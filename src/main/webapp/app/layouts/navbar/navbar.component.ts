@@ -10,9 +10,9 @@ import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
-import { environment } from 'environments/environment';
 import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
+import { VERSION } from '../../app.constants';
 
 @Component({
   selector: 'jhi-navbar',
@@ -36,10 +36,7 @@ export default class NavbarComponent implements OnInit {
   private readonly router = inject(Router);
 
   constructor() {
-    const { VERSION } = environment;
-    if (VERSION) {
-      this.version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
-    }
+    this.version = VERSION ? VERSION : '';
   }
 
   ngOnInit(): void {

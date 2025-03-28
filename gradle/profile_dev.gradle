@@ -1,6 +1,6 @@
 dependencies {
-    developmentOnly "org.springframework.boot:spring-boot-devtools"
-    // jhipster-needle-gradle-dependency - JHipster will add additional dependencies here
+    implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
+    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
 }
 
 ext {
@@ -28,10 +28,6 @@ task webapp(type: NpmTask) {
     inputs.dir("src/main/webapp/")
         .withPropertyName("src/main/webapp/")
         .withPathSensitivity(PathSensitivity.RELATIVE)
-    inputs.dir("webpack/")
-        .withPropertyName("webpack/")
-        .withPathSensitivity(PathSensitivity.RELATIVE)
-
     outputs.dir("build/resources/main/static/")
         .withPropertyName("webapp-build-dir")
 
@@ -54,15 +50,15 @@ processResources {
     }
 }
 
-task integrationTest(type: Test) {
+tasks.register("integrationTest", Test) {
     maxHeapSize = "1G"
     useJUnitPlatform()
     description = "Execute integration tests."
     group = "verification"
     include "**/*IT*", "**/*IntTest*"
     testLogging {
-        events 'FAILED', 'SKIPPED'
-        exceptionFormat "full"
+        events = ['FAILED', 'SKIPPED']
+        exceptionFormat = "full"
     }
     systemProperty('spring.profiles.active', 'test,testdev')
     systemProperty('java.security.egd', 'file:/dev/./urandom')

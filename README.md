@@ -1,6 +1,6 @@
 # TUMApply
 
-This application was generated using JHipster 8.9.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.9.0](https://www.jhipster.tech/documentation-archive/v8.9.0).
+**TUMApply** is a modern, inclusive, and efficient application portal for doctoral programs at the Technical University of Munich. It streamlines application management, improves usability for applicants and faculty, and supports scalable, secure, and transparent recruitment processes
 
 ## Project Structure
 

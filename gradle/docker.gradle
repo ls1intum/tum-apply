@@ -1,24 +1,19 @@
-plugins {
-    id "com.google.cloud.tools.jib"
-}
-
 jib {
-    configurationName = "productionRuntimeClasspath"
     from {
-        image = "eclipse-temurin:17-jre-focal"
+        image = "eclipse-temurin:21-jre-focal"
         platforms {
             platform {
-                architecture = "${findProperty('jibArchitecture') ?: 'amd64'}"
+                architecture = "${findProperty("jibArchitecture") ?: "amd64"}"
                 os = "linux"
             }
         }
     }
     to {
-        image = "tumapply:latest"
+        image = "tum-apply:latest"
     }
     container {
         entrypoint = ["bash", "-c", "/entrypoint.sh"]
-        ports = ["8080"]
+        ports = ["8080", "5701/udp" ]
         environment = [
             SPRING_OUTPUT_ANSI_ENABLED: "ALWAYS",
             JHIPSTER_SLEEP: "0"
@@ -31,3 +26,4 @@ jib {
       permissions = ["/entrypoint.sh": "755"]
     }
 }
+

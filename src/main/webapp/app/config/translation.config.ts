@@ -1,6 +1,7 @@
 import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { I18N_HASH } from '../environments/environment';
 
 export const translationNotFoundMessage = 'translation-not-found';
 
@@ -12,7 +13,7 @@ export class MissingTranslationHandlerImpl implements MissingTranslationHandler 
 }
 
 export function translatePartialLoader(http: HttpClient): TranslateLoader {
-  return new TranslateHttpLoader(http, 'i18n/', `.json?_=${I18N_HASH}`);
+  return new TranslateHttpLoader(http, '/i18n/', `.json?_=${I18N_HASH}`);
 }
 
 export function missingTranslationHandler(): MissingTranslationHandler {

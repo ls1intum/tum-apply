@@ -18,22 +18,24 @@
       "prefix": "jhi",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "customWebpackConfig": {
-              "path": "./webpack/webpack.custom.js"
+            "allowedCommonJsDependencies": [],
+            "outputPath": {
+              "base": "build/resources/main/static/",
+              "browser": ""
             },
-            "outputPath": "build/resources/main/static/",
             "index": "src/main/webapp/index.html",
-            "main": "src/main/webapp/main.ts",
-            "polyfills": ["zone.js"],
+            "browser": "src/main/webapp/main.ts",
+            "polyfills": ["@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/main/webapp/content",
               "src/main/webapp/favicon.ico",
               "src/main/webapp/manifest.webapp",
-              "src/main/webapp/robots.txt"
+              "src/main/webapp/robots.txt",
+              "src/main/webapp/i18n"
             ],
             "styles": ["src/main/webapp/content/scss/vendor.scss", "src/main/webapp/content/scss/global.scss"],
             "scripts": []
@@ -45,10 +47,7 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json",
+              "serviceWorker": "ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -63,16 +62,14 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
               "fileReplacements": [
                 {
-                  "replace": "src/main/webapp/environments/environment.ts",
-                  "with": "src/main/webapp/environments/environment.development.ts"
+                  "replace": "src/main/webapp/app/environments/environment.ts",
+                  "with": "src/main/webapp/app/environments/environment.override.ts"
                 }
               ]
             }
@@ -80,7 +77,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "tum-apply:build:development",
             "port": 4200
@@ -106,6 +103,7 @@
     }
   },
   "cli": {
+    "analytics": false,
     "cache": {
       "enabled": true,
       "path": "./build/angular/",
