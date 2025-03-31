@@ -353,6 +353,10 @@ For example, to start required services in Docker containers, run:
 docker compose -f src/main/docker/services.yml up -d
 ```
 
+- If you encounter a "Public Key Retrieval is not allowed" error when connecting to MySQL, you can fix it by either:
+  - Adding `allowPublicKeyRetrieval=true` to your JDBC URL (e.g., `jdbc:mysql://localhost:3306/dbname?allowPublicKeyRetrieval=true&useSSL=false`)
+  - Or, if you're using IntelliJ, open the Database tool window, navigate to your MySQL data source, open the driver properties, and set `allowPublicKeyRetrieval` to `true` manually.
+
 To stop and remove the containers, run:
 
 ```
