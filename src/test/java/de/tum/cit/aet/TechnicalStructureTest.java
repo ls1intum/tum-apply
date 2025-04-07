@@ -8,6 +8,8 @@ import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import de.tum.cit.aet.core.config.ApplicationProperties;
+import de.tum.cit.aet.core.config.Constants;
 
 @AnalyzeClasses(packagesOf = TumApplyApp.class, importOptions = DoNotIncludeTests.class)
 class TechnicalStructureTest {
@@ -32,7 +34,7 @@ class TechnicalStructureTest {
 
         .ignoreDependency(belongToAnyOf(TumApplyApp.class), alwaysTrue())
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
-            de.tum.cit.aet.config.Constants.class,
-            de.tum.cit.aet.config.ApplicationProperties.class
+            Constants.class,
+            ApplicationProperties.class
         ));
 }

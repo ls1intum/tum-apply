@@ -1,9 +1,9 @@
 package de.tum.cit.aet;
 
-import de.tum.cit.aet.config.AsyncSyncConfiguration;
-import de.tum.cit.aet.config.EmbeddedSQL;
-import de.tum.cit.aet.config.JacksonConfiguration;
-import de.tum.cit.aet.config.TestSecurityConfiguration;
+import de.tum.cit.aet.core.config.AsyncSyncConfiguration;
+import de.tum.cit.aet.core.config.EmbeddedSQL;
+import de.tum.cit.aet.core.config.JacksonConfiguration;
+import de.tum.cit.aet.core.config.TestSecurityConfiguration;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
