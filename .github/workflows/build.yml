@@ -90,8 +90,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Artemis.war
-          path: build/libs/Artemis-*.war
+          name: tum-apply.war
+          path: build/libs/tum-apply-*.war
       - name: Upload Release Artifact
         if: github.event_name == 'release' && github.event.action == 'created'
         uses: actions/upload-release-asset@v1
@@ -99,37 +99,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: build/libs/Artemis-${{ github.event.release.tag_name }}.war
-          asset_name: Artemis.war
+          asset_path: build/libs/tum-apply-${{ github.event.release.tag_name }}.war
+          asset_name: tum.war
           asset_content_type: application/x-webarchive
-
-  docker:
-    name: Build and Push Docker Image
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'ls1intum/Artemis' }}
-    uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@v1.1.0
-    with:
-      # Checkout pull request HEAD commit instead of merge commit to include the correct branch and git information inside the build
-      # Or use the push event ref name
-      ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-      image-name: ls1intum/artemis
-      docker-file: ./docker/artemis/Dockerfile
-      tags: |
-        type=ref,event=tag
-
-  # Save Docker image tag as an artifact
-  save-docker-tag:
-    name: Save Docker Image Tag
-    needs: docker
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'ls1intum/Artemis' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Save Docker Tag to File
-        run: |
-          echo "${{ needs.docker.outputs.image_tag }}" > docker-tag.txt
-          echo "Using Docker tag: ${{ needs.docker.outputs.image_tag }}"
-
-      - name: Upload Docker Tag as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-tag
-          path: docker-tag.txt
