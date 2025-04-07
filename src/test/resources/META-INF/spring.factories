@@ -1,2 +1,2 @@
 org.springframework.test.context.ContextCustomizerFactory = \
-    de.tum.cit.aet.config.SqlTestContainersSpringContextCustomizerFactory
+    de.tum.cit.aet.core.config.SqlTestContainersSpringContextCustomizerFactory

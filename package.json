@@ -36,7 +36,7 @@
     "server_port": 8080
   },
   "dependencies": {
-    "@angular/cdk": "19.2.7",
+    "@angular/cdk": "19.2.8",
     "@angular/common": "19.2.4",
     "@angular/compiler": "19.2.4",
     "@angular/core": "19.2.4",
@@ -84,7 +84,7 @@
     "jest-date-mock": "1.0.10",
     "jest-environment-jsdom": "29.7.0",
     "jest-junit": "16.0.0",
-    "jest-preset-angular": "14.5.3",
+    "jest-preset-angular": "14.5.4",
     "jest-sonar": "0.2.16",
     "lint-staged": "15.5.0",
     "prettier": "3.5.3",
@@ -92,8 +92,8 @@
     "prettier-plugin-packagejson": "2.5.10",
     "swagger-ui-dist": "5.20.2",
     "ts-jest": "29.3.0",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.29.0"
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.28.0"
   },
   "engines": {
     "node": ">=22.14.0",

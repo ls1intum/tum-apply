@@ -1,7 +1,7 @@
 package de.tum.cit.aet;
 
-import de.tum.cit.aet.config.ApplicationProperties;
-import de.tum.cit.aet.config.CRLFLogConverter;
+import de.tum.cit.aet.core.config.ApplicationProperties;
+import de.tum.cit.aet.core.config.CRLFLogConverter;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
