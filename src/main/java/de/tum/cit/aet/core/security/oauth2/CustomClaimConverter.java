@@ -51,6 +51,12 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * Converts the claims from the JWT token to a map of claims.
+     *
+     * @param claims the claims from the JWT token
+     * @return a map of claims
+     */
     public Map<String, Object> convert(Map<String, Object> claims) {
         Map<String, Object> convertedClaims = this.delegate.convert(claims);
         // Only look up user information if identity claims are missing

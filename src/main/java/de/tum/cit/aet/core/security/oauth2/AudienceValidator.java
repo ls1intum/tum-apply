@@ -21,6 +21,12 @@ public class AudienceValidator implements OAuth2TokenValidator<Jwt> {
         this.allowedAudience = allowedAudience;
     }
 
+    /**
+     * Validates the audience of the JWT token.
+     *
+     * @param jwt the JWT token to validate
+     * @return the result of the validation
+     */
     public OAuth2TokenValidatorResult validate(Jwt jwt) {
         List<String> audience = jwt.getAudience();
         if (audience.stream().anyMatch(allowedAudience::contains)) {

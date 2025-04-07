@@ -42,6 +42,14 @@ public class CacheConfiguration {
         return hibernateProperties -> hibernateProperties.put(ConfigSettings.CACHE_MANAGER, cacheManager);
     }
 
+    /**
+     * Customizes the JCache manager by creating caches for specific domain entities and repositories.
+     * <p>
+     * This method is automatically called by Spring and registers named caches using the JHipster
+     * configuration and MapStruct mappings. Useful for enabling application-level caching.
+     *
+     * @return a {@link JCacheManagerCustomizer} that sets up application caches
+     */
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {

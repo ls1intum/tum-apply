@@ -40,6 +40,12 @@ public class UserMapper {
         return userDTOs.stream().filter(Objects::nonNull).map(this::userDTOToUser).toList();
     }
 
+    /**
+     * Converts a UserDTO to a User entity.
+     *
+     * @param userDTO the UserDTO to convert
+     * @return the converted User entity
+     */
     public User userDTOToUser(AdminUserDTO userDTO) {
         if (userDTO == null) {
             return null;
@@ -80,6 +86,12 @@ public class UserMapper {
         return authorities;
     }
 
+    /**
+     * Converts a User entity to a UserDTO, only including the id field.
+     *
+     * @param id the id of the User entity
+     * @return a UserDTO with only the id field
+     */
     public User userFromId(String id) {
         if (id == null) {
             return null;
@@ -89,6 +101,12 @@ public class UserMapper {
         return user;
     }
 
+    /**
+     * Converts a User entity to a UserDTO, only including the id field.
+     *
+     * @param user the User entity to convert
+     * @return a UserDTO with only the id field
+     */
     @Named("id")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
@@ -101,6 +119,12 @@ public class UserMapper {
         return userDto;
     }
 
+    /**
+     * Converts a Set of User entities to a Set of UserDTOs, only including the id field.
+     *
+     * @param users the Set of User entities to convert
+     * @return a Set of UserDTOs with only the id field
+     */
     @Named("idSet")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
@@ -117,6 +141,12 @@ public class UserMapper {
         return userSet;
     }
 
+    /**
+     * Converts a User entity to a UserDTO, only including the id and login fields.
+     *
+     * @param user the User entity to convert
+     * @return a UserDTO with only the id and login fields
+     */
     @Named("login")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
@@ -131,6 +161,12 @@ public class UserMapper {
         return userDto;
     }
 
+    /**
+     * Converts a Set of User entities to a Set of UserDTOs, only including the id and login fields.
+     *
+     * @param users the Set of User entities to convert
+     * @return a Set of UserDTOs with only the id and login fields
+     */
     @Named("loginSet")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")

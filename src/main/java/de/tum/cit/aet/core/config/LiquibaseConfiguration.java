@@ -29,6 +29,17 @@ public class LiquibaseConfiguration {
         this.env = env;
     }
 
+    /**
+     * Configures Liquibase bean.
+     *
+     * @param executor the executor for async Liquibase
+     * @param liquibaseProperties the Liquibase properties
+     * @param liquibaseDataSource the Liquibase data source
+     * @param dataSource the main data source
+     * @param applicationProperties the application properties
+     * @param dataSourceProperties the data source properties
+     * @return the configured Liquibase bean
+     */
     @Bean
     public SpringLiquibase liquibase(
         @Qualifier("taskExecutor") Executor executor,
