@@ -92,7 +92,7 @@
     "prettier-plugin-packagejson": "2.5.10",
     "swagger-ui-dist": "5.20.2",
     "ts-jest": "29.3.0",
-    "typescript": "5.8.2",
+    "typescript": "5.8.3",
     "typescript-eslint": "8.28.0"
   },
   "engines": {
