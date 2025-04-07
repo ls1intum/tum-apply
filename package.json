@@ -36,7 +36,7 @@
     "server_port": 8080
   },
   "dependencies": {
-    "@angular/cdk": "19.2.7",
+    "@angular/cdk": "19.2.8",
     "@angular/common": "19.2.4",
     "@angular/compiler": "19.2.4",
     "@angular/core": "19.2.4",
