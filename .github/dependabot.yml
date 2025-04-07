@@ -1,0 +1,43 @@
+version: 2
+updates:
+  # Check for version updates for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '08:30'
+    reviewers:
+      - 'az108'
+      - 'krusche'
+    open-pull-requests-limit: 5
+    labels:
+      - 'ready for review'
+      - 'dependencies'
+
+  # Check for version updates for npm dependencies
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    reviewers:
+      - 'az108'
+      - 'krusche'
+    # Enable security updates
+    open-pull-requests-limit: 5
+    labels:
+      - 'ready for review'
+      - 'dependencies'
+
+  # Check for Gradle updates
+  - package-ecosystem: 'gradle'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    reviewers:
+      - 'az108'
+      - 'krusche'
+    open-pull-requests-limit: 5
+    labels:
+      - 'ready for review'
+      - 'dependencies'

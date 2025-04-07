@@ -1,0 +1,23 @@
+server:
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/**/*.java
+
+client:
+  - changed-files:
+      - any-glob-to-any-file: src/main/webapp/**/*
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: src/test/**/*
+
+database:
+  - changed-files:
+      - any-glob-to-any-file: src/main/resources/config/liquibase/master.xml
+
+docker:
+  - changed-files:
+      - any-glob-to-any-file: docker/**/*
+
+config-change:
+  - changed-files:
+      - any-glob-to-any-file: src/main/resources/config/*.yml

@@ -1,0 +1,250 @@
+name: Test
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'SECURITY.md'
+      - 'docs/**'
+      - '.github/**'
+      - '!.github/workflows/test.yml'
+  push:
+    branches:
+      - develop
+      - main
+      - release/*
+    tags: '[0-9]+.[0-9]+.[0-9]+'
+    paths-ignore:
+      - 'README.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'SECURITY.md'
+      - 'docs/**'
+      - '.github/**'
+      - '!.github/workflows/test.yml'
+  release:
+    types:
+      - created
+
+# Limit the number of concurrent runs to one per PR
+# If a run is already in progress, cancel it
+# If the run is not for a PR, then this limit does not apply
+concurrency:
+  group: test-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+# Keep in sync with codeql-analysis.yml and build.yml
+env:
+  CI: true
+  node: 22
+  java: 21
+  # Run all tests for non-draft pull-requests or the default branch. Otherwise, only module-affected tests are run.
+  RUN_ALL_TESTS: ${{ (github.event_name == 'pull_request' && github.event.pull_request.draft == false) || github.event.repository.default_branch == github.ref_name }}
+
+jobs:
+  server-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          # Install Java 17 to run programming templates
+          java-version: |
+            17
+            ${{ env.java }}
+          cache: 'gradle'
+      - name: Java Tests (module-affected)
+        # Not a non-draft pull-request and not the default branch
+        if: ${{ !env.RUN_ALL_TESTS }}
+        run: |
+          set -o pipefail
+
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+
+          # Explicitly fetch as the clone action only clones the current branch
+          git fetch origin "$DEFAULT_BRANCH"
+
+          chmod +x ./supporting_scripts/get_changed_modules.sh
+          CHANGED_MODULES=$(./supporting_scripts/get_changed_modules.sh "origin/$DEFAULT_BRANCH")
+
+          # Restrict executed tests to changed modules if there is diff between this and the base branch
+          if [ -n "${CHANGED_MODULES}" ]; then
+            IFS=,
+            TEST_MODULE_TAGS=$(echo "-DincludeModules=${CHANGED_MODULES[*]}")
+
+            echo "Executing tests for modules: $CHANGED_MODULES"
+            ./gradlew --console=plain test jacocoTestReport -x webapp jacocoTestCoverageVerification "$TEST_MODULE_TAGS" | tee tests.log
+            exit 0
+          fi
+
+          echo "Executing all tests"
+          ./gradlew --console=plain test jacocoTestReport -x webapp jacocoTestCoverageVerification | tee tests.log
+      - name: Java Tests (All)
+        # Non-draft pull-request or default branch
+        if: ${{ env.RUN_ALL_TESTS }}
+        run: |
+          set -o pipefail
+          ./gradlew --console=plain test jacocoTestReport -x webapp jacocoTestCoverageVerification | tee tests.log
+      - name: Upload JUnit Test Results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JUnit Test Results
+          path: build/test-results/test/*.xml
+      - name: Print failed tests
+        if: failure()
+        run: grep "Test >.* FAILED\$" tests.log || echo "No failed tests."
+      - name: 'Codacy: Report coverage'
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: build/reports/jacoco/aggregated/jacocoTestReport.xml
+        if: (github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name) && (success() || failure()) && github.event.pull_request.user.login != 'dependabot[bot]'
+      - name: Annotate Server Test Results
+        uses: ashley-taylor/junit-report-annotations-action@f9c1a5cbe28479439f82b80a5402a6d3aa1990ac
+        if: always() && github.event.pull_request.user.login != 'dependabot[bot]'
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: build/test-results/test/*.xml
+          numFailures: 99
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: H2 Tests
+          path: build/test-results/test/*.xml
+          reporter: java-junit
+      - name: Number of Server Starts
+        if: success() || failure()
+        run: bash supporting_scripts/extract_number_of_server_starts.sh
+      - name: Upload Server Test Coverage Report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage Report Server Tests
+          path: build/reports/jacoco/aggregated/html
+      - name: Append Per-Module Coverage to Job Summary
+        if: success() || failure()
+        run: |
+          AGGREGATED_REPORT_FILE=./module_coverage_report.md
+          python3 ./supporting_scripts/code-coverage/per_module_cov_report/parse_module_coverage.py build/reports/jacoco $AGGREGATED_REPORT_FILE
+          cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
+
+  server-style:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '${{ env.java }}'
+          cache: 'gradle'
+      - name: Java Code Style
+        run: ./gradlew spotlessCheck
+      - name: Java Documentation
+        run: ./gradlew checkstyleMain -x webapp
+        if: success() || failure()
+      - name: Java Architecture Tests
+        run: ./gradlew test -DincludeTags='ArchitectureTest' -x webapp
+        if: success() || failure()
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: Java Architecture Tests
+          path: build/test-results/test/*.xml
+          reporter: java-junit
+
+  client-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      # It seems like there is some memory issue with these tests with the project-wide default node option
+      # `--max-old-space-size` set in the .npmrc, therefore we delete it for this test as a workaround
+      - name: remove project-wide node options set in .npmrc just for this test
+        run: rm .npmrc || true
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '${{ env.node }}'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm install
+      - name: Compile TypeScript Test Files With Typechecking
+        run: npm run compile:ts:tests
+      - name: TypeScript Test Without Typechecking
+        run: npm run test:ci
+      - name: Upload Client Test Coverage Report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage Report Client Tests
+          path: build/test-results/lcov-report/
+      - name: Upload JUnit Test Results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Client JUnit Test Results
+          path: junit.xml
+
+  client-tests-selected:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '${{ env.node }}'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm install
+      - name: Compile TypeScript Test Files With Typechecking
+        run: npm run compile:ts:tests
+      - name: TypeScript Test (Selection) Without Typechecking
+        run: npm run test-diff:ci
+
+  client-style:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '${{ env.node }}'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm install
+      - name: TypeScript Formatting
+        run: npm run prettier:check
+      - name: TypeScript Code Style
+        run: npm run lint
+        if: success() || failure()
+
+  client-compilation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '${{ env.node }}'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm install
+      - name: Compile TypeScript Files With Typechecking
+        run: npm run compile:ts
