@@ -36,7 +36,7 @@ export default class NavbarComponent implements OnInit {
   private readonly router = inject(Router);
 
   constructor() {
-    this.version = VERSION ? VERSION : '';
+    this.version = VERSION;
   }
 
   ngOnInit(): void {

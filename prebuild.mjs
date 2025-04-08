@@ -9,7 +9,6 @@ import fs from 'fs';
 import path from 'path';
 import { hashElement } from 'folder-hash';
 import { fileURLToPath } from 'url';
-import * as esbuild from 'esbuild';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,7 +36,7 @@ function inferVersion() {
     version = data.match(/\nversion\s=\s"(.*)"/);
 
     version = version[1] ?? 'DEV';
-  } catch (error) {
+  } catch (_error) {
     console.log("Error while retrieving 'APP_VERSION' property");
   }
 
@@ -75,7 +74,7 @@ function deepMerge(target, source) {
 
   for (const key in source) {
     // prevent prototype pollution
-    if (!source.hasOwnProperty(key)) continue;
+    if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
     if (key === '__proto__' || key === 'constructor') continue;
 
     const targetValue = target[key];
