@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: Slashgear/action-check-pr-title@v4.3.0
         with:
-          regexp: '^`(General|Development|Scalability|Usability|Performance)`:\s[A-Z].*$'
+          regexp: '^`(Usability|Performance|Development|General)`:\s[A-Z].*$'
