@@ -14,6 +14,8 @@
     "build": "npm run webapp:prod --",
     "clean-www": "rimraf build/resources/main/static/",
     "cleanup": "rimraf build/",
+    "compile:ts": "npm run prebuild && tsc --project tsconfig.app.json",
+    "compile:ts:tests": "npm run prebuild && tsc --project tsconfig.spec.json",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
