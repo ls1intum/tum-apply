@@ -1,6 +1,6 @@
 #!/bin/bash
 
-numberOfStarts=$(grep ":: Powered by Spring Boot[^:]* ::" tests.log | wc -l)
+numberOfStarts=$(grep ":: TumApply 🤓  :: Running Spring Boot[^:]* ::" tests.log | wc -l)
 echo "Number of Server Starts: $numberOfStarts"
 
 if [[ $numberOfStarts -lt 1 ]]
