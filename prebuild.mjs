@@ -36,8 +36,8 @@ function inferVersion() {
     version = data.match(/\nversion\s=\s"(.*)"/);
 
     version = version[1] ?? 'DEV';
-  } catch (_error) {
-    console.log("Error while retrieving 'APP_VERSION' property");
+  } catch (error) {
+    console.log("Error while retrieving 'APP_VERSION' property", error);
   }
 
   return version;

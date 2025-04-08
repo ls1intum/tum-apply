@@ -60,9 +60,9 @@ export class JhiLanguageHelper {
    * @param routeSnapshot The snapshot of the current route
    */
   getPageTitle(routeSnapshot: ActivatedRouteSnapshot): string {
-    let title: string = routeSnapshot.data?.['pageTitle'] ?? 'global.title';
+    let title: string = routeSnapshot.data['pageTitle'] ?? 'global.title';
     if (routeSnapshot.firstChild) {
-      title = this.getPageTitle(routeSnapshot.firstChild) ?? title;
+      title = this.getPageTitle(routeSnapshot.firstChild);
     }
     return title;
   }
@@ -70,7 +70,7 @@ export class JhiLanguageHelper {
   public determinePreferredLanguage(): string {
     const navigator = this.getNavigatorReference();
     // In the languages array the languages are ordered by preference with the most preferred language first.
-    for (let language of navigator.languages) {
+    for (const language of navigator.languages) {
       // return the language with the highest preference
       if (language.startsWith('en')) {
         return 'en';

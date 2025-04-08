@@ -15,6 +15,17 @@ export class LocaleConversionService {
   }
 
   /**
+   * Get the language set by the user.
+   */
+  private static getLang(): string {
+    if (navigator.languages !== undefined) {
+      return navigator.languages[0];
+    } else {
+      return navigator.language;
+    }
+  }
+
+  /**
    * Convert a number value to a locale string.
    * @param value
    * @param maximumFractionDigits
@@ -45,17 +56,6 @@ export class LocaleConversionService {
       return '-';
     } else {
       return value.toLocaleString(this.locale, options) + '%';
-    }
-  }
-
-  /**
-   * Get the language set by the user.
-   */
-  private static getLang(): string {
-    if (navigator.languages !== undefined) {
-      return navigator.languages[0];
-    } else {
-      return navigator.language;
     }
   }
 }
