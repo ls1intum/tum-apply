@@ -71,6 +71,7 @@ jobs:
           # Explicitly fetch as the clone action only clones the current branch
           git fetch origin "$DEFAULT_BRANCH"
 
+
           chmod +x ./supporting_scripts/get_changed_modules.sh
           CHANGED_MODULES=$(./supporting_scripts/get_changed_modules.sh "origin/$DEFAULT_BRANCH")
 
