@@ -18,7 +18,7 @@ export class LocaleConversionService {
    * Get the language set by the user.
    */
   private static getLang(): string {
-    if (navigator.languages !== undefined) {
+    if (navigator.languages.length !== 0) {
       return navigator.languages[0];
     } else {
       return navigator.language;
