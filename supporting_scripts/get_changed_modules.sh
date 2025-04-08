@@ -13,8 +13,8 @@ fi
 
 BRANCH_TO_COMPARE="$1"
 
-MODULE_BASE_PATH="src/main/java/de/tum/cit/aet/artemis"
-MODULE_BASE_TEST_PATH="src/test/java/de/tum/cit/aet/artemis"
+MODULE_BASE_PATH="src/main/java/de/tum/cit/aet"
+MODULE_BASE_TEST_PATH="src/test/java/de/tum/cit/aet"
 
 MODULES=$(find "$MODULE_BASE_PATH" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
 CHANGED_MODULES=()
