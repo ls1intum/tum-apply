@@ -15,6 +15,13 @@ public class OpenApiConfiguration {
 
     public static final String API_FIRST_PACKAGE = "de.tum.cit.aet.web.api";
 
+    /**
+     * Configures the OpenAPI documentation for the application.
+     *
+     * @param jhipsterOpenApiCustomizer the customizer for OpenAPI
+     * @param jHipsterProperties        the JHipster properties
+     * @return the configured GroupedOpenApi bean
+     */
     @Bean
     @ConditionalOnMissingBean(name = "apiFirstGroupedOpenAPI")
     public GroupedOpenApi apiFirstGroupedOpenAPI(

@@ -12,6 +12,13 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 @Configuration
 public class OAuth2Configuration {
 
+    /**
+     * Configures the OAuth2AuthorizedClientManager bean.
+     *
+     * @param clientRegistrationRepository the client registration repository
+     * @param authorizedClientRepository   the authorized client repository
+     * @return the OAuth2AuthorizedClientManager bean
+     */
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(
         ClientRegistrationRepository clientRegistrationRepository,

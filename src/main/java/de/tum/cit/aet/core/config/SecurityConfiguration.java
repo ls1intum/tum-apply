@@ -57,6 +57,13 @@ public class SecurityConfiguration {
         this.jHipsterProperties = jHipsterProperties;
     }
 
+    /**
+     * Spring Security configuration.
+     *
+     * @param http the {@link HttpSecurity} to modify
+     * @return the {@link SecurityFilterChain}
+     * @throws Exception if an error occurs
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
