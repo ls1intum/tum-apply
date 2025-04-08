@@ -27,6 +27,7 @@
     "pretest": "npm run lint",
     "test": "ng test --coverage --log-heap-usage -w=4",
     "test:watch": "npm run test -- --watch",
+    "test:ci": "npm run prebuild && ng test --coverage --log-heap-usage -w=4 --ci --reporters=default --reporters=jest-junit",
     "update": "ncu -i --format group",
     "webapp:build": "npm run prebuild -- --develop && ng build --configuration development",
     "webapp:dev": "npm run prebuild -- --develop && ng serve",
