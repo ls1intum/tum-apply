@@ -282,7 +282,7 @@ def analyze_all_modules(base_directory):
     return results
 
 # Specify the base directory of your codebase
-base_directory = '../src/main/java/de/tum/cit/aet/artemis'
+base_directory = '../src/main/java/de/tum/cit/aet'
 
 # Analyze all dynamically detected modules
 module_metrics = analyze_all_modules(base_directory)
