@@ -113,6 +113,7 @@ jobs:
           name: H2 Tests
           path: build/test-results/test/*.xml
           reporter: java-junit
+      # //TODO: Check why this is not working and remove other unnecessary steps
       #- name: Number of Server Starts
       #  if: success() || failure()
       #  run: bash supporting_scripts/extract_number_of_server_starts.sh
