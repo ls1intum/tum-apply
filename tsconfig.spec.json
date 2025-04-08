@@ -3,6 +3,7 @@
   "include": ["src/main/webapp/**/*.ts"],
   "compilerOptions": {
     "composite": true,
+    "declaration": true,
     "outDir": "build/out-tsc/spec",
     "types": ["jest", "node"]
   }
