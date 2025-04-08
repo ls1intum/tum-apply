@@ -2,13 +2,11 @@ name: 'Validate Gradle Wrapper'
 on:
   push:
     branches:
-      - develop
       - main
-      - release/*
     paths:
       - '**/gradle/**'
   pull_request:
-    branches: [develop]
+    branches: [main]
     paths:
       - '**/gradle/**'
 
