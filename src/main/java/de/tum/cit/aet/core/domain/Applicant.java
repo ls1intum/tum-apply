@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
 import jakarta.persistence.*;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
