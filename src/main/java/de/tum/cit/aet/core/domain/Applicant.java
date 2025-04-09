@@ -16,9 +16,10 @@ public class Applicant {
     @JoinColumn(name = "user_id")
     private User user;
 
+    //TODO: Uncomment when Application Entity is implemented
     // Contains all the Applications that a User (Applicant) has submitted
-    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Application> submittedApplications;
+    //    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    //    private List<Application> submittedApplications;
 
     @Column(name = "street")
     private String street;
@@ -62,9 +63,10 @@ public class Applicant {
     @Column(name = "interests")
     private String interests;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "applicant_id")
-    private List<Document> documents;
+    //TODO: Uncomment when Document Entity is implemented
+    //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    //    @JoinColumn(name = "applicant_id")
+    //    private List<Document> documents;
 
     // Getters and Setters
 
@@ -84,13 +86,14 @@ public class Applicant {
         this.user = user;
     }
 
-    public List<Application> getSubmittedApplications() {
-        return submittedApplications;
-    }
-
-    public void setSubmittedApplications(List<Application> submittedApplications) {
-        this.submittedApplications = submittedApplications;
-    }
+    //TODO: Uncomment when Application Entity is implemented
+    //    public List<Application> getSubmittedApplications() {
+    //        return submittedApplications;
+    //    }
+    //
+    //    public void setSubmittedApplications(List<Application> submittedApplications) {
+    //        this.submittedApplications = submittedApplications;
+    //    }
 
     public String getStreet() {
         return street;
@@ -203,12 +206,12 @@ public class Applicant {
     public void setInterests(String interests) {
         this.interests = interests;
     }
-
-    public List<Document> getDocuments() {
-        return documents;
-    }
-
-    public void setDocuments(List<Document> documents) {
-        this.documents = documents;
-    }
+    //TODO: Uncomment when Document Entity is implemented
+    //    public List<Document> getDocuments() {
+    //        return documents;
+    //    }
+    //
+    //    public void setDocuments(List<Document> documents) {
+    //        this.documents = documents;
+    //    }
 }
