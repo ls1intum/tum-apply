@@ -11,5 +11,4 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID documentId;
     //TODO: store an applicant_id to map documents to applicants
-
 }
