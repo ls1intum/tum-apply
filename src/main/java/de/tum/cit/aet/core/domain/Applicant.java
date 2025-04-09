@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.domain;
 
 import jakarta.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,11 +16,9 @@ public class Applicant {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //TODO: Uncomment the lines below after the Application Entity has been created
-    // -> Adjust "mappedBy" if necessary
     // Contains all the Applications that a User (Applicant) has submitted
-    //    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    //    private List<Application> submittedApplications;
+    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Application> submittedApplications;
 
     @Column(name = "street")
     private String street;
@@ -63,9 +62,9 @@ public class Applicant {
     @Column(name = "interests")
     private String interests;
 
-    //TODO: Uncomment the lines below after the Document Entity has been created
-    //    @Column(name = "documents")
-    //    private List<Document> documents;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "applicant_id")
+    private List<Document> documents;
 
     // Getters and Setters
 
@@ -85,14 +84,13 @@ public class Applicant {
         this.user = user;
     }
 
-    //TODO: Uncomment the lines below after the Application Entity has been created
-    //    public List<Application> getSubmittedApplications() {
-    //        return submittedApplications;
-    //    }
-    //
-    //    public void setSubmittedApplications(List<Application> submittedApplications) {
-    //        this.submittedApplications = submittedApplications;
-    //    }
+    public List<Application> getSubmittedApplications() {
+        return submittedApplications;
+    }
+
+    public void setSubmittedApplications(List<Application> submittedApplications) {
+        this.submittedApplications = submittedApplications;
+    }
 
     public String getStreet() {
         return street;
@@ -205,11 +203,12 @@ public class Applicant {
     public void setInterests(String interests) {
         this.interests = interests;
     }
-    //TODO: Uncomment the lines below after the Document Entity has been created
-    //    public void getDocuments() {
-    //        return documents;
-    //    }
-    //    public void setDocuments(List<Document> documents) {
-    //        this.documents = documents;
-    //    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
+    }
 }

@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-//TODO: Check if there are any length restrictions on the fields
-
 /**
  * A user.
  */
@@ -18,14 +16,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id", nullable = false)
-    private UUID id;
+    private UUID userId;
 
-    //TODO: Unsure
     @ManyToOne
     @JoinColumn(name = "research_group_id")
     private ResearchGroup researchGroup;
 
-    //TODO: Unsure
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     private Applicant applicant;
 
@@ -33,7 +29,6 @@ public class User {
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Job> postedJobs;
 
-    //TODO: Adjust UserGroup if Necessary
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "user_group", nullable = false)
@@ -62,12 +57,12 @@ public class User {
 
     // Getters and Setters
 
-    public UUID getId() {
-        return id;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public ResearchGroup getResearchGroup() {

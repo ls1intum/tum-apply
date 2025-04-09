@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.constants.State;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,16 +18,13 @@ public class Job {
     @Column(name = "job_id", nullable = false)
     private UUID jobId;
 
-    //TODO: Unsure
     @ManyToOne
     @JoinColumn(name = "professor_id")
     private User postedBy;
 
-    //TODO: Uncomment the lines below after the Application Entity has been created
-    // -> Adjust "mappedBy" if necessary
     // Contains all the Applications that are submitted to this Job
-    //    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    //    private List<Application> applications;
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Application> applications;
 
     @Column(name = "field_of_studies")
     private String fieldOfStudies;
@@ -94,14 +92,13 @@ public class Job {
         this.postedBy = postedBy;
     }
 
-    //TODO: Uncomment the lines below after the Application Entity has been created
-    //    public List<Application> getApplications() {
-    //        return applications;
-    //    }
-    //
-    //    public void setApplications(List<Application> applications) {
-    //        this.applications = applications;
-    //    }
+    public List<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
+    }
 
     public String getFieldOfStudies() {
         return fieldOfStudies;

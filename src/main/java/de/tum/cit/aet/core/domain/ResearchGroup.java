@@ -16,7 +16,6 @@ public class ResearchGroup {
     @Column(name = "research_group_id", nullable = false)
     private UUID researchGroupId;
 
-    //TODO: Unsure
     @OneToMany(mappedBy = "researchGroup")
     private List<User> users;
 
