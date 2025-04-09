@@ -52,8 +52,9 @@ public class Job {
     @Column(name = "contact")
     private String contact;
 
-    //TODO: Possible change to "Status" -> change ENUM name + DB Schema + UML
-    @Column(name = "state")
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false)
     private State state;
 
     @Column(name = "start_date")

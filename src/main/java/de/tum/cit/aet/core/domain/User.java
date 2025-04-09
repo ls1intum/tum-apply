@@ -1,6 +1,8 @@
 package de.tum.cit.aet.core.domain;
 
+import de.tum.cit.aet.core.constants.UserGroup;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 //TODO: Check if there are any length restrictions on the fields
@@ -26,12 +28,12 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     private Applicant applicant;
 
-    //TODO: userGroup (ENUM);
-    // something like this for userGroup
-    //    @NotNull
-    //    @Enumerated(EnumType.STRING)
-    //    @JoinColumn(name = "type", nullable = false)
-    //    private ThesisCommentType type;
+    //TODO: Adjust UserGroup if Necessary
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_group", nullable = false)
+    private UserGroup userGroup;
 
     @Column(name = "email")
     private String email;
