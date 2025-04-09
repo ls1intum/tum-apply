@@ -5,13 +5,24 @@ import { TranslateService } from '@ngx-translate/core';
   providedIn: 'root',
 })
 export class LocaleConversionService {
-  private translateService = inject(TranslateService);
-
-  locale = LocaleConversionService.getLang();
   // default value, will be overridden by the current language of Artemis
+  locale = LocaleConversionService.getLang();
+
+  private translateService = inject(TranslateService);
 
   constructor() {
     this.locale = this.translateService.currentLang;
+  }
+
+  /**
+   * Get the language set by the user.
+   */
+  private static getLang(): string {
+    if (navigator.languages.length !== 0) {
+      return navigator.languages[0];
+    } else {
+      return navigator.language;
+    }
   }
 
   /**
@@ -19,7 +30,7 @@ export class LocaleConversionService {
    * @param value
    * @param maximumFractionDigits
    */
-  toLocaleString(value: number, maximumFractionDigits = 1) {
+  toLocaleString(value: number, maximumFractionDigits = 1): string {
     const options: Intl.NumberFormatOptions = {
       maximumFractionDigits,
     };
@@ -36,7 +47,7 @@ export class LocaleConversionService {
    * @param value
    * @param maximumFractionDigits
    */
-  toLocalePercentageString(value: number, maximumFractionDigits = 1) {
+  toLocalePercentageString(value: number, maximumFractionDigits = 1): string {
     const options: Intl.NumberFormatOptions = {
       maximumFractionDigits,
     };
@@ -45,17 +56,6 @@ export class LocaleConversionService {
       return '-';
     } else {
       return value.toLocaleString(this.locale, options) + '%';
-    }
-  }
-
-  /**
-   * Get the language set by the user.
-   */
-  private static getLang() {
-    if (navigator.languages !== undefined) {
-      return navigator.languages[0];
-    } else {
-      return navigator.language;
     }
   }
 }
