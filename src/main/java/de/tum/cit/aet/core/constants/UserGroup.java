@@ -1,8 +1,13 @@
 package de.tum.cit.aet.core.constants;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Enum representing the user groups in the system.
  */
+@AllArgsConstructor
+@Getter
 public enum UserGroup {
     PROFESSOR("PROFESSOR"),
     RESEARCH_ASSISTANT("RESEARCH_ASSISTANT"),
@@ -10,13 +15,4 @@ public enum UserGroup {
     APPLICANT("APPLICANT");
 
     private final String value;
-
-    UserGroup(String value) {
-        this.value = value;
-    }
-
-    // Getter
-    public String getValue() {
-        return value;
-    }
 }
