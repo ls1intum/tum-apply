@@ -63,13 +63,14 @@ class UserServiceIT {
     @BeforeEach
     public void init() {
         user = new User();
-        user.setLogin(DEFAULT_LOGIN);
-        user.setActivated(true);
-        user.setEmail(DEFAULT_EMAIL);
-        user.setFirstName(DEFAULT_FIRSTNAME);
-        user.setLastName(DEFAULT_LASTNAME);
-        user.setImageUrl(DEFAULT_IMAGEURL);
-        user.setLangKey(DEFAULT_LANGKEY);
+        //TODO: Adjust this code after Database Entities have been created
+        //        user.setLogin(DEFAULT_LOGIN);
+        //        user.setActivated(true);
+        //        user.setEmail(DEFAULT_EMAIL);
+        //        user.setFirstName(DEFAULT_FIRSTNAME);
+        //        user.setLastName(DEFAULT_LASTNAME);
+        //        user.setImageUrl(DEFAULT_IMAGEURL);
+        //        user.setLangKey(DEFAULT_LANGKEY);
 
         userDetails = new HashMap<>();
         userDetails.put("sub", DEFAULT_LOGIN);

@@ -20,9 +20,10 @@ public class UserDTO implements Serializable {
     }
 
     public UserDTO(User user) {
-        this.id = user.getId();
-        // Customize it here if you need, or not, firstName/lastName/etc
-        this.login = user.getLogin();
+        //TODO: Adjust this code after Database Entities have been created
+        //        this.id = user.getId();
+        //        // Customize it here if you need, or not, firstName/lastName/etc
+        //        this.login = user.getLogin();
     }
 
     public String getId() {

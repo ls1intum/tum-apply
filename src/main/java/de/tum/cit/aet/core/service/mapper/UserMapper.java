@@ -51,20 +51,21 @@ public class UserMapper {
             return null;
         } else {
             User user = new User();
-            user.setId(userDTO.getId());
-            user.setLogin(userDTO.getLogin());
-            user.setFirstName(userDTO.getFirstName());
-            user.setLastName(userDTO.getLastName());
-            user.setEmail(userDTO.getEmail());
-            user.setImageUrl(userDTO.getImageUrl());
-            user.setCreatedBy(userDTO.getCreatedBy());
-            user.setCreatedDate(userDTO.getCreatedDate());
-            user.setLastModifiedBy(userDTO.getLastModifiedBy());
-            user.setLastModifiedDate(userDTO.getLastModifiedDate());
-            user.setActivated(userDTO.isActivated());
-            user.setLangKey(userDTO.getLangKey());
-            Set<Authority> authorities = this.authoritiesFromStrings(userDTO.getAuthorities());
-            user.setAuthorities(authorities);
+            //TODO: Adjust this code after Database Entities have been created
+            //            user.setId(userDTO.getId());
+            //            user.setLogin(userDTO.getLogin());
+            //            user.setFirstName(userDTO.getFirstName());
+            //            user.setLastName(userDTO.getLastName());
+            //            user.setEmail(userDTO.getEmail());
+            //            user.setImageUrl(userDTO.getImageUrl());
+            //            user.setCreatedBy(userDTO.getCreatedBy());
+            //            user.setCreatedDate(userDTO.getCreatedDate());
+            //            user.setLastModifiedBy(userDTO.getLastModifiedBy());
+            //            user.setLastModifiedDate(userDTO.getLastModifiedDate());
+            //            user.setActivated(userDTO.isActivated());
+            //            user.setLangKey(userDTO.getLangKey());
+            //            Set<Authority> authorities = this.authoritiesFromStrings(userDTO.getAuthorities());
+            //            user.setAuthorities(authorities);
             return user;
         }
     }
@@ -97,7 +98,8 @@ public class UserMapper {
             return null;
         }
         User user = new User();
-        user.setId(id);
+        //TODO: Adjust this code after Database Entities have been created
+        //        user.setId(id);
         return user;
     }
 
@@ -115,7 +117,8 @@ public class UserMapper {
             return null;
         }
         UserDTO userDto = new UserDTO();
-        userDto.setId(user.getId());
+        //TODO: Adjust this code after Database Entities have been created
+        //        userDto.setId(user.getId());
         return userDto;
     }
 
@@ -156,8 +159,9 @@ public class UserMapper {
             return null;
         }
         UserDTO userDto = new UserDTO();
-        userDto.setId(user.getId());
-        userDto.setLogin(user.getLogin());
+        //TODO: Adjust this code after Database Entities have been created
+        //        userDto.setId(user.getId());
+        //        userDto.setLogin(user.getLogin());
         return userDto;
     }
 
