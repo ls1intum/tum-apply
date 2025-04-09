@@ -52,20 +52,21 @@ public class UserService {
      * @param imageUrl  image URL of user.
      */
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
-        SecurityUtils.getCurrentUserLogin()
-            .flatMap(userRepository::findOneByLogin)
-            .ifPresent(user -> {
-                user.setFirstName(firstName);
-                user.setLastName(lastName);
-                if (email != null) {
-                    user.setEmail(email.toLowerCase());
-                }
-                user.setLangKey(langKey);
-                user.setImageUrl(imageUrl);
-                userRepository.save(user);
-                this.clearUserCaches(user);
-                LOG.debug("Changed Information for User: {}", user);
-            });
+        //TODO: Adjust this code after Database Entities have been created
+        //        SecurityUtils.getCurrentUserLogin()
+        //            .flatMap(userRepository::findOneByLogin)
+        //            .ifPresent(user -> {
+        //                user.setFirstName(firstName);
+        //                user.setLastName(lastName);
+        //                if (email != null) {
+        //                    user.setEmail(email.toLowerCase());
+        //                }
+        //                user.setLangKey(langKey);
+        //                user.setImageUrl(imageUrl);
+        //                userRepository.save(user);
+        //                this.clearUserCaches(user);
+        //                LOG.debug("Changed Information for User: {}", user);
+        //            });
     }
 
     @Transactional(readOnly = true)
@@ -94,43 +95,44 @@ public class UserService {
     }
 
     private User syncUserWithIdP(Map<String, Object> details, User user) {
-        // save authorities in to sync user roles/groups between IdP and JHipster's local database
-        Collection<String> dbAuthorities = getAuthorities();
-        Collection<String> userAuthorities = user.getAuthorities().stream().map(Authority::getName).toList();
-        for (String authority : userAuthorities) {
-            if (!dbAuthorities.contains(authority)) {
-                LOG.debug("Saving authority '{}' in local database", authority);
-                Authority authorityToSave = new Authority();
-                authorityToSave.setName(authority);
-                authorityRepository.save(authorityToSave);
-            }
-        }
-        // save account in to sync users between IdP and JHipster's local database
-        Optional<User> existingUser = userRepository.findOneByLogin(user.getLogin());
-        if (existingUser.isPresent()) {
-            // if IdP sends last updated information, use it to determine if an update should happen
-            if (details.get("updated_at") != null) {
-                Instant dbModifiedDate = existingUser.orElseThrow().getLastModifiedDate();
-                Instant idpModifiedDate;
-                if (details.get("updated_at") instanceof Instant) {
-                    idpModifiedDate = (Instant) details.get("updated_at");
-                } else {
-                    idpModifiedDate = Instant.ofEpochSecond((Integer) details.get("updated_at"));
-                }
-                if (idpModifiedDate.isAfter(dbModifiedDate)) {
-                    LOG.debug("Updating user '{}' in local database", user.getLogin());
-                    updateUser(user.getFirstName(), user.getLastName(), user.getEmail(), user.getLangKey(), user.getImageUrl());
-                }
-                // no last updated info, blindly update
-            } else {
-                LOG.debug("Updating user '{}' in local database", user.getLogin());
-                updateUser(user.getFirstName(), user.getLastName(), user.getEmail(), user.getLangKey(), user.getImageUrl());
-            }
-        } else {
-            LOG.debug("Saving user '{}' in local database", user.getLogin());
-            userRepository.save(user);
-            this.clearUserCaches(user);
-        }
+        //TODO: Adjust this code after Database Entities have been created
+        //        // save authorities in to sync user roles/groups between IdP and JHipster's local database
+        //        Collection<String> dbAuthorities = getAuthorities();
+        //        Collection<String> userAuthorities = user.getAuthorities().stream().map(Authority::getName).toList();
+        //        for (String authority : userAuthorities) {
+        //            if (!dbAuthorities.contains(authority)) {
+        //                LOG.debug("Saving authority '{}' in local database", authority);
+        //                Authority authorityToSave = new Authority();
+        //                authorityToSave.setName(authority);
+        //                authorityRepository.save(authorityToSave);
+        //            }
+        //        }
+        //        // save account in to sync users between IdP and JHipster's local database
+        //        Optional<User> existingUser = userRepository.findOneByLogin(user.getLogin());
+        //        if (existingUser.isPresent()) {
+        //            // if IdP sends last updated information, use it to determine if an update should happen
+        //            if (details.get("updated_at") != null) {
+        //                Instant dbModifiedDate = existingUser.orElseThrow().getLastModifiedDate();
+        //                Instant idpModifiedDate;
+        //                if (details.get("updated_at") instanceof Instant) {
+        //                    idpModifiedDate = (Instant) details.get("updated_at");
+        //                } else {
+        //                    idpModifiedDate = Instant.ofEpochSecond((Integer) details.get("updated_at"));
+        //                }
+        //                if (idpModifiedDate.isAfter(dbModifiedDate)) {
+        //                    LOG.debug("Updating user '{}' in local database", user.getLogin());
+        //                    updateUser(user.getFirstName(), user.getLastName(), user.getEmail(), user.getLangKey(), user.getImageUrl());
+        //                }
+        //                // no last updated info, blindly update
+        //            } else {
+        //                LOG.debug("Updating user '{}' in local database", user.getLogin());
+        //                updateUser(user.getFirstName(), user.getLastName(), user.getEmail(), user.getLangKey(), user.getImageUrl());
+        //            }
+        //        } else {
+        //            LOG.debug("Saving user '{}' in local database", user.getLogin());
+        //            userRepository.save(user);
+        //            this.clearUserCaches(user);
+        //        }
         return user;
     }
 
@@ -152,18 +154,19 @@ public class UserService {
             throw new IllegalArgumentException("AuthenticationToken is not OAuth2 or JWT!");
         }
         User user = getUser(attributes);
-        user.setAuthorities(
-            authToken
-                .getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .map(authority -> {
-                    Authority auth = new Authority();
-                    auth.setName(authority);
-                    return auth;
-                })
-                .collect(Collectors.toSet())
-        );
+        //TODO: Adjust this code after Database Entities have been created
+        //        user.setAuthorities(
+        //            authToken
+        //                .getAuthorities()
+        //                .stream()
+        //                .map(GrantedAuthority::getAuthority)
+        //                .map(authority -> {
+        //                    Authority auth = new Authority();
+        //                    auth.setName(authority);
+        //                    return auth;
+        //                })
+        //                .collect(Collectors.toSet())
+        //        );
 
         return new AdminUserDTO(syncUserWithIdP(attributes, user));
     }
@@ -176,63 +179,65 @@ public class UserService {
         if (details.get("preferred_username") != null) {
             username = ((String) details.get("preferred_username")).toLowerCase();
         }
-        // handle resource server JWT, where sub claim is email and uid is ID
-        if (details.get("uid") != null) {
-            user.setId((String) details.get("uid"));
-            user.setLogin(sub);
-        } else {
-            user.setId(sub);
-        }
-        if (username != null) {
-            user.setLogin(username);
-        } else if (user.getLogin() == null) {
-            user.setLogin(user.getId());
-        }
-        if (details.get("given_name") != null) {
-            user.setFirstName((String) details.get("given_name"));
-        } else if (details.get("name") != null) {
-            user.setFirstName((String) details.get("name"));
-        }
-        if (details.get("family_name") != null) {
-            user.setLastName((String) details.get("family_name"));
-        }
-        if (details.get("email_verified") != null) {
-            activated = (Boolean) details.get("email_verified");
-        }
-        if (details.get("email") != null) {
-            user.setEmail(((String) details.get("email")).toLowerCase());
-        } else if (sub.contains("|") && (username != null && username.contains("@"))) {
-            // special handling for Auth0
-            user.setEmail(username);
-        } else {
-            user.setEmail(sub);
-        }
-        if (details.get("langKey") != null) {
-            user.setLangKey((String) details.get("langKey"));
-        } else if (details.get("locale") != null) {
-            // trim off country code if it exists
-            String locale = (String) details.get("locale");
-            if (locale.contains("_")) {
-                locale = locale.substring(0, locale.indexOf('_'));
-            } else if (locale.contains("-")) {
-                locale = locale.substring(0, locale.indexOf('-'));
-            }
-            user.setLangKey(locale.toLowerCase());
-        } else {
-            // set langKey to default if not specified by IdP
-            user.setLangKey(Constants.DEFAULT_LANGUAGE);
-        }
-        if (details.get("picture") != null) {
-            user.setImageUrl((String) details.get("picture"));
-        }
-        user.setActivated(activated);
+        //TODO: Adjust this code after Database Entities have been created
+        //        // handle resource server JWT, where sub claim is email and uid is ID
+        //        if (details.get("uid") != null) {
+        //            user.setId((String) details.get("uid"));
+        //            user.setLogin(sub);
+        //        } else {
+        //            user.setId(sub);
+        //        }
+        //        if (username != null) {
+        //            user.setLogin(username);
+        //        } else if (user.getLogin() == null) {
+        //            user.setLogin(user.getId());
+        //        }
+        //        if (details.get("given_name") != null) {
+        //            user.setFirstName((String) details.get("given_name"));
+        //        } else if (details.get("name") != null) {
+        //            user.setFirstName((String) details.get("name"));
+        //        }
+        //        if (details.get("family_name") != null) {
+        //            user.setLastName((String) details.get("family_name"));
+        //        }
+        //        if (details.get("email_verified") != null) {
+        //            activated = (Boolean) details.get("email_verified");
+        //        }
+        //        if (details.get("email") != null) {
+        //            user.setEmail(((String) details.get("email")).toLowerCase());
+        //        } else if (sub.contains("|") && (username != null && username.contains("@"))) {
+        //            // special handling for Auth0
+        //            user.setEmail(username);
+        //        } else {
+        //            user.setEmail(sub);
+        //        }
+        //        if (details.get("langKey") != null) {
+        //            user.setLangKey((String) details.get("langKey"));
+        //        } else if (details.get("locale") != null) {
+        //            // trim off country code if it exists
+        //            String locale = (String) details.get("locale");
+        //            if (locale.contains("_")) {
+        //                locale = locale.substring(0, locale.indexOf('_'));
+        //            } else if (locale.contains("-")) {
+        //                locale = locale.substring(0, locale.indexOf('-'));
+        //            }
+        //            user.setLangKey(locale.toLowerCase());
+        //        } else {
+        //            // set langKey to default if not specified by IdP
+        //            user.setLangKey(Constants.DEFAULT_LANGUAGE);
+        //        }
+        //        if (details.get("picture") != null) {
+        //            user.setImageUrl((String) details.get("picture"));
+        //        }
+        //        user.setActivated(activated);
         return user;
     }
 
     private void clearUserCaches(User user) {
-        Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE)).evictIfPresent(user.getLogin());
-        if (user.getEmail() != null) {
-            Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evictIfPresent(user.getEmail());
-        }
+        //TODO: Adjust this code after Database Entities have been created
+        //        Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE)).evictIfPresent(user.getLogin());
+        //        if (user.getEmail() != null) {
+        //            Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evictIfPresent(user.getEmail());
+        //        }
     }
 }
