@@ -15,47 +15,43 @@ The generated report is copied to the clipboard and pasted into a pull request o
 
 1. Optionally, create and activate a virtual environment:
 
-```
-python3 -m venv venv
-```
+   ```shell
+   python3 -m venv venv
+   ```
 
-On Linux or macOS:
+   On **macOS/Linux**:
 
-```
-source venv/bin/activate
-```
+   ```shell
+   source venv/bin/activate
+   ```
 
-On Windows (CMD):
+   On **Windows (CMD)**:
 
-```
-venv\Scripts\activate.bat
-```
+   ```shell
+   venv\Scripts\activate.bat
+   ```
 
-On Windows (PowerShell):
+   On **Windows (PowerShell)**:
 
-```
-venv\Scripts\Activate.ps1
-```
+   ```shell
+   venv\Scripts\Activate.ps1
+   ```
 
 2. Install the required packages:
 
-```
-pip install -r requirements.txt
-```
+   ```shell
+   pip install -r requirements.txt
+   ```
 
 3. Configure environment variables by copying the `env.example` file to `.env` (use with caution, security risk!):
-
-```
-cp env.example .env
-```
-
-Fill out the following variables:
-
-```
-TOKEN=ab12cd
-```
-
-Alternatively, you can use the command line argument `--token` to pass the credentials.
+   ```shell
+   cp env.example .env
+   ```
+   Fill out the following variables:
+   ```
+   TOKEN=ab12cd
+   ```
+   Alternatively, you can use the command line argument `--token` to pass the credentials.
 
 ### Token
 
@@ -73,7 +69,7 @@ You can also use remote branches, e.g. `origin/feature/xyz`.
 
 Run the script:
 
-```
+```shell
 python3 generate_code_cov_table.py
 ```
 
@@ -83,7 +79,7 @@ For additional options, use `--help`.
 
 Run the script with the --branch-name option:
 
-```
+```shell
 python3 generate_code_cov_table.py
 ```
 
@@ -93,7 +89,7 @@ For additional options, use `--help`.
 
 Use the `--verbose` option for more detailed logging:
 
-```
+```shell
 python3 generate_code_cov_table.py --verbose
 ```
 
@@ -124,13 +120,13 @@ If no option to insert text into the clipboard is found, the script falls back t
 
 Find outdated dependencies using the following command:
 
-```
+```shell
 pip list --outdated
 ```
 
 Find unused dependencies using the following command:
 
-```
+```shell
 pip install deptry
 deptry .
 ```
