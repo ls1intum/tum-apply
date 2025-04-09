@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.domain;
 import de.tum.cit.aet.core.constants.UserGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
 
 //TODO: Check if there are any length restrictions on the fields
@@ -28,8 +29,11 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     private Applicant applicant;
 
-    //TODO: Adjust UserGroup if Necessary
+    // Contains all the Jobs that a User (Professor) has posted
+    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Job> postedJobs;
 
+    //TODO: Adjust UserGroup if Necessary
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "user_group", nullable = false)
@@ -80,6 +84,22 @@ public class User {
 
     public void setApplicant(Applicant applicant) {
         this.applicant = applicant;
+    }
+
+    public List<Job> getPostedJobs() {
+        return postedJobs;
+    }
+
+    public void setPostedJobs(List<Job> postedJobs) {
+        this.postedJobs = postedJobs;
+    }
+
+    public UserGroup getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
     }
 
     public String getEmail() {

@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.domain;
 
 import jakarta.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -14,6 +15,12 @@ public class Applicant {
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
+
+    //TODO: Uncomment the lines below after the Application Entity has been created
+    // -> Adjust "mappedBy" if necessary
+    // Contains all the Applications that a User (Applicant) has submitted
+    //    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    //    private List<Application> submittedApplications;
 
     @Column(name = "street")
     private String street;
@@ -78,6 +85,15 @@ public class Applicant {
     public void setUser(User user) {
         this.user = user;
     }
+
+    //TODO: Uncomment the lines below after the Application Entity has been created
+    //    public List<Application> getSubmittedApplications() {
+    //        return submittedApplications;
+    //    }
+    //
+    //    public void setSubmittedApplications(List<Application> submittedApplications) {
+    //        this.submittedApplications = submittedApplications;
+    //    }
 
     public String getStreet() {
         return street;
