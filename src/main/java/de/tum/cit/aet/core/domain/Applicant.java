@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
+import de.tum.cit.aet.application.domain.Application;
 import jakarta.persistence.*;
 import java.util.List;
 import java.util.UUID;
@@ -23,10 +24,9 @@ public class Applicant {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //TODO: Uncomment when Application Entity is implemented
     // Contains all the Applications that a User (Applicant) has submitted
-    //    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    //    private List<Application> submittedApplications;
+    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Application> submittedApplications;
 
     @Column(name = "street")
     private String street;
