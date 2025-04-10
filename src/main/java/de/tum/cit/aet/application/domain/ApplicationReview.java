@@ -32,7 +32,7 @@ public class ApplicationReview {
     @JoinColumn(name = "application_id")
     private Application application;
 
-    @Column(name = "user_id")
+    @Column(name = "rejection_reason")
     private String rejectReason;
 
     @ManyToOne

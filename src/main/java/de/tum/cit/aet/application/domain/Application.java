@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
@@ -40,8 +39,8 @@ public class Application {
     @JoinColumn(name = "submitted_by")
     private Applicant submittedBy;
 
-    @OneToMany
-    @Column(name = "job")
+    @ManyToOne
+    @JoinColumn(name = "job_id")
     private Job job;
 
     @Column(name = "motivation")
