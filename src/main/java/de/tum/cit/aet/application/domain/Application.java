@@ -2,6 +2,7 @@ package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.application.constants.ApplicationStatus;
 import de.tum.cit.aet.core.domain.Applicant;
+import de.tum.cit.aet.core.domain.Job;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
@@ -38,10 +40,9 @@ public class Application {
     @JoinColumn(name = "submitted_by")
     private Applicant submittedBy;
 
-    // TODO to uncomment when rest of databases are created
-    // @Column(name = "job")
-    // @OneToMany
-    // private Job job;
+    @OneToMany
+    @Column(name = "job")
+    private Job job;
 
     @Column(name = "motivation")
     private String motivation;
