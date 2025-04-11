@@ -10,7 +10,7 @@
 <!-- If it's only a small change, testing it locally is acceptable, and you may remove the first checkmark. If you are unsure, please test on the test servers. -->
 
 - [ ] I tested **all** changes and their related features with **all** corresponding user types.
-- [ ] Language: I followed the [guidelines for inclusive, diversity-sensitive, and appreciative language](https://docs.artemis.cit.tum.de/dev/guidelines/language-guidelines/).
+- [ ] Language: I followed the [guidelines for inclusive, diversity-sensitive, and appreciative language](https://confluence.aet.cit.tum.de/spaces/AP/pages/257786006/Language+Guidelines+Client).
 - [ ] I chose a title conforming to the [naming conventions for pull requests](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311714/PR+Guidelines).
 
 #### Server
