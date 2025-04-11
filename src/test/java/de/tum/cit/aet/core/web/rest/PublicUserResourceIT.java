@@ -1,14 +1,10 @@
 package de.tum.cit.aet.core.web.rest;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import de.tum.cit.aet.IntegrationTest;
-import de.tum.cit.aet.core.domain.User;
 import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.core.security.AuthoritiesConstants;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Objects;
-import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;

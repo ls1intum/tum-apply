@@ -1,8 +1,8 @@
-package de.tum.cit.aet.core.domain;
+package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import jakarta.persistence.*;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +26,7 @@ public class Applicant {
 
     // Contains all the Applications that a User (Applicant) has submitted
     @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Application> submittedApplications;
+    private Set<Application> submittedApplications;
 
     @Column(name = "street")
     private String street;
@@ -70,7 +70,6 @@ public class Applicant {
     @Column(name = "interests")
     private String interests;
     //TODO: Uncomment when Document Entity is implemented
-    //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    //    @JoinColumn(name = "applicant_id")
-    //    private List<Document> documents;
+    //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy= "applicant")
+    //    private Set<Document> documents;
 }

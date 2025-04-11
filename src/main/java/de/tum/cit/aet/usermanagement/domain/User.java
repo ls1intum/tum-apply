@@ -1,9 +1,10 @@
-package de.tum.cit.aet.core.domain;
+package de.tum.cit.aet.usermanagement.domain;
 
-import de.tum.cit.aet.core.constants.UserGroup;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.usermanagement.constants.UserGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,7 @@ public class User {
 
     // Contains all the Jobs that a User (Professor) has posted
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Job> postedJobs;
+    private Set<Job> postedJobs;
 
     @NotNull
     @Enumerated(EnumType.STRING)

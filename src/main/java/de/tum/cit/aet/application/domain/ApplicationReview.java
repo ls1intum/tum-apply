@@ -1,6 +1,6 @@
 package de.tum.cit.aet.application.domain;
 
-import de.tum.cit.aet.core.domain.User;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

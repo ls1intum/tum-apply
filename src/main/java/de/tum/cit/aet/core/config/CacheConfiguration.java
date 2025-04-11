@@ -2,8 +2,8 @@ package de.tum.cit.aet.core.config;
 
 import com.github.benmanes.caffeine.jcache.configuration.CaffeineConfiguration;
 import de.tum.cit.aet.core.domain.Authority;
-import de.tum.cit.aet.core.domain.User;
 import de.tum.cit.aet.core.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.cache.jcache.ConfigSettings;

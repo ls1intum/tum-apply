@@ -1,8 +1,8 @@
 package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.application.constants.ApplicationStatus;
-import de.tum.cit.aet.core.domain.Applicant;
-import de.tum.cit.aet.core.domain.Job;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,7 +52,7 @@ public class Application {
 
     // TODO to uncomment when rest of databases are created
     // @OneToMany(mappedBy = "application")
-    // private Set<CustomFields> customFields;
+    // private Set<CustomField> customFields;
 
     // TODO to uncomment when rest of databases are created
     // @OneToMany(mappedBy = "application")
