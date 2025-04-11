@@ -55,7 +55,7 @@ public class Application {
     // TODO to uncomment when rest of databases are created
     // @OneToMany
     // @MapsId
-    // @JoinColumn(name = "customn_field_id")
+    // @JoinColumn(name = "custom_field_id")
     // private List<CustomFields> customFields;
 
     // TODO to uncomment when rest of databases are created
