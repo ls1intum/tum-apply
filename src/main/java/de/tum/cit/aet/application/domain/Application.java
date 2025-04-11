@@ -53,7 +53,7 @@ public class Application {
     private Instant desiredStartDate;
 
     // TODO to uncomment when rest of databases are created
-    // @OneToMany
+    // @OneToMany(mappedBy = "application")
     // @MapsId
     // @JoinColumn(name = "custom_field_id")
     // private List<CustomFields> customFields;
