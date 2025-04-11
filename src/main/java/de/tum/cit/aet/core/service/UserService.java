@@ -1,23 +1,18 @@
 package de.tum.cit.aet.core.service;
 
-import de.tum.cit.aet.core.config.Constants;
 import de.tum.cit.aet.core.domain.Authority;
-import de.tum.cit.aet.core.domain.User;
 import de.tum.cit.aet.core.repository.AuthorityRepository;
 import de.tum.cit.aet.core.repository.UserRepository;
-import de.tum.cit.aet.core.security.SecurityUtils;
 import de.tum.cit.aet.core.service.dto.AdminUserDTO;
 import de.tum.cit.aet.core.service.dto.UserDTO;
-import java.time.Instant;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;

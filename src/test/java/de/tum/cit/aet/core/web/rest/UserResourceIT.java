@@ -4,14 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.IntegrationTest;
-import de.tum.cit.aet.core.domain.User;
 import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.core.security.AuthoritiesConstants;
 import de.tum.cit.aet.core.service.mapper.UserMapper;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.EntityManager;
 import java.util.*;
 import java.util.function.Consumer;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

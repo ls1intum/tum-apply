@@ -1,9 +1,9 @@
 package de.tum.cit.aet.core.service.mapper;
 
 import de.tum.cit.aet.core.domain.Authority;
-import de.tum.cit.aet.core.domain.User;
 import de.tum.cit.aet.core.service.dto.AdminUserDTO;
 import de.tum.cit.aet.core.service.dto.UserDTO;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.mapstruct.BeanMapping;

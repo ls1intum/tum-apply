@@ -1,7 +1,7 @@
-package de.tum.cit.aet.core.domain;
+package de.tum.cit.aet.usermanagement.domain;
 
 import jakarta.persistence.*;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class ResearchGroup {
     private UUID researchGroupId;
 
     @OneToMany(mappedBy = "researchGroup")
-    private List<User> users;
+    private Set<User> users;
 
     @Column(name = "description")
     private String description;

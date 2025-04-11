@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.constants;
+package de.tum.cit.aet.job.constants;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
