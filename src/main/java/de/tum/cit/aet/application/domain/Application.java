@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
@@ -30,12 +29,10 @@ public class Application {
     private UUID applicationId;
 
     @OneToOne
-    @MapsId
     @JoinColumn(name = "application_review_id")
     private ApplicationReview applicationReview;
 
     @ManyToOne
-    @MapsId
     @JoinColumn(name = "submitted_by")
     private Applicant submittedBy;
 
@@ -54,12 +51,10 @@ public class Application {
 
     // TODO to uncomment when rest of databases are created
     // @OneToMany(mappedBy = "application")
-    // @MapsId
     // private List<CustomFields> customFields;
 
     // TODO to uncomment when rest of databases are created
     // @OneToMany(mappedBy = "application")
-    // @MapsId
     // @JoinColumn(name = "internal_comment_id")
     // private List<InternalComment> internalComments;
 
