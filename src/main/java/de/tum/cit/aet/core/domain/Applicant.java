@@ -70,7 +70,6 @@ public class Applicant {
     @Column(name = "interests")
     private String interests;
     //TODO: Uncomment when Document Entity is implemented
-    //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    //    @JoinColumn(name = "applicant_id")
+    //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy= "applicant")
     //    private List<Document> documents;
 }
