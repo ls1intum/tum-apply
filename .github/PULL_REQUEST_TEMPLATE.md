@@ -10,30 +10,24 @@
 <!-- If it's only a small change, testing it locally is acceptable, and you may remove the first checkmark. If you are unsure, please test on the test servers. -->
 
 - [ ] I tested **all** changes and their related features with **all** corresponding user types.
-- [ ] This is a small issue that I tested locally and was confirmed by another developer.
 - [ ] Language: I followed the [guidelines for inclusive, diversity-sensitive, and appreciative language](https://docs.artemis.cit.tum.de/dev/guidelines/language-guidelines/).
-- [ ] I chose a title conforming to the [naming conventions for pull requests](https://docs.artemis.cit.tum.de/dev/development-process/development-process.html#naming-conventions-for-github-pull-requests).
+- [ ] I chose a title conforming to the [naming conventions for pull requests](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311714/PR+Guidelines).
 
 #### Server
 
-- [ ] **Important**: I implemented the changes with a [very good performance](https://docs.artemis.cit.tum.de/dev/guidelines/performance/) and prevented too many (unnecessary) and too complex database calls.
+- [ ] **Important**: I implemented the changes with a [very good performance](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311718/Performance+Guidelines) and prevented too many (unnecessary) and too complex database calls.
 - [ ] I **strictly** followed the principle of **data economy** for all database calls.
-- [ ] I **strictly** followed the [server coding and design guidelines](https://docs.artemis.cit.tum.de/dev/guidelines/server/).
-- [ ] I added multiple integration tests (Spring) related to the features (with a high test coverage).
-- [ ] I added pre-authorization annotations according to the [guidelines](https://docs.artemis.cit.tum.de/dev/guidelines/server/#rest-endpoint-best-practices-for-authorization) and checked the course groups for all new REST Calls (security).
+- [ ] I **strictly** followed the [server coding and design guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311877/Server+Guidelines).
 - [ ] I documented the Java code using JavaDoc style.
 
 #### Client
 
 - [ ] **Important**: I implemented the changes with a very good performance, prevented too many (unnecessary) REST calls and made sure the UI is responsive, even with large data (e.g. using paging).
 - [ ] I **strictly** followed the principle of **data economy** for all client-server REST calls.
-- [ ] I **strictly** followed the [client coding and design guidelines](https://docs.artemis.cit.tum.de/dev/guidelines/client/).
-- [ ] Following the [theming guidelines](https://docs.artemis.cit.tum.de/dev/guidelines/client-design/), I specified colors only in the theming variable files and checked that the changes look consistent in both the light and the dark theme.
-- [ ] I added multiple integration tests (Jest) related to the features (with a high test coverage), while following the [test guidelines](https://docs.artemis.cit.tum.de/dev/guidelines/client-tests/).
-- [ ] I added `authorities` to all new routes and checked the course groups for displaying navigation elements (links, buttons).
+- [ ] I **strictly** followed the [client coding and design guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311716/Client+Guidelines).
+- [ ] I added multiple integration tests (Jest) related to the features (with a high test coverage), while following the [test guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311925/Client+Test+Guidelines).
 - [ ] I documented the TypeScript code using JSDoc style.
 - [ ] I added multiple screenshots/screencasts of my UI changes.
-- [ ] I translated all newly inserted strings into English and German.
 
 ### Motivation and Context
 
@@ -65,10 +59,6 @@ Prerequisites:
 - [ ] Code Review 1
 
 #### Manual Tests
-
-- [ ] Test 1
-
-#### Performance Tests
 
 - [ ] Test 1
 
