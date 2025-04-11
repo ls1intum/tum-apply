@@ -1,6 +1,6 @@
 package de.tum.cit.aet.core.repository;
 
-import de.tum.cit.aet.core.domain.User;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Optional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,6 @@
 package de.tum.cit.aet.core.service.dto;
 
-import de.tum.cit.aet.core.domain.User;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.io.Serializable;
 import java.util.Objects;
 

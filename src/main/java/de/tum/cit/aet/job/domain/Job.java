@@ -1,9 +1,12 @@
-package de.tum.cit.aet.core.domain;
+package de.tum.cit.aet.job.domain;
 
-import de.tum.cit.aet.core.constants.State;
+import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.job.constants.State;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,10 +31,9 @@ public class Job {
     @JoinColumn(name = "professor_id")
     private User postedBy;
 
-    //TODO: Uncomment when Application Entity is implemented
     // Contains all the Applications that are submitted to this Job
-    //    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    //    private List<Application> applications;
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Application> applications;
 
     @Column(name = "field_of_studies")
     private String fieldOfStudies;

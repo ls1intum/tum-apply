@@ -1,8 +1,7 @@
 package de.tum.cit.aet.core.service.dto;
 
 import de.tum.cit.aet.core.config.Constants;
-import de.tum.cit.aet.core.domain.Authority;
-import de.tum.cit.aet.core.domain.User;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -10,7 +9,6 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A DTO representing a user, with his authorities.

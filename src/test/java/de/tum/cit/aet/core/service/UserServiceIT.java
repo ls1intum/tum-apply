@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.IntegrationTest;
 import de.tum.cit.aet.core.config.Constants;
-import de.tum.cit.aet.core.domain.User;
 import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.core.security.AuthoritiesConstants;
-import de.tum.cit.aet.core.service.UserService;
 import de.tum.cit.aet.core.service.dto.AdminUserDTO;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
