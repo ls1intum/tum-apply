@@ -55,7 +55,6 @@ public class Application {
 
     // TODO to uncomment when rest of databases are created
     // @OneToMany(mappedBy = "application")
-    // @JoinColumn(name = "internal_comment_id")
     // private List<InternalComment> internalComments;
 
     @Column(name = "created_at")
