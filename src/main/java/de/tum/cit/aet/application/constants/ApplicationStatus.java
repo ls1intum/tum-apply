@@ -7,8 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ApplicationStatus {
     ACCEPTED("ACCEPTED"),
-    INTERVIEW("INTERVIEW"),
-    APPROVALLISTED("APPROVALLISTED"),
+    IN_REVIEW("IN_REVIEW"),
     REJECTED("REJECTED");
 
     private final String value;
