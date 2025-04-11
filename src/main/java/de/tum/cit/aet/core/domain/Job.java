@@ -5,7 +5,7 @@ import de.tum.cit.aet.core.constants.State;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +32,7 @@ public class Job {
 
     // Contains all the Applications that are submitted to this Job
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Application> applications;
+    private Set<Application> applications;
 
     @Column(name = "field_of_studies")
     private String fieldOfStudies;
