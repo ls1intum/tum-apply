@@ -58,7 +58,7 @@ public class Application {
     // private List<CustomFields> customFields;
 
     // TODO to uncomment when rest of databases are created
-    // @OneToMany
+    // @OneToMany(mappedBy = "application")
     // @MapsId
     // @JoinColumn(name = "internal_comment_id")
     // private List<InternalComment> internalComments;
