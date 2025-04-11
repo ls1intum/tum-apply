@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Getter
@@ -51,12 +52,13 @@ public class Application {
 
     // TODO to uncomment when rest of databases are created
     // @OneToMany(mappedBy = "application")
-    // private List<CustomFields> customFields;
+    // private Set<CustomFields> customFields;
 
     // TODO to uncomment when rest of databases are created
     // @OneToMany(mappedBy = "application")
-    // private List<InternalComment> internalComments;
+    // private Set<InternalComment> internalComments;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private Instant created_at;
 }
