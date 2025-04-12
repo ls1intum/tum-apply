@@ -9,6 +9,8 @@ import angularPlugin from '@angular-eslint/eslint-plugin';
 import angularTemplateParser from '@angular-eslint/template-parser';
 import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
+import unusedImports from 'eslint-plugin-unused-imports';
+import importPlugin from 'eslint-plugin-import';
 
 // jhipster-needle-eslint-add-import - JHipster will add additional import here
 
@@ -97,6 +99,7 @@ export default tseslint.config(
       '@typescript-eslint': tsPlugin,
       '@angular-eslint': angularPlugin,
       prettier: prettierPlugin,
+      'unused-imports': unusedImports,
     },
     processor: angular.processInlineTemplates,
     rules: {
@@ -107,9 +110,11 @@ export default tseslint.config(
       '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'jhi', style: 'kebab-case' }],
       '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'jhi', style: 'camelCase' }],
       '@angular-eslint/relative-url-prefix': 'error',
+      '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
+      '@angular-eslint/directive-class-suffix': ['error', { suffixes: ['Directive'] }],
       '@typescript-eslint/consistent-type-definitions': 'off',
       '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/member-ordering': [
         'error',
         {
@@ -132,10 +137,9 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-confusing-void-expression': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-extraneous-class': 'off',
       '@typescript-eslint/no-misused-spread': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-shadow': ['error'],
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/no-unsafe-argument': 'off',
@@ -146,6 +150,10 @@ export default tseslint.config(
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'explicit' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/strict-boolean-expressions': 'error',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
 
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
@@ -190,6 +198,23 @@ export default tseslint.config(
           ],
         },
       ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ForInStatement',
+          message: 'for-in loops are not allowed. Use Object.keys or Object.entries instead.',
+        },
+      ],
+      'unused-imports/no-unused-imports': 'warn',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
     },
   },
 
@@ -225,13 +250,29 @@ export default tseslint.config(
     },
     rules: {
       'prettier/prettier': ['error', { parser: 'angular' }],
-      '@angular-eslint/template/click-events-have-key-events': 'off',
-      '@angular-eslint/template/interactive-supports-focus': 'off',
-      '@angular-eslint/template/label-has-associated-control': 'off',
-      '@angular-eslint/template/alt-text': 'off',
-      '@angular-eslint/template/elements-content': 'off',
+      '@angular-eslint/template/click-events-have-key-events': 'warn',
+      '@angular-eslint/template/interactive-supports-focus': 'warn',
+      '@angular-eslint/template/label-has-associated-control': 'warn',
+      '@angular-eslint/template/alt-text': 'warn',
+      '@angular-eslint/template/elements-content': 'warn',
       '@angular-eslint/template/prefer-control-flow': 'error',
       '@angular-eslint/template/prefer-self-closing-tags': 'error',
+    },
+  },
+
+  {
+    files: ['**/*.{ts,js}'],
+    plugins: {
+      import: importPlugin,
+    },
+    rules: {
+      'import/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+        },
+      ],
     },
   },
 
