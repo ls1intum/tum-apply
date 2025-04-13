@@ -44,10 +44,10 @@ public class Application {
     @Column(name = "desired_start_date")
     private Instant desiredStartDate;
 
-    @OneToMany(mappedBy = "application")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<CustomField> customFields;
 
-    @OneToMany(mappedBy = "application")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
 
     @CreationTimestamp

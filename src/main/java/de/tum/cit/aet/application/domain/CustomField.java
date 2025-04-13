@@ -2,6 +2,7 @@ package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.core.domain.Document;
 import jakarta.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +25,7 @@ public class CustomField {
 
     private boolean isRequired;
 
-    @OneToOne
-    @JoinColumn(name = "document")
-    private Document document;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "customField")
+    private Set<Document> documents;
     // TODO what fields to use to enable dynamic questions need to be discussed
 }

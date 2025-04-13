@@ -19,15 +19,14 @@ public class Document {
     private UUID documentId;
 
     @ManyToOne
-    @JoinColumn(name = "applicant_id")
+    @JoinColumn(name = "applicant")
     private Applicant applicant;
 
-    @Column(name = "type")
     private DocumentType type;
 
-    @Column(name = "document_path")
     private String documentPath;
 
-    @OneToOne(mappedBy = "document")
+    @ManyToOne
+    @JoinColumn(name = "custom_field")
     private CustomField customField;
 }
