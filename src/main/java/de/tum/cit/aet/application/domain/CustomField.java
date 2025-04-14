@@ -15,14 +15,16 @@ public class CustomField {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "custom_field_id", nullable = false)
     private UUID customFieldId;
 
     @ManyToOne
-    @JoinColumn(name = "application")
+    @JoinColumn(name = "application_id")
     private Application application;
 
     private String question;
 
+    @Column(name = "is_required")
     private boolean isRequired;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "customField")

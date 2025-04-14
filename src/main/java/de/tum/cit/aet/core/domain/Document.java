@@ -16,17 +16,19 @@ public class Document {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "document_id", nullable = false)
     private UUID documentId;
 
     @ManyToOne
-    @JoinColumn(name = "applicant")
+    @JoinColumn(name = "applicant_id")
     private Applicant applicant;
 
     private DocumentType type;
 
+    @Column(name = "document_path")
     private String documentPath;
 
     @ManyToOne
-    @JoinColumn(name = "custom_field")
+    @JoinColumn(name = "custom_field_id")
     private CustomField customField;
 }

@@ -15,10 +15,11 @@ public class InternalComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "internal_comment_id", nullable = false)
     private UUID internalCommentId;
 
     @ManyToOne
-    @JoinColumn(name = "application")
+    @JoinColumn(name = "application_id")
     private Application application;
 
     @ManyToOne

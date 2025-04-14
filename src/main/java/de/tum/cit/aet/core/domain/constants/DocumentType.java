@@ -1,8 +1,10 @@
 package de.tum.cit.aet.core.domain.constants;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum DocumentType {
     BACHELOR_TRANSCRIPT("BACHELOR_TRANSCRIPT"),
     MASTER_TRANSCRIPT("MASTER_TRANSCRIPT"),
@@ -10,8 +12,4 @@ public enum DocumentType {
     CUSTOM("CUSTOM");
 
     private final String value;
-
-    DocumentType(String value) {
-        this.value = value;
-    }
 }
