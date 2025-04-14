@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.domain.Document;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.util.UUID;
@@ -69,7 +70,7 @@ public class Applicant {
 
     @Column(name = "interests")
     private String interests;
-    //TODO: Uncomment when Document Entity is implemented
-    //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy= "applicant")
-    //    private Set<Document> documents;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "applicant")
+    private Set<Document> documents;
 }
