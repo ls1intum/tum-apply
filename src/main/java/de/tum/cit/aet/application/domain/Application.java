@@ -45,7 +45,7 @@ public class Application {
     private Instant desiredStartDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
-    private Set<CustomFieldAnswer> customFields;
+    private Set<CustomFieldAnswer> customFieldAnswers;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
