@@ -25,7 +25,7 @@ public class CustomField {
     @JoinColumn(name = "job_id")
     private Job job;
 
-    private int order;
+    private int sequence;
 
     private CustomFieldType type;
 
