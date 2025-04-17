@@ -78,7 +78,6 @@ public class Job {
     private Instant applicationDeadline;
 
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderColumn(name = "sequence")
     @OrderBy("sequence ASC")
     private List<CustomField> customFields;
 
