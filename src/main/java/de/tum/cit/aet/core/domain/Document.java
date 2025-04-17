@@ -1,6 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
-import de.tum.cit.aet.application.domain.CustomField;
+import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.domain.constants.DocumentType;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
@@ -29,6 +29,6 @@ public class Document {
     private String documentPath;
 
     @ManyToOne
-    @JoinColumn(name = "custom_field_id")
-    private CustomField customField;
+    @JoinColumn(name = "custom_field_answer_id")
+    private CustomFieldAnswer customFieldAnswer;
 }
