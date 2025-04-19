@@ -25,6 +25,7 @@
 # ❗ Ensure that:
 #   - MySQL is running (check with `docker ps`)
 #   - The database "tumapply" exists
+#   - mysql CLI is installed and the command is available in your PATH (test via "mysql --version")
 ###############################################################################
 
 # Configuration variables
@@ -35,7 +36,7 @@ DB_HOST="127.0.0.1"
 DB_PORT="3306"
 
 # Path to testdata SQL files
-SQL_PATH="src/main/resources/testdata"
+SQL_PATH="./"
 
 echo "🚀 Importing SQL test data into MySQL database '$DB_NAME'..."
 
@@ -48,8 +49,12 @@ fi
 
 # Find and run only SQL files under testdata folder (and subfolders)
 find "$SQL_PATH" -type f -name "*.sql" | sort | while read file; do
-  echo "📄 Running: $file"
+  echo "📄 Attempting to run: $file"
   mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASS" "$DB_NAME" < "$file"
+
+  if [ ! -s "$file" ]; then
+    echo "⚠️  Warning: File is empty - $file"
+  fi
 
   if [ $? -ne 0 ]; then
     echo "❌ Error while importing $file"
