@@ -27,7 +27,8 @@ public class CustomField {
 
     private int sequence;
 
-    private CustomFieldType type;
+    @Column(name = "custom_field_type")
+    private CustomFieldType customFieldType;
 
     @Column(name = "is_required")
     private boolean isRequired;
