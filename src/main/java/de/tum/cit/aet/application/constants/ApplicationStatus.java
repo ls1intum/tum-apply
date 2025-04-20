@@ -21,7 +21,7 @@ public enum ApplicationStatus {
     private final String value;
     private final Set<UserGroup> userGroups;
 
-    public static Set<ApplicationStatus> getByUserGroup(UserGroup group) {
+    public static Set<ApplicationStatus> getPermittedStatusesByUserGroup(UserGroup group) {
         return Arrays.stream(values()).filter(status -> status.getUserGroups().contains(group)).collect(Collectors.toSet());
     }
 }
