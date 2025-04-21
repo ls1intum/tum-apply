@@ -1,9 +1,8 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.usermanagement.constants.UserGroup;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -34,16 +33,11 @@ public class User {
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Job> postedJobs;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_group", nullable = false)
-    private UserGroup userGroup;
-
     @Column(name = "email")
     private String email;
 
-    @Column(name = "avatar")
-    private String avatar;
+    @Column(name = "avatar_file_id")
+    private UUID avatar_file_id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -59,4 +53,16 @@ public class User {
 
     @Column(name = "website")
     private String website;
+
+    @Column(name = "tum_student")
+    private Boolean tumStudent;
+
+    @Column(name = "linkedin_url")
+    private String linkedinUrl;
+
+    @Column(name = "joined_at")
+    private Instant joinedAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 }

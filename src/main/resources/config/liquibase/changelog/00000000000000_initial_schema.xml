@@ -23,14 +23,6 @@
       <column name="gender" type="VARCHAR(255)"/>
       <column name="nationality" type="VARCHAR(255)"/>
       <column name="website" type="TEXT"/>
-      <column name="cv_file_id" type="CHAR(36)"/>
-      <column name="bachelor_certificate_id" type="CHAR(36)"/>
-      <column name="master_certificate_id" type="CHAR(36)"/>
-      <column name="study_degree" type="VARCHAR(255)"/>
-      <column name="bachelor_study_program" type="TEXT"/>
-      <column name="bachelor_gpa" type="DECIMAL(3,2)"/>
-      <column name="master_study_program" type="TEXT"/>
-      <column name="master_gpa" type="DECIMAL(3,2)"/>
       <column name="tum_student" type="BOOLEAN"/>
       <column name="linkedin_url" type="TEXT"/>
       <column name="joined_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
