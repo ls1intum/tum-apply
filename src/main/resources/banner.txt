@@ -6,6 +6,5 @@
   ${AnsiColor.BRIGHT_MAGENTA}   ██║   ${AnsiColor.GREEN}╚██████╔╝${AnsiColor.BRIGHT_MAGENTA}██║ ╚═╝ ██║${AnsiColor.GREEN}██║  ██║${AnsiColor.BRIGHT_MAGENTA}██║     ${AnsiColor.GREEN}██║     ${AnsiColor.BRIGHT_MAGENTA}███████╗  ${AnsiColor.GREEN}██║
   ${AnsiColor.BRIGHT_MAGENTA}   ╚═╝   ${AnsiColor.GREEN} ╚═════╝ ${AnsiColor.BRIGHT_MAGENTA}╚═╝     ╚═╝${AnsiColor.GREEN}╚═╝  ╚═╝${AnsiColor.BRIGHT_MAGENTA}╚═╝     ${AnsiColor.GREEN}╚═╝     ${AnsiColor.BRIGHT_MAGENTA}╚══════╝  ${AnsiColor.GREEN}╚═╝
 
-${AnsiColor.BRIGHT_BLUE}:: TumApply 🤓 :: Startup profile(s) ${spring.profiles.active} ::
-${AnsiColor.BRIGHT_BLUE}:: Powered by Spring Boot ${spring-boot.version} ::
+${AnsiColor.BRIGHT_BLUE}:: TumApply 🤓  :: Running Spring Boot ${spring-boot.version} :: Startup profile(s) ${spring.profiles.active} ::
 :: https://www.jhipster.tech ::${AnsiColor.DEFAULT}

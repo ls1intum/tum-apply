@@ -12,7 +12,6 @@ import { SessionStorageService } from 'ngx-webstorage';
 import { JhiLanguageHelper } from './app/config/language.helper';
 
 // disable debug data on prod profile to improve performance
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (!DEBUG_INFO_ENABLED) {
   enableProdMode();
 }
@@ -30,7 +29,7 @@ bootstrapApplication(AppComponent, appConfig)
     registerLocaleData(locale);
     dpConfig.minDate = { year: dayjs().subtract(100, 'year').year(), month: 1, day: 1 };
     translateService.setDefaultLang('en');
-    const languageKey = sessionStorageService.retrieve('locale') ?? languageHelper.determinePreferredLanguage();
+    const languageKey = sessionStorageService.retrieve('locale') || languageHelper.determinePreferredLanguage();
     translateService.use(languageKey);
     tooltipConfig.container = 'body';
   })
