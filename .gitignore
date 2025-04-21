@@ -154,3 +154,5 @@ coverage/
 /src/main/webapp/i18n/en.json
 /src/main/webapp/i18n/de.json
 /src/main/webapp/app/environments/environment.override.ts
+
+package-lock.json
