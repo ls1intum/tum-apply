@@ -52,5 +52,5 @@ public class Application {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private Instant created_at;
+    private Instant createdAt;
 }
