@@ -6,6 +6,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -75,6 +76,10 @@ public class Job {
 
     @Column(name = "application_deadline")
     private Instant applicationDeadline;
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sequence ASC")
+    private List<CustomField> customFields;
 
     @CreationTimestamp
     @NotNull
