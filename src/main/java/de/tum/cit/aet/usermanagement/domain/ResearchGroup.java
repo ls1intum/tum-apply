@@ -21,7 +21,7 @@ public class ResearchGroup {
     private UUID researchGroupId;
 
     @OneToMany(mappedBy = "researchGroup")
-    private Set<User> users;
+    private Set<User> employeesAt;
 
     @Column(name = "description")
     private String description;

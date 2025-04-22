@@ -32,7 +32,7 @@ public class ApplicationReview {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User reviewedBy;
 
     @Column(name = "reason")
     private String reason;
