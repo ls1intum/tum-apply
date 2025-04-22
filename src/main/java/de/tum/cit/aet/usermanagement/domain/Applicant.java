@@ -18,11 +18,12 @@ import lombok.Setter;
 public class Applicant {
 
     @Id
-    private UUID userId;
+    @Column(name = "applicant_id")
+    private UUID applicantId;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "applicant_id")
     private User user;
 
     // Contains all the Applications that a User (Applicant) has submitted
