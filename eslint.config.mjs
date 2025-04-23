@@ -138,6 +138,7 @@ export default tseslint.config(
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-extraneous-class': 'off',
       '@typescript-eslint/no-misused-spread': 'off',
+      '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-shadow': ['error'],
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/no-unsafe-argument': 'off',
@@ -247,6 +248,8 @@ export default tseslint.config(
     },
     rules: {
       'prettier/prettier': ['error', { parser: 'angular' }],
+      '@angular-eslint/template/click-events-have-key-events': 'warn',
+      '@angular-eslint/template/interactive-supports-focus': 'warn',
       '@angular-eslint/template/label-has-associated-control': 'warn',
       '@angular-eslint/template/alt-text': 'warn',
       '@angular-eslint/template/elements-content': 'warn',
