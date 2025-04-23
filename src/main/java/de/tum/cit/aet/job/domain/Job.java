@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.constants.State;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
@@ -11,8 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  * A Job.
@@ -21,7 +20,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Setter
 @Entity
 @Table(name = "jobs")
-public class Job {
+public class Job extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -80,13 +79,4 @@ public class Job {
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequence ASC")
     private List<CustomField> customFields;
-
-    @CreationTimestamp
-    @NotNull
-    @Column(name = "created_at", nullable = false)
-    private String createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "last_updated")
-    private String lastUpdated;
 }
