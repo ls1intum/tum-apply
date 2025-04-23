@@ -1,5 +1,7 @@
 import { Component, input } from '@angular/core';
+
 import SharedModule from '../shared.module';
+
 import { IFilterOptions } from './filter.model';
 
 @Component({

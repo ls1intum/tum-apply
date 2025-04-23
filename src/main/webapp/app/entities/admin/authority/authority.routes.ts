@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+
 import AuthorityResolve from './route/authority-routing-resolve.service';
 
 const authorityRoute: Routes = [

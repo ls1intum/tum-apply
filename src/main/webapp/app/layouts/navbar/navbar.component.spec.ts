@@ -5,7 +5,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-
 import { ProfileInfo } from 'app/layouts/profiles/profile-info.model';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';

@@ -12,8 +12,8 @@ describe('LogsComponent', () => {
   let fixture: ComponentFixture<LogsComponent>;
   let service: LogsService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(waitForAsync(async () => {
+    await TestBed.configureTestingModule({
       imports: [LogsComponent],
       providers: [provideHttpClient(), provideHttpClientTesting(), LogsService],
     })

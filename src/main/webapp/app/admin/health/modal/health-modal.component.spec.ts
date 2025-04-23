@@ -9,8 +9,8 @@ describe('HealthModalComponent', () => {
   let fixture: ComponentFixture<HealthModalComponent>;
   let mockActiveModal: NgbActiveModal;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(waitForAsync(async () => {
+    await TestBed.configureTestingModule({
       imports: [HealthModalComponent],
       providers: [provideHttpClient(), NgbActiveModal],
     })

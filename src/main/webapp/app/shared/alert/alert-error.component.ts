@@ -4,9 +4,9 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-
 import { Alert, AlertService } from 'app/core/util/alert.service';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
+
 import { AlertError } from './alert-error.model';
 
 @Component({
@@ -37,7 +37,7 @@ export class AlertErrorComponent implements OnDestroy {
 
   setClasses(alert: Alert): Record<string, boolean> {
     const classes = { 'jhi-toast': Boolean(alert.toast) };
-    if (alert.position) {
+    if (alert.position != null) {
       return { ...classes, [alert.position]: true };
     }
     return classes;
@@ -89,12 +89,12 @@ export class AlertErrorComponent implements OnDestroy {
         entityKey = httpErrorResponse.headers.get(entry);
       }
     }
-    if (errorHeader) {
-      const alertData = entityKey ? { entityName: this.translateService.instant(`global.menu.entities.${entityKey}`) } : undefined;
+    if (errorHeader != null) {
+      const alertData = entityKey != null ? { entityName: this.translateService.instant(`global.menu.entities.${entityKey}`) } : undefined;
       this.addErrorAlert(errorHeader, errorHeader, alertData);
-    } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.fieldErrors) {
+    } else if (httpErrorResponse.error !== '' && Boolean(httpErrorResponse.error.fieldErrors)) {
       this.handleFieldsError(httpErrorResponse);
-    } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.message) {
+    } else if (httpErrorResponse.error !== '' && Boolean(httpErrorResponse.error.message)) {
       this.addErrorAlert(
         httpErrorResponse.error.detail ?? httpErrorResponse.error.message,
         httpErrorResponse.error.message,
@@ -106,7 +106,7 @@ export class AlertErrorComponent implements OnDestroy {
   }
 
   private handleDefaultError(httpErrorResponse: HttpErrorResponse): void {
-    if (httpErrorResponse.error !== '' && httpErrorResponse.error.message) {
+    if (httpErrorResponse.error !== '' && Boolean(httpErrorResponse.error.message)) {
       this.addErrorAlert(
         httpErrorResponse.error.detail ?? httpErrorResponse.error.message,
         httpErrorResponse.error.message,

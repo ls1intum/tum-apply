@@ -1,5 +1,4 @@
 import { Directive, TemplateRef, ViewContainerRef, computed, effect, inject, input } from '@angular/core';
-
 import { AccountService } from 'app/core/auth/account.service';
 
 /**
@@ -28,7 +27,7 @@ export default class HasAnyAuthorityDirective {
     const hasPermission = computed(() => currentAccount()?.authorities && accountService.hasAnyAuthority(this.authorities()));
 
     effect(() => {
-      if (hasPermission()) {
+      if (hasPermission() === true) {
         this.viewContainerRef.createEmbeddedView(this.templateRef);
       } else {
         this.viewContainerRef.clear();

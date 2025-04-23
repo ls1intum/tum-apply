@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+
 import { Metrics, ThreadDump } from './metrics.model';
 
 @Injectable({ providedIn: 'root' })

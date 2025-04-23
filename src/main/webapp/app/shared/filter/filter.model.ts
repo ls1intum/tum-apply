@@ -3,17 +3,24 @@ import { Subject } from 'rxjs';
 
 export interface IFilterOptions {
   readonly filterChanges: Subject<FilterOption[]>;
+
   get filterOptions(): IFilterOption[];
+
   hasAnyFilterSet(): boolean;
+
   clear(): boolean;
+
   initializeFromParams(params: ParamMap): boolean;
+
   addFilter(name: string, ...values: string[]): boolean;
+
   removeFilter(name: string, value: string): boolean;
 }
 
 export interface IFilterOption {
   name: string;
   values: string[];
+
   nameAsQueryParam(): string;
 }
 
@@ -34,7 +41,7 @@ export class FilterOption implements IFilterOption {
   }
 
   addValue(...values: string[]): boolean {
-    const missingValues = values.filter(value => value && !this.values.includes(value));
+    const missingValues = values.filter((value): boolean => (value as unknown as boolean) && !this.values.includes(value));
     if (missingValues.length > 0) {
       this.values.push(...missingValues);
       return true;
@@ -68,7 +75,7 @@ export class FilterOption implements IFilterOption {
 
 export class FilterOptions implements IFilterOptions {
   readonly filterChanges = new Subject<FilterOption[]>();
-  private _filterOptions: FilterOption[];
+  _filterOptions: FilterOption[];
 
   constructor(filterOptions: FilterOption[] = []) {
     this._filterOptions = filterOptions;
@@ -121,7 +128,7 @@ export class FilterOptions implements IFilterOptions {
   }
 
   removeFilter(name: string, value: string): boolean {
-    if (this.getFilterOptionByName(name)?.removeValue(value)) {
+    if (this.getFilterOptionByName(name)?.removeValue(value) === true) {
       this.changed();
       return true;
     }
@@ -138,7 +145,7 @@ export class FilterOptions implements IFilterOptions {
     if (thisFilters.length !== otherFilters.length) {
       return false;
     }
-    return thisFilters.every(option => other.getFilterOptionByName(option.name)?.equals(option));
+    return thisFilters.every((option): boolean => other.getFilterOptionByName(option.name)?.equals(option) as boolean);
   }
 
   protected clone(): FilterOptions {

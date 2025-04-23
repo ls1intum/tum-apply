@@ -15,14 +15,14 @@
       aria-label="Toggle navigation"
       (click)="toggleNavbar()"
     >
-      <fa-icon icon="bars"></fa-icon>
+      <fa-icon icon="bars" />
     </a>
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
             <span>
-              <fa-icon icon="home"></fa-icon>
+              <fa-icon icon="home" />
               <span jhiTranslate="global.menu.home">Home</span>
             </span>
           </a>
@@ -37,7 +37,7 @@
           >
             <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu" data-cy="entity">
               <span>
-                <fa-icon icon="th-list"></fa-icon>
+                <fa-icon icon="th-list" />
                 <span jhiTranslate="global.menu.entities.main">Entities</span>
               </span>
             </a>
@@ -53,7 +53,7 @@
         >
           <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="admin-menu" data-cy="adminMenu">
             <span>
-              <fa-icon icon="users-cog"></fa-icon>
+              <fa-icon icon="users-cog" />
               <span jhiTranslate="global.menu.admin.main">Administration</span>
             </span>
           </a>
@@ -66,38 +66,38 @@
                 [routerLinkActiveOptions]="{ exact: true }"
                 (click)="collapseNavbar()"
               >
-                <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
+                <fa-icon icon="asterisk" [fixedWidth]="true" />
                 <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
               </a>
             </li>
             <li>
               <a class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tachometer-alt" [fixedWidth]="true"></fa-icon>
+                <fa-icon icon="tachometer-alt" [fixedWidth]="true" />
                 <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
               </a>
             </li>
             <li>
               <a class="dropdown-item" routerLink="/admin/health" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="heart" [fixedWidth]="true"></fa-icon>
+                <fa-icon icon="heart" [fixedWidth]="true" />
                 <span jhiTranslate="global.menu.admin.health">Health</span>
               </a>
             </li>
             <li>
               <a class="dropdown-item" routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
+                <fa-icon icon="cogs" [fixedWidth]="true" />
                 <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
               </a>
             </li>
             <li>
               <a class="dropdown-item" routerLink="/admin/logs" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tasks" [fixedWidth]="true"></fa-icon>
+                <fa-icon icon="tasks" [fixedWidth]="true" />
                 <span jhiTranslate="global.menu.admin.logs">Logs</span>
               </a>
             </li>
             @if (openAPIEnabled) {
               <li>
                 <a class="dropdown-item" routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
-                  <fa-icon icon="book" [fixedWidth]="true"></fa-icon>
+                  <fa-icon icon="book" [fixedWidth]="true" />
                   <span jhiTranslate="global.menu.admin.apidocs">API</span>
                 </a>
               </li>
@@ -108,7 +108,7 @@
           <li ngbDropdown class="nav-item dropdown pointer" display="dynamic">
             <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="languagesnavBarDropdown">
               <span>
-                <fa-icon icon="flag"></fa-icon>
+                <fa-icon icon="flag" />
                 <span jhiTranslate="global.menu.language">Language</span>
               </span>
             </a>
@@ -138,7 +138,7 @@
           <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu" data-cy="accountMenu">
             @if (!accountRef?.imageUrl) {
               <span>
-                <fa-icon icon="user"></fa-icon>
+                <fa-icon icon="user" />
                 <span jhiTranslate="global.menu.account.main">Account</span>
               </span>
             } @else {
@@ -151,14 +151,14 @@
             @if (accountRef !== null) {
               <li>
                 <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">
-                  <fa-icon icon="sign-out-alt" [fixedWidth]="true"></fa-icon>
+                  <fa-icon icon="sign-out-alt" [fixedWidth]="true" />
                   <span jhiTranslate="global.menu.account.logout">Sign out</span>
                 </a>
               </li>
             } @else {
               <li>
                 <a class="dropdown-item" (click)="login()" id="login" data-cy="login">
-                  <fa-icon icon="sign-in-alt" [fixedWidth]="true"></fa-icon>
+                  <fa-icon icon="sign-in-alt" [fixedWidth]="true" />
                   <span jhiTranslate="global.menu.account.login">Sign in</span>
                 </a>
               </li>

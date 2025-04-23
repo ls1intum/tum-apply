@@ -2,11 +2,12 @@ import { Injectable, Renderer2, RendererFactory2, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
-import { LANGUAGES } from './language.constants';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SessionStorageService } from 'ngx-webstorage';
+
 import { LocaleConversionService } from '../service/locale-conversion.service';
+
+import { LANGUAGES } from './language.constants';
 
 @Injectable({ providedIn: 'root' })
 export class JhiLanguageHelper {

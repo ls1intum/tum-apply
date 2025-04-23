@@ -16,7 +16,7 @@ import { sortStateSignal } from './sort-state';
         <tr jhiSort [(sortState)]="sortState" (sortChange)="transition($event)">
           <th jhiSortBy="name">
             ID
-            <fa-icon [icon]="'sort'"></fa-icon>
+            <fa-icon [icon]="'sort'" />
           </th>
         </tr>
       </thead>

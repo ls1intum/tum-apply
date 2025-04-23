@@ -6,7 +6,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { InterpolatableTranslationObject, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
-
 import { Account } from 'app/core/auth/account.model';
 import { Authority } from 'app/config/authority.constants';
 import { StateStorageService } from 'app/core/auth/state-storage.service';

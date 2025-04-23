@@ -2,11 +2,11 @@ import { Component, NgZone, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
+
 import { IAuthority } from '../authority.model';
 import { AuthorityService, EntityArrayResponseType } from '../service/authority.service';
 import { AuthorityDeleteDialogComponent } from '../delete/authority-delete-dialog.component';
@@ -82,7 +82,7 @@ export class AuthorityComponent implements OnInit {
 
   protected refineData(data: IAuthority[]): IAuthority[] {
     const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+    return predicate != null && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
   }
 
   protected fillComponentAttributesFromResponseBody(data: IAuthority[] | null): IAuthority[] {

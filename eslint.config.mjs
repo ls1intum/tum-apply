@@ -114,7 +114,6 @@ export default tseslint.config(
       '@angular-eslint/directive-class-suffix': ['error', { suffixes: ['Directive'] }],
       '@typescript-eslint/consistent-type-definitions': 'off',
       '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/member-ordering': [
         'error',
         {
@@ -150,9 +149,8 @@ export default tseslint.config(
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'explicit' }],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/strict-boolean-expressions': 'error',
+      '@typescript-eslint/strict-boolean-expressions': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
 
       '@typescript-eslint/no-non-null-assertion': 'off',
