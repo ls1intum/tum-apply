@@ -4,7 +4,6 @@ import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@a
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
-
 import './config/dayjs';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
@@ -43,7 +42,14 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withInterceptorsFromDi()),
-    provideNgxWebstorage(withNgxWebstorageConfig({ prefix: 'jhi', separator: '-' }), withLocalStorage(), withSessionStorage()),
+    provideNgxWebstorage(
+      withNgxWebstorageConfig({
+        prefix: 'jhi',
+        separator: '-',
+      }),
+      withLocalStorage(),
+      withSessionStorage(),
+    ),
     Title,
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },

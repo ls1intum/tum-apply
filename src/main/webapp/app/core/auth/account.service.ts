@@ -45,7 +45,7 @@ export class AccountService {
   }
 
   identity(force?: boolean): Observable<Account | null> {
-    if (!this.accountCache$ || force) {
+    if (!this.accountCache$ || force === true) {
       this.accountCache$ = this.fetch().pipe(
         tap((account: Account) => {
           this.authenticate(account);
@@ -53,7 +53,7 @@ export class AccountService {
           // After retrieve the account info, the language will be changed to
           // the user's preferred language configured in the account setting
           // unless user have chosen another language in the current session
-          if (!this.stateStorageService.getLocale()) {
+          if (this.stateStorageService.getLocale() == null) {
             this.translateService.use(account.langKey);
           }
 
@@ -81,7 +81,7 @@ export class AccountService {
     // previousState can be set in the authExpiredInterceptor and in the userRouteAccessService
     // if login is successful, go to stored previousState and clear previousState
     const previousUrl = this.stateStorageService.getUrl();
-    if (previousUrl) {
+    if (previousUrl != null) {
       this.stateStorageService.clearUrl();
       this.router.navigateByUrl(previousUrl);
     }
