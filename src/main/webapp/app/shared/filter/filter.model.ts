@@ -75,12 +75,11 @@ export class FilterOption implements IFilterOption {
 
 export class FilterOptions implements IFilterOptions {
   readonly filterChanges = new Subject<FilterOption[]>();
+  _filterOptions: FilterOption[];
 
   constructor(filterOptions: FilterOption[] = []) {
     this._filterOptions = filterOptions;
   }
-
-  _filterOptions: FilterOption[];
 
   get filterOptions(): FilterOption[] {
     return this._filterOptions.filter(option => option.isSet());
