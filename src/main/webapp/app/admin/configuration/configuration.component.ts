@@ -16,6 +16,7 @@ export default class ConfigurationComponent implements OnInit {
   beansFilter = signal<string>('');
   propertySources = signal<PropertySource[]>([]);
   sortState = sortStateSignal({ predicate: 'prefix', order: 'asc' });
+  private readonly sortService = inject(SortService);
   beans = computed(() => {
     let data = this.allBeans() ?? [];
     const beansFilter = this.beansFilter();
@@ -24,13 +25,11 @@ export default class ConfigurationComponent implements OnInit {
     }
 
     const { order, predicate } = this.sortState();
-    if (predicate && order) {
+    if (predicate != null && order) {
       data = data.sort(this.sortService.startSort({ predicate, order }));
     }
     return data;
   });
-
-  private readonly sortService = inject(SortService);
   private readonly configurationService = inject(ConfigurationService);
 
   ngOnInit(): void {
