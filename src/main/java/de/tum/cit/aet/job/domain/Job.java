@@ -38,6 +38,24 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "field_of_studies")
     private String fieldOfStudies;
 
+    @Column(name = "research_area")
+    private String researchArea;
+
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "employment_type")
+    private String employmentType;
+
+    @Column(name = "workload")
+    private int workload;
+
+    @Column(name = "contract_duration")
+    private int contractDuration;
+
+    @Column(name = "funding_type")
+    private String fundingType;
+
     @Column(name = "title")
     private String title;
 
@@ -62,8 +80,17 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "data_protection_information")
     private String dataProtectionInformation;
 
-    @Column(name = "contact")
-    private String contact;
+    @Column(name = "contact_name")
+    private String contactName;
+
+    @Column(name = "contact_email")
+    private String contactEmail;
+
+    @Column(name = "contact_phone_number")
+    private String contactPhoneNumber;
+
+    @Column(name = "contact_website")
+    private String contactWebsite;
 
     @NotNull
     @Enumerated(EnumType.STRING)

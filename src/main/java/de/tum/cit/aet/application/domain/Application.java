@@ -3,6 +3,7 @@ package de.tum.cit.aet.application.domain;
 import de.tum.cit.aet.application.constants.ApplicationStatus;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
+import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -44,6 +45,31 @@ public class Application extends AbstractAuditingEntity {
 
     @Column(name = "desired_start_date")
     private Instant desiredStartDate;
+
+    @OneToOne
+    @JoinColumn(name = "cv_file_id")
+    private Document cvFile;
+
+    @OneToOne
+    @JoinColumn(name = "reference_file_id")
+    private Document referenceFile;
+
+    @OneToOne
+    @JoinColumn(name = "bachelor_certificate_id")
+    private Document bachelorCertificate;
+
+    @OneToOne
+    @JoinColumn(name = "master_certificate_id")
+    private Document masterCertificate;
+
+    @Column(name = "projects")
+    private String projects;
+
+    @Column(name = "special_skills")
+    private String specialSkills;
+
+    @Column(name = "interests")
+    private String interests;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<CustomFieldAnswer> customFieldAnswers;
