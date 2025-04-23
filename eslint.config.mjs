@@ -150,7 +150,6 @@ export default tseslint.config(
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'explicit' }],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/strict-boolean-expressions': 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
