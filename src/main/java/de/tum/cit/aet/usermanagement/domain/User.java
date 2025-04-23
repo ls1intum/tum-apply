@@ -29,9 +29,6 @@ public class User extends AbstractAuditingEntity {
     @JoinColumn(name = "research_group_id")
     private ResearchGroup researchGroup;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
-    private Applicant applicant;
-
     // Contains all the Jobs that a User (Professor) has posted
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Job> postedJobs;
