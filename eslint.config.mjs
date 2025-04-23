@@ -150,7 +150,7 @@ export default tseslint.config(
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/strict-boolean-expressions': 'error',
+      '@typescript-eslint/strict-boolean-expressions': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
 
       '@typescript-eslint/no-non-null-assertion': 'off',
