@@ -1,19 +1,21 @@
-import { ApplicationConfig, LOCALE_ID, importProvidersFrom, inject, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
-import { TitleStrategy, provideRouter, withRouterConfig, RouterModule } from '@angular/router';
+import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
+
 import './config/dayjs';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { DatePipe } from '@angular/common';
+
 import { httpInterceptorProviders } from './core/interceptor';
 import routes from './app.routes';
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { AppPageTitleStrategy } from './app-page-title-strategy';
-import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { missingTranslationHandler, translatePartialLoader } from './config/translation.config';
-import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { DatePipe } from '@angular/common';
 import { AuthExpiredInterceptor } from './core/interceptor/auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';

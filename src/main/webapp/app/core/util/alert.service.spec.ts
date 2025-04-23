@@ -1,5 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { MissingTranslationHandler, TranslateModule, TranslateService } from '@ngx-translate/core';
+
 import { missingTranslationHandler } from '../../config/translation.config';
 
 import { Alert, AlertService } from './alert.service';

@@ -1,9 +1,9 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs/operators';
-
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
+
 import { Level, Log, LoggersResponse } from './log.model';
 import { LogsService } from './logs.service';
 

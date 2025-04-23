@@ -1,7 +1,6 @@
 import { Injectable, SecurityContext, inject } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
-
 import { translationNotFoundMessage } from 'app/config/translation.config';
 
 export type AlertType = 'success' | 'danger' | 'warning' | 'info';

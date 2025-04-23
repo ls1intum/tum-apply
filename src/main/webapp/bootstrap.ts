@@ -1,14 +1,15 @@
 import { enableProdMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import AppComponent from './app/app.component';
-import { DEBUG_INFO_ENABLED } from './app/app.constants';
 import { NgbDatepickerConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { registerLocaleData } from '@angular/common';
 import locale from '@angular/common/locales/en';
 import dayjs from 'dayjs';
 import { SessionStorageService } from 'ngx-webstorage';
+
+import { DEBUG_INFO_ENABLED } from './app/app.constants';
+import AppComponent from './app/app.component';
+import { appConfig } from './app/app.config';
 import { JhiLanguageHelper } from './app/config/language.helper';
 
 // disable debug data on prod profile to improve performance
@@ -18,7 +19,6 @@ if (!DEBUG_INFO_ENABLED) {
 }
 
 bootstrapApplication(AppComponent, appConfig)
-  // eslint-disable-next-line no-console
   .then(app => {
     const dpConfig = app.injector.get(NgbDatepickerConfig);
     const tooltipConfig = app.injector.get(NgbTooltipConfig);
@@ -34,5 +34,5 @@ bootstrapApplication(AppComponent, appConfig)
     translateService.use(languageKey);
     tooltipConfig.container = 'body';
   })
-  // eslint-disable-next-line no-undef
+
   .catch((err: unknown) => console.error(err));

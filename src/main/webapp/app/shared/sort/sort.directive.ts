@@ -1,4 +1,5 @@
 import { Directive, model, output } from '@angular/core';
+
 import { SortOrder, SortState } from './sort-state';
 
 @Directive({
