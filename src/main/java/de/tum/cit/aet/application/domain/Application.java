@@ -2,6 +2,7 @@ package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.application.constants.ApplicationStatus;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
