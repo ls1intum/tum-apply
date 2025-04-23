@@ -247,7 +247,6 @@ export default tseslint.config(
     },
     rules: {
       'prettier/prettier': ['error', { parser: 'angular' }],
-      '@typescript-eslint/no-floating-promises': 'warn',
       '@angular-eslint/template/label-has-associated-control': 'warn',
       '@angular-eslint/template/alt-text': 'warn',
       '@angular-eslint/template/elements-content': 'warn',
