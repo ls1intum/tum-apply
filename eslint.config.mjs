@@ -114,7 +114,6 @@ export default tseslint.config(
       '@angular-eslint/directive-class-suffix': ['error', { suffixes: ['Directive'] }],
       '@typescript-eslint/consistent-type-definitions': 'off',
       '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/member-ordering': [
         'error',
         {
@@ -248,8 +247,6 @@ export default tseslint.config(
     },
     rules: {
       'prettier/prettier': ['error', { parser: 'angular' }],
-      '@angular-eslint/template/click-events-have-key-events': 'warn',
-      '@angular-eslint/template/interactive-supports-focus': 'warn',
       '@angular-eslint/template/label-has-associated-control': 'warn',
       '@angular-eslint/template/alt-text': 'warn',
       '@angular-eslint/template/elements-content': 'warn',
