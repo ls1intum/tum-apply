@@ -19,7 +19,7 @@ export class AlertComponent implements OnInit, OnDestroy {
 
   setClasses(alert: Alert): Record<string, boolean> {
     const classes = { 'jhi-toast': Boolean(alert.toast) };
-    if (alert.position != null) {
+    if (alert.position) {
       return { ...classes, [alert.position]: true };
     }
     return classes;
