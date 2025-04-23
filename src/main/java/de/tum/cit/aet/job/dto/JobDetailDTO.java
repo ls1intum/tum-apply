@@ -3,7 +3,6 @@ package de.tum.cit.aet.job.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.job.domain.CustomField;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -30,5 +29,6 @@ public record JobDetailDTO(
     String contactEmail,
     String contactPhoneNumber,
     String contactWebsite,
-    List<CustomField> customFields
+    // TODO: Adjust this to a List of CustomFields
+    CustomField customFields
 ) {}
