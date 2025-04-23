@@ -82,7 +82,7 @@ export class AuthorityComponent implements OnInit {
 
   protected refineData(data: IAuthority[]): IAuthority[] {
     const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+    return predicate != null && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
   }
 
   protected fillComponentAttributesFromResponseBody(data: IAuthority[] | null): IAuthority[] {

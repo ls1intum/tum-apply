@@ -35,7 +35,7 @@ export default class ErrorComponent implements OnInit, OnDestroy {
 
   private getErrorMessageTranslation(): void {
     this.errorMessage.set('');
-    if (this.errorKey) {
+    if (this.errorKey != null) {
       this.translateService.get(this.errorKey).subscribe(translatedErrorMessage => {
         this.errorMessage.set(translatedErrorMessage);
       });
