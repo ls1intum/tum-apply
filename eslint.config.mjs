@@ -139,7 +139,6 @@ export default tseslint.config(
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-extraneous-class': 'off',
       '@typescript-eslint/no-misused-spread': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-shadow': ['error'],
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/no-unsafe-argument': 'off',
