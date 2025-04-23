@@ -4,6 +4,7 @@ import { NgbDatepickerConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstra
 import { TranslateService } from '@ngx-translate/core';
 import { registerLocaleData } from '@angular/common';
 import locale from '@angular/common/locales/en';
+// eslint-disable-next-line no-restricted-imports
 import dayjs from 'dayjs';
 import { SessionStorageService } from 'ngx-webstorage';
 

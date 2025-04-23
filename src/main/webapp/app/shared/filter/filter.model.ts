@@ -80,7 +80,7 @@ export class FilterOptions implements IFilterOptions {
     this._filterOptions = filterOptions;
   }
 
-  private _filterOptions: FilterOption[];
+  _filterOptions: FilterOption[];
 
   get filterOptions(): FilterOption[] {
     return this._filterOptions.filter(option => option.isSet());
