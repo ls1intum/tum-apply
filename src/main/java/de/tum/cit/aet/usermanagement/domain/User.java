@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.domain;
 
+import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.constants.UserGroup;
 import jakarta.persistence.*;
@@ -16,7 +17,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "users")
-public class User {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class User extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
