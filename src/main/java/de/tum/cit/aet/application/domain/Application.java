@@ -1,6 +1,7 @@
 package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.application.constants.ApplicationStatus;
+import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -10,13 +11,12 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "applications")
-public class Application {
+public class Application extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,8 +49,4 @@ public class Application {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private Instant createdAt;
 }
