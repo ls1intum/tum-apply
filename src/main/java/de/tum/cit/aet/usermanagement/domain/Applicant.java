@@ -29,11 +29,21 @@ public class Applicant extends User {
     @Column(name = "city")
     private String city;
 
-    @Column(name = "cv_filename")
-    private String cvFilename;
+    @OneToOne
+    @JoinColumn(name = "cv_file_id")
+    private Document cvFile;
 
-    @Column(name = "reference_filename")
-    private String referenceFilename;
+    @OneToOne
+    @JoinColumn(name = "reference_file_id")
+    private Document referenceFile;
+
+    @OneToOne
+    @JoinColumn(name = "bachelor_certificate_id")
+    private Document bachelorCertificate;
+
+    @OneToOne
+    @JoinColumn(name = "master_certificate_id")
+    private Document masterCertificate;
 
     @Column(name = "bachelor_degree_name")
     private String bachelorDegreeName;
@@ -62,6 +72,7 @@ public class Applicant extends User {
     @Column(name = "interests")
     private String interests;
 
+    // Is this necessary, now that we are mapping each document separately as a column?
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "applicant")
     private Set<Document> documents;
 }
