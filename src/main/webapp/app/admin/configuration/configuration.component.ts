@@ -17,6 +17,7 @@ export default class ConfigurationComponent implements OnInit {
   propertySources = signal<PropertySource[]>([]);
   sortState = sortStateSignal({ predicate: 'prefix', order: 'asc' });
   private readonly sortService = inject(SortService);
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   beans = computed(() => {
     let data = this.allBeans() ?? [];
     const beansFilter = this.beansFilter();
