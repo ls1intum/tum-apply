@@ -27,7 +27,10 @@ export class SortService {
         return { predicate: split[0], order: split[1] as any };
       }
     }
-    return { predicate: sortParam?.length ? sortParam : undefined };
+    if (sortParam != null) {
+      return { predicate: sortParam.length ? sortParam : undefined };
+    }
+    return { predicate: undefined };
   }
 
   public buildSortParam({ predicate, order }: SortState, fallback?: string): string[] {
