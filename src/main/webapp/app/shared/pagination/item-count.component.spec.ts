@@ -11,8 +11,8 @@ describe('ItemCountComponent test', () => {
   let fixture: ComponentFixture<ItemCountComponent>;
   const inputParams = 'params';
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(waitForAsync(async () => {
+    await TestBed.configureTestingModule({
       imports: [ItemCountComponent, TranslateModule.forRoot(), TranslateDirective],
     }).compileComponents();
   }));

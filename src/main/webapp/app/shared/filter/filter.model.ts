@@ -3,17 +3,24 @@ import { Subject } from 'rxjs';
 
 export interface IFilterOptions {
   readonly filterChanges: Subject<FilterOption[]>;
+
   get filterOptions(): IFilterOption[];
+
   hasAnyFilterSet(): boolean;
+
   clear(): boolean;
+
   initializeFromParams(params: ParamMap): boolean;
+
   addFilter(name: string, ...values: string[]): boolean;
+
   removeFilter(name: string, value: string): boolean;
 }
 
 export interface IFilterOption {
   name: string;
   values: string[];
+
   nameAsQueryParam(): string;
 }
 
@@ -68,11 +75,12 @@ export class FilterOption implements IFilterOption {
 
 export class FilterOptions implements IFilterOptions {
   readonly filterChanges = new Subject<FilterOption[]>();
-  private _filterOptions: FilterOption[];
 
   constructor(filterOptions: FilterOption[] = []) {
     this._filterOptions = filterOptions;
   }
+
+  private _filterOptions: FilterOption[];
 
   get filterOptions(): FilterOption[] {
     return this._filterOptions.filter(option => option.isSet());
@@ -121,7 +129,7 @@ export class FilterOptions implements IFilterOptions {
   }
 
   removeFilter(name: string, value: string): boolean {
-    if (this.getFilterOptionByName(name)?.removeValue(value)) {
+    if (this.getFilterOptionByName(name)?.removeValue(value) === true) {
       this.changed();
       return true;
     }
