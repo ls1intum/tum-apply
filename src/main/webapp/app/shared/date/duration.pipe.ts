@@ -6,7 +6,7 @@ import dayjs from 'dayjs/esm';
 })
 export default class DurationPipe implements PipeTransform {
   transform(value: any): string {
-    if (value) {
+    if (Boolean(value)) {
       return dayjs.duration(value).humanize();
     }
     return '';

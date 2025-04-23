@@ -41,7 +41,7 @@ export class FilterOption implements IFilterOption {
   }
 
   addValue(...values: string[]): boolean {
-    const missingValues = values.filter(value => value && !this.values.includes(value));
+    const missingValues = values.filter((value): boolean => (value as unknown as boolean) && !this.values.includes(value));
     if (missingValues.length > 0) {
       this.values.push(...missingValues);
       return true;
@@ -146,7 +146,7 @@ export class FilterOptions implements IFilterOptions {
     if (thisFilters.length !== otherFilters.length) {
       return false;
     }
-    return thisFilters.every(option => other.getFilterOptionByName(option.name)?.equals(option));
+    return thisFilters.every((option): boolean => other.getFilterOptionByName(option.name)?.equals(option) as boolean);
   }
 
   protected clone(): FilterOptions {

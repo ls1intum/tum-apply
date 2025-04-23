@@ -25,8 +25,8 @@ describe('MainComponent', () => {
 
   const navigateByUrlFn = (url: string) => () => router.navigateByUrl(url);
 
-  beforeEach(waitForAsync(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MainComponent],
       providers: [Title, AccountService, { provide: TitleStrategy, useClass: AppPageTitleStrategy }],
     })
@@ -71,19 +71,19 @@ describe('MainComponent', () => {
         expect(document.title).toBe(`${defaultPageTitle} translated`);
       }));
 
-      it('should set page title to root route pageTitle if there is no child routes', fakeAsync(async () => {
+      it('should set page title to root route pageTitle if there is no child routes', fakeAsync(() => {
         // GIVEN
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        await ngZone.run(navigateByUrlFn(''));
+        ngZone.run(navigateByUrlFn(''));
         tick();
 
         // THEN
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
       }));
 
-      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', fakeAsync(async () => {
+      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', fakeAsync(() => {
         // GIVEN
         router.resetConfig([
           {
@@ -94,14 +94,14 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        await ngZone.run(navigateByUrlFn('home'));
+        ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
         expect(document.title).toBe(`${childRoutePageTitle} translated`);
       }));
 
-      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', fakeAsync(async () => {
+      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', fakeAsync(() => {
         // GIVEN
         router.resetConfig([
           {
@@ -112,7 +112,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        await ngZone.run(navigateByUrlFn('home'));
+        ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
@@ -129,13 +129,13 @@ describe('MainComponent', () => {
         expect(document.title).toBe(`${defaultPageTitle} translated`);
       });
 
-      it('should set page title to root route pageTitle if there is no child routes', fakeAsync(async () => {
+      it('should set page title to root route pageTitle if there is no child routes', fakeAsync(() => {
         // GIVEN
         routerState.snapshot.root.data = { pageTitle: parentRoutePageTitle };
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        await ngZone.run(navigateByUrlFn(''));
+        ngZone.run(navigateByUrlFn(''));
         tick();
 
         // THEN
@@ -151,7 +151,7 @@ describe('MainComponent', () => {
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
       }));
 
-      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', fakeAsync(async () => {
+      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', fakeAsync(() => {
         // GIVEN
         router.resetConfig([
           {
@@ -162,7 +162,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        await ngZone.run(navigateByUrlFn('home'));
+        ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
@@ -178,7 +178,7 @@ describe('MainComponent', () => {
         expect(document.title).toBe(`${childRoutePageTitle} translated`);
       }));
 
-      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', fakeAsync(async () => {
+      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', fakeAsync(() => {
         // GIVEN
         router.resetConfig([
           {
@@ -189,7 +189,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        await ngZone.run(navigateByUrlFn('home'));
+        ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
