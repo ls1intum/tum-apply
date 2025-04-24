@@ -1,4 +1,4 @@
-package de.tum.cit.aet.application.repository;
+package de.tum.cit.aet.evaluation.repository;
 
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import java.util.UUID;
