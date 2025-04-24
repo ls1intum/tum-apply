@@ -11,7 +11,8 @@ import lombok.Getter;
 public enum State {
     OPEN("OPEN"),
     IN_REVIEW("IN_REVIEW"),
-    CLOSED("CLOSED");
+    CLOSED("CLOSED"),
+    DRAFT("DRAFT");
 
     private final String value;
 }
