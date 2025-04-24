@@ -1,6 +1,7 @@
 package de.tum.cit.aet.evaluation.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "internal_comments")
-public class InternalComment {
+public class InternalComment extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

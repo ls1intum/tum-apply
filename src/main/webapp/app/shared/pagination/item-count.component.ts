@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+
 import TranslateDirective from '../language/translate.directive';
 
 /**
@@ -24,7 +25,7 @@ export default class ItemCountComponent {
 
   first = computed(() => {
     const params = this.params();
-    if (params?.page && params.totalItems !== undefined && params.itemsPerPage) {
+    if (params?.page != null && params.totalItems !== undefined && params.itemsPerPage != null) {
       return (params.page - 1) * params.itemsPerPage + 1;
     }
     return undefined;
@@ -32,7 +33,7 @@ export default class ItemCountComponent {
 
   second = computed(() => {
     const params = this.params();
-    if (params?.page && params.totalItems !== undefined && params.itemsPerPage) {
+    if (params?.page != null && params.totalItems !== undefined && params.itemsPerPage != null) {
       return params.page * params.itemsPerPage < params.totalItems ? params.page * params.itemsPerPage : params.totalItems;
     }
     return undefined;

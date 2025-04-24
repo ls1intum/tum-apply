@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 import { SortState } from './sort-state';
 
 @Injectable({ providedIn: 'root' })
@@ -20,18 +21,21 @@ export class SortService {
   }
 
   public parseSortParam(sortParam: string | undefined): SortState {
-    if (sortParam?.includes(',')) {
+    if (sortParam?.includes(',') === true) {
       const split = sortParam.split(',');
       if (split[0]) {
         return { predicate: split[0], order: split[1] as any };
       }
     }
-    return { predicate: sortParam?.length ? sortParam : undefined };
+    if (sortParam != null) {
+      return { predicate: sortParam.length ? sortParam : undefined };
+    }
+    return { predicate: undefined };
   }
 
   public buildSortParam({ predicate, order }: SortState, fallback?: string): string[] {
-    const sortParam = predicate && order ? [`${predicate},${order}`] : [];
-    if (fallback && predicate !== fallback) {
+    const sortParam = predicate != null && order ? [`${predicate},${order}`] : [];
+    if (fallback != null && predicate !== fallback) {
       sortParam.push(`${fallback},asc`);
     }
     return sortParam;

@@ -7,10 +7,9 @@ import { DOCUMENT } from '@angular/common';
 import { Component, NgZone } from '@angular/core';
 import { of } from 'rxjs';
 import { InterpolatableTranslationObject, LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
-
 import { AccountService } from 'app/core/auth/account.service';
-
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
+
 import MainComponent from './main.component';
 
 describe('MainComponent', () => {

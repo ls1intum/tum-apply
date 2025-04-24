@@ -1,19 +1,12 @@
 package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.usermanagement.domain.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Getter
@@ -32,11 +25,12 @@ public class ApplicationReview {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User reviewedBy;
 
     @Column(name = "reason")
     private String reason;
 
+    @CreationTimestamp
     @Column(name = "reviewed_at")
     private Instant reviewedAt;
 }

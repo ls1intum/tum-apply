@@ -3,12 +3,12 @@ import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IAuthority } from '../authority.model';
 import { AuthorityService } from '../service/authority.service';
+
 import { AuthorityFormGroup, AuthorityFormService } from './authority-form.service';
 
 @Component({

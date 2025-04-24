@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ThreadState } from '../../metrics.model';
+
 import { MetricsModalThreadsComponent } from './metrics-modal-threads.component';
 
 describe('MetricsModalThreadsComponent', () => {

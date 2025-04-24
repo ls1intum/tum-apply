@@ -8,6 +8,7 @@ import { sampleWithRequiredData } from '../authority.test-samples';
 import { AuthorityService } from '../service/authority.service';
 
 import { AuthorityComponent } from './authority.component';
+
 import SpyInstance = jest.SpyInstance;
 
 describe('Authority Management Component', () => {

@@ -1,5 +1,4 @@
 import { Component, input } from '@angular/core';
-
 import SharedModule from 'app/shared/shared.module';
 import { Services } from 'app/admin/metrics/metrics.model';
 

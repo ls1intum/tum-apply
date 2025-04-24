@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.domain;
 
+import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.util.UUID;
@@ -13,7 +14,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "research_groups")
-public class ResearchGroup {
+public class ResearchGroup extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,7 +22,7 @@ public class ResearchGroup {
     private UUID researchGroupId;
 
     @OneToMany(mappedBy = "researchGroup")
-    private Set<User> users;
+    private Set<User> employeesAt;
 
     @Column(name = "description")
     private String description;

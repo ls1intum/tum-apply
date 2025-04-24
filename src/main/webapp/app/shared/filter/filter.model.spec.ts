@@ -1,4 +1,5 @@
 import { ParamMap, Params, convertToParamMap } from '@angular/router';
+
 import { FilterOption, FilterOptions } from './filter.model';
 
 describe('FilterModel Tests', () => {

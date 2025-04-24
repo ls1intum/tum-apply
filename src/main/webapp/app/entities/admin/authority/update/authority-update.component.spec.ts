@@ -6,8 +6,8 @@ import { Subject, from, of } from 'rxjs';
 
 import { AuthorityService } from '../service/authority.service';
 import { IAuthority } from '../authority.model';
-import { AuthorityFormService } from './authority-form.service';
 
+import { AuthorityFormService } from './authority-form.service';
 import { AuthorityUpdateComponent } from './authority-update.component';
 
 describe('Authority Management Update Component', () => {

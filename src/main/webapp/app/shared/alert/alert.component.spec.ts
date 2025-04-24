@@ -1,7 +1,6 @@
 jest.mock('app/core/util/alert.service');
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
 import { AlertService } from 'app/core/util/alert.service';
 
 import { AlertComponent } from './alert.component';

@@ -1,8 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
+
 import { ConfigurationService } from './configuration.service';
 import { Bean, PropertySource } from './configuration.model';
 
@@ -16,6 +16,8 @@ export default class ConfigurationComponent implements OnInit {
   beansFilter = signal<string>('');
   propertySources = signal<PropertySource[]>([]);
   sortState = sortStateSignal({ predicate: 'prefix', order: 'asc' });
+  private readonly sortService = inject(SortService);
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   beans = computed(() => {
     let data = this.allBeans() ?? [];
     const beansFilter = this.beansFilter();
@@ -24,13 +26,11 @@ export default class ConfigurationComponent implements OnInit {
     }
 
     const { order, predicate } = this.sortState();
-    if (predicate && order) {
+    if (predicate != null && order) {
       data = data.sort(this.sortService.startSort({ predicate, order }));
     }
     return data;
   });
-
-  private readonly sortService = inject(SortService);
   private readonly configurationService = inject(ConfigurationService);
 
   ngOnInit(): void {
