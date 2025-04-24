@@ -10,10 +10,10 @@
         <constraints nullable="false" primaryKey="true"/>
       </column>
       <column name="research_group_id" type="CHAR(36)"/>
-      <column name="avatar_file_id" type="CHAR(36)"/>
       <column name="email" type="TEXT">
         <constraints nullable="false"/>
       </column>
+      <column name="avatar_file_id" type="CHAR(36)"/>
       <column name="first_name" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
@@ -22,18 +22,19 @@
       </column>
       <column name="gender" type="VARCHAR(255)"/>
       <column name="nationality" type="VARCHAR(255)"/>
+      <column name="phone_number" type="TEXT"/>
       <column name="website" type="TEXT"/>
-      <column name="tum_student" type="BOOLEAN"/>
       <column name="linkedin_url" type="TEXT"/>
-      <column name="joined_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>
-      <column name="updated_at" type="TIMESTAMP">
+      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>
     </createTable>
     <sql>
-      ALTER TABLE users MODIFY updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+      ALTER TABLE users MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+        CURRENT_TIMESTAMP;
     </sql>
   </changeSet>
 
@@ -57,31 +58,33 @@
       <column name="street" type="TEXT"/>
       <column name="postal_code" type="VARCHAR(10)"/>
       <column name="city" type="TEXT"/>
-      <column name="is_archived" type="BOOLEAN" defaultValueBoolean="false">
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>
     </createTable>
   </changeSet>
 
-  <changeSet id="003_create_user_roles_and_logins" author="marc-fett">
-    <createTable tableName="user_roles">
-      <column name="user_id" type="CHAR(36)">
-        <constraints nullable="false"/>
+  <changeSet id="003_create_user_roles" author="marc-fett">
+    <createTable tableName="user_research_group_roles">
+      <column name="user_research_group_role_id" type="CHAR(36)">
+        <constraints nullable="false" primaryKey="true"/>
       </column>
-      <column name="role" type="VARCHAR(255)">
+      <column name="user_id" type="CHAR(36)">
         <constraints nullable="false"/>
       </column>
       <column name="research_group_id" type="CHAR(36)"/>
-    </createTable>
-
-    <createTable tableName="user_login_providers">
-      <column name="user_id" type="CHAR(36)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="login_provider" type="VARCHAR(255)">
+      <column name="role" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <addUniqueConstraint
+      tableName="user_research_group_roles"
+      columnNames="user_id, research_group_id, role"
+      constraintName="uc_user_group_role_unique"
+    />
   </changeSet>
 
   <changeSet id="004_add_constraints" author="marc-fett">
@@ -91,34 +94,16 @@
                              referencedColumnNames="research_group_id"
                              referencedTableName="research_groups"/>
 
-    <addForeignKeyConstraint baseColumnNames="head"
-                             baseTableName="research_groups"
-                             constraintName="fk_research_groups_head"
-                             referencedColumnNames="user_id"
-                             referencedTableName="users"/>
-
     <addForeignKeyConstraint baseColumnNames="user_id"
-                             baseTableName="user_roles"
-                             constraintName="fk_user_roles_user"
+                             baseTableName="user_research_group_roles"
+                             constraintName="fk_user_research_group_roles_user"
                              referencedColumnNames="user_id"
                              referencedTableName="users"/>
 
     <addForeignKeyConstraint baseColumnNames="research_group_id"
-                             baseTableName="user_roles"
-                             constraintName="fk_user_roles_research_group"
+                             baseTableName="user_research_group_roles"
+                             constraintName="fk_user_research_group_roles_research_group"
                              referencedColumnNames="research_group_id"
                              referencedTableName="research_groups"/>
-
-    <addForeignKeyConstraint baseColumnNames="user_id"
-                             baseTableName="user_login_providers"
-                             constraintName="fk_user_login_providers_user"
-                             referencedColumnNames="user_id"
-                             referencedTableName="users"/>
-
-    <addPrimaryKey columnNames="user_id, role" constraintName="pk_user_roles"
-                   tableName="user_roles"/>
-
-    <addPrimaryKey columnNames="user_id, login_provider" constraintName="pk_user_login_providers"
-                   tableName="user_login_providers"/>
   </changeSet>
 </databaseChangeLog>

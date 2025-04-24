@@ -3,7 +3,7 @@ package de.tum.cit.aet.usermanagement.domain;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -28,15 +28,11 @@ public class User extends AbstractAuditingEntity {
     @JoinColumn(name = "research_group_id")
     private ResearchGroup researchGroup;
 
-    // Contains all the Jobs that a User (Professor) has posted
-    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Job> postedJobs;
-
     @Column(name = "email")
     private String email;
 
     @Column(name = "avatar_file_id")
-    private UUID avatar_file_id;
+    private UUID avatarFileId;
 
     @Column(name = "first_name")
     private String firstName;
@@ -50,18 +46,19 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "nationality")
     private String nationality;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "website")
     private String website;
-
-    @Column(name = "tum_student")
-    private Boolean tumStudent;
 
     @Column(name = "linkedin_url")
     private String linkedinUrl;
 
-    @Column(name = "joined_at")
-    private Instant joinedAt;
+    // Contains all the Jobs that a User (Professor) has posted
+    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Job> postedJobs = new HashSet<>();
 
-    @Column(name = "updated_at")
-    private Instant updatedAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserResearchGroupRole> researchGroupRoles = new HashSet<>();
 }

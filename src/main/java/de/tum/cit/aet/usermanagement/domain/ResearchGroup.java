@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import jakarta.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -21,8 +22,23 @@ public class ResearchGroup extends AbstractAuditingEntity {
     @Column(name = "research_group_id", nullable = false)
     private UUID researchGroupId;
 
-    @OneToMany(mappedBy = "researchGroup")
-    private Set<User> employeesAt;
+    @Column(name = "head")
+    private String head;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "abbreviation")
+    private String abbreviation;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "website")
+    private String website;
+
+    @Column(name = "school")
+    private String school;
 
     @Column(name = "description")
     private String description;
@@ -33,9 +49,12 @@ public class ResearchGroup extends AbstractAuditingEntity {
     @Column(name = "street")
     private String street;
 
-    @Column(name = "postalCode")
+    @Column(name = "postal_code")
     private String postalCode;
 
     @Column(name = "city")
     private String city;
+
+    @OneToMany(mappedBy = "researchGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserResearchGroupRole> userRoles = new HashSet<>();
 }

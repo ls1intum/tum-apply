@@ -24,8 +24,7 @@ REPLACE INTO research_groups (research_group_id,
                               default_field_of_studies,
                               street,
                               postal_code,
-                              city,
-                              is_archived)
+                              city)
 VALUES ('00000000-0000-0000-0000-000000000001',
         '00000000-0000-0000-0000-000000000102',
         'Applied Education Technologies',
@@ -37,8 +36,7 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Informatics',
         'Boltzmannstrasse 3',
         '85748',
-        'Garching b. München',
-        FALSE),
+        'Garching b. München'),
        ('00000000-0000-0000-0000-000000000002',
         '00000000-0000-0000-0000-000000000105',
         'Data Science Group',
@@ -50,8 +48,7 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Data Science',
         'Friedrichstraße 12',
         '10117',
-        'Berlin',
-        FALSE);
+        'Berlin');
 
 -- =============================================
 -- 02b_assign_users_to_research_groups.sql
