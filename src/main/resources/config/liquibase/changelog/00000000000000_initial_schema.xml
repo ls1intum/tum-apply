@@ -43,7 +43,7 @@
       <column name="research_group_id" type="CHAR(36)">
         <constraints nullable="false" primaryKey="true"/>
       </column>
-      <column name="head" type="CHAR(36)">
+      <column name="head" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
       <column name="name" type="TEXT">
