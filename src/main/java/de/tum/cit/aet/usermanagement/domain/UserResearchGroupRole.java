@@ -21,16 +21,13 @@ public class UserResearchGroupRole {
     private UUID userResearchGroupRoleId;
 
     @ManyToOne
-    @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @MapsId("researchGroupId")
     @JoinColumn(name = "research_group_id")
     private ResearchGroup researchGroup;
 
-    @MapsId("role")
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UserRole role;
