@@ -71,8 +71,4 @@ public class Applicant extends User {
 
     @Column(name = "interests")
     private String interests;
-
-    // Is this necessary, now that we are mapping each document separately as a column?
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "applicant")
-    private Set<Document> documents;
 }
