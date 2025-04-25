@@ -18,6 +18,7 @@ public class Document extends AbstractAuditingEntity {
     @Column(name = "document_id", nullable = false)
     private UUID documentId;
 
+    @Column(name = "type")
     private DocumentType type;
 
     @Column(name = "document_path")
