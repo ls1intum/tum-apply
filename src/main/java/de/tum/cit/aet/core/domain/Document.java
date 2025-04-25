@@ -2,7 +2,6 @@ package de.tum.cit.aet.core.domain;
 
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
@@ -18,10 +17,6 @@ public class Document extends AbstractAuditingEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "document_id", nullable = false)
     private UUID documentId;
-
-    @ManyToOne
-    @JoinColumn(name = "applicant_id")
-    private Applicant applicant;
 
     @Column(name = "type")
     private DocumentType type;
