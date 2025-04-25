@@ -8,11 +8,10 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum UserGroup {
+public enum UserRole {
+    APPLICANT("APPLICANT"),
     PROFESSOR("PROFESSOR"),
-    RESEARCH_ASSISTANT("RESEARCH_ASSISTANT"),
-    ADMIN("ADMIN"),
-    APPLICANT("APPLICANT");
+    ADMIN("ADMIN");
 
     private final String value;
 }
