@@ -1,5 +1,6 @@
-package de.tum.cit.aet.application.domain;
+package de.tum.cit.aet.evaluation.domain;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.Instant;
@@ -33,4 +34,7 @@ public class ApplicationReview {
     @CreationTimestamp
     @Column(name = "reviewed_at")
     private Instant reviewedAt;
+
+    @Column(name = "rating")
+    private int rating;
 }

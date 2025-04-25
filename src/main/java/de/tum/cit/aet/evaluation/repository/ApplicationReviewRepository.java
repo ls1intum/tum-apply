@@ -1,6 +1,6 @@
-package de.tum.cit.aet.application.repository;
+package de.tum.cit.aet.evaluation.repository;
 
-import de.tum.cit.aet.application.domain.ApplicationReview;
+import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
