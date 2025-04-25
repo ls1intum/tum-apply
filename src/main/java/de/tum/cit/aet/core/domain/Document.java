@@ -23,6 +23,7 @@ public class Document extends AbstractAuditingEntity {
     @JoinColumn(name = "applicant_id")
     private Applicant applicant;
 
+    @Column(name = "type")
     private DocumentType type;
 
     @Column(name = "document_path")
