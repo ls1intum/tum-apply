@@ -29,6 +29,9 @@ public class Applicant extends User {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "country")
+    private String country;
+
     @OneToOne
     @JoinColumn(name = "cv_file_id")
     private Document cvFile;
@@ -44,6 +47,9 @@ public class Applicant extends User {
     @OneToOne
     @JoinColumn(name = "master_certificate_id")
     private Document masterCertificate;
+
+    @Column(name = "has_studied_at_tum")
+    private Boolean hasStudiedAtTum;
 
     @Column(name = "bachelor_degree_name")
     private String bachelorDegreeName;
