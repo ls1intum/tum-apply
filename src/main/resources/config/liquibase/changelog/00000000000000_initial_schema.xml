@@ -22,9 +22,13 @@
       </column>
       <column name="gender" type="VARCHAR(255)"/>
       <column name="nationality" type="VARCHAR(255)"/>
+      <column name="birthday" type="DATE"/>
       <column name="phone_number" type="TEXT"/>
       <column name="website" type="TEXT"/>
       <column name="linkedin_url" type="TEXT"/>
+      <column name="selected_language" type="VARCHAR(10)" defaultValue="en">
+        <constraints nullable="false"/>
+      </column>
       <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>

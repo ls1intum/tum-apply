@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.domain;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -46,6 +47,9 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "nationality")
     private String nationality;
 
+    @Column(name = "birthday")
+    private LocalDate birthday;
+
     @Column(name = "phone_number")
     private String phoneNumber;
 
@@ -54,6 +58,9 @@ public class User extends AbstractAuditingEntity {
 
     @Column(name = "linkedin_url")
     private String linkedinUrl;
+
+    @Column(name = "selected_language", nullable = false)
+    private String selectedLanguage;
 
     // Contains all the Jobs that a User (Professor) has posted
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
