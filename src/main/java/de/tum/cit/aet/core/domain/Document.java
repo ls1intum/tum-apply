@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.domain;
 
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
-import de.tum.cit.aet.core.domain.constants.DocumentType;
+import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import java.util.UUID;
