@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import jakarta.persistence.*;
 import java.util.Set;
 import lombok.Getter;
@@ -37,8 +38,11 @@ public class Applicant extends User {
     @Column(name = "bachelor_degree_name")
     private String bachelorDegreeName;
 
+    @Column(name = "bachelor_grading_scale")
+    private GradingScale bachelorGradingScale;
+
     @Column(name = "bachelor_grade")
-    private Double bachelorGrade;
+    private String bachelorGrade;
 
     @Column(name = "bachelor_university")
     private String bachelorUniversity;
@@ -46,8 +50,11 @@ public class Applicant extends User {
     @Column(name = "master_degree_name")
     private String masterDegreeName;
 
+    @Column(name = "master_grading_scale")
+    private GradingScale masterGradingScale;
+
     @Column(name = "master_grade")
-    private Double masterGrade;
+    private String masterGrade;
 
     @Column(name = "master_university")
     private String masterUniversity;
