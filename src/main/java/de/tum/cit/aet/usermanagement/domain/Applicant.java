@@ -1,7 +1,6 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.domain.Document;
 import jakarta.persistence.*;
 import java.util.Set;
 import lombok.Getter;
@@ -31,22 +30,6 @@ public class Applicant extends User {
 
     @Column(name = "country")
     private String country;
-
-    @OneToOne
-    @JoinColumn(name = "cv_file_id")
-    private Document cvFile;
-
-    @OneToOne
-    @JoinColumn(name = "reference_file_id")
-    private Document referenceFile;
-
-    @OneToOne
-    @JoinColumn(name = "bachelor_certificate_id")
-    private Document bachelorCertificate;
-
-    @OneToOne
-    @JoinColumn(name = "master_certificate_id")
-    private Document masterCertificate;
 
     @Column(name = "has_studied_at_tum")
     private Boolean hasStudiedAtTum;
