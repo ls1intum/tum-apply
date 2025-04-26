@@ -38,7 +38,7 @@ public class Applicant extends User {
     private String bachelorDegreeName;
 
     @Column(name = "bachelor_grade")
-    private String bachelorGrade;
+    private Double bachelorGrade;
 
     @Column(name = "bachelor_university")
     private String bachelorUniversity;
@@ -47,7 +47,7 @@ public class Applicant extends User {
     private String masterDegreeName;
 
     @Column(name = "master_grade")
-    private String masterGrade;
+    private Double masterGrade;
 
     @Column(name = "master_university")
     private String masterUniversity;
