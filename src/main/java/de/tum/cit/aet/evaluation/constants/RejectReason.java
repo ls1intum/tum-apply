@@ -1,4 +1,4 @@
-package de.tum.cit.aet.application.domain;
+package de.tum.cit.aet.evaluation.constants;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
