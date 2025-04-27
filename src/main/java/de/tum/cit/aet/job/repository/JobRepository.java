@@ -20,7 +20,7 @@ public interface JobRepository extends JpaRepository<Job, UUID> {
      * @param state the state of the jobs to filter by (e.g., OPEN, DRAFT).
      * @return a list of job DTOs matching the given state.
      */
-    List<JobCardDTO> findAvailableJobsByState(@Param("state") State state);
+    //List<JobCardDTO> findAllJobsByState(@Param("state") State state);
 
     /**
      * Retrieves all jobs posted by a specific professor as {@link JobCardDTO} projections.
@@ -28,5 +28,5 @@ public interface JobRepository extends JpaRepository<Job, UUID> {
      * @param professorId the UUID of the professor (user) who created the job postings.
      * @return a list of job DTOs created by the given professor.
      */
-    List<JobCardDTO> findAllJobsByProfessor(@Param("professorId") UUID professorId);
+    //List<JobCardDTO> findAllJobsByProfessor(@Param("professorId") UUID professorId);
 }

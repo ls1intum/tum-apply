@@ -31,7 +31,8 @@ public class JobService {
      * @return list of available job cards
      */
     public List<JobCardDTO> getAvailableJobs(String filter, String sorting) {
-        return jobRepository.findAvailableJobsByState(State.OPEN);
+        return null;
+        //return jobRepository.findAvailableJobsByState(State.OPEN);
     }
 
     /**
@@ -75,7 +76,8 @@ public class JobService {
      * @return list of job cards created by the professor
      */
     public List<JobCardDTO> getJobsByProfessor(UUID professorId) {
-        return jobRepository.findAllJobsByProfessor(professorId);
+        return null;
+        //return jobRepository.findAllJobsByProfessor(professorId);
     }
 
     /**
