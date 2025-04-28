@@ -76,4 +76,7 @@ public class Application extends AbstractAuditingEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
+
+    @Column(name = "rating")
+    private Integer rating;
 }

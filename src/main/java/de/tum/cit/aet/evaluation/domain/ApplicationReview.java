@@ -34,7 +34,4 @@ public class ApplicationReview {
     @CreationTimestamp
     @Column(name = "reviewed_at")
     private Instant reviewedAt;
-
-    @Column(name = "rating")
-    private int rating;
 }
