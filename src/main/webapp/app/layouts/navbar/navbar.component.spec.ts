@@ -1,4 +1,4 @@
-jest.mock('app/login/login.service');
+jest.mock('app/pages/misc/login/login.service');
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
