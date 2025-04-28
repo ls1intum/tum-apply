@@ -1,92 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
-                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <!--
-        JHipster core tables.
-        The initial schema has the '00000000000001' id, so that it is over-written if we re-generate it.
-    -->
-    <changeSet id="00000000000001" author="jhipster">
-        <createTable tableName="jhi_user">
-            <column name="id" type="varchar(100)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="login" type="varchar(50)">
-                <constraints unique="true" nullable="false" uniqueConstraintName="ux_user_login"/>
-            </column>
-            <column name="first_name" type="varchar(50)"/>
-            <column name="last_name" type="varchar(50)"/>
-            <column name="email" type="varchar(191)">
-                <constraints unique="true" nullable="true" uniqueConstraintName="ux_user_email"/>
-            </column>
-            <column name="image_url" type="varchar(256)"/>
-            <column name="activated" type="boolean" valueBoolean="false">
-                <constraints nullable="false" />
-            </column>
-            <column name="lang_key" type="varchar(10)"/>
-            <column name="created_by" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="timestamp"/>
-            <column name="last_modified_by" type="varchar(50)"/>
-            <column name="last_modified_date" type="timestamp"/>
-        </createTable>
+  <changeSet id="001_create_users" author="marc-fett">
+    <createTable tableName="users">
+      <column name="user_id" type="CHAR(36)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="research_group_id" type="CHAR(36)"/>
+      <column name="email" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="avatar_file_id" type="CHAR(36)"/>
+      <column name="first_name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="gender" type="VARCHAR(255)"/>
+      <column name="nationality" type="VARCHAR(255)"/>
+      <column name="birthday" type="DATE"/>
+      <column name="phone_number" type="TEXT"/>
+      <column name="website" type="TEXT"/>
+      <column name="linkedin_url" type="TEXT"/>
+      <column name="selected_language" type="VARCHAR(10)" defaultValue="en">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <sql>
+      ALTER TABLE users MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
+        CURRENT_TIMESTAMP;
+    </sql>
+  </changeSet>
 
-        <createTable tableName="jhi_authority">
-            <column name="name" type="varchar(50)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-        </createTable>
+  <changeSet id="002_create_research_groups" author="marc-fett">
+    <createTable tableName="research_groups">
+      <column name="research_group_id" type="CHAR(36)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="head" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="abbreviation" type="VARCHAR(255)"/>
+      <column name="email" type="TEXT"/>
+      <column name="website" type="TEXT"/>
+      <column name="school" type="TEXT"/>
+      <column name="description" type="LONGTEXT"/>
+      <column name="default_field_of_studies" type="TEXT"/>
+      <column name="street" type="TEXT"/>
+      <column name="postal_code" type="VARCHAR(10)"/>
+      <column name="city" type="TEXT"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
 
-        <createTable tableName="jhi_user_authority">
-            <column name="user_id" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="authority_name" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+  <changeSet id="003_create_user_roles" author="marc-fett">
+    <createTable tableName="user_research_group_roles">
+      <column name="user_research_group_role_id" type="CHAR(36)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="user_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="research_group_id" type="CHAR(36)"/>
+      <column name="role" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addUniqueConstraint
+      tableName="user_research_group_roles"
+      columnNames="user_id, research_group_id, role"
+      constraintName="uc_user_group_role_unique"
+    />
+  </changeSet>
 
-        <addPrimaryKey columnNames="user_id, authority_name" tableName="jhi_user_authority"/>
+  <changeSet id="004_add_constraints" author="marc-fett">
+    <addForeignKeyConstraint baseColumnNames="research_group_id"
+                             baseTableName="users"
+                             constraintName="fk_users_research_group"
+                             referencedColumnNames="research_group_id"
+                             referencedTableName="research_groups"/>
 
-        <addForeignKeyConstraint baseColumnNames="authority_name"
-                                 baseTableName="jhi_user_authority"
-                                 constraintName="fk_authority_name"
-                                 referencedColumnNames="name"
-                                 referencedTableName="jhi_authority"/>
+    <addForeignKeyConstraint baseColumnNames="user_id"
+                             baseTableName="user_research_group_roles"
+                             constraintName="fk_user_research_group_roles_user"
+                             referencedColumnNames="user_id"
+                             referencedTableName="users"/>
 
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="jhi_user_authority"
-                                 constraintName="fk_user_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"/>
-
-        <loadData
-                  file="config/liquibase/data/authority.csv"
-                  separator=";"
-                  tableName="jhi_authority"
-                  usePreparedStatements="true">
-            <column name="name" type="string"/>
-        </loadData>
-        <dropDefaultValue tableName="jhi_user" columnName="created_date" columnDataType="${datetimeType}"/>
-    </changeSet>
-
-    <changeSet author="jhipster" id="00000000000002" context="test">
-        <createTable tableName="jhi_date_time_wrapper">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="jhi_date_time_wrapperPK"/>
-            </column>
-            <column name="instant" type="timestamp"/>
-            <column name="local_date_time" type="timestamp"/>
-            <column name="offset_date_time" type="timestamp"/>
-            <column name="zoned_date_time" type="timestamp"/>
-            <column name="local_time" type="time"/>
-            <column name="offset_time" type="time"/>
-            <column name="local_date" type="date"/>
-        </createTable>
-    </changeSet>
+    <addForeignKeyConstraint baseColumnNames="research_group_id"
+                             baseTableName="user_research_group_roles"
+                             constraintName="fk_user_research_group_roles_research_group"
+                             referencedColumnNames="research_group_id"
+                             referencedTableName="research_groups"/>
+  </changeSet>
 </databaseChangeLog>

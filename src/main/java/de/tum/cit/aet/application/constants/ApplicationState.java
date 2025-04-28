@@ -1,6 +1,6 @@
 package de.tum.cit.aet.application.constants;
 
-import de.tum.cit.aet.usermanagement.constants.UserGroup;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
@@ -11,17 +11,17 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ApplicationState {
-    SAVED("SAVED", EnumSet.of(UserGroup.APPLICANT)),
-    SENT("SENT", EnumSet.of(UserGroup.APPLICANT)),
-    ACCEPTED("ACCEPTED", EnumSet.of(UserGroup.RESEARCH_ASSISTANT, UserGroup.PROFESSOR)),
-    IN_REVIEW("IN_REVIEW", EnumSet.of(UserGroup.RESEARCH_ASSISTANT, UserGroup.PROFESSOR)),
-    REJECTED("REJECTED", EnumSet.of(UserGroup.RESEARCH_ASSISTANT, UserGroup.PROFESSOR)),
-    WITHDRAWN("WITHDRAWN", EnumSet.of(UserGroup.APPLICANT));
+    SAVED("SAVED", EnumSet.of(UserRole.APPLICANT)),
+    SENT("SENT", EnumSet.of(UserRole.APPLICANT)),
+    ACCEPTED("ACCEPTED", EnumSet.of(UserRole.PROFESSOR)),
+    IN_REVIEW("IN_REVIEW", EnumSet.of(UserRole.PROFESSOR)),
+    REJECTED("REJECTED", EnumSet.of(UserRole.PROFESSOR)),
+    WITHDRAWN("WITHDRAWN", EnumSet.of(UserRole.APPLICANT));
 
     private final String value;
-    private final Set<UserGroup> userGroups;
+    private final Set<UserRole> UserRoles;
 
-    public static Set<ApplicationState> getPermittedStatesByUserGroup(UserGroup group) {
-        return Arrays.stream(values()).filter(status -> status.getUserGroups().contains(group)).collect(Collectors.toSet());
+    public static Set<ApplicationState> getPermittedStatesByUserRole(UserRole group) {
+        return Arrays.stream(values()).filter(status -> status.getUserRoles().contains(group)).collect(Collectors.toSet());
     }
 }
