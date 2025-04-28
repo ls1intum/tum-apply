@@ -2,10 +2,13 @@ package de.tum.cit.aet.job.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
-import de.tum.cit.aet.job.constants.State;
+import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.FundingType;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -28,55 +31,59 @@ public class Job extends AbstractAuditingEntity {
     private UUID jobId;
 
     @ManyToOne
-    @JoinColumn(name = "professor_id")
-    private User postedBy;
+    @JoinColumn(name = "professor_id", nullable = false)
+    private User supervisingProfessor;
 
-    // Contains all the Applications that are submitted to this Job
-    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Application> applications;
+    @ManyToOne
+    @JoinColumn(name = "research_group_id")
+    private ResearchGroup researchGroup;
 
+    //TODO will be an enum
     @Column(name = "field_of_studies")
     private String fieldOfStudies;
+
+    @Column(name = "research_area")
+    private String researchArea;
+
+    @NotBlank
+    @Column(name = "location")
+    private Campus location;
+
+    @Column(name = "workload")
+    private Integer workload;
+
+    @Column(name = "contract_duration")
+    private Integer contractDuration;
+
+    @NotBlank
+    @Column(name = "funding_type")
+    private FundingType fundingType;
 
     @Column(name = "title")
     private String title;
 
-    @Column(name = "introduction")
-    private String introduction;
-
-    @Column(name = "about_us")
-    private String aboutUs;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "tasks")
     private String tasks;
 
-    @Column(name = "qualifications")
-    private String qualifications;
+    @Column(name = "requirements")
+    private String requirements;
 
-    @Column(name = "we_offer")
-    private String weOffer;
-
-    @Column(name = "application_requirements")
-    private String applicationRequirements;
-
-    @Column(name = "data_protection_information")
-    private String dataProtectionInformation;
-
-    @Column(name = "contact")
-    private String contact;
-
-    @NotNull
+    @NotBlank
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false)
-    private State state;
+    @Column(name = "state")
+    private JobState state;
 
     @Column(name = "start_date")
     private Instant startDate;
 
-    @Column(name = "application_deadline")
-    private Instant applicationDeadline;
-
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequence ASC")
     private List<CustomField> customFields;
+
+    // Contains all the Applications that are submitted to this Job
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Application> applications;
 }

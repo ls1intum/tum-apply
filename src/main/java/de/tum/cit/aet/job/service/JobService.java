@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.service;
 
-import de.tum.cit.aet.job.constants.State;
+import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
@@ -99,6 +99,6 @@ public class JobService {
 
     private JobCardDTO toDto(Job job) {
         // Placeholder for the detailed implementation
-        return new JobCardDTO(UUID.randomUUID(), "", "", "", UUID.randomUUID(), 0, Instant.now(), "", State.OPEN, Instant.now());
+        return new JobCardDTO(UUID.randomUUID(), "", "", "", UUID.randomUUID(), 0, Instant.now(), "", JobState.PUBLISHED, Instant.now());
     }
 }
