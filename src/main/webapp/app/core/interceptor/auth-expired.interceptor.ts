@@ -3,7 +3,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { LoginService } from 'app/login/login.service';
+import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 
 @Injectable()
