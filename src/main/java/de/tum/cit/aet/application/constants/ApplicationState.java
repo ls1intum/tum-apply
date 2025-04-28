@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ApplicationStatus {
+public enum ApplicationState {
     SAVED("SAVED", EnumSet.of(UserRole.APPLICANT)),
     SENT("SENT", EnumSet.of(UserRole.APPLICANT)),
     ACCEPTED("ACCEPTED", EnumSet.of(UserRole.PROFESSOR)),
@@ -21,7 +21,7 @@ public enum ApplicationStatus {
     private final String value;
     private final Set<UserRole> UserRoles;
 
-    public static Set<ApplicationStatus> getPermittedStatusesByUserRole(UserRole group) {
+    public static Set<ApplicationState> getPermittedStatesByUserRole(UserRole group) {
         return Arrays.stream(values()).filter(status -> status.getUserRoles().contains(group)).collect(Collectors.toSet());
     }
 }

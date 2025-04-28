@@ -32,8 +32,8 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "avatar_file_id")
-    private UUID avatarFileId;
+    @Column(name = "avatar")
+    private String avatar;
 
     @Column(name = "first_name")
     private String firstName;
@@ -63,7 +63,7 @@ public class User extends AbstractAuditingEntity {
     private String selectedLanguage;
 
     // Contains all the Jobs that a User (Professor) has posted
-    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "supervisingProfessor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Job> postedJobs = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

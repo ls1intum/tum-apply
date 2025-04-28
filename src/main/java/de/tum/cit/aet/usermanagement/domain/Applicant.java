@@ -1,8 +1,9 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,7 @@ import lombok.Setter;
 public class Applicant extends User {
 
     // Contains all the Applications that a User (Applicant) has submitted
-    @OneToMany(mappedBy = "submittedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Application> submittedApplications;
 
     @Column(name = "street")
@@ -29,14 +30,15 @@ public class Applicant extends User {
     @Column(name = "city")
     private String city;
 
-    @Column(name = "cv_filename")
-    private String cvFilename;
-
-    @Column(name = "reference_filename")
-    private String referenceFilename;
+    @Column(name = "country")
+    private String country;
 
     @Column(name = "bachelor_degree_name")
     private String bachelorDegreeName;
+
+    @NotBlank
+    @Column(name = "bachelor_grading_scale")
+    private GradingScale bachelorGradingScale;
 
     @Column(name = "bachelor_grade")
     private String bachelorGrade;
@@ -47,21 +49,13 @@ public class Applicant extends User {
     @Column(name = "master_degree_name")
     private String masterDegreeName;
 
+    @NotBlank
+    @Column(name = "master_grading_scale")
+    private GradingScale masterGradingScale;
+
     @Column(name = "master_grade")
     private String masterGrade;
 
     @Column(name = "master_university")
     private String masterUniversity;
-
-    @Column(name = "projects")
-    private String projects;
-
-    @Column(name = "special_skills")
-    private String specialSkills;
-
-    @Column(name = "interests")
-    private String interests;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "applicant")
-    private Set<Document> documents;
 }

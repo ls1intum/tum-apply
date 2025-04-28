@@ -1,4 +1,4 @@
-package de.tum.cit.aet.application.domain;
+package de.tum.cit.aet.evaluation.constants;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,11 +15,13 @@ import lombok.Getter;
 public enum RejectReason {
     FAILED_APPLICANT_REQUIREMENTS("FAILED_APPLICANT_REQUIREMENTS"),
     POSITION_ALREADY_FILLED("POSITION_ALREADY_FILLED"),
+    POSITION_OUTDATED("POSITION_OUTDATED"),
     NOT_SUFFICIENT_GRADES("NOT_SUFFICIENT_GRADES"),
     STRONGER_CANDIDATES_SELECTED("STRONGER_CANDIDATES_SELECTED"),
+    APPLICATION_NOT_INTERESTING_ENOUGH("APPLICATION_NOT_INTERESTING_ENOUGH"),
     LACK_OF_RESEARCH_EXPERIENCE("LACK_OF_RESEARCH_EXPERIENCE");
 
-    private String value;
+    private final String value;
 
     public String getStandardText(String languageKey) {
         return "Not yet implemented";

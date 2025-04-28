@@ -1,7 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.tum.cit.aet.job.constants.State;
+import de.tum.cit.aet.job.constants.JobState;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -15,6 +15,6 @@ public record JobCardDTO(
     int workload,
     Instant startDate,
     String description,
-    State state,
+    JobState state,
     Instant createdAt
 ) {}
