@@ -119,30 +119,27 @@
       <column name="professor_id" type="CHAR(36)">
         <constraints nullable="false"/>
       </column>
+      <column name="research_group_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
       <column name="field_of_studies" type="TEXT"/>
       <column name="research_area" type="TEXT"/>
-      <column name="location" type="TEXT"/>
-      <column name="employment_type" type="TEXT"/>
+      <column name="location" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
       <column name="workload" type="INT"/>
       <column name="contract_duration" type="INT"/>
-      <column name="funding_type" type="TEXT"/>
+      <column name="funding_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
       <column name="title" type="TEXT"/>
-      <column name="introduction" type="LONGTEXT"/>
-      <column name="about_us" type="LONGTEXT"/>
+      <column name="description" type="LONGTEXT"/>
       <column name="tasks" type="LONGTEXT"/>
-      <column name="qualifications" type="LONGTEXT"/>
-      <column name="we_offer" type="LONGTEXT"/>
-      <column name="application_requirements" type="LONGTEXT"/>
-      <column name="data_protection_information" type="LONGTEXT"/>
-      <column name="contact_name" type="VARCHAR(255)"/>
-      <column name="contact_email" type="TEXT"/>
-      <column name="contact_phone_number" type="TEXT"/>
-      <column name="contact_website" type="TEXT"/>
+      <column name="requirements" type="LONGTEXT"/>
       <column name="state" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
       <column name="start_date" type="TIMESTAMP"/>
-      <column name="application_deadline" type="TIMESTAMP"/>
       <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>
@@ -156,7 +153,11 @@
                              constraintName="fk_jobs_professor"
                              referencedTableName="users"
                              referencedColumnNames="user_id"/>
-
+    <addForeignKeyConstraint baseTableName="jobs"
+                             baseColumnNames="research_group_id"
+                             constraintName="fk_jobs_research_group"
+                             referencedTableName="research_groups"
+                             referencedColumnNames="research_group_id"/>
     <sql>
       ALTER TABLE jobs MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
     </sql>

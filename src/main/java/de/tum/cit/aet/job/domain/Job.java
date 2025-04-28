@@ -35,7 +35,7 @@ public class Job extends AbstractAuditingEntity {
     private User supervisingProfessor;
 
     @ManyToOne
-    @JoinColumn(name = "research_group_id")
+    @JoinColumn(name = "research_group_id", nullable = false)
     private ResearchGroup researchGroup;
 
     //TODO will be an enum

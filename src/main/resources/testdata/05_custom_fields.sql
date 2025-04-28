@@ -28,7 +28,7 @@ VALUES
  TRUE,
  'FREE_TEXT',
  NULL,
- NULL),
+ 1),
 
 ('00000000-0000-0000-0000-000000020002',
  '00000000-0000-0000-0000-000000010001',
@@ -44,7 +44,7 @@ VALUES
  TRUE,
  'SINGLE_CHOICE',
  '["Munich", "Garching", "Remote"]',
- 1),
+ 3),
 
 ('00000000-0000-0000-0000-000000020004',
  '00000000-0000-0000-0000-000000010003',
@@ -52,4 +52,4 @@ VALUES
  FALSE,
  'MULTIPLE_CHOICE',
  '["less than 1 year", "1 - 2 years", "more than 3 years"]',
- NULL);
+ 4);
