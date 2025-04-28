@@ -2,7 +2,7 @@ import { inject, isDevMode } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { AccountService } from 'app/core/auth/account.service';
-import { LoginService } from 'app/login/login.service';
+import { LoginService } from 'app/pages/usermanagement/login/login.service';
 
 import { StateStorageService } from './state-storage.service';
 
