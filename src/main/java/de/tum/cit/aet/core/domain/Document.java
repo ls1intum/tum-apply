@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.constants.DocumentType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,17 +20,18 @@ public class Document extends AbstractAuditingEntity {
     @Column(name = "document_id", nullable = false)
     private UUID documentId;
 
-    @Column(name = "type", nullable = false)
+    @NotBlank
+    @Column(name = "type")
     private DocumentType type;
 
     @Column(name = "document_path")
     private String documentPath;
 
     @ManyToOne
-    @JoinColumn(name = "custom_field_answer_id", nullable = true)
+    @JoinColumn(name = "custom_field_answer_id")
     private CustomFieldAnswer customFieldAnswer;
 
     @ManyToOne
-    @JoinColumn(name = "application_id", nullable = true)
+    @JoinColumn(name = "application_id")
     private Application application;
 }

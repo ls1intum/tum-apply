@@ -1,6 +1,6 @@
 package de.tum.cit.aet.application.domain;
 
-import de.tum.cit.aet.application.constants.ApplicationStatus;
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
@@ -8,6 +8,7 @@ import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
@@ -30,18 +31,16 @@ public class Application extends AbstractAuditingEntity {
     private ApplicationReview applicationReview;
 
     @ManyToOne
-    @JoinColumn(name = "submitted_by")
-    private Applicant submittedBy;
+    @JoinColumn(name = "applicant_id", nullable = false)
+    private Applicant applicant;
 
     @ManyToOne
-    @JoinColumn(name = "job_id")
+    @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @Column(name = "motivation")
-    private String motivation;
-
-    @Column(name = "application_status")
-    private ApplicationStatus status;
+    @NotBlank
+    @Column(name = "application_state")
+    private ApplicationState state;
 
     @Column(name = "desired_start_date")
     private Instant desiredStartDate;
@@ -68,15 +67,15 @@ public class Application extends AbstractAuditingEntity {
     @Column(name = "special_skills")
     private String specialSkills;
 
-    @Column(name = "interests")
-    private String interests;
+    @Column(name = "motivation")
+    private String motivation;
+
+    @Column(name = "rating")
+    private Integer rating;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<CustomFieldAnswer> customFieldAnswers;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
-
-    @Column(name = "rating")
-    private Integer rating;
 }

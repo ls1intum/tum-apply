@@ -4,7 +4,7 @@ import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.constants.UserGroup;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -30,12 +30,12 @@ public class User extends AbstractAuditingEntity {
     private ResearchGroup researchGroup;
 
     // Contains all the Jobs that a User (Professor) has posted
-    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "supervisingProfessor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Job> postedJobs;
 
-    @NotNull
+    @NotBlank
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_group", nullable = false)
+    @Column(name = "user_group")
     private UserGroup userGroup;
 
     @Column(name = "email")

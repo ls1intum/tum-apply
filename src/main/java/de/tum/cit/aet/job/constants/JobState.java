@@ -8,11 +8,11 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum State {
-    OPEN("OPEN"),
-    IN_REVIEW("IN_REVIEW"),
+public enum JobState {
+    DRAFT("DRAFT"),
+    PUBLISHED("PUBLISHED"),
     CLOSED("CLOSED"),
-    DRAFT("DRAFT");
+    APPLICANT_FOUND("APPLICANT_FOUND");
 
     private final String value;
 }
