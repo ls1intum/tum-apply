@@ -1,5 +1,5 @@
 jest.mock('app/core/auth/account.service');
-jest.mock('app/pages/misc/login/login.service');
+jest.mock('app/pages/usermanagement/login/login.service');
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
