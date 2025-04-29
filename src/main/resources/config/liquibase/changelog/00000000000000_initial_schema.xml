@@ -110,4 +110,85 @@
                              referencedColumnNames="research_group_id"
                              referencedTableName="research_groups"/>
   </changeSet>
+
+  <changeSet id="005_create_jobs" author="ishani-budhwar">
+    <createTable tableName="jobs">
+      <column name="job_id" type="CHAR(36)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="professor_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="research_group_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="field_of_studies" type="TEXT"/>
+      <column name="research_area" type="TEXT"/>
+      <column name="location" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="workload" type="INT"/>
+      <column name="contract_duration" type="INT"/>
+      <column name="funding_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="title" type="TEXT"/>
+      <column name="description" type="LONGTEXT"/>
+      <column name="tasks" type="LONGTEXT"/>
+      <column name="requirements" type="LONGTEXT"/>
+      <column name="state" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="start_date" type="TIMESTAMP"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="jobs"
+                             baseColumnNames="professor_id"
+                             constraintName="fk_jobs_professor"
+                             referencedTableName="users"
+                             referencedColumnNames="user_id"/>
+    <addForeignKeyConstraint baseTableName="jobs"
+                             baseColumnNames="research_group_id"
+                             constraintName="fk_jobs_research_group"
+                             referencedTableName="research_groups"
+                             referencedColumnNames="research_group_id"/>
+    <sql>
+      ALTER TABLE jobs MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+    </sql>
+  </changeSet>
+
+  <changeSet id="006_create_custom_fields" author="ishani-budhwar">
+    <createTable tableName="custom_fields">
+      <column name="custom_field_id" type="CHAR(36)">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="job_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="question" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_required" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="custom_field_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="answer_options" type="TEXT"/>
+      <column name="sequence" type="INT"/>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="custom_fields"
+                             baseColumnNames="job_id"
+                             constraintName="fk_custom_fields_job"
+                             referencedTableName="jobs"
+                             referencedColumnNames="job_id"/>
+  </changeSet>
+
 </databaseChangeLog>

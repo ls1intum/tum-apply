@@ -30,7 +30,7 @@ public class CustomField {
     @Column(name = "question")
     private String question;
 
-    @Column(name = "is_required")
+    @Column(name = "is_required", nullable = false)
     private boolean isRequired;
 
     @NotBlank
