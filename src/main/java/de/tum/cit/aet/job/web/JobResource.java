@@ -2,6 +2,7 @@ package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.util.List;
 import java.util.UUID;
@@ -45,7 +46,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)}.
      */
     @PostMapping("/create")
-    public ResponseEntity<Void> createJob(@RequestBody JobDetailDTO jobForm) {
+    public ResponseEntity<Void> createJob(@RequestBody JobFormDTO jobForm) {
         jobService.createJob(jobForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

@@ -4,6 +4,7 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
@@ -40,9 +41,11 @@ public class JobService {
      *
      * @param dto the job details used to create the job
      */
-    public void createJob(JobDetailDTO dto) {
+    public void createJob(JobFormDTO dto) {
         Job job = new Job();
-        updateEntity(job, dto);
+        job.setTitle(dto.title());
+        job.setLocation(dto.location());
+        job.setState(dto.state());
         jobRepository.save(job);
     }
 
@@ -55,7 +58,7 @@ public class JobService {
      */
     public JobCardDTO updateJob(UUID jobId, JobDetailDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("Job not found with ID: " + jobId));
-        updateEntity(job, dto);
+        //        updateEntity(job, dto);
         jobRepository.save(job);
         return toDto(job);
     }
@@ -93,7 +96,7 @@ public class JobService {
 
     // === Mapping Helpers ===
 
-    private void updateEntity(Job job, JobDetailDTO dto) {
+    private void updateEntity(Job job, JobFormDTO dto) {
         // TODO: implement field mappings
     }
 
