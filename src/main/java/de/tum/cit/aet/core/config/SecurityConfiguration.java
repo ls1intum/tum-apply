@@ -95,6 +95,8 @@ public class SecurityConfiguration {
                     .requestMatchers("/i18n/*.json").permitAll()
                     .requestMatchers("/content/**").permitAll()
                     .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers(("/api-docs.yaml")).permitAll()
+                    .requestMatchers(("/api-docs")).permitAll()
                     .requestMatchers("/api/authenticate").permitAll()
                     .requestMatchers("/api/auth-info").permitAll()
                     .requestMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
