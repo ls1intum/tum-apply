@@ -21,7 +21,7 @@ public class ApplicationReview {
     private UUID applicationReviewId;
 
     @OneToOne
-    @JoinColumn(name = "application_id")
+    @JoinColumn(name = "application_id", nullable = false, unique = true)
     private Application application;
 
     @ManyToOne

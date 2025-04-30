@@ -9,7 +9,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -26,8 +26,7 @@ public class Application extends AbstractAuditingEntity {
     @Column(name = "application_id", nullable = false)
     private UUID applicationId;
 
-    @OneToOne
-    @JoinColumn(name = "application_review_id")
+    @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private ApplicationReview applicationReview;
 
     @ManyToOne
@@ -43,7 +42,7 @@ public class Application extends AbstractAuditingEntity {
     private ApplicationState state;
 
     @Column(name = "desired_start_date")
-    private Instant desiredStartDate;
+    private LocalDate desiredStartDate;
 
     @OneToOne
     @JoinColumn(name = "cv_file_id")
