@@ -51,7 +51,7 @@ spotless {
     }
 }
 
-apply from: "gradle/openapi.gradle"
+//apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
 if (project.hasProperty("prod")) {
@@ -125,12 +125,17 @@ configurations {
 }
 
 openApi {
-  apiDocsUrl.set("http://localhost:8080/v3/api-docs.yaml")
+  apiDocsUrl.set("http://localhost:8080/api-docs.yaml")
   outputDir.set(file("$rootDir/openapi"))
   outputFileName.set("openapi.yaml")
   waitTimeInSeconds.set(120)
   customBootRun {
-    jvmArgs = ["-Dspring.profiles.active=dev,api-docs,no-liquibase","-Dspringdoc.packages-to-scan=de.tum.cit.aet"]
+    jvmArgs = [
+      "-Dspring.profiles.active=dev,api-docs",
+      "-Dspringdoc.packages-to-scan=de.tum.cit.aet.job.web",
+      "-Dspring.docker.compose.enabled=false",
+      "-Dspring.docker.compose.lifecycle-management=none"
+    ]
     args.set([
             "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
             "--spring.datasource.username=sa",
@@ -222,7 +227,7 @@ dependencies {
 
     // needed for OpenAPI generation
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
-
+    runtimeOnly "com.h2database:h2"
 
 
     testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"

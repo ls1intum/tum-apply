@@ -22,6 +22,8 @@ spring:
       on-profile: '!api-docs'
 springdoc:
   api-docs:
+    path: /api-docs
+    # Having these endpoints publicly available is a security risk, so we disable them by default
     enabled: false
 ---
 management:
