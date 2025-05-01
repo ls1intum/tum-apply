@@ -43,6 +43,7 @@ export default tseslint.config(
       'rules/**/*.js',
       'build/resources/main/static/',
       'prebuild.mjs',
+      'src/main/webapp/app/generated/',
     ],
     languageOptions: {
       globals: {
