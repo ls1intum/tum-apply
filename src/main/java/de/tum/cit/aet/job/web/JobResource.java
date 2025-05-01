@@ -70,7 +70,7 @@ public class JobResource {
      */
     @DeleteMapping("/{jobId}")
     public ResponseEntity<Void> deleteJob(@PathVariable UUID jobId) {
-        jobService.deleteJob(jobId);
+        //jobService.deleteJob(jobId);
         return ResponseEntity.noContent().build();
     }
 
