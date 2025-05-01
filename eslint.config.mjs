@@ -19,7 +19,6 @@ export default [
   {
     ignores: ['src/main/webapp/app/generated/**'],
   },
-
   // 🌐 Base ignore and global config
   ...tseslint.config(
     {
@@ -68,7 +67,6 @@ export default [
 
     {
       files: ['src/main/webapp/**/*.ts'],
-      ignores: ['src/main/webapp/app/generated/**'],
       extends: [...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylistic, ...angular.configs.tsRecommended],
       languageOptions: {
         parser: typescriptParser,
