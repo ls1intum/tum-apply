@@ -46,7 +46,7 @@ public class JobResource {
      */
     @PostMapping("/create")
     public ResponseEntity<Void> createJob(@RequestBody JobDetailDTO jobForm) {
-        jobService.createJob(jobForm);
+        //jobService.createJob(jobForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
