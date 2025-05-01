@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ApplicationService {
@@ -20,7 +21,8 @@ public class ApplicationService {
         this.repository = repository;
     }
 
-    public ApplicationApplicantDTO createApplicationApplicantDTOFromCreateApplicationPayload(CreateApplicationPayload payload) {
+    @Transactional
+    public ApplicationApplicantDTO createApplication(CreateApplicationPayload payload) {
         Application application = new Application(
             null,
             null, // no applicationReview yet
@@ -45,6 +47,7 @@ public class ApplicationService {
         return ApplicationApplicantDTO.getFromEntity(savedApplication);
     }
 
+    @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
         return repository
             .findAllByApplicantId(applicantId)
@@ -53,15 +56,18 @@ public class ApplicationService {
             .collect(Collectors.toSet());
     }
 
+    @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
         return repository.findAllByJobId(jobId).stream().map(ApplicationApplicantDTO::getFromEntity).collect(Collectors.toSet());
     }
 
+    @Transactional(readOnly = true)
     public ApplicationApplicantDTO getApplicationById(UUID applicationId) {
         Application application = repository.findById(applicationId).orElse(null);
         return ApplicationApplicantDTO.getFromEntity(application);
     }
 
+    @Transactional
     public ApplicationApplicantDTO updateApplication(UpdateApplicationPayload updateApplicationPayload) {
         Application application = repository.findById(updateApplicationPayload.applicationId()).orElse(null);
         // TODO set values of application
@@ -69,6 +75,7 @@ public class ApplicationService {
         return ApplicationApplicantDTO.getFromEntity(updateApplication);
     }
 
+    @Transactional
     public ApplicationApplicantDTO withdrawApplication(UUID applicationId) {
         Application application = repository.findById(applicationId).orElse(null);
         if (application == null) {
@@ -79,6 +86,7 @@ public class ApplicationService {
         return ApplicationApplicantDTO.getFromEntity(savedApplication);
     }
 
+    @Transactional
     public void deleteApplication(UUID applicationId) {
         repository.deleteById(applicationId);
     }
