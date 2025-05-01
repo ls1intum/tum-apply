@@ -44,6 +44,10 @@ jobs:
     outputs:
       CHANGE_DETECTED: ${{ steps.check_changes.outputs.CHANGE_DETECTED }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Start Keycloak manually
         run: |
           docker run -d \
@@ -52,11 +56,6 @@ jobs:
             -e KEYCLOAK_ADMIN_PASSWORD=admin \
             -v ${{ github.workspace }}/src/main/docker/realm-config:/opt/keycloak/data/import \
             quay.io/keycloak/keycloak:24.0.1 start-dev --import-realm
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Fetch all branches
         run: |
           git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
