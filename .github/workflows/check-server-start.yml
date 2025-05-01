@@ -2,7 +2,7 @@ name: Check Server Startup
 
 on:
   pull_request:
-    branches: [origin]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
