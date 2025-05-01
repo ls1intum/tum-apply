@@ -77,7 +77,7 @@ jobs:
 
       - name: Run Gradle to generate OpenAPI docs
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
-        run: ./gradlew generateOpenApiDocs
+        run: ./gradlew generateApiDocs -x webapp
 
       - name: Check for OpenAPI spec differences
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'

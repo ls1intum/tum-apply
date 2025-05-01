@@ -1,0 +1,42 @@
+name: Check Server Startup
+
+on:
+  pull_request:
+    branches: [main, staging] # or adjust to your branches
+  workflow_dispatch:
+
+jobs:
+  check-server-start:
+    name: Ensure Server Starts Successfully
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Start Spring Boot and check log
+        run: |
+          ./gradlew bootRun > boot.log 2>&1 &
+          SERVER_PID=$!
+
+          # Wait for a few seconds to let server start
+          sleep 20
+
+          # Kill the process to avoid timeout
+          kill $SERVER_PID || true
+
+          # Look for Spring Boot banner
+          if grep -q "Application 'TUMApply' is running!" boot.log; then
+            echo "✅ Spring Boot started successfully."
+          else
+            echo "❌ Server did not start successfully!"
+            cat boot.log
+            exit 1
+          fi
