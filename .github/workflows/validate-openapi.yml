@@ -22,8 +22,8 @@ on:
       - 'LICENSE'
       - 'SECURITY.md'
       - 'docs/**'
-      - '.github/**'
-      - '!.github/workflows/test.yml'
+      #- '.github/**'
+      #- '!.github/workflows/test.yml'
   release:
     types:
       - created
