@@ -23,11 +23,10 @@ jobs:
 
       - name: Start Spring Boot and check log
         run: |
-          ./gradlew bootRun > boot.log 2>&1 &
-          SERVER_PID=$!
+          ./gradlew bootRun > boot.log 2>&1 & SERVER_PID=$!
 
           # Wait for a few seconds to let server start
-          sleep 20
+          sleep 120
 
           # Kill the process to avoid timeout
           kill $SERVER_PID || true
