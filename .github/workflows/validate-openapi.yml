@@ -43,20 +43,15 @@ jobs:
         src/main/webapp/app/generated
     outputs:
       CHANGE_DETECTED: ${{ steps.check_changes.outputs.CHANGE_DETECTED }}
-    services:
-      keycloak:
-        image: quay.io/keycloak/keycloak:24.0.1
-        ports:
-          - 9080:8080
-        env:
-          KEYCLOAK_ADMIN: admin
-          KEYCLOAK_ADMIN_PASSWORD: admin
-        options: >-
-          --health-cmd "curl --fail http://localhost:8080/realms/jhipster"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
     steps:
+      - name: Start Keycloak manually
+        run: |
+          docker run -d \
+            -p 9080:8080 \
+            -e KEYCLOAK_ADMIN=admin \
+            -e KEYCLOAK_ADMIN_PASSWORD=admin \
+            -v ${{ github.workspace }}/src/main/docker/realm-config:/opt/keycloak/data/import \
+            quay.io/keycloak/keycloak:24.0.1 start-dev --import-realm
       - name: Checkout code
         uses: actions/checkout@v4
         with:
