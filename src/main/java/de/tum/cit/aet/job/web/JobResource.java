@@ -44,7 +44,7 @@ public class JobResource {
      * @param jobForm the job posting data.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)}.
      */
-    @PostMapping("/creates")
+    @PostMapping("/create")
     public ResponseEntity<Void> createJob(@RequestBody JobDetailDTO jobForm) {
         //jobService.createJob(jobForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
