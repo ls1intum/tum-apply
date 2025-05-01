@@ -17,9 +17,10 @@
 ---
 # Conditionally disable springdoc on missing api-docs profile
 spring:
-  config:
-    activate:
-      on-profile: '!api-docs'
+  autoconfigure:
+    exclude:
+      # We can exclude this autoconfiguration. Using standard SpringDocs is fine and when excluding this, we avoid coupling OpenAPI specs to a profile
+      - tech.jhipster.config.apidoc.JHipsterSpringDocAutoConfiguration
 springdoc:
   api-docs:
     path: /api-docs
