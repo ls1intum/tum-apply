@@ -159,8 +159,7 @@ jobs:
 
       - name: Generate client code
         if: env.CHANGE_DETECTED == 'true'
-        working-directory: .
-        run: yarn generate:openapi
+        run: ./gradlew openApiGenerate
 
       - name: Check for client code differences
         if: env.CHANGE_DETECTED == 'true'
@@ -185,7 +184,7 @@ jobs:
             Please regenerate the client code by running:
             ```bash
             cd .
-            yarn generate:openapi
+            ./gradlew openApiGenerate
             ```
             Commit and push the updated files.
 
