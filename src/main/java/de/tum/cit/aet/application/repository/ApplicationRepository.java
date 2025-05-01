@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, UUID> {
-    Set<Application> findAllByApplicantId(UUID applicantId);
+    Set<Application> findAllByApplicantUserId(UUID applicantId);
 
-    Set<Application> findAllByJobId(UUID jobId);
+    Set<Application> findAllByJobJobId(UUID jobId);
 }

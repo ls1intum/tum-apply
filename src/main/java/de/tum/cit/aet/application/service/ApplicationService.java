@@ -50,7 +50,7 @@ public class ApplicationService {
     @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
         return repository
-            .findAllByApplicantId(applicantId)
+            .findAllByApplicantUserId(applicantId)
             .stream()
             .map(ApplicationApplicantDTO::getFromEntity)
             .collect(Collectors.toSet());
@@ -58,7 +58,7 @@ public class ApplicationService {
 
     @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
-        return repository.findAllByJobId(jobId).stream().map(ApplicationApplicantDTO::getFromEntity).collect(Collectors.toSet());
+        return repository.findAllByJobJobId(jobId).stream().map(ApplicationApplicantDTO::getFromEntity).collect(Collectors.toSet());
     }
 
     @Transactional(readOnly = true)
