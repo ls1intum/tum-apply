@@ -56,9 +56,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
-        volumes:
-          - ./src/main/docker/realm-config:/opt/keycloak/data/import
-        command: start-dev --import-realm
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
