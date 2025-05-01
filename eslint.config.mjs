@@ -14,269 +14,277 @@ import importPlugin from 'eslint-plugin-import';
 
 // jhipster-needle-eslint-add-import - JHipster will add additional import here
 
-export default tseslint.config(
+export default [
+  // 🔒 Completely ignore all generated files BEFORE any other config runs
   {
-    ignores: [
-      'src/main/docker/',
-      '.cache/',
-      '.git/',
-      '.github/',
-      '.gradle/',
-      '.idea/',
-      '.jhipster/',
-      'coverage/',
-      'docker/',
-      'docs/',
-      'gradle/',
-      'node/',
-      'node_modules/',
-      'out/',
-      'repos/',
-      'repos-download/',
-      'src/main/generated/',
-      'src/main/resources/',
-      'target/',
-      'uploads/',
-      'supporting_scripts/',
-      'stub.js',
-      '.lintstagedrc.js',
-      'rules/**/*.js',
-      'build/resources/main/static/',
-      'prebuild.mjs',
-      'src/main/webapp/app/generated/',
-    ],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-      },
-    },
-  },
-
-  {
-    files: ['**/*.{js,cjs,mjs}'],
-    rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    },
-  },
-
-  {
-    files: ['src/main/webapp/**/*.ts'],
     ignores: ['src/main/webapp/app/generated/**'],
-    extends: [...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylistic, ...angular.configs.tsRecommended],
-    languageOptions: {
-      parser: typescriptParser,
-      parserOptions: {
-        project: ['./tsconfig.app.json', './tsconfig.spec.json', './tsconfig.json', 'src/test/playwright/tsconfig.json'],
+  },
+
+  // 🌐 Base ignore and global config
+  ...tseslint.config(
+    {
+      ignores: [
+        'src/main/docker/',
+        '.cache/',
+        '.git/',
+        '.github/',
+        '.gradle/',
+        '.idea/',
+        '.jhipster/',
+        'coverage/',
+        'docker/',
+        'docs/',
+        'gradle/',
+        'node/',
+        'node_modules/',
+        'out/',
+        'repos/',
+        'repos-download/',
+        'src/main/generated/',
+        'src/main/resources/',
+        'target/',
+        'uploads/',
+        'supporting_scripts/',
+        'stub.js',
+        '.lintstagedrc.js',
+        'rules/**/*.js',
+        'build/resources/main/static/',
+        'prebuild.mjs',
+        'src/main/webapp/app/generated/',
+      ],
+      languageOptions: {
+        globals: {
+          ...globals.node,
+        },
       },
-      globals: {
-        ...globals.browser,
-        NodeJS: 'readonly',
-        navigator: 'readonly',
-        document: 'readonly',
-        window: 'readonly',
-        setTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearTimeout: 'readonly',
-        clearInterval: 'readonly',
-        sessionStorage: 'readonly',
-        localStorage: 'readonly',
-        addEventListener: 'readonly',
-        Image: 'readonly',
-        module: 'readonly',
-        require: 'readonly',
-        process: 'readonly',
-        location: 'readonly',
-        self: 'readonly',
-        history: 'readonly',
-        confirm: 'readonly',
-        plugin: 'readonly',
-        requestAnimationFrame: 'readonly',
-        alert: 'readonly',
-        Buffer: 'readonly',
-        getComputedStyle: 'readonly',
-        MarkdownIt: 'readonly',
+    },
+
+    {
+      files: ['**/*.{js,cjs,mjs}'],
+      rules: {
+        'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       },
     },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-      '@angular-eslint': angularPlugin,
-      prettier: prettierPlugin,
-      'unused-imports': unusedImports,
-    },
-    processor: angular.processInlineTemplates,
-    rules: {
-      ...prettierPlugin.configs.recommended.rules,
-      ...tsPlugin.configs.recommended.rules,
-      ...angularPlugin.configs.recommended.rules,
 
-      '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'jhi', style: 'kebab-case' }],
-      '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'jhi', style: 'camelCase' }],
-      '@angular-eslint/relative-url-prefix': 'error',
-      '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
-      '@angular-eslint/directive-class-suffix': ['error', { suffixes: ['Directive'] }],
-      '@typescript-eslint/consistent-type-definitions': 'off',
-      '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
-      '@typescript-eslint/member-ordering': [
-        'error',
-        {
-          default: [
-            'public-static-field',
-            'protected-static-field',
-            'private-static-field',
-            'public-instance-field',
-            'protected-instance-field',
-            'private-instance-field',
-            'constructor',
-            'public-static-method',
-            'protected-static-method',
-            'private-static-method',
-            'public-instance-method',
-            'protected-instance-method',
-            'private-instance-method',
-          ],
+    {
+      files: ['src/main/webapp/**/*.ts'],
+      ignores: ['src/main/webapp/app/generated/**'],
+      extends: [...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylistic, ...angular.configs.tsRecommended],
+      languageOptions: {
+        parser: typescriptParser,
+        parserOptions: {
+          project: ['./tsconfig.app.json', './tsconfig.spec.json', './tsconfig.json', 'src/test/playwright/tsconfig.json'],
         },
-      ],
-      '@typescript-eslint/no-confusing-void-expression': 'off',
-      '@typescript-eslint/no-empty-object-type': 'off',
-      '@typescript-eslint/no-extraneous-class': 'off',
-      '@typescript-eslint/no-misused-spread': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-shadow': ['error'],
-      '@typescript-eslint/no-unnecessary-condition': 'error',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
-      '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/strict-boolean-expressions': 'warn',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-
-      '@typescript-eslint/no-non-null-assertion': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/ban-ts-comment': 'warn',
-      '@typescript-eslint/no-empty-function': 'off',
-      '@typescript-eslint/no-non-null-asserted-optional-chain': 'warn',
-
-      'arrow-body-style': 'error',
-      curly: 'error',
-      eqeqeq: ['error', 'always', { null: 'ignore' }],
-      'guard-for-in': 'error',
-      'no-bitwise': 'error',
-      'no-caller': 'error',
-      'no-console': ['error', { allow: ['warn', 'error'] }],
-      'no-eval': 'error',
-      'no-labels': 'error',
-      'no-new': 'error',
-      'no-new-wrappers': 'error',
-      'object-shorthand': ['error', 'always', { avoidExplicitReturnArrows: true }],
-      radix: 'error',
-      'spaced-comment': ['warn', 'always'],
-      'no-unused-private-class-members': 'error',
-      'no-case-declarations': 'off',
-      'prefer-const': 'warn',
-      'prefer-spread': 'warn',
-      'no-var': 'error',
-      'no-prototype-builtins': 'off',
-      'sort-imports': [
-        'error',
-        {
-          ignoreDeclarationSort: true,
+        globals: {
+          ...globals.browser,
+          NodeJS: 'readonly',
+          navigator: 'readonly',
+          document: 'readonly',
+          window: 'readonly',
+          setTimeout: 'readonly',
+          setInterval: 'readonly',
+          clearTimeout: 'readonly',
+          clearInterval: 'readonly',
+          sessionStorage: 'readonly',
+          localStorage: 'readonly',
+          addEventListener: 'readonly',
+          Image: 'readonly',
+          module: 'readonly',
+          require: 'readonly',
+          process: 'readonly',
+          location: 'readonly',
+          self: 'readonly',
+          history: 'readonly',
+          confirm: 'readonly',
+          plugin: 'readonly',
+          requestAnimationFrame: 'readonly',
+          alert: 'readonly',
+          Buffer: 'readonly',
+          getComputedStyle: 'readonly',
+          MarkdownIt: 'readonly',
         },
-      ],
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'dayjs',
-              message: "Please import from 'dayjs/esm' instead.",
-            },
-          ],
-        },
-      ],
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: 'ForInStatement',
-          message: 'for-in loops are not allowed. Use Object.keys or Object.entries instead.',
-        },
-      ],
-      'unused-imports/no-unused-imports': 'warn',
-      'unused-imports/no-unused-vars': [
-        'warn',
-        {
-          vars: 'all',
-          varsIgnorePattern: '^_',
-          args: 'after-used',
-          argsIgnorePattern: '^_',
-        },
-      ],
-    },
-  },
+      },
+      plugins: {
+        '@typescript-eslint': tsPlugin,
+        '@angular-eslint': angularPlugin,
+        prettier: prettierPlugin,
+        'unused-imports': unusedImports,
+      },
+      processor: angular.processInlineTemplates,
+      rules: {
+        ...prettierPlugin.configs.recommended.rules,
+        ...tsPlugin.configs.recommended.rules,
+        ...angularPlugin.configs.recommended.rules,
 
-  {
-    files: ['src/test/**/mock-*.ts'],
-    languageOptions: {
-      parser: typescriptParser,
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-    },
-  },
+        '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'jhi', style: 'kebab-case' }],
+        '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'jhi', style: 'camelCase' }],
+        '@angular-eslint/relative-url-prefix': 'error',
+        '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
+        '@angular-eslint/directive-class-suffix': ['error', { suffixes: ['Directive'] }],
+        '@typescript-eslint/consistent-type-definitions': 'off',
+        '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
+        '@typescript-eslint/member-ordering': [
+          'error',
+          {
+            default: [
+              'public-static-field',
+              'protected-static-field',
+              'private-static-field',
+              'public-instance-field',
+              'protected-instance-field',
+              'private-instance-field',
+              'constructor',
+              'public-static-method',
+              'protected-static-method',
+              'private-static-method',
+              'public-instance-method',
+              'protected-instance-method',
+              'private-instance-method',
+            ],
+          },
+        ],
+        '@typescript-eslint/no-confusing-void-expression': 'off',
+        '@typescript-eslint/no-empty-object-type': 'off',
+        '@typescript-eslint/no-extraneous-class': 'off',
+        '@typescript-eslint/no-misused-spread': 'off',
+        '@typescript-eslint/no-floating-promises': 'warn',
+        '@typescript-eslint/no-shadow': ['error'],
+        '@typescript-eslint/no-unnecessary-condition': 'error',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/prefer-nullish-coalescing': 'error',
+        '@typescript-eslint/prefer-optional-chain': 'error',
+        '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+        '@typescript-eslint/unbound-method': 'off',
+        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/strict-boolean-expressions': 'warn',
+        '@typescript-eslint/no-unnecessary-type-assertion': 'error',
 
-  {
-    files: ['src/main/webapp/**/*.spec.ts'],
-    rules: {
-      '@typescript-eslint/no-empty-function': 'off',
-    },
-  },
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/ban-ts-comment': 'warn',
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/no-non-null-asserted-optional-chain': 'warn',
 
-  {
-    files: ['**/*.html'],
-    languageOptions: {
-      parser: angularTemplateParser,
+        'arrow-body-style': 'error',
+        curly: 'error',
+        eqeqeq: ['error', 'always', { null: 'ignore' }],
+        'guard-for-in': 'error',
+        'no-bitwise': 'error',
+        'no-caller': 'error',
+        'no-console': ['error', { allow: ['warn', 'error'] }],
+        'no-eval': 'error',
+        'no-labels': 'error',
+        'no-new': 'error',
+        'no-new-wrappers': 'error',
+        'object-shorthand': ['error', 'always', { avoidExplicitReturnArrows: true }],
+        radix: 'error',
+        'spaced-comment': ['warn', 'always'],
+        'no-unused-private-class-members': 'error',
+        'no-case-declarations': 'off',
+        'prefer-const': 'warn',
+        'prefer-spread': 'warn',
+        'no-var': 'error',
+        'no-prototype-builtins': 'off',
+        'sort-imports': [
+          'error',
+          {
+            ignoreDeclarationSort: true,
+          },
+        ],
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: 'dayjs',
+                message: "Please import from 'dayjs/esm' instead.",
+              },
+            ],
+          },
+        ],
+        'no-restricted-syntax': [
+          'error',
+          {
+            selector: 'ForInStatement',
+            message: 'for-in loops are not allowed. Use Object.keys or Object.entries instead.',
+          },
+        ],
+        'unused-imports/no-unused-imports': 'warn',
+        'unused-imports/no-unused-vars': [
+          'warn',
+          {
+            vars: 'all',
+            varsIgnorePattern: '^_',
+            args: 'after-used',
+            argsIgnorePattern: '^_',
+          },
+        ],
+      },
     },
-    extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
-    plugins: {
-      '@angular-eslint': angularPlugin,
-      prettier: prettierPlugin,
-    },
-    rules: {
-      'prettier/prettier': ['error', { parser: 'angular' }],
-      '@angular-eslint/template/click-events-have-key-events': 'warn',
-      '@angular-eslint/template/interactive-supports-focus': 'warn',
-      '@angular-eslint/template/label-has-associated-control': 'warn',
-      '@angular-eslint/template/alt-text': 'warn',
-      '@angular-eslint/template/elements-content': 'warn',
-      '@angular-eslint/template/prefer-control-flow': 'error',
-      '@angular-eslint/template/prefer-self-closing-tags': 'error',
-    },
-  },
 
-  {
-    files: ['**/*.{ts,js}'],
-    plugins: {
-      import: importPlugin,
+    {
+      files: ['src/test/**/mock-*.ts'],
+      languageOptions: {
+        parser: typescriptParser,
+      },
+      plugins: {
+        '@typescript-eslint': tsPlugin,
+      },
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+      },
     },
-    rules: {
-      'import/order': [
-        'error',
-        {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-          'newlines-between': 'always',
-        },
-      ],
+
+    {
+      files: ['src/main/webapp/**/*.spec.ts'],
+      rules: {
+        '@typescript-eslint/no-empty-function': 'off',
+      },
     },
-  },
 
-  // jhipster-needle-eslint-add-config - JHipster will add additional config here
+    {
+      files: ['**/*.html'],
+      languageOptions: {
+        parser: angularTemplateParser,
+      },
+      extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
+      plugins: {
+        '@angular-eslint': angularPlugin,
+        prettier: prettierPlugin,
+      },
+      rules: {
+        'prettier/prettier': ['error', { parser: 'angular' }],
+        '@angular-eslint/template/click-events-have-key-events': 'warn',
+        '@angular-eslint/template/interactive-supports-focus': 'warn',
+        '@angular-eslint/template/label-has-associated-control': 'warn',
+        '@angular-eslint/template/alt-text': 'warn',
+        '@angular-eslint/template/elements-content': 'warn',
+        '@angular-eslint/template/prefer-control-flow': 'error',
+        '@angular-eslint/template/prefer-self-closing-tags': 'error',
+      },
+    },
 
-  prettier,
-);
+    {
+      files: ['**/*.{ts,js}'],
+      plugins: {
+        import: importPlugin,
+      },
+      rules: {
+        'import/order': [
+          'error',
+          {
+            groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+            'newlines-between': 'always',
+          },
+        ],
+      },
+    },
+
+    // jhipster-needle-eslint-add-config - JHipster will add additional config here
+
+    prettier,
+  ),
+];
