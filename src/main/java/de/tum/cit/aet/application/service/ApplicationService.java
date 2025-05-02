@@ -1,10 +1,10 @@
 package de.tum.cit.aet.application.service;
 
-import de.tum.cit.aet.application.api.payload.CreateApplicationPayload;
-import de.tum.cit.aet.application.api.payload.UpdateApplicationPayload;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.dto.ApplicationApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationApplicantDTO;
+import de.tum.cit.aet.application.domain.payload.CreateApplicationPayload;
+import de.tum.cit.aet.application.domain.payload.UpdateApplicationPayload;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +21,11 @@ public class ApplicationService {
         this.repository = repository;
     }
 
+    /**
+     *
+     * @param payload
+     * @return created ApplicationApplicantDTO
+     */
     @Transactional
     public ApplicationApplicantDTO createApplication(CreateApplicationPayload payload) {
         Application application = new Application(
@@ -47,6 +52,11 @@ public class ApplicationService {
         return ApplicationApplicantDTO.getFromEntity(savedApplication);
     }
 
+    /**
+     *
+     * @param applicantId
+     * @return Set of ApplicationApplicantDTO which all have the same applicant
+     */
     @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
         return repository
@@ -56,17 +66,32 @@ public class ApplicationService {
             .collect(Collectors.toSet());
     }
 
+    /**
+     *
+     * @param jobId
+     * @return Set of ApplicationApplicantDTO which all have the same Job
+     */
     @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
         return repository.findAllByJobJobId(jobId).stream().map(ApplicationApplicantDTO::getFromEntity).collect(Collectors.toSet());
     }
 
+    /**
+     *
+     * @param applicationId
+     * @return ApplicationApplicantDTO with same Id as parameter applicationId
+     */
     @Transactional(readOnly = true)
     public ApplicationApplicantDTO getApplicationById(UUID applicationId) {
         Application application = repository.findById(applicationId).orElse(null);
         return ApplicationApplicantDTO.getFromEntity(application);
     }
 
+    /**
+     *
+     * @param updateApplicationPayload
+     * @return updated ApplicationApplicantDTO with updated values
+     */
     @Transactional
     public ApplicationApplicantDTO updateApplication(UpdateApplicationPayload updateApplicationPayload) {
         Application application = repository.findById(updateApplicationPayload.applicationId()).orElse(null);
@@ -75,6 +100,11 @@ public class ApplicationService {
         return ApplicationApplicantDTO.getFromEntity(updateApplication);
     }
 
+    /**
+     *
+     * @param applicationId
+     * @return withdrawn ApplicationApplicantDTO
+     */
     @Transactional
     public ApplicationApplicantDTO withdrawApplication(UUID applicationId) {
         Application application = repository.findById(applicationId).orElse(null);
@@ -86,6 +116,10 @@ public class ApplicationService {
         return ApplicationApplicantDTO.getFromEntity(savedApplication);
     }
 
+    /**
+     *
+     * @param applicationId
+     */
     @Transactional
     public void deleteApplication(UUID applicationId) {
         repository.deleteById(applicationId);

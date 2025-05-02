@@ -1,8 +1,8 @@
-package de.tum.cit.aet.application.api;
+package de.tum.cit.aet.application.web;
 
-import de.tum.cit.aet.application.api.payload.CreateApplicationPayload;
-import de.tum.cit.aet.application.api.payload.UpdateApplicationPayload;
-import de.tum.cit.aet.application.dto.ApplicationApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationApplicantDTO;
+import de.tum.cit.aet.application.domain.payload.CreateApplicationPayload;
+import de.tum.cit.aet.application.domain.payload.UpdateApplicationPayload;
 import de.tum.cit.aet.application.service.ApplicationService;
 import java.util.Set;
 import java.util.UUID;
@@ -28,6 +28,11 @@ public class ApplicationController {
         this.applicationService = applicationService;
     }
 
+    /**
+     *
+     * @param payload
+     * @return ApplicationApplicantDto as Responseentity
+     */
     @PostMapping
     public ResponseEntity<ApplicationApplicantDTO> createApplication(@RequestBody CreateApplicationPayload payload) {
         // TODO check authorization
@@ -38,6 +43,11 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.createApplication(payload));
     }
 
+    /**
+     *
+     * @param applicantId
+     * @return Set of ApplicationApplicantDtom where the applicant has the applicantId as UUID
+     */
     @GetMapping("/applicant/{applicantId}")
     public ResponseEntity<Set<ApplicationApplicantDTO>> getAllApplicationsOfApplicant(@PathVariable UUID applicantId) {
         // TODO check authorization
@@ -45,6 +55,11 @@ public class ApplicationController {
         return ResponseEntity.ok(applications);
     }
 
+    /**
+     *
+     * @param jobId
+     * @return Set of ApplicationApplicantDtom where the job has the jobId as UUID
+     */
     @GetMapping("/application/job/{jobId}")
     public ResponseEntity<Set<ApplicationApplicantDTO>> getAllApplicationsOfJob(@PathVariable UUID jobId) {
         // TODO check authorization
@@ -52,6 +67,11 @@ public class ApplicationController {
         return ResponseEntity.ok(applications);
     }
 
+    /**
+     *
+     * @param applicationId
+     * @return ApplicationApplicantDTO where the id is the same as the path variable
+     */
     @GetMapping("/application/{applicationId}")
     public ResponseEntity<ApplicationApplicantDTO> getApplicationById(@PathVariable UUID applicationId) {
         // TODO check authorization
@@ -63,6 +83,11 @@ public class ApplicationController {
         }
     }
 
+    /**
+     *
+     * @param application
+     * @return updated ApplicationApplicantDTO
+     */
     @PutMapping("/application")
     public ResponseEntity<ApplicationApplicantDTO> updateApplication(@RequestBody UpdateApplicationPayload application) {
         // TODO check authorization
@@ -70,6 +95,11 @@ public class ApplicationController {
         return ResponseEntity.ok(updatedApplication);
     }
 
+    /**
+     *
+     * @param applicationId
+     * @return withdrawn ApplicationApplicantDTO
+     */
     @GetMapping("/application/withdraw/{applicationId}")
     public ResponseEntity<ApplicationApplicantDTO> withdrawApplication(@PathVariable UUID applicationId) {
         // TODO check authorization
@@ -81,6 +111,11 @@ public class ApplicationController {
         }
     }
 
+    /**
+     *
+     * @param applicationId
+     * @return ResponseEntity which confirms that the Application was deleted
+     */
     @DeleteMapping("/application/{applicationId}")
     public ResponseEntity<Void> deleteApplication(@PathVariable UUID applicationId) {
         // TODO check authorization

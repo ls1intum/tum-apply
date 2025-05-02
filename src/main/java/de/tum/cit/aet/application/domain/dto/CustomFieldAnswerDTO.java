@@ -1,4 +1,4 @@
-package de.tum.cit.aet.application.dto;
+package de.tum.cit.aet.application.domain.dto;
 
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.dto.DocumentDTO;
