@@ -125,13 +125,13 @@ configurations {
 }
 
 openApi {
-  apiDocsUrl.set("http://localhost:8080/api-docs.yaml")
+  apiDocsUrl.set("http://localhost:8080/api-docs")
   outputDir.set(file("$rootDir/openapi"))
   outputFileName.set("openapi.yaml")
   waitTimeInSeconds.set(120)
   customBootRun {
     jvmArgs = [
-      "-Dspring.profiles.active=dev,api-docs,no-liquibase",
+      "-Dspring.profiles.active=dev,no-liquibase",
       "-Dspringdoc.packages-to-scan=de.tum.cit.aet.job.web",
       "-Dspring.docker.compose.enabled=false",
       "-Dspring.docker.compose.lifecycle-management=none"
@@ -161,8 +161,6 @@ openApiGenerate {
   ]
 }
 
-
-
 repositories {
     mavenCentral()
     mavenLocal()
@@ -173,7 +171,6 @@ dependencies {
     // import JHipster dependencies BOM
     implementation platform("tech.jhipster:jhipster-dependencies:${jhipsterDependenciesVersion}")
 
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.6"
     implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
 
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
