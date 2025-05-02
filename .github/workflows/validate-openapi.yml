@@ -48,7 +48,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+      - name: Start Keycloak manually
+        run: |
+          docker run -d \
+            -p 9080:8080 \
+            -e KEYCLOAK_ADMIN=admin \
+            -e KEYCLOAK_ADMIN_PASSWORD=admin \
+            -v ${{ github.workspace }}/src/main/docker/realm-config:/opt/keycloak/data/import \
+            quay.io/keycloak/keycloak:24.0.1 start-dev --import-realm
       - name: Fetch all branches
         run: |
           git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
@@ -77,7 +84,7 @@ jobs:
 
       - name: Run Gradle to generate OpenAPI docs
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
-        run: ./gradlew generateOpenApiDocs
+        run: ./gradlew generateApiDocs -x webapp
 
       - name: Check for OpenAPI spec differences
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
@@ -101,8 +108,8 @@ jobs:
             The OpenAPI specs in `openapi.yaml` differ from the generated version.
             Please update the OpenAPI specs by running:
             ```bash
-            cd ./server
-            ./gradlew :application-server:generateOpenApiDocs
+            cd .
+            ./gradlew generateApiDocs -x webapp
             ```
             Commit and push the updated file.
 
@@ -152,9 +159,11 @@ jobs:
 
       - name: Generate client code
         if: env.CHANGE_DETECTED == 'true'
-        working-directory: .
-        run: yarn generate:openapi
+        run: ./gradlew openApiGenerate
 
+      - name: Format generated client code
+        if: env.CHANGE_DETECTED == 'true'
+        run: npx prettier --write ./src/main/webapp/app/generated
       - name: Check for client code differences
         if: env.CHANGE_DETECTED == 'true'
         id: check_client_code
@@ -178,7 +187,7 @@ jobs:
             Please regenerate the client code by running:
             ```bash
             cd .
-            yarn generate:openapi
+            ./gradlew openApiGenerate
             ```
             Commit and push the updated files.
 
