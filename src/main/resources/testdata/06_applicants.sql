@@ -27,21 +27,6 @@ REPLACE INTO applicants (
     master_university
 ) VALUES
 (
-    '00000000-0000-0000-0000-000000000103',
-    'Technikerstraße 21A',
-    '80333',
-    'Munich',
-    'Germany',
-    'B.Sc. Computer Science',
-    'ONE_TO_FOUR',
-    '1.7',
-    'Technical University of Munich',
-    'M.Sc. Robotics, Cognition, Intelligence',
-    'ONE_TO_FOUR',
-    '1.3',
-    'Technical University of Munich'
-),
-(
     '00000000-0000-0000-0000-000000000104',
     'Leopoldstraße 44',
     '80802',
