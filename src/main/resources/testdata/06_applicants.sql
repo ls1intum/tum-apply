@@ -8,11 +8,11 @@
 -- clean existing data
 DELETE
 FROM applicants
-WHERE applicant_id IN ('00000000-0000-0000-0000-000000000103', '00000000-0000-0000-0000-000000000104');
+WHERE user_id IN ('00000000-0000-0000-0000-000000000103', '00000000-0000-0000-0000-000000000104');
 
 -- Insert test applicants linked to existing users
 REPLACE INTO applicants (
-    applicant_id,
+    user_id,
     street,
     postal_code,
     city,
@@ -55,4 +55,19 @@ REPLACE INTO applicants (
     'ONE_TO_FOUR',
     '1.5',
     'Technical University of Munich'
+),
+(
+    '00000000-0000-0000-0000-000000000103',
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
 );

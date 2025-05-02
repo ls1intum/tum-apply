@@ -41,5 +41,5 @@ VALUES
 
 ('bce85235-25b7-46c2-988c-9290be79dc57', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010004', 'SAVED', '2025-06-11', 'Ever since I built my first robot in high school, I knew I wanted to pursue intelligent systems.', 1, '2025-04-27 00:00:00', '2025-04-27 00:00:00'),
 
-('cafc966e-1927-4593-bd36-986e8f06db25', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010005', 'SENT', '2025-07-22', 'Ever since I built my first robot in high school, I knew I wanted to pursue intelligent systems.', -1, '2025-04-08 00:00:00', '2025-04-08 00:00:00');
+('cafc966e-1927-4593-bd36-986e8f06db25', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010005', NULL, NULL, NULL, NULL, NULL, NULL);
 

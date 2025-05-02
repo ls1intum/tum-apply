@@ -193,14 +193,14 @@
 
   <changeSet id="007_create_applicants" author="moritz-schmidt">
     <createTable tableName="applicants">
-      <column name="applicant_id" type="CHAR(36)">
+      <column name="user_id" type="CHAR(36)">
         <constraints primaryKey="true" nullable="false"/>
       </column>
 
       <column name="street" type="TEXT"/>
       <column name="postal_code" type="VARCHAR(10)"/>
-      <column name="city" type="VARCHAR(255)"/>
-      <column name="country" type="VARCHAR(255)"/>
+      <column name="city" type="TEXT"/>
+      <column name="country" type="TEXT"/>
 
       <column name="bachelor_degree_name" type="VARCHAR(255)"/>
       <column name="bachelor_grading_scale"
@@ -208,7 +208,7 @@
         <constraints nullable="false"/>
       </column>
       <column name="bachelor_grade" type="VARCHAR(10)"/>
-      <column name="bachelor_university" type="VARCHAR(255)"/>
+      <column name="bachelor_university" type="TEXT"/>
 
       <column name="master_degree_name" type="VARCHAR(255)"/>
       <column name="master_grading_scale"
