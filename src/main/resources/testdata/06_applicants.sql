@@ -52,7 +52,7 @@ REPLACE INTO applicants (
     NULL,
     NULL,
     NULL,
-    NULL,
+    'ONE_TO_FOUR',
     NULL,
     NULL
 );
