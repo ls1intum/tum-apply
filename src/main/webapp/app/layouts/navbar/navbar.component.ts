@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
@@ -41,7 +41,7 @@ export default class NavbarComponent implements OnInit {
   constructor() {
     this.version = VERSION;
     // Initialize theme from session storage or default to 'light'
-    const savedTheme = this.sessionStorage.retrieve('theme') || 'light';
+    const savedTheme = this.sessionStorage.retrieve('theme') ?? 'light';
     if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark-theme');
     } else {
