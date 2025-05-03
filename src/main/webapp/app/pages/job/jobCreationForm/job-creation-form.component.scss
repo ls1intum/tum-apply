@@ -1,0 +1,378 @@
+/* app.component.scss */
+
+// Variables
+$primary-color: #0065bd;
+$primary-light: #3a7ab6;
+$primary-dark: #004e9a;
+$light-gray: #f6f6f6;
+$border-color: #ddd;
+$text-color: #333;
+$error-color: #e74c3c;
+$success-color: #2ecc71;
+$white: #fff;
+$shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+// Base styles
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+body {
+  background-color: $light-gray;
+  color: $text-color;
+  line-height: 1.6;
+}
+
+.doctorate-form-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: $white;
+  box-shadow: $shadow;
+  border-radius: 4px;
+}
+
+// Header
+header {
+  padding-bottom: 20px;
+
+  h1 {
+    color: $primary-color;
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// Stepper
+.stepper {
+  display: flex;
+  align-items: center;
+  margin: 30px 0;
+
+  .step {
+    display: flex;
+    align-items: center;
+
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ccc;
+      color: $white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .step-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    &.active {
+      .step-number {
+        background-color: $primary-color;
+      }
+
+      .step-label {
+        color: $text-color;
+        font-weight: bold;
+      }
+    }
+
+    &.completed {
+      .step-number {
+        background-color: $primary-color;
+      }
+    }
+  }
+
+  .step-connector {
+    flex: 1;
+    height: 2px;
+    background-color: #ccc;
+    margin: 0 10px;
+  }
+}
+
+// Form styles
+.form-step {
+  h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+}
+
+.form-field {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: bold;
+
+    .required {
+      color: $error-color;
+      margin-left: 2px;
+    }
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+    }
+
+    &.invalid {
+      border-color: $error-color;
+    }
+
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .description-helper {
+    display: block;
+    color: #999;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+
+  .form-field {
+    flex: 1;
+  }
+}
+
+.input-with-icon {
+  position: relative;
+
+  .info-icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: $primary-light;
+    color: $white;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-style: italic;
+  }
+}
+
+.select-wrapper {
+  position: relative;
+
+  &::after {
+    content: '▼';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 12px;
+    color: #666;
+  }
+
+  select {
+    appearance: none;
+    padding-right: 30px;
+  }
+}
+
+.date-picker-wrapper {
+  position: relative;
+
+  .calendar-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    .calendar-icon {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-color: $primary-color;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zM4 8V5h16v3H4z'/%3E%3C/svg%3E")
+        no-repeat center;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zM4 8V5h16v3H4z'/%3E%3C/svg%3E")
+        no-repeat center;
+    }
+  }
+}
+
+// Custom questions section
+.custom-questions-dropdown {
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  margin-bottom: 30px;
+
+  .dropdown-header {
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: $white;
+    border-radius: 4px;
+    cursor: pointer;
+
+    .dropdown-icon {
+      color: #666;
+      font-size: 12px;
+    }
+  }
+}
+
+.data-privacy-notice {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: $light-gray;
+  border-radius: 4px;
+  font-size: 14px;
+
+  p {
+    margin: 0;
+    color: #666;
+  }
+
+  .tum-link {
+    color: $primary-color;
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Form actions
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid $border-color;
+
+  .action-right {
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    border: none;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .btn-cancel,
+  .btn-back {
+    background-color: transparent;
+    color: #666;
+    border: 1px solid $border-color;
+
+    &:hover {
+      background-color: $light-gray;
+    }
+  }
+
+  .btn-save-draft {
+    background-color: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.05);
+    }
+  }
+
+  .btn-next {
+    background-color: $primary-color;
+    color: $white;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: $primary-dark;
+    }
+  }
+
+  .btn-publish {
+    background-color: $primary-color;
+    color: $white;
+
+    &:hover {
+      background-color: $primary-dark;
+    }
+  }
+}
+
+// Extras section
+.extras-section {
+  h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+}

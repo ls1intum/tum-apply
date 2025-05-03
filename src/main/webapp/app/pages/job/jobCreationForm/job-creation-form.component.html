@@ -1,0 +1,231 @@
+<div class="doctorate-form-container">
+  <header>
+    <h1>Find your perfect Doctorate Position at TUM</h1>
+    <p>Fill in the details below to create a new job posting for doctoral candidates.</p>
+  </header>
+  <div class="stepper">
+    <div [ngClass]="{ active: currentStep === 1, completed: currentStep > 1 }" class="step">
+      <div class="step-number">1</div>
+      <div class="step-label">Basic Information</div>
+    </div>
+    <div class="step-connector"></div>
+    <div [ngClass]="{ active: currentStep === 2, completed: currentStep > 2 }" class="step">
+      <div class="step-number">2</div>
+      <div class="step-label">Position Details</div>
+    </div>
+    <!-- <div class="step-connector"></div>
+    <div class="step" [ngClass]="{ active: currentStep === 3 }">
+      <div class="step-number">3</div>
+      <div class="step-label">Additional Information</div>
+    </div> -->
+  </div>
+  <!-- Step 1: Basic Information -->
+  @if (currentStep === 1) {
+    <div class="form-step">
+      <form [formGroup]="basicInfoForm">
+        <h2>Basic Information</h2>
+        <p>Provide the key details about the doctoral position, such as title, field of study, and supervising professor.</p>
+
+        <div class="form-field">
+          <label for="jobTitle">Job Title</label>
+          <input formControlName="jobTitle" id="jobTitle" placeholder="e.g. Doctoral Position in Robotics" type="text" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="researchArea">Research Area</label>
+            <div class="input-with-icon">
+              <input
+                formControlName="researchArea"
+                id="researchArea"
+                placeholder="e.g. Machine Learning, Human-Computer Interaction"
+                type="text"
+              />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="fieldOfStudies">Field of Studies</label>
+            <div class="input-with-icon">
+              <div class="select-wrapper">
+                <select formControlName="fieldOfStudies" id="fieldOfStudies">
+                  <option disabled selected value="">Select a Field of Studies ...</option>
+                  <option value="computer_science">Computer Science</option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="physics">Physics</option>
+                  <option value="engineering">Engineering</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="supervisingProfessor">Supervising Professor<span class="required">*</span></label>
+            <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
+          </div>
+
+          <div class="form-field">
+            <label for="location">Location<span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select formControlName="location" id="location">
+                <option disabled selected value="">Select a Location ...</option>
+                @for (location of locations; track location) {
+                  <option [value]="location">
+                    {{ location }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="startDate">Start Date</label>
+            <div class="date-picker-wrapper">
+              <input formControlName="startDate" id="startDate" placeholder="Select a Start Date ..." type="date" />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="workload">Workload</label>
+            <div class="select-wrapper">
+              <select formControlName="workload" id="workload">
+                <option disabled selected value="">Select an Employment Type first ...</option>
+                @for (option of workloadOptions; track option) {
+                  <option [value]="option">
+                    {{ option }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="contractDuration">Contract Duration</label>
+            <div class="select-wrapper">
+              <select formControlName="contractDuration" id="contractDuration">
+                <option disabled selected value="">Select a Contract Duration ...</option>
+                @for (duration of contractDurations; track duration) {
+                  <option [value]="duration">
+                    {{ duration }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="fundingType">Funding Type</label>
+            <div class="select-wrapper">
+              <select formControlName="fundingType" id="fundingType">
+                <option disabled selected value="">Select a Funding Type ...</option>
+                @for (type of fundingTypes; track type) {
+                  <option [value]="type">
+                    {{ type }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="form-actions">
+        <button class="btn-cancel"><span class="btn-icon">←</span> Cancel</button>
+        <div class="action-right">
+          <button (click)="saveDraft()" class="btn-save-draft">
+            <span class="btn-icon">
+              <fa-icon [icon]="['fas', 'floppy-disk']" />
+            </span>
+            Save Draft
+          </button>
+          <button (click)="nextStep()" [disabled]="basicInfoForm.invalid" class="btn-next">Next</button>
+        </div>
+      </div>
+    </div>
+  }
+  <!-- Step 2: Position Details -->
+  @if (currentStep === 2) {
+    <div class="form-step">
+      <form [formGroup]="positionDetailsForm">
+        <h2>Position Details</h2>
+        <p>
+          Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred
+          qualifications for applicants.
+        </p>
+        <div class="form-field">
+          <label for="jobDescription">Job Description</label>
+          <div class="input-with-icon">
+            <textarea
+              formControlName="jobDescription"
+              id="jobDescription"
+              placeholder="Describe the scope and focus of the position ..."
+              rows="10"
+            ></textarea>
+            <span class="info-icon">i</span>
+          </div>
+          <small class="description-helper"
+            >Describe the research context, goals, and overall scope of the position. Keep it concise but informative.</small
+          >
+        </div>
+        <div class="form-field">
+          <label for="tasks">Tasks</label>
+          <div class="input-with-icon">
+            <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
+            <span class="info-icon">i</span>
+          </div>
+        </div>
+      </form>
+      <div class="form-actions">
+        <button (click)="previousStep()" class="btn-back"><span class="btn-icon">←</span> Back</button>
+        <div class="action-right">
+          <button (click)="saveDraft()" class="btn-save-draft">
+            <span class="btn-icon">
+              <fa-icon [icon]="['fas', 'floppy-disk']" />
+            </span>
+            Save Draft
+          </button>
+          <!-- <button class="btn-next" (click)="nextStep()">Next</button> -->
+          <button (click)="publishJob()" class="btn-publish">Publish Job</button>
+        </div>
+      </div>
+    </div>
+  }
+  <!-- Step 3: Additional Information -->
+  <!-- <div class="form-step" *ngIf="currentStep === 3">
+                                <form [formGroup]="additionalInfoForm">
+                                  <section class="extras-section">
+                                    <h2>Extras</h2>
+                                    <p>Add custom questions that applicants will see in the application form.</p>
+
+                                    <div class="custom-questions-dropdown">
+                                      <div class="dropdown-header">
+                                        <span>Custom Questions</span>
+                                        <span class="dropdown-icon">▼</span>
+                                      </div>
+                                    </div>
+
+                                    <div class="data-privacy-notice">
+                                      <p>
+                                        A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more
+                                        information, please visit: <a href="#" class="tum-link">TUM Data Protection Information</a>.
+                                      </p>
+                                    </div>
+                                  </section>
+                                </form>
+
+                                <div class="form-actions">
+                                  <button class="btn-back" (click)="previousStep()"><span class="btn-icon">←</span> Back</button>
+                                  <div class="action-right">
+                                    <button class="btn-save-draft" (click)="saveDraft()"><span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']"></fa-icon></span> Save Draft</button>
+                                    <button class="btn-publish" (click)="publishJob()">Publish Job</button>
+                                  </div>
+                                </div>
+                                </div>
+                                  -->
+</div>
