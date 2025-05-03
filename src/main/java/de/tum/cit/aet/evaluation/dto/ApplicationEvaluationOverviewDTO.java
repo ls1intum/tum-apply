@@ -1,0 +1,33 @@
+package de.tum.cit.aet.evaluation.dto;
+
+import de.tum.cit.aet.application.constants.ApplicationState;
+import de.tum.cit.aet.application.domain.Application;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.UUID;
+
+public record ApplicationEvaluationOverviewDTO(
+    UUID applicationId,
+    String avatar,
+    String firstName,
+    String lastName,
+    ApplicationState state,
+    String jobName,
+    Integer rating,
+    LocalDate appliedAt
+) {
+    public static ApplicationEvaluationOverviewDTO fromApplication(Application application) {
+        if (application == null) return null;
+
+        return new ApplicationEvaluationOverviewDTO(
+            application.getApplicationId(),
+            application.getApplicant().getAvatar(),
+            application.getApplicant().getFirstName(),
+            application.getApplicant().getLastName(),
+            application.getState(),
+            application.getJob().getTitle(),
+            application.getRating(),
+            LocalDate.ofInstant(application.getCreatedAt(), ZoneId.systemDefault())
+        ); //use system's timezone to convert Instant
+    }
+}
