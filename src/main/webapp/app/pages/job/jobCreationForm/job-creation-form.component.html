@@ -120,7 +120,7 @@
           </div>
 
           <div class="form-field">
-            <label for="fundingType">Funding Type</label>
+            <label for="fundingType">Funding Type<span class="required">*</span></label>
             <div class="select-wrapper">
               <select formControlName="fundingType" id="fundingType">
                 <option disabled selected value="">Select a Funding Type ...</option>
@@ -159,12 +159,12 @@
           qualifications for applicants.
         </p>
         <div class="form-field">
-          <label for="jobDescription">Job Description</label>
+          <label for="description">Job Description</label>
           <div class="input-with-icon">
             <textarea
-              formControlName="jobDescription"
-              id="jobDescription"
-              placeholder="Describe the scope and focus of the position ..."
+              formControlName="description"
+              id="description"
+              placeholder="Describe the scope and focus of the position..."
               rows="10"
             ></textarea>
             <span class="info-icon">i</span>
@@ -179,6 +179,24 @@
             <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
             <span class="info-icon">i</span>
           </div>
+          <small class="description-helper"
+            >List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.</small
+          >
+        </div>
+        <div class="form-field">
+          <label for="requirements">Eligibility Criteria</label>
+          <div class="input-with-icon">
+            <textarea
+              formControlName="requirements"
+              id="requirements"
+              placeholder="List the minimum requirements for applicants..."
+              rows="10"
+            ></textarea>
+            <span class="info-icon">i</span>
+          </div>
+          <small class="description-helper"
+            >Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.</small
+          >
         </div>
       </form>
       <div class="form-actions">

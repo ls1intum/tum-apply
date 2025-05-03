@@ -66,8 +66,9 @@ export class JobCreationFormComponent {
 
     // Position Details form
     this.positionDetailsForm = this.fb.group({
-      jobDescription: [''],
+      description: [''],
       tasks: [''],
+      requirements: [''],
     });
 
     // Additional Information form
