@@ -47,6 +47,7 @@ public class Job extends AbstractAuditingEntity {
 
     @NotBlank
     @Column(name = "location")
+    @Enumerated(EnumType.STRING)
     private Campus location;
 
     @Column(name = "workload")
@@ -57,6 +58,7 @@ public class Job extends AbstractAuditingEntity {
 
     @NotBlank
     @Column(name = "funding_type")
+    @Enumerated(EnumType.STRING)
     private FundingType fundingType;
 
     @Column(name = "title")

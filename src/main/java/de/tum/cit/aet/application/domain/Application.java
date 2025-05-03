@@ -39,6 +39,7 @@ public class Application extends AbstractAuditingEntity {
 
     @NotBlank
     @Column(name = "application_state")
+    @Enumerated(EnumType.STRING)
     private ApplicationState state;
 
     @Column(name = "desired_start_date")

@@ -88,6 +88,7 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(requests ->
                 // prettier-ignore
                 requests
+                    .requestMatchers("/api/**").permitAll() //TODO this has to be removed
                     .requestMatchers("/", "/index.html", "/*.js", "/*.txt", "/*.json", "/*.map", "/*.css").permitAll()
                     .requestMatchers("/*.ico", "/*.png", "/*.svg", "/*.webapp").permitAll()
                     .requestMatchers("/manifest.webapp", "/robots.txt").permitAll()

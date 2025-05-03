@@ -13,7 +13,7 @@
       <column name="email" type="TEXT">
         <constraints nullable="false"/>
       </column>
-      <column name="avatar_file_id" type="CHAR(36)"/>
+      <column name="avatar" type="CHAR(36)"/>
       <column name="first_name" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
@@ -326,5 +326,75 @@
       referencedTableName="applications"
       referencedColumnNames="application_id"/>
   </changeSet>
+
+  <changeSet id="010_create_custom_field_answers" author="assistant">
+    <createTable tableName="custom_field_answers">
+      <column name="custom_field_answer_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="custom_field_id" type="CHAR(36)"/>
+      <column name="application_id" type="CHAR(36)"/>
+      <column name="answers" type="LONGTEXT"/>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="custom_field_answers" baseColumnNames="custom_field_id"
+                             constraintName="fk_custom_field_answers_custom_field"
+                             referencedTableName="custom_fields" referencedColumnNames="custom_field_id"/>
+
+    <addForeignKeyConstraint baseTableName="custom_field_answers" baseColumnNames="application_id"
+                             constraintName="fk_custom_field_answers_application"
+                             referencedTableName="applications" referencedColumnNames="application_id"/>
+
+    <createIndex indexName="idx_custom_field_answers_custom_field" tableName="custom_field_answers">
+      <column name="custom_field_id"/>
+    </createIndex>
+
+    <createIndex indexName="idx_custom_field_answers_application" tableName="custom_field_answers">
+      <column name="application_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="011_create_documents" author="assistant">
+    <createTable tableName="documents">
+      <column name="document_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="type" type="ENUM('BACHELOR_TRANSCRIPT','MASTER_TRANSCRIPT','CV','CUSTOM')">
+        <constraints nullable="false"/>
+      </column>
+      <column name="document_path" type="TEXT"/>
+      <column name="custom_field_answer_id" type="CHAR(36)"/>
+      <column name="application_id" type="CHAR(36)"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="documents" baseColumnNames="custom_field_answer_id"
+                             constraintName="fk_documents_custom_field_answer"
+                             referencedTableName="custom_field_answers" referencedColumnNames="custom_field_answer_id"
+                             onDelete="CASCADE"/>
+
+    <addForeignKeyConstraint baseTableName="documents" baseColumnNames="application_id"
+                             constraintName="fk_documents_application"
+                             referencedTableName="applications" referencedColumnNames="application_id"
+                             onDelete="CASCADE"/>
+
+    <createIndex indexName="idx_documents_custom_field_answer" tableName="documents">
+      <column name="custom_field_answer_id"/>
+    </createIndex>
+
+    <createIndex indexName="idx_documents_application" tableName="documents">
+      <column name="application_id"/>
+    </createIndex>
+
+    <sql>
+      ALTER TABLE documents MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+    </sql>
+  </changeSet>
+
 
 </databaseChangeLog>

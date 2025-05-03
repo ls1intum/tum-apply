@@ -17,7 +17,7 @@ WHERE user_id IN ('00000000-0000-0000-0000-000000000101', '00000000-0000-0000-00
 REPLACE INTO users (user_id,
                     research_group_id,
                     email,
-                    avatar_file_id,
+                    avatar,
                     first_name,
                     last_name,
                     gender,

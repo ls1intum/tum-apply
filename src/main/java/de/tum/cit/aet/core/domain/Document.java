@@ -22,6 +22,7 @@ public class Document extends AbstractAuditingEntity {
 
     @NotBlank
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private DocumentType type;
 
     @Column(name = "document_path")

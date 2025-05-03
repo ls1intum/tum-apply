@@ -38,6 +38,7 @@ public class Applicant extends User {
 
     @NotBlank
     @Column(name = "bachelor_grading_scale")
+    @Enumerated(EnumType.STRING)
     private GradingScale bachelorGradingScale;
 
     @Column(name = "bachelor_grade")
@@ -51,6 +52,7 @@ public class Applicant extends User {
 
     @NotBlank
     @Column(name = "master_grading_scale")
+    @Enumerated(EnumType.STRING)
     private GradingScale masterGradingScale;
 
     @Column(name = "master_grade")
