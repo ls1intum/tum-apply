@@ -57,7 +57,6 @@ public class ApplicationService {
      * @param applicantId
      * @return Set of ApplicationApplicantDTO which all have the same applicant
      */
-    @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
         return repository
             .findAllByApplicantUserId(applicantId)
@@ -71,7 +70,6 @@ public class ApplicationService {
      * @param jobId
      * @return Set of ApplicationApplicantDTO which all have the same Job
      */
-    @Transactional(readOnly = true)
     public Set<ApplicationApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
         return repository.findAllByJobJobId(jobId).stream().map(ApplicationApplicantDTO::getFromEntity).collect(Collectors.toSet());
     }
@@ -81,7 +79,6 @@ public class ApplicationService {
      * @param applicationId
      * @return ApplicationApplicantDTO with same Id as parameter applicationId
      */
-    @Transactional(readOnly = true)
     public ApplicationApplicantDTO getApplicationById(UUID applicationId) {
         Application application = repository.findById(applicationId).orElse(null);
         return ApplicationApplicantDTO.getFromEntity(application);

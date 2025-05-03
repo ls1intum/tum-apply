@@ -19,19 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/applications")
-public class ApplicationController {
+public class ApplicationResource {
 
     private final ApplicationService applicationService;
 
     @Autowired
-    public ApplicationController(ApplicationService applicationService) {
+    public ApplicationResource(ApplicationService applicationService) {
         this.applicationService = applicationService;
     }
 
     /**
      *
-     * @param payload
-     * @return ApplicationApplicantDto as Responseentity
+     * @param payload The payload necessary to create an Application
+     * @return ApplicationApplicantDto as Responseentity, or 400 Bad Request if the payload is invalid
      */
     @PostMapping
     public ResponseEntity<ApplicationApplicantDTO> createApplication(@RequestBody CreateApplicationPayload payload) {
@@ -45,34 +45,22 @@ public class ApplicationController {
 
     /**
      *
-     * @param applicantId
-     * @return Set of ApplicationApplicantDtom where the applicant has the applicantId as UUID
+     * @param application the updated application payload
+     * @return updated ApplicationApplicantDTO
      */
-    @GetMapping("/applicant/{applicantId}")
-    public ResponseEntity<Set<ApplicationApplicantDTO>> getAllApplicationsOfApplicant(@PathVariable UUID applicantId) {
+    @PutMapping
+    public ResponseEntity<ApplicationApplicantDTO> updateApplication(@RequestBody UpdateApplicationPayload application) {
         // TODO check authorization
-        Set<ApplicationApplicantDTO> applications = applicationService.getAllApplicationsOfApplicant(applicantId);
-        return ResponseEntity.ok(applications);
+        ApplicationApplicantDTO updatedApplication = applicationService.updateApplication(application);
+        return ResponseEntity.ok(updatedApplication);
     }
 
     /**
      *
-     * @param jobId
-     * @return Set of ApplicationApplicantDtom where the job has the jobId as UUID
+     * @param applicationId the UUID of the application
+     * @return the ApplicationApplicantDTO if found, otherwise 404 Not Found
      */
-    @GetMapping("/application/job/{jobId}")
-    public ResponseEntity<Set<ApplicationApplicantDTO>> getAllApplicationsOfJob(@PathVariable UUID jobId) {
-        // TODO check authorization
-        Set<ApplicationApplicantDTO> applications = applicationService.getAllApplicationsOfJob(jobId);
-        return ResponseEntity.ok(applications);
-    }
-
-    /**
-     *
-     * @param applicationId
-     * @return ApplicationApplicantDTO where the id is the same as the path variable
-     */
-    @GetMapping("/application/{applicationId}")
+    @GetMapping("/{applicationId}")
     public ResponseEntity<ApplicationApplicantDTO> getApplicationById(@PathVariable UUID applicationId) {
         // TODO check authorization
         ApplicationApplicantDTO application = applicationService.getApplicationById(applicationId);
@@ -85,22 +73,47 @@ public class ApplicationController {
 
     /**
      *
-     * @param application
-     * @return updated ApplicationApplicantDTO
+     * @param applicationId the UUID of the application
+     * @return 204 No Content when deletion is successful
      */
-    @PutMapping("/application")
-    public ResponseEntity<ApplicationApplicantDTO> updateApplication(@RequestBody UpdateApplicationPayload application) {
+    @DeleteMapping("/{applicationId}")
+    public ResponseEntity<Void> deleteApplication(@PathVariable UUID applicationId) {
         // TODO check authorization
-        ApplicationApplicantDTO updatedApplication = applicationService.updateApplication(application);
-        return ResponseEntity.ok(updatedApplication);
+        applicationService.deleteApplication(applicationId);
+        return ResponseEntity.noContent().build();
     }
 
     /**
      *
-     * @param applicationId
-     * @return withdrawn ApplicationApplicantDTO
+     * @param applicantId the UUID of the applicant
+     * @return Set of ApplicationApplicantDtom where the applicant has the applicantId as UUID
      */
-    @GetMapping("/application/withdraw/{applicationId}")
+    @GetMapping("/applicant/{applicantId}")
+    public ResponseEntity<Set<ApplicationApplicantDTO>> getAllApplicationsOfApplicant(@PathVariable UUID applicantId) {
+        // TODO check authorization
+        Set<ApplicationApplicantDTO> applications = applicationService.getAllApplicationsOfApplicant(applicantId);
+        return ResponseEntity.ok(applications);
+    }
+
+    /**
+     *
+     * @param jobId the UUID of the Job
+     * @return Set of ApplicationApplicantDtos where the job has the jobId as UUID
+     */
+    @GetMapping("/job/{jobId}")
+    public ResponseEntity<Set<ApplicationApplicantDTO>> getAllApplicationsOfJob(@PathVariable UUID jobId) {
+        // TODO check authorization
+        Set<ApplicationApplicantDTO> applications = applicationService.getAllApplicationsOfJob(jobId);
+        return ResponseEntity.ok(applications);
+    }
+
+    /**
+     * Withdraws a specific application.
+     *
+     * @param applicationId
+     * @return the withdrawn ApplicationApplicantDTO, or 404 Not Found if not found
+     */
+    @PutMapping("/withdraw/{applicationId}")
     public ResponseEntity<ApplicationApplicantDTO> withdrawApplication(@PathVariable UUID applicationId) {
         // TODO check authorization
         ApplicationApplicantDTO withdrawnApplication = applicationService.withdrawApplication(applicationId);
@@ -109,17 +122,5 @@ public class ApplicationController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    /**
-     *
-     * @param applicationId
-     * @return ResponseEntity which confirms that the Application was deleted
-     */
-    @DeleteMapping("/application/{applicationId}")
-    public ResponseEntity<Void> deleteApplication(@PathVariable UUID applicationId) {
-        // TODO check authorization
-        applicationService.deleteApplication(applicationId);
-        return ResponseEntity.noContent().build();
     }
 }
