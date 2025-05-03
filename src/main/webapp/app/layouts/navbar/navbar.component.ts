@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
@@ -9,6 +9,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
+import { SessionStorageService } from 'ngx-webstorage';
 
 import { VERSION } from '../../app.constants';
 
@@ -35,9 +36,17 @@ export default class NavbarComponent implements OnInit {
   private readonly stateStorageService = inject(StateStorageService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
+  private readonly sessionStorage = inject(SessionStorageService);
 
   constructor() {
     this.version = VERSION;
+    // Initialize theme from session storage or default to 'light'
+    const savedTheme = this.sessionStorage.retrieve('theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark-theme');
+    } else {
+      document.documentElement.classList.remove('dark-theme');
+    }
   }
 
   ngOnInit(): void {
@@ -69,5 +78,16 @@ export default class NavbarComponent implements OnInit {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed.update(isNavbarCollapsed => !isNavbarCollapsed);
+  }
+
+  toggleTheme(): void {
+    const isDarkTheme = document.documentElement.classList.contains('dark-theme');
+    if (isDarkTheme) {
+      document.documentElement.classList.remove('dark-theme');
+      this.sessionStorage.store('theme', 'light');
+    } else {
+      document.documentElement.classList.add('dark-theme');
+      this.sessionStorage.store('theme', 'dark');
+    }
   }
 }

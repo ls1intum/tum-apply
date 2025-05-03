@@ -109,10 +109,6 @@ Generic styles
   opacity: 1;
 }
 
-.footer {
-  border-top: 1px solid var(--border-default);
-}
-
 .hand,
 [jhisortby] {
   cursor: pointer;
@@ -237,15 +233,6 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   -o-transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
   transform: rotate(-45deg);
-}
-
-/* navbar.component.scss */
-.navbar {
-  ul.navbar-nav {
-    .nav-item {
-      margin-left: 0.5em;
-    }
-  }
 }
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */
