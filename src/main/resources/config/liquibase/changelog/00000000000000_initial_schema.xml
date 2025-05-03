@@ -191,4 +191,140 @@
                              referencedColumnNames="job_id"/>
   </changeSet>
 
+  <changeSet id="007_create_applicants" author="moritz-schmidt">
+    <createTable tableName="applicants">
+      <column name="user_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="street" type="TEXT"/>
+      <column name="postal_code" type="VARCHAR(10)"/>
+      <column name="city" type="TEXT"/>
+      <column name="country" type="TEXT"/>
+
+      <column name="bachelor_degree_name" type="VARCHAR(255)"/>
+      <column name="bachelor_grading_scale"
+              type="ENUM('ONE_TO_FOUR')">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bachelor_grade" type="VARCHAR(10)"/>
+      <column name="bachelor_university" type="TEXT"/>
+
+      <column name="master_degree_name" type="VARCHAR(255)"/>
+      <column name="master_grading_scale"
+              type="ENUM('ONE_TO_FOUR')">
+        <constraints nullable="false"/>
+      </column>
+      <column name="master_grade" type="VARCHAR(10)"/>
+      <column name="master_university" type="VARCHAR(255)"/>
+    </createTable>
+
+    <!-- FK: applicants.applicant_id → users.user_id -->
+    <addForeignKeyConstraint
+      baseTableName="applicants"
+      baseColumnNames="user_id"
+      constraintName="fk_applicants_user"
+      referencedTableName="users"
+      referencedColumnNames="user_id"/>
+  </changeSet>
+
+
+  <changeSet id="008_create_applications" author="moritz-schmidt">
+
+    <createTable tableName="applications">
+      <column name="application_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="applicant_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="job_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="application_state"
+              type="ENUM('SAVED','SENT','ACCEPTED','IN_REVIEW','REJECTED','WITHDRAWN')">
+        <constraints nullable="false"/>
+      </column>
+      <column name="desired_start_date" type="DATE"/>
+
+      <column name="cv_file_id" type="CHAR(36)"/>
+      <column name="reference_file_id" type="CHAR(36)"/>
+      <column name="bachelor_certificate_id" type="CHAR(36)"/>
+      <column name="master_certificate_id" type="CHAR(36)"/>
+
+      <column name="rating" type="INT"/>
+      <column name="projects" type="LONGTEXT"/>
+      <column name="special_skills" type="LONGTEXT"/>
+      <column name="motivation" type="LONGTEXT"/>
+
+      <column name="created_at" type="TIMESTAMP"
+              defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modified_at" type="TIMESTAMP"
+              defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <!-- FK: applications.applicant_id → applicants.applicant_id -->
+    <addForeignKeyConstraint
+      baseTableName="applications" baseColumnNames="applicant_id"
+      constraintName="fk_applications_applicant"
+      referencedTableName="applicants" referencedColumnNames="user_id"/>
+
+    <!-- FK: applications.job_id → jobs.job_id -->
+    <addForeignKeyConstraint
+      baseTableName="applications" baseColumnNames="job_id"
+      constraintName="fk_applications_job"
+      referencedTableName="jobs" referencedColumnNames="job_id"/>
+
+    <!-- keep last_modified_at automatically updated -->
+    <sql>
+      ALTER TABLE applications
+        MODIFY last_modified_at TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP
+        ON
+      UPDATE CURRENT_TIMESTAMP;
+    </sql>
+
+  </changeSet>
+
+
+  <changeSet id="009_create_application_reviews" author="moritz-schmidt">
+    <createTable tableName="application_reviews">
+      <column name="application_review_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="application_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="CHAR(36)"/>
+      <column name="reason" type="TEXT"/>
+      <column name="reviewed_at" type="TIMESTAMP"
+              defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <!-- FK: application_reviews.user_id → users.user_id -->
+    <addForeignKeyConstraint
+      baseTableName="application_reviews"
+      baseColumnNames="user_id"
+      constraintName="fk_application_reviews_user"
+      referencedTableName="users"
+      referencedColumnNames="user_id"/>
+
+    <!-- FK: application_reviews.application_id → applications.application_id -->
+    <addForeignKeyConstraint
+      baseTableName="application_reviews"
+      baseColumnNames="application_id"
+      constraintName="fk_application_reviews_application"
+      referencedTableName="applications"
+      referencedColumnNames="application_id"/>
+  </changeSet>
+
 </databaseChangeLog>
