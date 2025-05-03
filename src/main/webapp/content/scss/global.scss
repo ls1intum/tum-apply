@@ -76,6 +76,8 @@ Generic styles
   padding: 1.5%;
   margin-top: 20px;
   border: none;
+  background-color: var(--background-surface-alt);
+  color: var(--text-primary);
 }
 
 .error {
@@ -101,11 +103,11 @@ Generic styles
 }
 
 .form-control {
-  background-color: var(--background-surface);
+  background-color: var(--background-default);
 }
 
 .readonly {
-  background-color: var(--background-surface-alt);
+  background-color: var(--background-default);
   opacity: 1;
 }
 
@@ -120,6 +122,7 @@ Custom alerts for notification
 .alerts {
   .alert {
     text-overflow: ellipsis;
+    background-color: var(--background-default);
 
     pre {
       background: none;
@@ -138,6 +141,7 @@ Custom alerts for notification
   .jhi-toast {
     position: fixed;
     width: 100%;
+    background-color: var(--background-default);
 
     &.left {
       left: 5px;
@@ -194,7 +198,7 @@ entity detail page css
     }
 
     dd {
-      border-bottom: 1px solid var(--background-surface-alt);
+      border-bottom: 1px solid var(--background-default);
       padding: 0.5em 0;
       margin-left: 0;
     }
@@ -220,6 +224,7 @@ ui bootstrap tweaks
 
 .dropdown-menu {
   padding-left: 0;
+  background-color: var(--background-default);
 }
 
 /* ==========================================================================
