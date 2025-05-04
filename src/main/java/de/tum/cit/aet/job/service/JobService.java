@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
@@ -7,8 +8,8 @@ import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +25,6 @@ public class JobService {
 
     public JobService(JobRepository jobRepository, UserRepository userRepository) {
         this.jobRepository = jobRepository;
-        //this.userRepository = userRepository;
         this.userRepository = userRepository;
     }
 
@@ -45,6 +45,7 @@ public class JobService {
      *
      * @param dto the job details used to create the job
      */
+    @Transactional
     public void createJob(JobFormDTO dto) {
         Job job = new Job();
         User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());

@@ -8,7 +8,6 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +44,9 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "research_area")
     private String researchArea;
 
-    @NotBlank
+    //    @NotBlank
     @Column(name = "location")
+    @Enumerated(EnumType.STRING)
     private Campus location;
 
     @Column(name = "workload")
@@ -55,8 +55,9 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "contract_duration")
     private Integer contractDuration;
 
-    @NotBlank
+    //    @NotBlank
     @Column(name = "funding_type")
+    @Enumerated(EnumType.STRING)
     private FundingType fundingType;
 
     @Column(name = "title")
@@ -71,7 +72,7 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "requirements")
     private String requirements;
 
-    @NotBlank
+    //    @NotBlank
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
     private JobState state;

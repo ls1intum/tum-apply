@@ -2,7 +2,6 @@ package de.tum.cit.aet.core.config;
 
 import com.github.benmanes.caffeine.jcache.configuration.CaffeineConfiguration;
 import de.tum.cit.aet.core.domain.Authority;
-import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
@@ -23,9 +22,9 @@ import tech.jhipster.config.cache.PrefixedKeyGenerator;
 @EnableCaching
 public class CacheConfiguration {
 
+    private final javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration;
     private GitProperties gitProperties;
     private BuildProperties buildProperties;
-    private final javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration;
 
     public CacheConfiguration(JHipsterProperties jHipsterProperties) {
         JHipsterProperties.Cache.Caffeine caffeine = jHipsterProperties.getCache().getCaffeine();
@@ -53,8 +52,8 @@ public class CacheConfiguration {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
-            createCache(cm, UserRepository.USERS_BY_LOGIN_CACHE);
-            createCache(cm, UserRepository.USERS_BY_EMAIL_CACHE);
+            // createCache(cm, UserRepository.USERS_BY_LOGIN_CACHE);
+            // createCache(cm, UserRepository.USERS_BY_EMAIL_CACHE);
             createCache(cm, User.class.getName());
             createCache(cm, Authority.class.getName());
             createCache(cm, User.class.getName() + ".authorities");
