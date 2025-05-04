@@ -27,7 +27,7 @@ public class ApplicationService {
      * @return created ApplicationForApplicantDTO
      */
     @Transactional
-    public ApplicationForApplicantDTO createApplication(CreateApplicationDTO payload) {
+    public ApplicationForApplicantDTO createApplication(CreateApplicationDTO createApplicationDTO) {
         Application application = new Application(
             null,
             null, // no applicationReview yet
