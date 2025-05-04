@@ -1,14 +1,12 @@
 package de.tum.cit.aet.core.web.rest;
 
-import static de.tum.cit.aet.core.util.OAuth2TestUtil.TEST_USER_LOGIN;
-import static de.tum.cit.aet.core.util.OAuth2TestUtil.registerAuthenticationToken;
-import static de.tum.cit.aet.core.util.OAuth2TestUtil.testAuthenticationToken;
+import static de.tum.cit.aet.core.util.OAuth2TestUtil.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import de.tum.cit.aet.IntegrationTest;
-import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.core.security.AuthoritiesConstants;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 class AccountResourceIT {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private MockMvc restAccountMockMvc;
-
-    @Autowired
     OAuth2AuthorizedClientService authorizedClientService;
 
     @Autowired
     ClientRegistration clientRegistration;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private MockMvc restAccountMockMvc;
 
     @AfterEach
     public void cleanup() {

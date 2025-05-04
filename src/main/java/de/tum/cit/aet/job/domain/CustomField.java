@@ -26,15 +26,14 @@ public class CustomField {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @NotBlank
-    @Column(name = "question")
+    @Column(name = "question", nullable = false)
     private String question;
 
     @Column(name = "is_required", nullable = false)
     private boolean isRequired;
 
-    @NotBlank
-    @Column(name = "custom_field_type")
+    @Column(name = "custom_field_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private CustomFieldType customFieldType;
 
     @Convert(converter = StringListConverter.class)

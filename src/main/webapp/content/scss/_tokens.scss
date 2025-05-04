@@ -1,0 +1,152 @@
+@import 'primitives';
+// SCSS fallbacks for Bootstrap (do not use in application styling)
+$primary-default: $primary-300;
+$secondary-default: $secondary-300;
+$info-default: $info-500;
+$positive-default: $positive-500;
+$warning-default: $warning-500;
+$negative-default: $negative-500;
+// ========================================================
+// Semantic Color Tokens for TUMApply
+//
+// This file defines semantic tokens for Light and Dark Mode
+// using CSS Custom Properties. Values are assigned based on
+// design tokens defined in `_primitives.scss`.
+//
+// Token Suffixes:
+// -default: standard appearance for a UI element
+// -hover: color on hover state
+// -active: color on pressed/active state
+// -disabled: appearance for non-interactive elements
+//
+// :root          → Light Mode
+// .dark-theme    → Dark Mode
+// ========================================================
+
+:root {
+  // Background Colors
+  --background-default: #f8f9fa;
+  --background-disabled: #{$neutral-200};
+  --background-footer: #f5f5f5;
+  --background-special: #{$tertiary-50};
+  --background-surface: #{$base-white};
+  --background-surface-alt: #{$neutral-100};
+
+  // Border & Divider
+  --border-default: #{$neutral-300};
+  --divider-default: #{$neutral-200};
+
+  // Primary Colors
+  --primary-default: #{$primary-300};
+  --primary-hover: #{$primary-600};
+  --primary-active: #{$primary-700};
+  --primary-disabled: #{$primary-200};
+
+  // Secondary Colors
+  --secondary-default: #{$secondary-300};
+  --secondary-hover: #{$secondary-600};
+  --secondary-active: #{$secondary-700};
+  --secondary-disabled: #{$secondary-200};
+
+  // Info Colors
+  --info-default: #{$info-500};
+  --info-hover: #{$info-600};
+  --info-active: #{$info-700};
+  --info-disabled: #{$info-200};
+
+  // Positive Colors
+  --positive-default: #{$positive-500};
+  --positive-hover: #{$positive-600};
+  --positive-active: #{$positive-700};
+  --positive-disabled: #{$positive-200};
+
+  // Warning Colors
+  --warning-default: #{$warning-500};
+  --warning-hover: #{$warning-600};
+  --warning-active: #{$warning-700};
+  --warning-disabled: #{$warning-200};
+
+  // Negative Colors
+  --negative-default: #{$negative-500};
+  --negative-hover: #{$negative-600};
+  --negative-active: #{$negative-700};
+  --negative-disabled: #{$negative-200};
+
+  // Text Colors
+  --text-primary: #{$neutral-950};
+  --text-primary-inverted: #{$neutral-50};
+  --text-secondary: #{$neutral-700};
+  --text-secondary-inverted: #{$neutral-200};
+  --text-on-primary: #{$neutral-50};
+  --text-on-secondary: #{$neutral-50};
+  --text-on-info: #{$neutral-950};
+  --text-on-positive: #{$neutral-950};
+  --text-on-warning: #{$neutral-950};
+  --text-on-negative: #{$neutral-950};
+  --text-on-surface-alt: #{$neutral-800};
+  --text-on-disabled: #{$neutral-600};
+}
+
+.dark-theme {
+  // Background Colors
+  --background-default: #121212;
+  --background-disabled: #{$neutral-700};
+  --background-footer: #212121;
+  --background-special: #{$tertiary-900};
+  --background-surface: #1e1e1e;
+  --background-surface-alt: #{$neutral-800};
+
+  // Border & Divider
+  --border-default: #{$neutral-600};
+  --divider-default: #{$neutral-700};
+
+  // Primary Colors
+  --primary-default: #{$primary-300};
+  --primary-hover: #{$primary-200};
+  --primary-active: #{$primary-100};
+  --primary-disabled: #{$primary-50};
+
+  // Secondary Colors
+  --secondary-default: #{$secondary-500};
+  --secondary-hover: #{$secondary-600};
+  --secondary-active: #{$secondary-700};
+  --secondary-disabled: #{$secondary-800};
+
+  // Info Colors
+  --info-default: #{$info-500};
+  --info-hover: #{$info-600};
+  --info-active: #{$info-700};
+  --info-disabled: #{$info-800};
+
+  // Positive Colors
+  --positive-default: #{$positive-500};
+  --positive-hover: #{$positive-600};
+  --positive-active: #{$positive-700};
+  --positive-disabled: #{$positive-800};
+
+  // Warning Colors
+  --warning-default: #{$warning-500};
+  --warning-hover: #{$warning-600};
+  --warning-active: #{$warning-700};
+  --warning-disabled: #{$warning-800};
+
+  // Negative Colors
+  --negative-default: #{$negative-500};
+  --negative-hover: #{$negative-600};
+  --negative-active: #{$negative-700};
+  --negative-disabled: #{$negative-800};
+
+  // Text Colors
+  --text-primary: #{$neutral-50};
+  --text-primary-inverted: #{$neutral-950};
+  --text-secondary: #{$neutral-200};
+  --text-secondary-inverted: #{$neutral-700};
+  --text-on-primary: #{$neutral-50};
+  --text-on-secondary: #{$neutral-50};
+  --text-on-info: #{$neutral-50};
+  --text-on-positive: #{$neutral-950};
+  --text-on-warning: #{$neutral-950};
+  --text-on-negative: #{$neutral-950};
+  --text-on-surface-alt: #{$neutral-50};
+  --text-on-disabled: #{$neutral-200};
+}

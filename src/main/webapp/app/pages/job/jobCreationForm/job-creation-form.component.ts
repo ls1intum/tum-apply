@@ -88,6 +88,9 @@ export class JobCreationFormComponent {
   }
 
   publishJob(): void {
+    // 1. prepare DTO to send to server
+    // 2. call service method to send request
+
     // Logic to publish job
     console.warn('Publishing job...');
     console.warn({
