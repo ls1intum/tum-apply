@@ -4,8 +4,12 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -15,12 +19,13 @@ import org.springframework.stereotype.Service;
 public class JobService {
 
     private final JobRepository jobRepository;
+    private final UserRepository userRepository;
 
     //private final UserRepository userRepository;
 
-    public JobService(JobRepository jobRepository) {
+    public JobService(JobRepository jobRepository, UserRepository userRepository) {
         this.jobRepository = jobRepository;
-        //this.userRepository = userRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -40,9 +45,16 @@ public class JobService {
      *
      * @param dto the job details used to create the job
      */
-    public void createJob(JobDetailDTO dto) {
+    @Transactional
+    public void createJob(JobFormDTO dto) {
         Job job = new Job();
-        updateEntity(job, dto);
+        User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
+        job.setSupervisingProfessor(supervisingProfessor);
+        job.setResearchGroup(supervisingProfessor.getResearchGroup());
+        job.setTitle(dto.title());
+        job.setLocation(dto.location());
+        job.setFundingType(dto.fundingType());
+        job.setState(dto.state());
         jobRepository.save(job);
     }
 
@@ -55,7 +67,7 @@ public class JobService {
      */
     public JobCardDTO updateJob(UUID jobId, JobDetailDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("Job not found with ID: " + jobId));
-        updateEntity(job, dto);
+        //        updateEntity(job, dto);
         jobRepository.save(job);
         return toDto(job);
     }
@@ -91,9 +103,7 @@ public class JobService {
         return toDto(job);
     }
 
-    // === Mapping Helpers ===
-
-    private void updateEntity(Job job, JobDetailDTO dto) {
+    private void updateEntity(Job job, JobFormDTO dto) {
         // TODO: implement field mappings
     }
 
