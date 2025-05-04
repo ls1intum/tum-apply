@@ -4,6 +4,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
 
 import de.tum.cit.aet.core.security.AuthoritiesConstants;
+import de.tum.cit.aet.core.security.CurrentUserService;
+import de.tum.cit.aet.core.security.CustomMethodSecurityExpressionHandler;
 import de.tum.cit.aet.core.security.SecurityUtils;
 import de.tum.cit.aet.core.security.oauth2.AudienceValidator;
 import de.tum.cit.aet.core.security.oauth2.CustomClaimConverter;
@@ -18,6 +20,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -55,6 +58,11 @@ public class SecurityConfiguration {
 
     public SecurityConfiguration(JHipsterProperties jHipsterProperties) {
         this.jHipsterProperties = jHipsterProperties;
+    }
+
+    @Bean
+    public MethodSecurityExpressionHandler methodSecurityExpressionHandler(CurrentUserService currentUserService) {
+        return new CustomMethodSecurityExpressionHandler(currentUserService);
     }
 
     /**
