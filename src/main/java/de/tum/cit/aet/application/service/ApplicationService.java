@@ -3,8 +3,8 @@ package de.tum.cit.aet.application.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
-import de.tum.cit.aet.application.domain.dto.CreateApplicationPayload;
-import de.tum.cit.aet.application.domain.dto.UpdateApplicationPayload;
+import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
+import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +27,7 @@ public class ApplicationService {
      * @return created ApplicationForApplicantDTO
      */
     @Transactional
-    public ApplicationForApplicantDTO createApplication(CreateApplicationPayload payload) {
+    public ApplicationForApplicantDTO createApplication(CreateApplicationDTO payload) {
         Application application = new Application(
             null,
             null, // no applicationReview yet
@@ -90,7 +90,7 @@ public class ApplicationService {
      * @return updated ApplicationForApplicantDTO with updated values
      */
     @Transactional
-    public ApplicationForApplicantDTO updateApplication(UpdateApplicationPayload updateApplicationPayload) {
+    public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationPayload) {
         Application application = repository.findById(updateApplicationPayload.applicationId()).orElse(null);
         // TODO set values of application
         Application updateApplication = repository.save(application);

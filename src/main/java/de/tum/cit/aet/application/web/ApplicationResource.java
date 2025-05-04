@@ -1,8 +1,8 @@
 package de.tum.cit.aet.application.web;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
-import de.tum.cit.aet.application.domain.dto.CreateApplicationPayload;
-import de.tum.cit.aet.application.domain.dto.UpdateApplicationPayload;
+import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
+import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import java.util.Set;
 import java.util.UUID;
@@ -34,7 +34,7 @@ public class ApplicationResource {
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if the payload is invalid
      */
     @PostMapping
-    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationPayload payload) {
+    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO payload) {
         // TODO check authorization
         if (payload == null || payload.applicant() == null || payload.job() == null) {
             return ResponseEntity.badRequest().build();
@@ -49,7 +49,7 @@ public class ApplicationResource {
      * @return updated ApplicationForApplicantDTO
      */
     @PutMapping
-    public ResponseEntity<ApplicationForApplicantDTO> updateApplication(@RequestBody UpdateApplicationPayload application) {
+    public ResponseEntity<ApplicationForApplicantDTO> updateApplication(@RequestBody UpdateApplicationDTO application) {
         // TODO check authorization
         ApplicationForApplicantDTO updatedApplication = applicationService.updateApplication(application);
         return ResponseEntity.ok(updatedApplication);

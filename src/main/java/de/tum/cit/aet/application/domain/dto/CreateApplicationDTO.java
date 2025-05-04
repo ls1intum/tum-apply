@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
-public record CreateApplicationPayload(
+public record CreateApplicationDTO(
     UUID applicant,
     JobCardDTO job,
     LocalDate desiredDate,
