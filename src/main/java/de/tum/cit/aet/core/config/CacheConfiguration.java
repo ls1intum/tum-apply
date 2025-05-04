@@ -52,8 +52,6 @@ public class CacheConfiguration {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
-            // createCache(cm, UserRepository.USERS_BY_LOGIN_CACHE);
-            // createCache(cm, UserRepository.USERS_BY_EMAIL_CACHE);
             createCache(cm, User.class.getName());
             createCache(cm, Authority.class.getName());
             createCache(cm, User.class.getName() + ".authorities");
