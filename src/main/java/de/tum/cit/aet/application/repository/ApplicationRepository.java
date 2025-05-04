@@ -1,8 +1,8 @@
 package de.tum.cit.aet.application.repository;
 
 import de.tum.cit.aet.application.domain.Application;
-import java.util.Set;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
