@@ -4,15 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.IntegrationTest;
 import de.tum.cit.aet.core.config.Constants;
-import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.core.security.AuthoritiesConstants;
 import de.tum.cit.aet.core.service.dto.AdminUserDTO;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,13 +37,11 @@ class UserServiceIT {
     private static final String DEFAULT_FIRSTNAME = "john";
 
     private static final String DEFAULT_LASTNAME = "doe";
+    private static final String DEFAULT_IMAGEURL = "http://placehold.it/50x50";
+    private static final String DEFAULT_LANGKEY = "dummy";
 
     @Autowired
     private CacheManager cacheManager;
-
-    private static final String DEFAULT_IMAGEURL = "http://placehold.it/50x50";
-
-    private static final String DEFAULT_LANGKEY = "dummy";
 
     @Autowired
     private UserRepository userRepository;

@@ -13,7 +13,7 @@
       <column name="email" type="TEXT">
         <constraints nullable="false"/>
       </column>
-      <column name="avatar_file_id" type="CHAR(36)"/>
+      <column name="avatar" type="CHAR(36)"/>
       <column name="first_name" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
