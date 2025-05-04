@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronDown, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
+import { JobResourceService } from 'app/generated/api/jobResource.service';
+import { JobFormDTO } from '../../../generated';
 
 @Component({
   selector: 'jhi-job-creation-form',
@@ -10,22 +12,22 @@ import { CommonModule } from '@angular/common';
   templateUrl: './job-creation-form.component.html',
   styleUrls: ['./job-creation-form.component.scss'],
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
   readonly faCircleInfo = faCircleInfo;
   readonly faChevronDown = faChevronDown;
-
   currentStep = 1;
   // Form groups for each step
   basicInfoForm: FormGroup = this.fb.group({});
   positionDetailsForm: FormGroup = this.fb.group({});
-  // additionalInfoForm: FormGroup = this.fb.group({});
-
   // Options for dropdowns
   locations = ['Munich Campus', 'Garching Campus', 'Weihenstephan Campus'];
+  // additionalInfoForm: FormGroup = this.fb.group({});
   workloadOptions = ['Full-time (100%)', 'Part-time (75%)', 'Part-time (50%)'];
   contractDurations = ['3 years', '4 years', '5 years'];
   fundingTypes = ['University Budget', 'Government Funding', 'Self Funding'];
+  private jobResourceService = inject(JobResourceService);
 
   constructor(private fb: FormBuilder) {
     this.initForms();
@@ -88,8 +90,14 @@ export class JobCreationFormComponent {
   }
 
   publishJob(): void {
-    // 1. prepare DTO to send to server
-    // 2. call service method to send request
+    const jobFormDto: JobFormDTO = {
+      title: this.basicInfoForm.value.jobTitle,
+      supervisingProfessor: '00000000-0000-0000-0000-000000000102',
+      location: this.basicInfoForm.value.location,
+      fundingType: this.basicInfoForm.value.fundingType,
+      state: JobFormDTO.StateEnum.Published,
+    };
+    this.jobResourceService.createJob(jobFormDto);
 
     // Logic to publish job
     console.warn('Publishing job...');
