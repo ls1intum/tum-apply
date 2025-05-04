@@ -1,26 +1,34 @@
-<nav data-cy="navbar" class="navbar navbar-dark navbar-expand-md bg-dark">
+<nav class="navbar navbar-dark navbar-expand-md bg-dark" data-cy="navbar">
   <div class="container-fluid">
-    <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
+    <a (click)="collapseNavbar()" class="navbar-brand logo" routerLink="/">
       <span class="logo-img"></span>
       <span class="navbar-title" jhiTranslate="global.title">TUMApply</span>
       <span class="navbar-version">{{ version }}</span>
     </a>
     <a
-      class="navbar-toggler d-lg-none"
-      href="javascript:void(0);"
-      data-toggle="collapse"
-      data-target="#navbarResponsive"
+      (click)="toggleNavbar()"
       aria-controls="navbarResponsive"
       aria-expanded="false"
       aria-label="Toggle navigation"
-      (click)="toggleNavbar()"
+      class="navbar-toggler d-lg-none"
+      data-target="#navbarResponsive"
+      data-toggle="collapse"
+      href="javascript:void(0);"
     >
       <fa-icon icon="bars" />
     </a>
-    <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
+    <div [ngbCollapse]="isNavbarCollapsed()" class="navbar-collapse collapse" id="navbarResponsive">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
+        <li class="nav-item">
+          <button (click)="toggleTheme()" aria-label="Toggle theme" class="btn btn-link nav-link" title="Toggle theme" type="button">
+            <span>
+              <fa-icon icon="circle-half-stroke" />
+              <span jhiTranslate="global.menu.colorTheme"></span>
+            </span>
+          </button>
+        </li>
+        <li [routerLinkActiveOptions]="{ exact: true }" class="nav-item" routerLinkActive="active">
+          <a (click)="collapseNavbar()" class="nav-link" routerLink="/">
             <span>
               <fa-icon icon="home" />
               <span jhiTranslate="global.menu.home">Home</span>
@@ -45,52 +53,52 @@
         }
         <li
           *jhiHasAnyAuthority="'ROLE_ADMIN'"
-          ngbDropdown
+          [routerLinkActiveOptions]="{ exact: true }"
           class="nav-item dropdown pointer"
           display="dynamic"
+          ngbDropdown
           routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
         >
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="admin-menu" data-cy="adminMenu">
+          <a class="nav-link dropdown-toggle" data-cy="adminMenu" href="javascript:void(0);" id="admin-menu" ngbDropdownToggle>
             <span>
               <fa-icon icon="users-cog" />
               <span jhiTranslate="global.menu.admin.main">Administration</span>
             </span>
           </a>
-          <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="admin-menu">
+          <ul aria-labelledby="admin-menu" class="dropdown-menu" ngbDropdownMenu>
             <li>
               <a
+                (click)="collapseNavbar()"
+                [routerLinkActiveOptions]="{ exact: true }"
                 class="dropdown-item"
                 routerLink="/authority"
                 routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
-                (click)="collapseNavbar()"
               >
-                <fa-icon icon="asterisk" [fixedWidth]="true" />
+                <fa-icon [fixedWidth]="true" icon="asterisk" />
                 <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
               </a>
             </li>
             <li>
-              <a class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tachometer-alt" [fixedWidth]="true" />
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="tachometer-alt" />
                 <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
               </a>
             </li>
             <li>
-              <a class="dropdown-item" routerLink="/admin/health" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="heart" [fixedWidth]="true" />
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/health" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="heart" />
                 <span jhiTranslate="global.menu.admin.health">Health</span>
               </a>
             </li>
             <li>
-              <a class="dropdown-item" routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="cogs" [fixedWidth]="true" />
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/configuration" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="cogs" />
                 <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
               </a>
             </li>
             <li>
-              <a class="dropdown-item" routerLink="/admin/logs" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tasks" [fixedWidth]="true" />
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/logs" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="tasks" />
                 <span jhiTranslate="global.menu.admin.logs">Logs</span>
               </a>
             </li>
@@ -128,14 +136,14 @@
           </li>
         }
         <li
-          ngbDropdown
+          [routerLinkActiveOptions]="{ exact: true }"
           class="nav-item dropdown pointer"
           display="dynamic"
+          ngbDropdown
           routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
         >
           @let accountRef = account();
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu" data-cy="accountMenu">
+          <a class="nav-link dropdown-toggle" data-cy="accountMenu" href="javascript:void(0);" id="account-menu" ngbDropdownToggle>
             @if (!accountRef?.imageUrl) {
               <span>
                 <fa-icon icon="user" />
@@ -147,7 +155,7 @@
               </span>
             }
           </a>
-          <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
+          <ul aria-labelledby="account-menu" class="dropdown-menu" ngbDropdownMenu>
             @if (accountRef !== null) {
               <li>
                 <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">

@@ -10,6 +10,7 @@ import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
+import { SessionStorageService } from 'ngx-webstorage';
 
 import NavbarComponent from './navbar.component';
 
@@ -32,7 +33,18 @@ describe('Navbar Component', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [NavbarComponent, TranslateModule.forRoot()],
-      providers: [provideHttpClient(), provideHttpClientTesting(), LoginService],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        LoginService,
+        {
+          provide: SessionStorageService,
+          useValue: {
+            retrieve: jest.fn().mockReturnValue(null),
+            store: jest.fn(),
+          },
+        },
+      ],
     })
       .overrideTemplate(NavbarComponent, '')
       .compileComponents();
