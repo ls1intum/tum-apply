@@ -52,6 +52,7 @@ public class JobResource {
     public ResponseEntity<Void> createJob(@RequestBody JobFormDTO jobForm) {
         log.debug("REST request to create Job : {}", jobForm);
         jobService.createJob(jobForm);
+        log.debug("REST request to create Job : {} succeeded", jobForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

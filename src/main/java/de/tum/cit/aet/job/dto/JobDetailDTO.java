@@ -4,14 +4,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record JobDetailDTO(
     UUID jobId,
-    //    User supervisingProfessor,
-    //    ResearchGroup researchGroup,
+    User supervisingProfessor,
+    ResearchGroup researchGroup,
     String fieldOfStudies,
     String researchArea,
     Campus location,
