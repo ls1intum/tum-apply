@@ -23,25 +23,25 @@ public class ApplicationService {
 
     /**
      *
-     * @param payload
+     * @param createApplicationDTO
      * @return created ApplicationForApplicantDTO
      */
     @Transactional
-    public ApplicationForApplicantDTO createApplication(CreateApplicationDTO payload) {
+    public ApplicationForApplicantDTO createApplication(CreateApplicationDTO createApplicationDTO) {
         Application application = new Application(
             null,
             null, // no applicationReview yet
             null, //TODO get User from UUID
             null, // TODO get Job from JobcardDTO
-            payload.applicationState(),
-            payload.desiredDate(),
+            createApplicationDTO.applicationState(),
+            createApplicationDTO.desiredDate(),
             null,
             null,
             null,
             null,
-            payload.projects(),
-            payload.specialSkills(),
-            payload.motivation(),
+            createApplicationDTO.projects(),
+            createApplicationDTO.specialSkills(),
+            createApplicationDTO.motivation(),
             null,
             null, // TODO get CustomAnswers from CustomAnswerDto,
             null
@@ -86,12 +86,12 @@ public class ApplicationService {
 
     /**
      *
-     * @param updateApplicationPayload
+     * @param updateApplicationDTO
      * @return updated ApplicationForApplicantDTO with updated values
      */
     @Transactional
-    public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationPayload) {
-        Application application = repository.findById(updateApplicationPayload.applicationId()).orElse(null);
+    public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
+        Application application = repository.findById(updateApplicationDTO.applicationId()).orElse(null);
         // TODO set values of application
         Application updateApplication = repository.save(application);
         return ApplicationForApplicantDTO.getFromEntity(updateApplication);

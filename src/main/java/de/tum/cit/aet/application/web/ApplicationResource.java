@@ -30,22 +30,22 @@ public class ApplicationResource {
 
     /**
      *
-     * @param payload The payload necessary to create an Application
-     * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if the payload is invalid
+     * @param createApplicationDTO The data necessary to create an Application
+     * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if the createApplicationDTO is invalid
      */
     @PostMapping
-    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO payload) {
+    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
         // TODO check authorization
-        if (payload == null || payload.applicant() == null || payload.job() == null) {
+        if (createApplicationDTO == null || createApplicationDTO.applicant() == null || createApplicationDTO.job() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok(applicationService.createApplication(payload));
+        return ResponseEntity.ok(applicationService.createApplication(createApplicationDTO));
     }
 
     /**
      *
-     * @param application the updated application payload
+     * @param application the updated application
      * @return updated ApplicationForApplicantDTO
      */
     @PutMapping
