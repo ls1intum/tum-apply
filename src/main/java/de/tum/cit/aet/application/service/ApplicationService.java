@@ -2,9 +2,9 @@ package de.tum.cit.aet.application.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.dto.ApplicationApplicantDTO;
-import de.tum.cit.aet.application.domain.payload.CreateApplicationPayload;
-import de.tum.cit.aet.application.domain.payload.UpdateApplicationPayload;
+import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.CreateApplicationPayload;
+import de.tum.cit.aet.application.domain.dto.UpdateApplicationPayload;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import java.util.Set;
 import java.util.UUID;
@@ -24,10 +24,10 @@ public class ApplicationService {
     /**
      *
      * @param payload
-     * @return created ApplicationApplicantDTO
+     * @return created ApplicationForApplicantDTO
      */
     @Transactional
-    public ApplicationApplicantDTO createApplication(CreateApplicationPayload payload) {
+    public ApplicationForApplicantDTO createApplication(CreateApplicationPayload payload) {
         Application application = new Application(
             null,
             null, // no applicationReview yet
@@ -49,68 +49,68 @@ public class ApplicationService {
 
         Application savedApplication = repository.save(application);
 
-        return ApplicationApplicantDTO.getFromEntity(savedApplication);
+        return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
     /**
      *
      * @param applicantId
-     * @return Set of ApplicationApplicantDTO which all have the same applicant
+     * @return Set of ApplicationForApplicantDTO which all have the same applicant
      */
-    public Set<ApplicationApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
+    public Set<ApplicationForApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
         return repository
             .findAllByApplicantUserId(applicantId)
             .stream()
-            .map(ApplicationApplicantDTO::getFromEntity)
+            .map(ApplicationForApplicantDTO::getFromEntity)
             .collect(Collectors.toSet());
     }
 
     /**
      *
      * @param jobId
-     * @return Set of ApplicationApplicantDTO which all have the same Job
+     * @return Set of ApplicationForApplicantDTO which all have the same Job
      */
-    public Set<ApplicationApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
-        return repository.findAllByJobJobId(jobId).stream().map(ApplicationApplicantDTO::getFromEntity).collect(Collectors.toSet());
+    public Set<ApplicationForApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
+        return repository.findAllByJobJobId(jobId).stream().map(ApplicationForApplicantDTO::getFromEntity).collect(Collectors.toSet());
     }
 
     /**
      *
      * @param applicationId
-     * @return ApplicationApplicantDTO with same Id as parameter applicationId
+     * @return ApplicationForApplicantDTO with same Id as parameter applicationId
      */
-    public ApplicationApplicantDTO getApplicationById(UUID applicationId) {
+    public ApplicationForApplicantDTO getApplicationById(UUID applicationId) {
         Application application = repository.findById(applicationId).orElse(null);
-        return ApplicationApplicantDTO.getFromEntity(application);
+        return ApplicationForApplicantDTO.getFromEntity(application);
     }
 
     /**
      *
      * @param updateApplicationPayload
-     * @return updated ApplicationApplicantDTO with updated values
+     * @return updated ApplicationForApplicantDTO with updated values
      */
     @Transactional
-    public ApplicationApplicantDTO updateApplication(UpdateApplicationPayload updateApplicationPayload) {
+    public ApplicationForApplicantDTO updateApplication(UpdateApplicationPayload updateApplicationPayload) {
         Application application = repository.findById(updateApplicationPayload.applicationId()).orElse(null);
         // TODO set values of application
         Application updateApplication = repository.save(application);
-        return ApplicationApplicantDTO.getFromEntity(updateApplication);
+        return ApplicationForApplicantDTO.getFromEntity(updateApplication);
     }
 
     /**
      *
      * @param applicationId
-     * @return withdrawn ApplicationApplicantDTO
+     * @return withdrawn ApplicationForApplicantDTO
      */
     @Transactional
-    public ApplicationApplicantDTO withdrawApplication(UUID applicationId) {
+    public ApplicationForApplicantDTO withdrawApplication(UUID applicationId) {
         Application application = repository.findById(applicationId).orElse(null);
         if (application == null) {
             return null;
         }
         application.setState(ApplicationState.WITHDRAWN);
         Application savedApplication = repository.save(application);
-        return ApplicationApplicantDTO.getFromEntity(savedApplication);
+        return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
     /**

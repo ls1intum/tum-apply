@@ -1,7 +1,6 @@
-package de.tum.cit.aet.application.domain.payload;
+package de.tum.cit.aet.application.domain.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.application.domain.dto.CustomFieldAnswerDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import java.time.LocalDate;
 import java.util.Set;

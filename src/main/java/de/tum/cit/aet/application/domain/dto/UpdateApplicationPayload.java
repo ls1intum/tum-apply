@@ -1,4 +1,4 @@
-package de.tum.cit.aet.application.domain.payload;
+package de.tum.cit.aet.application.domain.dto;
 
 import java.util.UUID;
 

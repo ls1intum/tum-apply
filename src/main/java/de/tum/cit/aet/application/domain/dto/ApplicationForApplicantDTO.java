@@ -1,5 +1,6 @@
 package de.tum.cit.aet.application.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.job.dto.JobCardDTO;
@@ -8,7 +9,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public record ApplicationApplicantDTO(
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public record ApplicationForApplicantDTO(
     UUID applicationId,
     UUID applicant,
     JobCardDTO job,
@@ -22,11 +24,11 @@ public record ApplicationApplicantDTO(
      * @param application
      * @return
      */
-    public static ApplicationApplicantDTO getFromEntity(Application application) {
+    public static ApplicationForApplicantDTO getFromEntity(Application application) {
         if (application == null) {
             return null;
         }
-        return new ApplicationApplicantDTO(
+        return new ApplicationForApplicantDTO(
             application.getApplicationId(),
             application.getApplicationId(), //new UserDTO(), //TODO
             null, // TODO JobDTO.getFromEntity(application.getJob()),
