@@ -298,6 +298,52 @@ Add the `help` flag on any command to see how you can use it. For example, `./np
 
 The `./npmw run` command will list all the scripts available to run for this project.
 
+### 🎨 Color System & Theming
+
+TUMApply uses a scalable and themeable SCSS color system that supports light and dark mode via CSS Custom Properties.
+
+#### 🧱 Structure
+
+Colors are defined and used in the following way:
+
+- `_primitives.scss`: defines color primitives from the design (e.g. `$primary-300`, `$neutral-100`, etc.)
+- `_tokens.scss`: defines semantic tokens (e.g. `--primary-default`, `--background-default`) for actual use in
+  components
+- `_bootstrap-overrides.scss`: maps semantic tokens to Bootstrap variables (e.g. `$theme-colors`) using SCSS or
+  `var(...)`
+- `global.scss`: sets application-wide styles and uses the defined `var(--token-name)` variables
+
+#### 🌞 Light and 🌚 Dark Mode
+
+The file `_tokens.scss` defines two CSS scopes:
+
+- `:root { ... }` → Light mode tokens
+- `.dark-theme { ... }` → Dark mode overrides
+
+The theme is automatically selected at runtime based on the user's system preference (`prefers-color-scheme`). You can
+also manually force the dark mode by adding the `dark-theme` class to the `<html>` element.
+
+#### 🎨 How to use colors
+
+Use CSS variables in components and global styles:
+
+```scss
+background-color: var (--background-default);
+color: var (--text-primary);
+```
+
+Do not use hardcoded hex values. Do not use SCSS variables like `$primary-default` outside of Bootstrap configuration.
+
+#### ⚠️ Missing or unset tokens
+
+If a variable like `var(--background-default)` is not set, the browser will fall back to:
+
+- inherited values
+- the default style (`transparent`, `black`, or `initial`)
+- or fallback provided via `var(--background-default, #fff)`
+
+Make sure to define all used tokens in `_tokens.scss`. You can use browser dev tools to debug unresolved CSS variables.
+
 ### PWA Support
 
 JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a

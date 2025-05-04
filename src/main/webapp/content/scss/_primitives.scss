@@ -1,0 +1,128 @@
+// ========================================================
+// Color Primitives for TUMApply (imported from Figma)
+//
+// These variables define the core color palette based on
+// the design tokens created in Figma.
+//
+// Each color family includes a `-base` token and numbered
+// shades (50–950) used throughout the design system.
+// The `-base` token should be used for semantic tokens and
+// defaults where no specific shade is intended.
+// ========================================================
+
+// Color Primitives
+
+$base-black: #030712;
+$base-white: #ffffff;
+
+// Neutral Colors (grayscale background and text tones)
+$neutral-50: #f7f7f8;
+$neutral-100: #e6e6e6;
+$neutral-200: #d4d4d5;
+$neutral-300: #c0c0c1;
+$neutral-400: #aeaeaf;
+$neutral-500: #8d8d8f;
+$neutral-600: #676769;
+$neutral-700: #414144;
+$neutral-800: #343537;
+$neutral-900: #1a1b1e;
+$neutral-950: #010205;
+$neutral-base: $neutral-500;
+
+// Primary Colors (main brand colors)
+$primary-50: #d6e6fa;
+$primary-100: #b1d1f6;
+$primary-200: #63a2ee;
+$primary-300: #1872dd;
+$primary-400: #10498f;
+$primary-500: #072140;
+$primary-600: #061a33;
+$primary-700: #041325;
+$primary-800: #030e1c;
+$primary-900: #02070e;
+$primary-950: #010205;
+$primary-base: $primary-500;
+
+// Secondary Colors (supporting brand colors)
+$secondary-50: #dfecfc;
+$secondary-100: #bfd9f8;
+$secondary-200: #83b6f2;
+$secondary-300: #428feb;
+$secondary-400: #176dd4;
+$secondary-500: #104d95;
+$secondary-600: #0d3e78;
+$secondary-700: #092d58;
+$secondary-800: #061f3c;
+$secondary-900: #030e1c;
+$secondary-950: #01070e;
+$secondary-base: $secondary-500;
+
+// Tertiary Colors (additional accent colors)
+$tertiary-50: #e8f1fd;
+$tertiary-100: #d0e4fb;
+$tertiary-200: #a2c8f6;
+$tertiary-300: #78b0f3;
+$tertiary-400: #4994ee;
+$tertiary-500: #1a79ea;
+$tertiary-600: #1261c0;
+$tertiary-700: #0d4991;
+$tertiary-800: #092f5d;
+$tertiary-900: #04182f;
+$tertiary-950: #020c17;
+$tertiary-base: $tertiary-500;
+
+// Info Colors (informational messages and highlights)
+$info-50: #ebefff;
+$info-100: #d6e0ff;
+$info-200: #a8bdff;
+$info-300: #809dff;
+$info-400: #527aff;
+$info-500: #295bff;
+$info-600: #0037eb;
+$info-700: #002ab3;
+$info-800: #001b75;
+$info-900: #000e3d;
+$info-950: #00071f;
+$info-base: $info-500;
+
+// Positive Colors (success states and positive feedback)
+$positive-50: #e6faee;
+$positive-100: #d0f5e1;
+$positive-200: #a2ecc2;
+$positive-300: #73e2a4;
+$positive-400: #45d985;
+$positive-500: #27be69;
+$positive-600: #1f9854;
+$positive-700: #17723f;
+$positive-800: #104c2a;
+$positive-900: #082615;
+$positive-950: #031109;
+$positive-base: $positive-500;
+
+// Warning Colors (warning states and alerts)
+$warning-50: #fff8e5;
+$warning-100: #fff3d1;
+$warning-200: #ffe59e;
+$warning-300: #ffd970;
+$warning-400: #ffcb3d;
+$warning-500: #ffbf0f;
+$warning-600: #d69d00;
+$warning-700: #a37800;
+$warning-800: #6b4f00;
+$warning-900: #382900;
+$warning-950: #1a1300;
+$warning-base: $warning-500;
+
+// Negative Colors (error states and negative feedback)
+$negative-50: #feecee;
+$negative-100: #fcd9de;
+$negative-200: #fab3bd;
+$negative-300: #f78c9c;
+$negative-400: #f5667a;
+$negative-500: #f2415a;
+$negative-600: #e5102e;
+$negative-700: #ac0c22;
+$negative-800: #730817;
+$negative-900: #39040b;
+$negative-950: #1d0206;
+$negative-base: $negative-500;
