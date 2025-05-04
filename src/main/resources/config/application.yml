@@ -121,6 +121,7 @@ spring:
   jpa:
     open-in-view: false
     properties:
+      hibernate.type.preferred_uuid_jdbc_type: CHAR
       hibernate.jdbc.time_zone: UTC
       hibernate.timezone.default_storage: NORMALIZE
       hibernate.id.new_generator_mappings: true
