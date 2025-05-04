@@ -8,24 +8,14 @@
  * Do not edit the class manually.
  */
 
-export interface JobDetailDTO {
-  jobId?: string;
+export interface JobFormDTO {
   supervisingProfessor?: string;
-  researchGroup?: string;
-  fieldOfStudies?: string;
-  researchArea?: string;
-  location?: JobDetailDTO.LocationEnum;
-  workload?: number;
-  contractDuration?: number;
-  fundingType?: JobDetailDTO.FundingTypeEnum;
   title?: string;
-  description?: string;
-  tasks?: string;
-  requirements?: string;
-  state?: JobDetailDTO.StateEnum;
-  startDate?: string;
+  location?: JobFormDTO.LocationEnum;
+  fundingType?: JobFormDTO.FundingTypeEnum;
+  state?: JobFormDTO.StateEnum;
 }
-export namespace JobDetailDTO {
+export namespace JobFormDTO {
   export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
   export const LocationEnum = {
     Garching: 'GARCHING' as LocationEnum,
