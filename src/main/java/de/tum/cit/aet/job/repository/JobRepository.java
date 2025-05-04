@@ -1,16 +1,16 @@
 package de.tum.cit.aet.job.repository;
 
+import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
  * Spring Data JPA repository for the {@link Job} entity.
  */
 @Repository
-public interface JobRepository extends JpaRepository<Job, UUID> {
+public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     /**
      * Finds all jobs with the given state and returns them as {@link JobCardDTO} projections.
      *

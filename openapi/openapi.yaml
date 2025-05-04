@@ -62,7 +62,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/JobDetailDTO"
+                "$ref": "#/components/schemas/JobFormDTO"
               }
             }
           },
@@ -211,32 +211,35 @@
       "JobDetailDTO": {
         "type": "object",
         "properties": {
-          "title": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supervisingProfessor": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "researchGroup": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldOfStudies": {
             "type": "string"
           },
           "researchArea": {
             "type": "string"
           },
-          "fieldOfStudies": {
-            "type": "string"
-          },
-          "professorId": {
-            "type": "string",
-            "format": "uuid"
-          },
           "location": {
-            "type": "string"
-          },
-          "startDate": {
             "type": "string",
-            "format": "date-time"
-          },
-          "applicationDeadline": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "employmentType": {
-            "type": "string"
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
           },
           "workload": {
             "type": "integer",
@@ -247,6 +250,18 @@
             "format": "int32"
           },
           "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "title": {
             "type": "string"
           },
           "description": {
@@ -255,32 +270,21 @@
           "tasks": {
             "type": "string"
           },
-          "applicationRequirements": {
+          "requirements": {
             "type": "string"
           },
-          "qualifications": {
-            "type": "string"
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
           },
-          "introduction": {
-            "type": "string"
-          },
-          "aboutUs": {
-            "type": "string"
-          },
-          "weOffer": {
-            "type": "string"
-          },
-          "contactName": {
-            "type": "string"
-          },
-          "contactEmail": {
-            "type": "string"
-          },
-          "contactPhoneNumber": {
-            "type": "string"
-          },
-          "contactWebsite": {
-            "type": "string"
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -341,6 +345,51 @@
           "title",
           "workload"
         ]
+      },
+      "JobFormDTO": {
+        "type": "object",
+        "properties": {
+          "supervisingProfessor": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          }
+        }
       }
     }
   }

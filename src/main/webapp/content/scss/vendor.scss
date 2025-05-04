@@ -4,6 +4,10 @@
 put Sass variables here:
 eg $input-color: red;
 ****************************/
+// Import color tokens from Figma
+@import 'tokens';
+// Import Bootstrap overrides
+@import 'bootstrap-overrides';
 // Override Bootstrap variables
 @import 'bootstrap-variables';
 // Import Bootstrap source files from node_modules

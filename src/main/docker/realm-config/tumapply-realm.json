@@ -1,0 +1,63 @@
+{
+  "realm": "tumapply",
+  "enabled": true,
+  "displayName": "TUMApply Realm",
+  "users": [
+    {
+      "username": "applicant1",
+      "enabled": true,
+      "email": "applicant1@tumapply.local",
+      "emailVerified": true,
+      "firstName": "Applicant",
+      "lastName": "One",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "applicant",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "professor1",
+      "enabled": true,
+      "email": "professor1@tumapply.local",
+      "emailVerified": true,
+      "firstName": "Professor",
+      "lastName": "One",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "professor",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "admin1",
+      "enabled": true,
+      "email": "admin1@tumapply.local",
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "One",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "tumapply-client",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "redirectUris": ["*"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true
+    }
+  ]
+}

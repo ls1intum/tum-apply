@@ -12,12 +12,14 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
 @Table(name = "applications")
 public class Application extends AbstractAuditingEntity {
 
@@ -37,8 +39,7 @@ public class Application extends AbstractAuditingEntity {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @NotBlank
-    @Column(name = "application_state")
+    @Column(name = "application_state", nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationState state;
 

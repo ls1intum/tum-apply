@@ -332,8 +332,12 @@
       <column name="custom_field_answer_id" type="CHAR(36)">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="custom_field_id" type="CHAR(36)"/>
-      <column name="application_id" type="CHAR(36)"/>
+      <column name="custom_field_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="application_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
       <column name="answers" type="LONGTEXT"/>
     </createTable>
 
@@ -362,7 +366,9 @@
       <column name="type" type="ENUM('BACHELOR_TRANSCRIPT','MASTER_TRANSCRIPT','CV','CUSTOM')">
         <constraints nullable="false"/>
       </column>
-      <column name="document_path" type="TEXT"/>
+      <column name="document_path" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
       <column name="custom_field_answer_id" type="CHAR(36)"/>
       <column name="application_id" type="CHAR(36)"/>
       <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">

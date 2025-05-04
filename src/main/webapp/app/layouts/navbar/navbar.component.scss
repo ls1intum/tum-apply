@@ -7,7 +7,7 @@ Navbar
 
 .navbar-version {
   font-size: 0.65em;
-  color: $navbar-dark-color;
+  color: var(--text-secondary);
 }
 
 .profile-image {
@@ -17,6 +17,29 @@ Navbar
 
 .navbar {
   padding: 0.2rem 1rem;
+  background-color: var(--background-surface);
+  color: var(--text-primary);
+
+  a,
+  .nav-link,
+  .navbar-brand {
+    color: var(--text-primary);
+  }
+
+  a:hover,
+  .nav-link:hover {
+    color: var(--text-secondary);
+  }
+
+  .btn {
+    color: var(--text-primary);
+    background-color: transparent;
+    border: none;
+
+    &:hover {
+      color: var(--text-secondary);
+    }
+  }
 
   a.nav-link {
     font-weight: 400;
