@@ -37,8 +37,7 @@ public class Application extends AbstractAuditingEntity {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @NotBlank
-    @Column(name = "application_state")
+    @Column(name = "application_state", nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationState state;
 
