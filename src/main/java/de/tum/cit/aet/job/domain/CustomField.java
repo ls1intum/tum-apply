@@ -33,6 +33,7 @@ public class CustomField {
     private boolean isRequired;
 
     @Column(name = "custom_field_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private CustomFieldType customFieldType;
 
     @Convert(converter = StringListConverter.class)
