@@ -1,15 +1,14 @@
 package de.tum.cit.aet.core.web.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.IntegrationTest;
-import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.core.security.AuthoritiesConstants;
 import de.tum.cit.aet.core.service.mapper.UserMapper;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.persistence.EntityManager;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +64,7 @@ class UserResourceIT {
 
     /**
      * Create a User.
-     *
+     * <p>
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which has a required relationship to the User entity.
      */
