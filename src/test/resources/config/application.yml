@@ -30,12 +30,9 @@ spring:
     basename: i18n/messages
   security:
     oauth2:
-      client:
-        provider:
-          oidc:
-            issuer-uri: http://DO_NOT_CALL:9080/realms/jhipster
       resourceserver:
         jwt:
+          issuer-uri: http://localhost:9080/realms/jhipster
           principal-claim-name: preferred_username
   task:
     execution:
