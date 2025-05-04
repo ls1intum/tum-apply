@@ -33,7 +33,10 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label for="researchArea">Research Area</label>
+            <label for="researchArea"
+              >Research Area
+              <fa-icon [icon]="faCircleInfo"></fa-icon>
+            </label>
             <div class="input-with-icon">
               <input
                 formControlName="researchArea"
@@ -45,7 +48,10 @@
           </div>
 
           <div class="form-field">
-            <label for="fieldOfStudies">Field of Studies</label>
+            <label for="fieldOfStudies"
+              >Field of Studies
+              <fa-icon [icon]="faCircleInfo"></fa-icon>
+            </label>
             <div class="input-with-icon">
               <div class="select-wrapper">
                 <select formControlName="fieldOfStudies" id="fieldOfStudies">
@@ -159,7 +165,10 @@
           qualifications for applicants.
         </p>
         <div class="form-field">
-          <label for="description">Job Description</label>
+          <label for="description"
+            >Job Description
+            <fa-icon [icon]="faCircleInfo"></fa-icon>
+          </label>
           <div class="input-with-icon">
             <textarea
               formControlName="description"
@@ -167,24 +176,28 @@
               placeholder="Describe the scope and focus of the position..."
               rows="10"
             ></textarea>
-            <span class="info-icon">i</span>
           </div>
           <small class="description-helper"
             >Describe the research context, goals, and overall scope of the position. Keep it concise but informative.</small
           >
         </div>
         <div class="form-field">
-          <label for="tasks">Tasks</label>
+          <label for="tasks"
+            >Tasks
+            <fa-icon [icon]="faCircleInfo"></fa-icon>
+          </label>
           <div class="input-with-icon">
             <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
-            <span class="info-icon">i</span>
           </div>
           <small class="description-helper"
             >List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.</small
           >
         </div>
         <div class="form-field">
-          <label for="requirements">Eligibility Criteria</label>
+          <label for="requirements"
+            >Eligibility Criteria
+            <fa-icon [icon]="faCircleInfo"></fa-icon>
+          </label>
           <div class="input-with-icon">
             <textarea
               formControlName="requirements"
@@ -192,7 +205,6 @@
               placeholder="List the minimum requirements for applicants..."
               rows="10"
             ></textarea>
-            <span class="info-icon">i</span>
           </div>
           <small class="description-helper"
             >Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.</small

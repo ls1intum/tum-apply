@@ -1,19 +1,8 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faChevronDown, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
-
-interface BasicInfoForm {
-  jobTitle: FormControl<string | null>;
-  researchArea: FormControl<string | null>;
-  fieldOfStudies: FormControl<string | null>;
-  supervisingProfessor: FormControl<string>;
-  location: FormControl<string>;
-  startDate: FormControl<string | null>;
-  workload: FormControl<string | null>;
-  contractDuration: FormControl<string | null>;
-  fundingType: FormControl<string>;
-}
 
 @Component({
   selector: 'jhi-job-creation-form',
@@ -23,10 +12,12 @@ interface BasicInfoForm {
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
 })
 export class JobCreationFormComponent {
-  currentStep = 1;
+  readonly faCircleInfo = faCircleInfo;
+  readonly faChevronDown = faChevronDown;
 
+  currentStep = 1;
   // Form groups for each step
-  basicInfoForm!: FormGroup<BasicInfoForm>;
+  basicInfoForm: FormGroup = this.fb.group({});
   positionDetailsForm: FormGroup = this.fb.group({});
   // additionalInfoForm: FormGroup = this.fb.group({});
 
@@ -38,10 +29,6 @@ export class JobCreationFormComponent {
 
   constructor(private fb: FormBuilder) {
     this.initForms();
-  }
-
-  get f(): BasicInfoForm {
-    return this.basicInfoForm.controls;
   }
 
   initForms(): void {
@@ -62,7 +49,7 @@ export class JobCreationFormComponent {
       workload: [''],
       contractDuration: [''],
       fundingType: ['', Validators.required],
-    }) as FormGroup<BasicInfoForm>;
+    });
 
     // Position Details form
     this.positionDetailsForm = this.fb.group({
@@ -89,6 +76,7 @@ export class JobCreationFormComponent {
     }
   }
 
+  // TODO: DELETE LATER
   saveDraft(): void {
     // Logic to save draft
     console.warn('Saving draft...');
@@ -107,9 +95,5 @@ export class JobCreationFormComponent {
       ...this.positionDetailsForm.value,
       // ...this.additionalInfoForm.value,
     });
-  }
-
-  isInvalidOrDisabled(control: FormControl): boolean {
-    return (control.invalid && control.touched) || control.disabled;
   }
 }
