@@ -20,8 +20,7 @@ public class Document extends AbstractAuditingEntity {
     @Column(name = "document_id", nullable = false)
     private UUID documentId;
 
-    @NotBlank
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private DocumentType type;
 
