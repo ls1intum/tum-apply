@@ -2,9 +2,9 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.domain.Authority;
 import de.tum.cit.aet.core.repository.AuthorityRepository;
-import de.tum.cit.aet.core.repository.UserRepository;
 import de.tum.cit.aet.core.service.dto.AdminUserDTO;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
