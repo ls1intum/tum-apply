@@ -18,7 +18,7 @@ public class UserResearchGroupRole {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_research_group_role_id", nullable = false)
-    private UUID userResearchGroupRoleId;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

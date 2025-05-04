@@ -20,7 +20,7 @@ public class ResearchGroup extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "research_group_id", nullable = false)
-    private UUID researchGroupId;
+    private UUID id;
 
     @Column(name = "head")
     private String head;
