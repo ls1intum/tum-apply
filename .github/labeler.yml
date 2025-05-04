@@ -21,3 +21,23 @@ docker:
 config-change:
   - changed-files:
       - any-glob-to-any-file: src/main/resources/config/*.yml
+
+application:
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/application
+      - any-glob-to-any-file: src/main/webapp/app/pages/application
+
+job:
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/job
+      - any-glob-to-any-file: src/main/webapp/app/pages/job
+
+evaluation:
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/evaluation
+      - any-glob-to-any-file: src/main/webapp/app/pages/evaluation
+
+usermanagement:
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/usermanagement
+      - any-glob-to-any-file: src/main/webapp/app/pages/usermanagement

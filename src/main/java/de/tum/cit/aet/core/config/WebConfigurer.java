@@ -99,6 +99,11 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
      */
     private String resolvePathPrefix() {
         String fullExecutablePath = decode(this.getClass().getResource("").getPath(), StandardCharsets.UTF_8);
+
+        if (System.getProperty("os.name").toLowerCase().contains("win") && fullExecutablePath.matches("^/[A-Za-z]:/.*")) {
+            fullExecutablePath = fullExecutablePath.substring(1);
+        }
+
         String rootPath = Path.of(".").toUri().normalize().getPath();
         String extractedPath = fullExecutablePath.replace(rootPath, "");
         int extractionEndIndex = extractedPath.indexOf("build/");

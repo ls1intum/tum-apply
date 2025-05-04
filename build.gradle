@@ -20,9 +20,10 @@ plugins {
     id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
     id "io.spring.dependency-management" version "1.1.7"
     id "org.liquibase.gradle" version "${liquibasePluginVersion}"
-    id "org.openapi.generator" version "7.12.0"
     id "org.sonarqube" version "6.1.0.5360"
     id "org.springframework.boot" version "${springBootVersion}"
+    id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
+    id "org.openapi.generator" version "7.12.0"
 }
 
 group = "de.tum.cit.aet"
@@ -50,7 +51,7 @@ spotless {
     }
 }
 
-apply from: "gradle/openapi.gradle"
+//apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
 if (project.hasProperty("prod")) {
@@ -123,6 +124,43 @@ configurations {
     providedRuntime
 }
 
+openApi {
+  apiDocsUrl.set("http://localhost:8080/api-docs")
+  outputDir.set(file("$rootDir/openapi"))
+  outputFileName.set("openapi.yaml")
+  waitTimeInSeconds.set(120)
+  customBootRun {
+    jvmArgs = [
+      "-Dspring.profiles.active=dev,no-liquibase",
+      "-Dspringdoc.packages-to-scan=de.tum.cit.aet.job.web",
+      "-Dspring.docker.compose.enabled=false",
+      "-Dspring.docker.compose.lifecycle-management=none"
+    ]
+    args.set([
+            "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+            "--spring.datasource.username=sa",
+            "--spring.datasource.password=",
+            "--spring.datasource.driver-class-name=org.h2.Driver"
+            ])
+  }
+}
+
+openApiGenerate {
+  generatorName = "typescript-angular"
+  inputSpec = "${rootDir}/openapi/openapi.yaml"
+  outputDir = "${rootDir}/src/main/webapp/app/generated"
+  apiPackage = "api"
+  modelPackage = "model"
+  invokerPackage = "invoker"
+  validateSpec.set(false)
+  configOptions = [
+    serviceSuffix: "Service",
+    supportsES6: "true",
+    npmName: "@tumapply/api-client",
+    npmVersion: "${project.version}"
+  ]
+}
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -133,7 +171,6 @@ dependencies {
     // import JHipster dependencies BOM
     implementation platform("tech.jhipster:jhipster-dependencies:${jhipsterDependenciesVersion}")
 
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.6"
     implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
 
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
@@ -183,6 +220,12 @@ dependencies {
     implementation "com.github.ben-manes.caffeine:jcache:3.2.0"
     implementation "javax.cache:cache-api"
     implementation "org.hibernate.orm:hibernate-jcache"
+
+
+    // needed for OpenAPI generation
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+    runtimeOnly "com.h2database:h2"
+
 
     testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
     testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
