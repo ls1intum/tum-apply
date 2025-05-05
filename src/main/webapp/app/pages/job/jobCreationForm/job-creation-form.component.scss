@@ -1,6 +1,7 @@
 /* app.component.scss */
 
 // Variables
+/*
 $primary-color: #0065bd;
 $primary-light: #3a7ab6;
 $primary-dark: #004e9a;
@@ -10,7 +11,8 @@ $text-color: #333;
 $error-color: #e74c3c;
 $success-color: #2ecc71;
 $white: #fff;
-$shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+$shadow: 0 0.1250rem 0.3125rem rgba(0, 0, 0, 0.1);
+ */
 
 // Base styles
 * {
@@ -27,27 +29,27 @@ body {
 }
 
 .doctorate-form-container {
-  max-width: 1200px;
+  max-width: 75rem;
   margin: 0 auto;
-  padding: 20px;
+  padding: 1.25rem;
   background-color: $white;
   box-shadow: $shadow;
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 
 // Header
 header {
-  padding-bottom: 20px;
+  padding-bottom: 1.25rem;
 
   h1 {
     color: $primary-color;
-    font-size: 24px;
-    margin-bottom: 8px;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
   }
 
   p {
     color: #666;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 }
 
@@ -55,15 +57,15 @@ header {
 .stepper {
   display: flex;
   align-items: center;
-  margin: 30px 0;
+  margin: 1.875rem 0;
 
   .step {
     display: flex;
     align-items: center;
 
     .step-number {
-      width: 30px;
-      height: 30px;
+      width: 1.875rem;
+      height: 1.875rem;
       border-radius: 50%;
       background-color: #ccc;
       color: $white;
@@ -71,11 +73,11 @@ header {
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      margin-right: 10px;
+      margin-right: 0.625rem;
     }
 
     .step-label {
-      font-size: 14px;
+      font-size: 0.875rem;
       color: #666;
     }
 
@@ -99,38 +101,38 @@ header {
 
   .step-connector {
     flex: 1;
-    height: 2px;
+    height: 0.125rem;
     background-color: #ccc;
-    margin: 0 10px;
+    margin: 0 0.625rem;
   }
 }
 
 // Form styles
 .form-step {
   h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 1.25rem;
+    margin-bottom: 0.625rem;
   }
 
   p {
     color: #666;
-    font-size: 14px;
-    margin-bottom: 20px;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
   }
 }
 
 .form-field {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 
   label {
     display: block;
-    font-size: 14px;
-    margin-bottom: 8px;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
     font-weight: bold;
 
     .required {
       color: $error-color;
-      margin-left: 2px;
+      margin-left: 0.125rem;
     }
   }
 
@@ -138,10 +140,10 @@ header {
   textarea,
   select {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid $border-color;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 0.625rem 0.75rem;
+    border: 0.0625rem solid $border-color;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
 
     &:focus {
       outline: none;
@@ -164,14 +166,14 @@ header {
   .description-helper {
     display: block;
     color: #999;
-    font-size: 12px;
-    margin-top: 5px;
+    font-size: 0.75rem;
+    margin-top: 0.3125rem;
   }
 }
 
 .form-row {
   display: flex;
-  gap: 20px;
+  gap: 1.25rem;
 
   .form-field {
     flex: 1;
@@ -183,14 +185,14 @@ header {
 
   .info-icon {
     position: absolute;
-    right: 10px;
-    top: 10px;
-    width: 18px;
-    height: 18px;
+    right: 0.625rem;
+    top: 0.625rem;
+    width: 1.125rem;
+    height: 1.125rem;
     border-radius: 50%;
     background-color: $primary-light;
     color: $white;
-    font-size: 12px;
+    font-size: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -205,17 +207,17 @@ header {
   &::after {
     content: '▼';
     position: absolute;
-    right: 15px;
+    right: 0.9375rem;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #666;
   }
 
   select {
     appearance: none;
-    padding-right: 30px;
+    padding-right: 1.875rem;
   }
 }
 
@@ -224,7 +226,7 @@ header {
 
   .calendar-button {
     position: absolute;
-    right: 10px;
+    right: 0.625rem;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -233,8 +235,8 @@ header {
 
     .calendar-icon {
       display: inline-block;
-      width: 20px;
-      height: 20px;
+      width: 1.25rem;
+      height: 1.25rem;
       background-color: $primary-color;
       mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zM4 8V5h16v3H4z'/%3E%3C/svg%3E")
         no-repeat center;
@@ -246,32 +248,32 @@ header {
 
 // Custom questions section
 .custom-questions-dropdown {
-  border: 1px solid $border-color;
-  border-radius: 4px;
-  margin-bottom: 30px;
+  border: 0.0625rem solid $border-color;
+  border-radius: 0.25rem;
+  margin-bottom: 1.875rem;
 
   .dropdown-header {
-    padding: 12px 15px;
+    padding: 0.75rem 0.9375rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: $white;
-    border-radius: 4px;
+    border-radius: 0.25rem;
     cursor: pointer;
 
     .dropdown-icon {
       color: #666;
-      font-size: 12px;
+      font-size: 0.75rem;
     }
   }
 }
 
 .data-privacy-notice {
-  margin-top: 20px;
-  padding: 15px;
+  margin-top: 1.25rem;
+  padding: 0.9375rem;
   background-color: $light-gray;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
 
   p {
     margin: 0;
@@ -293,20 +295,20 @@ header {
 .form-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid $border-color;
+  margin-top: 1.875rem;
+  padding-top: 1.25rem;
+  border-top: 0.0625rem solid $border-color;
 
   .action-right {
     display: flex;
-    gap: 10px;
+    gap: 0.625rem;
   }
 
   button {
-    padding: 10px 15px;
-    border-radius: 4px;
+    padding: 0.625rem 0.9375rem;
+    border-radius: 0.25rem;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -318,7 +320,7 @@ header {
     }
 
     .btn-icon {
-      margin-right: 8px;
+      margin-right: 0.5rem;
     }
   }
 
@@ -326,7 +328,7 @@ header {
   .btn-back {
     background-color: transparent;
     color: #666;
-    border: 1px solid $border-color;
+    border: 0.0625rem solid $border-color;
 
     &:hover {
       background-color: $light-gray;
@@ -336,7 +338,7 @@ header {
   .btn-save-draft {
     background-color: transparent;
     color: $primary-color;
-    border: 1px solid $primary-color;
+    border: 0.0625rem solid $primary-color;
 
     &:hover {
       background-color: rgba($primary-color, 0.05);
@@ -346,7 +348,7 @@ header {
   .btn-next {
     background-color: $primary-color;
     color: $white;
-    border-radius: 4px;
+    border-radius: 0.25rem;
 
     &:hover {
       background-color: $primary-dark;
@@ -366,13 +368,13 @@ header {
 // Extras section
 .extras-section {
   h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 1.25rem;
+    margin-bottom: 0.625rem;
   }
 
   p {
     color: #666;
-    font-size: 14px;
-    margin-bottom: 20px;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
   }
 }
