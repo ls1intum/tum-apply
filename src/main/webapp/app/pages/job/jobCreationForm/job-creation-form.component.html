@@ -78,8 +78,8 @@
               <select formControlName="location" id="location">
                 <option disabled selected value="">Select a Location ...</option>
                 @for (location of locations; track location) {
-                  <option [value]="location">
-                    {{ location }}
+                  <option [value]="location.value">
+                    {{ location.label }}
                   </option>
                 }
               </select>
@@ -131,8 +131,8 @@
               <select formControlName="fundingType" id="fundingType">
                 <option disabled selected value="">Select a Funding Type ...</option>
                 @for (type of fundingTypes; track type) {
-                  <option [value]="type">
-                    {{ type }}
+                  <option [value]="type.value">
+                    {{ type.label }}
                   </option>
                 }
               </select>
@@ -146,7 +146,7 @@
         <div class="action-right">
           <button (click)="saveDraft()" class="btn-save-draft">
             <span class="btn-icon">
-              <fa-icon [icon]="['fas', 'floppy-disk']" />
+              <fa-icon [icon]="['fas', 'floppy-disk']"></fa-icon>
             </span>
             Save Draft
           </button>
@@ -216,7 +216,7 @@
         <div class="action-right">
           <button (click)="saveDraft()" class="btn-save-draft">
             <span class="btn-icon">
-              <fa-icon [icon]="['fas', 'floppy-disk']" />
+              <fa-icon [icon]="['fas', 'floppy-disk']"></fa-icon>
             </span>
             Save Draft
           </button>

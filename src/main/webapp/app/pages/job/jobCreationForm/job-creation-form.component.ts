@@ -22,11 +22,21 @@ export class JobCreationFormComponent {
   basicInfoForm: FormGroup = this.fb.group({});
   positionDetailsForm: FormGroup = this.fb.group({});
   // Options for dropdowns
-  locations = ['Munich Campus', 'Garching Campus', 'Weihenstephan Campus'];
-  // additionalInfoForm: FormGroup = this.fb.group({});
+  locations = [
+    { label: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
+    { label: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
+    { label: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
+  ]; // additionalInfoForm: FormGroup = this.fb.group({});
   workloadOptions = ['Full-time (100%)', 'Part-time (75%)', 'Part-time (50%)'];
   contractDurations = ['3 years', '4 years', '5 years'];
-  fundingTypes = ['University Budget', 'Government Funding', 'Self Funding'];
+  fundingTypes = [
+    { label: 'University Budget', value: JobFormDTO.FundingTypeEnum.FullyFunded },
+    { label: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
+    { label: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
+    { label: 'Industry Sponsored', value: JobFormDTO.FundingTypeEnum.IndustrySponsored },
+    { label: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
+    { label: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
+  ];
   private jobResourceService = inject(JobResourceService);
 
   constructor(private fb: FormBuilder) {
@@ -78,7 +88,6 @@ export class JobCreationFormComponent {
     }
   }
 
-  // TODO: DELETE LATER
   saveDraft(): void {
     // Logic to save draft
     console.warn('Saving draft...');
@@ -97,7 +106,14 @@ export class JobCreationFormComponent {
       fundingType: this.basicInfoForm.value.fundingType,
       state: JobFormDTO.StateEnum.Published,
     };
-    this.jobResourceService.createJob(jobFormDto);
+    this.jobResourceService.createJob(jobFormDto).subscribe({
+      next: () => {
+        console.log('Job successfully published!');
+      },
+      error: err => {
+        console.error('Failed to publish job:', err);
+      },
+    });
 
     // Logic to publish job
     console.warn('Publishing job...');
