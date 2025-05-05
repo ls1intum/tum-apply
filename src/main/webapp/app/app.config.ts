@@ -9,6 +9,9 @@ import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ng
 import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 
 import { httpInterceptorProviders } from './core/interceptor';
 import routes from './app.routes';
@@ -18,9 +21,6 @@ import { missingTranslationHandler, translatePartialLoader } from './config/tran
 import { AuthExpiredInterceptor } from './core/interceptor/auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
 
 export const appConfig: ApplicationConfig = {
   providers: [
