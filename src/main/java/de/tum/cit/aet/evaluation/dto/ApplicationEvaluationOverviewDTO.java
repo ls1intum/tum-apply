@@ -16,8 +16,17 @@ public record ApplicationEvaluationOverviewDTO(
     Integer rating,
     LocalDate appliedAt
 ) {
+    /**
+     * Creates an {@link ApplicationEvaluationOverviewDTO} from an {@link Application} entity.
+     *
+     * @param application the {@link Application} entity to convert; may be {@code null}
+     * @return a new {@link ApplicationEvaluationOverviewDTO} with data from the application,
+     * or {@code null} if the input is {@code null}
+     */
     public static ApplicationEvaluationOverviewDTO fromApplication(Application application) {
-        if (application == null) return null;
+        if (application == null) {
+            return null;
+        }
 
         return new ApplicationEvaluationOverviewDTO(
             application.getApplicationId(),

@@ -3,11 +3,9 @@ package de.tum.cit.aet.evaluation.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.specification.ApplicationEvaluationSpecification;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -44,12 +42,6 @@ public class ApplicationEvaluationService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Application> applicationsPage = applicationEvaluationRepository.findAll(specification, pageable);
 
-        List<ApplicationEvaluationOverviewDTO> overviewDTOs = applicationsPage
-            .getContent()
-            .stream()
-            .map(ApplicationEvaluationOverviewDTO::fromApplication)
-            .toList();
-
-        return new ApplicationEvaluationListDTO(overviewDTOs, applicationsPage.getTotalElements());
+        return ApplicationEvaluationListDTO.fromPage(applicationsPage);
     }
 }
