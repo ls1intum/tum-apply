@@ -18,11 +18,18 @@ import { missingTranslationHandler, translatePartialLoader } from './config/tran
 import { AuthExpiredInterceptor } from './core/interceptor/auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideExperimentalZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
+    provideAnimations(),
+    providePrimeNG({
+      theme: { preset: Aura },
+    }),
     importProvidersFrom(BrowserModule),
     // Set this to true to enable service worker (PWA)
     importProvidersFrom(ServiceWorkerModule.register('ngsw-worker.js', { enabled: false })),
