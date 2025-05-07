@@ -1,0 +1,32 @@
+name: Deploy to Test Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Which branch to deploy'
+        required: false
+        type: string
+      commit_sha:
+        description: 'Commit SHA to deploy'
+        required: true
+        type: string
+      environment_name:
+        description: 'Which environment to deploy'
+        required: true
+        type: string
+      triggered_by:
+        description: 'User who triggered the deploy'
+        required: false
+        type: string
+
+jobs:
+  deploy-app:
+    uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
+    with:
+      environment: ${{ inputs.environment_name }}
+      docker-compose-file: './src/main/docker/compose.yaml'
+      main-image-name: ghcr.io/${{ github.repository }}
+      image-tag: ${{ inputs.commit_sha }}
+      deployment-base-path: '/opt/tum-apply'
+    secrets: inherit
