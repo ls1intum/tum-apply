@@ -1,0 +1,24 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        type: string
+        description: 'Image tag (SHA) to deploy'
+      deploy-app:
+        type: boolean
+        default: true
+        description: 'Deploy app service'
+
+jobs:
+  deploy-app:
+    if: ${{ inputs.deploy-app }}
+    uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
+    with:
+      environment: Production
+      docker-compose-file: './src/main/docker/compose.yaml'
+      main-image-name: ghcr.io/${{ github.repository }}
+      image-tag: ${{ inputs.image-tag }}
+      deployment-base-path: '/opt/tum-apply'
+    secrets: inherit
