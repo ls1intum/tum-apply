@@ -7,6 +7,7 @@ import locale from '@angular/common/locales/en';
 // eslint-disable-next-line no-restricted-imports
 import dayjs from 'dayjs';
 import { SessionStorageService } from 'ngx-webstorage';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { DEBUG_INFO_ENABLED } from './app/app.constants';
 import AppComponent from './app/app.component';
