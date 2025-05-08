@@ -19,7 +19,10 @@ if (!DEBUG_INFO_ENABLED) {
   enableProdMode();
 }
 
-bootstrapApplication(AppComponent, appConfig)
+bootstrapApplication(AppComponent, {
+  ...appConfig,
+  providers: [...appConfig.providers, provideAnimations()],
+})
   .then(app => {
     const dpConfig = app.injector.get(NgbDatepickerConfig);
     const tooltipConfig = app.injector.get(NgbTooltipConfig);

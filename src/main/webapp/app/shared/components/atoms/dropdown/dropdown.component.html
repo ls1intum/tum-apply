@@ -1,0 +1,31 @@
+<div class="dropdown-container">
+  @if (label) {
+    <div class="dropdown-label">{{ label }}</div>
+  }
+  <div (click)="toggleDropdown()" [class.open]="isOpen" class="custom-dropdown">
+    <div class="dropdown-selected">
+      <span class="dropdown-text">{{ selectedItem ? getDisplayValue(selectedItem) : placeholder }}</span>
+      <span [class.open]="isOpen" class="chevron-down">
+        <fa-icon [icon]="faChevronDown"></fa-icon>
+      </span>
+    </div>
+    @if (isOpen) {
+      <div class="dropdown-menu">
+        <div class="dropdown-items">
+          @for (item of filteredItems; track item[valueField]) {
+            <div
+              (click)="selectItem(item); $event.stopPropagation()"
+              [class.active]="selectedItem && selectedItem[valueField] === item[valueField]"
+              class="dropdown-item"
+            >
+              {{ getDisplayValue(item) }}
+            </div>
+          }
+          @if (filteredItems.length === 0) {
+            <div class="dropdown-no-results">No results found</div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
