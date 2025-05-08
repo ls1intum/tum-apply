@@ -88,17 +88,6 @@ jobs:
             echo "tag=branch-$LATEST_SHA" >> $GITHUB_OUTPUT
           fi
 
-  # Build the Docker image (branch without PR)
-  conditional-build:
-    if: ${{ needs.determine-build-context.outputs.pr_number == '' }}
-    needs: determine-build-context
-    uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@v1.1.0
-    with:
-      ref: ${{ github.event.inputs.branch_name }}
-      image-name: ls1intum/tum-apply
-      docker-file: ./devcontainer/Dockerfile
-      tags: ${{ needs.determine-build-context.outputs.tag }}
-
   # Check if the build has run successfully (PR)
   check-existing-build:
     name: Check Existing Build
@@ -121,12 +110,69 @@ jobs:
 
   # Deploy to the test-server
   deploy:
-    needs: [determine-build-context, conditional-build, check-existing-build]
-    # Run if either the conditional-build or check-existing-build job was successful
-    # Use always() since one of the jobs will always skip
-    if: always() && (needs.conditional-build.result == 'success' || needs.check-existing-build.result == 'success')
-    name: Deploy to Test-Server
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event.inputs.environment_name }}
-      url: ${{ vars.DEPLOYMENT_URL }}
+      name: Test
+      url: '${{ vars.CLIENT_HOST }}'
+    steps:
+      - name: SSH to VM and Execute Docker-Compose Down
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.VM_HOST }}
+          username: ${{ vars.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
+          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
+          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
+          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
+          script: |
+            docker compose -f docker-compose.test.yml --env-file=.env.test down --remove-orphans --rmi all
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Copy Docker Compose File From Repo to VM Host
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.VM_HOST }}
+          username: ${{ vars.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
+          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
+          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
+          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
+          source: './docker-compose.test.yml'
+          target: /home/${{ vars.VM_USERNAME }}
+
+      - name: SSH to VM and Create .env.test
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.VM_HOST }}
+          username: ${{ vars.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
+          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
+          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
+          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
+          script: |
+            rm .env.test
+            touch .env.test
+            echo "PUBLIC_API_URL=${{ vars.PUBLIC_API_URL }}" >> .env.test
+            echo "CLIENT_HOST=${{ vars.CLIENT_HOST }}" >> .env.test
+            echo "APP_HOSTNAME=${{ vars.APP_HOSTNAME }}" >> .env.test
+
+      - name: SSH to VM and Execute Docker-Compose Up
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.VM_HOST }}
+          username: ${{ vars.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
+          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
+          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
+          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
+          script: |
+            echo "Logging into Docker registry..."
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "Starting Docker Compose..."
+            docker compose -f docker-compose.test.yml --env-file=.env.test up --pull=always -d
