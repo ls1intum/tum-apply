@@ -10,7 +10,8 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpContext, HttpEvent, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext } from '@angular/common/http';
+import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
@@ -46,41 +47,25 @@ export class JobResourceService extends BaseService {
     jobFormDTO: JobFormDTO,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any>;
   public createJob(
     jobFormDTO: JobFormDTO,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<any>>;
   public createJob(
     jobFormDTO: JobFormDTO,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<any>>;
   public createJob(
     jobFormDTO: JobFormDTO,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (jobFormDTO === null || jobFormDTO === undefined) {
       throw new Error('Required parameter jobFormDTO was null or undefined when calling createJob.');
@@ -137,41 +122,25 @@ export class JobResourceService extends BaseService {
     jobId: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any>;
   public deleteJob(
     jobId: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<any>>;
   public deleteJob(
     jobId: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<any>>;
   public deleteJob(
     jobId: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: undefined;
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (jobId === null || jobId === undefined) {
       throw new Error('Required parameter jobId was null or undefined when calling deleteJob.');
@@ -199,15 +168,7 @@ export class JobResourceService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/jobs/${this.configuration.encodeParam({
-      name: 'jobId',
-      value: jobId,
-      in: 'path',
-      style: 'simple',
-      explode: false,
-      dataType: 'string',
-      dataFormat: 'uuid',
-    })}`;
+    let localVarPath = `/api/jobs/${this.configuration.encodeParam({ name: 'jobId', value: jobId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
     return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -230,44 +191,28 @@ export class JobResourceService extends BaseService {
     sorting?: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<Array<JobCardDTO>>;
   public getAvailableJobs(
     filter?: string,
     sorting?: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<Array<JobCardDTO>>>;
   public getAvailableJobs(
     filter?: string,
     sorting?: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<Array<JobCardDTO>>>;
   public getAvailableJobs(
     filter?: string,
     sorting?: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>filter, 'filter');
@@ -318,41 +263,25 @@ export class JobResourceService extends BaseService {
     jobId: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<JobCardDTO>;
   public getJobDetails(
     jobId: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<JobCardDTO>>;
   public getJobDetails(
     jobId: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<JobCardDTO>>;
   public getJobDetails(
     jobId: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (jobId === null || jobId === undefined) {
       throw new Error('Required parameter jobId was null or undefined when calling getJobDetails.');
@@ -381,15 +310,7 @@ export class JobResourceService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/jobs/${this.configuration.encodeParam({
-      name: 'jobId',
-      value: jobId,
-      in: 'path',
-      style: 'simple',
-      explode: false,
-      dataType: 'string',
-      dataFormat: 'uuid',
-    })}/details`;
+    let localVarPath = `/api/jobs/${this.configuration.encodeParam({ name: 'jobId', value: jobId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}/details`;
     return this.httpClient.request<JobCardDTO>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -410,41 +331,25 @@ export class JobResourceService extends BaseService {
     userId: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<Array<JobCardDTO>>;
   public getJobsByProfessor(
     userId: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<Array<JobCardDTO>>>;
   public getJobsByProfessor(
     userId: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<Array<JobCardDTO>>>;
   public getJobsByProfessor(
     userId: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (userId === null || userId === undefined) {
       throw new Error('Required parameter userId was null or undefined when calling getJobsByProfessor.');
@@ -473,15 +378,7 @@ export class JobResourceService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/jobs/professor/${this.configuration.encodeParam({
-      name: 'userId',
-      value: userId,
-      in: 'path',
-      style: 'simple',
-      explode: false,
-      dataType: 'string',
-      dataFormat: 'uuid',
-    })}`;
+    let localVarPath = `/api/jobs/professor/${this.configuration.encodeParam({ name: 'userId', value: userId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
     return this.httpClient.request<Array<JobCardDTO>>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -504,44 +401,28 @@ export class JobResourceService extends BaseService {
     jobDetailDTO: JobDetailDTO,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<JobCardDTO>;
   public updateJob(
     jobId: string,
     jobDetailDTO: JobDetailDTO,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<JobCardDTO>>;
   public updateJob(
     jobId: string,
     jobDetailDTO: JobDetailDTO,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<JobCardDTO>>;
   public updateJob(
     jobId: string,
     jobDetailDTO: JobDetailDTO,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: '*/*';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (jobId === null || jobId === undefined) {
       throw new Error('Required parameter jobId was null or undefined when calling updateJob.');
@@ -580,15 +461,7 @@ export class JobResourceService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/jobs/jobform/${this.configuration.encodeParam({
-      name: 'jobId',
-      value: jobId,
-      in: 'path',
-      style: 'simple',
-      explode: false,
-      dataType: 'string',
-      dataFormat: 'uuid',
-    })}`;
+    let localVarPath = `/api/jobs/jobform/${this.configuration.encodeParam({ name: 'jobId', value: jobId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
     return this.httpClient.request<JobCardDTO>('put', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: jobDetailDTO,

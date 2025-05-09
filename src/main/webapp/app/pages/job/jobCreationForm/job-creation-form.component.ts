@@ -18,17 +18,32 @@ export class JobCreationFormComponent {
   readonly faCircleInfo = faCircleInfo;
   readonly faChevronDown = faChevronDown;
   currentStep = 1;
+
   // Form groups for each step
   basicInfoForm: FormGroup = this.fb.group({});
   positionDetailsForm: FormGroup = this.fb.group({});
+  additionalInformationForm: FormGroup = this.fb.group({});
+
   // Options for dropdowns
   locations = [
     { label: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
     { label: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
     { label: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
-  ]; // additionalInfoForm: FormGroup = this.fb.group({});
-  workloadOptions = ['Full-time (100%)', 'Part-time (75%)', 'Part-time (50%)'];
-  contractDurations = ['3 years', '4 years', '5 years'];
+  ];
+  workloadOptions = [
+    { label: '100% (Full-time)', value: 100 },
+    { label: '60%', value: 60 },
+    { label: '40%', value: 40 },
+    { label: '20%', value: 20 },
+    { label: '10%', value: 10 },
+  ];
+  contractDurations = [
+    { label: '1 year', value: 1 },
+    { label: '2 years', value: 2 },
+    { label: '3 years', value: 3 },
+    { label: '4 years', value: 4 },
+    { label: '5+ years', value: 5 },
+  ];
   fundingTypes = [
     { label: 'University Budget', value: JobFormDTO.FundingTypeEnum.FullyFunded },
     { label: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
@@ -46,7 +61,7 @@ export class JobCreationFormComponent {
   initForms(): void {
     // Basic Information form
     this.basicInfoForm = this.fb.group({
-      jobTitle: [''],
+      title: [''],
       researchArea: [''],
       fieldOfStudies: [''],
       supervisingProfessor: this.fb.control(
@@ -71,9 +86,7 @@ export class JobCreationFormComponent {
     });
 
     // Additional Information form
-    // this.additionalInfoForm = this.fb.group({
-    //   customQuestions: [[]],
-    // });
+    this.additionalInformationForm = this.fb.group({});
   }
 
   nextStep(): void {
@@ -100,10 +113,18 @@ export class JobCreationFormComponent {
 
   publishJob(): void {
     const jobFormDto: JobFormDTO = {
-      title: this.basicInfoForm.value.jobTitle,
+      title: this.basicInfoForm.value.title,
+      researchArea: this.basicInfoForm.value.researchArea,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies,
       supervisingProfessor: '00000000-0000-0000-0000-000000000102',
       location: this.basicInfoForm.value.location,
+      startDate: this.basicInfoForm.value.startDate,
+      workload: this.basicInfoForm.value.workload,
+      contractDuration: this.basicInfoForm.value.contractDuration,
       fundingType: this.basicInfoForm.value.fundingType,
+      description: this.positionDetailsForm.value.description,
+      tasks: this.positionDetailsForm.value.tasks,
+      requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
     this.jobResourceService.createJob(jobFormDto).subscribe({

@@ -2,15 +2,6 @@
 
 // Variables
 
-$primary-color: #0065bd;
-$primary-light: #3a7ab6;
-$primary-dark: #004e9a;
-$light-gray: #f6f6f6;
-$border-color: #ddd;
-$text-color: #333;
-$error-color: #e74c3c;
-$success-color: #2ecc71;
-$white: #fff;
 $shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
 
 // Base styles
@@ -22,8 +13,8 @@ $shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
 }
 
 body {
-  background-color: $light-gray;
-  color: $text-color;
+  background-color: var(--background-surface);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
@@ -31,7 +22,7 @@ body {
   max-width: 75rem;
   margin: 0 auto;
   padding: 1.25rem;
-  background-color: $white;
+  background-color: var(--background-default);
   box-shadow: $shadow;
   border-radius: 0.25rem;
 }
@@ -41,13 +32,13 @@ header {
   padding-bottom: 1.25rem;
 
   h1 {
-    color: $primary-color;
+    color: var(--primary-default);
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
   }
 
   p {
-    color: #666;
+    color: var(--background-disabled);
     font-size: 0.875rem;
   }
 }
@@ -66,8 +57,8 @@ header {
       width: 1.875rem;
       height: 1.875rem;
       border-radius: 50%;
-      background-color: #ccc;
-      color: $white;
+      background-color: var(--background-disabled);
+      color: var(--text-on-disabled);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -77,23 +68,25 @@ header {
 
     .step-label {
       font-size: 0.875rem;
-      color: #666;
+      color: var(--text-on-disabled);
     }
 
-    &.active {
+    &.active,
+    &.completed {
       .step-number {
-        background-color: $primary-color;
+        background-color: var(--primary-default);
+        color: var(--text-on-primary);
       }
 
       .step-label {
-        color: $text-color;
+        color: var(--text-primary);
         font-weight: bold;
       }
     }
 
     &.completed {
       .step-number {
-        background-color: $primary-color;
+        background-color: var(--primary-default);
       }
     }
   }
@@ -101,7 +94,7 @@ header {
   .step-connector {
     flex: 1;
     height: 0.125rem;
-    background-color: #ccc;
+    background-color: var(--text-on-disabled);
     margin: 0 0.625rem;
   }
 }
@@ -114,7 +107,7 @@ header {
   }
 
   p {
-    color: #666;
+    color: var(--text-on-disabled);
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
   }
@@ -130,7 +123,7 @@ header {
     font-weight: bold;
 
     .required {
-      color: $error-color;
+      color: var(--negative-default);
       margin-left: 0.125rem;
     }
   }
@@ -140,21 +133,21 @@ header {
   select {
     width: 100%;
     padding: 0.625rem 0.75rem;
-    border: 0.0625rem solid $border-color;
+    border: 0.0625rem solid var(--border-default);
     border-radius: 0.25rem;
     font-size: 0.875rem;
 
     &:focus {
       outline: none;
-      border-color: $primary-color;
+      border-color: var(--primary-default);
     }
 
     &.invalid {
-      border-color: $error-color;
+      border-color: var(--negative-default);
     }
 
     &::placeholder {
-      color: #aaa;
+      color: var(--background-disabled);
     }
   }
 
@@ -164,7 +157,7 @@ header {
 
   .description-helper {
     display: block;
-    color: #999;
+    color: var(--background-disabled);
     font-size: 0.75rem;
     margin-top: 0.3125rem;
   }
@@ -189,8 +182,8 @@ header {
     width: 1.125rem;
     height: 1.125rem;
     border-radius: 50%;
-    background-color: $primary-light;
-    color: $white;
+    background-color: var(--secondary-default);
+    color: var(--background-default);
     font-size: 0.75rem;
     display: flex;
     align-items: center;
@@ -211,7 +204,7 @@ header {
     transform: translateY(-50%);
     pointer-events: none;
     font-size: 0.75rem;
-    color: #666;
+    color: var(--text-on-disabled);
   }
 
   select {
@@ -236,7 +229,7 @@ header {
       display: inline-block;
       width: 1.25rem;
       height: 1.25rem;
-      background-color: $primary-color;
+      background-color: var(--primary-default);
       mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zM4 8V5h16v3H4z'/%3E%3C/svg%3E")
         no-repeat center;
       -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zM4 8V5h16v3H4z'/%3E%3C/svg%3E")
@@ -247,7 +240,7 @@ header {
 
 // Custom questions section
 .custom-questions-dropdown {
-  border: 0.0625rem solid $border-color;
+  border: 0.0625rem solid var(--border-default);
   border-radius: 0.25rem;
   margin-bottom: 1.875rem;
 
@@ -256,12 +249,12 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: $white;
+    background-color: var(--background-default);
     border-radius: 0.25rem;
     cursor: pointer;
 
     .dropdown-icon {
-      color: #666;
+      color: var(--text-on-disabled);
       font-size: 0.75rem;
     }
   }
@@ -270,17 +263,17 @@ header {
 .data-privacy-notice {
   margin-top: 1.25rem;
   padding: 0.9375rem;
-  background-color: $light-gray;
+  background-color: var(--background-default);
   border-radius: 0.25rem;
   font-size: 0.875rem;
 
   p {
     margin: 0;
-    color: #666;
+    color: var(--text-on-disabled);
   }
 
   .tum-link {
-    color: $primary-color;
+    color: var(--primary-default);
     text-decoration: none;
     font-weight: bold;
 
@@ -296,7 +289,7 @@ header {
   justify-content: space-between;
   margin-top: 1.875rem;
   padding-top: 1.25rem;
-  border-top: 0.0625rem solid $border-color;
+  border-top: 0.0625rem solid var(--border-default);
 
   .action-right {
     display: flex;
@@ -326,40 +319,40 @@ header {
   .btn-cancel,
   .btn-back {
     background-color: transparent;
-    color: #666;
-    border: 0.0625rem solid $border-color;
+    color: var(--text-on-disabled);
+    border: 0.0625rem solid var(--border-default);
 
     &:hover {
-      background-color: $light-gray;
+      background-color: var(--background-surface-alt);
     }
   }
 
   .btn-save-draft {
     background-color: transparent;
-    color: $primary-color;
-    border: 0.0625rem solid $primary-color;
+    color: var(--primary-default);
+    border: 0.0625rem solid var(--primary-default);
 
     &:hover {
-      background-color: rgba($primary-color, 0.05);
+      background-color: rgba(var(--primary-default), 0.05);
     }
   }
 
   .btn-next {
-    background-color: $primary-color;
-    color: $white;
+    background-color: var(--primary-default);
+    color: var(--background-default);
     border-radius: 0.25rem;
 
     &:hover {
-      background-color: $primary-dark;
+      background-color: var(--primary-hover);
     }
   }
 
   .btn-publish {
-    background-color: $primary-color;
-    color: $white;
+    background-color: var(--primary-default);
+    color: var(--background-default);
 
     &:hover {
-      background-color: $primary-dark;
+      background-color: var(--primary-hover);
     }
   }
 }
@@ -372,7 +365,7 @@ header {
   }
 
   p {
-    color: #666;
+    color: var(--text-on-disabled);
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
   }

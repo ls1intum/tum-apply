@@ -1,23 +1,22 @@
 <div class="doctorate-form-container">
   <header>
-    <h1>Find your perfect Doctorate Position at TUM</h1>
-    <p>Fill in the details below to create a new job posting for doctoral candidates.</p>
+    <h1>Create a new Doctorate Position</h1>
   </header>
   <div class="stepper">
-    <div [ngClass]="{ active: currentStep === 1, completed: currentStep > 1 }" class="step">
+    <div (click)="currentStep = 1" [ngClass]="{ active: currentStep === 1, completed: currentStep > 1 }" class="step">
       <div class="step-number">1</div>
       <div class="step-label">Basic Information</div>
     </div>
     <div class="step-connector"></div>
-    <div [ngClass]="{ active: currentStep === 2, completed: currentStep > 2 }" class="step">
+    <div (click)="currentStep = 2" [ngClass]="{ active: currentStep === 2, completed: currentStep > 2 }" class="step">
       <div class="step-number">2</div>
       <div class="step-label">Position Details</div>
     </div>
-    <!-- <div class="step-connector"></div>
-    <div class="step" [ngClass]="{ active: currentStep === 3 }">
+    <div class="step-connector"></div>
+    <div (click)="currentStep = 3" [ngClass]="{ active: currentStep === 3 }" class="step">
       <div class="step-number">3</div>
       <div class="step-label">Additional Information</div>
-    </div> -->
+    </div>
   </div>
   <!-- Step 1: Basic Information -->
   @if (currentStep === 1) {
@@ -27,8 +26,8 @@
         <p>Provide the key details about the doctoral position, such as title, field of study, and supervising professor.</p>
 
         <div class="form-field">
-          <label for="jobTitle">Job Title</label>
-          <input formControlName="jobTitle" id="jobTitle" placeholder="e.g. Doctoral Position in Robotics" type="text" />
+          <label for="title">Job Title</label>
+          <input formControlName="title" id="title" placeholder="e.g. Doctoral Position in Robotics" type="text" />
         </div>
 
         <div class="form-row">
@@ -94,15 +93,14 @@
               <input formControlName="startDate" id="startDate" placeholder="Select a Start Date ..." type="date" />
             </div>
           </div>
-
           <div class="form-field">
             <label for="workload">Workload</label>
             <div class="select-wrapper">
               <select formControlName="workload" id="workload">
-                <option disabled selected value="">Select an Employment Type first ...</option>
+                <option disabled selected value="">Select a Workload ...</option>
                 @for (option of workloadOptions; track option) {
-                  <option [value]="option">
-                    {{ option }}
+                  <option [value]="option.value">
+                    {{ option.label }}
                   </option>
                 }
               </select>
@@ -117,8 +115,8 @@
               <select formControlName="contractDuration" id="contractDuration">
                 <option disabled selected value="">Select a Contract Duration ...</option>
                 @for (duration of contractDurations; track duration) {
-                  <option [value]="duration">
-                    {{ duration }}
+                  <option [value]="duration.value">
+                    {{ duration.label }}
                   </option>
                 }
               </select>
@@ -150,7 +148,7 @@
             </span>
             Save Draft
           </button>
-          <button (click)="nextStep()" [disabled]="basicInfoForm.invalid" class="btn-next">Next</button>
+          <button (click)="nextStep()" class="btn-next">Next</button>
         </div>
       </div>
     </div>
@@ -220,42 +218,45 @@
             </span>
             Save Draft
           </button>
-          <!-- <button class="btn-next" (click)="nextStep()">Next</button> -->
-          <button (click)="publishJob()" class="btn-publish">Publish Job</button>
+          <button class="btn-next" (click)="nextStep()">Next</button>
+          <!--          <button (click)="publishJob()" class="btn-publish">Publish Job</button>-->
         </div>
       </div>
     </div>
   }
   <!-- Step 3: Additional Information -->
-  <!-- <div class="form-step" *ngIf="currentStep === 3">
-                                <form [formGroup]="additionalInfoForm">
-                                  <section class="extras-section">
-                                    <h2>Extras</h2>
-                                    <p>Add custom questions that applicants will see in the application form.</p>
+  <div *ngIf="currentStep === 3" class="form-step">
+    <form [formGroup]="additionalInformationForm">
+      <section class="extras-section">
+        <h2>Extras</h2>
+        <p>Add custom questions that applicants will see in the application form.</p>
 
-                                    <div class="custom-questions-dropdown">
-                                      <div class="dropdown-header">
-                                        <span>Custom Questions</span>
-                                        <span class="dropdown-icon">▼</span>
-                                      </div>
-                                    </div>
+        <!--        Not implemented yet-->
+        <!--        <div class="custom-questions-dropdown">-->
+        <!--          <div class="dropdown-header">-->
+        <!--            <span>Custom Questions</span>-->
+        <!--            <span class="dropdown-icon">▼</span>-->
+        <!--          </div>-->
+        <!--        </div>-->
 
-                                    <div class="data-privacy-notice">
-                                      <p>
-                                        A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more
-                                        information, please visit: <a href="#" class="tum-link">TUM Data Protection Information</a>.
-                                      </p>
-                                    </div>
-                                  </section>
-                                </form>
+        <div class="data-privacy-notice">
+          <p>
+            A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more
+            information, please visit:
+            <a class="tum-link" href="https://www.community.tum.de/en/privacy-policy/">TUM Data Protection Information</a>.
+          </p>
+        </div>
+      </section>
+    </form>
 
-                                <div class="form-actions">
-                                  <button class="btn-back" (click)="previousStep()"><span class="btn-icon">←</span> Back</button>
-                                  <div class="action-right">
-                                    <button class="btn-save-draft" (click)="saveDraft()"><span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']"></fa-icon></span> Save Draft</button>
-                                    <button class="btn-publish" (click)="publishJob()">Publish Job</button>
-                                  </div>
-                                </div>
-                                </div>
-                                  -->
+    <div class="form-actions">
+      <button (click)="previousStep()" class="btn-back"><span class="btn-icon">←</span> Back</button>
+      <div class="action-right">
+        <button (click)="saveDraft()" class="btn-save-draft">
+          <span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']"></fa-icon></span> Save Draft
+        </button>
+        <button (click)="publishJob()" class="btn-publish">Publish Job</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,12 +1,10 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.base.service.ts
 api.module.ts
 api/accountResource.service.ts
 api/actuator.service.ts
 api/api.ts
-api/applicationResource.service.ts
 api/jobResource.service.ts
 configuration.ts
 encoder.ts
@@ -18,7 +16,6 @@ model/jobDetailDTO.ts
 model/jobFormDTO.ts
 model/link.ts
 model/models.ts
-model/updateApplicationDTO.ts
 ng-package.json
 package.json
 param.ts

@@ -62,73 +62,6 @@
         }
       }
     },
-    "/api/applications": {
-      "put": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "updateApplication",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateApplicationDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {}
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "createApplication",
-        "requestBody": {
-          "content": {
-            "application/json": {}
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/api/applications/withdraw/{applicationId}": {
-      "put": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "withdrawApplication",
-        "parameters": [
-          {
-            "name": "applicationId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {}
-          }
-        }
-      }
-    },
     "/management/loggers/{name}": {
       "get": {
         "tags": [
@@ -967,103 +900,6 @@
         }
       }
     },
-    "/api/applications/{applicationId}": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getApplicationById",
-        "parameters": [
-          {
-            "name": "applicationId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {}
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "deleteApplication",
-        "parameters": [
-          {
-            "name": "applicationId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/applications/job/{jobId}": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getAllApplicationsOfJob",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/api/applications/applicant/{applicantId}": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getAllApplicationsOfApplicant",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {}
-          }
-        }
-      }
-    },
     "/api/account": {
       "get": {
         "tags": [
@@ -1249,24 +1085,21 @@
           "workload"
         ]
       },
-      "UpdateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
-      },
       "JobFormDTO": {
         "type": "object",
         "properties": {
+          "title": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
           "supervisingProfessor": {
             "type": "string",
             "format": "uuid"
-          },
-          "title": {
-            "type": "string"
           },
           "location": {
             "type": "string",
@@ -1280,6 +1113,18 @@
               "SINGAPORE"
             ]
           },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
           "fundingType": {
             "type": "string",
             "enum": [
@@ -1292,6 +1137,15 @@
               "RESEARCH_GRANT"
             ]
           },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
           "state": {
             "type": "string",
             "enum": [
@@ -1301,7 +1155,13 @@
               "APPLICANT_FOUND"
             ]
           }
-        }
+        },
+        "required": [
+          "fundingType",
+          "location",
+          "state",
+          "supervisingProfessor"
+        ]
       },
       "Link": {
         "type": "object",
