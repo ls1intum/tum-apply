@@ -1,0 +1,171 @@
+@import '../../../../../content/scss/tokens';
+
+p-button {
+  display: inline-block;
+  width: min-content;
+  overflow: unset;
+}
+
+// Mixin to reduce repetition
+@mixin state-styles($base-color, $text-color: black) {
+  &:hover {
+    background: darken($base-color, 10%) !important;
+  }
+
+  &.disabled,
+  &:disabled {
+    background: lighten($base-color, 40%) !important;
+    border-color: lighten($base-color, 40%) !important;
+    color: $text-color !important;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}
+
+@mixin outlined-button($color) {
+  background: white !important;
+  border: 0.06em solid $color !important;
+  color: $color !important;
+
+  &:hover {
+    background: $color !important;
+    color: white !important;
+  }
+
+  &.disabled,
+  &:disabled {
+    background: white !important;
+    border-color: lighten($color, 20%) !important;
+    color: lighten($color, 20%) !important;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}
+
+@mixin filled-button($color, $text-color: black, $text-color-disabled: black) {
+  background: $color !important;
+  border: 0.06em solid $color !important;
+  color: $text-color !important;
+
+  &:hover {
+    background: darken($color, 10%) !important;
+  }
+
+  &.disabled,
+  &:disabled {
+    background: lighten($color, 20%) !important;
+    // border-color: lighten($color, 20%) !important;
+    border: 0 !important;
+    color: lighten($text-color-disabled, 40%) !important;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+}
+
+@mixin text-button($color) {
+  background: white !important;
+  border: 0 !important;
+  color: $color !important;
+  margin: 0.06em;
+
+  &:hover {
+    background: rgba($color, 0.1) !important;
+  }
+
+  &.disabled,
+  &:disabled {
+    color: lighten($color, 20%) !important;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}
+
+// Apply to each variant
+.primary_outlined {
+  @include outlined-button($primary-default);
+}
+.primary_filled {
+  @include filled-button($primary-default, white, white);
+}
+.primary_text {
+  @include text-button($primary-default);
+}
+
+.secondary_outlined {
+  @include outlined-button($secondary-default);
+}
+.secondary_filled {
+  @include filled-button($secondary-default, white);
+}
+.secondary_text {
+  @include text-button($secondary-default);
+}
+
+.success_outlined {
+  @include outlined-button($positive-default);
+}
+.success_filled {
+  @include filled-button($positive-default, black);
+}
+.success_text {
+  @include text-button($positive-default);
+}
+
+.warning_outlined {
+  @include outlined-button($warning-default);
+}
+.warning_filled {
+  @include filled-button($warning-default, black);
+}
+.warning_text {
+  @include text-button($warning-default);
+}
+
+.error_outlined {
+  @include outlined-button($negative-default);
+}
+.error_filled {
+  @include filled-button($negative-default, black);
+}
+.error_text {
+  @include text-button($negative-default);
+}
+
+.neutral_outlined {
+  @include outlined-button($neutral-300);
+}
+.neutral_filled {
+  @include filled-button($neutral-300, black);
+}
+.neutral_text {
+  @include text-button($neutral-300);
+}
+
+.white_outlined {
+  @include outlined-button(black);
+}
+.white_filled {
+  @include filled-button(white, black);
+}
+.white_text {
+  @include text-button(black);
+}
+.badge_mini {
+  position: absolute;
+  top: -0.25em;
+  color: black;
+  right: -0.6em;
+  z-index: 300;
+  background: $negative-default;
+  border-radius: 50%;
+  font-size: smaller;
+  padding: 0.2em;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  overflow: hidden;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--p-button-raised-shadow);
+}

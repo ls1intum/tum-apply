@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-
+import { ButtonPlayGroundComponent } from './pages/misc/button-play-ground/button-play-ground.component';
 import { errorRoute } from './layouts/error/error.route';
 
 const routes: Routes = [
@@ -19,6 +19,10 @@ const routes: Routes = [
     path: '',
     loadComponent: () => import('./layouts/navbar/navbar.component'),
     outlet: 'navbar',
+  },
+  {
+    path: 'button',
+    loadComponent: () => import('./pages/misc/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
   },
   {
     path: 'admin',
