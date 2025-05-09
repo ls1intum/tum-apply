@@ -1,106 +1,179 @@
-<nav class="flex w-full items-center justify-between bg-surface p-3 shadow-md" data-cy="navbar">
-  <div class="flex items-center">
-    <a (click)="collapseNavbar()" class="logo flex items-center mr-6" routerLink="/">
+<nav class="navbar navbar-dark navbar-expand-md bg-dark" data-cy="navbar">
+  <div class="container-fluid">
+    <a (click)="collapseNavbar()" class="navbar-brand logo" routerLink="/">
       <span class="logo-img"></span>
-      <span class="navbar-title text-lg font-semibold" jhiTranslate="global.title">TUMApply</span>
-      <span class="navbar-version ml-1">{{ version }}</span>
+      <span class="navbar-title" jhiTranslate="global.title">TUMApply</span>
+      <span class="navbar-version">{{ version }}</span>
     </a>
-  </div>
-
-  <!-- Mobile menu button -->
-  <div class="lg:hidden">
-    <button (click)="toggleNavbar()" aria-label="Toggle navigation" class="p-button p-button-text p-button-rounded" type="button">
+    <a
+      (click)="toggleNavbar()"
+      aria-controls="navbarResponsive"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+      class="navbar-toggler d-lg-none"
+      data-target="#navbarResponsive"
+      data-toggle="collapse"
+      href="javascript:void(0);"
+    >
       <fa-icon icon="bars" />
-    </button>
-  </div>
-
-  <!-- Navigation items -->
-  <div [class.hidden]="isNavbarCollapsed()" class="lg:flex w-full lg:w-auto lg:flex-grow lg:justify-end">
-    <ul class="flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-y-0 lg:space-x-4">
-      <li>
-        <button
-          pButton
-          pRipple
-          (click)="toggleTheme()"
-          aria-label="Toggle theme"
-          class="p-button-text p-button-rounded"
-          title="Toggle theme"
-          type="button"
-        >
-          <fa-icon icon="circle-half-stroke" class="mr-1" />
-          <span jhiTranslate="global.menu.colorTheme"></span>
-        </button>
-      </li>
-
-      <li>
-        <a
-          (click)="collapseNavbar()"
-          class="flex items-center p-2 rounded-md hover:bg-surface-hover"
-          routerLink="/"
-          routerLinkActive="bg-surface-active"
+    </a>
+    <div [ngbCollapse]="isNavbarCollapsed()" class="navbar-collapse collapse" id="navbarResponsive">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <button (click)="toggleTheme()" aria-label="Toggle theme" class="btn btn-link nav-link" title="Toggle theme" type="button">
+            <span>
+              <fa-icon icon="circle-half-stroke" />
+              <span jhiTranslate="global.menu.colorTheme"></span>
+            </span>
+          </button>
+        </li>
+        <li [routerLinkActiveOptions]="{ exact: true }" class="nav-item" routerLinkActive="active">
+          <a (click)="collapseNavbar()" class="nav-link" routerLink="/">
+            <span>
+              <fa-icon icon="home" />
+              <span jhiTranslate="global.menu.home">Home</span>
+            </span>
+          </a>
+        </li>
+        @if (account() !== null) {
+          <li
+            ngbDropdown
+            class="nav-item dropdown pointer"
+            display="dynamic"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu" data-cy="entity">
+              <span>
+                <fa-icon icon="th-list" />
+                <span jhiTranslate="global.menu.entities.main">Entities</span>
+              </span>
+            </a>
+          </li>
+        }
+        <li
+          *jhiHasAnyAuthority="'ROLE_ADMIN'"
           [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-item dropdown pointer"
+          display="dynamic"
+          ngbDropdown
+          routerLinkActive="active"
         >
-          <fa-icon icon="home" class="mr-1" />
-          <span jhiTranslate="global.menu.home">Home</span>
-        </a>
-      </li>
-
-      @if (account() !== null) {
-        <li>
-          <p-menu #entityMenu [popup]="true" [model]="entitiesNavbarItems" appendTo="body" />
-          <button pButton pRipple type="button" (click)="entityMenu.toggle($event)" class="p-button-text p-button-rounded" data-cy="entity">
-            <fa-icon icon="th-list" class="mr-1" />
-            <span jhiTranslate="global.menu.entities.main">Entities</span>
-          </button>
+          <a class="nav-link dropdown-toggle" data-cy="adminMenu" href="javascript:void(0);" id="admin-menu" ngbDropdownToggle>
+            <span>
+              <fa-icon icon="users-cog" />
+              <span jhiTranslate="global.menu.admin.main">Administration</span>
+            </span>
+          </a>
+          <ul aria-labelledby="admin-menu" class="dropdown-menu" ngbDropdownMenu>
+            <li>
+              <a
+                (click)="collapseNavbar()"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="dropdown-item"
+                routerLink="/authority"
+                routerLinkActive="active"
+              >
+                <fa-icon [fixedWidth]="true" icon="asterisk" />
+                <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
+              </a>
+            </li>
+            <li>
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="tachometer-alt" />
+                <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
+              </a>
+            </li>
+            <li>
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/health" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="heart" />
+                <span jhiTranslate="global.menu.admin.health">Health</span>
+              </a>
+            </li>
+            <li>
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/configuration" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="cogs" />
+                <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
+              </a>
+            </li>
+            <li>
+              <a (click)="collapseNavbar()" class="dropdown-item" routerLink="/admin/logs" routerLinkActive="active">
+                <fa-icon [fixedWidth]="true" icon="tasks" />
+                <span jhiTranslate="global.menu.admin.logs">Logs</span>
+              </a>
+            </li>
+            @if (openAPIEnabled) {
+              <li>
+                <a class="dropdown-item" routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
+                  <fa-icon icon="book" [fixedWidth]="true" />
+                  <span jhiTranslate="global.menu.admin.apidocs">API</span>
+                </a>
+              </li>
+            }
+          </ul>
         </li>
-      }
-
-      <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
-        <p-menu #adminMenu [popup]="true" [model]="adminNavItems" appendTo="body" />
-        <button pButton pRipple type="button" (click)="adminMenu.toggle($event)" class="p-button-text p-button-rounded" data-cy="adminMenu">
-          <fa-icon icon="users-cog" class="mr-1" />
-          <span jhiTranslate="global.menu.admin.main">Administration</span>
-        </button>
-      </li>
-
-      @if (languages && languages.length > 1) {
-        <li>
-          <p-menu
-            #langMenu
-            [popup]="true"
-            [model]="languageNavItems"
-            styleClass="language-menu"
-            appendTo="body"
-            [showTransitionOptions]="'0ms'"
-            [hideTransitionOptions]="'0ms'"
-          />
-          <button pButton pRipple type="button" (click)="langMenu.toggle($event)" class="p-button-text p-button-rounded">
-            <fa-icon icon="flag" class="mr-1" />
-            <span jhiTranslate="global.menu.language">Language</span>
-          </button>
-        </li>
-      }
-
-      <li>
-        <p-menu #accountMenu [popup]="true" [model]="accountNavItems" appendTo="body" />
-        @let accountRef = account();
-        <button
-          pButton
-          pRipple
-          type="button"
-          (click)="accountMenu.toggle($event)"
-          class="p-button-text p-button-rounded"
-          data-cy="accountMenu"
+        @if (languages && languages.length > 1) {
+          <li ngbDropdown class="nav-item dropdown pointer" display="dynamic">
+            <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="languagesnavBarDropdown">
+              <span>
+                <fa-icon icon="flag" />
+                <span jhiTranslate="global.menu.language">Language</span>
+              </span>
+            </a>
+            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="languagesnavBarDropdown">
+              @for (language of languages; track $index) {
+                <li>
+                  <a
+                    class="dropdown-item"
+                    [jhiActiveMenu]="language"
+                    href="javascript:void(0);"
+                    (click)="changeLanguage(language); collapseNavbar()"
+                    >{{ language | findLanguageFromKey }}</a
+                  >
+                </li>
+              }
+            </ul>
+          </li>
+        }
+        <li
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-item dropdown pointer"
+          display="dynamic"
+          ngbDropdown
+          routerLinkActive="active"
         >
-          @if (!accountRef?.imageUrl) {
-            <fa-icon icon="user" class="mr-1" />
-            <span jhiTranslate="global.menu.account.main">Account</span>
-          } @else {
-            <img [src]="accountRef!.imageUrl" class="profile-image rounded-full mr-1" alt="Avatar" />
-            <span>{{ accountRef!.firstName }}</span>
-          }
-        </button>
-      </li>
-    </ul>
+          @let accountRef = account();
+          <a class="nav-link dropdown-toggle" data-cy="accountMenu" href="javascript:void(0);" id="account-menu" ngbDropdownToggle>
+            @if (!accountRef?.imageUrl) {
+              <span>
+                <fa-icon icon="user" />
+                <span jhiTranslate="global.menu.account.main">Account</span>
+              </span>
+            } @else {
+              <span>
+                <img [src]="accountRef!.imageUrl" class="profile-image rounded-circle" alt="Avatar" />
+              </span>
+            }
+          </a>
+          <ul aria-labelledby="account-menu" class="dropdown-menu" ngbDropdownMenu>
+            @if (accountRef !== null) {
+              <li>
+                <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">
+                  <fa-icon icon="sign-out-alt" [fixedWidth]="true" />
+                  <span jhiTranslate="global.menu.account.logout">Sign out</span>
+                </a>
+              </li>
+            } @else {
+              <li>
+                <a class="dropdown-item" (click)="login()" id="login" data-cy="login">
+                  <fa-icon icon="sign-in-alt" [fixedWidth]="true" />
+                  <span jhiTranslate="global.menu.account.login">Sign in</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
