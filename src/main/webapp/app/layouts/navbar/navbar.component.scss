@@ -15,37 +15,6 @@ Navbar
   width: 1.75em;
 }
 
-.navbar {
-  padding: 0.2rem 1rem;
-  background-color: var(--background-surface);
-  color: var(--text-primary);
-
-  a,
-  .nav-link,
-  .navbar-brand {
-    color: var(--text-primary);
-  }
-
-  a:hover,
-  .nav-link:hover {
-    color: var(--text-secondary);
-  }
-
-  .btn {
-    color: var(--text-primary);
-    background-color: transparent;
-    border: none;
-
-    &:hover {
-      color: var(--text-secondary);
-    }
-  }
-
-  a.nav-link {
-    font-weight: 400;
-  }
-}
-
 /* ==========================================================================
 Logo styles
 ========================================================================== */
@@ -56,4 +25,65 @@ Logo styles
   vertical-align: middle;
   background: url('/content/images/logo-jhipster.png') no-repeat center center;
   background-size: contain;
+  margin-right: 0.5rem;
+}
+
+/* PrimeNG Menu Adjustments */
+:host ::ng-deep {
+  .p-menu {
+    min-width: 200px;
+    z-index: 1000;
+  }
+
+  .language-menu {
+    min-width: 150px;
+  }
+
+  .p-button.p-button-text {
+    padding: 0.5rem;
+
+    &:hover {
+      background-color: var(--surface-hover);
+      color: var(--text-color);
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .p-menu .p-menuitem-link .p-menuitem-icon {
+    margin-right: 0.5rem;
+  }
+
+  /* Fix for menu overlay */
+  .p-menu.p-component {
+    position: absolute;
+
+    .p-menuitem {
+      .p-menuitem-link {
+        padding: 0.75rem 1rem;
+
+        &:hover {
+          background-color: var(--surface-hover);
+        }
+      }
+    }
+  }
+}
+
+/* Mobile Menu Adjustments */
+@media screen and (max-width: 1023px) {
+  .hidden {
+    display: none;
+  }
+
+  ul {
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  li {
+    padding: 0.5rem 0;
+  }
 }

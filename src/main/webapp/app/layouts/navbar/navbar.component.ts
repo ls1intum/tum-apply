@@ -10,6 +10,10 @@ import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import { SessionStorageService } from 'ngx-webstorage';
+import { MenuItem } from 'primeng/api';
+import { MenuModule } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
 
 import { VERSION } from '../../app.constants';
 
@@ -20,7 +24,7 @@ import NavbarItem from './navbar-item.model';
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],
+  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective, MenuModule, ButtonModule, RippleModule],
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;
@@ -29,7 +33,10 @@ export default class NavbarComponent implements OnInit {
   openAPIEnabled?: boolean;
   version = '';
   account = inject(AccountService).trackCurrentAccount();
-  entitiesNavbarItems: NavbarItem[] = [];
+  entitiesNavbarItems: MenuItem[] = [];
+  adminNavItems: MenuItem[] = [];
+  languageNavItems: MenuItem[] = [];
+  accountNavItems: MenuItem[] = [];
 
   private readonly loginService = inject(LoginService);
   private readonly translateService = inject(TranslateService);
@@ -40,21 +47,87 @@ export default class NavbarComponent implements OnInit {
 
   constructor() {
     this.version = VERSION;
-    // Initialize theme from session storage or default to 'light'
     const savedTheme = this.sessionStorage.retrieve('theme') ?? 'light';
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark-theme');
-    } else {
-      document.documentElement.classList.remove('dark-theme');
-    }
+    document.documentElement.classList.remove('light-theme', 'dark-theme');
+    document.documentElement.classList.add(savedTheme === 'dark' ? 'dark-theme' : 'light-theme');
   }
 
   ngOnInit(): void {
-    this.entitiesNavbarItems = EntityNavbarItems;
+    // Convert entity navbar items to PrimeNG MenuItem format
+    this.entitiesNavbarItems = this.convertNavbarItemsToMenuItems(EntityNavbarItems);
+
+    // Create admin menu items
+    this.adminNavItems = [
+      {
+        label: this.translateService.instant('global.menu.entities.adminAuthority'),
+        icon: 'pi pi-fw pi-star',
+        command: () => {
+          this.router.navigate(['/authority']);
+          this.collapseNavbar();
+        },
+      },
+      {
+        label: this.translateService.instant('global.menu.admin.metrics'),
+        icon: 'pi pi-fw pi-chart-bar',
+        command: () => {
+          this.router.navigate(['/admin/metrics']);
+          this.collapseNavbar();
+        },
+      },
+      {
+        label: this.translateService.instant('global.menu.admin.health'),
+        icon: 'pi pi-fw pi-heart',
+        command: () => {
+          this.router.navigate(['/admin/health']);
+          this.collapseNavbar();
+        },
+      },
+      {
+        label: this.translateService.instant('global.menu.admin.configuration'),
+        icon: 'pi pi-fw pi-cog',
+        command: () => {
+          this.router.navigate(['/admin/configuration']);
+          this.collapseNavbar();
+        },
+      },
+      {
+        label: this.translateService.instant('global.menu.admin.logs'),
+        icon: 'pi pi-fw pi-list',
+        command: () => {
+          this.router.navigate(['/admin/logs']);
+          this.collapseNavbar();
+        },
+      },
+    ];
+
+    // Add API docs menu item if enabled
     this.profileService.getProfileInfo().subscribe(profileInfo => {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;
+
+      if (this.openAPIEnabled) {
+        this.adminNavItems.push({
+          label: this.translateService.instant('global.menu.admin.apidocs'),
+          icon: 'pi pi-fw pi-book',
+          command: () => {
+            this.router.navigate(['/admin/docs']);
+            this.collapseNavbar();
+          },
+        });
+      }
     });
+
+    // Create language menu items
+    this.languageNavItems = this.languages.map(lang => ({
+      label: this.findLanguageFromKey(lang),
+      command: () => {
+        this.changeLanguage(lang);
+        this.collapseNavbar();
+      },
+    }));
+
+    // Set up account menu items depending on auth status
+    this.updateAccountMenu();
   }
 
   changeLanguage(languageKey: string): void {
@@ -81,13 +154,68 @@ export default class NavbarComponent implements OnInit {
   }
 
   toggleTheme(): void {
-    const isDarkTheme = document.documentElement.classList.contains('dark-theme');
-    if (isDarkTheme) {
-      document.documentElement.classList.remove('dark-theme');
-      this.sessionStorage.store('theme', 'light');
+    const currentTheme = this.sessionStorage.retrieve('theme');
+    const isDark = currentTheme === 'dark';
+
+    const newTheme = isDark ? 'light' : 'dark';
+    const themeId = 'app-theme';
+    const themeLink = document.getElementById(themeId) as HTMLLinkElement | null;
+
+    if (themeLink) {
+      themeLink.href = `assets/themes/lara-${newTheme}-blue/theme.css`;
     } else {
-      document.documentElement.classList.add('dark-theme');
-      this.sessionStorage.store('theme', 'dark');
+      const link = document.createElement('link');
+      link.id = themeId;
+      link.rel = 'stylesheet';
+      link.href = `assets/themes/lara-${newTheme}-blue/theme.css`;
+      document.head.appendChild(link);
     }
+
+    // Update Tailwind class
+    document.documentElement.classList.remove('light-theme', 'dark-theme');
+    document.documentElement.classList.add(`${newTheme}-theme`);
+
+    // Save new theme
+    this.sessionStorage.store('theme', newTheme);
+  }
+
+  private convertNavbarItemsToMenuItems(items: NavbarItem[]): MenuItem[] {
+    return items.map(item => ({
+      label: this.translateService.instant(item.name),
+      icon: 'pi pi-fw pi-circle',
+      command: () => {
+        this.router.navigate([item.route]);
+        this.collapseNavbar();
+      },
+    }));
+  }
+
+  private updateAccountMenu(): void {
+    if (this.account()) {
+      this.accountNavItems = [
+        {
+          label: this.translateService.instant('global.menu.account.logout'),
+          icon: 'pi pi-fw pi-sign-out',
+          command: () => this.logout(),
+        },
+      ];
+    } else {
+      this.accountNavItems = [
+        {
+          label: this.translateService.instant('global.menu.account.login'),
+          icon: 'pi pi-fw pi-sign-in',
+          command: () => this.login(),
+        },
+      ];
+    }
+  }
+
+  private findLanguageFromKey(key: string): string {
+    // This is a simple implementation - you might want to improve this
+    const languageNames: Record<string, string> = {
+      en: 'English',
+      de: 'Deutsch',
+    };
+    return languageNames[key] || key;
   }
 }
