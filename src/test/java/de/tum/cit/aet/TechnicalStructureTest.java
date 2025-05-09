@@ -24,13 +24,14 @@ class TechnicalStructureTest {
         .layer("Security").definedBy("..security..")
         .optionalLayer("Persistence").definedBy("..repository..")
         .layer("Domain").definedBy("..domain..")
+        .optionalLayer("Dto").definedBy("..dto..")
 
         .whereLayer("Config").mayNotBeAccessedByAnyLayer()
         .whereLayer("Web").mayOnlyBeAccessedByLayers("Config")
         .whereLayer("Service").mayOnlyBeAccessedByLayers("Web", "Config")
         .whereLayer("Security").mayOnlyBeAccessedByLayers("Config", "Service", "Web")
         .whereLayer("Persistence").mayOnlyBeAccessedByLayers("Service", "Security", "Web", "Config")
-        .whereLayer("Domain").mayOnlyBeAccessedByLayers("Persistence", "Service", "Security", "Web", "Config")
+        .whereLayer("Domain").mayOnlyBeAccessedByLayers("Persistence", "Service", "Security", "Web", "Config", "Dto")
 
         .ignoreDependency(belongToAnyOf(TumApplyApp.class), alwaysTrue())
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
