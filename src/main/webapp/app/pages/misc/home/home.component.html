@@ -1,31 +1,33 @@
-<div class="row">
-  <div class="col-md-3">
-    <span class="hipster img-fluid rounded"></span>
+<div class="flex flex-col md:flex-row items-start gap-6 p-6">
+  <div class="w-full md:w-1/4 flex justify-center">
+    <span class="hipster rounded-full w-32 h-32 bg-gray-200"></span>
   </div>
 
-  <div class="col-md-9">
-    <h1 class="display-4"><span jhiTranslate="home.title">Welcome to TUMApply!</span></h1>
+  <div class="w-full md:w-3/4">
+    <h1 class="text-3xl font-bold mb-4"><span jhiTranslate="home.title">Welcome to TUMApply!</span></h1>
 
     <div>
       @if (account() !== null) {
-        <div class="alert alert-success">
+        <div class="bg-green-100 text-green-800 border border-green-300 rounded px-4 py-3 mb-4">
           @if (account(); as accountRef) {
-            <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }"
-              >You are logged in as user &quot;{{ accountRef.login }}&quot;.</span
-            >
+            <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }">
+              You are logged in as user "{{ accountRef.login }}".
+            </span>
           }
         </div>
       } @else {
-        <div class="alert alert-warning">
+        <div class="bg-yellow-100 text-yellow-800 border border-yellow-300 rounded px-4 py-3 mb-4">
           <span jhiTranslate="global.messages.info.authenticated.prefix">If you want to </span>
-          <a class="alert-link" (click)="login()" jhiTranslate="global.messages.info.authenticated.link">sign in</a
-          ><span jhiTranslate="global.messages.info.authenticated.suffix"
-            >, you can try the default accounts:<br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />- User
-            (login=&quot;user&quot; and password=&quot;user&quot;).</span
-          >
+          <a class="text-blue-600 underline" (click)="login()" jhiTranslate="global.messages.info.authenticated.link">sign in</a>
+          <span jhiTranslate="global.messages.info.authenticated.suffix">
+            , you can try the default accounts:<br />
+            - Administrator (login="admin" and password="admin") <br />
+            - User (login="user" and password="user").
+          </span>
         </div>
       }
     </div>
-    <jhi-button>Test</jhi-button>
+
+    <jhi-button class="mt-4">Test</jhi-button>
   </div>
 </div>
