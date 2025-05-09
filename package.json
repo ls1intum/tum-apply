@@ -16,6 +16,7 @@
     "cleanup": "rimraf build/",
     "compile:ts": "npm run prebuild && tsc --project tsconfig.app.json",
     "compile:ts:tests": "npm run prebuild && tsc --project tsconfig.spec.json",
+    "preinstall": "npx only-allow pnpm",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
