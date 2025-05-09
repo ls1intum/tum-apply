@@ -102,12 +102,33 @@ export class JobCreationFormComponent {
   }
 
   saveDraft(): void {
-    // Logic to save draft
-    console.warn('Saving draft...');
+    const jobFormDto: JobFormDTO = {
+      title: this.basicInfoForm.value.title,
+      researchArea: this.basicInfoForm.value.researchArea,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies,
+      supervisingProfessor: '00000000-0000-0000-0000-000000000102',
+      location: this.basicInfoForm.value.location,
+      startDate: this.basicInfoForm.value.startDate,
+      workload: this.basicInfoForm.value.workload,
+      contractDuration: this.basicInfoForm.value.contractDuration,
+      fundingType: this.basicInfoForm.value.fundingType,
+      description: this.positionDetailsForm.value.description,
+      tasks: this.positionDetailsForm.value.tasks,
+      requirements: this.positionDetailsForm.value.requirements,
+      state: JobFormDTO.StateEnum.Draft,
+    };
+    this.jobResourceService.createJob(jobFormDto).subscribe({
+      next: () => {
+        console.log('Draft Job successfully created!');
+      },
+      error: err => {
+        console.error('Failed to create job draft:', err);
+      },
+    });
+    console.warn('Creating Job Draft...');
     console.warn({
       ...this.basicInfoForm.value,
       ...this.positionDetailsForm.value,
-      // ...this.additionalInfoForm.value,
     });
   }
 
