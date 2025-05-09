@@ -1,8 +1,6 @@
 @import '../../../../../content/scss/tokens';
 
-p-button {
-  display: inline-block;
-  width: min-content;
+.p-button {
   overflow: unset;
 }
 
@@ -151,19 +149,18 @@ p-button {
   @include text-button(black);
 }
 .badge_mini {
-  position: absolute;
-  top: -0.25em;
-  color: black;
-  right: -0.6em;
-  z-index: 300;
   background: $negative-default;
   border-radius: 50%;
-  font-size: smaller;
-  padding: 0.2em;
-  min-width: 1.2rem;
+  color: black;
+  font-size: 0.75rem;
   height: 1.2rem;
+  padding: 0.3em;
+  position: absolute;
+  min-width: 1.2rem;
+  right: -0.6em;
   overflow: hidden;
-  font-size: 0.8rem;
+  top: -0.25em;
+
   display: flex;
   align-items: center;
   justify-content: center;
