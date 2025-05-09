@@ -1,0 +1,16 @@
+.playground {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  flex-direction: row;
+  display: flex;
+  margin-bottom: 8px;
+}
+
+jhi-button {
+  display: inline-block;
+  width: min-content;
+  margin-bottom: 8px;
+}

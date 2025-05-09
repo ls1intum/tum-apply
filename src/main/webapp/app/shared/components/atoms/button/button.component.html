@@ -1,1 +1,17 @@
-<p-button>Implement me!</p-button>
+<button
+  pButton
+  [disabled]="disabled"
+  class="{{ color.toLowerCase() + '_' + variant.toLowerCase() }} {{ label === undefined ? 'rounded-circle' : '' }}"
+  [raised]="numberOfFavorites !== undefined"
+  badgeStyle=""
+>
+  @if (icon !== undefined) {
+    <fa-icon [icon]="['fas', icon]" />
+  }
+  @if (label !== undefined) {
+    <span pButtonLabel>{{ label }}</span>
+  }
+  @if (numberOfFavorites !== undefined) {
+    <span class="badge_mini">{{ numberOfFavorites }}</span>
+  }
+</button>
