@@ -1,17 +1,48 @@
-<!--<div class="custom-datepicker">-->
-<!--  <label for="nativeDatepicker">Select a date:</label>-->
-<!--  <input-->
-<!--    id="nativeDatepicker"-->
-<!--    type="date"-->
-<!--    [(ngModel)]="selectedDate"-->
-<!--  />-->
-<!--  <p>You picked: {{ selectedDate }}</p>-->
-<!--</div>-->
+<div [class.active]="isCalendarOpen" class="datepicker-container">
+  <label class="datepicker-label" for="startDate">Start Date</label>
+  <p-datepicker
+    (onHide)="isCalendarOpen = false"
+    (onShow)="isCalendarOpen = true"
+    [(ngModel)]="selectedDate"
+    [showButtonBar]="true"
+    class="custom-datepicker"
+    dateFormat="dd/mm/yy"
+    iconDisplay="button"
+    inputId="startDate"
+    placeholder="Select a Start Date ..."
+    showIcon="true"
+  >
+    <ng-template pTemplate="triggericon">
+      <fa-icon [icon]="faCalendar"></fa-icon>
+    </ng-template>
+  </p-datepicker>
+</div>
 
-<label for="start-date">Start Date<span class="required">*</span></label>
-<p-datepicker [(ngModel)]="selectedDate" [showIcon]="true"></p-datepicker>
+<!-- Testing Datepicker -->
 
-<!-- <div class="custom-datepicker">
-  <p-calendar [(ngModel)]="selectedDate" inputId="calendar" showIcon="true"></p-calendar>
-  <p>You picked: {{ selectedDate }}</p>
+<!-- <div class="flex-auto">
+    <label for="buttondisplay" class="font-bold block mb-2"> Button </label>
+    <p-datepicker [(ngModel)]="selectedDate" [showIcon]="true" inputId="buttondisplay" [showOnFocus]="false" />
+</div>
+
+
+<div class="datepicker-wrapper">
+    <label class="datepicker-label" for="startDate">Start Date<span class="required">*</span></label>
+    <p-datepicker
+            [(ngModel)]="selectedDate"
+            [iconDisplay]="'input'"
+            inputId="buttondisplay"
+            [showIcon]="true"
+            [showOnFocus]="false"
+            inputId="buttondisplay"
+    >
+    <ng-template #inputicon let-clickCallBack="clickCallBack">
+        <span
+          class="icon-wrapper"
+          (click)="clickCallBack($event)"
+        >
+          <fa-icon [icon]="faCalendar"></fa-icon>
+        </span>
+    </ng-template>
+    </p-datepicker>
 </div> -->

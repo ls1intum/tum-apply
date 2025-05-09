@@ -5,7 +5,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-export interface City {
+export interface Location {
   name: string;
   code: string;
 }
@@ -23,15 +23,15 @@ export class DropdownComponent implements OnInit {
 
   // Input properties
   @Input() items: any[] = [];
-  @Input() placeholder: string = 'Input';
-  @Input() label: string = 'Label';
+  @Input() placeholder: string = 'Select a Location ... ';
+  @Input() label: string = 'Location';
   @Input() displayField: string = 'name';
   @Input() valueField: string = 'code';
   @Input() showFilter: boolean = true;
   @Input() filterPlaceholder: string = 'Search...';
 
   // Output events
-  @Output() selected = new EventEmitter<City>();
+  @Output() selected = new EventEmitter<Location>();
   @Output() opened = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
 
@@ -47,11 +47,13 @@ export class DropdownComponent implements OnInit {
     // If no items provided, use default cities
     if (!this.items || this.items.length === 0) {
       this.items = [
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' },
+        { name: 'Garching Campus', code: 'GARCHING' },
+        { name: 'Garching Hochbrueck Campus', code: 'GARCHING_HOCHBRUECK' },
+        { name: 'Heilbronn Campus', code: 'HEILBRONN' },
+        { name: 'Munich Campus', code: 'MUNICH' },
+        { name: 'Straubing Campus', code: 'STRAUBING' },
+        { name: 'Weihenstephan Campus', code: 'WEIHENSTEPHAN' },
+        { name: 'Singapore Campus', code: 'SINGAPORE' },
       ];
     }
 
@@ -113,3 +115,54 @@ export class DropdownComponent implements OnInit {
     }
   }
 }
+
+// PrimeNG Dropdown Component
+
+// import { Component } from '@angular/core';
+// import { DropdownModule } from 'primeng/dropdown';
+// import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+// import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+// import { FormsModule } from '@angular/forms';
+// import { CommonModule } from '@angular/common';
+
+// interface DropdownItem {
+//   name: string;
+//   value: any;
+// }
+
+// @Component({
+//   selector: 'jhi-dropdown',
+//   standalone: true,
+//   imports: [FormsModule, CommonModule, FontAwesomeModule, DropdownModule],
+//   templateUrl: './dropdown.component.html',
+//   styleUrls: ['./dropdown.component.scss'],
+// })
+// export class DropdownComponent {
+//   readonly faChevronDown = faChevronDown;
+//   readonly faChevronUp = faChevronUp;
+
+//   placeholderText = 'Select a Location...';
+
+//   // Logic for displaying the dropdown chevronup and chevrondown icons
+//   isOpen = false;
+
+//   onShow() {
+//     this.isOpen = true;
+//   }
+
+//   onHide() {
+//     this.isOpen = false;
+//   }
+
+//   options: DropdownItem[] = [
+//     { name: 'Garching Campus', value: 'GARCHING' },
+//     { name: 'Garching Hochbrueck Campus', value: 'GARCHING_HOCHBRUECK' },
+//     { name: 'Heilbronn Campus', value: 'HEILBRONN' },
+//     { name: 'Munich Campus', value: 'MUNICH' },
+//     { name: 'Straubing Campus', value: 'STRAUBING' },
+//     { name: 'Weihenstephan Campus', value: 'WEIHENSTEPHAN' },
+//     { name: 'Singapore Campus', value: 'SINGAPORE' }
+//   ];
+
+//   value: any;
+// }

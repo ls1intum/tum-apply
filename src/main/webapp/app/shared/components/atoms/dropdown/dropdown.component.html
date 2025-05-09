@@ -1,6 +1,6 @@
 <div class="dropdown-container">
   @if (label) {
-    <div class="dropdown-label">{{ label }}</div>
+    <div class="dropdown-label">{{ label }}<span class="required">*</span></div>
   }
   <div (click)="toggleDropdown()" [class.open]="isOpen" class="custom-dropdown">
     <div class="dropdown-selected">
@@ -29,3 +29,20 @@
     }
   </div>
 </div>
+
+<!-- PrimeNG Dropdown Component -->
+
+<!-- <p-dropdown
+  [options]="options"
+  optionLabel="name"
+  [(ngModel)]="value"
+  [placeholder]="placeholderText"
+  (onShow)="onShow()"
+  (onHide)="onHide()"
+  [showClear]="true"
+  [appendTo]="'body'"
+>
+  <ng-template pTemplate="dropdownicon">
+    <fa-icon [icon]="isOpen ? faChevronUp : faChevronDown"></fa-icon>
+  </ng-template>
+</p-dropdown> -->

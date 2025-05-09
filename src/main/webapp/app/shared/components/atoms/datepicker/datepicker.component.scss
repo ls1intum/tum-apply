@@ -1,64 +1,153 @@
-.datepicker-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  label {
-    font-weight: 500;
+:host ::ng-deep {
+  .custom-datepicker .p-inputtext::placeholder {
     color: var(--text-primary);
+  }
 
-    .required {
-      color: red;
-      margin-left: 0.25rem;
+  .datepicker-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .p-datepicker-today > .p-datepicker-day {
+    color: var(--text-on-primary);
+  }
+
+  .p-datepicker-clear-button {
+    color: var(--primary-default);
+    background: none;
+    border: 0.1rem solid var(--primary-default);
+
+    &:hover {
+      background-color: var(--primary-hover);
+      border: 0.1rem solid var(--primary-hover);
+      color: var(--text-on-primary);
     }
   }
 
-  ::ng-deep .styled-datepicker {
+  .p-datepicker-today-button {
+    background-color: var(--primary-default);
+    border: 0.1rem solid var(--primary-default);
+    color: var(--text-on-primary);
+
+    &:hover {
+      background-color: var(--primary-hover);
+      border: 0.1rem solid var(--primary-hover);
+      color: var(--text-on-primary);
+    }
+  }
+
+  .p-inputtext:enabled:focus {
+    border-color: var(--primary-default);
+  }
+
+  .p-inputtext {
+    background-color: var(--background-default);
+    color: var(--text-default);
+    border: 0rem;
+  }
+
+  .p-datepicker-trigger {
+    background-color: var(--primary-default);
+    color: var(--text-on-primary);
+  }
+
+  .p-datepicker {
+    background-color: var(--background-default);
+    color: var(--text-default);
     width: 100%;
-    display: flex;
-    align-items: center;
-    border-radius: 0.75rem;
-    overflow: hidden;
+  }
 
-    .p-inputtext {
-      flex: 1;
-      border: 1px solid var(--border-default);
-      padding: 1rem;
-      border-radius: 0.75rem 0 0 0.75rem;
-      font-size: 1rem;
-      color: var(--text-primary);
+  .p-datepicker td span {
+    color: var(--text-default);
+  }
 
-      &::placeholder {
-        color: var(--text-primary);
-      }
-    }
+  .p-datepicker td.p-highlight > span {
+    background-color: var(--primary-default);
+    color: var(--text-on-primary);
+  }
 
-    .p-datepicker-trigger {
-      background-color: var(--primary-default);
-      border: none;
-      padding: 0 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 0 0.75rem 0.75rem 0;
+  .p-datepicker .p-datepicker-header,
+  .p-datepicker-title {
+    color: var(--primary-default);
+    background-color: var(--background-default);
+  }
 
-      .pi {
-        color: var(--text-on-primary);
-        font-size: 1.2rem;
-      }
-    }
+  .p-monthpicker .p-month,
+  .p-yearpicker .p-year {
+    color: var(--text-default);
   }
 }
 
-// .custom-datepicker {
-//   display: flex;
-//   flex-direction: column;
-//   gap: 0.5rem;
+:host ::ng-deep .custom-datepicker {
+  .p-inputtext {
+    background-color: var(--background-default);
+    color: var(--text-default);
+  }
 
-//   input[type="date"] {
-//     padding: 0.5rem;
-//     border-radius: 4px;
-//     border: 1px solid #ccc;
-//     font-size: 1rem;
-//   }
-// }
+  .p-datepicker-dropdown {
+    background-color: var(--primary-default);
+    color: var(--text-on-primary);
+    border: 0rem;
+  }
+
+  .p-datepicker-panel {
+    background-color: var(--background-default);
+    color: var(--text-default);
+  }
+
+  .p-datepicker-select-month,
+  .p-datepicker-select-year {
+    background-color: var(--background-default);
+    color: var(--primary-default);
+  }
+
+  .p-button-sm.p-button-icon-only {
+    color: var(--text-primary);
+  }
+
+  .p-datepicker {
+    background-color: var(--background-default);
+    color: var(--text-default);
+    border-radius: 0.5rem;
+    border: 0.1rem solid var(--border-default);
+
+    &:hover {
+      border: 0.1rem solid var(--primary-default);
+    }
+  }
+
+  .p-datepicker-day-selected,
+  .p-datepicker-month-selected,
+  .p-datepicker-year-selected {
+    background-color: var(--primary-default);
+    color: var(--text-on-primary);
+  }
+
+  ::ng-deep .custom-datepicker .p-inputwrapper,
+  ::ng-deep .custom-datepicker .p-datepicker {
+    border: 0.1rem solid var(--border-default);
+    border-radius: var(--border-radius);
+    box-shadow: none !important;
+    outline: none;
+  }
+
+  ::ng-deep .custom-datepicker:enabled:focus {
+    border: var(--primary-default);
+    outline: none;
+    box-shadow: none;
+  }
+
+  .p-datepicker-weekday,
+  .p-datepicker-month,
+  .p-datepicker-year {
+    color: var(--text-default);
+  }
+
+  .fa-icon {
+    color: var(--text-default);
+  }
+
+  .p-datepicker td.p-datepicker-other-month span {
+    color: var(--background-disabled);
+  }
+}
