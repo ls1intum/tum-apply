@@ -1,15 +1,16 @@
 <div [class.active]="isCalendarOpen" class="datepicker-container">
-  <label class="datepicker-label" for="startDate">Start Date</label>
+  <label class="datepicker-label">{{ label }}</label>
   <p-datepicker
+    (ngModelChange)="onDateChange($event)"
     (onHide)="isCalendarOpen = false"
     (onShow)="isCalendarOpen = true"
-    [(ngModel)]="selectedDate"
+    [(ngModel)]="modelDate"
+    [placeholder]="placeholder"
     [showButtonBar]="true"
     class="custom-datepicker"
     dateFormat="dd/mm/yy"
     iconDisplay="button"
     inputId="startDate"
-    placeholder="Select a Start Date ..."
     showIcon="true"
   >
     <ng-template pTemplate="triggericon">

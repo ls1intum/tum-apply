@@ -27,7 +27,17 @@
       }
     </div>
     <jhi-button>Test</jhi-button>
-    <jhi-datepicker></jhi-datepicker>
-    <jhi-dropdown></jhi-dropdown>
+    <jhi-datepicker [(selectedDate)]="selectedDate" [label]="'Start Date'" [placeholder]="'Select a Start Date...'"></jhi-datepicker>
+    <jhi-dropdown
+      [(selected)]="selectedLocation"
+      [items]="locations"
+      [label]="'Campus Location'"
+      [placeholder]="'Select a Location...'"
+    ></jhi-dropdown>
+
+    <div class="mt-3">
+      <p><strong>Selected Date:</strong> {{ selectedDate?.day }}/{{ selectedDate?.month }}/{{ selectedDate?.year }}</p>
+      <p><strong>Selected Location:</strong> {{ selectedLocation?.name }} ({{ selectedLocation?.value }})</p>
+    </div>
   </div>
 </div>

@@ -8,6 +8,12 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
 
+interface LocalDate {
+  year: number;
+  month: number;
+  day: number;
+}
+
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
@@ -17,6 +23,19 @@ import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dro
 export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
 
+  // Datepicker:
+  selectedDate: LocalDate | null = null;
+  // Dropdown:
+  selectedLocation: any = null;
+  locations = [
+    { name: 'Garching Campus', value: 'GARCHING' },
+    { name: 'Garching Hochbrueck Campus', value: 'GARCHING_HOCHBRUECK' },
+    { name: 'Heilbronn Campus', value: 'HEILBRONN' },
+    { name: 'Munich Campus', value: 'MUNICH' },
+    { name: 'Straubing Campus', value: 'STRAUBING' },
+    { name: 'Weihenstephan Campus', value: 'WEIHENSTEPHAN' },
+    { name: 'Singapore Campus', value: 'SINGAPORE' },
+  ];
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
