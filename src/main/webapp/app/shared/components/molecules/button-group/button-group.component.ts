@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { ButtonColor, ButtonComponent, ButtonVariant } from '../../atoms/button/button.component';
 import { CommonModule } from '@angular/common';
+
+import { ButtonColor, ButtonComponent, ButtonVariant } from '../../atoms/button/button.component';
 
 export type Button = {
   color: ButtonColor;
