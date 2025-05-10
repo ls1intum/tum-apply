@@ -1,7 +1,7 @@
 <button
   pButton
   [disabled]="disabled"
-  class="{{ color.toLowerCase() + '_' + variant.toLowerCase() }} {{ label === undefined ? 'rounded-circle' : '' }}"
+  class="{{ color.toLowerCase() + '_' + variant.toLowerCase() }} {{ label === undefined ? 'rounded-circle' : '' }} {{ buttonClass }}"
   [raised]="numberOfFavorites !== undefined"
   badgeStyle=""
 >

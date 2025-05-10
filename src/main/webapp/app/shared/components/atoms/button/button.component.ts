@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-// import '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonModule } from 'primeng/button';
@@ -22,4 +21,5 @@ export class ButtonComponent {
   @Input() label?: string = undefined;
   @Input() numberOfFavorites?: number = undefined;
   @Input() disabled: boolean = false;
+  @Input() buttonClass: string = '';
 }
