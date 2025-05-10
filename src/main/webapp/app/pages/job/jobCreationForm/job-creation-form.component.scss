@@ -120,11 +120,14 @@ header {
     display: block;
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
-    font-weight: bold;
 
     .required {
       color: var(--negative-default);
       margin-left: 0.125rem;
+    }
+
+    .disabled {
+      color: var(--background-disabled);
     }
   }
 
@@ -134,7 +137,7 @@ header {
     width: 100%;
     padding: 0.625rem 0.75rem;
     border: 0.0625rem solid var(--border-default);
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
     font-size: 0.875rem;
 
     &:focus {
@@ -287,9 +290,8 @@ header {
 .form-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 1.875rem;
-  padding-top: 1.25rem;
-  border-top: 0.0625rem solid var(--border-default);
+  margin-top: 1rem;
+  padding-top: 1rem;
 
   .action-right {
     display: flex;
@@ -320,7 +322,7 @@ header {
   .btn-back {
     background-color: transparent;
     color: var(--text-on-disabled);
-    border: 0.0625rem solid var(--border-default);
+    border: 0.0625rem solid var(--text-on-disabled);
 
     &:hover {
       background-color: var(--background-surface-alt);
@@ -369,4 +371,17 @@ header {
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
   }
+}
+
+.ng-fa-icon {
+  color: var(--primary-default);
+}
+
+.btn-back .ng-fa-icon,
+.btn-cancel .ng-fa-icon {
+  color: var(--text-on-disabled);
+}
+
+input:disabled {
+  background-color: var(--background-disabled);
 }

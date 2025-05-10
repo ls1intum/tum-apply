@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronDown, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faCircleInfo, faFloppyDisk, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { JobFormDTO } from '../../../generated';
@@ -16,7 +16,10 @@ import { JobFormDTO } from '../../../generated';
 })
 export class JobCreationFormComponent {
   readonly faCircleInfo = faCircleInfo;
-  readonly faChevronDown = faChevronDown;
+  readonly faChevronLeft = faChevronLeft;
+  readonly faLocationDot = faLocationDot;
+  readonly faFloppyDisk = faFloppyDisk;
+
   currentStep = 1;
 
   // Form groups for each step

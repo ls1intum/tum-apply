@@ -75,9 +75,13 @@
             <label for="location">Location<span class="required">*</span></label>
             <div class="select-wrapper">
               <select formControlName="location" id="location">
-                <option disabled selected value="">Select a Location ...</option>
+                <option disabled selected value="">
+                  <fa-icon [icon]="faLocationDot"></fa-icon>
+                  Select a Location ...
+                </option>
                 @for (location of locations; track location) {
                   <option [value]="location.value">
+                    <fa-icon [icon]="faLocationDot"></fa-icon>
                     {{ location.label }}
                   </option>
                 }
@@ -140,11 +144,16 @@
       </form>
 
       <div class="form-actions">
-        <button class="btn-cancel"><span class="btn-icon">←</span> Cancel</button>
+        <button class="btn-cancel">
+          <span class="btn-icon">
+            <fa-icon [icon]="faChevronLeft"></fa-icon>
+          </span>
+          Cancel
+        </button>
         <div class="action-right">
           <button (click)="saveDraft()" class="btn-save-draft">
             <span class="btn-icon">
-              <fa-icon [icon]="['fas', 'floppy-disk']"></fa-icon>
+              <fa-icon [icon]="faFloppyDisk"></fa-icon>
             </span>
             Save Draft
           </button>
@@ -210,7 +219,12 @@
         </div>
       </form>
       <div class="form-actions">
-        <button (click)="previousStep()" class="btn-back"><span class="btn-icon">←</span> Back</button>
+        <button (click)="previousStep()" class="btn-back">
+          <span class="btn-icon">
+            <fa-icon [icon]="faChevronLeft"></fa-icon>
+          </span>
+          Back
+        </button>
         <div class="action-right">
           <button (click)="saveDraft()" class="btn-save-draft">
             <span class="btn-icon">
@@ -250,7 +264,12 @@
     </form>
 
     <div class="form-actions">
-      <button (click)="previousStep()" class="btn-back"><span class="btn-icon">←</span> Back</button>
+      <button (click)="previousStep()" class="btn-back">
+        <span class="btn-icon">
+          <fa-icon [icon]="faChevronLeft"></fa-icon>
+        </span>
+        Back
+      </button>
       <div class="action-right">
         <button (click)="saveDraft()" class="btn-save-draft">
           <span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']"></fa-icon></span> Save Draft
