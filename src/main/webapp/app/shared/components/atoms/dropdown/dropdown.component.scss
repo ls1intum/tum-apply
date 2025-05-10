@@ -1,0 +1,93 @@
+::ng-deep .dropdown-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+
+  &.label-left {
+    flex-direction: row;
+    align-items: center;
+
+    .dropdown-label {
+      margin-right: 1rem;
+    }
+  }
+
+  &.label-top .dropdown-label {
+    margin-bottom: 0.25rem;
+  }
+
+  .dropdown-label {
+    color: var(--p-text-primary);
+    font-size: 1rem;
+  }
+
+  .custom-dropdown {
+    background: var(--p-background-default);
+    border: 0.1rem solid var(--p-border-default);
+    border-radius: 0.5rem;
+    color: var(--p-text-primary);
+
+    &.p-disabled {
+      background-color: var(--p-background-disabled) !important;
+      color: var(--p-text-disabled) !important;
+      border-color: var(--p-border-default) !important;
+
+      .ng-fa-icon,
+      .p-select-label.ng-star-inserted.p-placeholder {
+        color: var(--p-text-disabled) !important;
+      }
+    }
+
+    &.open {
+      border: 0.1rem var(--p-primary-color) !important;
+    }
+
+    .p-select-label.ng-star-inserted.p-placeholder {
+      color: var(--p-text-primary);
+    }
+
+    .dropdown-item-content {
+      display: flex;
+      align-items: center;
+
+      .left-icon {
+        margin-right: 0.5rem;
+        color: var(--p-text-primary);
+      }
+    }
+
+    .p-select-list {
+      padding: 0;
+    }
+
+    // Override wrong color on unselected item from primeng
+    .p-dropdown-items,
+    .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
+    .p-ripple.p-select-option {
+      background: var(--p-background-surface);
+    }
+
+    .p-dropdown-item {
+      color: var(--p-text-primary);
+
+      &:hover {
+        background-color: var(--p-background-surface-alt);
+      }
+    }
+  }
+
+  .ng-fa-icon {
+    color: var(--p-text-primary);
+  }
+
+  // Override unnecessary padding from primeng
+  .p-select-list .ng-star-inserted {
+    padding: 0;
+  }
+
+  // Override wrong color on selected item from primeng
+  .p-select-option.p-select-option-selected.p-focus {
+    background: var(--p-background-surface-alt);
+    color: var(--p-text-primary);
+  }
+}

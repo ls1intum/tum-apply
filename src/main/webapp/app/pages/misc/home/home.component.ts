@@ -1,20 +1,49 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
+import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
+
+interface LocalDate {
+  year: number;
+  month: number;
+  day: number;
+}
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, ButtonComponent],
+  imports: [SharedModule, RouterModule, ButtonComponent, DatePickerComponent, DropdownComponent],
 })
 export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
 
+  // Datepicker:
+  selectedDate: LocalDate | null = null;
+  // Dropdown:
+  selectedLocation1: any;
+  selectedLocation2: any;
+  locations = [
+    { name: 'Munich Campus', value: 'munich', icon: 'chevron-up' },
+    { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },
+    { name: 'Weihenstephan Campus', value: 'weihenstephan', icon: 'map-marker-alt' },
+  ];
+  /*
+  selectedLocation: any = null;
+  locations = [
+    { name: 'Garching Campus', value: 'GARCHING' },
+    { name: 'Garching Hochbrueck Campus', value: 'GARCHING_HOCHBRUECK' },
+    { name: 'Heilbronn Campus', value: 'HEILBRONN' },
+    { name: 'Munich Campus', value: 'MUNICH' },
+    { name: 'Straubing Campus', value: 'STRAUBING' },
+    { name: 'Weihenstephan Campus', value: 'WEIHENSTEPHAN' },
+    { name: 'Singapore Campus', value: 'SINGAPORE' },
+  ];*/
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
