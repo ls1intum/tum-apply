@@ -1,0 +1,45 @@
+<p-table
+  [paginator]="paginator"
+  [resizableColumns]="true"
+  [responsiveLayout]="'scroll'"
+  [rowsPerPageOptions]="[10, 20, 50]"
+  [rows]="rows"
+  [value]="data"
+  styleClass="fixed-table"
+>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <tr>
+      @if (selectAble) {
+        <th style="width: 4rem">
+          <p-tableHeaderCheckbox />
+        </th>
+      }
+      @for (col of columns; track col.field) {
+        <th [style.width]="col.width" [ngClass]="{ 'text-center': col.alignCenter ?? false }">
+          {{ col.header }}
+        </th>
+      }
+    </tr>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template let-rowData pTemplate="body">
+    <tr>
+      @if (selectAble) {
+        <td>
+          <p-tableCheckbox [value]="rowData" />
+        </td>
+      }
+      @for (col of columns; track col.field) {
+        <td [style.width]="col.width" [ngClass]="{ 'text-center': col.alignCenter ?? false }">
+          @if (col.template) {
+            <ng-container *ngTemplateOutlet="col.template; context: { $implicit: rowData }" />
+          } @else {
+            {{ rowData[col.field] }}
+          }
+        </td>
+      }
+    </tr>
+  </ng-template>
+</p-table>

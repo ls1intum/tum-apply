@@ -1,0 +1,20 @@
+<jhi-dynamic-table
+  [columns]="[
+    { field: 'applicantName', header: 'Name', width: '3%' },
+    { field: 'email', header: 'Email', width: '80rem' },
+    { field: 'position', header: 'Position', width: '1rem' },
+    { field: 'status', header: 'Status', width: '1rem', alignCenter: true, template: statusTemplate },
+    { field: 'actions', header: 'Actions', width: '1rem', template: actionTemplate },
+  ]"
+  [data]="applications"
+  [paginator]="true"
+  [rows]="10"
+  [selectAble]="true"
+/>
+<ng-template #statusTemplate let-application>
+  <jhi-status-badge [status]="application.status" />
+</ng-template>
+
+<ng-template #actionTemplate let-application>
+  <jhi-button />
+</ng-template>

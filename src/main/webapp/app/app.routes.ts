@@ -27,6 +27,11 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import(`./entities/entity.routes`),
   },
+  {
+    path: 'evaluation/overview',
+    loadComponent: () =>
+      import('./pages/evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
+  },
   ...errorRoute,
 ];
 
