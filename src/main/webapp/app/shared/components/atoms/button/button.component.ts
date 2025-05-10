@@ -14,7 +14,7 @@ import { ButtonModule } from 'primeng/button';
  * - `neutral`: Neutral tone, less emphasis.
  * - `white`: Minimal styling, often used on colored backgrounds.
  */
-export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'neutral' | 'white';
+export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warn' | 'danger' | 'info' | 'accent';
 
 /**
  * Defines the visual style of the button.

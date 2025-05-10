@@ -1,10 +1,17 @@
 @import '../../../../../content/scss/tokens';
 
+$primary-default: $primary-300; //var(--p-primary-color, #{$primary-300});//
+$secondary-default: $secondary-300; // var(--p-primary-color);
+$info-default: $info-500; //var(--p-info-color);
+$positive-default: $positive-500; //var(--p-success-color);
+$warning-default: $warning-500; //var(--p-warn-color);
+$negative-default: $negative-500; //var(--p-danger-color);
+
 .p-button {
   overflow: unset;
+  border: 1px solid var(--p-primary-color) !important;
 }
 
-// Mixin to reduce repetition
 @mixin state-styles($base-color, $text-color: black) {
   &:hover {
     background: darken($base-color, 10%) !important;
@@ -109,43 +116,43 @@
   @include text-button($positive-default);
 }
 
-.warning_outlined {
+.warn_outlined {
   @include outlined-button($warning-default);
 }
-.warning_filled {
+.warn_filled {
   @include filled-button($warning-default, black);
 }
-.warning_text {
+.warn_text {
   @include text-button($warning-default);
 }
 
-.error_outlined {
+.danger_outlined {
   @include outlined-button($negative-default);
 }
-.error_filled {
+.danger_filled {
   @include filled-button($negative-default, black);
 }
-.error_text {
+.danger_text {
   @include text-button($negative-default);
 }
 
-.neutral_outlined {
+.accent_outlined {
   @include outlined-button($neutral-300);
 }
-.neutral_filled {
+.accent_filled {
   @include filled-button($neutral-300, black);
 }
-.neutral_text {
+.accent_text {
   @include text-button($neutral-300);
 }
 
-.white_outlined {
+.info_outlined {
   @include outlined-button(black);
 }
-.white_filled {
+.info_filled {
   @include filled-button(white, black);
 }
-.white_text {
+.info_text {
   @include text-button(black);
 }
 .badge_mini {
