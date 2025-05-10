@@ -1,1 +1,14 @@
-<p>button-group works!</p>
+<div class="d-flex {{ buttonGroupData.direction === 'vertical' ? 'flex-row' : 'flex-column' }}">
+  @for (button of buttonGroupData.buttons; track $index) {
+    <jhi-button
+      [buttonClass]="'flex-grow-1'"
+      [color]="button.color"
+      [variant]="button.variant"
+      [icon]="button.icon"
+      [label]="button.label"
+      [numberOfFavorites]="button.numberOfFavorites"
+      [disabled]="button.disabled"
+      (click)="button.onClick()"
+    />
+  }
+</div>

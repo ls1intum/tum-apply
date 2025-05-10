@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ButtonGroupComponent } from './button-group.component';
+import ButtonGroupComponent from './button-group.component';
 
 describe('ButtonGroupComponent', () => {
   let component: ButtonGroupComponent;
