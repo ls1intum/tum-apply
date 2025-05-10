@@ -1,7 +1,8 @@
-import { Component, input, TemplateRef } from '@angular/core';
-import { Button } from '../../atoms/button/button.component';
+import { Component, TemplateRef, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
+
+import { Button } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
 
 /**
