@@ -23,7 +23,7 @@ export type StepData = {
   standalone: true,
 })
 export class ProgressStepperComponent {
-  currentStep = 0;
+  currentStep = 1;
 
   steps = input<StepData[]>([]);
 
@@ -45,7 +45,7 @@ export class ProgressStepperComponent {
           onClick: () => {
             console.log(action + ' index ' + index);
             button.onClick();
-            action === 'next' ? this.goToStep(index + 1) : this.goToStep(index - 1); //TODO
+            action === 'next' ? this.goToStep(index + 1) : this.goToStep(index - 1);
           },
         };
       }),
