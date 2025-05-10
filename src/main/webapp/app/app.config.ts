@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
     providePrimeNG({
-      theme: { preset: TUMApplyPreset, options: { darkModeSelector: '.my-app-dark' } },
+      theme: { preset: TUMApplyPreset, options: { darkModeSelector: '.tum-apply-dark-mode' } },
     }),
     importProvidersFrom(BrowserModule),
     // Set this to true to enable service worker (PWA)
