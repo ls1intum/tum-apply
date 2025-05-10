@@ -81,13 +81,7 @@ export default class NavbarComponent implements OnInit {
   }
 
   toggleTheme(): void {
-    const isDarkTheme = document.documentElement.classList.contains('dark-theme');
-    if (isDarkTheme) {
-      document.documentElement.classList.remove('dark-theme');
-      this.sessionStorage.store('theme', 'light');
-    } else {
-      document.documentElement.classList.add('dark-theme');
-      this.sessionStorage.store('theme', 'dark');
-    }
+    const element = document.querySelector('html');
+    element?.classList.toggle('tum-apply-dark-mode');
   }
 }
