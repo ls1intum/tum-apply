@@ -66,9 +66,12 @@
         </div>
 
         <div class="form-row">
-          <div class="form-field">
-            <label for="supervisingProfessor">Supervising Professor<span class="required">*</span></label>
-            <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
+          <div class="form-field input-with-icon">
+            <label for="supervisingProfessor"> Supervising Professor<span class="required">*</span> </label>
+            <div class="icon-input-wrapper">
+              <fa-icon [icon]="faUser" class="input-icon"></fa-icon>
+              <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
+            </div>
           </div>
 
           <div class="form-field">
@@ -184,9 +187,12 @@
               rows="10"
             ></textarea>
           </div>
-          <small class="description-helper"
-            >Describe the research context, goals, and overall scope of the position. Keep it concise but informative.</small
-          >
+          <div class="form-footer">
+            <small class="description-helper"
+              >Describe the research context, goals, and overall scope of the position. Keep it concise but informative.</small
+            >
+            <small class="char-counter"> {{ descriptionLength }}/1000 </small>
+          </div>
         </div>
         <div class="form-field">
           <label for="tasks"
@@ -196,9 +202,12 @@
           <div class="input-with-icon">
             <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
           </div>
-          <small class="description-helper"
-            >List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.</small
-          >
+          <div class="form-footer">
+            <small class="description-helper"
+              >List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.</small
+            >
+            <small class="char-counter"> {{ tasksLength }}/1000 </small>
+          </div>
         </div>
         <div class="form-field">
           <label for="requirements"
@@ -213,9 +222,12 @@
               rows="10"
             ></textarea>
           </div>
-          <small class="description-helper"
-            >Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.</small
-          >
+          <div class="form-footer">
+            <small class="description-helper"
+              >Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.</small
+            >
+            <small class="char-counter"> {{ requirementsLength }}/1000 </small>
+          </div>
         </div>
       </form>
       <div class="form-actions">
@@ -233,7 +245,6 @@
             Save Draft
           </button>
           <button class="btn-next" (click)="nextStep()">Next</button>
-          <!--          <button (click)="publishJob()" class="btn-publish">Publish Job</button>-->
         </div>
       </div>
     </div>

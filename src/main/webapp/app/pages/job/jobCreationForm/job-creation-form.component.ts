@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronLeft, faCircleInfo, faFloppyDisk, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faCircleInfo, faFloppyDisk, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { JobFormDTO } from '../../../generated';
@@ -19,6 +19,7 @@ export class JobCreationFormComponent {
   readonly faChevronLeft = faChevronLeft;
   readonly faLocationDot = faLocationDot;
   readonly faFloppyDisk = faFloppyDisk;
+  readonly faUser = faUser;
 
   currentStep = 1;
 
@@ -61,6 +62,18 @@ export class JobCreationFormComponent {
     this.initForms();
   }
 
+  get descriptionLength(): number {
+    return this.positionDetailsForm.get('description')?.value?.length || 0;
+  }
+
+  get tasksLength(): number {
+    return this.positionDetailsForm.get('tasks')?.value?.length || 0;
+  }
+
+  get requirementsLength(): number {
+    return this.positionDetailsForm.get('requirements')?.value?.length || 0;
+  }
+
   initForms(): void {
     // Basic Information form
     this.basicInfoForm = this.fb.group({
@@ -83,9 +96,9 @@ export class JobCreationFormComponent {
 
     // Position Details form
     this.positionDetailsForm = this.fb.group({
-      description: [''],
-      tasks: [''],
-      requirements: [''],
+      description: ['', [Validators.maxLength(1000)]],
+      tasks: ['', [Validators.maxLength(1000)]],
+      requirements: ['', [Validators.maxLength(1000)]],
     });
 
     // Additional Information form

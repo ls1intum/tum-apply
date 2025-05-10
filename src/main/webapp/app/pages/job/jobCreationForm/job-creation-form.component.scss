@@ -158,11 +158,20 @@ header {
     resize: vertical;
   }
 
-  .description-helper {
-    display: block;
-    color: var(--background-disabled);
-    font-size: 0.75rem;
-    margin-top: 0.3125rem;
+  .form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.1rem;
+    font-size: 0.9rem;
+
+    .description-helper {
+      color: var(--background-disabled);
+    }
+
+    .char-counter {
+      color: var(--text-primary);
+    }
   }
 }
 
@@ -177,6 +186,21 @@ header {
 
 .input-with-icon {
   position: relative;
+
+  .icon-input-wrapper {
+    display: flex;
+    align-items: center;
+
+    input {
+      padding-left: 2.25rem;
+    }
+
+    .ng-fa-icon.input-icon {
+      position: absolute;
+      left: 0.75rem;
+      color: var(--text-on-disabled);
+    }
+  }
 
   .info-icon {
     position: absolute;
@@ -383,5 +407,6 @@ header {
 }
 
 input:disabled {
+  color: var(--text-on-disabled);
   background-color: var(--background-disabled);
 }
