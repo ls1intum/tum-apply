@@ -1,8 +1,7 @@
 <p-stepper [(value)]="currentStep" class="basis-[50rem]">
   <p-step-list>
     @for (step of steps(); track $index) {
-      <p-step [value]="$index">{{ step.name }}</p-step>
-      <!--translate step-->
+      <p-step [value]="$index + 1">{{ step.name }}</p-step>
     }
   </p-step-list>
 </p-stepper>
