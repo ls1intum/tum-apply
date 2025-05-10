@@ -30,7 +30,7 @@ describe('ButtonGroupComponent', () => {
 
     fixture = TestBed.createComponent(ButtonGroupComponent);
     componentRef = fixture.componentRef;
-    await componentRef.setInput('data', mockButtonGroupData);
+    componentRef.setInput('data', mockButtonGroupData);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
