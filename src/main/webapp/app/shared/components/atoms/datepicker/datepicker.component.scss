@@ -159,7 +159,7 @@
 
   .p-inputtext:enabled:focus {
     box-shadow: none;
-    border: 0.25rem solid var(--p-primary-color) !important;
+    border: 0.1rem solid var(--p-primary-color) !important;
   }
 
   // Disable border-change on hover to keep consistency
@@ -170,6 +170,7 @@
   .p-datepicker-dropdown {
     background-color: var(--p-primary-color);
     color: var(--p-text-on-primary);
+    border: 0.1rem;
   }
 
   .p-inputtext::placeholder {

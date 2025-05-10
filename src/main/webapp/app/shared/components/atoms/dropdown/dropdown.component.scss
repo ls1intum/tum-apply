@@ -22,17 +22,11 @@
 
     &.p-disabled {
       background-color: var(--p-background-disabled) !important;
-      color: var(--p-text-disabled) !important;
-      border-color: var(--p-border-default) !important;
 
       .ng-fa-icon,
-      .p-select-label.ng-star-inserted.p-placeholder {
+      .p-select-label.ng-star-inserted {
         color: var(--p-text-disabled) !important;
       }
-    }
-
-    &.open {
-      border: 0.1rem var(--p-primary-color) !important;
     }
 
     .p-select-label.ng-star-inserted.p-placeholder {
@@ -77,11 +71,7 @@
   .p-select-option.p-select-option-selected.p-focus {
     background: var(--p-background-surface-alt);
     color: var(--p-text-primary);
-  }
-
-  .p-inputtext:enabled:focus {
-    box-shadow: none;
-    border: 0.1rem solid var(--p-primary-color) !important;
+    border-radius: 0.2rem;
   }
 
   .p-select:not(.p-disabled).p-focus {
