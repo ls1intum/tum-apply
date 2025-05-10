@@ -16,16 +16,9 @@
     margin-bottom: 0.25rem;
   }
 
-  .dropdown-label {
-    color: var(--p-text-primary);
-    font-size: 1rem;
-  }
-
   .custom-dropdown {
-    background: var(--p-background-default);
     border: 0.1rem solid var(--p-border-default);
     border-radius: 0.5rem;
-    color: var(--p-text-primary);
 
     &.p-disabled {
       background-color: var(--p-background-disabled) !important;
@@ -80,11 +73,6 @@
     color: var(--p-text-primary);
   }
 
-  // Override unnecessary padding from primeng
-  .p-select-list .ng-star-inserted {
-    padding: 0;
-  }
-
   // Override wrong color on selected item from primeng
   .p-select-option.p-select-option-selected.p-focus {
     background: var(--p-background-surface-alt);
@@ -93,11 +81,11 @@
 
   .p-inputtext:enabled:focus {
     box-shadow: none;
-    border: 0.25rem solid var(--p-primary-color) !important;
+    border: 0.1rem solid var(--p-primary-color) !important;
   }
 
   .p-select:not(.p-disabled).p-focus {
     box-shadow: none;
-    border: 0.25rem solid var(--p-primary-color) !important;
+    border: 0.1rem solid var(--p-primary-color) !important;
   }
 }
