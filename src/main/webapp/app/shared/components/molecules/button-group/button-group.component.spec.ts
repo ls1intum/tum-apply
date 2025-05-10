@@ -40,7 +40,6 @@ describe('ButtonGroupComponent', () => {
   });
 
   it('should render the correct number of buttons', () => {
-    console.log(fixture.nativeElement.innerHTML);
     const buttonElements = fixture.nativeElement.querySelectorAll('jhi-button');
     expect(buttonElements.length).toBe(mockButtonGroupData.buttons.length);
   });
