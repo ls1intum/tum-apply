@@ -20,6 +20,6 @@ export class ButtonComponent {
   @Input() icon?: string = undefined;
   @Input() label?: string = undefined;
   @Input() numberOfFavorites?: number = undefined;
-  @Input() disabled: boolean = false;
-  @Input() buttonClass: string = '';
+  @Input() disabled = false;
+  @Input() buttonClass = '';
 }

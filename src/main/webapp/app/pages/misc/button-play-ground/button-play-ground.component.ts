@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
 import ButtonGroupComponent, { ButtonGroupData } from '../../../shared/components/molecules/button-group/button-group.component';
 
 @Component({

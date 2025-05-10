@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { ButtonPlayGroundComponent } from './pages/misc/button-play-ground/button-play-ground.component';
+
 import { errorRoute } from './layouts/error/error.route';
 
 const routes: Routes = [
