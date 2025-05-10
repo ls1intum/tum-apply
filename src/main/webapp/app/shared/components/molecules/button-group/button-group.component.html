@@ -1,5 +1,5 @@
-<div class="button_group d-flex {{ buttonGroupData.direction === 'vertical' ? 'flex-column' : 'flex-row' }}">
-  @for (button of buttonGroupData.buttons; track $index) {
+<div class="button_group d-flex {{ data().direction === 'vertical' ? 'flex-column' : 'flex-row' }}">
+  @for (button of data().buttons; track $index) {
     <jhi-button
       class="'flex-grow-1'"
       [buttonClass]="'w-100'"

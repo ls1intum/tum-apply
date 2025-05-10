@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Button, ButtonComponent } from '../../atoms/button/button.component';
@@ -36,5 +36,5 @@ export type ButtonGroupData = {
  * @type {ButtonGroupData}
  */
 export default class ButtonGroupComponent {
-  @Input({ required: true, alias: 'data' }) buttonGroupData!: ButtonGroupData;
+  data = input.required<ButtonGroupData>();
 }
