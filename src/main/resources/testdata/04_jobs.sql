@@ -47,7 +47,7 @@ VALUES
  'Assist in AI research projects, publish papers, collaborate with partners.',
  'Bachelor in Computer Science or related field, experience with ML.',
  'PUBLISHED',
- '2025-10-01 00:00:00'),
+ '2025-10-01'),
 
 -- Job 2 (Some NULLs: no description or requirements)
 ('00000000-0000-0000-0000-000000010002',
@@ -64,7 +64,7 @@ VALUES
  'Design robotic systems, prototype mechanical solutions, publish research.',
  NULL,
  'DRAFT',
- '2025-10-01 00:00:00'),
+ '2025-10-01'),
 
 -- Job 3 (All NULLs except the mandatory ones)
 ('00000000-0000-0000-0000-000000010003',
@@ -98,7 +98,7 @@ VALUES
  NULL,
  'Ongoing Bachelor in Informatics or related, enthusiasm for UX.',
  'DRAFT',
- '2025-10-01 00:00:00'),
+ '2025-10-01'),
 
 -- Job 5 (Fully filled out again, normal)
 ('00000000-0000-0000-0000-000000010005',
@@ -115,4 +115,4 @@ VALUES
  'Develop data pipelines, analyze massive datasets, publish results.',
  'Master in Computer Science or Data Science, SQL and Python skills.',
  'APPLICANT_FOUND',
- '2025-10-01 00:00:00');
+ '2025-10-01');
