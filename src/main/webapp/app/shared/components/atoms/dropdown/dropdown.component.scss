@@ -90,4 +90,14 @@
     background: var(--p-background-surface-alt);
     color: var(--p-text-primary);
   }
+
+  .p-inputtext:enabled:focus {
+    box-shadow: none;
+    border: 0.25rem solid var(--p-primary-color) !important;
+  }
+
+  .p-select:not(.p-disabled).p-focus {
+    box-shadow: none;
+    border: 0.25rem solid var(--p-primary-color) !important;
+  }
 }

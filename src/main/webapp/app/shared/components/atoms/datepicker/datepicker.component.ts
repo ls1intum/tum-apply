@@ -21,6 +21,7 @@ export class DatePickerComponent {
   isCalendarOpen = false;
   readonly faCalendar = faCalendar;
 
+  @Input() width: string = '50%';
   @Input() label = 'Date';
   @Input() placeholder = 'Select a date...';
   @Input() selectedDate: LocalDate | null = null;

@@ -1,4 +1,4 @@
-:host ::ng-deep {
+/*:host ::ng-deep {
   .custom-datepicker .p-inputtext::placeholder {
     color: var(--text-primary);
   }
@@ -150,4 +150,66 @@
   .p-datepicker td.p-datepicker-other-month span {
     color: var(--background-disabled);
   }
+}
+*/
+::ng-deep .custom-datepicker {
+  .p-inputtext {
+    border-color: var(--p-border-default);
+  }
+
+  .p-inputtext:enabled:focus {
+    box-shadow: none;
+    border: 0.25rem solid var(--p-primary-color) !important;
+  }
+
+  // Disable border-change on hover to keep consistency
+  .p-datepicker:not(.p-disabled) .p-inputtext:hover {
+    border-color: var(--p-border-default);
+  }
+
+  .p-datepicker-dropdown {
+    background-color: var(--p-primary-color);
+    color: var(--p-text-on-primary);
+  }
+
+  .p-inputtext::placeholder {
+    color: var(--p-text-primary);
+  }
+
+  .p-datepicker-clear-button {
+    color: var(--p-primary-color);
+    background: none;
+    border: 0.1rem solid var(--p-primary-color);
+
+    &:hover {
+      background-color: var(--p-primary-color);
+      border: 0.1rem solid var(--p-primary-color);
+      color: var(--p-text-on-primary);
+    }
+  }
+
+  .p-ripple.p-datepicker-select-month,
+  .p-ripple.p-datepicker-select-year,
+  .p-datepicker-decade {
+    color: var(--p-primary-color);
+  }
+
+  /*
+
+    .p-datepicker-dropdown {
+      background-color: var(--primary-default);
+      color: var(--text-on-primary);
+      border: 0rem;
+    }
+
+    .p-datepicker-panel {
+      background-color: var(--background-default);
+      color: var(--text-default);
+    }
+
+    .p-datepicker-select-month,
+    .p-datepicker-select-year {
+      background-color: var(--background-default);
+      color: var(--primary-default);
+    }*/
 }
