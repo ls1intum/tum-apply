@@ -27,7 +27,7 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'filled',
             color: 'secondary',
             icon: 'save',
-            onClick: () => {},
+            onClick() {},
             disabled: false,
             label: 'Save Draft',
           },
@@ -35,7 +35,7 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'filled',
             color: 'primary',
             icon: 'arrow-right',
-            onClick: () => {
+            onClick() {
               alert('Clicked');
             },
             disabled: false,
@@ -52,7 +52,7 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'outlined',
             color: 'primary',
             icon: 'arrow-left',
-            onClick: () => {
+            onClick() {
               alert('Clicked');
             },
             disabled: false,
@@ -65,7 +65,7 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'filled',
             color: 'secondary',
             icon: 'save',
-            onClick: () => {},
+            onClick() {},
             disabled: false,
             label: 'Save Draft',
           },
@@ -73,7 +73,7 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'filled',
             color: 'primary',
             icon: 'arrow-right',
-            onClick: () => {
+            onClick() {
               alert('Clicked');
             },
             disabled: false,
@@ -90,7 +90,7 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'outlined',
             color: 'primary',
             icon: 'arrow-left',
-            onClick: () => {
+            onClick() {
               alert('Clicked');
             },
             disabled: false,
@@ -103,7 +103,7 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'filled',
             color: 'primary',
             icon: 'paper-plane',
-            onClick: () => {
+            onClick() {
               alert('Clicked');
             },
             disabled: false,
