@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ProgressStepperComponent, StepData } from './progress-stepper.component';
 import { Component, ComponentRef, TemplateRef, ViewChild } from '@angular/core';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowRight, faSave } from '@fortawesome/free-solid-svg-icons';
+
+import { ProgressStepperComponent, StepData } from './progress-stepper.component';
 
 @Component({
   template: `
     <ng-template #testTemplate>
       <p>Mock Content</p>
     </ng-template>
-    <jhi-progress-stepper></jhi-progress-stepper>
+    <jhi-progress-stepper />
   `,
 })
 class TestHostComponent {
