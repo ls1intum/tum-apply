@@ -299,8 +299,8 @@ export const TUMApplyPreset = definePreset(Lara, {
   components: {
     button: {
       root: {
-        borderRadius: '16px',
-        fontWeight: '500',
+        borderRadius: '8px',
+        fontWeight: '100',
       },
       colorScheme: {
         light: {
@@ -336,7 +336,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             disabledBackground: '{danger.disabledColor}',
             disabledText: '{text.disabled}',
           },
-          warning: {
+          warn: {
             background: '{warn.color}',
             text: '{warn.inverseColor}',
             hoverBackground: '{warn.hoverColor}',
@@ -394,7 +394,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             disabledBackground: '{danger.disabledColor}',
             disabledText: '{text.disabled}',
           },
-          warning: {
+          warn: {
             background: '{warn.color}',
             text: '{warn.inverseColor}',
             hoverBackground: '{warn.hoverColor}',

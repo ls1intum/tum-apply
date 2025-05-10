@@ -1,1 +1,18 @@
-<p-button>Implement me!</p-button>
+<button
+  pButton
+  [disabled]="disabled()"
+  variant="'outlined'"
+  class="{{ color() + '_' + variant() }} {{ label() === undefined ? 'rounded-full' : '' }} {{ buttonClass() }}"
+  [raised]="numberOfFavorites() !== undefined"
+  badgeStyle=""
+>
+  @if (icon() !== undefined) {
+    <fa-icon [icon]="['fas', icon() ?? '']" />
+  }
+  @if (label() !== undefined) {
+    <span pButtonLabel>{{ label() }}</span>
+  }
+  @if (numberOfFavorites() !== undefined) {
+    <span class="badge_mini">{{ numberOfFavorites() }}</span>
+  }
+</button>
