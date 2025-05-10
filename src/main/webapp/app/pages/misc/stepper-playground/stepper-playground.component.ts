@@ -16,7 +16,7 @@ export class StepperPlaygroundComponent implements OnInit {
 
   data: StepData[] = [];
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.data = [
       {
         name: 'panel1 name',
