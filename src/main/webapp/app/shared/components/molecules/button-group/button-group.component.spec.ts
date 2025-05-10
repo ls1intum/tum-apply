@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentRef } from '@angular/core';
+
+import { ButtonColor, ButtonComponent, ButtonVariant } from '../../atoms/button/button.component';
 
 import ButtonGroupComponent, { ButtonGroupData } from './button-group.component';
-import { ButtonColor, ButtonComponent, ButtonVariant } from '../../atoms/button/button.component';
-import { ComponentRef } from '@angular/core';
 
 describe('ButtonGroupComponent', () => {
   let component: ButtonGroupComponent;
@@ -17,7 +18,7 @@ describe('ButtonGroupComponent', () => {
         variant: 'filled' as ButtonVariant,
         label: 'Test Button',
         disabled: false,
-        onClick: () => {},
+        onClick() {},
       },
     ],
   };
