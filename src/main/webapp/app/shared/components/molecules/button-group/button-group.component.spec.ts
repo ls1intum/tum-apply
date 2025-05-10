@@ -1,11 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import ButtonGroupComponent, { ButtonGroupData } from './button-group.component';
-import { ButtonColor, ButtonVariant } from '../../atoms/button/button.component';
+import { ButtonColor, ButtonComponent, ButtonVariant } from '../../atoms/button/button.component';
+import { ComponentRef } from '@angular/core';
 
 describe('ButtonGroupComponent', () => {
   let component: ButtonGroupComponent;
   let fixture: ComponentFixture<ButtonGroupComponent>;
+  let componentRef: ComponentRef<ButtonGroupComponent>;
 
   const mockButtonGroupData: ButtonGroupData = {
     direction: 'horizontal',
@@ -22,16 +24,23 @@ describe('ButtonGroupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ButtonGroupComponent],
+      imports: [ButtonComponent, ButtonGroupComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ButtonGroupComponent);
+    componentRef = fixture.componentRef;
+    await componentRef.setInput('data', mockButtonGroupData);
     component = fixture.componentInstance;
-    component.buttonGroupData = mockButtonGroupData;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should render the correct number of buttons', () => {
+    console.log(fixture.nativeElement.innerHTML);
+    const buttonElements = fixture.nativeElement.querySelectorAll('jhi-button');
+    expect(buttonElements.length).toBe(mockButtonGroupData.buttons.length);
   });
 });

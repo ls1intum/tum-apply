@@ -1,17 +1,17 @@
 <button
   pButton
-  [disabled]="disabled"
-  class="{{ color.toLowerCase() + '_' + variant.toLowerCase() }} {{ label === undefined ? 'rounded-circle' : '' }} {{ buttonClass }}"
+  [disabled]="disabled()"
+  class="{{ color() + '_' + variant() }} {{ label() === undefined ? 'rounded-circle' : '' }} {{ buttonClass() }}"
   [raised]="numberOfFavorites !== undefined"
   badgeStyle=""
 >
-  @if (icon !== undefined) {
-    <fa-icon [icon]="['fas', icon]" />
+  @if (icon() !== undefined) {
+    <fa-icon [icon]="['fas', icon() ?? '']" />
   }
-  @if (label !== undefined) {
-    <span pButtonLabel>{{ label }}</span>
+  @if (label() !== undefined) {
+    <span pButtonLabel>{{ label() }}</span>
   }
-  @if (numberOfFavorites !== undefined) {
-    <span class="badge_mini">{{ numberOfFavorites }}</span>
+  @if (numberOfFavorites() !== undefined) {
+    <span class="badge_mini">{{ numberOfFavorites() }}</span>
   }
 </button>

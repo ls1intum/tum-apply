@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonModule } from 'primeng/button';
@@ -53,38 +53,38 @@ export class ButtonComponent {
    * Defines the color theme of the button.
    * @default 'primary'
    */
-  @Input() color: ButtonColor = 'primary';
+  color = input<ButtonColor>('primary');
 
   /**
    * Defines the visual variant of the button.
    * @default 'filled'
    */
-  @Input() variant: ButtonVariant = 'filled';
+  variant = input<ButtonVariant>('filled');
 
   /**
    * Optional icon name to display within the button (using a FontAwesome icon).
    */
-  @Input() icon?: string = undefined;
+  icon = input<string | undefined>(undefined);
 
   /**
    * Optional label text displayed on the button.
    */
-  @Input() label?: string = undefined;
+  label = input<string | undefined>(undefined);
 
   /**
    * Optional number of favorites or similar numeric display.
    */
-  @Input() numberOfFavorites?: number = undefined;
+  numberOfFavorites = input<number | undefined>(undefined);
 
   /**
    * Whether the button is disabled and non-interactive.
    * @default false
    */
-  @Input() disabled = false;
+  disabled = input<boolean>(false);
 
   /**
    * Additional CSS classes to apply to the button element.
    * @default ''
    */
-  @Input() buttonClass = '';
+  buttonClass = input<string>('');
 }
