@@ -43,10 +43,11 @@
     <label class="dropdown-label">{{ label }}</label>
   }
   <p-dropdown
+    (ngModelChange)="onSelectionChange($event)"
     (onHide)="isOpen = false"
     (onShow)="isOpen = true"
-    [(ngModel)]="selected"
     [disabled]="disabled"
+    [ngModel]="selected"
     [optionLabel]="labelField"
     [options]="items"
     [placeholder]="placeholder"
@@ -54,19 +55,19 @@
     [style]="{ width: width }"
     class="custom-dropdown"
   >
-    <ng-template pTemplate="selectedItem">
-      <!-- currently icons on placeholder not working -->
-      <div class="dropdown-item-content">
-        <!-- Display the selected item with an icon if available -->
-        @if (iconField && selected?.[iconField]) {
-          <fa-icon [icon]="['fas', selected[iconField]]" class="left-icon"></fa-icon>
-          <!-- If no item is selected or the selected item has no icon, show the prefix icon if available -->
-        } @else if (prefixIcon) {
-          <fa-icon [icon]="['fas', prefixIcon]" class="left-icon"></fa-icon>
-        }
-        {{ selected?.[labelField] || placeholder }}
-      </div>
-    </ng-template>
+    <!-- currently icons on placeholder not working -->
+    <!--    <ng-template pTemplate="selectedItem">-->
+    <!--      <div class="dropdown-item-content">-->
+    <!--        &lt;!&ndash; Display the selected item with an icon if available &ndash;&gt;-->
+    <!--        @if (iconField && selected?.[iconField]) {-->
+    <!--          <fa-icon [icon]="['fas', selected[iconField]]" class="left-icon"></fa-icon>-->
+    <!--          &lt;!&ndash; If no item is selected or the selected item has no icon, show the prefix icon if available &ndash;&gt;-->
+    <!--        } @else if (prefixIcon) {-->
+    <!--          <fa-icon [icon]="['fas', prefixIcon]" class="left-icon"></fa-icon>-->
+    <!--        }-->
+    <!--        {{ selected?.[labelField] || placeholder }}-->
+    <!--      </div>-->
+    <!--    </ng-template>-->
 
     <!--         Add optional icon field to the dropdown items-->
     <!--        <ng-template let-option pTemplate="item">-->

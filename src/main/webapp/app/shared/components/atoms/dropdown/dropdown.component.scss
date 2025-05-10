@@ -32,13 +32,18 @@
       color: var(--p-text-disabled) !important;
       border-color: var(--p-border-default) !important;
 
-      .ng-fa-icon {
+      .ng-fa-icon,
+      .p-select-label.ng-star-inserted.p-placeholder {
         color: var(--p-text-disabled) !important;
       }
     }
 
     &.open {
       border: 0.1rem var(--p-primary-color) !important;
+    }
+
+    .p-select-label.ng-star-inserted.p-placeholder {
+      color: var(--p-text-primary);
     }
 
     .dropdown-item-content {
@@ -55,7 +60,10 @@
       padding: 0;
     }
 
-    .p-dropdown-items {
+    // Override wrong color on unselected item from primeng
+    .p-dropdown-items,
+    .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
+    .p-ripple.p-select-option {
       background: var(--p-background-surface);
     }
 
@@ -72,7 +80,14 @@
     color: var(--p-text-primary);
   }
 
+  // Override unnecessary padding from primeng
   .p-select-list .ng-star-inserted {
     padding: 0;
+  }
+
+  // Override wrong color on selected item from primeng
+  .p-select-option.p-select-option-selected.p-focus {
+    background: var(--p-background-surface-alt);
+    color: var(--p-text-primary);
   }
 }

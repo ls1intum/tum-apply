@@ -31,10 +31,9 @@ export class DropdownComponent {
   protected readonly faChevronUp = faChevronUp;
   protected readonly faChevronDown = faChevronDown;
 
-  selectItem(item: any) {
-    this.selected = item;
-    this.selectedChange.emit(item);
-    this.isOpen = false;
+  onSelectionChange(value: any): void {
+    this.selected = value;
+    this.selectedChange.emit(value);
   }
 }
 
