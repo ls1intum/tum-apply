@@ -11,7 +11,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+
+import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
 import { httpInterceptorProviders } from './core/interceptor';
 import routes from './app.routes';
@@ -28,7 +29,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
     providePrimeNG({
-      theme: { preset: Aura },
+      theme: {
+        preset: TUMApplyPreset,
+        options: { darkModeSelector: '.tum-apply-dark-mode', cssLayer: { name: 'primeng', order: 'theme, base, primeng' } },
+      },
     }),
     importProvidersFrom(BrowserModule),
     // Set this to true to enable service worker (PWA)
