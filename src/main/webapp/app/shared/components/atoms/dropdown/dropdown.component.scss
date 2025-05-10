@@ -1,162 +1,78 @@
-.dropdown-container {
+::ng-deep .dropdown-wrapper {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 1rem;
-  color: var(--text-primary);
 
-  .dropdown-text {
-    color: var(--text-secondary);
-    font-weight: 400;
+  &.label-left {
+    flex-direction: row;
+    align-items: center;
+
+    .dropdown-label {
+      margin-right: 1rem;
+    }
   }
 
-  .required {
-    color: var(--negative-default);
+  &.label-top .dropdown-label {
+    margin-bottom: 0.25rem;
+  }
+
+  .dropdown-label {
+    color: var(--p-text-primary);
+    font-size: 1rem;
   }
 
   .custom-dropdown {
-    position: relative;
-    width: 100%;
-    user-select: none;
+    background: var(--p-background-default);
+    border: 0.1rem solid var(--p-border-default);
+    border-radius: 0.5rem;
+    color: var(--p-text-primary);
 
-    .dropdown-selected {
+    &.p-disabled {
+      background-color: var(--p-background-disabled) !important;
+      color: var(--p-text-disabled) !important;
+      border-color: var(--p-border-default) !important;
+
+      .ng-fa-icon {
+        color: var(--p-text-disabled) !important;
+      }
+    }
+
+    &.open {
+      border: 0.1rem var(--p-primary-color) !important;
+    }
+
+    .dropdown-item-content {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0.5rem 0.75rem;
-      border: 0.1rem solid var(--border-default);
-      border-radius: 0.5rem;
-      background-color: var(--background-default);
-      cursor: pointer;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+
+      .left-icon {
+        margin-right: 0.5rem;
+        color: var(--p-text-primary);
+      }
+    }
+
+    .p-select-list {
+      padding: 0;
+    }
+
+    .p-dropdown-items {
+      background: var(--p-background-surface);
+    }
+
+    .p-dropdown-item {
+      color: var(--p-text-primary);
 
       &:hover {
-        border-color: var(--primary-default);
-      }
-
-      .dropdown-text {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: var(--text-primary);
-      }
-
-      .chevron-down {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 1rem;
-        height: 1rem;
-        transition: transform 0.2s ease;
-        color: var(--text-primary);
-
-        &.open {
-          transform: rotate(180deg);
-        }
-      }
-    }
-    &.open {
-      .dropdown-selected {
-        border-radius: 0.5rem 0.5rem 0 0;
-        border-bottom-left-radius: 0.5rem;
-        border-bottom-right-radius: 0.5rem;
-        border: 0.1rem solid var(--primary-default);
-      }
-    }
-
-    .dropdown-menu {
-      display: flex;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background-color: var(--background-default);
-      border: 0;
-      border-top: none;
-      border-bottom-left-radius: 0.5rem;
-      border-bottom-right-radius: 0.5rem;
-      z-index: 100;
-      max-height: 18.75rem;
-      overflow: hidden;
-      flex-direction: column;
-      padding: 0;
-
-      .dropdown-items {
-        overflow-y: auto;
-        max-height: 15rem;
-
-        .dropdown-item {
-          padding: 0.5rem 0.75rem;
-          cursor: pointer;
-          transition: background-color 0.2s;
-          color: var(--text-primary);
-
-          &:hover {
-            background-color: var(--background-surface-alt);
-          }
-
-          &.active {
-            background-color: var(--background-surface-alt);
-            color: var(--text-primary);
-          }
-        }
-
-        .dropdown-no-results {
-          padding: 0.5rem 0.75rem;
-          color: var(--text-secondary);
-          font-style: italic;
-          text-align: center;
-        }
+        background-color: var(--p-background-surface-alt);
       }
     }
   }
-}
 
-// remove scrollbar from dropdown-items
-.dropdown-items {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  .ng-fa-icon {
+    color: var(--p-text-primary);
+  }
 
-  &::-webkit-scrollbar {
-    display: none;
+  .p-select-list .ng-star-inserted {
+    padding: 0;
   }
 }
-
-// PrimeNG Dropdown Custom Styles
-
-// ::ng-deep .p-select-label {
-//     color: var(--text-primary);
-// }
-
-// .p-dropdown:not(.p-disabled).p-focus {
-//     border: 0.1rem solid var(--primary-default);
-// }
-
-// .p-select {
-//     background-color: var(--background-default);
-//     color: var(--text-default);
-// }
-
-// ::ng-deep .p-select-option {
-//     color: var(--text-primary)
-// }
-
-// ::ng-deep .p-select-overlay {
-//     background-color : var(--background-surface);
-//     color: var(--text-primary);
-// }
-
-// ::ng-deep .p-dropdown-item:not(.p-disabled):hover {
-//     background-color: var(--background-surface--alt); // or your desired variable
-// }
-
-// ::ng-deep .p-select-list-container {
-//     background-color: var(--background-surface);
-//     color: var(--text-primary);
-// }
-
-// ::ng-deep .p-select-option:hover:not(.p-select-option-selected):not(.p-disabled),
-// ::ng-deep .p-select-option:focus:not(.p-select-option-selected):not(.p-disabled) {
-//   background-color: var(--background-surface);
-//   color: var(--text-primary);
-// }

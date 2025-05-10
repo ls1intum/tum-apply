@@ -26,6 +26,14 @@ export default class HomeComponent implements OnInit {
   // Datepicker:
   selectedDate: LocalDate | null = null;
   // Dropdown:
+  selectedLocation1: any;
+  selectedLocation2: any;
+  locations = [
+    { name: 'Munich Campus', value: 'munich', icon: 'chevron-up' },
+    { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },
+    { name: 'Weihenstephan Campus', value: 'weihenstephan', icon: 'map-marker-alt' },
+  ];
+  /*
   selectedLocation: any = null;
   locations = [
     { name: 'Garching Campus', value: 'GARCHING' },
@@ -35,7 +43,7 @@ export default class HomeComponent implements OnInit {
     { name: 'Straubing Campus', value: 'STRAUBING' },
     { name: 'Weihenstephan Campus', value: 'WEIHENSTEPHAN' },
     { name: 'Singapore Campus', value: 'SINGAPORE' },
-  ];
+  ];*/
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
