@@ -359,7 +359,12 @@ header {
     border: 0.0625rem solid var(--primary-default);
 
     &:hover {
-      background-color: rgba(var(--primary-default), 0.05);
+      background-color: var(--primary-default);
+      color: var(--text-on-primary);
+
+      .btn-icon .ng-fa-icon {
+        color: var(--text-on-primary);
+      }
     }
   }
 
