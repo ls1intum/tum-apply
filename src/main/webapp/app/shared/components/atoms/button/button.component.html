@@ -1,8 +1,9 @@
 <button
   pButton
   [disabled]="disabled()"
-  class="{{ color() + '_' + variant() }} {{ label() === undefined ? 'rounded-circle' : '' }} {{ buttonClass() }}"
-  [raised]="numberOfFavorites !== undefined"
+  variant="'outlined'"
+  class="{{ color() + '_' + variant() }} {{ label() === undefined ? 'rounded-full' : '' }} {{ buttonClass() }}"
+  [raised]="numberOfFavorites() !== undefined"
   badgeStyle=""
 >
   @if (icon() !== undefined) {
