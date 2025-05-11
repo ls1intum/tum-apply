@@ -1,4 +1,4 @@
-::ng-deep .dropdown-wrapper {
+.dropdown-wrapper {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
@@ -21,7 +21,7 @@
     border-radius: 0.5rem;
 
     &.p-disabled {
-      background-color: var(--p-background-disabled) !important;
+      background-color: var(--p-background-disabled);
 
       .ng-fa-icon,
       .p-select-label.ng-star-inserted {
@@ -42,10 +42,7 @@
     .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
     .p-ripple.p-select-option {
       background: var(--p-background-surface);
-    }
-
-    .p-dropdown-item {
-      color: var(--p-text-primary);
+      border-radius: 0.3rem;
 
       &:hover {
         background-color: var(--p-background-surface-alt);
@@ -61,11 +58,11 @@
   .p-select-option.p-select-option-selected.p-focus {
     background: var(--p-background-surface-alt);
     color: var(--p-text-primary);
-    border-radius: 0.2rem;
+    border-radius: 0.3rem;
   }
 
   .p-select:not(.p-disabled).p-focus {
     box-shadow: none;
-    border: 0.1rem solid var(--p-primary-color) !important;
+    border: 0.1rem solid var(--p-primary-color);
   }
 }

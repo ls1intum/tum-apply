@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.scss'],
   imports: [DropdownModule, FontAwesomeModule, FormsModule, CommonModule],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DropdownComponent {
   @Input() items: any[] = [];
