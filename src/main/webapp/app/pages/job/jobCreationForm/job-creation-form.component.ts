@@ -135,17 +135,10 @@ export class JobCreationFormComponent {
       state: JobFormDTO.StateEnum.Draft,
     };
     this.jobResourceService.createJob(jobFormDto).subscribe({
-      next() {
-        console.warn('Draft Job successfully created!');
-      },
+      next() {},
       error(err) {
         console.error('Failed to create job draft:', err);
       },
-    });
-    console.warn({
-      ...this.basicInfoForm.value,
-      ...this.positionDetailsForm.value,
-      // ...this.additionalInfoForm.value,
     });
   }
 
@@ -166,17 +159,10 @@ export class JobCreationFormComponent {
       state: JobFormDTO.StateEnum.Published,
     };
     this.jobResourceService.createJob(jobFormDto).subscribe({
-      next() {
-        console.warn('Job successfully published!');
-      },
+      next() {},
       error(err) {
         console.error('Failed to publish job:', err);
       },
-    });
-    console.warn({
-      ...this.basicInfoForm.value,
-      ...this.positionDetailsForm.value,
-      // ...this.additionalInfoForm.value,
     });
   }
 }
