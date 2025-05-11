@@ -152,19 +152,14 @@
   }
 }
 */
-::ng-deep .custom-datepicker {
+.custom-datepicker {
   .p-inputtext {
     border-color: var(--p-border-default);
   }
 
   .p-inputtext:enabled:focus {
     box-shadow: none;
-    border: 0.1rem solid var(--p-primary-color) !important;
-  }
-
-  // Disable border-change on hover to keep consistency
-  .p-datepicker:not(.p-disabled) .p-inputtext:hover {
-    border-color: var(--p-border-default);
+    border: 0.1rem solid var(--p-primary-color);
   }
 
   .p-datepicker-dropdown {

@@ -45,7 +45,8 @@
       border-radius: 0.3rem;
 
       &:hover {
-        background-color: var(--p-background-surface-alt);
+        background-color: var(--p-primary-color);
+        color: var(--p-text-on-primary);
       }
     }
   }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -16,6 +16,7 @@ interface LocalDate {
   imports: [DatePickerModule, FormsModule, FontAwesomeModule],
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DatePickerComponent {
   isCalendarOpen = false;
