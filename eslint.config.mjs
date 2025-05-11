@@ -237,7 +237,7 @@ export default [
     },
 
     {
-      files: ['src/test/webapp/**/*.spec.ts', 'src/main/webapp/**/*.spec.ts'],
+      files: ['src/main/webapp/**/*.spec.ts'],
       rules: {
         '@typescript-eslint/no-empty-function': 'off',
       },
