@@ -1,5 +1,10 @@
 <div class="form-row">
-  <input type="date" />
+  <jhi-datepicker
+    [(selectedDate)]="data().desiredStartDate"
+    [label]="'Desired Start Date'"
+    [placeholder]="'Select a Start Date...'"
+    [width]="'50%'"
+  />
 </div>
 <jhi-divider label="Uploads" />
 <div class="form-row">

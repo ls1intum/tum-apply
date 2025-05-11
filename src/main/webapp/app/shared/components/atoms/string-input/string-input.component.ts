@@ -16,4 +16,9 @@ export class StringInputComponent {
   disabled = input<boolean>(false);
   required = input<boolean>(false);
   area = input<boolean>(false);
+
+  onInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.value.set(input.value);
+  }
 }

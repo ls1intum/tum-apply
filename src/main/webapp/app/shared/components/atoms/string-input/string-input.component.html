@@ -3,5 +3,5 @@
   @if (icon() !== undefined) {
     <fa-icon [icon]="['fas', icon() ?? '']" />
   }
-  <input type="text" pInputText [id]="id()" [(value)]="value" />
+  <input type="text" pInputText [id]="id()" [value]="value()" (input)="onInput($event)" />
 </div>

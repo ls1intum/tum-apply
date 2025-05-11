@@ -47,7 +47,7 @@ export class ProgressStepperComponent {
    * @param index - Index of the step to navigate to
    */
   goToStep(index: number): void {
-    if (index >= 0 && index < this.steps().length) {
+    if (index > 0 && index <= this.steps().length) {
       this.currentStep = index;
     }
   }

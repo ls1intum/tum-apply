@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 
-interface LocalDate {
+export interface LocalDate {
   year: number;
   month: number;
   day: number;

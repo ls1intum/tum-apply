@@ -15,7 +15,7 @@ export type ApplicationCreationPage1Data = {
   website: string;
   linkedIn: string;
   street: string;
-  streetnumber: number;
+  streetnumber: string;
   city: string;
   country: string;
   postcode: string;

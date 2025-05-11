@@ -22,7 +22,7 @@
 <jhi-divider label="Address" />
 <div class="form-row">
   <jhi-string-input [label]="'street'" [id]="'street'" [required]="true" [(value)]="data().street" />
-  <input type="number" [(value)]="data().streetnumber" />
+  <jhi-string-input [label]="'streetnumber'" [id]="'streetnumber'" [required]="true" [(value)]="data().streetnumber" />
 </div>
 <div class="form-row">
   <jhi-string-input [label]="'city'" [id]="'city'" [required]="true" [(value)]="data().city" />
