@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronLeft, faCircleInfo, faFloppyDisk, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
+
 import { JobFormDTO } from '../../../generated';
 
 @Component({
@@ -63,15 +64,15 @@ export class JobCreationFormComponent {
   }
 
   get descriptionLength(): number {
-    return this.positionDetailsForm.get('description')?.value?.length || 0;
+    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
   }
 
   get tasksLength(): number {
-    return this.positionDetailsForm.get('tasks')?.value?.length || 0;
+    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
   }
 
   get requirementsLength(): number {
-    return this.positionDetailsForm.get('requirements')?.value?.length || 0;
+    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
   }
 
   initForms(): void {
@@ -134,17 +135,17 @@ export class JobCreationFormComponent {
       state: JobFormDTO.StateEnum.Draft,
     };
     this.jobResourceService.createJob(jobFormDto).subscribe({
-      next: () => {
-        console.log('Draft Job successfully created!');
+      next() {
+        console.warn('Draft Job successfully created!');
       },
-      error: err => {
+      error(err) {
         console.error('Failed to create job draft:', err);
       },
     });
-    console.warn('Creating Job Draft...');
     console.warn({
       ...this.basicInfoForm.value,
       ...this.positionDetailsForm.value,
+      // ...this.additionalInfoForm.value,
     });
   }
 
@@ -165,16 +166,13 @@ export class JobCreationFormComponent {
       state: JobFormDTO.StateEnum.Published,
     };
     this.jobResourceService.createJob(jobFormDto).subscribe({
-      next: () => {
-        console.log('Job successfully published!');
+      next() {
+        console.warn('Job successfully published!');
       },
-      error: err => {
+      error(err) {
         console.error('Failed to publish job:', err);
       },
     });
-
-    // Logic to publish job
-    console.warn('Publishing job...');
     console.warn({
       ...this.basicInfoForm.value,
       ...this.positionDetailsForm.value,
