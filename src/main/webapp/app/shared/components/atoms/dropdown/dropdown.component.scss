@@ -1,0 +1,79 @@
+.dropdown-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+
+  // Add styling for labels on the left of the dropdown
+  &.label-left {
+    flex-direction: row;
+    align-items: center;
+
+    .dropdown-label {
+      margin-right: 1rem;
+    }
+  }
+
+  // Add styling for labels on the top of the dropdown
+  &.label-top .dropdown-label {
+    margin-bottom: 0.25rem;
+  }
+
+  // Add styling for border and corners of dropdown fields
+  .custom-dropdown {
+    border: 0.1rem solid var(--p-border-default);
+    border-radius: 0.5rem;
+
+    // Add styling for disabled dropdown fields
+    &.p-disabled {
+      background-color: var(--p-background-disabled);
+
+      // Add styling for text inside disabled dropdown fields
+      .ng-fa-icon,
+      .p-select-label.ng-star-inserted {
+        color: var(--p-text-disabled) !important;
+      }
+    }
+
+    // Override primeng styling of placeholder text color in dropdown field
+    .p-select-label.ng-star-inserted.p-placeholder {
+      color: var(--p-text-primary);
+    }
+
+    // Override primeng unnecessary padding on top and bottom of dropdown list
+    .p-select-list {
+      padding: 0;
+    }
+
+    // Override primeng styling of unselected items in dropdown
+    .p-dropdown-items,
+    .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
+    .p-ripple.p-select-option {
+      background: var(--p-background-surface);
+      border-radius: 0.3rem;
+
+      // Override primeng styling of hover on dropdown items
+      &:hover {
+        background-color: var(--p-primary-color);
+        color: var(--p-text-on-primary);
+      }
+    }
+  }
+
+  // Override primeng styling of wrong color on dropdown icon
+  .ng-fa-icon {
+    color: var(--p-text-primary);
+  }
+
+  // Override primeng styling of selected item in dropdown menu
+  .p-select-option.p-select-option-selected.p-focus {
+    background: var(--p-background-surface-alt);
+    color: var(--p-text-primary);
+    border-radius: 0.3rem;
+  }
+
+  // Override primeng styling of border color when clicking on dropdown field
+  .p-select:not(.p-disabled).p-focus {
+    box-shadow: none;
+    border: 0.1rem solid var(--p-primary-color);
+  }
+}
