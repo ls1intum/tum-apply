@@ -1,0 +1,7 @@
+<div class="flex flex-col gap-1">
+  <label [for]="id()">{{ label() }}</label>
+  @if (icon() !== undefined) {
+    <fa-icon [icon]="['fas', icon() ?? '']" />
+  }
+  <input type="text" pInputText [id]="id()" [(value)]="value" />
+</div>
