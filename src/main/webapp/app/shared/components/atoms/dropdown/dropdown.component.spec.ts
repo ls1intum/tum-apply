@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DropdownComponent } from '../../../../../../../main/webapp/app/shared/components/atoms/dropdown/dropdown.component';
+import { DropdownComponent } from './dropdown.component';
 
 describe('DropdownComponent', () => {
   let component: DropdownComponent;
