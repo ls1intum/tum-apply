@@ -52,6 +52,95 @@
         }
       }
     },
+    "/api/applications": {
+      "put": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "updateApplication",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApplicationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "createApplication",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApplicationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/withdraw/{applicationId}": {
+      "put": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "withdrawApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/create": {
       "post": {
         "tags": [
@@ -174,6 +263,173 @@
                   "items": {
                     "$ref": "#/components/schemas/JobCardDTO"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getApplications",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 25,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationEvaluationListDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{applicationId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationById",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/job/{jobId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getAllApplicationsOfJob",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/applicant/{applicantId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getAllApplicationsOfApplicant",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                  },
+                  "uniqueItems": true
                 }
               }
             }
@@ -346,6 +602,86 @@
           "workload"
         ]
       },
+      "UpdateApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ApplicationForApplicantDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicant": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobCardDTO"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswerDTO"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "CustomFieldAnswerDTO": {
+        "type": "object",
+        "properties": {
+          "customFieldAnswerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customField": {
+            "$ref": "#/components/schemas/CustomFieldDTO"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentDTO"
+            }
+          }
+        }
+      },
+      "CustomFieldDTO": {
+        "type": "object"
+      },
+      "DocumentDTO": {
+        "type": "object"
+      },
       "JobFormDTO": {
         "type": "object",
         "properties": {
@@ -423,6 +759,104 @@
           "state",
           "supervisingProfessor"
         ]
+      },
+      "CreateApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "applicant": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobCardDTO"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswerDTO"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "ApplicationEvaluationListDTO": {
+        "type": "object",
+        "properties": {
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationEvaluationOverviewDTO"
+            }
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApplicationEvaluationOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "jobName": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appliedAt": {
+            "type": "string",
+            "format": "date"
+          }
+        }
       }
     }
   }
