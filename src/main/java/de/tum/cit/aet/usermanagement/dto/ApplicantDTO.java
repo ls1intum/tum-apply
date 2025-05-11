@@ -18,6 +18,11 @@ public record ApplicantDTO(
     String masterGrade,
     String masterUniversity
 ) {
+    /**
+     *
+     * @param applicant
+     * @return the ApplicantDTO
+     */
     public static ApplicantDTO getFromEntity(Applicant applicant) {
         if (applicant == null) {
             return null;

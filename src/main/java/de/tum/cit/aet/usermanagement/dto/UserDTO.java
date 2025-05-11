@@ -21,6 +21,11 @@ public record UserDTO(
     // postedJobs Set<JobDTO>
     // Set<UserResearchGroupRoleDTO> researchGroupRoles
 ) {
+    /**
+     *
+     * @param user
+     * @return The userDTO from the user
+     */
     public static UserDTO getFromEntity(User user) {
         if (user == null) {
             return null;
