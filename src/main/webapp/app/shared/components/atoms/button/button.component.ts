@@ -9,12 +9,11 @@ import { ButtonModule } from 'primeng/button';
  * - `primary`: Default primary color.
  * - `secondary`: Secondary styling.
  * - `success`: Indicates successful action.
- * - `warning`: Indicates caution.
- * - `error`: Indicates an error or destructive action.
- * - `neutral`: Neutral tone, less emphasis.
- * - `white`: Minimal styling, often used on colored backgrounds.
+ * - `warn`: Indicates caution.
+ * - `danger`: Indicates an error or destructive action.
+ * - `info`: Neutral tone, less emphasis.
  */
-export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warn' | 'danger' | 'info' | 'accent';
+export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warn' | 'danger' | 'info';
 
 /**
  * Defines the visual style of the button.
