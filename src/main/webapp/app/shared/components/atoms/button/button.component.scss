@@ -10,7 +10,7 @@ $background-disabled: $neutral-200;
 
 .p-button {
   overflow: unset;
-  border: 1px solid var(--p-primary-color) !important;
+  border: 0.06rem solid var(--p-primary-color) !important;
 }
 
 @mixin state-styles($base-color, $text-color: black) {
@@ -30,7 +30,7 @@ $background-disabled: $neutral-200;
 
 @mixin outlined-button($color) {
   background: white !important;
-  border: 0.06em solid $color !important;
+  border: 0.06rem solid $color !important;
   color: $color !important;
 
   &:hover {
@@ -50,7 +50,7 @@ $background-disabled: $neutral-200;
 
 @mixin filled-button($color, $text-color: black, $text-color-disabled: black) {
   background: $color !important;
-  border: 0.06em solid $color !important;
+  border: 0.06rem solid $color !important;
   color: $text-color !important;
 
   &:hover {
@@ -72,7 +72,7 @@ $background-disabled: $neutral-200;
   background: white !important;
   border: 0 !important;
   color: $color !important;
-  margin: 0.06em;
+  margin: 0.06rem;
 
   &:hover {
     background: rgba($color, 0.1) !important;
@@ -137,16 +137,6 @@ $background-disabled: $neutral-200;
   @include text-button($negative-default);
 }
 
-// .accent_outlined {
-//   @include outlined-button($neutral-300);
-// }
-// .accent_filled {
-//   @include filled-button($neutral-300, black);
-// }
-// .accent_text {
-//   @include text-button($neutral-300);
-// }
-
 .info_outlined {
   @include outlined-button(black);
 }
@@ -162,12 +152,12 @@ $background-disabled: $neutral-200;
   color: black;
   font-size: 0.75rem;
   height: 1.2rem;
-  padding: 0.3em;
+  padding: 0.3rem;
   position: absolute;
   min-width: 1.2rem;
-  right: -0.6em;
+  right: -0.6rem;
   overflow: hidden;
-  top: -0.25em;
+  top: -0.25rem;
 
   display: flex;
   align-items: center;

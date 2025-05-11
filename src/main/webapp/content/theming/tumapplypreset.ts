@@ -299,7 +299,7 @@ export const TUMApplyPreset = definePreset(Lara, {
   components: {
     button: {
       root: {
-        borderRadius: '8px',
+        borderRadius: '0.5rem',
         fontWeight: '100',
       },
       colorScheme: {

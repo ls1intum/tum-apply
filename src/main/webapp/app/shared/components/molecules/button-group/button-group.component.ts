@@ -27,14 +27,6 @@ export type ButtonGroupData = {
   templateUrl: './button-group.component.html',
   styleUrl: './button-group.component.scss',
 })
-
-/**
- * Input data specifying the direction and buttons to display.
- *
- * @alias data
- * @required
- * @type {ButtonGroupData}
- */
 export default class ButtonGroupComponent {
   data = input.required<ButtonGroupData>();
 }
