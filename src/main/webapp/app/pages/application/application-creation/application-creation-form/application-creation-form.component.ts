@@ -1,4 +1,7 @@
-import { Component, OnInit, signal, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, signal } from '@angular/core';
+import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
+import { CommonModule } from '@angular/common';
+
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
 } from '../application-creation-page1/application-creation-page1.component';
@@ -8,8 +11,6 @@ import ApplicationCreationPage3Component, {
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
 } from '../application-creation-page2/application-creation-page2.component';
-import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import { CommonModule } from '@angular/common';
 
 type ApplicationCreationFormData = {
   page1: ApplicationCreationPage1Data;
@@ -126,7 +127,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         ],
       },
       {
-        name: 'Application Details', //TODO translation
+        name: 'Application Details', // TODO translation
         panelTemplate: this.panel3,
         buttonGroupPrev: [
           {
