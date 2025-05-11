@@ -685,12 +685,18 @@
       "JobFormDTO": {
         "type": "object",
         "properties": {
+          "title": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
           "supervisingProfessor": {
             "type": "string",
             "format": "uuid"
-          },
-          "title": {
-            "type": "string"
           },
           "location": {
             "type": "string",
@@ -704,6 +710,18 @@
               "SINGAPORE"
             ]
           },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
           "fundingType": {
             "type": "string",
             "enum": [
@@ -716,6 +734,15 @@
               "RESEARCH_GRANT"
             ]
           },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
           "state": {
             "type": "string",
             "enum": [
@@ -725,7 +752,13 @@
               "APPLICANT_FOUND"
             ]
           }
-        }
+        },
+        "required": [
+          "fundingType",
+          "location",
+          "state",
+          "supervisingProfessor"
+        ]
       },
       "CreateApplicationDTO": {
         "type": "object",

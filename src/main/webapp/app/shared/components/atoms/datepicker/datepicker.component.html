@@ -1,0 +1,21 @@
+<div [class.active]="isCalendarOpen" class="datepicker-container">
+  <label class="datepicker-label">{{ label() }}</label>
+  <p-datepicker
+    (ngModelChange)="onDateChange($event)"
+    (onHide)="isCalendarOpen = false"
+    (onShow)="isCalendarOpen = true"
+    [(ngModel)]="modelDate"
+    [placeholder]="placeholder()"
+    [showButtonBar]="true"
+    [style]="{ width: width() }"
+    class="custom-datepicker"
+    dateFormat="dd/mm/yy"
+    iconDisplay="button"
+    inputId="startDate"
+    showIcon="true"
+  >
+    <ng-template pTemplate="triggericon">
+      <fa-icon [icon]="faCalendar" />
+    </ng-template>
+  </p-datepicker>
+</div>
