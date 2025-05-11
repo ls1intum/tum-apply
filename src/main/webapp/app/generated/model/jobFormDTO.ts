@@ -9,11 +9,19 @@
  */
 
 export interface JobFormDTO {
-  supervisingProfessor?: string;
   title?: string;
-  location?: JobFormDTO.LocationEnum;
-  fundingType?: JobFormDTO.FundingTypeEnum;
-  state?: JobFormDTO.StateEnum;
+  researchArea?: string;
+  fieldOfStudies?: string;
+  supervisingProfessor: string;
+  location: JobFormDTO.LocationEnum;
+  startDate?: string;
+  workload?: number;
+  contractDuration?: number;
+  fundingType: JobFormDTO.FundingTypeEnum;
+  description?: string;
+  tasks?: string;
+  requirements?: string;
+  state: JobFormDTO.StateEnum;
 }
 export namespace JobFormDTO {
   export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
