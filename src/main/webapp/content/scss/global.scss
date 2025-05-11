@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '_tokens';
 
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
