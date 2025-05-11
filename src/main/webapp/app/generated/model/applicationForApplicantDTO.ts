@@ -9,14 +9,17 @@
  */
 import { JobCardDTO } from './jobCardDTO';
 import { CustomFieldAnswerDTO } from './customFieldAnswerDTO';
+import { ApplicantDTO } from './applicantDTO';
 
 export interface ApplicationForApplicantDTO {
   applicationId?: string;
-  applicant?: string;
+  applicant?: ApplicantDTO;
   job?: JobCardDTO;
   applicationState?: ApplicationForApplicantDTO.ApplicationStateEnum;
-  motivation?: string;
   desiredDate?: string;
+  projects?: string;
+  specialSkills?: string;
+  motivation?: string;
   customFields?: Set<CustomFieldAnswerDTO>;
 }
 export namespace ApplicationForApplicantDTO {
