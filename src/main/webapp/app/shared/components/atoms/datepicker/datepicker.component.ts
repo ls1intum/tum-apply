@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, Input, input, output, ViewEncapsulation } from '@angular/core';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -22,11 +22,11 @@ export class DatePickerComponent {
   isCalendarOpen = false;
   readonly faCalendar = faCalendar;
 
-  @Input() width: string = '50%';
-  @Input() label = 'Date';
-  @Input() placeholder = 'Select a date...';
+  width = input<string>('50%');
+  label = input<string>('Date');
+  placeholder = input<string>('Select a date...');
   @Input() selectedDate: LocalDate | null = null;
-  @Output() selectedDateChange = new EventEmitter<LocalDate | null>();
+  selectedDateChange = output<LocalDate | null>();
 
   modelDate: Date | null = null;
 
