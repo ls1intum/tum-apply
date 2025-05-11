@@ -148,19 +148,10 @@ $background-disabled: $neutral-200;
 }
 .badge_mini {
   background: $negative-default;
-  border-radius: 50%;
   color: black;
   font-size: 0.75rem;
   height: 1.2rem;
   padding: 0.3rem;
-  position: absolute;
   min-width: 1.2rem;
-  right: -0.6rem;
-  overflow: hidden;
-  top: -0.25rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
   box-shadow: var(--p-button-raised-shadow);
 }
