@@ -1,4 +1,4 @@
-import { Component, Input, input, output, ViewEncapsulation } from '@angular/core';
+import { Component, input, output, ViewEncapsulation } from '@angular/core';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -25,7 +25,7 @@ export class DatePickerComponent {
   width = input<string>('50%');
   label = input<string>('Date');
   placeholder = input<string>('Select a date...');
-  @Input() selectedDate: LocalDate | null = null;
+  selectedDate = input<LocalDate | null>(null);
   selectedDateChange = output<LocalDate | null>();
 
   modelDate: Date | null = null;
@@ -37,10 +37,8 @@ export class DatePickerComponent {
         month: date.getMonth() + 1,
         day: date.getDate(),
       };
-      this.selectedDate = localDate;
       this.selectedDateChange.emit(localDate);
     } else {
-      this.selectedDate = null;
       this.selectedDateChange.emit(null);
     }
   }

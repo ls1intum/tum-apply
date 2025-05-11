@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, input, output, ViewEncapsulation } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
@@ -14,19 +14,19 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
   encapsulation: ViewEncapsulation.None,
 })
 export class DropdownComponent {
-  @Input() items: any[] = [];
-  @Input() selected: any;
-  @Input() label: string = '';
-  @Input() placeholder: string = 'Select...';
-  @Input() disabled = false;
-  @Input() labelField = 'name';
-  @Input() valueField = 'value';
-  @Input() iconField?: string; // For singular icons
-  @Input() prefixIcon?: string; // For placeholder
-  @Input() labelPosition: 'top' | 'left' = 'top';
-  @Input() width: string = '50%';
+  items = input<any[]>([]);
+  selected = input<any>(null);
+  label = input<string>('');
+  placeholder = input<string>('Select...');
+  disabled = input<boolean>(false);
+  labelField = input<string>('name');
+  valueField = input<string>('value');
+  iconField = input<string | undefined>(undefined); // For displaying custom icons for each dropdown item
+  prefixIcon = input<string | undefined>(undefined); // For default icon for dropdown placeholder
+  labelPosition = input<'top' | 'left'>('top');
+  width = input<string>('50%');
 
-  @Output() selectedChange = new EventEmitter<any>();
+  selectedChange = output<any>();
 
   isOpen = false;
   protected readonly faChevronUp = faChevronUp;
