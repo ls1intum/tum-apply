@@ -5,16 +5,9 @@
 $shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
 
 // Base styles
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Arial', sans-serif;
-}
-
 body {
-  background-color: var(--background-surface);
-  color: var(--text-primary);
+  background-color: var(--p-background-surface);
+  color: var(--p-text-primary);
   line-height: 1.6;
 }
 
@@ -22,7 +15,7 @@ body {
   max-width: 75rem;
   margin: 0 auto;
   padding: 1.25rem;
-  background-color: var(--background-default);
+  background-color: var(--p-background-default);
   box-shadow: $shadow;
   border-radius: 0.25rem;
 }
@@ -32,13 +25,13 @@ header {
   padding-bottom: 1.25rem;
 
   h1 {
-    color: var(--primary-default);
+    color: var(--p-primary-color);
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
   }
 
   p {
-    color: var(--background-disabled);
+    color: var(--p-background-disabled);
     font-size: 0.875rem;
   }
 }
@@ -57,8 +50,8 @@ header {
       width: 1.875rem;
       height: 1.875rem;
       border-radius: 50%;
-      background-color: var(--background-disabled);
-      color: var(--text-on-disabled);
+      background-color: var(--p-background-disabled);
+      color: var(--p-text-disabled);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -68,25 +61,25 @@ header {
 
     .step-label {
       font-size: 0.875rem;
-      color: var(--text-on-disabled);
+      color: var(--p-text-disabled);
     }
 
     &.active,
     &.completed {
       .step-number {
-        background-color: var(--primary-default);
-        color: var(--text-on-primary);
+        background-color: var(--p-primary-color);
+        color: var(--p-text-on-primary);
       }
 
       .step-label {
-        color: var(--text-primary);
+        color: var(--p-text-primary);
         font-weight: bold;
       }
     }
 
     &.completed {
       .step-number {
-        background-color: var(--primary-default);
+        background-color: var(--p-primary-color);
       }
     }
   }
@@ -94,7 +87,7 @@ header {
   .step-connector {
     flex: 1;
     height: 0.125rem;
-    background-color: var(--text-on-disabled);
+    background-color: var(--p-text-disabled);
     margin: 0 0.625rem;
   }
 }
@@ -107,7 +100,7 @@ header {
   }
 
   p {
-    color: var(--text-on-disabled);
+    color: var(--p-text-disabled);
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
   }
@@ -122,12 +115,12 @@ header {
     margin-bottom: 0.5rem;
 
     .required {
-      color: var(--negative-default);
+      color: var(--p-danger-color);
       margin-left: 0.125rem;
     }
 
     .disabled {
-      color: var(--background-disabled);
+      color: var(--p-background-disabled);
     }
   }
 
@@ -136,21 +129,21 @@ header {
   select {
     width: 100%;
     padding: 0.625rem 0.75rem;
-    border: 0.0625rem solid var(--border-default);
+    border: 0.0625rem solid var(--p-border-default);
     border-radius: 0.5rem;
     font-size: 0.875rem;
 
     &:focus {
       outline: none;
-      border-color: var(--primary-default);
+      border-color: var(--p-primary-color);
     }
 
     &.invalid {
-      border-color: var(--negative-default);
+      border-color: var(--p-danger-color);
     }
 
     &::placeholder {
-      color: var(--background-disabled);
+      color: var(--p-background-disabled);
     }
   }
 
@@ -166,11 +159,11 @@ header {
     font-size: 0.9rem;
 
     .description-helper {
-      color: var(--background-disabled);
+      color: var(--p-background-disabled);
     }
 
     .char-counter {
-      color: var(--text-primary);
+      color: var(--p-text-primary);
     }
   }
 }
@@ -198,7 +191,7 @@ header {
     .ng-fa-icon.input-icon {
       position: absolute;
       left: 0.75rem;
-      color: var(--text-on-disabled);
+      color: var(--p-text-disabled);
     }
   }
 
@@ -209,8 +202,8 @@ header {
     width: 1.125rem;
     height: 1.125rem;
     border-radius: 50%;
-    background-color: var(--secondary-default);
-    color: var(--background-default);
+    background-color: var(--p-secondary-color);
+    color: var(--p-background-default);
     font-size: 0.75rem;
     display: flex;
     align-items: center;
@@ -231,7 +224,7 @@ header {
     transform: translateY(-50%);
     pointer-events: none;
     font-size: 0.75rem;
-    color: var(--text-on-disabled);
+    color: var(--p-text-disabled);
   }
 
   select {
@@ -256,7 +249,7 @@ header {
       display: inline-block;
       width: 1.25rem;
       height: 1.25rem;
-      background-color: var(--primary-default);
+      background-color: var(--p-primary-color);
       mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zM4 8V5h16v3H4z'/%3E%3C/svg%3E")
         no-repeat center;
       -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zM4 8V5h16v3H4z'/%3E%3C/svg%3E")
@@ -267,7 +260,7 @@ header {
 
 // Custom questions section
 .custom-questions-dropdown {
-  border: 0.0625rem solid var(--border-default);
+  border: 0.0625rem solid var(--p-border-default);
   border-radius: 0.25rem;
   margin-bottom: 1.875rem;
 
@@ -276,12 +269,12 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--background-default);
+    background-color: var(--p-background-default);
     border-radius: 0.25rem;
     cursor: pointer;
 
     .dropdown-icon {
-      color: var(--text-on-disabled);
+      color: var(--p-text-disabled);
       font-size: 0.75rem;
     }
   }
@@ -290,17 +283,17 @@ header {
 .data-privacy-notice {
   margin-top: 1.25rem;
   padding: 0.9375rem;
-  background-color: var(--background-default);
+  background-color: var(--p-background-default);
   border-radius: 0.25rem;
   font-size: 0.875rem;
 
   p {
     margin: 0;
-    color: var(--text-on-disabled);
+    color: var(--p-text-disabled);
   }
 
   .tum-link {
-    color: var(--primary-default);
+    color: var(--p-primary-color);
     text-decoration: none;
     font-weight: bold;
 
@@ -345,45 +338,45 @@ header {
   .btn-cancel,
   .btn-back {
     background-color: transparent;
-    color: var(--text-on-disabled);
-    border: 0.0625rem solid var(--text-on-disabled);
+    color: var(--p-text-disabled);
+    border: 0.0625rem solid var(--p-text-disabled);
 
     &:hover {
-      background-color: var(--background-surface-alt);
+      background-color: var(--p-background-surface-alt);
     }
   }
 
   .btn-save-draft {
     background-color: transparent;
-    color: var(--primary-default);
-    border: 0.0625rem solid var(--primary-default);
+    color: var(--p-primary-color);
+    border: 0.0625rem solid var(--p-primary-color);
 
     &:hover {
-      background-color: var(--primary-default);
-      color: var(--text-on-primary);
+      background-color: var(--p-primary-color);
+      color: var(--p-text-on-primary);
 
       .btn-icon .ng-fa-icon {
-        color: var(--text-on-primary);
+        color: var(--p-text-on-primary);
       }
     }
   }
 
   .btn-next {
-    background-color: var(--primary-default);
-    color: var(--background-default);
+    background-color: var(--p-primary-color);
+    color: var(--p-background-default);
     border-radius: 0.25rem;
 
     &:hover {
-      background-color: var(--primary-hover);
+      background-color: var(--p-primary-hover-color);
     }
   }
 
   .btn-publish {
-    background-color: var(--primary-default);
-    color: var(--background-default);
+    background-color: var(--p-primary-color);
+    color: var(--p-background-default);
 
     &:hover {
-      background-color: var(--primary-hover);
+      background-color: var(--p-primary-hover-color);
     }
   }
 }
@@ -396,22 +389,22 @@ header {
   }
 
   p {
-    color: var(--text-on-disabled);
+    color: var(--p-text-disabled);
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
   }
 }
 
 .ng-fa-icon {
-  color: var(--primary-default);
+  color: var(--p-primary-color);
 }
 
 .btn-back .ng-fa-icon,
 .btn-cancel .ng-fa-icon {
-  color: var(--text-on-disabled);
+  color: var(--p-text-disabled);
 }
 
 input:disabled {
-  color: var(--text-on-disabled);
-  background-color: var(--background-disabled);
+  color: var(--p-text-disabled);
+  background-color: var(--p-background-disabled);
 }
