@@ -6,6 +6,7 @@ $info-default: $info-500; //var(--p-info-color);
 $positive-default: $positive-500; //var(--p-success-color);
 $warning-default: $warning-500; //var(--p-warn-color);
 $negative-default: $negative-500; //var(--p-danger-color);
+$background-disabled: $neutral-200;
 
 .p-button {
   overflow: unset;
@@ -20,7 +21,7 @@ $negative-default: $negative-500; //var(--p-danger-color);
   &.disabled,
   &:disabled {
     background: lighten($base-color, 40%) !important;
-    border-color: lighten($base-color, 40%) !important;
+    border-color: var(--background-disabled) !important;
     color: $text-color !important;
     pointer-events: none;
     opacity: 0.6;
@@ -40,8 +41,8 @@ $negative-default: $negative-500; //var(--p-danger-color);
   &.disabled,
   &:disabled {
     background: white !important;
-    border-color: lighten($color, 20%) !important;
-    color: lighten($color, 20%) !important;
+    border-color: var(--background-disabled) !important;
+    color: var(--text-on-disabled) !important;
     pointer-events: none;
     opacity: 0.6;
   }
@@ -53,15 +54,15 @@ $negative-default: $negative-500; //var(--p-danger-color);
   color: $text-color !important;
 
   &:hover {
-    background: darken($color, 10%) !important;
+    background: darken($neutral-300, 10%) !important;
   }
 
   &.disabled,
   &:disabled {
-    background: lighten($color, 20%) !important;
-    // border-color: lighten($color, 20%) !important;
+    background: $background-disabled !important;
+    border-color: $background-disabled !important;
     border: 0 !important;
-    color: lighten($text-color-disabled, 40%) !important;
+    color: var(--text-on-disabled) !important;
     pointer-events: none;
     opacity: 0.7;
   }
@@ -79,7 +80,7 @@ $negative-default: $negative-500; //var(--p-danger-color);
 
   &.disabled,
   &:disabled {
-    color: lighten($color, 20%) !important;
+    color: var(--text-on-disabled) !important;
     pointer-events: none;
     opacity: 0.6;
   }
@@ -136,15 +137,15 @@ $negative-default: $negative-500; //var(--p-danger-color);
   @include text-button($negative-default);
 }
 
-.accent_outlined {
-  @include outlined-button($neutral-300);
-}
-.accent_filled {
-  @include filled-button($neutral-300, black);
-}
-.accent_text {
-  @include text-button($neutral-300);
-}
+// .accent_outlined {
+//   @include outlined-button($neutral-300);
+// }
+// .accent_filled {
+//   @include filled-button($neutral-300, black);
+// }
+// .accent_text {
+//   @include text-button($neutral-300);
+// }
 
 .info_outlined {
   @include outlined-button(black);
