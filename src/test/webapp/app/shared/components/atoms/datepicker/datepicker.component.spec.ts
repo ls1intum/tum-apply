@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DatePickerComponent } from './datepicker.component';
+import { DatePickerComponent } from '../../../../../../../main/webapp/app/shared/components/atoms/datepicker/datepicker.component';
 
-describe('CalendarComponent', () => {
+describe('DatePickerComponent', () => {
   let component: DatePickerComponent;
   let fixture: ComponentFixture<DatePickerComponent>;
 
