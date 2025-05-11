@@ -52,8 +52,16 @@ public class JobService {
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
         job.setTitle(dto.title());
+        job.setResearchArea(dto.researchArea());
+        job.setFieldOfStudies(dto.fieldOfStudies());
         job.setLocation(dto.location());
+        job.setStartDate(dto.startDate());
+        job.setWorkload(dto.workload());
+        job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
+        job.setDescription(dto.description());
+        job.setTasks(dto.tasks());
+        job.setRequirements(dto.requirements());
         job.setState(dto.state());
         jobRepository.save(job);
     }

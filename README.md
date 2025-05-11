@@ -300,49 +300,42 @@ The `./npmw run` command will list all the scripts available to run for this pro
 
 ### 🎨 Color System & Theming
 
-TUMApply uses a scalable and themeable SCSS color system that supports light and dark mode via CSS Custom Properties.
+TUMApply uses a scalable and customizable theming system that's built on PrimeNG Themes and Tailwind CSS. It supports both light and dark mode through a centralized theme management.
 
 #### 🧱 Structure
 
-Colors are defined and used in the following way:
+The theming system is structured as follows:
 
-- `_primitives.scss`: defines color primitives from the design (e.g. `$primary-300`, `$neutral-100`, etc.)
-- `_tokens.scss`: defines semantic tokens (e.g. `--primary-default`, `--background-default`) for actual use in
-  components
-- `_bootstrap-overrides.scss`: maps semantic tokens to Bootstrap variables (e.g. `$theme-colors`) using SCSS or
-  `var(...)`
-- `global.scss`: sets application-wide styles and uses the defined `var(--token-name)` variables
+- `src/main/webapp/content/theming/tumapplypreset.ts`: defines the custom PrimeNG theme with TUMApply-specific colors
+- CSS variables are provided by PrimeNG's theming system and are available globally
+- Tailwind CSS is used for additional styling options and is aligned with the PrimeNG theme
 
 #### 🌞 Light and 🌚 Dark Mode
 
-The file `_tokens.scss` defines two CSS scopes:
+Theme switching is controlled through the `toggleTheme()` method in the NavbarComponent:
 
-- `:root { ... }` → Light mode tokens
-- `.dark-theme { ... }` → Dark mode overrides
+- The selected theme preference is stored in `sessionStorage`
+- The theme is toggled by adding/removing the `dark-theme` class to the `<html>` element
+- PrimeNG components automatically respond to theme changes
 
-The theme is automatically selected at runtime based on the user's system preference (`prefers-color-scheme`). You can
-also manually force the dark mode by adding the `dark-theme` class to the `<html>` element.
+#### 🎨 Using Colors
 
-#### 🎨 How to use colors
-
-Use CSS variables in components and global styles:
+For consistent designs:
 
 ```scss
-background-color: var (--background-default);
-color: var (--text-primary);
+/* Using PrimeNG variables */
+color: var(--text-color);
+background-color: var(--surface-ground);
+
+/* Using Tailwind classes */
+<div class="text-primary bg-surface-200 dark:bg-surface-700">...</div>
 ```
 
-Do not use hardcoded hex values. Do not use SCSS variables like `$primary-default` outside of Bootstrap configuration.
+Avoid hard-coded hex values. Instead, use the CSS variables provided by PrimeNG or Tailwind classes.
 
-#### ⚠️ Missing or unset tokens
+#### ⚠️ Theme Customization
 
-If a variable like `var(--background-default)` is not set, the browser will fall back to:
-
-- inherited values
-- the default style (`transparent`, `black`, or `initial`)
-- or fallback provided via `var(--background-default, #fff)`
-
-Make sure to define all used tokens in `_tokens.scss`. You can use browser dev tools to debug unresolved CSS variables.
+To customize the theme, edit the color definitions in `src/main/webapp/content/theming/tumapplypreset.ts`
 
 ### PWA Support
 
