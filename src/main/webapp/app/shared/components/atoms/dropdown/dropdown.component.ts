@@ -5,6 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
+export type DropdownOption = {
+  name: string;
+  value: string;
+  icon?: string;
+};
+
 @Component({
   selector: 'jhi-dropdown',
   standalone: true,
@@ -14,8 +20,8 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
   encapsulation: ViewEncapsulation.None,
 })
 export class DropdownComponent {
-  items = input<any[]>([]);
-  selected = input<any>(null);
+  items = input<DropdownOption[]>([]);
+  selected = input<DropdownOption | undefined>(undefined);
   label = input<string>('');
   placeholder = input<string>('Select...');
   disabled = input<boolean>(false);
