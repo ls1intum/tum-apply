@@ -76,21 +76,15 @@
           </div>
 
           <div class="form-field">
-            <label for="location">Location<span class="required">*</span></label>
-            <div class="select-wrapper">
-              <select formControlName="location" id="location">
-                <option disabled selected value="">
-                  <fa-icon [icon]="faLocationDot" />
-                  Select a Location ...
-                </option>
-                @for (location of locations; track location) {
-                  <option [value]="location.value">
-                    <fa-icon [icon]="faLocationDot" />
-                    {{ location.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['location'].value"
+              [iconField]="'icon'"
+              [items]="locations"
+              [labelPosition]="'top'"
+              [label]="'Campus Location'"
+              [placeholder]="'Select a location...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
 

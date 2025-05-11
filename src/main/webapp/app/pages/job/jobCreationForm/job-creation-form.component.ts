@@ -5,6 +5,7 @@ import { faChevronLeft, faCircleInfo, faFloppyDisk, faLocationDot, faUser } from
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 
+import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { JobFormDTO } from '../../../generated';
 
 @Component({
@@ -12,7 +13,7 @@ import { JobFormDTO } from '../../../generated';
   standalone: true,
   templateUrl: './job-creation-form.component.html',
   styleUrls: ['./job-creation-form.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, DropdownComponent],
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
@@ -31,9 +32,9 @@ export class JobCreationFormComponent {
 
   // Options for dropdowns
   locations = [
-    { label: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
-    { label: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
-    { label: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
+    { name: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
+    { name: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
+    { name: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
   ];
   workloadOptions = [
     { label: '100% (Full-time)', value: 100 },
