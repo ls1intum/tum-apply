@@ -33,17 +33,6 @@ export default class HomeComponent implements OnInit {
     { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },
     { name: 'Weihenstephan Campus', value: 'weihenstephan', icon: 'map-marker-alt' },
   ];
-  /*
-  selectedLocation: any = null;
-  locations = [
-    { name: 'Garching Campus', value: 'GARCHING' },
-    { name: 'Garching Hochbrueck Campus', value: 'GARCHING_HOCHBRUECK' },
-    { name: 'Heilbronn Campus', value: 'HEILBRONN' },
-    { name: 'Munich Campus', value: 'MUNICH' },
-    { name: 'Straubing Campus', value: 'STRAUBING' },
-    { name: 'Weihenstephan Campus', value: 'WEIHENSTEPHAN' },
-    { name: 'Singapore Campus', value: 'SINGAPORE' },
-  ];*/
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
