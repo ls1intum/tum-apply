@@ -862,8 +862,7 @@
         "type": "object",
         "properties": {
           "applicant": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/ApplicantDTO"
           },
           "job": {
             "$ref": "#/components/schemas/JobCardDTO"

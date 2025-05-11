@@ -2,12 +2,12 @@ package de.tum.cit.aet.application.domain.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.job.dto.JobCardDTO;
+import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import java.time.LocalDate;
 import java.util.Set;
-import java.util.UUID;
 
 public record CreateApplicationDTO(
-    UUID applicant,
+    ApplicantDTO applicant,
     JobCardDTO job,
     LocalDate desiredDate,
     ApplicationState applicationState,
