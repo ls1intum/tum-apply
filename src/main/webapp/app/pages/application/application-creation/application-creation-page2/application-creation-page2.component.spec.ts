@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApplicationCreationPage2Component } from './application-creation-page2.component';
+import ApplicationCreationPage2Component from './application-creation-page2.component';
 
 describe('ApplicationCreationPage2Component', () => {
   let component: ApplicationCreationPage2Component;
