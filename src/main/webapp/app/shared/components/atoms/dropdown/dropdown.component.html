@@ -1,36 +1,3 @@
-<!--<div class="dropdown-container">-->
-<!--  @if (label) {-->
-<!--    <div class="dropdown-label">{{ label }}<span class="required">*</span></div>-->
-<!--  }-->
-<!--  <div (click)="toggleDropdown()" [class.open]="isOpen" class="custom-dropdown">-->
-<!--    <div class="dropdown-selected">-->
-<!--      <span class="dropdown-text">{{ selected ? getDisplayValue(selected) : placeholder }}</span>-->
-<!--      <span [class.open]="isOpen" class="chevron-down">-->
-<!--        <fa-icon [icon]="faChevronDown"></fa-icon>-->
-<!--      </span>-->
-<!--    </div>-->
-<!--    @if (isOpen) {-->
-<!--      <div class="dropdown-menu">-->
-<!--        <div class="dropdown-items">-->
-<!--          @for (item of allItems; track item[valueField]) {-->
-<!--            <div-->
-<!--              (click)="selectItem(item); $event.stopPropagation()"-->
-<!--              [class.active]="selected && selected[valueField] === item[valueField]"-->
-<!--              class="dropdown-item"-->
-<!--            >-->
-<!--              {{ getDisplayValue(item) }}-->
-<!--            </div>-->
-<!--          }-->
-<!--          @if (allItems.length === 0) {-->
-<!--            <div class="dropdown-no-results">No results found</div>-->
-<!--          }-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    }-->
-<!--  </div>-->
-<!--</div>-->
-
-<!-- jhi-dropdown.component.html -->
 <div
   [ngClass]="{
     'label-top': labelPosition === 'top',
@@ -54,29 +21,6 @@
     [style]="{ width: width }"
     class="custom-dropdown"
   >
-    <!-- currently icons on placeholder not working -->
-    <!--    <ng-template pTemplate="selectedItem">-->
-    <!--      <div class="dropdown-item-content">-->
-    <!--        &lt;!&ndash; Display the selected item with an icon if available &ndash;&gt;-->
-    <!--        @if (iconField && selected?.[iconField]) {-->
-    <!--          <fa-icon [icon]="['fas', selected[iconField]]" class="left-icon"></fa-icon>-->
-    <!--          &lt;!&ndash; If no item is selected or the selected item has no icon, show the prefix icon if available &ndash;&gt;-->
-    <!--        } @else if (prefixIcon) {-->
-    <!--          <fa-icon [icon]="['fas', prefixIcon]" class="left-icon"></fa-icon>-->
-    <!--        }-->
-    <!--        {{ selected?.[labelField] || placeholder }}-->
-    <!--      </div>-->
-    <!--    </ng-template>-->
-
-    <!--         Add optional icon field to the dropdown items-->
-    <!--        <ng-template let-option pTemplate="item">-->
-    <!--            <div class="dropdown-item-content">-->
-    <!--                @if (iconField && option?.[iconField]) {-->
-    <!--                    <fa-icon [icon]="['fas', option[iconField]]" class="left-icon"></fa-icon>-->
-    <!--                }-->
-    <!--                {{ option?.[labelField] }}-->
-    <!--            </div>-->
-    <!--        </ng-template>-->
     <ng-template pTemplate="dropdownicon">
       <fa-icon [icon]="isOpen ? faChevronUp : faChevronDown"></fa-icon>
     </ng-template>
