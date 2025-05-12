@@ -1,0 +1,35 @@
+meta {
+  name: Keycloak Logout
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/logout?post_logout_redirrect_uri={{redirectUri}}&id_token_hint
+  body: none
+  auth: oauth2
+}
+
+params:query {
+  post_logout_redirrect_uri: {{redirectUri}}
+  id_token_hint: null
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: {{redirectUri}}
+  authorization_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth
+  access_token_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
+  refresh_token_url: 
+  client_id: {{clientId}}
+  client_secret: 
+  scope: openid
+  state: {{$guid}}
+  pkce: true
+  credentials_placement: basic_auth_header
+  credentials_id: 
+  token_placement: header
+  token_header_prefix: 
+  auto_fetch_token: true
+  auto_refresh_token: false
+}
