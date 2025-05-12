@@ -1,54 +1,51 @@
-import { AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
 
 import { DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import { StatusBadgeComponent } from '../../../shared/components/atoms/status-badge/status-badge.component';
+import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../generated';
 
 @Component({
   selector: 'jhi-application-overview',
-  imports: [CommonModule, ButtonComponent, DynamicTableComponent, StatusBadgeComponent],
+  standalone: true,
+  imports: [CommonModule, ButtonComponent, DynamicTableComponent, StatusBadgeComponent, FaIconComponent],
   templateUrl: './application-overview.component.html',
   styleUrl: './application-overview.component.scss',
 })
-export class ApplicationOverviewComponent implements AfterViewInit {
+export class ApplicationOverviewComponent {
   @ViewChild('actionTemplate') actionTemplate!: TemplateRef<any>;
 
-  applications = [
-    {
-      id: 1,
-      applicantName: 'Alice Müller',
-      email: 'alice@example.com',
-      position: 'AI Research Assistant',
-      status: 'ACCEPTED',
-    },
-    {
-      id: 2,
-      applicantName: 'Bob Meier',
-      email: 'bob@example.com',
-      position: 'Data Science PhD',
-      status: 'REJECTED',
-    },
-    {
-      id: 3,
-      applicantName: 'Carla Schmidt',
-      email: 'carla@example.com',
-      position: 'Cybersecurity Researcher',
-      status: 'SENT',
-    },
-  ];
+  pageSize = 10;
+  pageData: ApplicationEvaluationOverviewDTO[] = [];
+  total = 0;
+  loading = signal(false);
 
-  columns: any[] = [];
+  constructor(private evaluationService: ApplicationEvaluationResourceService) {}
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  async loadPage(event: TableLazyLoadEvent): Promise<void> {
+    console.warn('Loading Page');
+    this.loading.set(true);
 
-  ngAfterViewInit(): void {
-    this.columns = [
-      { field: 'applicantName', header: 'Name' },
-      { field: 'email', header: 'Email' },
-      { field: 'position', header: 'Position' },
-      { field: 'status', header: 'Status' },
-      { field: 'actions', header: 'Actions', template: this.actionTemplate },
-    ];
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    const page = first / rows;
+
+    try {
+      const res = await firstValueFrom(this.evaluationService.getApplications(rows, page));
+      this.pageData = res.applications ?? [];
+      console.warn('Applications: ', this.pageData);
+      this.total = res.totalRecords ?? 0;
+      this.pageSize = rows;
+      console.warn('Page Size: ', this.pageSize);
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+    } finally {
+      console.warn('Setting loading to false');
+      this.loading.set(false);
+    }
   }
 }

@@ -1,6 +1,6 @@
-import { Component, Input, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Signal, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
@@ -10,15 +10,28 @@ import { ButtonModule } from 'primeng/button';
   styleUrl: './dynamic-table.component.scss',
 })
 export class DynamicTableComponent {
-  @Input() data: any[] = [];
-  @Input() columns: {
+  readonly paginator = true;
+  readonly lazy = true;
+
+  @Input({ required: true })
+  columns: {
     field: string;
     header: string;
+    type?: string;
     width: string;
     alignCenter?: boolean;
     template?: TemplateRef<any>;
   }[] = [];
-  @Input() paginator = true;
+
+  @Input() data: any[] = [];
   @Input() rows = 10;
+  @Input() totalRecords = 0;
+  @Input({ required: true }) loading!: Signal<boolean>;
   @Input() selectAble = false;
+
+  @Output() lazyLoad = new EventEmitter<TableLazyLoadEvent>();
+
+  emitLazy(event: TableLazyLoadEvent): void {
+    this.lazyLoad.emit(event);
+  }
 }

@@ -1,18 +1,22 @@
 <jhi-dynamic-table
   [columns]="[
-    { field: 'applicantName', header: 'Name', width: '3%' },
-    { field: 'email', header: 'Email', width: '80rem' },
-    { field: 'position', header: 'Position', width: '1rem' },
-    { field: 'status', header: 'Status', width: '1rem', alignCenter: true, template: statusTemplate },
-    { field: 'actions', header: 'Actions', width: '1rem', template: actionTemplate },
+    { field: 'avatar', header: '', width: '5rem' },
+    { field: 'name', header: 'Name', width: '12rem' },
+    { field: 'state', header: 'Status', width: '10rem', alignCenter: true, template: statusTemplate },
+    { field: 'jobName', header: 'Job', width: '26rem' },
+    { field: 'rating', header: 'Rating', width: '10rem' },
+    { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
+    { field: 'actions', header: '', width: '5rem', template: actionTemplate },
   ]"
-  [data]="applications"
-  [paginator]="true"
-  [rows]="10"
+  [data]="pageData"
+  [totalRecords]="total"
+  [rows]="pageSize"
   [selectAble]="true"
+  [loading]="loading()"
+  (lazyLoad)="loadPage($event)"
 />
 <ng-template #statusTemplate let-application>
-  <jhi-status-badge [status]="application.status" />
+  <jhi-status-badge [status]="application.state" />
 </ng-template>
 
 <ng-template #actionTemplate let-application>
