@@ -1,13 +1,8 @@
 package de.tum.cit.aet.core.web.rest.errors;
 
 import de.tum.cit.aet.core.exception.*;
-import java.util.ArrayList;
-import java.util.List;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/test")
@@ -63,20 +58,8 @@ public class TestExceptionController {
         throw new InternalServerException("Internal server error");
     }
 
-    @GetMapping("/validation-error")
-    public String triggerValidationError() throws MethodArgumentNotValidException {
-        // Simulate a validation error by throwing MethodArgumentNotValidException
-        List<FieldError> fieldErrors = new ArrayList<>();
-        fieldErrors.add(new FieldError("objectName", "field1", "must not be blank"));
-        fieldErrors.add(new FieldError("objectName", "field2", "must be a valid email"));
-
-        throw new MethodArgumentNotValidException(
-            null,
-            new org.springframework.validation.BeanPropertyBindingResult(new Object(), "objectName") {
-                {
-                    fieldErrors.forEach(this::addError);
-                }
-            }
-        );
+    @PostMapping("/validation-error")
+    public void triggerValidationError(@Valid @RequestBody ValidationTestDto dto) {
+        // method body can remain empty
     }
 }

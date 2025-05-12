@@ -1,18 +1,21 @@
 package de.tum.cit.aet.core.web.rest.errors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.core.exception.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = de.tum.cit.aet.core.web.rest.errors.TestExceptionController.class)
 @Import(GlobalExceptionHandler.class)
+@AutoConfigureMockMvc(addFilters = false)
 class GlobalExceptionHandlerTest {
 
     @Autowired
@@ -82,9 +85,9 @@ class GlobalExceptionHandlerTest {
     void returnsOperationNotAllowedException() throws Exception {
         mockMvc
             .perform(get("/test/not-allowed"))
-            .andExpect(status().isMethodNotAllowed())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errorCode").value("OPERATION_NOT_ALLOWED"))
-            .andExpect(jsonPath("$.status").value(405))
+            .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.message").value("Operation not allowed"));
     }
 
@@ -92,9 +95,9 @@ class GlobalExceptionHandlerTest {
     void returnsUploadException() throws Exception {
         mockMvc
             .perform(get("/test/upload"))
-            .andExpect(status().isInternalServerError())
-            .andExpect(jsonPath("$.errorCode").value("UPLOAD_ERROR"))
-            .andExpect(jsonPath("$.status").value(500))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("UPLOAD_FAILED"))
+            .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.message").value("Upload failed"));
     }
 
@@ -105,7 +108,7 @@ class GlobalExceptionHandlerTest {
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.errorCode").value("MAILING_ERROR"))
             .andExpect(jsonPath("$.status").value(500))
-            .andExpect(jsonPath("$.message").value("Mail sending failed"));
+            .andExpect(jsonPath("$.message").value("Mailing failed"));
     }
 
     @Test
@@ -113,7 +116,7 @@ class GlobalExceptionHandlerTest {
         mockMvc
             .perform(get("/test/internal-error"))
             .andExpect(status().isInternalServerError())
-            .andExpect(jsonPath("$.errorCode").value("INTERNAL_SERVER_ERROR"))
+            .andExpect(jsonPath("$.errorCode").value("INTERNAL_ERROR"))
             .andExpect(jsonPath("$.status").value(500))
             .andExpect(jsonPath("$.message").value("Internal server error"));
     }
@@ -121,12 +124,22 @@ class GlobalExceptionHandlerTest {
     @Test
     void returnsValidationError() throws Exception {
         mockMvc
-            .perform(get("/test/validation-error"))
+            .perform(
+                post("/test/validation-error")
+                    .contentType("application/json")
+                    .content(
+                        """
+                        {
+                          "name": ""
+                        }
+                        """
+                    )
+            )
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"))
+            .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"))
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.fieldErrors").isArray())
             .andExpect(jsonPath("$.fieldErrors[0].field").value("name"))
-            .andExpect(jsonPath("$.fieldErrors[0].message").value("must not be blank"));
+            .andExpect(jsonPath("$.fieldErrors[0].message").value("name must not be blank"));
     }
 }
