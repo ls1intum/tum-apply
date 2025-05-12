@@ -96,12 +96,17 @@ Congratulations! You've selected an excellent way to secure your JHipster applic
 OpenID Connect (OIDC) are, please
 see [What the Heck is OAuth?](https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth)
 
-To log in to your app, you'll need to have [Keycloak](https://keycloak.org) up and running. The JHipster Team has
-created a Docker container for you that has the default users and roles. Start Keycloak using the following command.
+To log in to your app, you'll need to have [Keycloak](https://keycloak.org) up and running. TUMApply provides a
+preconfigured setup including default users and roles, and supports convenient token-based login testing
+with [Bruno](https://www.usebruno.com/).
 
 ```
 docker compose -f src/main/docker/keycloak.yml up
 ```
+
+You can also use the provided `docs/TUMapply API` folder to test the login flow via OAuth 2.0 in Bruno. The request is
+already preconfigured to obtain an access token using the password grant type. For more information see [AUTH.md](.
+/docs/AUTH.md).
 
 The security settings in `src/main/resources/config/application.yml` are configured for this image.
 
@@ -130,6 +135,21 @@ better security and performance.
 Also, you should never use `start-dev` nor `KC_DB=dev-file` in production.
 
 When using Kubernetes, importing should be done using init-containers (with a volume when using `db=dev-file`).
+
+### Bruno for API Testing
+
+Bruno is an open-source API client, similar to Postman, but focused on a local-first and Git-friendly workflow.
+
+#### How Bruno works
+
+- Bruno stores collections as plain folder and text files in the git repository.
+- You can send requests with environment variables, use OAuth2 flows, and inspect responses.
+- The folder `docs/TUMapply API` contains all relevant requests for testing authentication and the TUMApply API.
+
+#### More Information
+
+👉 [TUMApply API – Bruno Collection Overview (Confluence)](https://confluence.aet.cit.tum.
+de/spaces/AP/pages/257785953/TUMApply+API+%E2%80%93+Postman+Collection+Overview)
 
 ### Okta
 
@@ -300,7 +320,8 @@ The `./npmw run` command will list all the scripts available to run for this pro
 
 ### 🎨 Color System & Theming
 
-TUMApply uses a scalable and customizable theming system that's built on PrimeNG Themes and Tailwind CSS. It supports both light and dark mode through a centralized theme management.
+TUMApply uses a scalable and customizable theming system that's built on PrimeNG Themes and Tailwind CSS. It supports
+both light and dark mode through a centralized theme management.
 
 #### 🧱 Structure
 
@@ -324,11 +345,33 @@ For consistent designs:
 
 ```scss
 /* Using PrimeNG variables */
-color: var(--text-color);
-background-color: var(--surface-ground);
+color:
+var
+
+(
+--text-color
+
+)
+;
+background-color:
+var
+
+(
+--surface-ground
+
+)
+;
 
 /* Using Tailwind classes */
-<div class="text-primary bg-surface-200 dark:bg-surface-700">...</div>
+<
+div class
+
+=
+"text-primary bg-surface-200 dark:bg-surface-700"
+> ...<
+
+/
+div >
 ```
 
 Avoid hard-coded hex values. Instead, use the CSS variables provided by PrimeNG or Tailwind classes.
