@@ -139,7 +139,7 @@
       <column name="state" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="start_date" type="TIMESTAMP"/>
+      <column name="start_date" type="DATE"/>
       <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>

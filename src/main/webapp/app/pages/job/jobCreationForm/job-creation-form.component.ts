@@ -1,28 +1,22 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronLeft, faCircleInfo, faFloppyDisk, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 
 import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { JobFormDTO } from '../../../generated';
+import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
 @Component({
   selector: 'jhi-job-creation-form',
   standalone: true,
   templateUrl: './job-creation-form.component.html',
   styleUrls: ['./job-creation-form.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, DropdownComponent],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, DropdownComponent, DatePickerComponent],
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
-  readonly faCircleInfo = faCircleInfo;
-  readonly faChevronLeft = faChevronLeft;
-  readonly faLocationDot = faLocationDot;
-  readonly faFloppyDisk = faFloppyDisk;
-  readonly faUser = faUser;
-
   currentStep = 1;
 
   // Form groups for each step
@@ -32,32 +26,52 @@ export class JobCreationFormComponent {
 
   // Options for dropdowns
   locations = [
-    { name: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
     { name: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
+    { name: 'Garching Hochbrueck Campus', value: JobFormDTO.LocationEnum.GarchingHochbrueck },
+    { name: 'Heilbronn Campus', value: JobFormDTO.LocationEnum.Heilbronn },
+    { name: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
+    { name: 'Straubing Campus', value: JobFormDTO.LocationEnum.Straubing },
     { name: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
+    { name: 'Singapore Campus', value: JobFormDTO.LocationEnum.Singapore },
   ];
+
+  fieldsOfStudies = [
+    { name: 'Mathematics', value: 'Mathematics' },
+    { name: 'Informatics', value: 'Informatics' },
+    { name: 'Physics', value: 'Physics' },
+    { name: 'Chemistry', value: 'Chemistry' },
+    { name: 'Biology', value: 'Biology' },
+  ];
+
   workloadOptions = [
-    { label: '100% (Full-time)', value: 100 },
-    { label: '60%', value: 60 },
-    { label: '40%', value: 40 },
-    { label: '20%', value: 20 },
-    { label: '10%', value: 10 },
+    { name: '100% (Full-time)', value: 100 },
+    { name: '60%', value: 60 },
+    { name: '40%', value: 40 },
+    { name: '20%', value: 20 },
+    { name: '10%', value: 10 },
   ];
   contractDurations = [
-    { label: '1 year', value: 1 },
-    { label: '2 years', value: 2 },
-    { label: '3 years', value: 3 },
-    { label: '4 years', value: 4 },
-    { label: '5+ years', value: 5 },
+    { name: '1 year', value: 1 },
+    { name: '2 years', value: 2 },
+    { name: '3 years', value: 3 },
+    { name: '4 years', value: 4 },
+    { name: '5+ years', value: 5 },
   ];
   fundingTypes = [
-    { label: 'University Budget', value: JobFormDTO.FundingTypeEnum.FullyFunded },
-    { label: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
-    { label: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
-    { label: 'Industry Sponsored', value: JobFormDTO.FundingTypeEnum.IndustrySponsored },
-    { label: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
-    { label: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
+    { name: 'University Budget', value: JobFormDTO.FundingTypeEnum.FullyFunded },
+    { name: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
+    { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
+    { name: 'Industry Sponsored', value: JobFormDTO.FundingTypeEnum.IndustrySponsored },
+    { name: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
+    { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
   ];
+
+  selectedLocation: any = null;
+  selectedWorkload: any = null;
+  selectedContractDuration: any = null;
+  selectedFundingType: any = null;
+  selectedFieldOfStudies: any = null;
+
   private jobResourceService = inject(JobResourceService);
 
   constructor(private fb: FormBuilder) {
@@ -147,23 +161,49 @@ export class JobCreationFormComponent {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
-      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies.value,
       supervisingProfessor: '00000000-0000-0000-0000-000000000102',
-      location: this.basicInfoForm.value.location,
+      location: this.basicInfoForm.value.location.value,
       startDate: this.basicInfoForm.value.startDate,
-      workload: this.basicInfoForm.value.workload,
-      contractDuration: this.basicInfoForm.value.contractDuration,
-      fundingType: this.basicInfoForm.value.fundingType,
+      workload: this.basicInfoForm.value.workload.value,
+      contractDuration: this.basicInfoForm.value.contractDuration.value,
+      fundingType: this.basicInfoForm.value.fundingType.value,
       description: this.positionDetailsForm.value.description,
       tasks: this.positionDetailsForm.value.tasks,
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
+    console.log('Job DTO:', jobFormDto);
     this.jobResourceService.createJob(jobFormDto).subscribe({
       next() {},
       error(err) {
         console.error('Failed to publish job:', err);
       },
     });
+  }
+
+  onLocationChange(value: any): void {
+    this.selectedLocation = value;
+    this.basicInfoForm.patchValue({ location: value });
+  }
+
+  onWorkloadChange(value: any): void {
+    this.selectedWorkload = value;
+    this.basicInfoForm.patchValue({ workload: value });
+  }
+
+  onContractDurationChange(value: any): void {
+    this.selectedContractDuration = value;
+    this.basicInfoForm.patchValue({ contractDuration: value });
+  }
+
+  onFundingTypeChange(value: any): void {
+    this.selectedFundingType = value;
+    this.basicInfoForm.patchValue({ fundingType: value });
+  }
+
+  onFieldOfStudiesChange(value: any): void {
+    this.selectedFieldOfStudies = value;
+    this.basicInfoForm.patchValue({ fieldOfStudies: value });
   }
 }

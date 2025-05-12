@@ -34,7 +34,7 @@
           <div class="form-field">
             <label for="researchArea"
               >Research Area
-              <fa-icon [icon]="faCircleInfo" />
+              <fa-icon [icon]="['fas', 'circle-info']" />
             </label>
             <div class="input-with-icon">
               <input
@@ -47,22 +47,16 @@
           </div>
 
           <div class="form-field">
-            <label for="fieldOfStudies"
-              >Field of Studies
-              <fa-icon [icon]="faCircleInfo" />
-            </label>
-            <div class="input-with-icon">
-              <div class="select-wrapper">
-                <select formControlName="fieldOfStudies" id="fieldOfStudies">
-                  <option disabled selected value="">Select a Field of Studies ...</option>
-                  <option value="Computer Science">Computer Science</option>
-                  <option value="Mathematics">Mathematics</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
-                  <option value="Engineering">Engineering</option>
-                </select>
-              </div>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['fieldOfStudies'].value"
+              (selectedChange)="onFieldOfStudiesChange($event)"
+              [iconField]="'icon'"
+              [items]="fieldsOfStudies"
+              [labelPosition]="'top'"
+              [label]="'Field Of Studies'"
+              [placeholder]="'Select a Field of Studies...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
 
@@ -70,7 +64,7 @@
           <div class="form-field input-with-icon">
             <label for="supervisingProfessor"> Supervising Professor<span class="required">*</span> </label>
             <div class="icon-input-wrapper">
-              <fa-icon [icon]="faUser" class="input-icon" />
+              <fa-icon [icon]="['fas', 'user']" class="input-icon" />
               <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
             </div>
           </div>
@@ -78,11 +72,12 @@
           <div class="form-field">
             <jhi-dropdown
               [(selected)]="basicInfoForm.controls['location'].value"
+              (selectedChange)="onLocationChange($event)"
               [iconField]="'icon'"
               [items]="locations"
               [labelPosition]="'top'"
-              [label]="'Campus Location'"
-              [placeholder]="'Select a location...'"
+              [label]="'Location'"
+              [placeholder]="'Select a Location...'"
               [width]="'100%'"
             />
           </div>
@@ -90,53 +85,51 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label for="startDate">Start Date</label>
-            <div class="date-picker-wrapper">
-              <input formControlName="startDate" id="startDate" placeholder="Select a Start Date ..." type="date" />
-            </div>
+            <jhi-datepicker
+              [(selectedDate)]="basicInfoForm.controls['startDate'].value"
+              [label]="'Start Date'"
+              [placeholder]="'Select a Start Date...'"
+              [width]="'100%'"
+            />
           </div>
           <div class="form-field">
-            <label for="workload">Workload</label>
-            <div class="select-wrapper">
-              <select formControlName="workload" id="workload">
-                <option disabled selected value="">Select a Workload ...</option>
-                @for (option of workloadOptions; track option) {
-                  <option [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['workload'].value"
+              (selectedChange)="onWorkloadChange($event)"
+              [iconField]="'icon'"
+              [items]="workloadOptions"
+              [labelPosition]="'top'"
+              [label]="'Workload'"
+              [placeholder]="'Select a Workload...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="contractDuration">Contract Duration</label>
-            <div class="select-wrapper">
-              <select formControlName="contractDuration" id="contractDuration">
-                <option disabled selected value="">Select a Contract Duration ...</option>
-                @for (duration of contractDurations; track duration) {
-                  <option [value]="duration.value">
-                    {{ duration.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['contractDuration'].value"
+              (selectedChange)="onContractDurationChange($event)"
+              [iconField]="'icon'"
+              [items]="contractDurations"
+              [labelPosition]="'top'"
+              [label]="'Contract Duration'"
+              [placeholder]="'Select a Contract Duration...'"
+              [width]="'100%'"
+            />
           </div>
-
           <div class="form-field">
-            <label for="fundingType">Funding Type<span class="required">*</span></label>
-            <div class="select-wrapper">
-              <select formControlName="fundingType" id="fundingType">
-                <option disabled selected value="">Select a Funding Type ...</option>
-                @for (type of fundingTypes; track type) {
-                  <option [value]="type.value">
-                    {{ type.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['fundingType'].value"
+              (selectedChange)="onFundingTypeChange($event)"
+              [iconField]="'icon'"
+              [items]="fundingTypes"
+              [labelPosition]="'top'"
+              [label]="'Funding Type'"
+              [placeholder]="'Select a Funding Type...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
       </form>
@@ -144,14 +137,14 @@
       <div class="form-actions">
         <button class="btn-cancel">
           <span class="btn-icon">
-            <fa-icon [icon]="faChevronLeft" />
+            <fa-icon [icon]="['fas', 'chevron-left']" />
           </span>
           Cancel
         </button>
         <div class="action-right">
           <button (click)="saveDraft()" class="btn-save-draft">
             <span class="btn-icon">
-              <fa-icon [icon]="faFloppyDisk" />
+              <fa-icon [icon]="['fas', 'floppy-disk']" />
             </span>
             Save Draft
           </button>
@@ -172,7 +165,7 @@
         <div class="form-field">
           <label for="description"
             >Job Description
-            <fa-icon [icon]="faCircleInfo" />
+            <fa-icon [icon]="['fas', 'circle-info']" />
           </label>
           <div class="input-with-icon">
             <textarea
@@ -192,7 +185,7 @@
         <div class="form-field">
           <label for="tasks"
             >Tasks
-            <fa-icon [icon]="faCircleInfo" />
+            <fa-icon [icon]="['fas', 'circle-info']" />
           </label>
           <div class="input-with-icon">
             <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
@@ -207,7 +200,7 @@
         <div class="form-field">
           <label for="requirements"
             >Eligibility Criteria
-            <fa-icon [icon]="faCircleInfo" />
+            <fa-icon [icon]="['fas', 'circle-info']" />
           </label>
           <div class="input-with-icon">
             <textarea
@@ -228,7 +221,7 @@
       <div class="form-actions">
         <button (click)="previousStep()" class="btn-back">
           <span class="btn-icon">
-            <fa-icon [icon]="faChevronLeft" />
+            <fa-icon [icon]="['fas', 'chevron-left']" />
           </span>
           Back
         </button>
@@ -270,7 +263,7 @@
       <div class="form-actions">
         <button (click)="previousStep()" class="btn-back">
           <span class="btn-icon">
-            <fa-icon [icon]="faChevronLeft" />
+            <fa-icon [icon]="['fas', 'chevron-left']" />
           </span>
           Back
         </button>

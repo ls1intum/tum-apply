@@ -7,7 +7,7 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 export type DropdownOption = {
   name: string;
-  value: string;
+  value: string | number;
   icon?: string;
 };
 

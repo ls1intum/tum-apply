@@ -3,10 +3,10 @@ import { CustomHttpParameterCodec } from './encoder';
 import { Configuration } from './configuration';
 
 export class BaseService {
-  protected basePath = '';
   public defaultHeaders = new HttpHeaders();
   public configuration: Configuration;
   public encoder: HttpParameterCodec;
+  protected basePath = 'http://localhost:8080';
 
   constructor(basePath?: string | string[], configuration?: Configuration) {
     this.configuration = configuration || new Configuration();
