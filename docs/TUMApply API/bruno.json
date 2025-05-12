@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "name": "TUMApply API",
+  "type": "collection",
+  "ignore": ["node_modules", ".git"],
+  "size": 0.03786277770996094,
+  "filesCount": 44,
+  "presets": {
+    "requestType": "http",
+    "requestUrl": "{{baseUrl}}"
+  }
+}
