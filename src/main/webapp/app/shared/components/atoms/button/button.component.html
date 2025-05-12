@@ -1,19 +1,17 @@
 <div class="relative">
-  <button
-    pButton
+  <p-button
     [disabled]="disabled()"
-    variant="'outlined'"
-    class="{{ color() + '_' + variant() }} {{ label() === undefined ? 'rounded-full w-12 h-12' : '' }} {{ buttonClass() }}"
+    [variant]="variant()"
+    [severity]="color()"
     [raised]="numberOfFavorites() !== undefined"
     badgeStyle=""
+    [rounded]="label() === undefined"
+    [label]="label() ?? ''"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="['fas', icon() ?? '']" />
     }
-    @if (label() !== undefined) {
-      <span pButtonLabel>{{ label() }}</span>
-    }
-  </button>
+  </p-button>
   @if (numberOfFavorites() !== undefined) {
     <span class="badge_mini absolute flex items-center justify-center overflow-hidden right_full rounded-full top-0 ml-8">{{
       numberOfFavorites()

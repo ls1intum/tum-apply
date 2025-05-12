@@ -6,11 +6,11 @@ import { ButtonModule } from 'primeng/button';
 
 export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warn' | 'danger' | 'info';
 
-export type ButtonVariant = 'filled' | 'outlined' | 'text';
+export type ButtonVariant = 'outlined' | 'text';
 
 export type Button = {
   color: ButtonColor;
-  variant: ButtonVariant;
+  variant?: ButtonVariant;
   icon?: string;
   label?: string;
   numberOfFavorites?: number;
@@ -27,7 +27,7 @@ export type Button = {
 })
 export class ButtonComponent {
   color = input<ButtonColor>('primary');
-  variant = input<ButtonVariant>('filled');
+  variant = input<ButtonVariant>();
   icon = input<string | undefined>(undefined);
   label = input<string | undefined>(undefined);
   numberOfFavorites = input<number | undefined>(undefined);

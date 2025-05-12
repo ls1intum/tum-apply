@@ -16,7 +16,7 @@ export class ButtonPlayGroundComponent {
     buttons: [
       {
         color: 'primary',
-        variant: 'filled',
+        variant: undefined,
         icon: 'home',
         disabled: false,
         label: 'Label',
@@ -24,7 +24,7 @@ export class ButtonPlayGroundComponent {
       },
       {
         color: 'secondary',
-        variant: 'filled',
+        variant: undefined,
         icon: 'home',
         disabled: false,
         label: 'Secondary',
@@ -32,7 +32,7 @@ export class ButtonPlayGroundComponent {
       },
       {
         color: 'secondary',
-        variant: 'filled',
+        variant: undefined,
         disabled: false,
         label: 'Secondary',
         onClick: () => alert('I am secondary. Click the first button'),
@@ -44,7 +44,7 @@ export class ButtonPlayGroundComponent {
     buttons: [
       {
         color: 'primary',
-        variant: 'filled',
+        variant: undefined,
         icon: 'home',
         disabled: false,
         label: 'Label',
@@ -52,7 +52,7 @@ export class ButtonPlayGroundComponent {
       },
       {
         color: 'secondary',
-        variant: 'filled',
+        variant: undefined,
         icon: 'home',
         disabled: false,
         label: 'Secondary',
@@ -60,7 +60,7 @@ export class ButtonPlayGroundComponent {
       },
       {
         color: 'secondary',
-        variant: 'filled',
+        variant: undefined,
         icon: 'home',
         disabled: false,
         label: 'Secondary',
