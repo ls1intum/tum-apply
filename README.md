@@ -68,11 +68,19 @@ This starts a local MySQL instance with the database `tumapply`.
 
 #### Step 3: Import Example/Test Data
 
+This script automatically imports all SQL files from the `src/main/resources/testdata/` folder, sorted alphabetically.
+
 ```bash
-bash src/main/resources/testdata/import-testdata.sh
+bash ./src/main/resources/testdata/import-testdata.sh
 ```
 
-This script imports example users, roles, and research groups.
+💡 **Platform Notes:**
+
+- **macOS**: Works out of the box. Requires MySQL CLI to be installed via Homebrew (`brew install mysql-client`) and
+  available in your `PATH`.
+- **Linux**: Requires `mysql` CLI to be installed (`sudo apt install mysql-client` or equivalent).
+- **Windows**: Use **Git Bash** to run this script. Make sure the MySQL CLI is installed (via MySQL Installer) and the
+  `bin` folder is added to your `PATH`.
 
 ---
 
