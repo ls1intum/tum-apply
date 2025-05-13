@@ -22,6 +22,7 @@ export class DropdownComponent {
   items = input<DropdownOption[]>([]);
   selected = input<DropdownOption | undefined>(undefined);
   label = input<string>('');
+  required = input<boolean>(false);
   placeholder = input<string>('Select...');
   disabled = input<boolean>(false);
   labelField = input<string>('name');

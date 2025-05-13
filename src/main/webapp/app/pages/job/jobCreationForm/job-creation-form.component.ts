@@ -101,9 +101,9 @@ export class JobCreationFormComponent {
   initForms(): void {
     // Basic Information form
     this.basicInfoForm = this.fb.group({
-      title: [''],
-      researchArea: [''],
-      fieldOfStudies: [''],
+      title: ['', Validators.required],
+      researchArea: ['', Validators.required],
+      fieldOfStudies: ['', Validators.required],
       supervisingProfessor: this.fb.control(
         {
           value: 'Prof. Dr. Stephan Krusche',
@@ -112,17 +112,17 @@ export class JobCreationFormComponent {
         Validators.required,
       ),
       location: ['', Validators.required],
-      startDate: [''],
-      workload: [''],
-      contractDuration: [''],
+      startDate: ['', Validators.required],
+      workload: ['', Validators.required],
+      contractDuration: ['', Validators.required],
       fundingType: ['', Validators.required],
     });
 
     // Position Details form
     this.positionDetailsForm = this.fb.group({
-      description: ['', [Validators.maxLength(1000)]],
-      tasks: ['', [Validators.maxLength(1000)]],
-      requirements: ['', [Validators.maxLength(1000)]],
+      description: ['', [Validators.required, Validators.maxLength(1000)]],
+      tasks: ['', [Validators.required, Validators.maxLength(1000)]],
+      requirements: ['', [Validators.required, Validators.maxLength(1000)]],
     });
 
     // Additional Information form
@@ -191,6 +191,7 @@ export class JobCreationFormComponent {
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
+    console.log('Publishing job:', jobFormDto);
     this.jobResourceService.createJob(jobFormDto).subscribe({
       next() {},
       error(err) {

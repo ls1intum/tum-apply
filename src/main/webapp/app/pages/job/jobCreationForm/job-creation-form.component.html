@@ -24,9 +24,8 @@
       <form [formGroup]="basicInfoForm">
         <h2>Basic Information</h2>
         <p>Provide the key details about the doctoral position, such as title, field of study, and supervising professor.</p>
-
         <div class="form-field">
-          <label for="title">Job Title</label>
+          <label for="title">Job Title <span class="required">*</span> </label>
           <input formControlName="title" id="title" placeholder="e.g. Doctoral Position in Robotics" type="text" />
         </div>
 
@@ -35,6 +34,7 @@
             <label for="researchArea"
               >Research Area
               <fa-icon [icon]="['fas', 'circle-info']" />
+              <span class="required">*</span>
             </label>
             <div class="input-with-icon">
               <input
@@ -54,6 +54,7 @@
               [items]="fieldsOfStudies"
               [labelPosition]="'top'"
               [label]="'Field Of Studies'"
+              [required]="true"
               [placeholder]="'Select a Field of Studies...'"
               [width]="'100%'"
             />
@@ -62,7 +63,7 @@
 
         <div class="form-row">
           <div class="form-field input-with-icon">
-            <label for="supervisingProfessor"> Supervising Professor<span class="required">*</span> </label>
+            <label for="supervisingProfessor"> Supervising Professor <span class="required">*</span> </label>
             <div class="icon-input-wrapper">
               <fa-icon [icon]="['fas', 'user']" class="input-icon" />
               <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
@@ -77,6 +78,7 @@
               [items]="locations"
               [labelPosition]="'top'"
               [label]="'Location'"
+              [required]="true"
               [placeholder]="'Select a Location...'"
               [width]="'100%'"
             />
@@ -89,6 +91,7 @@
               [(selectedDate)]="basicInfoForm.controls['startDate'].value"
               (selectedChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
               [label]="'Start Date'"
+              [required]="true"
               [placeholder]="'Select a Start Date...'"
               [width]="'100%'"
             />
@@ -101,6 +104,7 @@
               [items]="workloadOptions"
               [labelPosition]="'top'"
               [label]="'Workload'"
+              [required]="true"
               [placeholder]="'Select a Workload...'"
               [width]="'100%'"
             />
@@ -116,6 +120,7 @@
               [items]="contractDurations"
               [labelPosition]="'top'"
               [label]="'Contract Duration'"
+              [required]="true"
               [placeholder]="'Select a Contract Duration...'"
               [width]="'100%'"
             />
@@ -128,6 +133,7 @@
               [items]="fundingTypes"
               [labelPosition]="'top'"
               [label]="'Funding Type'"
+              [required]="true"
               [placeholder]="'Select a Funding Type...'"
               [width]="'100%'"
             />
@@ -167,6 +173,7 @@
           <label for="description"
             >Job Description
             <fa-icon [icon]="['fas', 'circle-info']" />
+            <span class="required">*</span>
           </label>
           <div class="input-with-icon">
             <textarea
@@ -188,6 +195,7 @@
           <label for="tasks"
             >Tasks
             <fa-icon [icon]="['fas', 'circle-info']" />
+            <span class="required">*</span>
           </label>
           <div class="input-with-icon">
             <textarea
@@ -209,6 +217,7 @@
           <label for="requirements"
             >Eligibility Criteria
             <fa-icon [icon]="['fas', 'circle-info']" />
+            <span class="required">*</span>
           </label>
           <div class="input-with-icon">
             <textarea
@@ -280,7 +289,9 @@
           <button (click)="saveDraft()" class="btn-save-draft">
             <span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']" /></span> Save Draft
           </button>
-          <button (click)="publishJob()" class="btn-publish">Publish Job</button>
+          <button (click)="publishJob()" class="btn-publish" [disabled]="basicInfoForm.invalid || positionDetailsForm.invalid">
+            Publish Job
+          </button>
         </div>
       </div>
     </div>

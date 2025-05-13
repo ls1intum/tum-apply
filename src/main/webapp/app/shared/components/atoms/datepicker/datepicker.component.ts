@@ -16,6 +16,7 @@ export class DatePickerComponent {
 
   width = input<string>('50%');
   label = input<string>('Date');
+  required = input<boolean>(false);
   placeholder = input<string>('Select a date...');
 
   /**

@@ -7,7 +7,12 @@
   class="dropdown-wrapper"
 >
   @if (label()) {
-    <label class="dropdown-label">{{ label() }}</label>
+    <label class="dropdown-label"
+      >{{ label() }}
+      @if (required()) {
+        <span class="required">*</span>
+      }
+    </label>
   }
   <p-dropdown
     (ngModelChange)="onSelectionChange($event)"
