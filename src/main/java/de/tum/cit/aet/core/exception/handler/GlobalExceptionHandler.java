@@ -17,6 +17,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * Global exception handler for all unhandled runtime and validation exceptions in the application.
+ * Provides consistent error responses to the client using ApiError structure and error codes.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -34,6 +38,14 @@ public class GlobalExceptionHandler {
         Map.entry(InternalServerException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR))
     );
 
+    /**
+     * Handles all runtime exceptions and validation errors.
+     * Maps them to appropriate HTTP responses and error codes.
+     *
+     * @param ex      the exception that was thrown
+     * @param request the current HTTP request
+     * @return a ResponseEntity with a structured ApiError body
+     */
     @ExceptionHandler({ RuntimeException.class, MethodArgumentNotValidException.class })
     public ResponseEntity<Object> handleRuntime(Exception ex, HttpServletRequest request) {
         if (ex instanceof MethodArgumentNotValidException manve) {
@@ -58,6 +70,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(metadata.status(), metadata.code(), ex, request.getRequestURI(), null);
     }
 
+    /**
+     * Builds a standardized API error response object from the given exception and metadata.
+     *
+     * @param status      the HTTP status to return
+     * @param code        the application-specific error code
+     * @param ex          the thrown exception
+     * @param path        the request URI that caused the error
+     * @param fieldErrors optional list of field-level validation errors (null if not applicable)
+     * @return a ResponseEntity containing the ApiError
+     */
     private ResponseEntity<Object> buildErrorResponse(
         HttpStatus status,
         ErrorCode code,
@@ -69,5 +91,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, status);
     }
 
+    /**
+     * Metadata record for mapping exceptions to corresponding HTTP status and error code.
+     *
+     * @param status the HTTP status to return
+     * @param code   the error code associated with the exception
+     */
     private record ExceptionMetadata(HttpStatus status, ErrorCode code) {}
 }
