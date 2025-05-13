@@ -171,10 +171,10 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
-      - name: Enable pnpm via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
@@ -209,10 +209,10 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
-      - name: Enable pnpm via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
@@ -233,10 +233,10 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
-      - name: Enable pnpm via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
@@ -258,10 +258,10 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
-      - name: Enable pnpm via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
