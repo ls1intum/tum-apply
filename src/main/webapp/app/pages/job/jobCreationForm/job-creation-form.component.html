@@ -49,7 +49,7 @@
           <div class="form-field">
             <jhi-dropdown
               [(selected)]="basicInfoForm.controls['fieldOfStudies'].value"
-              (selectedChange)="onFieldOfStudiesChange($event)"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'fieldOfStudies', $event)"
               [iconField]="'icon'"
               [items]="fieldsOfStudies"
               [labelPosition]="'top'"
@@ -72,7 +72,7 @@
           <div class="form-field">
             <jhi-dropdown
               [(selected)]="basicInfoForm.controls['location'].value"
-              (selectedChange)="onLocationChange($event)"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'location', $event)"
               [iconField]="'icon'"
               [items]="locations"
               [labelPosition]="'top'"
@@ -87,7 +87,7 @@
           <div class="form-field">
             <jhi-datepicker
               [(selectedDate)]="basicInfoForm.controls['startDate'].value"
-              (selectedDateChange)="onStartDateChange($event)"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
               [label]="'Start Date'"
               [placeholder]="'Select a Start Date...'"
               [width]="'100%'"
@@ -96,7 +96,7 @@
           <div class="form-field">
             <jhi-dropdown
               [(selected)]="basicInfoForm.controls['workload'].value"
-              (selectedChange)="onWorkloadChange($event)"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
               [iconField]="'icon'"
               [items]="workloadOptions"
               [labelPosition]="'top'"
@@ -111,7 +111,7 @@
           <div class="form-field">
             <jhi-dropdown
               [(selected)]="basicInfoForm.controls['contractDuration'].value"
-              (selectedChange)="onContractDurationChange($event)"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'contractDuration', $event)"
               [iconField]="'icon'"
               [items]="contractDurations"
               [labelPosition]="'top'"
@@ -123,7 +123,7 @@
           <div class="form-field">
             <jhi-dropdown
               [(selected)]="basicInfoForm.controls['fundingType'].value"
-              (selectedChange)="onFundingTypeChange($event)"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'fundingType', $event)"
               [iconField]="'icon'"
               [items]="fundingTypes"
               [labelPosition]="'top'"

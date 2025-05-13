@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 
-import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
+import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { JobFormDTO } from '../../../generated';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
@@ -177,27 +177,7 @@ export class JobCreationFormComponent {
     });
   }
 
-  onLocationChange(value: DropdownOption): void {
-    this.basicInfoForm.patchValue({ location: value });
-  }
-
-  onWorkloadChange(value: DropdownOption): void {
-    this.basicInfoForm.patchValue({ workload: value });
-  }
-
-  onContractDurationChange(value: DropdownOption): void {
-    this.basicInfoForm.patchValue({ contractDuration: value });
-  }
-
-  onFundingTypeChange(value: DropdownOption): void {
-    this.basicInfoForm.patchValue({ fundingType: value });
-  }
-
-  onFieldOfStudiesChange(value: DropdownOption): void {
-    this.basicInfoForm.patchValue({ fieldOfStudies: value });
-  }
-
-  onStartDateChange(date: string | undefined): void {
-    this.basicInfoForm.patchValue({ startDate: date });
+  onSelectionChange(form: FormGroup, controlName: string, value: unknown): void {
+    form.patchValue({ [controlName]: value });
   }
 }
