@@ -40,3 +40,8 @@
     color: var(--p-primary-color);
   }
 }
+
+.required.ng-star-inserted {
+  color: var(--p-danger-color) !important;
+  margin-left: 0.125rem;
+}
