@@ -167,21 +167,15 @@ bootstrap(AppComponent, [{ provide: BASE_PATH, useValue: 'https://your-web-servi
 or
 
 ```typescript
-import {BASE_PATH} from '@tumapply/api-client';
+import { BASE_PATH } from '@tumapply/api-client';
 
 @NgModule({
-  imports: [],
-  declarations: [AppComponent],
-  providers: [provide:
-BASE_PATH, useValue
-:
-'https://your-web-service.com'
-],
-bootstrap: [AppComponent]
+    imports: [],
+    declarations: [ AppComponent ],
+    providers: [ provide: BASE_PATH, useValue: 'https://your-web-service.com' ],
+    bootstrap: [ AppComponent ]
 })
-
-export class AppModule {
-}
+export class AppModule {}
 ```
 
 ### Using @angular/cli

@@ -20,7 +20,6 @@ export interface CreateApplicationDTO {
   motivation?: string;
   answers?: Set<CustomFieldAnswerDTO>;
 }
-
 export namespace CreateApplicationDTO {
   export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
   export const ApplicationStateEnum = {

@@ -19,7 +19,6 @@ export interface ApplicationForApplicantDTO {
   desiredDate?: string;
   customFields?: Set<CustomFieldAnswerDTO>;
 }
-
 export namespace ApplicationForApplicantDTO {
   export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
   export const ApplicationStateEnum = {

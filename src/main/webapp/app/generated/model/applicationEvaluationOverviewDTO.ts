@@ -18,7 +18,6 @@ export interface ApplicationEvaluationOverviewDTO {
   rating?: number;
   appliedAt?: string;
 }
-
 export namespace ApplicationEvaluationOverviewDTO {
   export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
   export const StateEnum = {

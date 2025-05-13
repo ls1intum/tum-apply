@@ -10,9 +10,14 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpContext, HttpEvent, HttpParams, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs'; // @ts-ignore
-import { ApplicationEvaluationListDTO } from '../model/applicationEvaluationListDTO'; // @ts-ignore
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext } from '@angular/common/http';
+import { CustomHttpParameterCodec } from '../encoder';
+import { Observable } from 'rxjs';
+
+// @ts-ignore
+import { ApplicationEvaluationListDTO } from '../model/applicationEvaluationListDTO';
+
+// @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
 import { BaseService } from '../api.base.service';
@@ -40,44 +45,28 @@ export class ApplicationEvaluationResourceService extends BaseService {
     pageNumber?: number,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<ApplicationEvaluationListDTO>;
   public getApplications(
     pageSize?: number,
     pageNumber?: number,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<ApplicationEvaluationListDTO>>;
   public getApplications(
     pageSize?: number,
     pageNumber?: number,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<ApplicationEvaluationListDTO>>;
   public getApplications(
     pageSize?: number,
     pageNumber?: number,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>pageSize, 'pageSize');
