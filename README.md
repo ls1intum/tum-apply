@@ -76,7 +76,7 @@ bash ./src/main/resources/testdata/import-testdata.sh
 
 💡 **Platform Notes:**
 
-- **macOS**: Works out of the box. Requires MySQL CLI to be installed via Homebrew (`brew install mysql-client`) and
+- **macOS**: Requires MySQL CLI to be installed via Homebrew (`brew install mysql-client`) and
   available in your `PATH`.
 - **Linux**: Requires `mysql` CLI to be installed (`sudo apt install mysql-client` or equivalent).
 - **Windows**: Use **Git Bash** to run this script. Make sure the MySQL CLI is installed (via MySQL Installer) and the
