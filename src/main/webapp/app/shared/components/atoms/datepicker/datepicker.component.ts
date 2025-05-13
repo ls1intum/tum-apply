@@ -2,7 +2,6 @@ import { Component, ViewEncapsulation, input, output } from '@angular/core';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 
 interface LocalDate {
   year: number;
@@ -20,7 +19,6 @@ interface LocalDate {
 })
 export class DatePickerComponent {
   isCalendarOpen = false;
-  readonly faCalendar = faCalendar;
 
   width = input<string>('50%');
   label = input<string>('Date');

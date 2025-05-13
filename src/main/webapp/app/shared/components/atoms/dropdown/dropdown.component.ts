@@ -3,7 +3,6 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 export type DropdownOption = {
   name: string;
@@ -35,8 +34,6 @@ export class DropdownComponent {
   selectedChange = output<any>();
 
   isOpen = false;
-  protected readonly faChevronUp = faChevronUp;
-  protected readonly faChevronDown = faChevronDown;
 
   onSelectionChange(value: any): void {
     this.selectedChange.emit(value);
