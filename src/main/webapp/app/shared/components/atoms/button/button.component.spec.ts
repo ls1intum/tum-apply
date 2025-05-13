@@ -43,7 +43,7 @@ describe('ButtonComponent', () => {
     expect(button.nativeElement.disabled).toBe(true);
   });
 
-  it('should render the icon when icon is provided', async () => {
+  it('should render the icon when icon is provided', () => {
     fixture.componentRef.setInput('icon', 'home');
     fixture.detectChanges();
 
