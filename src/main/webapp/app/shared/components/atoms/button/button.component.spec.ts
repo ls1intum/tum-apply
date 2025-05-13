@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-
-import { ButtonComponent } from './button.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+
+import { ButtonComponent } from './button.component';
 
 describe('ButtonComponent', () => {
   let component: ButtonComponent;
