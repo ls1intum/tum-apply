@@ -4,9 +4,8 @@
     [variant]="variant()"
     [severity]="color()"
     [raised]="numberOfFavorites() !== undefined"
-    badgeStyle=""
     [rounded]="label() === undefined"
-    [label]="label() ?? ''"
+    [label]="label()"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="['fas', icon() ?? '']" />

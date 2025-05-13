@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { Button, ButtonComponent } from '../../atoms/button/button.component';
 
+export type ButtonGroupDirection = 'vertical' | 'horizontal';
+
 /**
  * Defines the data structure for a group of buttons.
  *
@@ -13,7 +15,7 @@ import { Button, ButtonComponent } from '../../atoms/button/button.component';
  * @property buttons - Array of `Button` objects to render.
  */
 export type ButtonGroupData = {
-  direction: 'vertical' | 'horizontal';
+  direction: ButtonGroupDirection;
   buttons: Button[];
 };
 
