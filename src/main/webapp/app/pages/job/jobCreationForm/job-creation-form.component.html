@@ -1,0 +1,292 @@
+<div class="doctorate-form-container">
+  <header>
+    <h1>Create a new Doctorate Position</h1>
+  </header>
+  <div class="stepper">
+    <div (click)="currentStep = 1" [ngClass]="{ active: currentStep === 1, completed: currentStep > 1 }" class="step">
+      <div class="step-number">1</div>
+      <div class="step-label">Basic Information</div>
+    </div>
+    <div class="step-connector"></div>
+    <div (click)="currentStep = 2" [ngClass]="{ active: currentStep === 2, completed: currentStep > 2 }" class="step">
+      <div class="step-number">2</div>
+      <div class="step-label">Position Details</div>
+    </div>
+    <div class="step-connector"></div>
+    <div (click)="currentStep = 3" [ngClass]="{ active: currentStep === 3 }" class="step">
+      <div class="step-number">3</div>
+      <div class="step-label">Additional Information</div>
+    </div>
+  </div>
+  <!-- Step 1: Basic Information -->
+  @if (currentStep === 1) {
+    <div class="form-step">
+      <form [formGroup]="basicInfoForm">
+        <h2>Basic Information</h2>
+        <p>Provide the key details about the doctoral position, such as title, field of study, and supervising professor.</p>
+
+        <div class="form-field">
+          <label for="title">Job Title</label>
+          <input formControlName="title" id="title" placeholder="e.g. Doctoral Position in Robotics" type="text" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="researchArea"
+              >Research Area
+              <fa-icon [icon]="faCircleInfo" />
+            </label>
+            <div class="input-with-icon">
+              <input
+                formControlName="researchArea"
+                id="researchArea"
+                placeholder="e.g. Machine Learning, Human-Computer Interaction"
+                type="text"
+              />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="fieldOfStudies"
+              >Field of Studies
+              <fa-icon [icon]="faCircleInfo" />
+            </label>
+            <div class="input-with-icon">
+              <div class="select-wrapper">
+                <select formControlName="fieldOfStudies" id="fieldOfStudies">
+                  <option disabled selected value="">Select a Field of Studies ...</option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Physics">Physics</option>
+                  <option value="Chemistry">Chemistry</option>
+                  <option value="Engineering">Engineering</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field input-with-icon">
+            <label for="supervisingProfessor"> Supervising Professor<span class="required">*</span> </label>
+            <div class="icon-input-wrapper">
+              <fa-icon [icon]="faUser" class="input-icon" />
+              <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="location">Location<span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select formControlName="location" id="location">
+                <option disabled selected value="">
+                  <fa-icon [icon]="faLocationDot" />
+                  Select a Location ...
+                </option>
+                @for (location of locations; track location) {
+                  <option [value]="location.value">
+                    <fa-icon [icon]="faLocationDot" />
+                    {{ location.label }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="startDate">Start Date</label>
+            <div class="date-picker-wrapper">
+              <input formControlName="startDate" id="startDate" placeholder="Select a Start Date ..." type="date" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="workload">Workload</label>
+            <div class="select-wrapper">
+              <select formControlName="workload" id="workload">
+                <option disabled selected value="">Select a Workload ...</option>
+                @for (option of workloadOptions; track option) {
+                  <option [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="contractDuration">Contract Duration</label>
+            <div class="select-wrapper">
+              <select formControlName="contractDuration" id="contractDuration">
+                <option disabled selected value="">Select a Contract Duration ...</option>
+                @for (duration of contractDurations; track duration) {
+                  <option [value]="duration.value">
+                    {{ duration.label }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="fundingType">Funding Type<span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select formControlName="fundingType" id="fundingType">
+                <option disabled selected value="">Select a Funding Type ...</option>
+                @for (type of fundingTypes; track type) {
+                  <option [value]="type.value">
+                    {{ type.label }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="form-actions">
+        <button class="btn-cancel">
+          <span class="btn-icon">
+            <fa-icon [icon]="faChevronLeft" />
+          </span>
+          Cancel
+        </button>
+        <div class="action-right">
+          <button (click)="saveDraft()" class="btn-save-draft">
+            <span class="btn-icon">
+              <fa-icon [icon]="faFloppyDisk" />
+            </span>
+            Save Draft
+          </button>
+          <button (click)="nextStep()" class="btn-next">Next</button>
+        </div>
+      </div>
+    </div>
+  }
+  <!-- Step 2: Position Details -->
+  @if (currentStep === 2) {
+    <div class="form-step">
+      <form [formGroup]="positionDetailsForm">
+        <h2>Position Details</h2>
+        <p>
+          Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred
+          qualifications for applicants.
+        </p>
+        <div class="form-field">
+          <label for="description"
+            >Job Description
+            <fa-icon [icon]="faCircleInfo" />
+          </label>
+          <div class="input-with-icon">
+            <textarea
+              formControlName="description"
+              id="description"
+              placeholder="Describe the scope and focus of the position..."
+              rows="10"
+            ></textarea>
+          </div>
+          <div class="form-footer">
+            <small class="description-helper"
+              >Describe the research context, goals, and overall scope of the position. Keep it concise but informative.</small
+            >
+            <small class="char-counter"> {{ descriptionLength }}/1000 </small>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="tasks"
+            >Tasks
+            <fa-icon [icon]="faCircleInfo" />
+          </label>
+          <div class="input-with-icon">
+            <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
+          </div>
+          <div class="form-footer">
+            <small class="description-helper"
+              >List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.</small
+            >
+            <small class="char-counter"> {{ tasksLength }}/1000 </small>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="requirements"
+            >Eligibility Criteria
+            <fa-icon [icon]="faCircleInfo" />
+          </label>
+          <div class="input-with-icon">
+            <textarea
+              formControlName="requirements"
+              id="requirements"
+              placeholder="List the minimum requirements for applicants..."
+              rows="10"
+            ></textarea>
+          </div>
+          <div class="form-footer">
+            <small class="description-helper"
+              >Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.</small
+            >
+            <small class="char-counter"> {{ requirementsLength }}/1000 </small>
+          </div>
+        </div>
+      </form>
+      <div class="form-actions">
+        <button (click)="previousStep()" class="btn-back">
+          <span class="btn-icon">
+            <fa-icon [icon]="faChevronLeft" />
+          </span>
+          Back
+        </button>
+        <div class="action-right">
+          <button (click)="saveDraft()" class="btn-save-draft">
+            <span class="btn-icon">
+              <fa-icon [icon]="['fas', 'floppy-disk']" />
+            </span>
+            Save Draft
+          </button>
+          <button class="btn-next" (click)="nextStep()">Next</button>
+        </div>
+      </div>
+    </div>
+  }
+  <!-- Step 3: Additional Information -->
+  @if (currentStep === 3) {
+    <div class="form-step">
+      <form [formGroup]="additionalInformationForm">
+        <section class="extras-section">
+          <h2>Extras</h2>
+          <p>Add custom questions that applicants will see in the application form.</p>
+          <!--        Not implemented yet-->
+          <!--        <div class="custom-questions-dropdown">-->
+          <!--          <div class="dropdown-header">-->
+          <!--            <span>Custom Questions</span>-->
+          <!--            <span class="dropdown-icon">▼</span>-->
+          <!--          </div>-->
+          <!--        </div>-->
+          <div class="data-privacy-notice">
+            <p>
+              A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more
+              information, please visit:
+              <a class="tum-link" href="https://www.community.tum.de/en/privacy-policy/">TUM Data Protection Information</a>.
+            </p>
+          </div>
+        </section>
+      </form>
+      <div class="form-actions">
+        <button (click)="previousStep()" class="btn-back">
+          <span class="btn-icon">
+            <fa-icon [icon]="faChevronLeft" />
+          </span>
+          Back
+        </button>
+        <div class="action-right">
+          <button (click)="saveDraft()" class="btn-save-draft">
+            <span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']" /></span> Save Draft
+          </button>
+          <button (click)="publishJob()" class="btn-publish">Publish Job</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

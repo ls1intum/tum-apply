@@ -21,7 +21,7 @@ module.exports = {
     ['jest-junit', { outputDirectory: '<rootDir>/build/test-results/', outputName: 'TESTS-results-jest.xml' }],
     ['jest-sonar', { outputDirectory: './build/test-results/jest', outputName: 'TESTS-results-sonar.xml' }],
   ],
-  testMatch: ['<rootDir>/src/main/webapp/app/**/@(*.)@(spec.ts)'],
+  testMatch: ['<rootDir>/src/main/webapp/app/**/@(*.)@(spec.ts)', '<rootDir>/src/test/webapp/app/**/@(*.)@(spec.ts)'],
   testEnvironmentOptions: {
     url: 'https://jhipster.tech',
   },

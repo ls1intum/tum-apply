@@ -1,0 +1,93 @@
+meta {
+  name: Create new Job
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/jobs/create
+  body: json
+  auth: oauth2
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: {{redirectUri}}
+  authorization_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth
+  access_token_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
+  refresh_token_url: 
+  client_id: {{clientId}}
+  client_secret: 
+  scope: openid
+  state: {{$guid}}
+  pkce: true
+  credentials_placement: basic_auth_header
+  credentials_id: 
+  token_placement: header
+  token_header_prefix: 
+  auto_fetch_token: true
+  auto_refresh_token: false
+}
+
+body:json {
+  {
+    "professorId": "6e8a48fa-0e8e-4e17-bc0f-8e7389e4f1ab",
+    "fieldOfStudies": "",
+    "researchArea": "Machine Learning and Computer Vision",
+    "title": "",
+    "introduction": "",
+    "aboutUs": "",
+    "tasks": "",
+    "qualifications": "",
+    "weOffer": "",
+    "applicationRequirements": "",
+    "dataProtectionInformation": "",
+    "contact": "",
+    "state": "DRAFT",
+    "startDate": "2025-10-01T00:00:00Z",
+    "applicationDeadline": "2025-06-30T23:59:59Z"
+  }
+}
+
+docs {
+  ### Create Job Posting
+  
+  This API endpoint allows you to create a new job posting.
+  
+  #### Request Body
+  
+  - `professorId`: The ID of the professor associated with the job posting.
+      
+  - `fieldOfStudies`: The field of studies related to the job.
+      
+  - `researchArea`: The research area for the job posting.
+      
+  - `title`: The title of the job posting.
+      
+  - `introduction`: Introduction for the job posting.
+      
+  - `aboutUs`: Information about the organization or company.
+      
+  - `tasks`: Description of the tasks associated with the job.
+      
+  - `qualifications`: Qualifications required for the job.
+      
+  - `weOffer`: Details about what the organization offers to the applicants.
+      
+  - `applicationRequirements`: Requirements for the job application.
+      
+  - `dataProtectionInformation`: Information about data protection policies.
+      
+  - `contact`: Contact information for the job posting.
+      
+  - `state`: The state of the job posting (e.g., DRAFT).
+      
+  - `startDate`: The start date for the job posting.
+      
+  - `applicationDeadline`: The deadline for job applications.
+      
+  
+  #### Response Body
+  
+  The response will contain the status of the job posting creation.
+}
