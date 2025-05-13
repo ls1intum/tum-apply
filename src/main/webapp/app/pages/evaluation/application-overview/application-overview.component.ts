@@ -2,7 +2,7 @@ import { Component, TemplateRef, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
 
 import { DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
@@ -27,7 +27,6 @@ export class ApplicationOverviewComponent {
   constructor(private evaluationService: ApplicationEvaluationResourceService) {}
 
   async loadPage(event: TableLazyLoadEvent): Promise<void> {
-    console.warn('Loading Page');
     this.loading.set(true);
 
     const first = event.first ?? 0;
@@ -35,16 +34,24 @@ export class ApplicationOverviewComponent {
     const page = first / rows;
 
     try {
-      const res = await firstValueFrom(this.evaluationService.getApplications(rows, page));
+      const res = await firstValueFrom(
+        this.evaluationService.getApplications(rows, page).pipe(
+          timeout(5000),
+          catchError(err => {
+            if (err.name === 'TimeoutError') {
+              console.error('Request timed out');
+            }
+            return throwError(() => err);
+          }),
+        ),
+      );
+
       this.pageData = res.applications ?? [];
-      console.warn('Applications: ', this.pageData);
       this.total = res.totalRecords ?? 0;
       this.pageSize = rows;
-      console.warn('Page Size: ', this.pageSize);
     } catch (error) {
       console.error('Failed to load applications:', error);
     } finally {
-      console.warn('Setting loading to false');
       this.loading.set(false);
     }
   }

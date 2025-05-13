@@ -12,13 +12,13 @@
   [totalRecords]="total"
   [rows]="pageSize"
   [selectAble]="true"
-  [loading]="loading()"
+  [loading]="loading"
   (lazyLoad)="loadPage($event)"
 />
 <ng-template #statusTemplate let-application>
   <jhi-status-badge [status]="application.state" />
 </ng-template>
 
-<ng-template #actionTemplate let-application>
+<ng-template #actionTemplate>
   <jhi-button />
 </ng-template>
