@@ -166,9 +166,6 @@
   },
   "cacheDirectories": [
     "node_modules"
-  ]
-  "cacheDirectories": [
-    "node_modules"
   ],
   "overrides": {
     "braces": "3.0.3",
