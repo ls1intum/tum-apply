@@ -80,6 +80,7 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "tum-apply:build:development",
+            "proxyConfig": "proxy.conf.mjs",
             "port": 4200
           },
           "configurations": {
