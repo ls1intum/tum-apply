@@ -66,12 +66,6 @@ export class JobCreationFormComponent {
     { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
   ];
 
-  selectedLocation: DropdownOption | null = null;
-  selectedWorkload: DropdownOption | null = null;
-  selectedContractDuration: DropdownOption | null = null;
-  selectedFundingType: DropdownOption | null = null;
-  selectedFieldOfStudies: DropdownOption | null = null;
-
   private jobResourceService = inject(JobResourceService);
 
   constructor(private fb: FormBuilder) {
@@ -137,13 +131,13 @@ export class JobCreationFormComponent {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
-      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies.value,
       supervisingProfessor: '00000000-0000-0000-0000-000000000102',
-      location: this.basicInfoForm.value.location,
+      location: this.basicInfoForm.value.location.value,
       startDate: this.basicInfoForm.value.startDate,
-      workload: this.basicInfoForm.value.workload,
-      contractDuration: this.basicInfoForm.value.contractDuration,
-      fundingType: this.basicInfoForm.value.fundingType,
+      workload: this.basicInfoForm.value.workload.value,
+      contractDuration: this.basicInfoForm.value.contractDuration.value,
+      fundingType: this.basicInfoForm.value.fundingType.value,
       description: this.positionDetailsForm.value.description,
       tasks: this.positionDetailsForm.value.tasks,
       requirements: this.positionDetailsForm.value.requirements,
@@ -173,6 +167,7 @@ export class JobCreationFormComponent {
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
+    // Remove the log line after testing purposes
     console.log('Job DTO:', jobFormDto);
     this.jobResourceService.createJob(jobFormDto).subscribe({
       next() {},
@@ -183,27 +178,26 @@ export class JobCreationFormComponent {
   }
 
   onLocationChange(value: DropdownOption): void {
-    this.selectedLocation = value;
     this.basicInfoForm.patchValue({ location: value });
   }
 
   onWorkloadChange(value: DropdownOption): void {
-    this.selectedWorkload = value;
     this.basicInfoForm.patchValue({ workload: value });
   }
 
   onContractDurationChange(value: DropdownOption): void {
-    this.selectedContractDuration = value;
     this.basicInfoForm.patchValue({ contractDuration: value });
   }
 
   onFundingTypeChange(value: DropdownOption): void {
-    this.selectedFundingType = value;
     this.basicInfoForm.patchValue({ fundingType: value });
   }
 
   onFieldOfStudiesChange(value: DropdownOption): void {
-    this.selectedFieldOfStudies = value;
     this.basicInfoForm.patchValue({ fieldOfStudies: value });
+  }
+
+  onStartDateChange(date: string | undefined): void {
+    this.basicInfoForm.patchValue({ startDate: date });
   }
 }
