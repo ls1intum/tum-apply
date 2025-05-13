@@ -41,7 +41,6 @@ DB_HOST="127.0.0.1"
 DB_PORT="3306"
 
 # Path to testdata SQL files
-SQL_PATH="src/main/resources/testdata"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SQL_PATH="$SCRIPT_DIR"
 
@@ -55,8 +54,25 @@ then
   exit 1
 fi
 
+# Ask user if they want to reset the DB (run drop script)
+echo "Do you want to reset the database (run 00_drop_all_tables.sql)? (y/n)"
+read -r RESET_DB
+if [[ "$RESET_DB" == "y" || "$RESET_DB" == "Y" ]]; then
+  DROP_FILE="$SQL_PATH/00_drop_all_tables.sql"
+  if [ -f "$DROP_FILE" ]; then
+    echo "Resetting database..."
+    mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASS" "$DB_NAME" < "$DROP_FILE"
+  else
+    echo "Reset script not found at: $DROP_FILE"
+    exit 1
+  fi
+else
+  echo "Skipping database reset."
+fi
+
 # Find and run only SQL files under testdata folder (and subfolders)
-find "$SQL_PATH" -type f -name "*.sql" | sort | while IFS= read -r file; do
+# Find and run all SQL files except the reset script
+find "$SQL_PATH" -type f -name "*.sql" ! -name "00_drop_all_tables.sql" | sort | while IFS= read -r file; do
   echo "Attempting to run: $file"
   mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASS" "$DB_NAME" < "$file"
 
