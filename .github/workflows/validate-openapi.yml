@@ -2,6 +2,10 @@ name: Validate OpenAPI Spec and Generated Client Code
 
 on:
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
     paths-ignore:
       - 'README.md'
       - 'CODE_OF_CONDUCT.md'
