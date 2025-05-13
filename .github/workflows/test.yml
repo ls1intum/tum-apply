@@ -168,9 +168,13 @@ jobs:
       - name: Setup Node.js & pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: '${{ env.node }}'
-          cache: 'pnpm'
+          node-version: 22
+          cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
@@ -202,9 +206,13 @@ jobs:
       - name: Setup Node.js & pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: '${{ env.node }}'
-          cache: 'pnpm'
+          node-version: 22
+          cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
@@ -222,9 +230,13 @@ jobs:
       - name: Setup Node.js & pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: '${{ env.node }}'
-          cache: 'pnpm'
+          node-version: 22
+          cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
@@ -243,9 +255,13 @@ jobs:
       - name: Setup Node.js & pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: '${{ env.node }}'
-          cache: 'pnpm'
+          node-version: 22
+          cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@latest --activate
       - name: Install Dependencies
