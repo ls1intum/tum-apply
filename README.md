@@ -96,12 +96,17 @@ Congratulations! You've selected an excellent way to secure your JHipster applic
 OpenID Connect (OIDC) are, please
 see [What the Heck is OAuth?](https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth)
 
-To log in to your app, you'll need to have [Keycloak](https://keycloak.org) up and running. The JHipster Team has
-created a Docker container for you that has the default users and roles. Start Keycloak using the following command.
+To log in to your app, you'll need to have [Keycloak](https://keycloak.org) up and running. TUMApply provides a
+preconfigured setup including default users and roles, and supports convenient token-based login testing
+with [Bruno](https://www.usebruno.com/).
 
 ```
 docker compose -f src/main/docker/keycloak.yml up
 ```
+
+You can also use the provided `docs/TUMapply API` folder to test the login flow via OAuth 2.0 in Bruno. The request is
+already preconfigured to obtain an access token using the password grant type. For more information see [AUTH.md](.
+/docs/AUTH.md).
 
 The security settings in `src/main/resources/config/application.yml` are configured for this image.
 
@@ -130,6 +135,21 @@ better security and performance.
 Also, you should never use `start-dev` nor `KC_DB=dev-file` in production.
 
 When using Kubernetes, importing should be done using init-containers (with a volume when using `db=dev-file`).
+
+### Bruno for API Testing
+
+Bruno is an open-source API client, similar to Postman, but focused on a local-first and Git-friendly workflow.
+
+#### How Bruno works
+
+- Bruno stores collections as plain folder and text files in the git repository.
+- You can send requests with environment variables, use OAuth2 flows, and inspect responses.
+- The folder `docs/TUMapply API` contains all relevant requests for testing authentication and the TUMApply API.
+
+#### More Information
+
+👉 [TUMApply API – Bruno Collection Overview (Confluence)](https://confluence.aet.cit.tum.
+de/spaces/AP/pages/257785953/TUMApply+API+%E2%80%93+Postman+Collection+Overview)
 
 ### Okta
 
@@ -300,49 +320,65 @@ The `./npmw run` command will list all the scripts available to run for this pro
 
 ### 🎨 Color System & Theming
 
-TUMApply uses a scalable and themeable SCSS color system that supports light and dark mode via CSS Custom Properties.
+TUMApply uses a scalable and customizable theming system that's built on PrimeNG Themes and Tailwind CSS. It supports
+both light and dark mode through a centralized theme management.
 
 #### 🧱 Structure
 
-Colors are defined and used in the following way:
+The theming system is structured as follows:
 
-- `_primitives.scss`: defines color primitives from the design (e.g. `$primary-300`, `$neutral-100`, etc.)
-- `_tokens.scss`: defines semantic tokens (e.g. `--primary-default`, `--background-default`) for actual use in
-  components
-- `_bootstrap-overrides.scss`: maps semantic tokens to Bootstrap variables (e.g. `$theme-colors`) using SCSS or
-  `var(...)`
-- `global.scss`: sets application-wide styles and uses the defined `var(--token-name)` variables
+- `src/main/webapp/content/theming/tumapplypreset.ts`: defines the custom PrimeNG theme with TUMApply-specific colors
+- CSS variables are provided by PrimeNG's theming system and are available globally
+- Tailwind CSS is used for additional styling options and is aligned with the PrimeNG theme
 
 #### 🌞 Light and 🌚 Dark Mode
 
-The file `_tokens.scss` defines two CSS scopes:
+Theme switching is controlled through the `toggleTheme()` method in the NavbarComponent:
 
-- `:root { ... }` → Light mode tokens
-- `.dark-theme { ... }` → Dark mode overrides
+- The selected theme preference is stored in `sessionStorage`
+- The theme is toggled by adding/removing the `dark-theme` class to the `<html>` element
+- PrimeNG components automatically respond to theme changes
 
-The theme is automatically selected at runtime based on the user's system preference (`prefers-color-scheme`). You can
-also manually force the dark mode by adding the `dark-theme` class to the `<html>` element.
+#### 🎨 Using Colors
 
-#### 🎨 How to use colors
-
-Use CSS variables in components and global styles:
+For consistent designs:
 
 ```scss
-background-color: var (--background-default);
-color: var (--text-primary);
+/* Using PrimeNG variables */
+color:
+var
+
+(
+--text-color
+
+)
+;
+background-color:
+var
+
+(
+--surface-ground
+
+)
+;
+
+/* Using Tailwind classes */
+<
+div class
+
+=
+"text-primary bg-surface-200 dark:bg-surface-700"
+> ...<
+
+/
+div >
 ```
 
-Do not use hardcoded hex values. Do not use SCSS variables like `$primary-default` outside of Bootstrap configuration.
+Avoid hard-coded hex values. Instead, use the CSS variables provided by PrimeNG or Tailwind classes.
 
-#### ⚠️ Missing or unset tokens
+#### ⚠️ Theme Customization
 
-If a variable like `var(--background-default)` is not set, the browser will fall back to:
-
-- inherited values
-- the default style (`transparent`, `black`, or `initial`)
-- or fallback provided via `var(--background-default, #fff)`
-
-Make sure to define all used tokens in `_tokens.scss`. You can use browser dev tools to debug unresolved CSS variables.
+To customize the theme, edit the color definitions in `src/main/webapp/content/theming/tumapplypreset.ts`
 
 ### PWA Support
 

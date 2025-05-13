@@ -1,0 +1,28 @@
+<div
+  [ngClass]="{
+    'label-top': labelPosition() === 'top',
+    'label-left': labelPosition() === 'left',
+    disabled: disabled(),
+  }"
+  class="dropdown-wrapper"
+>
+  @if (label()) {
+    <label class="dropdown-label">{{ label() }}</label>
+  }
+  <p-dropdown
+    (ngModelChange)="onSelectionChange($event)"
+    (onHide)="isOpen = false"
+    (onShow)="isOpen = true"
+    [disabled]="disabled()"
+    [ngModel]="selected()"
+    [optionLabel]="labelField()"
+    [options]="items()"
+    [placeholder]="placeholder()"
+    [style]="{ width: width() }"
+    class="custom-dropdown"
+  >
+    <ng-template pTemplate="dropdownicon">
+      <fa-icon [icon]="isOpen ? faChevronUp : faChevronDown" />
+    </ng-template>
+  </p-dropdown>
+</div>

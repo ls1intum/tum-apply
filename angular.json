@@ -37,7 +37,7 @@
               "src/main/webapp/robots.txt",
               "src/main/webapp/i18n"
             ],
-            "styles": ["src/main/webapp/content/scss/vendor.scss", "src/main/webapp/content/scss/global.scss"],
+            "styles": ["node_modules/primeicons/primeicons.css", "src/main/webapp/content/scss/global.scss"],
             "scripts": []
           },
           "configurations": {

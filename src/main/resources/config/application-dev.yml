@@ -54,6 +54,7 @@ spring:
 springdoc:
   api-docs:
     enabled: true
+  default-produces-media-type: application/json
 
 server:
   port: 8080

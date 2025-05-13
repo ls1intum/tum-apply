@@ -26,6 +26,7 @@ springdoc:
     path: /api-docs
     # Having these endpoints publicly available is a security risk, so we disable them by default
     enabled: false
+  default-produces-media-type: application/json
 ---
 management:
   endpoints:
