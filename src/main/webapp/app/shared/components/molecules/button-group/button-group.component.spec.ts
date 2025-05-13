@@ -45,7 +45,7 @@ describe('ButtonGroupComponent', () => {
   });
 
   it('should call onClick when a button is clicked', () => {
-    const spy = spyOn(mockButtonGroupData.buttons[0], 'onClick');
+    const spy = jest.spyOn(mockButtonGroupData.buttons[0], 'onClick');
     const buttonElement = fixture.nativeElement.querySelector('jhi-button');
     buttonElement.click();
     expect(spy).toHaveBeenCalled();
