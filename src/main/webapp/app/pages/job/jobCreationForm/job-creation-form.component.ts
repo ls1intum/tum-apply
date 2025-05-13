@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 
-import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
+import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { JobFormDTO } from '../../../generated';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
@@ -66,11 +66,11 @@ export class JobCreationFormComponent {
     { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
   ];
 
-  selectedLocation: any = null;
-  selectedWorkload: any = null;
-  selectedContractDuration: any = null;
-  selectedFundingType: any = null;
-  selectedFieldOfStudies: any = null;
+  selectedLocation: DropdownOption | null = null;
+  selectedWorkload: DropdownOption | null = null;
+  selectedContractDuration: DropdownOption | null = null;
+  selectedFundingType: DropdownOption | null = null;
+  selectedFieldOfStudies: DropdownOption | null = null;
 
   private jobResourceService = inject(JobResourceService);
 
@@ -182,27 +182,27 @@ export class JobCreationFormComponent {
     });
   }
 
-  onLocationChange(value: any): void {
+  onLocationChange(value: DropdownOption): void {
     this.selectedLocation = value;
     this.basicInfoForm.patchValue({ location: value });
   }
 
-  onWorkloadChange(value: any): void {
+  onWorkloadChange(value: DropdownOption): void {
     this.selectedWorkload = value;
     this.basicInfoForm.patchValue({ workload: value });
   }
 
-  onContractDurationChange(value: any): void {
+  onContractDurationChange(value: DropdownOption): void {
     this.selectedContractDuration = value;
     this.basicInfoForm.patchValue({ contractDuration: value });
   }
 
-  onFundingTypeChange(value: any): void {
+  onFundingTypeChange(value: DropdownOption): void {
     this.selectedFundingType = value;
     this.basicInfoForm.patchValue({ fundingType: value });
   }
 
-  onFieldOfStudiesChange(value: any): void {
+  onFieldOfStudiesChange(value: DropdownOption): void {
     this.selectedFieldOfStudies = value;
     this.basicInfoForm.patchValue({ fieldOfStudies: value });
   }

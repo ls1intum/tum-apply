@@ -31,11 +31,11 @@ export class DropdownComponent {
   labelPosition = input<'top' | 'left'>('top');
   width = input<string>('50%');
 
-  selectedChange = output<any>();
+  selectedChange = output<DropdownOption>();
 
   isOpen = false;
 
-  onSelectionChange(value: any): void {
+  onSelectionChange(value: DropdownOption): void {
     this.selectedChange.emit(value);
   }
 }
