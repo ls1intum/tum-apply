@@ -171,6 +171,7 @@
           <div class="input-with-icon">
             <textarea
               formControlName="description"
+              maxlength="1000"
               id="description"
               placeholder="Describe the scope and focus of the position..."
               rows="10"
@@ -189,7 +190,13 @@
             <fa-icon [icon]="['fas', 'circle-info']" />
           </label>
           <div class="input-with-icon">
-            <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
+            <textarea
+              formControlName="tasks"
+              maxlength="1000"
+              id="tasks"
+              placeholder="List the main responsibilities..."
+              rows="8"
+            ></textarea>
           </div>
           <div class="form-footer">
             <small class="description-helper"
@@ -206,6 +213,7 @@
           <div class="input-with-icon">
             <textarea
               formControlName="requirements"
+              maxlength="1000"
               id="requirements"
               placeholder="List the minimum requirements for applicants..."
               rows="10"

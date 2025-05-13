@@ -8,6 +8,12 @@ import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dro
 import { JobFormDTO } from '../../../generated';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
+/**
+ * JobCreationFormComponent
+ * ------------------------
+ * This component provides a multi-step form interface for creating a new doctoral job position.
+ * It handles data binding, validation, and communication with the server via JobResourceService.
+ */
 @Component({
   selector: 'jhi-job-creation-form',
   standalone: true,
@@ -19,12 +25,14 @@ import { DatePickerComponent } from '../../../shared/components/atoms/datepicker
 export class JobCreationFormComponent {
   currentStep = 1;
 
-  // Form groups for each step
+  // Reactive form groups for each step of the wizard
   basicInfoForm: FormGroup = this.fb.group({});
   positionDetailsForm: FormGroup = this.fb.group({});
   additionalInformationForm: FormGroup = this.fb.group({});
 
-  // Options for dropdowns
+  /**
+   * Dropdown options used in the form
+   */
   locations = [
     { name: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
     { name: 'Garching Hochbrueck Campus', value: JobFormDTO.LocationEnum.GarchingHochbrueck },
@@ -34,7 +42,6 @@ export class JobCreationFormComponent {
     { name: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
     { name: 'Singapore Campus', value: JobFormDTO.LocationEnum.Singapore },
   ];
-
   fieldsOfStudies = [
     { name: 'Mathematics', value: 'Mathematics' },
     { name: 'Informatics', value: 'Informatics' },
@@ -42,7 +49,6 @@ export class JobCreationFormComponent {
     { name: 'Chemistry', value: 'Chemistry' },
     { name: 'Biology', value: 'Biology' },
   ];
-
   workloadOptions = [
     { name: '100% (Full-time)', value: 100 },
     { name: '60%', value: 60 },
@@ -72,6 +78,10 @@ export class JobCreationFormComponent {
     this.initForms();
   }
 
+  /**
+   * Calculates the current length of the input fields with a character limit.
+   * Used for character count feedback.
+   */
   get descriptionLength(): number {
     return this.positionDetailsForm.get('description')?.value?.length ?? 0;
   }
@@ -84,6 +94,10 @@ export class JobCreationFormComponent {
     return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
   }
 
+  /**
+   * Initializes all three form groups used in the form wizard.
+   * Sets up validators, default values, and disabled controls.
+   */
   initForms(): void {
     // Basic Information form
     this.basicInfoForm = this.fb.group({
@@ -115,6 +129,9 @@ export class JobCreationFormComponent {
     this.additionalInformationForm = this.fb.group({});
   }
 
+  /**
+   * Advances the form wizard to the next/previous step.
+   */
   nextStep(): void {
     if (this.currentStep < 3) {
       this.currentStep++;
@@ -127,6 +144,10 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Saves the current form state as a draft.
+   * Sends a partial or full JobFormDTO to the server with "Draft" status.
+   */
   saveDraft(): void {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
@@ -151,6 +172,9 @@ export class JobCreationFormComponent {
     });
   }
 
+  /**
+   * Finalizes and submits the form by publishing the job post.
+   */
   publishJob(): void {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
@@ -167,8 +191,6 @@ export class JobCreationFormComponent {
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
-    // Remove the log line after testing purposes
-    console.log('Job DTO:', jobFormDto);
     this.jobResourceService.createJob(jobFormDto).subscribe({
       next() {},
       error(err) {
@@ -177,6 +199,13 @@ export class JobCreationFormComponent {
     });
   }
 
+  /**
+   * Utility function used to patch values to a form control dynamically.
+   *
+   * @param form - The FormGroup that contains the control
+   * @param controlName - The name of the control to update
+   * @param value - The value to patch into the control
+   */
   onSelectionChange(form: FormGroup, controlName: string, value: unknown): void {
     form.patchValue({ [controlName]: value });
   }
