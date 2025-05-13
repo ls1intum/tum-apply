@@ -9,11 +9,6 @@ services:
     extends:
       file: ./keycloak.yml
       service: keycloak
-  reverse-proxy:
-    extends:
-      file: ./nginx/compose.proxy.yaml
-      service: reverse-proxy
-
 networks:
   shared-network:
     name: shared-network
