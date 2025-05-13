@@ -1,12 +1,12 @@
-import { HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
+import { HttpHeaders, HttpParameterCodec, HttpParams } from '@angular/common/http';
 import { CustomHttpParameterCodec } from './encoder';
 import { Configuration } from './configuration';
 
 export class BaseService {
-  protected basePath = '';
   public defaultHeaders = new HttpHeaders();
   public configuration: Configuration;
   public encoder: HttpParameterCodec;
+  protected basePath = '';
 
   constructor(basePath?: string | string[], configuration?: Configuration) {
     this.configuration = configuration || new Configuration();

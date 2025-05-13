@@ -1,4 +1,4 @@
-import { HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
+import { HttpHeaders, HttpParameterCodec, HttpParams } from '@angular/common/http';
 import { Param } from './param';
 
 export interface ConfigurationParameters {

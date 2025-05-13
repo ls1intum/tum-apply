@@ -20,6 +20,7 @@ export interface JobCardDTO {
   state: JobCardDTO.StateEnum;
   createdAt: string;
 }
+
 export namespace JobCardDTO {
   export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
   export const StateEnum = {

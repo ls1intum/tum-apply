@@ -25,6 +25,7 @@ export interface JobDetailDTO {
   state?: JobDetailDTO.StateEnum;
   startDate?: string;
 }
+
 export namespace JobDetailDTO {
   export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
   export const LocationEnum = {
