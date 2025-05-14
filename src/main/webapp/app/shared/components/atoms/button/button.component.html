@@ -6,6 +6,7 @@
     [raised]="numberOfFavorites() !== undefined"
     [rounded]="label() === undefined"
     [label]="label()"
+    [ariaLabel]="label() === undefined ? icon() : undefined"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="['fas', icon() ?? '']" />
