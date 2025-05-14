@@ -318,7 +318,6 @@ export const TUMApplyPreset = definePreset(Lara, {
         borderRadius: '0.75rem',
         fontWeight: '100',
         badgeSize: '1rem',
-        borderWidth: '3rem',
         transitionDuration: '{form.field.transition.duration}',
       },
       colorScheme: {
@@ -504,6 +503,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           root: {
             primary: {
               background: '{primary.color}',
+              borderColor: '{primary.color}',
               color: '{primary.inverseColor}',
               hoverBackground: '{primary.hoverColor}',
               activeBackground: '{primary.activeColor}',
@@ -511,18 +511,21 @@ export const TUMApplyPreset = definePreset(Lara, {
             secondary: {
               background: '{secondary.color}',
               color: '{secondary.inverseColor}',
+              borderColor: '{secondary.color}',
               hoverBackground: '{secondary.hoverColor}',
               hoverColor: '{secondary.inverseColor}',
               activeBackground: '{secondary.activeColor}',
             },
             success: {
               background: '{success.color}',
+              borderColor: '{success.color}',
               color: '{success.inverseColor}',
               hoverBackground: '{success.hoverColor}',
               activeBackground: '{success.activeColor}',
             },
             danger: {
               background: '{danger.color}',
+              borderColor: '{danger.color}',
               color: '{danger.inverseColor}',
               hoverBackground: '{danger.hoverColor}',
               activeBackground: '{danger.activeColor}',
