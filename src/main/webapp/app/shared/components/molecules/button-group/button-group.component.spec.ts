@@ -14,7 +14,7 @@ describe('ButtonGroupComponent', () => {
     direction: 'horizontal',
     buttons: [
       {
-        color: 'primary' as ButtonColor,
+        severity: 'primary' as ButtonColor,
         variant: 'filled' as ButtonVariant,
         label: 'Test Button',
         disabled: false,

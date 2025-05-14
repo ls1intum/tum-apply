@@ -15,7 +15,7 @@ export class ButtonPlayGroundComponent {
     direction: 'vertical',
     buttons: [
       {
-        color: 'primary',
+        severity: 'primary',
         variant: undefined,
         icon: 'home',
         disabled: false,
@@ -23,7 +23,7 @@ export class ButtonPlayGroundComponent {
         onClick: () => alert('Tadaaaa'),
       },
       {
-        color: 'secondary',
+        severity: 'secondary',
         variant: undefined,
         icon: 'home',
         disabled: false,
@@ -31,7 +31,7 @@ export class ButtonPlayGroundComponent {
         onClick: () => alert('I am secondary. Click the first button'),
       },
       {
-        color: 'secondary',
+        severity: 'secondary',
         variant: undefined,
         disabled: false,
         label: 'Secondary',
@@ -43,7 +43,7 @@ export class ButtonPlayGroundComponent {
     direction: 'horizontal',
     buttons: [
       {
-        color: 'primary',
+        severity: 'primary',
         variant: undefined,
         icon: 'home',
         disabled: false,
@@ -51,7 +51,7 @@ export class ButtonPlayGroundComponent {
         onClick: () => alert('Tadaaaa'),
       },
       {
-        color: 'secondary',
+        severity: 'secondary',
         variant: undefined,
         icon: 'home',
         disabled: false,
@@ -59,7 +59,7 @@ export class ButtonPlayGroundComponent {
         onClick: () => alert('I am secondary. Click the first button'),
       },
       {
-        color: 'secondary',
+        severity: 'secondary',
         variant: undefined,
         icon: 'home',
         disabled: false,

@@ -9,7 +9,7 @@ export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warn' | 'danger
 export type ButtonVariant = 'outlined' | 'text';
 
 export type Button = {
-  color: ButtonColor;
+  severity: ButtonColor;
   variant?: ButtonVariant;
   icon?: string;
   label?: string;
@@ -27,7 +27,7 @@ export type Button = {
   encapsulation: ViewEncapsulation.None,
 })
 export class ButtonComponent {
-  color = input<ButtonColor>('primary');
+  severity = input<ButtonColor>('primary');
   variant = input<ButtonVariant>();
   icon = input<string | undefined>(undefined);
   label = input<string | undefined>(undefined);
