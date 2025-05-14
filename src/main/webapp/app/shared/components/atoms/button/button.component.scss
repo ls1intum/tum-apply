@@ -1,175 +1,31 @@
-@import '../../../../../content/scss/tokens';
-
-$primary-default: $primary-300; //var(--p-primary-color, #{$primary-300});//
-$secondary-default: $secondary-300; // var(--p-primary-color);
-$info-default: $info-500; //var(--p-info-color);
-$positive-default: $positive-500; //var(--p-success-color);
-$warning-default: $warning-500; //var(--p-warn-color);
-$negative-default: $negative-500; //var(--p-danger-color);
-
-.p-button {
-  overflow: unset;
-  border: 1px solid var(--p-primary-color) !important;
+p-button > button:disabled {
+  background: var(--p-background-disabled);
+  border: var(--p-background-disabled) solid;
+  color: var(--p-color-disabled);
 }
 
-@mixin state-styles($base-color, $text-color: black) {
-  &:hover {
-    background: darken($base-color, 10%) !important;
-  }
-
-  &.disabled,
-  &:disabled {
-    background: lighten($base-color, 40%) !important;
-    border-color: lighten($base-color, 40%) !important;
-    color: $text-color !important;
-    pointer-events: none;
-    opacity: 0.6;
-  }
+p-button > .p-button-outlined:disabled {
+  background: var(--p-background-default);
+  border: 0.1rem var(--p-background-disabled) solid;
+  color: var(--p-color-disabled);
 }
 
-@mixin outlined-button($color) {
-  background: white !important;
-  border: 0.06em solid $color !important;
-  color: $color !important;
-
-  &:hover {
-    background: $color !important;
-    color: white !important;
-  }
-
-  &.disabled,
-  &:disabled {
-    background: white !important;
-    border-color: lighten($color, 20%) !important;
-    color: lighten($color, 20%) !important;
-    pointer-events: none;
-    opacity: 0.6;
-  }
+p-button > .p-button-text:disabled {
+  background: var(--p-background-default);
+  border: 0.1rem var(--p-background-default) solid;
+  color: var(--p-color-disabled);
 }
 
-@mixin filled-button($color, $text-color: black, $text-color-disabled: black) {
-  background: $color !important;
-  border: 0.06em solid $color !important;
-  color: $text-color !important;
-
-  &:hover {
-    background: darken($color, 10%) !important;
-  }
-
-  &.disabled,
-  &:disabled {
-    background: lighten($color, 20%) !important;
-    // border-color: lighten($color, 20%) !important;
-    border: 0 !important;
-    color: lighten($text-color-disabled, 40%) !important;
-    pointer-events: none;
-    opacity: 0.7;
-  }
+p-button > .p-button-outlined {
+  border: 0.1rem solid;
 }
 
-@mixin text-button($color) {
-  background: white !important;
-  border: 0 !important;
-  color: $color !important;
-  margin: 0.06em;
-
-  &:hover {
-    background: rgba($color, 0.1) !important;
-  }
-
-  &.disabled,
-  &:disabled {
-    color: lighten($color, 20%) !important;
-    pointer-events: none;
-    opacity: 0.6;
-  }
-}
-
-// Apply to each variant
-.primary_outlined {
-  @include outlined-button($primary-default);
-}
-.primary_filled {
-  @include filled-button($primary-default, white, white);
-}
-.primary_text {
-  @include text-button($primary-default);
-}
-
-.secondary_outlined {
-  @include outlined-button($secondary-default);
-}
-.secondary_filled {
-  @include filled-button($secondary-default, white);
-}
-.secondary_text {
-  @include text-button($secondary-default);
-}
-
-.success_outlined {
-  @include outlined-button($positive-default);
-}
-.success_filled {
-  @include filled-button($positive-default, black);
-}
-.success_text {
-  @include text-button($positive-default);
-}
-
-.warn_outlined {
-  @include outlined-button($warning-default);
-}
-.warn_filled {
-  @include filled-button($warning-default, black);
-}
-.warn_text {
-  @include text-button($warning-default);
-}
-
-.danger_outlined {
-  @include outlined-button($negative-default);
-}
-.danger_filled {
-  @include filled-button($negative-default, black);
-}
-.danger_text {
-  @include text-button($negative-default);
-}
-
-.accent_outlined {
-  @include outlined-button($neutral-300);
-}
-.accent_filled {
-  @include filled-button($neutral-300, black);
-}
-.accent_text {
-  @include text-button($neutral-300);
-}
-
-.info_outlined {
-  @include outlined-button(black);
-}
-.info_filled {
-  @include filled-button(white, black);
-}
-.info_text {
-  @include text-button(black);
-}
-.badge_mini {
-  background: $negative-default;
-  border-radius: 50%;
+.jhi-button-badge-mini {
+  background: var(--p-danger-color);
   color: black;
   font-size: 0.75rem;
   height: 1.2rem;
-  padding: 0.3em;
-  position: absolute;
+  padding: 0.3rem;
   min-width: 1.2rem;
-  right: -0.6em;
-  overflow: hidden;
-  top: -0.25em;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
   box-shadow: var(--p-button-raised-shadow);
 }
