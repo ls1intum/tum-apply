@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +17,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     default User findByIdElseThrow(UUID userId) {
         return getArbitraryValueElseThrow(findById(userId));
     }
+
+    Optional<User> findByEmailIgnoreCase(String email);
 }
