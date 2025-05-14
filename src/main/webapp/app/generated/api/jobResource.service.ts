@@ -191,28 +191,28 @@ export class JobResourceService extends BaseService {
     sorting?: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<Array<JobCardDTO>>;
   public getAvailableJobs(
     filter?: string,
     sorting?: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<Array<JobCardDTO>>>;
   public getAvailableJobs(
     filter?: string,
     sorting?: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<Array<JobCardDTO>>>;
   public getAvailableJobs(
     filter?: string,
     sorting?: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>filter, 'filter');
@@ -221,7 +221,7 @@ export class JobResourceService extends BaseService {
     let localVarHeaders = this.defaultHeaders;
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['*/*']);
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
@@ -263,25 +263,25 @@ export class JobResourceService extends BaseService {
     jobId: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<JobCardDTO>;
   public getJobDetails(
     jobId: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<JobCardDTO>>;
   public getJobDetails(
     jobId: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<JobCardDTO>>;
   public getJobDetails(
     jobId: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (jobId === null || jobId === undefined) {
       throw new Error('Required parameter jobId was null or undefined when calling getJobDetails.');
@@ -290,7 +290,7 @@ export class JobResourceService extends BaseService {
     let localVarHeaders = this.defaultHeaders;
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['*/*']);
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
@@ -331,25 +331,25 @@ export class JobResourceService extends BaseService {
     userId: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<Array<JobCardDTO>>;
   public getJobsByProfessor(
     userId: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<Array<JobCardDTO>>>;
   public getJobsByProfessor(
     userId: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<Array<JobCardDTO>>>;
   public getJobsByProfessor(
     userId: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (userId === null || userId === undefined) {
       throw new Error('Required parameter userId was null or undefined when calling getJobsByProfessor.');
@@ -358,7 +358,7 @@ export class JobResourceService extends BaseService {
     let localVarHeaders = this.defaultHeaders;
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['*/*']);
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
@@ -401,28 +401,28 @@ export class JobResourceService extends BaseService {
     jobDetailDTO: JobDetailDTO,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<JobCardDTO>;
   public updateJob(
     jobId: string,
     jobDetailDTO: JobDetailDTO,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<JobCardDTO>>;
   public updateJob(
     jobId: string,
     jobDetailDTO: JobDetailDTO,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<JobCardDTO>>;
   public updateJob(
     jobId: string,
     jobDetailDTO: JobDetailDTO,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: '*/*'; context?: HttpContext; transferCache?: boolean },
+    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (jobId === null || jobId === undefined) {
       throw new Error('Required parameter jobId was null or undefined when calling updateJob.');
@@ -434,7 +434,7 @@ export class JobResourceService extends BaseService {
     let localVarHeaders = this.defaultHeaders;
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['*/*']);
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }

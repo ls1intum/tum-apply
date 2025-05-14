@@ -2,7 +2,7 @@ import { Component, TemplateRef, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
@@ -19,10 +19,10 @@ import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService 
 export class ApplicationOverviewComponent {
   @ViewChild('actionTemplate') actionTemplate!: TemplateRef<any>;
 
-  pageSize = 10;
-  pageData: ApplicationEvaluationOverviewDTO[] = [];
-  total = 0;
   loading = signal(false);
+  pageData = signal<ApplicationEvaluationOverviewDTO[]>([]);
+  pageSize = signal(10);
+  total = signal(0);
 
   constructor(private evaluationService: ApplicationEvaluationResourceService) {}
 
@@ -34,21 +34,13 @@ export class ApplicationOverviewComponent {
     const page = first / rows;
 
     try {
-      const res = await firstValueFrom(
-        this.evaluationService.getApplications(rows, page).pipe(
-          timeout(5000),
-          catchError(err => {
-            if (err.name === 'TimeoutError') {
-              console.error('Request timed out');
-            }
-            return throwError(() => err);
-          }),
-        ),
-      );
+      const res = await firstValueFrom(this.evaluationService.getApplications(rows, page).pipe());
 
-      this.pageData = res.applications ?? [];
-      this.total = res.totalRecords ?? 0;
-      this.pageSize = rows;
+      setTimeout(() => {
+        this.pageData.set(res.applications ?? []);
+        this.total.set(res.totalRecords ?? 0);
+        this.pageSize.set(rows);
+      });
     } catch (error) {
       console.error('Failed to load applications:', error);
     } finally {

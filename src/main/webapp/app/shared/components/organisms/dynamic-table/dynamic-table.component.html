@@ -3,13 +3,14 @@
   [paginator]="true"
   [rowsPerPageOptions]="[10, 20, 50]"
   [totalRecords]="totalRecords"
+  [scrollable]="true"
+  scrollHeight="400px"
   [rows]="rows"
   [lazy]="true"
   (onLazyLoad)="emitLazy($event)"
   [loading]="loading"
   [autoLayout]="true"
   [tableStyle]="{ width: 'auto' }"
-  styleClass="fixed-table"
 >
   <!-- Header -->
   <ng-template pTemplate="header">

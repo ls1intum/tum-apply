@@ -8,11 +8,11 @@
     { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
     { field: 'actions', header: '', width: '5rem', template: actionTemplate },
   ]"
-  [data]="pageData"
-  [totalRecords]="total"
-  [rows]="pageSize"
+  [data]="pageData()"
+  [totalRecords]="total()"
+  [rows]="pageSize()"
   [selectAble]="true"
-  [loading]="loading"
+  [loading]="loading()"
   (lazyLoad)="loadPage($event)"
 />
 <ng-template #statusTemplate let-application>

@@ -421,23 +421,16 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
-    table: {
-      colorScheme: {
-        light: {
-          headerBackground: '{background.default}',
-          headerTextColor: '{text.primary}',
-          bodyBackground: '{background.surface}',
-          bodyTextColor: '{text.primary}',
-          borderColor: '{border.default}',
-          rowHoverBackground: '{background.surfaceAlt}',
-        },
-        dark: {
-          headerBackground: '{background.surface}',
-          headerTextColor: '{text.primary}',
-          bodyBackground: '{background.default}',
-          bodyTextColor: '{text.primary}',
-          borderColor: '{border.default}',
-          rowHoverBackground: '{background.surfaceAlt}',
+    datatable: {
+      header: {
+        background: '#ffffff',
+        border: { color: 'transparent', width: '0' },
+        color: '#000',
+      },
+      body: {
+        cell: {
+          border: { color: 'transparent', width: '0' },
+          background: '#ffffff',
         },
       },
     },
