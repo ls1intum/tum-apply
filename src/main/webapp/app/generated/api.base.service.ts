@@ -6,7 +6,7 @@ export class BaseService {
   public defaultHeaders = new HttpHeaders();
   public configuration: Configuration;
   public encoder: HttpParameterCodec;
-  protected basePath = 'http://localhost:8080';
+  protected basePath = '';
 
   constructor(basePath?: string | string[], configuration?: Configuration) {
     this.configuration = configuration || new Configuration();
