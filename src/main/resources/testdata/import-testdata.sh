@@ -55,20 +55,26 @@ then
 fi
 
 # Ask user if they want to reset the DB (run drop script)
-echo "Do you want to reset the database (run 00_drop_all_tables.sql)? (y/n)"
-read -r RESET_DB
-if [[ "$RESET_DB" == "y" || "$RESET_DB" == "Y" ]]; then
-  DROP_FILE="$SQL_PATH/00_drop_all_tables.sql"
-  if [ -f "$DROP_FILE" ]; then
-    echo "Resetting database..."
-    mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASS" "$DB_NAME" < "$DROP_FILE"
+while true; do
+  echo "Do you want to reset the database (run 00_drop_all_tables.sql)? (y/n)"
+  read -p "Do you want to reset the database? (y/n): " RESET_DB
+  if [[ "$RESET_DB" == "y" || "$RESET_DB" == "Y" ]]; then
+    DROP_FILE="$SQL_PATH/00_drop_all_tables.sql"
+    if [ -f "$DROP_FILE" ]; then
+      echo "Resetting database..."
+      mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASS" "$DB_NAME" < "$DROP_FILE"
+    else
+      echo "Reset script not found at: $DROP_FILE"
+      exit 1
+    fi
+    break
+  elif [[ "$RESET_DB" == "n" || "$RESET_DB" == "N" ]]; then
+    echo "Skipping database reset."
+    break
   else
-    echo "Reset script not found at: $DROP_FILE"
-    exit 1
+    echo "Invalid input. Please enter y or n."
   fi
-else
-  echo "Skipping database reset."
-fi
+done
 
 # Find and run only SQL files under testdata folder (and subfolders)
 # Find and run all SQL files except the reset script
