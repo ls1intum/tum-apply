@@ -191,7 +191,6 @@ export class JobCreationFormComponent {
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
-    console.log('Publishing job:', jobFormDto);
     this.jobResourceService.createJob(jobFormDto).subscribe({
       next() {},
       error(err) {
