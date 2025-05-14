@@ -1,16 +1,16 @@
-::ng-deep p-button > button:disabled {
+p-button > button:disabled {
   background: var(--p-background-disabled);
   border: var(--p-background-disabled) solid;
   color: var(--p-color-disabled);
 }
 
-::ng-deep p-button > .p-button-outlined:disabled {
+p-button > .p-button-outlined:disabled {
   background: var(--p-background-default);
   border: 0.06rem var(--p-background-disabled) solid;
   color: var(--p-color-disabled);
 }
 
-::ng-deep p-button > .p-button-text:disabled {
+p-button > .p-button-text:disabled {
   background: var(--p-background-default);
   border: 0.06rem var(--p-background-default) solid;
   color: var(--p-color-disabled);
