@@ -7,14 +7,18 @@ import { ProgressStepperComponent, StepData } from './progress-stepper.component
 
 @Component({
   template: `
-    <ng-template #testTemplate>
+    <ng-template #testTemplate1>
+      <p>Mock Content</p>
+    </ng-template>
+    <ng-template #testTemplate2>
       <p>Mock Content</p>
     </ng-template>
     <jhi-progress-stepper />
   `,
 })
 class TestHostComponent {
-  @ViewChild('testTemplate') templateRef!: TemplateRef<any>;
+  @ViewChild('testTemplate1') templateRef1!: TemplateRef<any>;
+  @ViewChild('testTemplate2') templateRef2!: TemplateRef<any>;
 }
 
 describe('ProgressStepperComponent', () => {
@@ -36,7 +40,7 @@ describe('ProgressStepperComponent', () => {
     const mockProgressStepperComponent: StepData[] = [
       {
         name: 'panel1 name',
-        panelTemplate: fixtureTest.componentInstance.templateRef,
+        panelTemplate: fixtureTest.componentInstance.templateRef1,
         buttonGroupPrev: [],
         buttonGroupNext: [
           {
@@ -61,7 +65,7 @@ describe('ProgressStepperComponent', () => {
       },
       {
         name: 'panel1 name',
-        panelTemplate: fixtureTest.componentInstance.templateRef,
+        panelTemplate: fixtureTest.componentInstance.templateRef2,
         buttonGroupPrev: [],
         buttonGroupNext: [
           {
