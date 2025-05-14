@@ -1,0 +1,10 @@
+<p-tag [severity]="color" [rounded]="round" class="custom-tag">
+  @if (icon && !iconRight) {
+    <fa-icon [icon]="icon" class="icon left" />
+  }
+  <span class="text">{{ text }}</span>
+
+  @if (icon && iconRight) {
+    <fa-icon [icon]="icon" class="icon right" />
+  }
+</p-tag>

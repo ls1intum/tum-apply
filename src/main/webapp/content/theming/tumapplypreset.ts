@@ -421,5 +421,73 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    tag: {
+      fontSize: '0.5rem',
+      rounded: {
+        borderRadius: '9999px',
+      },
+      colorScheme: {
+        light: {
+          primary: {
+            background: '{primary.color}',
+            color: '{primary.inverseColor}',
+          },
+          secondary: {
+            background: '{secondary.color}',
+            color: '{secondary.inverse}',
+          },
+          info: {
+            background: '{info.color}',
+            color: '{info.inverse}',
+          },
+          success: {
+            background: '{success.color}',
+            color: '{success.inverse}',
+          },
+          warn: {
+            background: '{warn.color}',
+            color: '{warn.inverse}',
+          },
+          danger: {
+            background: '{danger.color}',
+            color: '{danger.inverse}',
+          },
+          contrast: {
+            background: '{accent.color}',
+            color: '{accent.inverse}',
+          },
+        },
+      },
+      dark: {
+        primary: {
+          background: '{primary.color}',
+          color: '{primary.inverseColor}',
+        },
+        secondary: {
+          background: '{secondary.color}',
+          color: '{secondary.inverse}',
+        },
+        info: {
+          background: '{info.color}',
+          color: '{info.inverse}',
+        },
+        success: {
+          background: '{success.color}',
+          color: '{success.inverse}',
+        },
+        warn: {
+          background: '{warn.color}',
+          color: '{warn.inverse}',
+        },
+        danger: {
+          background: '{danger.color}',
+          color: '{danger.inverse}',
+        },
+        contrast: {
+          background: '{accent.color}',
+          color: '{accent.inverse}',
+        },
+      },
+    },
   },
 });
