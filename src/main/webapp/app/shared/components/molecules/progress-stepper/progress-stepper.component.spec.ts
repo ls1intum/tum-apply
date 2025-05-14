@@ -40,16 +40,14 @@ describe('ProgressStepperComponent', () => {
         buttonGroupPrev: [],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'secondary',
+            severity: 'secondary',
             icon: 'save',
             onClick() {},
             disabled: false,
             label: 'Save Draft',
           },
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-right',
             onClick() {
               alert('Clicked');
