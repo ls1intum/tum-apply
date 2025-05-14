@@ -45,10 +45,12 @@ export class ProgressStepperComponent {
           ...button,
           onClick: () => {
             button.onClick();
-            if (action === 'next') {
-              this.goToStep(index + 1);
-            } else {
-              this.goToStep(index - 1);
+            if (button.changePanel === true) {
+              if (action === 'next') {
+                this.goToStep(index + 1);
+              } else {
+                this.goToStep(index - 1);
+              }
             }
           },
         };
