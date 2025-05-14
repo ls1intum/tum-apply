@@ -683,5 +683,45 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    stepper: {
+      root: {
+        transitionDuration: '{transition.duration}',
+      },
+      separator: {
+        background: '{text.disabled}',
+        activeBackground: '{base.black}',
+        margin: '0 0 0 1.625rem',
+        size: '0.25rem',
+      },
+      step: {
+        padding: '0.5rem',
+        gap: '1rem',
+      },
+      stepHeader: {
+        padding: '0',
+        gap: '0.5rem',
+      },
+      stepTitle: {
+        color: '{text.disabled}',
+        activeColor: '{base.black}',
+        fontWeight: '700',
+      },
+      stepNumber: {
+        background: '{background.disabled}',
+        activeBackground: '{primary.color}',
+        borderColor: '{background.disabled}',
+        activeBorderColor: '{primary.color}',
+        color: '{text.disabled}',
+        activeColor: '{base.white}',
+        size: '2.25rem',
+        fontSize: '1.125rem',
+        fontWeight: '700',
+        borderRadius: '50%',
+        shadow: 'none',
+      },
+      steppanels: {
+        padding: '0.875rem 0.5rem 1.125rem 0.5rem',
+      },
+    },
   },
 });

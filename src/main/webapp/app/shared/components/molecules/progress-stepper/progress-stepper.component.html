@@ -1,7 +1,7 @@
 <p-stepper [value]="currentStep()" (valueChange)="currentStep.set($event ?? 1)" class="basis-[50rem]">
   <p-step-list>
     @for (step of steps(); track $index) {
-      <p-step [value]="$index + 1">{{ step.name }}</p-step>
+      <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''">{{ step.name }}</p-step>
     }
   </p-step-list>
 </p-stepper>
