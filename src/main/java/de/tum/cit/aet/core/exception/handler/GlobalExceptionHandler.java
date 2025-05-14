@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.dto.ApiError;
 import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.exception.errors.ValidationFieldError;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,15 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .map(fe -> new ValidationFieldError(fe.getObjectName(), fe.getField(), fe.getDefaultMessage()))
+                .collect(Collectors.toList());
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, ex, request.getRequestURI(), fieldErrors);
+        }
+        if (ex instanceof ConstraintViolationException cve) {
+            log.warn("Handled constraint validation exception: {} - Path: {}", ex.getClass().getSimpleName(), request.getRequestURI(), ex);
+            List<ValidationFieldError> fieldErrors = cve
+                .getConstraintViolations()
+                .stream()
+                .map(v -> new ValidationFieldError(v.getRootBeanClass().getSimpleName(), v.getPropertyPath().toString(), v.getMessage()))
                 .collect(Collectors.toList());
             return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, ex, request.getRequestURI(), fieldErrors);
         }

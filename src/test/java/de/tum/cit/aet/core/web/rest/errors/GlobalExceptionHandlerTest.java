@@ -142,4 +142,16 @@ class GlobalExceptionHandlerTest {
             .andExpect(jsonPath("$.fieldErrors[0].field").value("name"))
             .andExpect(jsonPath("$.fieldErrors[0].message").value("name must not be blank"));
     }
+
+    @Test
+    void returnsConstraintViolationExceptionAsValidationError() throws Exception {
+        mockMvc
+            .perform(get("/test/constraint-violation"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"))
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.fieldErrors").isArray())
+            .andExpect(jsonPath("$.fieldErrors[0].field").value("param"))
+            .andExpect(jsonPath("$.fieldErrors[0].message").value("must not be blank"));
+    }
 }
