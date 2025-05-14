@@ -33,5 +33,4 @@ export class ButtonComponent {
   label = input<string | undefined>(undefined);
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
-  buttonClass = input<string>('');
 }
