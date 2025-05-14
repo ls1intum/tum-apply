@@ -1,0 +1,30 @@
+name: tumapply
+services:
+  mysql:
+    extends:
+      file: ./mysql.yml
+      service: mysql
+  keycloak:
+    extends:
+      file: ./keycloak.yml
+      service: keycloak
+  nginx:
+    extends:
+      file: ./nginx/compose.proxy.yaml
+      service: nginx
+  server:
+    build:
+      context: ../../../src/main/java
+      dockerfile: ../../../src/main/docker/server/Dockerfile
+    image: ghcr.io/ls1intum/tum-apply-server:${IMAGE_TAG}
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  client:
+    build:
+      context: ../../../src/main/webapp
+      dockerfile: ../../../src/main/docker/client/Dockerfile
+    image: ghcr.io/ls1intum/tum-apply-client:${IMAGE_TAG}
+    ports:
+      - "80:80"
