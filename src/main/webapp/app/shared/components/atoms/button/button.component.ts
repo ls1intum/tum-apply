@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonModule } from 'primeng/button';
