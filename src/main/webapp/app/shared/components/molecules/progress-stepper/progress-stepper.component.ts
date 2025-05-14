@@ -10,7 +10,7 @@ import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-gr
  * Optionally includes a flag to indicate whether the panel should change.
  */
 export type StepButton = Button & {
-  changePanel?: boolean;
+  changePanel: boolean;
 };
 
 export type StepData = {

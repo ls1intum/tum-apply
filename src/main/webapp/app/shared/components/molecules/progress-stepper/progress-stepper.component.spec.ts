@@ -45,6 +45,7 @@ describe('ProgressStepperComponent', () => {
             onClick() {},
             disabled: false,
             label: 'Save Draft',
+            changePanel: false,
           },
           {
             severity: 'primary',
@@ -58,6 +59,21 @@ describe('ProgressStepperComponent', () => {
           },
         ],
       },
+      {
+        name: 'panel1 name',
+        panelTemplate: fixtureTest.componentInstance.templateRef,
+        buttonGroupPrev: [],
+        buttonGroupNext: [
+          {
+            severity: 'secondary',
+            icon: 'save',
+            onClick() {},
+            disabled: false,
+            label: 'Sent',
+            changePanel: false,
+          },
+        ],
+      },
     ];
 
     fixture = TestBed.createComponent(ProgressStepperComponent);
@@ -65,6 +81,20 @@ describe('ProgressStepperComponent', () => {
     componentRef.setInput('steps', mockProgressStepperComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  it('should not change panel on button click when changePanel is false', () => {
+    expect(component.currentStep()).toBe(1);
+
+    const buttons: HTMLButtonElement[] = fixture.nativeElement.querySelectorAll('button');
+
+    const saveDraftButton = Array.from(buttons).find((btn: HTMLButtonElement) => btn.textContent?.includes('Save Draft'));
+
+    expect(saveDraftButton).toBeTruthy();
+    saveDraftButton?.click();
+    fixture.detectChanges();
+
+    expect(component.currentStep()).toBe(1);
   });
 
   it('should create', () => {

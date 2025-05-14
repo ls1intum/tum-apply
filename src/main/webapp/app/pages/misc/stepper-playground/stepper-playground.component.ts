@@ -29,6 +29,7 @@ export class StepperPlaygroundComponent implements OnInit {
             onClick() {},
             disabled: false,
             label: 'Save Draft',
+            changePanel: false,
           },
           {
             severity: 'primary',
@@ -65,6 +66,7 @@ export class StepperPlaygroundComponent implements OnInit {
             onClick() {},
             disabled: false,
             label: 'Save Draft',
+            changePanel: false,
           },
           {
             severity: 'primary',
@@ -103,6 +105,7 @@ export class StepperPlaygroundComponent implements OnInit {
             },
             disabled: false,
             label: 'Send',
+            changePanel: false,
           },
         ],
       },
