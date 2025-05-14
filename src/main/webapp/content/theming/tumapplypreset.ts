@@ -691,7 +691,7 @@ export const TUMApplyPreset = definePreset(Lara, {
         light: {
           separator: {
             background: '{text.disabled}',
-            activeBackground: '{base.black}',
+            activeBackground: '{text.onPrimary}',
             margin: '0 0 0 1.625rem',
             size: '0.25rem',
           },
@@ -705,7 +705,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           },
           stepTitle: {
             color: '{text.disabled}',
-            activeColor: '{base.black}',
+            activeColor: '{text.onPrimary}',
             fontWeight: '700',
           },
           stepNumber: {
@@ -728,9 +728,9 @@ export const TUMApplyPreset = definePreset(Lara, {
         dark: {
           separator: {
             background: '{text.disabled}',
-            activeBackground: '{base.black}',
+            activeBackground: '{text.onPrimary}',
             margin: '0 0 0 1.625rem',
-            size: '0.25rem',
+            size: '0.1rem',
           },
           step: {
             padding: '0.5rem',
