@@ -24,16 +24,14 @@ export class StepperPlaygroundComponent implements OnInit {
         buttonGroupPrev: [],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'secondary',
+            severity: 'secondary',
             icon: 'save',
             onClick() {},
             disabled: false,
             label: 'Save Draft',
           },
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-right',
             onClick() {
               alert('Clicked');
@@ -50,7 +48,7 @@ export class StepperPlaygroundComponent implements OnInit {
         buttonGroupPrev: [
           {
             variant: 'outlined',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-left',
             onClick() {
               alert('Clicked');
@@ -62,16 +60,14 @@ export class StepperPlaygroundComponent implements OnInit {
         ],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'secondary',
+            severity: 'secondary',
             icon: 'save',
             onClick() {},
             disabled: false,
             label: 'Save Draft',
           },
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-right',
             onClick() {
               alert('Clicked');
@@ -88,7 +84,7 @@ export class StepperPlaygroundComponent implements OnInit {
         buttonGroupPrev: [
           {
             variant: 'outlined',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-left',
             onClick() {
               alert('Clicked');
@@ -100,8 +96,7 @@ export class StepperPlaygroundComponent implements OnInit {
         ],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'paper-plane',
             onClick() {
               alert('Clicked');
