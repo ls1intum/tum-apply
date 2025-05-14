@@ -70,4 +70,9 @@ public class TestExceptionController {
     public void triggerConstraintViolation(@RequestParam @NotBlank(message = "must not be blank") String param) {
         // nothing needed here
     }
+
+    @GetMapping("/type-mismatch")
+    public void triggerTypeMismatch(@RequestParam Integer number) {
+        // Spring will trigger type conversion exception
+    }
 }

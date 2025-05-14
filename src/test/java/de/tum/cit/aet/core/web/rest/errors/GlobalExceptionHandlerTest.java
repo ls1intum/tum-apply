@@ -146,12 +146,60 @@ class GlobalExceptionHandlerTest {
     @Test
     void returnsConstraintViolationExceptionAsValidationError() throws Exception {
         mockMvc
-            .perform(get("/test/constraint-violation"))
+            .perform(get("/test/constraint-violation").param("param", ""))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"))
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.fieldErrors").isArray())
-            .andExpect(jsonPath("$.fieldErrors[0].field").value("param"))
+            .andExpect(jsonPath("$.fieldErrors[0].field").value(org.hamcrest.Matchers.containsString("param")))
             .andExpect(jsonPath("$.fieldErrors[0].message").value("must not be blank"));
+    }
+
+    @Test
+    void returnsMissingServletRequestParameterException() throws Exception {
+        mockMvc
+            .perform(get("/test/constraint-violation"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"))
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.fieldErrors[0].field").value("param"))
+            .andExpect(jsonPath("$.fieldErrors[0].message").value("Required parameter 'param' is missing"));
+    }
+
+    @Test
+    void returnsMethodNotAllowed() throws Exception {
+        mockMvc
+            .perform(post("/test/not-found")) // only GET allowed
+            .andExpect(status().isMethodNotAllowed())
+            .andExpect(jsonPath("$.errorCode").value("INVALID_PARAMETER"))
+            .andExpect(jsonPath("$.status").value(405));
+    }
+
+    @Test
+    void returnsUnsupportedMediaType() throws Exception {
+        mockMvc
+            .perform(post("/test/validation-error").contentType("text/plain").content("name=abc"))
+            .andExpect(status().isUnsupportedMediaType())
+            .andExpect(jsonPath("$.errorCode").value("INVALID_PARAMETER"))
+            .andExpect(jsonPath("$.status").value(415));
+    }
+
+    @Test
+    void returnsBadRequestForUnreadableJson() throws Exception {
+        mockMvc
+            .perform(post("/test/validation-error").contentType("application/json").content("{ name: }")) // malformed JSON
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("INVALID_PARAMETER"))
+            .andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    void returnsTypeMismatchException() throws Exception {
+        mockMvc
+            .perform(get("/test/type-mismatch").param("number", "not-a-number"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("INVALID_PARAMETER"))
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.fieldErrors[0].field").value("number"));
     }
 }
