@@ -28,9 +28,11 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
         String preferredUsername = jwt.getClaimAsString("preferred_username");
+        String firstName = jwt.getClaimAsString("given_name");
+        String lastName = jwt.getClaimAsString("family_name");
 
         // Create user if missing and fetch database entity
-        User user = userService.provisionUserIfMissing(preferredUsername);
+        User user = userService.provisionUserIfMissing(preferredUsername, firstName, lastName);
 
         // Load all role names from the DB (e.g., ["ADMIN", "PROFESSOR"])
         List<String> roles = userService.getRolesForUser(user);
