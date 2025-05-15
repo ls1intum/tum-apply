@@ -55,7 +55,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://tumapply-dev.aet.cit.tum.de/realms/tumapply
+          issuer-uri: http://localhost:9080/realms/tumapply
 springdoc:
   api-docs:
     enabled: true
