@@ -21,6 +21,10 @@ const routes: Routes = [
     outlet: 'navbar',
   },
   {
+    path: 'button',
+    loadComponent: () => import('./pages/misc/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
+  },
+  {
     path: 'admin',
     data: {
       authorities: [Authority.ADMIN],
