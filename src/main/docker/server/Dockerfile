@@ -1,26 +1,29 @@
 # Stage 1: Build the application
-FROM gradle:8.3-jdk21 AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 
 WORKDIR /app
 
 # Copy Gradle wrapper and build files to cache dependencies
-COPY gradlew settings.gradle build.gradle /app/
+COPY gradlew settings.gradle build.gradle gradle.properties /app/
 COPY gradle /app/gradle
 
 # Download dependencies to cache them
 RUN ./gradlew dependencies --no-daemon
 
 # Copy the source code
-COPY ../../../src/main/java /app/src/main/java
-COPY ../../../src/main/resources /app/src/main/resources
-COPY ../../../src/test/java /app/src/test/java
-COPY ../../../src/test/resources /app/src/test/resources
+COPY src/main/java     /app/src/main/java
+COPY src/main/resources/ /app/src/main/resources/
+COPY src/test/java     /app/src/test/java
+COPY src/test/resources/ /app/src/test/resources/
+COPY src/main/webapp /app/src/main/webapp
+
+COPY .git  .git
 
 # Build the application
 RUN ./gradlew build -x test --no-daemon
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:21
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
