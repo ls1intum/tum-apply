@@ -20,8 +20,8 @@ services:
     extends:
       file: ./keycloak.yml
       service: keycloak
-  benchmarking:
-    image: ls1tum/tum-apply:latest
+  tumapply:
+    image: "ghcr.io/ls1tum/tum-apply:${IMAGE_TAG}"
     env_file:
       - src/main/docker/config/tumapply.env
     ports:

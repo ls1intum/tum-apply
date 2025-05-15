@@ -1,7 +1,7 @@
 FROM gradle:8.12-jdk21 AS build
 
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
+COPY --chown=gradle:gradle . /home/tumapply
+WORKDIR /home/tumapply
 RUN ./gradlew -Pprod --no-daemon clean bootJar
 
 FROM eclipse-temurin:21
