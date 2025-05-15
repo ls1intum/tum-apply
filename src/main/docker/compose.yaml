@@ -24,7 +24,7 @@ services:
   client:
     build:
       context: ../../../src/main/webapp
-      dockerfile: ../../../src/main/docker/client/Dockerfile
+      dockerfile: Dockerfile
     image: ghcr.io/ls1intum/tum-apply-client:${IMAGE_TAG}
     ports:
       - "80:80"
