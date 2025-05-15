@@ -6,6 +6,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,5 +19,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         return getArbitraryValueElseThrow(findById(userId));
     }
 
-    Optional<User> findByEmailIgnoreCase(String email);
+    @EntityGraph(attributePaths = { "roles", "roles.role", "roles.researchGroup" })
+    Optional<User> findWithRolesByEmailIgnoreCase(String email);
 }
