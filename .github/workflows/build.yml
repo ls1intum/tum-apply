@@ -89,7 +89,7 @@ jobs:
     # Save Docker image tag as an artifact
   save-docker-tag:
     name: Save Docker Image Tag
-    needs: docker
+    needs: build
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'ls1intum/tum-apply' }}
     runs-on: ubuntu-latest
     steps:
