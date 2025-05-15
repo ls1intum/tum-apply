@@ -88,8 +88,8 @@
         <div class="form-row">
           <div class="form-field">
             <jhi-datepicker
-              [(selectedDate)]="basicInfoForm.controls['startDate'].value"
-              (selectedChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
+              [selectedDate]="basicInfoForm.get('startDate')?.value"
+              (selectedDateChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
               [label]="'Start Date'"
               [required]="true"
               [placeholder]="'Select a Start Date...'"
