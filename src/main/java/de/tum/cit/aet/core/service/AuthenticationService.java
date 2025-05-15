@@ -23,7 +23,7 @@ public class AuthenticationService {
     @Transactional
     public User provisionUserIfMissing(String preferredUsername, String firstName, String lastName) {
         String normalizedEmail = preferredUsername.toLowerCase(Locale.ROOT);
-        return userRepository
+        User user = userRepository
             .findWithResearchGroupRolesByEmailIgnoreCase(normalizedEmail)
             .orElseGet(() -> {
                 User newUser = new User();
@@ -31,14 +31,17 @@ public class AuthenticationService {
                 newUser.setFirstName(firstName);
                 newUser.setLastName(lastName);
                 newUser.setSelectedLanguage("en");
-                User savedUser = userRepository.save(newUser);
-
-                UserResearchGroupRole defaultRole = new UserResearchGroupRole();
-                defaultRole.setUser(newUser);
-                defaultRole.setRole(UserRole.APPLICANT);
-                userResearchGroupRoleRepository.save(defaultRole);
-
-                return savedUser;
+                return userRepository.save(newUser);
             });
+
+        boolean hasRoles = userResearchGroupRoleRepository.existsByUserUserId(user.getUserId());
+        if (!hasRoles) {
+            UserResearchGroupRole defaultRole = new UserResearchGroupRole();
+            defaultRole.setUser(user);
+            defaultRole.setRole(UserRole.APPLICANT);
+            userResearchGroupRoleRepository.save(defaultRole);
+        }
+
+        return user;
     }
 }
