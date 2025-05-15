@@ -1,30 +1,38 @@
 name: tumapply
 services:
   mysql:
-    extends:
-      file: ./mysql.yml
-      service: mysql
+    image: mysql:9.2.0
+    volumes:
+      - artemis-mysql-data:/var/lib/mysql
+    env_file:
+      - src/main/docker/config/mysql.env
+    expose:
+      - '3306'
+    command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --silent
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 300s
+    restart: always
   keycloak:
     extends:
       file: ./keycloak.yml
       service: keycloak
-  nginx:
-    extends:
-      file: ./nginx/compose.proxy.yaml
-      service: nginx
-  server:
-    build:
-      context: ../../../src/main/java
-      dockerfile: ../../../src/main/docker/server/Dockerfile
-    image: ghcr.io/ls1intum/tum-apply-server:${IMAGE_TAG}
+  benchmarking:
+    image: ls1tum/tum-apply:latest
+    env_file:
+      - src/main/docker/config/tumapply.env
     ports:
-      - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-  client:
-    build:
-      context: ../../../src/main/webapp
-      dockerfile: Dockerfile
-    image: ghcr.io/ls1intum/tum-apply-client:${IMAGE_TAG}
-    ports:
-      - "80:80"
+      - '127.0.0.1:8080:8080'
+    expose:
+      - '8080'
+    healthcheck:
+      test: wget -nv -t1 --spider http://localhost:8080/actuator/health || exit 1
+      start_period: 600s
+      interval: 1s
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
