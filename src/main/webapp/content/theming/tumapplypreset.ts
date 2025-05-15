@@ -421,18 +421,24 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
-    datatable: {
-      header: {
-        background: '#ffffff',
-        border: { color: 'transparent', width: '0' },
-        color: '#000',
-      },
-      body: {
-        cell: {
-          border: { color: 'transparent', width: '0' },
-          background: '#ffffff',
+    checkbox: {
+      background: 'transparent',
+      checked: {
+        background: '{primary.color}',
+        hover: {
+          background: '{primary.hoverColor}',
         },
       },
+    },
+    paginator: {
+      nav: {
+        button: {
+          selected: {
+            background: '{primary.color}',
+          },
+        },
+      },
+      color: '{primary.color}',
     },
   },
 });
