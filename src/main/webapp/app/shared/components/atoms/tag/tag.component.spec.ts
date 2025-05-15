@@ -23,7 +23,7 @@ describe('TagComponent', () => {
   });
 
   it('renders the supplied text', () => {
-    component.text = 'Hello World';
+    fixture.componentRef.setInput('text', 'Hello World');
     fixture.detectChanges();
 
     const textEl: HTMLElement = fixture.debugElement.query(By.css('.text')).nativeElement;
@@ -31,7 +31,7 @@ describe('TagComponent', () => {
   });
 
   it('reflects the "color" input on the underlying <p-tag>', () => {
-    component.color = 'success';
+    fixture.componentRef.setInput('color', 'success');
     fixture.detectChanges();
 
     const tagDebug = fixture.debugElement.query(By.css('p-tag'));
@@ -39,8 +39,8 @@ describe('TagComponent', () => {
   });
 
   it('shows a left icon when icon is set and iconRight is false', () => {
-    component.icon = faCoffee;
-    component.iconRight = false;
+    fixture.componentRef.setInput('icon', faCoffee);
+    fixture.componentRef.setInput('iconRight', false);
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('fa-icon.icon.left'))).toBeTruthy();
@@ -48,8 +48,8 @@ describe('TagComponent', () => {
   });
 
   it('shows a right icon when iconRight is true', () => {
-    component.icon = faCoffee;
-    component.iconRight = true;
+    fixture.componentRef.setInput('icon', faCoffee);
+    fixture.componentRef.setInput('iconRight', true);
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('fa-icon.icon.right'))).toBeTruthy();
@@ -57,14 +57,14 @@ describe('TagComponent', () => {
   });
 
   it('adds rounded styles when round is true', () => {
-    component.round = true;
+    fixture.componentRef.setInput('round', true);
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('.p-tag-rounded'))).toBeTruthy();
   });
 
   it('renders no icon element when no icon is supplied', () => {
-    component.icon = undefined;
+    fixture.componentRef.setInput('icon', undefined);
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('fa-icon'))).toBeNull();
