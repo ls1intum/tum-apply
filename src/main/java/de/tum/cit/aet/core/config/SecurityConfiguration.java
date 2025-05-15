@@ -3,9 +3,6 @@ package de.tum.cit.aet.core.config;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
 
-import de.tum.cit.aet.core.security.AuthoritiesConstants;
-import de.tum.cit.aet.core.security.SecurityUtils;
-import de.tum.cit.aet.core.web.filter.SpaWebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.function.Supplier;
@@ -19,7 +16,6 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.*;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
@@ -53,7 +49,6 @@ public class SecurityConfiguration {
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
             )
-            .addFilterAfter(new SpaWebFilter(), BasicAuthenticationFilter.class)
             .headers(headers ->
                 headers
                     .contentSecurityPolicy(csp -> csp.policyDirectives(jHipsterProperties.getSecurity().getContentSecurityPolicy()))
@@ -79,14 +74,14 @@ public class SecurityConfiguration {
                     .requestMatchers(("/api-docs")).permitAll()
                     .requestMatchers("/api/authenticate").permitAll()
                     .requestMatchers("/api/auth-info").permitAll()
-                    .requestMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                     .requestMatchers("/api/**").authenticated()
-                    .requestMatchers("/v3/api-docs/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers("/v3/api-docs/**").hasAuthority("ADMIN")
                     .requestMatchers("/management/health").permitAll()
                     .requestMatchers("/management/health/**").permitAll()
                     .requestMatchers("/management/info").permitAll()
                     .requestMatchers("/management/prometheus").permitAll()
-                    .requestMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers("/management/**").hasAuthority("ADMIN")
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())));
         return http.build();
@@ -99,7 +94,6 @@ public class SecurityConfiguration {
 
     Converter<Jwt, AbstractAuthenticationToken> authenticationConverter() {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> SecurityUtils.extractAuthorityFromClaims(jwt.getClaims()));
         jwtAuthenticationConverter.setPrincipalClaimName(PREFERRED_USERNAME);
         return jwtAuthenticationConverter;
     }
