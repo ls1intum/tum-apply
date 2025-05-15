@@ -66,48 +66,6 @@ env:
 
 jobs:
   build:
-    name: Build .war artifact
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [client, server]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '${{ env.node }}'
-          cache: 'npm'
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '${{ env.java }}'
-          cache: 'gradle'
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-      - name: install webapp dependencies
-        working-directory: src/main/webapp
-        run: npm ci
-      - name: Production Build
-        run: ./gradlew -Pprod -Pwar clean bootWar
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tum-apply.war
-          path: build/libs/tum-apply-*.war
-      - name: Upload Release Artifact
-        if: github.event_name == 'release' && github.event.action == 'created'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: build/libs/tum-apply-${{ github.event.release.tag_name }}.war
-          asset_name: tum-apply.war
-          asset_content_type: application/x-webarchive
-
-  docker:
     name: Build and Push Docker Image
     if: github.actor != 'dependabot[bot]'
     strategy:
