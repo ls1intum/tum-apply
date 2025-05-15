@@ -1,4 +1,4 @@
-import { Component, TemplateRef, input } from '@angular/core';
+import { Component, Signal, TemplateRef, computed, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 
@@ -10,20 +10,13 @@ import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-gr
  * Optionally includes a flag to indicate whether the panel should change.
  */
 export type StepButton = Button & {
-  changePanel?: boolean;
+  changePanel: boolean;
 };
 
-/**
- * Describes the data structure for a step in the stepper.
- */
 export type StepData = {
-  /** Name of the step */
   name: string;
-  /** Template for the content panel of the step */
   panelTemplate: TemplateRef<any>;
-  /** Buttons shown on the left in the "prev" button group */
   buttonGroupPrev: StepButton[];
-  /** Buttons shown on the right in the "next" button group */
   buttonGroupNext: StepButton[];
 };
 
@@ -35,33 +28,24 @@ export type StepData = {
   standalone: true,
 })
 export class ProgressStepperComponent {
-  /** Index of the currently active step */
-  currentStep = 1;
-
-  /** Input list of step data to render in the stepper */
+  currentStep = signal<number>(1);
   steps = input<StepData[]>([]);
 
-  /**
-   * Navigates to the specified step index if within bounds.
-   *
-   * @param index - Index of the step to navigate to
-   */
+  buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev, 'prev', this.currentStep()),
+  );
+
+  buttonGroupNext: Signal<ButtonGroupData> = computed(() =>
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext, 'next', this.currentStep()),
+  );
+
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {
-      this.currentStep = index;
+      this.currentStep.set(index);
     }
   }
 
-  /**
-   * Generates the button group data for a given step's button group.
-   * Each button's click handler is extended to navigate to the appropriate step.
-   *
-   * @param steps - Array of buttons for the step
-   * @param action - Indicates the navigation direction ('prev' or 'next')
-   * @param index - Current step index
-   * @returns Button group data object for rendering
-   */
-  getDataFromStepperButtonGroup(steps: StepButton[], action: 'prev' | 'next', index: number): ButtonGroupData {
+  buildButtonGroupData(steps: StepButton[], action: 'prev' | 'next', index: number): ButtonGroupData {
     return {
       direction: 'horizontal',
       buttons: steps.map(button => {
@@ -69,10 +53,12 @@ export class ProgressStepperComponent {
           ...button,
           onClick: () => {
             button.onClick();
-            if (action === 'next') {
-              this.goToStep(index + 1);
-            } else {
-              this.goToStep(index - 1);
+            if (button.changePanel) {
+              if (action === 'next') {
+                this.goToStep(index + 1);
+              } else {
+                this.goToStep(index - 1);
+              }
             }
           },
         };

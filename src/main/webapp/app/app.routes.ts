@@ -25,11 +25,11 @@ const routes: Routes = [
     loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
   },
   {
-    path: 'button',
+    path: 'playground/button',
     loadComponent: () => import('./pages/misc/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
   },
   {
-    path: 'stepper',
+    path: 'playground/stepper',
     loadComponent: () => import('./pages/misc/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
   },
   {

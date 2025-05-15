@@ -7,14 +7,18 @@ import { ProgressStepperComponent, StepData } from './progress-stepper.component
 
 @Component({
   template: `
-    <ng-template #testTemplate>
+    <ng-template #testTemplate1>
+      <p>Mock Content</p>
+    </ng-template>
+    <ng-template #testTemplate2>
       <p>Mock Content</p>
     </ng-template>
     <jhi-progress-stepper />
   `,
 })
 class TestHostComponent {
-  @ViewChild('testTemplate') templateRef!: TemplateRef<any>;
+  @ViewChild('testTemplate1') templateRef1!: TemplateRef<any>;
+  @ViewChild('testTemplate2') templateRef2!: TemplateRef<any>;
 }
 
 describe('ProgressStepperComponent', () => {
@@ -36,20 +40,19 @@ describe('ProgressStepperComponent', () => {
     const mockProgressStepperComponent: StepData[] = [
       {
         name: 'panel1 name',
-        panelTemplate: fixtureTest.componentInstance.templateRef,
+        panelTemplate: fixtureTest.componentInstance.templateRef1,
         buttonGroupPrev: [],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'secondary',
+            severity: 'secondary',
             icon: 'save',
             onClick() {},
             disabled: false,
             label: 'Save Draft',
+            changePanel: false,
           },
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-right',
             onClick() {
               alert('Clicked');
@@ -60,6 +63,21 @@ describe('ProgressStepperComponent', () => {
           },
         ],
       },
+      {
+        name: 'panel1 name',
+        panelTemplate: fixtureTest.componentInstance.templateRef2,
+        buttonGroupPrev: [],
+        buttonGroupNext: [
+          {
+            severity: 'secondary',
+            icon: 'save',
+            onClick() {},
+            disabled: false,
+            label: 'Sent',
+            changePanel: false,
+          },
+        ],
+      },
     ];
 
     fixture = TestBed.createComponent(ProgressStepperComponent);
@@ -67,6 +85,20 @@ describe('ProgressStepperComponent', () => {
     componentRef.setInput('steps', mockProgressStepperComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  it('should not change panel on button click when changePanel is false', () => {
+    expect(component.currentStep()).toBe(1);
+
+    const buttons: HTMLButtonElement[] = fixture.nativeElement.querySelectorAll('button');
+
+    const saveDraftButton = Array.from(buttons).find((btn: HTMLButtonElement) => btn.textContent?.includes('Save Draft'));
+
+    expect(saveDraftButton).toBeTruthy();
+    saveDraftButton?.click();
+    fixture.detectChanges();
+
+    expect(component.currentStep()).toBe(1);
   });
 
   it('should create', () => {

@@ -14,7 +14,7 @@ describe('ButtonGroupComponent', () => {
     direction: 'horizontal',
     buttons: [
       {
-        color: 'primary' as ButtonColor,
+        severity: 'primary' as ButtonColor,
         variant: 'filled' as ButtonVariant,
         label: 'Test Button',
         disabled: false,
@@ -42,5 +42,12 @@ describe('ButtonGroupComponent', () => {
   it('should render the correct number of buttons', () => {
     const buttonElements = fixture.nativeElement.querySelectorAll('jhi-button');
     expect(buttonElements.length).toBe(mockButtonGroupData.buttons.length);
+  });
+
+  it('should call onClick when a button is clicked', () => {
+    const spy = jest.spyOn(mockButtonGroupData.buttons[0], 'onClick');
+    const buttonElement = fixture.nativeElement.querySelector('jhi-button');
+    buttonElement.click();
+    expect(spy).toHaveBeenCalled();
   });
 });

@@ -47,21 +47,16 @@ This file defines the realm, users, and client.
 
 ---
 
-## 🔑 How to test login (Postman)
+## 🔑 How to test login (Bruno)
 
-You can test the login flow using Postman:
+You can test the login flow using [Bruno](https://www.usebruno.com/):
 
-**POST** `http://localhost:9080/realms/tumapply/protocol/openid-connect/token`  
-**Body (x-www-form-urlencoded):**
+1. Open Bruno and load the request collection at:  
+   `docs/TUMapply API/Authentication/collection.bru`
 
-```
-client_id=tumapply-client
-grant_type=password
-username=admin1
-password=admin
-```
+2. Use the POST `Keycloak Token` entry in the Authentication folder.
 
-✅ You should receive a response like:
+✅ You should receive a JSON response like:
 
 ```json
 {
