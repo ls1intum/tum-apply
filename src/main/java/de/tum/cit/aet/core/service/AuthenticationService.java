@@ -1,9 +1,10 @@
 package de.tum.cit.aet.core.service;
 
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
-import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,18 +24,21 @@ public class AuthenticationService {
     public User provisionUserIfMissing(String preferredUsername, String firstName, String lastName) {
         String normalizedEmail = preferredUsername.toLowerCase(Locale.ROOT);
         return userRepository
-            .findWithRolesByEmailIgnoreCase(normalizedEmail)
+            .findWithResearchGroupRolesByEmailIgnoreCase(normalizedEmail)
             .orElseGet(() -> {
                 User newUser = new User();
                 newUser.setEmail(normalizedEmail);
                 newUser.setFirstName(firstName);
                 newUser.setLastName(lastName);
                 newUser.setSelectedLanguage("en");
-                return userRepository.save(newUser);
-            });
-    }
+                User savedUser = userRepository.save(newUser);
 
-    public List<String> getRolesForUser(User user) {
-        return userResearchGroupRoleRepository.findByUserUserId(user.getUserId()).stream().map(role -> role.getRole().name()).toList();
+                UserResearchGroupRole defaultRole = new UserResearchGroupRole();
+                defaultRole.setUser(newUser);
+                defaultRole.setRole(UserRole.APPLICANT);
+                userResearchGroupRoleRepository.save(defaultRole);
+
+                return savedUser;
+            });
     }
 }
