@@ -7,7 +7,8 @@ import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { JobFormDTO } from '../../../generated';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-
+import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
+import ButtonGroupComponent, { ButtonGroupData } from '../../../shared/components/molecules/button-group/button-group.component';
 /**
  * JobCreationFormComponent
  * ------------------------
@@ -19,7 +20,15 @@ import { DatePickerComponent } from '../../../shared/components/atoms/datepicker
   standalone: true,
   templateUrl: './job-creation-form.component.html',
   styleUrls: ['./job-creation-form.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, DropdownComponent, DatePickerComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    DropdownComponent,
+    DatePickerComponent,
+    ButtonComponent,
+    ButtonGroupComponent,
+  ],
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
@@ -30,6 +39,50 @@ export class JobCreationFormComponent {
   positionDetailsForm: FormGroup = this.fb.group({});
   additionalInformationForm: FormGroup = this.fb.group({});
 
+  // Button Group Data consisting of 'Next' and 'Save Draft' Buttons
+  nextAndSaveButtons(): ButtonGroupData {
+    return {
+      direction: 'horizontal',
+      buttons: [
+        {
+          label: 'Save Draft',
+          icon: 'floppy-disk',
+          severity: 'secondary',
+          disabled: false,
+          onClick: () => this.saveDraft(),
+        },
+        {
+          label: 'Next',
+          icon: undefined,
+          severity: 'primary',
+          disabled: false,
+          onClick: () => this.nextStep(),
+        },
+      ],
+    };
+  }
+  // Button Group Data consisting of 'Publish Job' and 'Save Draft' Buttons
+  publishAndSaveButtons(): ButtonGroupData {
+    return {
+      direction: 'horizontal',
+      buttons: [
+        {
+          label: 'Save Draft',
+          icon: 'floppy-disk',
+          severity: 'secondary',
+          disabled: false,
+          onClick: () => this.saveDraft(),
+        },
+        {
+          label: 'Publish Job',
+          icon: undefined,
+          severity: 'primary',
+          disabled: this.basicInfoForm.invalid || this.positionDetailsForm.invalid,
+          onClick: () => this.publishJob(),
+        },
+      ],
+    };
+  }
   /**
    * Dropdown options used in the form
    */

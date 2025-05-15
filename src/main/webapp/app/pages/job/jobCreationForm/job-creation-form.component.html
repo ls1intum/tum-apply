@@ -88,8 +88,8 @@
         <div class="form-row">
           <div class="form-field">
             <jhi-datepicker
-              [(selectedDate)]="basicInfoForm.controls['startDate'].value"
-              (selectedChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
+              [selectedDate]="basicInfoForm.get('startDate')?.value"
+              (selectedDateChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
               [label]="'Start Date'"
               [required]="true"
               [placeholder]="'Select a Start Date...'"
@@ -142,20 +142,9 @@
       </form>
 
       <div class="form-actions">
-        <button class="btn-cancel">
-          <span class="btn-icon">
-            <fa-icon [icon]="['fas', 'chevron-left']" />
-          </span>
-          Cancel
-        </button>
+        <jhi-button [label]="'Cancel'" [icon]="'chevron-left'" [severity]="'primary'" [variant]="'outlined'" [disabled]="false" />
         <div class="action-right">
-          <button (click)="saveDraft()" class="btn-save-draft">
-            <span class="btn-icon">
-              <fa-icon [icon]="['fas', 'floppy-disk']" />
-            </span>
-            Save Draft
-          </button>
-          <button (click)="nextStep()" class="btn-next">Next</button>
+          <jhi-button-group [data]="nextAndSaveButtons()" />
         </div>
       </div>
     </div>
@@ -237,20 +226,16 @@
         </div>
       </form>
       <div class="form-actions">
-        <button (click)="previousStep()" class="btn-back">
-          <span class="btn-icon">
-            <fa-icon [icon]="['fas', 'chevron-left']" />
-          </span>
-          Back
-        </button>
+        <jhi-button
+          [label]="'Back'"
+          [icon]="'chevron-left'"
+          [severity]="'primary'"
+          [variant]="'outlined'"
+          [disabled]="false"
+          (click)="previousStep()"
+        />
         <div class="action-right">
-          <button (click)="saveDraft()" class="btn-save-draft">
-            <span class="btn-icon">
-              <fa-icon [icon]="['fas', 'floppy-disk']" />
-            </span>
-            Save Draft
-          </button>
-          <button class="btn-next" (click)="nextStep()">Next</button>
+          <jhi-button-group [data]="nextAndSaveButtons()" />
         </div>
       </div>
     </div>
@@ -279,19 +264,16 @@
         </section>
       </form>
       <div class="form-actions">
-        <button (click)="previousStep()" class="btn-back">
-          <span class="btn-icon">
-            <fa-icon [icon]="['fas', 'chevron-left']" />
-          </span>
-          Back
-        </button>
+        <jhi-button
+          [label]="'Back'"
+          [icon]="'chevron-left'"
+          [severity]="'primary'"
+          [variant]="'outlined'"
+          [disabled]="false"
+          (click)="previousStep()"
+        />
         <div class="action-right">
-          <button (click)="saveDraft()" class="btn-save-draft">
-            <span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']" /></span> Save Draft
-          </button>
-          <button (click)="publishJob()" class="btn-publish" [disabled]="basicInfoForm.invalid || positionDetailsForm.invalid">
-            Publish Job
-          </button>
+          <jhi-button-group [data]="publishAndSaveButtons()" />
         </div>
       </div>
     </div>
