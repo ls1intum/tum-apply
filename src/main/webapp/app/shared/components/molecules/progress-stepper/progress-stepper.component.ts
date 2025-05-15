@@ -31,6 +31,14 @@ export class ProgressStepperComponent {
   currentStep = signal<number>(1);
   steps = input<StepData[]>([]);
 
+  buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev || [], 'prev', this.currentStep()),
+  );
+
+  buttonGroupNext: Signal<ButtonGroupData> = computed(() =>
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext || [], 'next', this.currentStep()),
+  );
+
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {
       this.currentStep.set(index);
@@ -57,12 +65,4 @@ export class ProgressStepperComponent {
       }),
     };
   }
-
-  buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
-    this.buildButtonGroupData(this.steps()[this.currentStep() - 1]?.buttonGroupPrev || [], 'prev', this.currentStep()),
-  );
-
-  buttonGroupNext: Signal<ButtonGroupData> = computed(() =>
-    this.buildButtonGroupData(this.steps()[this.currentStep() - 1]?.buttonGroupNext || [], 'next', this.currentStep()),
-  );
 }
