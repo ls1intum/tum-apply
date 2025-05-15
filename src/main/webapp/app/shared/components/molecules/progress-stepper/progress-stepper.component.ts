@@ -32,11 +32,11 @@ export class ProgressStepperComponent {
   steps = input<StepData[]>([]);
 
   buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
-    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev || [], 'prev', this.currentStep()),
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev, 'prev', this.currentStep()),
   );
 
   buttonGroupNext: Signal<ButtonGroupData> = computed(() =>
-    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext || [], 'next', this.currentStep()),
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext, 'next', this.currentStep()),
   );
 
   goToStep(index: number): void {
