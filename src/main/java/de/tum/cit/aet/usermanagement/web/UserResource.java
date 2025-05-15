@@ -2,7 +2,7 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.security.SecurityUtils;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.dto.UserDTO;
+import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +20,9 @@ public class UserResource {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getCurrentUser() {
+    public ResponseEntity<UserShortDTO> getCurrentUser() {
         String email = SecurityUtils.getCurrentUserLogin().orElseThrow();
         User user = userService.findByEmail(email);
-        return ResponseEntity.ok(new UserDTO(user));
+        return ResponseEntity.ok(new UserShortDTO(user));
     }
 }
