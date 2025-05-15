@@ -144,8 +144,7 @@
       <div class="form-actions">
         <jhi-button [label]="'Cancel'" [icon]="'chevron-left'" [severity]="'primary'" [variant]="'outlined'" [disabled]="false" />
         <div class="action-right">
-          <jhi-button [label]="'Save Draft'" [icon]="'floppy-disk'" [severity]="'secondary'" [disabled]="false" (click)="saveDraft()" />
-          <jhi-button [label]="'Next'" [severity]="'primary'" [disabled]="false" (click)="nextStep()" />
+          <jhi-button-group [data]="nextAndSaveButtons()" />
         </div>
       </div>
     </div>
@@ -236,8 +235,7 @@
           (click)="previousStep()"
         />
         <div class="action-right">
-          <jhi-button [label]="'Save Draft'" [icon]="'floppy-disk'" [severity]="'secondary'" [disabled]="false" (click)="saveDraft()" />
-          <jhi-button [label]="'Next'" [severity]="'primary'" [disabled]="false" (click)="nextStep()" />
+          <jhi-button-group [data]="nextAndSaveButtons()" />
         </div>
       </div>
     </div>
@@ -275,13 +273,7 @@
           (click)="previousStep()"
         />
         <div class="action-right">
-          <jhi-button [label]="'Save Draft'" [icon]="'floppy-disk'" [severity]="'secondary'" [disabled]="false" (click)="saveDraft()" />
-          <jhi-button
-            [label]="'Publish Job'"
-            [severity]="'primary'"
-            [disabled]="basicInfoForm.invalid || positionDetailsForm.invalid"
-            (click)="publishJob()"
-          />
+          <jhi-button-group [data]="publishAndSaveButtons()" />
         </div>
       </div>
     </div>
