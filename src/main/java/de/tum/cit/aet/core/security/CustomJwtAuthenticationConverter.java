@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.security;
 
+import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.service.UserService;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    private final UserService userService;
+    private final AuthenticationService authenticationService;
 
-    public CustomJwtAuthenticationConverter(UserService userService) {
-        this.userService = userService;
+    public CustomJwtAuthenticationConverter(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @Override
@@ -32,10 +32,9 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
         String lastName = jwt.getClaimAsString("family_name");
 
         // Create user if missing and fetch database entity
-        User user = userService.provisionUserIfMissing(preferredUsername, firstName, lastName);
+        User user = authenticationService.provisionUserIfMissing(preferredUsername, firstName, lastName);
 
-        // Load all role names from the DB (e.g., ["ADMIN", "PROFESSOR"])
-        List<String> roles = userService.getRolesForUser(user);
+        List<String> roles = user.getResearchGroupRoles().stream().map(r -> r.getRole().name()).toList();
 
         Collection<GrantedAuthority> authorities = roles
             .stream()
