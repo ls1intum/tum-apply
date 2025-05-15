@@ -39,50 +39,6 @@ export class JobCreationFormComponent {
   positionDetailsForm: FormGroup = this.fb.group({});
   additionalInformationForm: FormGroup = this.fb.group({});
 
-  // Button Group Data consisting of 'Next' and 'Save Draft' Buttons
-  nextAndSaveButtons(): ButtonGroupData {
-    return {
-      direction: 'horizontal',
-      buttons: [
-        {
-          label: 'Save Draft',
-          icon: 'floppy-disk',
-          severity: 'secondary',
-          disabled: false,
-          onClick: () => this.saveDraft(),
-        },
-        {
-          label: 'Next',
-          icon: undefined,
-          severity: 'primary',
-          disabled: false,
-          onClick: () => this.nextStep(),
-        },
-      ],
-    };
-  }
-  // Button Group Data consisting of 'Publish Job' and 'Save Draft' Buttons
-  publishAndSaveButtons(): ButtonGroupData {
-    return {
-      direction: 'horizontal',
-      buttons: [
-        {
-          label: 'Save Draft',
-          icon: 'floppy-disk',
-          severity: 'secondary',
-          disabled: false,
-          onClick: () => this.saveDraft(),
-        },
-        {
-          label: 'Publish Job',
-          icon: undefined,
-          severity: 'primary',
-          disabled: this.basicInfoForm.invalid || this.positionDetailsForm.invalid,
-          onClick: () => this.publishJob(),
-        },
-      ],
-    };
-  }
   /**
    * Dropdown options used in the form
    */
@@ -129,6 +85,51 @@ export class JobCreationFormComponent {
 
   constructor(private fb: FormBuilder) {
     this.initForms();
+  }
+
+  // Button Group Data consisting of 'Next' and 'Save Draft' Buttons
+  nextAndSaveButtons(): ButtonGroupData {
+    return {
+      direction: 'horizontal',
+      buttons: [
+        {
+          label: 'Save Draft',
+          icon: 'floppy-disk',
+          severity: 'secondary',
+          disabled: false,
+          onClick: () => this.saveDraft(),
+        },
+        {
+          label: 'Next',
+          icon: undefined,
+          severity: 'primary',
+          disabled: false,
+          onClick: () => this.nextStep(),
+        },
+      ],
+    };
+  }
+  // Button Group Data consisting of 'Publish Job' and 'Save Draft' Buttons
+  publishAndSaveButtons(): ButtonGroupData {
+    return {
+      direction: 'horizontal',
+      buttons: [
+        {
+          label: 'Save Draft',
+          icon: 'floppy-disk',
+          severity: 'secondary',
+          disabled: false,
+          onClick: () => this.saveDraft(),
+        },
+        {
+          label: 'Publish Job',
+          icon: undefined,
+          severity: 'primary',
+          disabled: this.basicInfoForm.invalid || this.positionDetailsForm.invalid,
+          onClick: () => this.publishJob(),
+        },
+      ],
+    };
   }
 
   /**
