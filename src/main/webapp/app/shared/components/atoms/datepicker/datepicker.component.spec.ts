@@ -44,7 +44,7 @@ describe('DatePickerComponent', () => {
     expect(required.textContent).toBe('*');
   });
 
-  it('should emit ISO date string on valid date selection', () => {
+  it('should emit selectedDateChange with ISO string when a valid date is chosen', () => {
     const spy = jest.spyOn(component.selectedDateChange, 'emit');
     component.onDateChange(new Date(2025, 0, 1));
     expect(spy).toHaveBeenCalledWith('2025-01-01');
