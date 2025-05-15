@@ -422,7 +422,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       },
     },
     tag: {
-      fontSize: '0.5rem',
+      fontSize: '0.75rem',
       rounded: {
         borderRadius: '9999px',
       },
