@@ -73,6 +73,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/authenticate").permitAll()
                     .requestMatchers("/api/auth-info").permitAll()
                     .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                    .requestMatchers("/api/users/me").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .requestMatchers("/v3/api-docs/**").hasAuthority("ADMIN")
                     .requestMatchers("/management/health").permitAll()
