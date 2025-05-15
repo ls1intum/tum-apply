@@ -11,9 +11,9 @@
 
 <div class="flex m-2 pt-6 justify-between">
   <div>
-    <jhi-button-group [data]="getDataFromStepperButtonGroup(steps()[currentStep() - 1].buttonGroupPrev, 'prev', currentStep())" />
+    <jhi-button-group [data]="buttonGroupPrev()" />
   </div>
   <div>
-    <jhi-button-group [data]="getDataFromStepperButtonGroup(steps()[currentStep() - 1].buttonGroupNext, 'next', currentStep())" />
+    <jhi-button-group [data]="buttonGroupNext()" />
   </div>
 </div>

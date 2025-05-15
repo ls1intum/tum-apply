@@ -1,4 +1,4 @@
-import { Component, TemplateRef, input, signal } from '@angular/core';
+import { Component, Signal, TemplateRef, computed, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 
@@ -37,7 +37,7 @@ export class ProgressStepperComponent {
     }
   }
 
-  getDataFromStepperButtonGroup(steps: StepButton[], action: 'prev' | 'next', index: number): ButtonGroupData {
+  buildButtonGroupData(steps: StepButton[], action: 'prev' | 'next', index: number): ButtonGroupData {
     return {
       direction: 'horizontal',
       buttons: steps.map(button => {
@@ -57,4 +57,12 @@ export class ProgressStepperComponent {
       }),
     };
   }
+
+  buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1]?.buttonGroupPrev || [], 'prev', this.currentStep()),
+  );
+
+  buttonGroupNext: Signal<ButtonGroupData> = computed(() =>
+    this.buildButtonGroupData(this.steps()[this.currentStep() - 1]?.buttonGroupNext || [], 'next', this.currentStep()),
+  );
 }
