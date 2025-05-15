@@ -7,6 +7,7 @@ import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { JobFormDTO } from '../../../generated';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
+import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
 /**
  * JobCreationFormComponent
@@ -19,7 +20,7 @@ import { DatePickerComponent } from '../../../shared/components/atoms/datepicker
   standalone: true,
   templateUrl: './job-creation-form.component.html',
   styleUrls: ['./job-creation-form.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, DropdownComponent, DatePickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, DropdownComponent, DatePickerComponent, ButtonComponent],
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
