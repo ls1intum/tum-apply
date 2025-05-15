@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Tag } from 'primeng/tag';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
 
@@ -9,9 +9,9 @@ import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawes
   styleUrl: './tag.component.scss',
 })
 export class TagComponent {
-  @Input() text!: string;
-  @Input() color: 'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast' = 'primary';
-  @Input() icon?: IconDefinition;
-  @Input() round = false;
-  @Input() iconRight = false;
+  text = input<string>('');
+  color = input<'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast'>('primary');
+  icon = input<IconDefinition | undefined>(undefined);
+  round = input<boolean>(false);
+  iconRight = input<boolean>(false);
 }

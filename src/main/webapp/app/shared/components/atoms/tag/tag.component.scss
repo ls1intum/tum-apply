@@ -1,20 +1,9 @@
-::ng-deep .custom-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.icon {
+  &.right {
+    padding-left: 0.2rem;
+  }
 
-  gap: 0;
-
-  .icon {
-    display: inline-flex;
-    align-items: center;
-
-    &.right {
-      padding-left: 0.2rem;
-    }
-
-    &.left {
-      padding-right: 0.2rem;
-    }
+  &.left {
+    padding-right: 0.2rem;
   }
 }
