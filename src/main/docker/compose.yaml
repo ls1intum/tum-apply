@@ -21,7 +21,10 @@ services:
       file: ./keycloak.yml
       service: keycloak
   tumapply:
-    image: "ghcr.io/ls1tum/tum-apply:${IMAGE_TAG}"
+    #image: "ls1tum/tum-apply:${IMAGE_TAG}"
+    build:
+      context: ../../../
+      dockerfile: Dockerfile
     env_file:
       - src/main/docker/config/tumapply.env
     ports:
