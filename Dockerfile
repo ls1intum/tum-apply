@@ -1,12 +1,14 @@
 # Stage 1: Build Angular frontend with Node.js 22
-FROM --platform=linux/amd64 node:22 AS angular-build
+FROM --platform=linux/amd64 node:22-bullseye AS angular-build
 WORKDIR /tum-apply
 ENV NODE_OPTIONS=--max_old_space_size=4096
-COPY package.json package-lock.json ./
+
+COPY package*.json ./
+RUN npm ci
+
 COPY prebuild.mjs ./
 COPY angular.json tsconfig.json tsconfig.app.json ./
 COPY ngsw-config.json ./
-RUN npm ci
 
 COPY build.gradle ./
 COPY src/main/webapp ./src/main/webapp
