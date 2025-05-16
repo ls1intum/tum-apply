@@ -38,9 +38,7 @@ export default class ApplicationCreationPage3Component implements OnInit {
       skills: [this.data().skills, Validators.required],
     });
 
-    // Keep form values in sync with the model
     this.page3Form.valueChanges.subscribe(value => {
-      // this.data().desiredStartDate = value.desiredStartDate;
       this.data().experiences = value.experiences;
       this.data().motivation = value.motivation;
       this.data().skills = value.skills;

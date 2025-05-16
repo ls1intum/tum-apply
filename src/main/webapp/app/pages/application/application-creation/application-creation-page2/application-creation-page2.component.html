@@ -1,7 +1,17 @@
 <jhi-divider label="Bachelor" />
 <div class="form-row">
-  <jhi-string-input label="Bachelor Degree Name" [required]="true" [(value)]="data().bachelorDegreeName" />
-  <jhi-string-input label="Bachelor Degree University" [required]="true" [(value)]="data().bachelorDegreeUniversity" />
+  <jhi-string-input
+    label="Bachelor Degree Name"
+    formControlName="bachelorDegreeName"
+    [required]="true"
+    [(value)]="data().bachelorDegreeName"
+  />
+  <jhi-string-input
+    label="Bachelor Degree University"
+    formControlName="bachelorDegreeUniversity"
+    [required]="true"
+    [(value)]="data().bachelorDegreeUniversity"
+  />
 </div>
 <div class="form-row">
   <div class="w-1/2 pr-4">
@@ -15,13 +25,18 @@
     />
   </div>
   <div class="w-1/2 pr-4">
-    <jhi-string-input label="Bachelor Grade" [required]="true" [(value)]="data().bachelorGrade" />
+    <jhi-string-input label="Bachelor Grade" formControlName="bachelorGrade" [required]="true" [(value)]="data().bachelorGrade" />
   </div>
 </div>
 <jhi-divider label="Master" />
 <div class="form-row">
-  <jhi-string-input label="Master Degree Name" [required]="true" [(value)]="data().masterDegreeName" />
-  <jhi-string-input label="Master Degree University" [required]="true" [(value)]="data().masterDegreeUniversity" />
+  <jhi-string-input label="Master Degree Name" formControlName="masterDegreeName" [required]="true" [(value)]="data().masterDegreeName" />
+  <jhi-string-input
+    label="Master Degree University"
+    formControlName="masterDegreeUniversity"
+    [required]="true"
+    [(value)]="data().masterDegreeUniversity"
+  />
 </div>
 <div class="form-row">
   <div class="w-1/2 pr-4">
@@ -35,7 +50,6 @@
     />
   </div>
   <div class="w-1/2 pr-4">
-    <!-- <jhi-string-input label="Master Grading Scale" [required]="true" [(value)]="data().masterGradingScale" /> -->
-    <jhi-string-input label="Master Grade" [required]="true" [(value)]="data().masterGrade" />
+    <jhi-string-input label="Master Grade" formControlName="masterGrade" [required]="true" [(value)]="data().masterGrade" />
   </div>
 </div>

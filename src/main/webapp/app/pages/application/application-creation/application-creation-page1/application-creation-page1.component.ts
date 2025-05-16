@@ -89,20 +89,6 @@ export const dropdownNationality: DropdownOption[] = [
   { value: 'vatican', name: 'Vatican' },
 ];
 
-@Component({
-  selector: 'jhi-application-creation-page1',
-  imports: [CommonModule, StringInputComponent, DividerComponent, DropdownComponent, DatePickerComponent],
-  templateUrl: './application-creation-page1.component.html',
-  styleUrl: './application-creation-page1.component.scss',
-})
-export default class ApplicationCreationPage1Component {
-  data = model.required<ApplicationCreationPage1Data>();
-
-  dropdownGenderLocal = dropdownGender;
-  dropdownLanguageLocal = dropdownLanguage;
-  dropdownNationalityLocal = dropdownNationality;
-}
-
 export const getPage1FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage1Data => {
   return {
     firstName: application.applicant?.user?.firstName ?? '',
@@ -122,3 +108,17 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     streetnumber: '', // TODO
   };
 };
+
+@Component({
+  selector: 'jhi-application-creation-page1',
+  imports: [CommonModule, StringInputComponent, DividerComponent, DropdownComponent, DatePickerComponent],
+  templateUrl: './application-creation-page1.component.html',
+  styleUrl: './application-creation-page1.component.scss',
+})
+export default class ApplicationCreationPage1Component {
+  data = model.required<ApplicationCreationPage1Data>();
+
+  dropdownGenderLocal = dropdownGender;
+  dropdownLanguageLocal = dropdownLanguage;
+  dropdownNationalityLocal = dropdownNationality;
+}

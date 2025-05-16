@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { Component, OnInit, model, output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
@@ -31,19 +32,6 @@ export const masterGradingScale: DropdownOption[] = Object.values(ApplicantDTO.M
     .replace(/\b\w/g, c => c.toUpperCase()),
 }));
 
-@Component({
-  selector: 'jhi-application-creation-page2',
-  imports: [CommonModule, StringInputComponent, DividerComponent, DropdownComponent],
-  templateUrl: './application-creation-page2.component.html',
-  styleUrl: './application-creation-page2.component.scss',
-})
-export default class ApplicationCreationPage2Component {
-  data = model.required<ApplicationCreationPage2Data>();
-
-  bachelorGradingScaleLocal = bachelorGradingScale;
-  masterGradingScaleLocal = masterGradingScale;
-}
-
 export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
   return {
     bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
@@ -56,3 +44,42 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
     masterGrade: application.applicant?.masterGrade ?? '',
   };
 };
+
+@Component({
+  selector: 'jhi-application-creation-page2',
+  imports: [CommonModule, StringInputComponent, DividerComponent, DropdownComponent],
+  templateUrl: './application-creation-page2.component.html',
+  styleUrl: './application-creation-page2.component.scss',
+})
+export default class ApplicationCreationPage2Component implements OnInit {
+  bachelorGradingScaleLocal = bachelorGradingScale;
+  masterGradingScaleLocal = masterGradingScale;
+
+  data = model.required<ApplicationCreationPage2Data>();
+  valid = output<boolean>();
+
+  form!: FormGroup;
+
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      bachelorDegreeName: [this.data().bachelorDegreeName, Validators.required],
+      bachelorDegreeUniversity: [this.data().bachelorDegreeUniversity, Validators.required],
+      bachelorGrade: [this.data().bachelorGrade, Validators.required],
+      masterDegreeName: [this.data().masterDegreeName, Validators.required],
+      masterDegreeUniversity: [this.data().masterDegreeUniversity, Validators.required],
+      masterGrade: [this.data().masterGrade, Validators.required],
+    });
+
+    this.form.valueChanges.subscribe(value => {
+      Object.assign(this.data(), value);
+    });
+
+    this.form.statusChanges.subscribe(() => {
+      this.valid.emit(this.form.valid);
+    });
+
+    this.valid.emit(this.form.valid);
+  }
+}
