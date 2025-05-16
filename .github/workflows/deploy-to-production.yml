@@ -1,4 +1,4 @@
-name: Deploy to a test-server
+name: Deploy to a production
 
 on:
   workflow_dispatch:
@@ -35,4 +35,5 @@ jobs:
       docker-compose-file: './docker/compose.app.yaml'
       main-image-name: ls1intum/tum-apply
       image-tag: ${{ inputs.image-tag }}
+      deployment-base-path: '/opt/tum-apply'
     secrets: inherit
