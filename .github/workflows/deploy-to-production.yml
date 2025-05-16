@@ -29,10 +29,10 @@ env:
 
 jobs:
   deploy:
-    uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
+    uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@v1.1.0
     with:
       environment: ${{ inputs.environment_name }}
-      docker-compose-file: './compose.yaml'
-      main-image-name: ls1intum/tum-apply
+      docker-compose-file: './docker/compose.yaml'
+      main-image-name: ghcr.io/ls1intum/tum-apply
       image-tag: ${{ inputs.commit_sha }}
     secrets: inherit
