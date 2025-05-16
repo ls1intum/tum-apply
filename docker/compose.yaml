@@ -1,0 +1,83 @@
+name: tumapply
+services:
+  mysql:
+    image: mysql:9.2.0
+    volumes:
+      - ./config/mysql:/etc/mysql/conf.d
+    env_file:
+      - ../src/main/docker/config/mysql.env
+    expose:
+      - '3306'
+    command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --silent
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 300s
+    restart: always
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.1
+    command: 'start-dev --import-realm'
+    volumes:
+      - ./realm-config:/opt/keycloak/data/import
+      - ./realm-config/keycloak-health-check.sh:/opt/keycloak/health-check.sh
+    environment:
+      - KC_DB=dev-file
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_FEATURES=scripts
+      - KC_HTTP_PORT=9080
+      - KC_HTTPS_PORT=9443
+      - KC_HEALTH_ENABLED=true
+      - KC_HTTP_MANAGEMENT_PORT=9990
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 127.0.0.1:9080:9080
+      - 127.0.0.1:9443:9443
+    healthcheck:
+      test: 'bash /opt/keycloak/health-check.sh'
+      interval: 5s
+      timeout: 5s
+      # Increased retries due to slow Keycloak startup in GitHub Actions using MacOS
+      retries: 50
+      start_period: 10s
+    labels:
+      org.springframework.boot.ignore: true
+  tumapply:
+    image: "ls1tum/tum-apply:${IMAGE_TAG}"
+    env_file:
+      - ../src/main/docker/config/tumapply.env
+    ports:
+      - '127.0.0.1:8080:8080'
+    expose:
+      - '8080'
+    healthcheck:
+      test: wget -nv -t1 --spider http://localhost:8080/actuator/health || exit 1
+      start_period: 600s
+      interval: 1s
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+  nginx:
+    image: nginx:1.27.4-alpine-slim
+    ports:
+      - '80:80'
+      - '443:443'
+    expose:
+      - '80'
+      - '443'
+    healthcheck:
+      test: service nginx status || exit 1
+      start_period: 10s
+    restart: always
+    volumes:
+      - ./src/main/resources/config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - type: bind
+        source: '/var/lib/rbg-cert/live/fullchain.pem'
+        target: '/certs/fullchain.pem'
+      - type: bind
+        source: '/var/lib/rbg-cert/live/privkey.pem'
+        target: '/certs/privkey.pem'
