@@ -109,21 +109,6 @@ header {
 .form-field {
   margin-bottom: 1.25rem;
 
-  label {
-    display: block;
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
-
-    .required {
-      color: var(--p-danger-color);
-      margin-left: 0.125rem;
-    }
-
-    .disabled {
-      color: var(--p-background-disabled);
-    }
-  }
-
   input,
   textarea,
   select {

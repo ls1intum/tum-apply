@@ -2,17 +2,15 @@
   @if (label() !== undefined) {
     <label class="label">
       {{ label() }}
+      @if (icon() !== undefined) {
+        <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+      }
       @if (required()) {
         <span class="required">*</span>
       }
     </label>
   }
-
-  <div class="relative flex items-center">
-    @if (icon() !== undefined) {
-      <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
-    }
-
+  <div [ngClass]="{ error: error() }">
     <input
       type="text"
       class="string-input"
@@ -20,8 +18,9 @@
       [disabled]="disabled()"
       [ngModel]="model()"
       (ngModelChange)="modelChange.emit($event)"
-      [attr.required]="required() ? true : null"
+      [required]="required()"
       pInputText
+      class="custom-string-input"
     />
   </div>
 </div>

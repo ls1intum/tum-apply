@@ -2,11 +2,6 @@
   display: flex;
   flex-direction: column;
 
-  .required {
-    color: var(--p-danger-color);
-    margin-left: 0.125rem;
-  }
-
   // Add styling for labels on the left of the dropdown
   &.label-left {
     flex-direction: row;

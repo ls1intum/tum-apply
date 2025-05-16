@@ -18,7 +18,7 @@ export class StringInputComponent {
   label = input<string | undefined>(undefined);
   placeholder = input<string | undefined>(undefined);
   required = input<boolean>(false);
-
+  error = input<boolean>(false);
   model = input<string>('');
   modelChange = output<string>();
 }

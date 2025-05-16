@@ -1,47 +1,26 @@
-.jhi-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+c.p-inputtext:enabled:focus {
+  box-shadow: none;
+  border: 0.1rem solid var(--p-primary-color);
 }
 
-.label {
-  font-size: 0.875rem; // text-sm
-  font-weight: 500;
-  color: var(--p-color-default, #374151);
-}
-
-.required {
-  color: var(--p-danger-color);
-  margin-left: 0.25rem;
-}
-
-.icon {
-  position: absolute;
-  left: 0.75rem;
-  color: var(--p-color-default, #6b7280);
-  pointer-events: none;
-}
-
-.string-input {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  padding-left: 2.5rem;
+.p-inputtext {
+  color: var(--text-primary);
   border: 0.1rem solid var(--p-border-default);
-  border-radius: 0.375rem;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+}
 
-  &:focus {
-    outline: none;
-    border-color: var(--p-primary-color);
-    box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.05);
-  }
+.p-inputtext::placeholder {
+  color: var(--p-text-primary);
+}
 
-  &:disabled {
-    background-color: var(--p-background-disabled);
-    border-color: var(--p-background-disabled);
-    color: var(--p-color-disabled);
-    cursor: not-allowed;
-  }
+.p-inputtext:disabled {
+  background-color: var(--p-background-disabled);
+  color: var(--p-text-disabled);
+}
+
+.p-inputtext:disabled::placeholder {
+  color: var(--p-text-disabled);
+}
+
+.error .p-inputtext {
+  border-color: var(--p-danger-color) !important;
 }
