@@ -1,4 +1,4 @@
-name: Deploy to a test-server
+name: Deploy to a production
 
 on:
   workflow_dispatch:
