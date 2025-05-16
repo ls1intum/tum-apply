@@ -35,5 +35,5 @@ jobs:
       docker-compose-file: './docker/compose.yaml'
       main-image-name: ls1intum/tum-apply
       image-tag: ${{ inputs.image-tag }}
-      deployment-base-path: '/opt/tum-apply/opt/tum-apply'
+      deployment-base-path: '/tum-apply/docker'
     secrets: inherit
