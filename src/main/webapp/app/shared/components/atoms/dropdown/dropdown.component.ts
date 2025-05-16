@@ -3,11 +3,10 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 export type DropdownOption = {
   name: string;
-  value: string;
+  value: string | number;
   icon?: string;
 };
 
@@ -23,6 +22,7 @@ export class DropdownComponent {
   items = input<DropdownOption[]>([]);
   selected = input<DropdownOption | undefined>(undefined);
   label = input<string>('');
+  required = input<boolean>(false);
   placeholder = input<string>('Select...');
   disabled = input<boolean>(false);
   labelField = input<string>('name');
@@ -32,13 +32,11 @@ export class DropdownComponent {
   labelPosition = input<'top' | 'left'>('top');
   width = input<string>('50%');
 
-  selectedChange = output<any>();
+  selectedChange = output<DropdownOption>();
 
   isOpen = false;
-  protected readonly faChevronUp = faChevronUp;
-  protected readonly faChevronDown = faChevronDown;
 
-  onSelectionChange(value: any): void {
+  onSelectionChange(value: DropdownOption): void {
     this.selectedChange.emit(value);
   }
 }
