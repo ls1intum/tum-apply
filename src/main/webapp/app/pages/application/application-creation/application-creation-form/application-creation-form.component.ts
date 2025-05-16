@@ -1,23 +1,25 @@
-import { Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule } from '@angular/common';
-import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO, JobResourceService } from 'app/generated';
+import { ApplicationResourceService, CreateApplicationDTO, JobCardDTO, JobResourceService } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
-  dropdownGender,
-  dropdownLanguage,
-  dropdownNationality,
+  getPage1FromApplication,
 } from '../application-creation-page1/application-creation-page1.component';
 import ApplicationCreationPage3Component, {
   ApplicationCreationPage3Data,
+  getPage3FromApplication,
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
   bachelorGradingScale,
+  getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
+
+type ApplicationFormMode = 'create' | 'edit' | 'view';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -74,10 +76,19 @@ export default class ApplicationCreationFormComponent implements OnInit {
   private jobResourceService = inject(JobResourceService);
   private router = inject(Router);
 
-  stepData: StepData[] = [];
-  jobId?: string;
+  stepData = signal<StepData[]>([]);
   title?: string = '';
-  mode?: 'create' | 'view' | 'edit';
+
+  jobId?: string;
+  job?: JobCardDTO;
+
+  mode?: ApplicationFormMode;
+
+  page1Valid = signal<boolean>(false);
+  page2Valid = signal<boolean>(false);
+  page3Valid = signal<boolean>(false);
+
+  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
 
   constructor(private route: ActivatedRoute) {
     this.route.url.subscribe(async segments => {
@@ -87,14 +98,15 @@ export default class ApplicationCreationFormComponent implements OnInit {
         this.jobId = this.route.snapshot.paramMap.get('job_id')!;
         this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
           this.title = job.title;
+          this.job = job;
         });
       } else if (firstSegment === 'edit' || firstSegment === 'view') {
         this.mode = firstSegment;
         const applicationId = this.route.snapshot.paramMap.get('application_id')!;
         this.applicationResourceService.getApplicationById(applicationId).subscribe(application => {
-          this.page1 = this.getPage1FromApplication(application);
-          this.page2 = this.getPage2FromApplication(application);
-          this.page3 = this.getPage3FromApplication(application);
+          this.page1 = getPage1FromApplication(application);
+          this.page2 = getPage2FromApplication(application);
+          this.page3 = getPage3FromApplication(application);
         });
       } else {
         this.router.navigate(['/404']);
@@ -102,51 +114,11 @@ export default class ApplicationCreationFormComponent implements OnInit {
     });
   }
 
-  getPage1FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage1Data {
-    return {
-      firstName: application.applicant?.user?.firstName ?? '',
-      lastName: application.applicant?.user?.lastName ?? '',
-      email: application.applicant?.user?.email ?? '',
-      phoneNumber: application.applicant?.user?.phoneNumber ?? '',
-      gender: dropdownGender.find(val => val.value === application.applicant?.user?.gender),
-      nationality: dropdownNationality.find(val => val.value === application.applicant?.user?.nationality),
-      language: dropdownLanguage.find(val => val.value === application.applicant?.user?.selectedLanguage),
-      dateOfBirth: application.applicant?.user?.birthday ?? '',
-      website: application.applicant?.user?.website ?? '',
-      linkedIn: application.applicant?.user?.linkedinUrl ?? '',
-      street: application.applicant?.street ?? '',
-      city: application.applicant?.city ?? '',
-      country: application.applicant?.country ?? '',
-      postcode: application.applicant?.postalCode ?? '',
-      streetnumber: '', // TODO
-    };
-  }
-  getPage2FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage2Data {
-    return {
-      bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
-      bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-      bachelorGradingScale: bachelorGradingScale[0], // TODO
-      bachelorGrade: application.applicant?.bachelorGrade ?? '',
-      masterDegreeName: application.applicant?.masterDegreeName ?? '',
-      masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
-      masterGradingScale: masterGradingScale[0], // application.applicant?.masterGradingScale ?? ApplicantDTO.MasterGradingScaleEnum.OneToFour,
-      masterGrade: application.applicant?.masterGrade ?? '',
-    };
-  }
-  getPage3FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage3Data {
-    return {
-      desiredStartDate: application.desiredDate ?? '',
-      motivation: application.motivation ?? '',
-      skills: application.specialSkills ?? '',
-      experiences: application.projects ?? '',
-    };
-  }
-
   ngOnInit(): void {
     const sendData = (state: 'SAVED' | 'SENT') => {
       this.sendCreateApplicationData(state);
     };
-    this.stepData = [
+    this.stepData.set([
       {
         name: 'Personal Information', // TODO translation
         panelTemplate: this.panel1,
@@ -228,13 +200,13 @@ export default class ApplicationCreationFormComponent implements OnInit {
             onClick() {
               sendData('SENT');
             },
-            disabled: false,
+            disabled: this.allPagesValid(),
             label: 'Send',
             changePanel: false,
           },
         ],
       },
-    ];
+    ]);
   }
 
   sendCreateApplicationData(state: 'SAVED' | 'SENT') {
@@ -263,12 +235,24 @@ export default class ApplicationCreationFormComponent implements OnInit {
       applicationState: state,
       answers: new Set(),
       desiredDate: this.page3.desiredStartDate, // TODO
-      job: undefined, // TODO,
+      job: this.job, // TODO,
       motivation: this.page3.motivation,
       specialSkills: this.page3.skills,
       projects: this.page3.experiences,
     };
 
     this.applicationResourceService.createApplication(createApplication);
+  }
+
+  onPage1ValidityChanged(isValid: boolean): void {
+    this.page1Valid.set(isValid);
+  }
+
+  onPage2ValidityChanged(isValid: boolean): void {
+    this.page2Valid.set(isValid);
+  }
+
+  onPage3ValidityChanged(isValid: boolean): void {
+    this.page3Valid.set(isValid);
   }
 }

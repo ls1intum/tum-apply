@@ -1,18 +1,26 @@
-<div class="form-row flex flex-col w-1/2">
-  <label>Desired Start Date<span class="text-red-600">*</span></label>
-  <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
-</div>
-<jhi-divider label="Uploads" />
-<div class="form-row">
-  <jhi-string-input label="What is your motivation to take this position?" [required]="true" [(value)]="data().motivation" />
-</div>
-<div class="form-row">
-  <jhi-string-input label="What are your special skills?" [required]="true" [(value)]="data().skills" />
-</div>
-<div class="form-row">
-  <jhi-string-input
-    label="If you already worked in research topics, what are your experiences?"
-    [required]="true"
-    [(value)]="data().experiences"
-  />
-</div>
+<form [formGroup]="page3Form">
+  <div class="form-row flex flex-col w-1/2">
+    <label>Desired Start Date<span class="text-red-600">*</span></label>
+    <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
+  </div>
+  <jhi-divider label="Uploads" />
+  <div class="form-row">
+    <jhi-string-input
+      label="What is your motivation to take this position?"
+      formControlName="motivation"
+      [required]="true"
+      [(value)]="data().motivation"
+    />
+  </div>
+  <div class="form-row">
+    <jhi-string-input label="What are your special skills?" formControlName="skills" [required]="true" [(value)]="data().skills" />
+  </div>
+  <div class="form-row">
+    <jhi-string-input
+      label="If you already worked in research topics, what are your experiences?"
+      formControlName="experiences"
+      [required]="true"
+      [(value)]="data().experiences"
+    />
+  </div>
+</form>

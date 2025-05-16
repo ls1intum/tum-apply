@@ -22,15 +22,9 @@ class MockApplicationResourceService {
   createApplication = jest.fn();
 }
 
-class MockJobResourceService {
-  getJobDetail = jest.fn().mockReturnValue(of({}));
-}
-
 describe('ApplicationCreationFormComponent create', () => {
   let component: ApplicationCreationFormComponent;
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
-
-  // let componentRef: ComponentRef<ApplicationCreationFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -77,7 +71,6 @@ describe('ApplicationCreationFormComponent create', () => {
     library.addIcons(faArrowRight);
     library.addIcons(faArrowLeft);
 
-    // componentRef = fixture.componentRef;
     fixture.detectChanges();
   });
 

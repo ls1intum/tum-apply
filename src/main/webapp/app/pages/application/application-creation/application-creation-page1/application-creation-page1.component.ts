@@ -5,6 +5,7 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
+import { ApplicationForApplicantDTO } from 'app/generated';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -101,3 +102,23 @@ export default class ApplicationCreationPage1Component {
   dropdownLanguageLocal = dropdownLanguage;
   dropdownNationalityLocal = dropdownNationality;
 }
+
+export const getPage1FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage1Data => {
+  return {
+    firstName: application.applicant?.user?.firstName ?? '',
+    lastName: application.applicant?.user?.lastName ?? '',
+    email: application.applicant?.user?.email ?? '',
+    phoneNumber: application.applicant?.user?.phoneNumber ?? '',
+    gender: dropdownGender.find(val => val.value === application.applicant?.user?.gender),
+    nationality: dropdownNationality.find(val => val.value === application.applicant?.user?.nationality),
+    language: dropdownLanguage.find(val => val.value === application.applicant?.user?.selectedLanguage),
+    dateOfBirth: application.applicant?.user?.birthday ?? '',
+    website: application.applicant?.user?.website ?? '',
+    linkedIn: application.applicant?.user?.linkedinUrl ?? '',
+    street: application.applicant?.street ?? '',
+    city: application.applicant?.city ?? '',
+    country: application.applicant?.country ?? '',
+    postcode: application.applicant?.postalCode ?? '',
+    streetnumber: '', // TODO
+  };
+};

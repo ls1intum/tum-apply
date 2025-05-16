@@ -10,10 +10,10 @@
 </ng-template>
 <ng-template #panel3>
   <div class="h-full flex p-1 m-4">
-    <jhi-application-creation-page3 class="w-full" [(data)]="page3" />
+    <jhi-application-creation-page3 class="w-full" [(data)]="page3" (valid)="onPage3ValidityChanged($event)" />
   </div>
 </ng-template>
 
 <div class="m-4 p-1">
-  <jhi-progress-stepper [steps]="stepData" />
+  <jhi-progress-stepper [steps]="stepData()" />
 </div>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, model } from '@angular/core';
-import { ApplicantDTO } from 'app/generated';
+import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -44,3 +44,16 @@ export default class ApplicationCreationPage2Component {
   bachelorGradingScaleLocal = bachelorGradingScale;
   masterGradingScaleLocal = masterGradingScale;
 }
+
+export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
+  return {
+    bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
+    bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
+    bachelorGradingScale: bachelorGradingScale[0], // TODO
+    bachelorGrade: application.applicant?.bachelorGrade ?? '',
+    masterDegreeName: application.applicant?.masterDegreeName ?? '',
+    masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
+    masterGradingScale: masterGradingScale[0],
+    masterGrade: application.applicant?.masterGrade ?? '',
+  };
+};
