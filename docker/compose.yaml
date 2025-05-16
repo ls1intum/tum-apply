@@ -5,7 +5,7 @@ services:
     volumes:
       - ./config/mysql:/etc/mysql/conf.d
     env_file:
-      - ../src/main/docker/config/mysql.env
+      - ../docker/mysql.env
     expose:
       - '3306'
     command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
@@ -48,7 +48,7 @@ services:
   tumapply:
     image: "ls1tum/tum-apply:${IMAGE_TAG}"
     env_file:
-      - ../src/main/docker/config/tumapply.env
+      - ../docker/tumapply.env
     ports:
       - '127.0.0.1:8080:8080'
     expose:
