@@ -5,6 +5,11 @@
 
   .p-inputtext {
     border: 0.1rem solid var(--p-border-default);
+
+    &:disabled {
+      background-color: var(--p-background-disabled);
+      color: var(--p-text-disabled);
+    }
   }
 
   .p-inputtext:enabled:focus {
@@ -16,10 +21,18 @@
     background-color: var(--p-primary-color);
     color: var(--p-text-on-primary);
     border: 0.1rem;
+
+    &:disabled {
+      background-color: var(--p-text-disabled);
+    }
   }
 
   .p-inputtext::placeholder {
     color: var(--p-text-primary);
+  }
+
+  .p-inputtext:disabled::placeholder {
+    color: var(--p-text-disabled);
   }
 
   .p-datepicker-clear-button {

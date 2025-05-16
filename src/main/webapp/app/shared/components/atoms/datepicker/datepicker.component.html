@@ -11,6 +11,7 @@
     (onShow)="isCalendarOpen = true"
     [(ngModel)]="modelDate"
     [placeholder]="placeholder()"
+    [disabled]="disabled()"
     [showButtonBar]="true"
     [style]="{ width: width() }"
     class="custom-datepicker"
