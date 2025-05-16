@@ -7,7 +7,7 @@
   </label>
   <div>
     @if (icon() !== undefined) {
-      <fa-icon class="absolute pl-2 pt-2 text-grey-600" [icon]="['fas', icon() ?? '']" />
+      <fa-icon class="absolute pl-2 icon text-grey-600" [icon]="['fas', icon() ?? '']" />
     }
     <input type="text" class="w-full" pInputText [id]="id()" [value]="value()" (input)="onInput($event)" [disabled]="disabled()" />
   </div>
