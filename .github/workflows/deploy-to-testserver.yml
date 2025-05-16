@@ -31,8 +31,8 @@ jobs:
   deploy:
     uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
     with:
-      environment: ${{ inputs.environment }}
+      environment: ${{ inputs.environment_name }}
       docker-compose-file: './compose.yaml'
       main-image-name: ls1intum/tum-apply
-      image-tag: ${{ inputs.image-tag }}
+      image-tag: ${{ inputs.commit_sha }}
     secrets: inherit
