@@ -14,7 +14,6 @@ import ApplicationCreationPage2Component, {
 } from '../application-creation-page2/application-creation-page2.component';
 import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocalDate } from 'app/shared/components/atoms/datepicker/datepicker.component';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -238,7 +237,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
           firstName: this.page1.firstName,
           lastName: this.page1.lastName,
           email: this.page1.email,
-          gender: this.page1.gender?.value,
+          gender: this.page1.gender?.value as string,
           linkedinUrl: this.page1.linkedIn,
           nationality: this.page1.nationality,
           phoneNumber: this.page1.phoneNumber,
