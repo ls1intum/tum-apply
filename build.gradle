@@ -62,6 +62,10 @@ if (project.hasProperty("prod")) {
 
 apply from: "gradle/war.gradle"
 
+tasks.register("npmSetCacheDockerfile", NpmTask) {
+  args = ["set", "cache", "/opt/tum-apply/.npm"]
+}
+
 idea {
     module {
         excludeDirs += files("node_modules")
