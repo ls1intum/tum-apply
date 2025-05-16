@@ -115,9 +115,8 @@ export default class ApplicationCreationFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const sendData = (state: 'SAVED' | 'SENT') => {
+    const sendData = (state: 'SAVED' | 'SENT'): void => {
       this.sendCreateApplicationData(state);
-      console.log(this.allPagesValid());
     };
     this.stepData.set([
       {
@@ -235,8 +234,8 @@ export default class ApplicationCreationFormComponent implements OnInit {
       },
       applicationState: state,
       answers: new Set(),
-      desiredDate: this.page3.desiredStartDate, // TODO
-      job: this.job, // TODO,
+      desiredDate: this.page3.desiredStartDate,
+      job: this.job,
       motivation: this.page3.motivation,
       specialSkills: this.page3.skills,
       projects: this.page3.experiences,
