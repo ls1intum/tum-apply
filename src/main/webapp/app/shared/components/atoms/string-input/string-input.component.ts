@@ -23,17 +23,18 @@ export class StringInputComponent implements ControlValueAccessor {
   icon = input<string | undefined>(undefined);
   id = input<string>();
   disabled = input<boolean>(false);
-  private _disabled = signal<boolean>(this.disabled());
-  readonly disabledComputed = computed(() => this._disabled());
   required = input<boolean>(false);
   area = input<boolean>(false);
+
+  readonly disabledComputed = computed(() => this._disabled());
+  private _disabled = signal<boolean>(this.disabled());
 
   private onChange: (_: any) => void = () => {};
   private onTouched: () => void = () => {};
 
   onInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.value.set(input.value);
+    const _input = event.target as HTMLInputElement;
+    this.value.set(_input.value);
   }
 
   writeValue(value: string): void {

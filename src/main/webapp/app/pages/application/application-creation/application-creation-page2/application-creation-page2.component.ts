@@ -8,13 +8,12 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradingScale: DropdownOption; // ApplicantDTO.BachelorGradingScaleEnum;
+  bachelorGradingScale: DropdownOption;
   bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
   masterGradingScale: DropdownOption;
   masterGrade: string;
-  // TODO Fileupload
 };
 
 export const bachelorGradingScale: DropdownOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
