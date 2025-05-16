@@ -1,24 +1,26 @@
 <div class="jhi-input-wrapper flex flex-col gap-2">
-  @if (label !== undefined) {
+  @if (label() !== undefined) {
     <label class="label">
-      {{ label }}
-      @if (required) {
+      {{ label() }}
+      @if (required()) {
         <span class="required">*</span>
       }
     </label>
   }
+
   <div class="relative flex items-center">
-    @if (icon !== undefined) {
-      <fa-icon class="icon" [icon]="['fas', icon ?? '']" />
+    @if (icon() !== undefined) {
+      <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
     }
+
     <input
       type="text"
       class="string-input"
-      [placeholder]="placeholder"
-      [disabled]="disabled"
-      [ngModel]="model"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [ngModel]="model()"
       (ngModelChange)="modelChange.emit($event)"
-      [attr.required]="required ? true : null"
+      [attr.required]="required() ? true : null"
       pInputText
     />
   </div>

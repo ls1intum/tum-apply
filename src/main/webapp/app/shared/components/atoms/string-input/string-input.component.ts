@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewEncapsulation, input } from '@angular/core';
+import { Component, ViewEncapsulation, input, output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -18,5 +18,7 @@ export class StringInputComponent {
   label = input<string | undefined>(undefined);
   placeholder = input<string | undefined>(undefined);
   required = input<boolean>(false);
-  modelChange = output<string>('');
+
+  model = input<string>('');
+  modelChange = output<string>();
 }

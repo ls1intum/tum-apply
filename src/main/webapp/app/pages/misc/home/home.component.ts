@@ -8,6 +8,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
+import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
 interface LocalDate {
   year: number;
@@ -19,7 +20,7 @@ interface LocalDate {
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, ButtonComponent, DatePickerComponent, DropdownComponent],
+  imports: [SharedModule, RouterModule, ButtonComponent, DatePickerComponent, DropdownComponent, StringInputComponent],
 })
 export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
@@ -29,6 +30,10 @@ export default class HomeComponent implements OnInit {
   // Dropdown:
   selectedLocation1: any;
   selectedLocation2: any;
+
+  testInput = '';
+  testInputDisabled = '';
+
   locations = [
     { name: 'Munich Campus', value: 'munich', icon: 'chevron-up' },
     { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },
