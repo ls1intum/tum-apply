@@ -52,7 +52,7 @@ FROM ${WAR_FILE_STAGE} AS war_file
 FROM docker.io/library/eclipse-temurin:21-jdk AS runtime
 
 #default path of the built .war files
-ARG WAR_FILE_PATH="/opt/artemis/build/libs"
+ARG WAR_FILE_PATH="/opt/tum-apply/build/libs"
 #default UID/GID of the artemis user
 ARG UID=1337
 ARG GID=1337
