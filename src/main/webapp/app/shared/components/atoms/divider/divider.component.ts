@@ -12,4 +12,3 @@ export class DividerComponent {
   label = input<string | undefined>(undefined);
   layout = input<'vertical' | 'horizontal'>('horizontal');
 }
-//https://primeng.org/divider

@@ -1,6 +1,8 @@
-import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule } from '@angular/common';
+import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO } from 'app/generated';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -16,8 +18,6 @@ import ApplicationCreationPage2Component, {
   bachelorGradingScale,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
-import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO } from 'app/generated';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -86,7 +86,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         // TODO get jobInformation
       } else if (firstSegment === 'edit' || firstSegment === 'view') {
         this.mode = firstSegment;
-        let applicationId = this.route.snapshot.paramMap.get('application_id')!;
+        const applicationId = this.route.snapshot.paramMap.get('application_id')!;
         this.applicationResourceService.getApplicationById(applicationId).subscribe(application => {
           this.page1 = this.getPage1FromApplication(application);
           this.page2 = this.getPage2FromApplication(application);
@@ -114,18 +114,18 @@ export default class ApplicationCreationFormComponent implements OnInit {
       city: application.applicant?.city ?? '',
       country: application.applicant?.country ?? '',
       postcode: application.applicant?.postalCode ?? '',
-      streetnumber: '', //TODO
+      streetnumber: '', // TODO
     };
   }
   getPage2FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage2Data {
     return {
       bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
       bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-      bachelorGradingScale: bachelorGradingScale[0], //TODO
+      bachelorGradingScale: bachelorGradingScale[0], // TODO
       bachelorGrade: application.applicant?.bachelorGrade ?? '',
       masterDegreeName: application.applicant?.masterDegreeName ?? '',
       masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
-      masterGradingScale: masterGradingScale[0], //application.applicant?.masterGradingScale ?? ApplicantDTO.MasterGradingScaleEnum.OneToFour,
+      masterGradingScale: masterGradingScale[0], // application.applicant?.masterGradingScale ?? ApplicantDTO.MasterGradingScaleEnum.OneToFour,
       masterGrade: application.applicant?.masterGrade ?? '',
     };
   }
@@ -234,7 +234,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
   }
 
   sendCreateApplicationData(state: 'SAVED' | 'SENT') {
-    let createApplication: CreateApplicationDTO = {
+    const createApplication: CreateApplicationDTO = {
       applicant: {
         user: {
           birthday: this.page1.dateOfBirth,
@@ -247,14 +247,14 @@ export default class ApplicationCreationFormComponent implements OnInit {
           phoneNumber: this.page1.phoneNumber,
           website: this.page1.website,
           selectedLanguage: this.page1.language?.value as string,
-          //id?
+          // id?
         },
         bachelorDegreeName: this.page2.bachelorDegreeName,
         masterDegreeName: this.page2.masterDegreeName,
         bachelorGrade: this.page2.bachelorGrade,
         masterGrade: this.page2.masterGrade,
-        bachelorGradingScale: 'ONE_TO_FOUR', //this.page2.bachelorsGradingScale,
-        masterGradingScale: 'ONE_TO_FOUR', //this.page2.mastersGradingScale,
+        bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
+        masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
       },
       applicationState: state,
       answers: new Set(),

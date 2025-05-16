@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, model } from '@angular/core';
 import { ApplicantDTO } from 'app/generated';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
-import { DropdownOption, DropdownComponent } from 'app/shared/components/atoms/dropdown/dropdown.component';
+import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradingScale: DropdownOption; //ApplicantDTO.BachelorGradingScaleEnum;
+  bachelorGradingScale: DropdownOption; // ApplicantDTO.BachelorGradingScaleEnum;
   bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;

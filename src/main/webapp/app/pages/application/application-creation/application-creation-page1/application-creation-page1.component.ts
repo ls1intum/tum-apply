@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, model } from '@angular/core';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
 
@@ -23,18 +24,18 @@ export type ApplicationCreationPage1Data = {
   postcode: string;
 };
 
-export let dropdownGender: DropdownOption[] = [
+export const dropdownGender: DropdownOption[] = [
   { value: 'female', name: 'female' },
   { value: 'male', name: 'male' },
   { value: 'other', name: 'other' },
 ];
 
-export let dropdownLanguage: DropdownOption[] = [
+export const dropdownLanguage: DropdownOption[] = [
   { value: 'de', name: 'deutsch' },
   { value: 'en', name: 'english' },
 ];
 
-export let dropdownNationality: DropdownOption[] = [
+export const dropdownNationality: DropdownOption[] = [
   { value: 'albanian', name: 'Albanian' },
   { value: 'andorran', name: 'Andorran' },
   { value: 'armenian', name: 'Armenian' },
