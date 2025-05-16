@@ -1,18 +1,18 @@
-<div class="form-row">
-  <jhi-datepicker
-    [(selectedDate)]="data().desiredStartDate"
-    [label]="'Desired Start Date'"
-    [placeholder]="'Select a Start Date...'"
-    [width]="'50%'"
-  />
+<div class="form-row flex flex-col w-1/2">
+  <label>Desired Start Date<span class="text-red-600">*</span></label>
+  <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
 </div>
 <jhi-divider label="Uploads" />
 <div class="form-row">
-  <jhi-string-input label="motivation" [required]="true" [(value)]="data().motivation" />
+  <jhi-string-input label="What is your motivation to take this position?" [required]="true" [(value)]="data().motivation" />
 </div>
 <div class="form-row">
-  <jhi-string-input label="special-skill" [required]="true" [(value)]="data().skills" />
+  <jhi-string-input label="What are your special skills?" [required]="true" [(value)]="data().skills" />
 </div>
 <div class="form-row">
-  <jhi-string-input label="experience" [required]="true" [(value)]="data().experiences" />
+  <jhi-string-input
+    label="If you already worked in research topics, what are your experiences?"
+    [required]="true"
+    [(value)]="data().experiences"
+  />
 </div>

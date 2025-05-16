@@ -1,10 +1,11 @@
 import { Component, input, model } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import SharedModule from 'app/shared/shared.module';
 import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'jhi-string-input',
-  imports: [InputTextModule, FontAwesomeModule],
+  imports: [SharedModule, InputTextModule, FontAwesomeModule],
   templateUrl: './string-input.component.html',
   styleUrl: './string-input.component.scss',
 })

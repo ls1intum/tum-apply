@@ -4,13 +4,17 @@ import { CommonModule } from '@angular/common';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
-  dropdownGenderGlobal,
+  dropdownGender,
+  dropdownLanguage,
+  dropdownNationality,
 } from '../application-creation-page1/application-creation-page1.component';
 import ApplicationCreationPage3Component, {
   ApplicationCreationPage3Data,
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
+  bachelorGradingScale,
+  masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -34,8 +38,8 @@ export default class ApplicationCreationFormComponent implements OnInit {
     email: '',
     phoneNumber: '',
     gender: undefined,
-    nationality: '',
-    language: '',
+    nationality: undefined,
+    language: undefined,
     dateOfBirth: '',
     website: '',
     linkedIn: '',
@@ -46,17 +50,17 @@ export default class ApplicationCreationFormComponent implements OnInit {
     streetnumber: '',
   };
   page2: ApplicationCreationPage2Data = {
-    bachelorsDegreeName: '',
-    bachelorsDegreeUniversity: '',
-    bachelorsGradingScale: '',
-    bachelorsGrade: '',
-    mastersDegreeName: '',
-    mastersDegreeUniversity: '',
-    mastersGradingScale: '',
-    mastersGrade: '',
+    bachelorDegreeName: '',
+    bachelorDegreeUniversity: '',
+    bachelorGradingScale: bachelorGradingScale[0],
+    bachelorGrade: '',
+    masterDegreeName: '',
+    masterDegreeUniversity: '',
+    masterGradingScale: masterGradingScale[0],
+    masterGrade: '',
   };
   page3: ApplicationCreationPage3Data = {
-    desiredStartDate: { day: 1, month: 1, year: 1970 },
+    desiredStartDate: '',
     motivation: '',
     skills: '',
     experiences: '',
@@ -100,9 +104,9 @@ export default class ApplicationCreationFormComponent implements OnInit {
       lastName: application.applicant?.user?.lastName ?? '',
       email: application.applicant?.user?.email ?? '',
       phoneNumber: application.applicant?.user?.phoneNumber ?? '',
-      gender: dropdownGenderGlobal.find(val => val.value === application.applicant?.user?.gender),
-      nationality: application.applicant?.user?.nationality ?? '',
-      language: application.applicant?.user?.selectedLanguage ?? '',
+      gender: dropdownGender.find(val => val.value === application.applicant?.user?.gender),
+      nationality: dropdownNationality.find(val => val.value === application.applicant?.user?.nationality),
+      language: dropdownLanguage.find(val => val.value === application.applicant?.user?.selectedLanguage),
       dateOfBirth: application.applicant?.user?.birthday ?? '',
       website: application.applicant?.user?.website ?? '',
       linkedIn: application.applicant?.user?.linkedinUrl ?? '',
@@ -115,19 +119,19 @@ export default class ApplicationCreationFormComponent implements OnInit {
   }
   getPage2FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage2Data {
     return {
-      bachelorsDegreeName: application.applicant?.bachelorDegreeName ?? '',
-      bachelorsDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-      bachelorsGradingScale: application.applicant?.bachelorGradingScale ?? '',
-      bachelorsGrade: application.applicant?.bachelorGrade ?? '',
-      mastersDegreeName: application.applicant?.masterDegreeName ?? '',
-      mastersDegreeUniversity: application.applicant?.masterUniversity ?? '',
-      mastersGradingScale: application.applicant?.masterGradingScale ?? '',
-      mastersGrade: application.applicant?.masterGrade ?? '',
+      bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
+      bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
+      bachelorGradingScale: bachelorGradingScale[0], //TODO
+      bachelorGrade: application.applicant?.bachelorGrade ?? '',
+      masterDegreeName: application.applicant?.masterDegreeName ?? '',
+      masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
+      masterGradingScale: masterGradingScale[0], //application.applicant?.masterGradingScale ?? ApplicantDTO.MasterGradingScaleEnum.OneToFour,
+      masterGrade: application.applicant?.masterGrade ?? '',
     };
   }
   getPage3FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage3Data {
     return {
-      desiredStartDate: { day: 1, month: 1, year: 1970 }, //JSON.stringify(application.desiredDate??'') as LocalDate,
+      desiredStartDate: application.desiredDate ?? '',
       motivation: application.motivation ?? '',
       skills: application.specialSkills ?? '',
       experiences: application.projects ?? '',
@@ -239,21 +243,22 @@ export default class ApplicationCreationFormComponent implements OnInit {
           email: this.page1.email,
           gender: this.page1.gender?.value as string,
           linkedinUrl: this.page1.linkedIn,
-          nationality: this.page1.nationality,
+          nationality: this.page1.nationality?.value as string,
           phoneNumber: this.page1.phoneNumber,
           website: this.page1.website,
+          selectedLanguage: this.page1.language?.value as string,
           //id?
         },
-        bachelorDegreeName: this.page2.bachelorsDegreeName,
-        masterDegreeName: this.page2.mastersDegreeName,
-        bachelorGrade: this.page2.bachelorsGrade,
-        masterGrade: this.page2.mastersGrade,
+        bachelorDegreeName: this.page2.bachelorDegreeName,
+        masterDegreeName: this.page2.masterDegreeName,
+        bachelorGrade: this.page2.bachelorGrade,
+        masterGrade: this.page2.masterGrade,
         bachelorGradingScale: 'ONE_TO_FOUR', //this.page2.bachelorsGradingScale,
         masterGradingScale: 'ONE_TO_FOUR', //this.page2.mastersGradingScale,
       },
       applicationState: state,
       answers: new Set(),
-      desiredDate: `${this.page3.desiredStartDate.year}-${this.page3.desiredStartDate.month}-${this.page3.desiredStartDate.day}`, // TODO
+      desiredDate: this.page3.desiredStartDate, // TODO
       job: undefined, // TODO,
       motivation: this.page3.motivation,
       specialSkills: this.page3.skills,
