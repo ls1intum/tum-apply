@@ -1,33 +1,36 @@
 <div class="form-row">
-  <jhi-string-input [label]="'firstName'" [id]="'firstName'" [required]="true" [(value)]="data().firstName" />
-  <jhi-string-input [label]="'lastName'" [id]="'lastName'" [required]="true" [(value)]="data().lastName" />
+  <jhi-string-input label="firstName" id="firstName" [required]="true" [(value)]="data().firstName" />
+  <jhi-string-input label="lastName" id="lastName" [required]="true" [(value)]="data().lastName" />
 </div>
 <jhi-divider label="User Information" />
 <div class="form-row">
-  <jhi-string-input [label]="'email'" [id]="'email'" [required]="true" [(value)]="data().email" />
-  <jhi-string-input [label]="'phoneNumber'" [id]="'phoneNumber'" [required]="true" [(value)]="data().phoneNumber" />
+  <jhi-string-input label="email" id="email" [required]="true" [(value)]="data().email" />
+  <jhi-string-input label="phoneNumber" id="phoneNumber" [required]="true" [(value)]="data().phoneNumber" />
 </div>
 <div class="form-row">
-  <jhi-string-input [label]="'gender'" [id]="'gender'" [(value)]="data().gender" />
-  <jhi-string-input [label]="'nationality'" [id]="'nationality'" [(value)]="data().nationality" />
+  <!-- <jhi-string-input label="gender" id="gender" [(value)]="data().gender" /> -->
+
+  <jhi-dropdown [items]="dropdownGender" id="gender" [(selected)]="data().gender" />
+
+  <jhi-string-input label="nationality" id="nationality" [(value)]="data().nationality" />
 </div>
 <div class="form-row">
-  <jhi-string-input [label]="'language'" [id]="'language'" [(value)]="data().language" />
-  <jhi-string-input [label]="'dateOfBirth'" [id]="'dateOfBirth'" [required]="true" [(value)]="data().dateOfBirth" />
+  <jhi-string-input label="language" id="language" [(value)]="data().language" />
+  <jhi-string-input label="dateOfBirth" id="dateOfBirth" [required]="true" [(value)]="data().dateOfBirth" />
 </div>
 <div class="form-row">
-  <jhi-string-input [label]="'website'" [id]="'website'" [(value)]="data().website" />
-  <jhi-string-input [label]="'linkedIn'" [id]="'linkedIn'" [(value)]="data().linkedIn" />
+  <jhi-string-input label="website" id="website" [(value)]="data().website" />
+  <jhi-string-input label="linkedIn" id="linkedIn" [(value)]="data().linkedIn" />
 </div>
 <jhi-divider label="Address" />
 <div class="form-row">
-  <jhi-string-input [label]="'street'" [id]="'street'" [required]="true" [(value)]="data().street" />
-  <jhi-string-input [label]="'streetnumber'" [id]="'streetnumber'" [required]="true" [(value)]="data().streetnumber" />
+  <jhi-string-input label="street" id="street" [required]="true" [(value)]="data().street" />
+  <jhi-string-input label="streetnumber" id="streetnumber" [required]="true" [(value)]="data().streetnumber" />
 </div>
 <div class="form-row">
-  <jhi-string-input [label]="'city'" [id]="'city'" [required]="true" [(value)]="data().city" />
+  <jhi-string-input label="city" id="city" [required]="true" [(value)]="data().city" />
 </div>
 <div class="form-row">
-  <jhi-string-input [label]="'country'" [id]="'country'" [required]="true" [(value)]="data().country" />
-  <jhi-string-input [label]="'postcode'" [id]="'postcode'" [required]="true" [(value)]="data().postcode" />
+  <jhi-string-input label="country" id="country" [required]="true" [(value)]="data().country" />
+  <jhi-string-input label="postcode" id="postcode" [required]="true" [(value)]="data().postcode" />
 </div>

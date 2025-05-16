@@ -11,7 +11,9 @@ import ApplicationCreationPage3Component, {
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
 } from '../application-creation-page2/application-creation-page2.component';
-import { ApplicationResourceService, CreateApplicationDTO } from 'app/generated';
+import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO } from 'app/generated';
+import { ActivatedRoute, Router } from '@angular/router';
+import { LocalDate } from 'app/shared/components/atoms/datepicker/datepicker.component';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -65,8 +67,72 @@ export default class ApplicationCreationFormComponent implements OnInit {
   @ViewChild('panel3', { static: true }) panel3!: TemplateRef<any>;
 
   private applicationResourceService = inject(ApplicationResourceService);
+  private router = inject(Router);
 
   stepData: StepData[] = [];
+  jobId?: number;
+  mode?: 'create' | 'view' | 'edit';
+
+  constructor(private route: ActivatedRoute) {
+    this.route.url.subscribe(async segments => {
+      const firstSegment = segments[1]?.path;
+      if (firstSegment === 'create') {
+        this.mode = 'create';
+        this.jobId = Number.parseInt(this.route.snapshot.paramMap.get('job_id')!);
+        // TODO get jobInformation
+      } else if (firstSegment === 'edit' || firstSegment === 'view') {
+        this.mode = firstSegment;
+        let applicationId = this.route.snapshot.paramMap.get('application_id')!;
+        this.applicationResourceService.getApplicationById(applicationId).subscribe(application => {
+          this.page1 = this.getPage1FromApplication(application);
+          this.page2 = this.getPage2FromApplication(application);
+          this.page3 = this.getPage3FromApplication(application);
+        });
+      } else {
+        this.router.navigate(['/404']);
+      }
+    });
+  }
+
+  getPage1FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage1Data {
+    return {
+      firstName: application.applicant?.user?.firstName ?? '',
+      lastName: application.applicant?.user?.lastName ?? '',
+      email: application.applicant?.user?.email ?? '',
+      phoneNumber: application.applicant?.user?.phoneNumber ?? '',
+      gender: application.applicant?.user?.gender ?? '',
+      nationality: application.applicant?.user?.nationality ?? '',
+      language: application.applicant?.user?.selectedLanguage ?? '',
+      dateOfBirth: application.applicant?.user?.birthday ?? '',
+      website: application.applicant?.user?.website ?? '',
+      linkedIn: application.applicant?.user?.linkedinUrl ?? '',
+      street: application.applicant?.street ?? '',
+      city: application.applicant?.city ?? '',
+      country: application.applicant?.country ?? '',
+      postcode: application.applicant?.postalCode ?? '',
+      streetnumber: '', //TODO
+    };
+  }
+  getPage2FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage2Data {
+    return {
+      bachelorsDegreeName: application.applicant?.bachelorDegreeName ?? '',
+      bachelorsDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
+      bachelorsGradingScale: application.applicant?.bachelorGradingScale ?? '',
+      bachelorsGrade: application.applicant?.bachelorGrade ?? '',
+      mastersDegreeName: application.applicant?.masterDegreeName ?? '',
+      mastersDegreeUniversity: application.applicant?.masterUniversity ?? '',
+      mastersGradingScale: application.applicant?.masterGradingScale ?? '',
+      mastersGrade: application.applicant?.masterGrade ?? '',
+    };
+  }
+  getPage3FromApplication(application: ApplicationForApplicantDTO): ApplicationCreationPage3Data {
+    return {
+      desiredStartDate: { day: 1, month: 1, year: 1970 }, //JSON.stringify(application.desiredDate??'') as LocalDate,
+      motivation: application.motivation ?? '',
+      skills: application.specialSkills ?? '',
+      experiences: application.projects ?? '',
+    };
+  }
 
   ngOnInit(): void {
     const sendData = (state: 'SAVED' | 'SENT') => {
@@ -79,17 +145,17 @@ export default class ApplicationCreationFormComponent implements OnInit {
         buttonGroupPrev: [
           {
             variant: 'outlined',
-            color: 'info',
+            severity: 'info',
             icon: 'caret-left',
             onClick() {},
             disabled: false,
             label: 'Cancel', // TODO translation
+            changePanel: false,
           },
         ],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
             disabled: false,
@@ -104,7 +170,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         buttonGroupPrev: [
           {
             variant: 'outlined',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-left',
             onClick() {},
             disabled: false,
@@ -114,8 +180,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         ],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
             disabled: false,
@@ -130,7 +195,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         buttonGroupPrev: [
           {
             variant: 'outlined',
-            color: 'primary',
+            severity: 'primary',
             icon: 'arrow-left',
             onClick() {},
             disabled: false,
@@ -140,24 +205,24 @@ export default class ApplicationCreationFormComponent implements OnInit {
         ],
         buttonGroupNext: [
           {
-            variant: 'filled',
-            color: 'secondary',
+            severity: 'secondary',
             icon: 'save',
             onClick() {
               sendData('SAVED');
             },
             disabled: false,
             label: 'Save Draft',
+            changePanel: false,
           },
           {
-            variant: 'filled',
-            color: 'primary',
+            severity: 'primary',
             icon: 'paper-plane',
             onClick() {
               sendData('SENT');
             },
             disabled: false,
             label: 'Send',
+            changePanel: false,
           },
         ],
       },

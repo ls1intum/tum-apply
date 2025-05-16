@@ -21,7 +21,15 @@ const routes: Routes = [
     outlet: 'navbar',
   },
   {
-    path: 'application/creation',
+    path: 'application/create/:job_id',
+    loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
+  },
+  {
+    path: 'application/edit/:application_id',
+    loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
+  },
+  {
+    path: 'application/view/:application_id',
     loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
   },
   {
