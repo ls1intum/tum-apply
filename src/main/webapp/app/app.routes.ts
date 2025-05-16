@@ -21,8 +21,12 @@ const routes: Routes = [
     outlet: 'navbar',
   },
   {
-    path: 'button',
+    path: 'playground/button',
     loadComponent: () => import('./pages/misc/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
+  },
+  {
+    path: 'playground/stepper',
+    loadComponent: () => import('./pages/misc/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
   },
   {
     path: 'admin',

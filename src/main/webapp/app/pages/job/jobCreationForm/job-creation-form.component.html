@@ -24,9 +24,8 @@
       <form [formGroup]="basicInfoForm">
         <h2>Basic Information</h2>
         <p>Provide the key details about the doctoral position, such as title, field of study, and supervising professor.</p>
-
         <div class="form-field">
-          <label for="title">Job Title</label>
+          <label for="title">Job Title <span class="required">*</span> </label>
           <input formControlName="title" id="title" placeholder="e.g. Doctoral Position in Robotics" type="text" />
         </div>
 
@@ -34,7 +33,8 @@
           <div class="form-field">
             <label for="researchArea"
               >Research Area
-              <fa-icon [icon]="faCircleInfo" />
+              <fa-icon [icon]="['fas', 'circle-info']" />
+              <span class="required">*</span>
             </label>
             <div class="input-with-icon">
               <input
@@ -47,121 +47,104 @@
           </div>
 
           <div class="form-field">
-            <label for="fieldOfStudies"
-              >Field of Studies
-              <fa-icon [icon]="faCircleInfo" />
-            </label>
-            <div class="input-with-icon">
-              <div class="select-wrapper">
-                <select formControlName="fieldOfStudies" id="fieldOfStudies">
-                  <option disabled selected value="">Select a Field of Studies ...</option>
-                  <option value="Computer Science">Computer Science</option>
-                  <option value="Mathematics">Mathematics</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
-                  <option value="Engineering">Engineering</option>
-                </select>
-              </div>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['fieldOfStudies'].value"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'fieldOfStudies', $event)"
+              [iconField]="'icon'"
+              [items]="fieldsOfStudies"
+              [labelPosition]="'top'"
+              [label]="'Field Of Studies'"
+              [required]="true"
+              [placeholder]="'Select a Field of Studies...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field input-with-icon">
-            <label for="supervisingProfessor"> Supervising Professor<span class="required">*</span> </label>
+            <label for="supervisingProfessor"> Supervising Professor <span class="required">*</span> </label>
             <div class="icon-input-wrapper">
-              <fa-icon [icon]="faUser" class="input-icon" />
+              <fa-icon [icon]="['fas', 'user']" class="input-icon" />
               <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
             </div>
           </div>
 
           <div class="form-field">
-            <label for="location">Location<span class="required">*</span></label>
-            <div class="select-wrapper">
-              <select formControlName="location" id="location">
-                <option disabled selected value="">
-                  <fa-icon [icon]="faLocationDot" />
-                  Select a Location ...
-                </option>
-                @for (location of locations; track location) {
-                  <option [value]="location.value">
-                    <fa-icon [icon]="faLocationDot" />
-                    {{ location.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['location'].value"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'location', $event)"
+              [iconField]="'icon'"
+              [items]="locations"
+              [labelPosition]="'top'"
+              [label]="'Location'"
+              [required]="true"
+              [placeholder]="'Select a Location...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="startDate">Start Date</label>
-            <div class="date-picker-wrapper">
-              <input formControlName="startDate" id="startDate" placeholder="Select a Start Date ..." type="date" />
-            </div>
+            <jhi-datepicker
+              [selectedDate]="basicInfoForm.get('startDate')?.value"
+              (selectedDateChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
+              [label]="'Start Date'"
+              [required]="true"
+              [placeholder]="'Select a Start Date...'"
+              [width]="'100%'"
+            />
           </div>
           <div class="form-field">
-            <label for="workload">Workload</label>
-            <div class="select-wrapper">
-              <select formControlName="workload" id="workload">
-                <option disabled selected value="">Select a Workload ...</option>
-                @for (option of workloadOptions; track option) {
-                  <option [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['workload'].value"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
+              [iconField]="'icon'"
+              [items]="workloadOptions"
+              [labelPosition]="'top'"
+              [label]="'Workload'"
+              [required]="true"
+              [placeholder]="'Select a Workload...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="contractDuration">Contract Duration</label>
-            <div class="select-wrapper">
-              <select formControlName="contractDuration" id="contractDuration">
-                <option disabled selected value="">Select a Contract Duration ...</option>
-                @for (duration of contractDurations; track duration) {
-                  <option [value]="duration.value">
-                    {{ duration.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['contractDuration'].value"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'contractDuration', $event)"
+              [iconField]="'icon'"
+              [items]="contractDurations"
+              [labelPosition]="'top'"
+              [label]="'Contract Duration'"
+              [required]="true"
+              [placeholder]="'Select a Contract Duration...'"
+              [width]="'100%'"
+            />
           </div>
-
           <div class="form-field">
-            <label for="fundingType">Funding Type<span class="required">*</span></label>
-            <div class="select-wrapper">
-              <select formControlName="fundingType" id="fundingType">
-                <option disabled selected value="">Select a Funding Type ...</option>
-                @for (type of fundingTypes; track type) {
-                  <option [value]="type.value">
-                    {{ type.label }}
-                  </option>
-                }
-              </select>
-            </div>
+            <jhi-dropdown
+              [(selected)]="basicInfoForm.controls['fundingType'].value"
+              (selectedChange)="onSelectionChange(basicInfoForm, 'fundingType', $event)"
+              [iconField]="'icon'"
+              [items]="fundingTypes"
+              [labelPosition]="'top'"
+              [label]="'Funding Type'"
+              [required]="true"
+              [placeholder]="'Select a Funding Type...'"
+              [width]="'100%'"
+            />
           </div>
         </div>
       </form>
 
       <div class="form-actions">
-        <button class="btn-cancel">
-          <span class="btn-icon">
-            <fa-icon [icon]="faChevronLeft" />
-          </span>
-          Cancel
-        </button>
+        <jhi-button [label]="'Cancel'" [icon]="'chevron-left'" [severity]="'primary'" [variant]="'outlined'" [disabled]="false" />
         <div class="action-right">
-          <button (click)="saveDraft()" class="btn-save-draft">
-            <span class="btn-icon">
-              <fa-icon [icon]="faFloppyDisk" />
-            </span>
-            Save Draft
-          </button>
-          <button (click)="nextStep()" class="btn-next">Next</button>
+          <jhi-button-group [data]="nextAndSaveButtons()" />
         </div>
       </div>
     </div>
@@ -178,11 +161,13 @@
         <div class="form-field">
           <label for="description"
             >Job Description
-            <fa-icon [icon]="faCircleInfo" />
+            <fa-icon [icon]="['fas', 'circle-info']" />
+            <span class="required">*</span>
           </label>
           <div class="input-with-icon">
             <textarea
               formControlName="description"
+              maxlength="1000"
               id="description"
               placeholder="Describe the scope and focus of the position..."
               rows="10"
@@ -198,10 +183,17 @@
         <div class="form-field">
           <label for="tasks"
             >Tasks
-            <fa-icon [icon]="faCircleInfo" />
+            <fa-icon [icon]="['fas', 'circle-info']" />
+            <span class="required">*</span>
           </label>
           <div class="input-with-icon">
-            <textarea formControlName="tasks" id="tasks" placeholder="List the main responsibilities..." rows="8"></textarea>
+            <textarea
+              formControlName="tasks"
+              maxlength="1000"
+              id="tasks"
+              placeholder="List the main responsibilities..."
+              rows="8"
+            ></textarea>
           </div>
           <div class="form-footer">
             <small class="description-helper"
@@ -213,11 +205,13 @@
         <div class="form-field">
           <label for="requirements"
             >Eligibility Criteria
-            <fa-icon [icon]="faCircleInfo" />
+            <fa-icon [icon]="['fas', 'circle-info']" />
+            <span class="required">*</span>
           </label>
           <div class="input-with-icon">
             <textarea
               formControlName="requirements"
+              maxlength="1000"
               id="requirements"
               placeholder="List the minimum requirements for applicants..."
               rows="10"
@@ -232,20 +226,16 @@
         </div>
       </form>
       <div class="form-actions">
-        <button (click)="previousStep()" class="btn-back">
-          <span class="btn-icon">
-            <fa-icon [icon]="faChevronLeft" />
-          </span>
-          Back
-        </button>
+        <jhi-button
+          [label]="'Back'"
+          [icon]="'chevron-left'"
+          [severity]="'primary'"
+          [variant]="'outlined'"
+          [disabled]="false"
+          (click)="previousStep()"
+        />
         <div class="action-right">
-          <button (click)="saveDraft()" class="btn-save-draft">
-            <span class="btn-icon">
-              <fa-icon [icon]="['fas', 'floppy-disk']" />
-            </span>
-            Save Draft
-          </button>
-          <button class="btn-next" (click)="nextStep()">Next</button>
+          <jhi-button-group [data]="nextAndSaveButtons()" />
         </div>
       </div>
     </div>
@@ -274,17 +264,16 @@
         </section>
       </form>
       <div class="form-actions">
-        <button (click)="previousStep()" class="btn-back">
-          <span class="btn-icon">
-            <fa-icon [icon]="faChevronLeft" />
-          </span>
-          Back
-        </button>
+        <jhi-button
+          [label]="'Back'"
+          [icon]="'chevron-left'"
+          [severity]="'primary'"
+          [variant]="'outlined'"
+          [disabled]="false"
+          (click)="previousStep()"
+        />
         <div class="action-right">
-          <button (click)="saveDraft()" class="btn-save-draft">
-            <span class="btn-icon"><fa-icon [icon]="['fas', 'floppy-disk']" /></span> Save Draft
-          </button>
-          <button (click)="publishJob()" class="btn-publish">Publish Job</button>
+          <jhi-button-group [data]="publishAndSaveButtons()" />
         </div>
       </div>
     </div>
