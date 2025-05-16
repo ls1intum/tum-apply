@@ -33,6 +33,6 @@ jobs:
     with:
       environment: ${{ inputs.environment_name }}
       docker-compose-file: './docker/compose.yaml'
-      main-image-name: ghcr.io/ls1intum/tum-apply
+      main-image-name: ls1intum/tum-apply
       image-tag: ${{ inputs.commit_sha }}
     secrets: inherit
