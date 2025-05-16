@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule } from '@angular/common';
-import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO } from 'app/generated';
+import { ApplicationForApplicantDTO, ApplicationResourceService, CreateApplicationDTO, JobResourceService } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import ApplicationCreationPage1Component, {
@@ -71,10 +71,12 @@ export default class ApplicationCreationFormComponent implements OnInit {
   @ViewChild('panel3', { static: true }) panel3!: TemplateRef<any>;
 
   private applicationResourceService = inject(ApplicationResourceService);
+  private jobResourceService = inject(JobResourceService);
   private router = inject(Router);
 
   stepData: StepData[] = [];
-  jobId?: number;
+  jobId?: string;
+  title?: string = '';
   mode?: 'create' | 'view' | 'edit';
 
   constructor(private route: ActivatedRoute) {
@@ -82,8 +84,10 @@ export default class ApplicationCreationFormComponent implements OnInit {
       const firstSegment = segments[1]?.path;
       if (firstSegment === 'create') {
         this.mode = 'create';
-        this.jobId = Number.parseInt(this.route.snapshot.paramMap.get('job_id')!);
-        // TODO get jobInformation
+        this.jobId = this.route.snapshot.paramMap.get('job_id')!;
+        this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
+          this.title = job.title;
+        });
       } else if (firstSegment === 'edit' || firstSegment === 'view') {
         this.mode = firstSegment;
         const applicationId = this.route.snapshot.paramMap.get('application_id')!;
@@ -153,7 +157,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
             icon: 'caret-left',
             onClick() {},
             disabled: false,
-            label: 'Cancel', // TODO translation
+            label: 'Cancel',
             changePanel: false,
           },
         ],
@@ -169,7 +173,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         ],
       },
       {
-        name: 'Education', // TODO translation
+        name: 'Education',
         panelTemplate: this.panel2,
         buttonGroupPrev: [
           {
