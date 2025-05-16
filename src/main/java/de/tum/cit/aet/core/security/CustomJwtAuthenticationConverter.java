@@ -27,12 +27,12 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        String preferredUsername = jwt.getClaimAsString("preferred_username");
+        String email = jwt.getClaimAsString("email");
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
 
         // Create user if missing and fetch database entity
-        User user = authenticationService.provisionUserIfMissing(preferredUsername, firstName, lastName);
+        User user = authenticationService.provisionUserIfMissing(email, firstName, lastName);
 
         List<String> roles = user.getResearchGroupRoles().stream().map(r -> r.getRole().name()).toList();
 
@@ -41,6 +41,6 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
             .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
             .collect(Collectors.toList());
 
-        return new JwtAuthenticationToken(jwt, authorities, preferredUsername);
+        return new JwtAuthenticationToken(jwt, authorities, email);
     }
 }

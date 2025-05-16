@@ -21,8 +21,8 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public User provisionUserIfMissing(String preferredUsername, String firstName, String lastName) {
-        String normalizedEmail = preferredUsername.toLowerCase(Locale.ROOT);
+    public User provisionUserIfMissing(String email, String firstName, String lastName) {
+        String normalizedEmail = email.toLowerCase(Locale.ROOT);
         User user = userRepository
             .findWithResearchGroupRolesByEmailIgnoreCase(normalizedEmail)
             .orElseGet(() -> {
