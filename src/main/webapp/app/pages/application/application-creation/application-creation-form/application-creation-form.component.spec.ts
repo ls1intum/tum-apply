@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApplicationCreationFormComponent } from './application-creation-form.component';
+import ApplicationCreationFormComponent from './application-creation-form.component';
 
 describe('ApplicationCreationFormComponent', () => {
   let component: ApplicationCreationFormComponent;
