@@ -72,10 +72,6 @@ export default class ApplicationCreationFormComponent implements OnInit {
   @ViewChild('panel2', { static: true }) panel2!: TemplateRef<any>;
   @ViewChild('panel3', { static: true }) panel3!: TemplateRef<any>;
 
-  private applicationResourceService = inject(ApplicationResourceService);
-  private jobResourceService = inject(JobResourceService);
-  private router = inject(Router);
-
   stepData = signal<StepData[]>([]);
   title?: string = '';
 
@@ -90,8 +86,12 @@ export default class ApplicationCreationFormComponent implements OnInit {
 
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
 
+  private applicationResourceService = inject(ApplicationResourceService);
+  private jobResourceService = inject(JobResourceService);
+  private router = inject(Router);
+
   constructor(private route: ActivatedRoute) {
-    this.route.url.subscribe(async segments => {
+    this.route.url.subscribe(segments => {
       const firstSegment = segments[1]?.path;
       if (firstSegment === 'create') {
         this.mode = 'create';
@@ -117,6 +117,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
   ngOnInit(): void {
     const sendData = (state: 'SAVED' | 'SENT') => {
       this.sendCreateApplicationData(state);
+      console.log(this.allPagesValid());
     };
     this.stepData.set([
       {
@@ -209,7 +210,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
     ]);
   }
 
-  sendCreateApplicationData(state: 'SAVED' | 'SENT') {
+  sendCreateApplicationData(state: 'SAVED' | 'SENT'): void {
     const createApplication: CreateApplicationDTO = {
       applicant: {
         user: {
