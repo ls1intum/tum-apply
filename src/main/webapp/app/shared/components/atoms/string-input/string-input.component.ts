@@ -29,9 +29,6 @@ export class StringInputComponent implements ControlValueAccessor {
   readonly disabledComputed = computed(() => this._disabled());
   private _disabled = signal<boolean>(this.disabled());
 
-  private onChange: (_: any) => void = () => {};
-  private onTouched: () => void = () => {};
-
   onInput(event: Event): void {
     const _input = event.target as HTMLInputElement;
     this.value.set(_input.value);
@@ -52,4 +49,7 @@ export class StringInputComponent implements ControlValueAccessor {
   setDisabledState(isDisabled: boolean): void {
     this._disabled.set(isDisabled);
   }
+
+  private onChange: (_: any) => void = () => {};
+  private onTouched: () => void = () => {};
 }
