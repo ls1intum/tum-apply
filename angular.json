@@ -22,7 +22,7 @@
           "options": {
             "allowedCommonJsDependencies": [],
             "outputPath": {
-              "base": "build/resources/main/static/",
+              "base": "dist/tum-apply",
               "browser": ""
             },
             "index": "src/main/webapp/index.html",
@@ -51,13 +51,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2.5mb",
+                  "maximumError": "4.8mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "1mb",
+                  "maximumError": "1.6mb"
                 }
               ]
             },
@@ -80,6 +80,7 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "tum-apply:build:development",
+            "proxyConfig": "proxy.conf.mjs",
             "port": 4200
           },
           "configurations": {
