@@ -1,6 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import ApplicationCreationPage1Component, { ApplicationCreationPage1Data, dropdownLanguage } from './application-creation-page1.component';
 import { ComponentRef } from '@angular/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
@@ -14,7 +12,9 @@ import {
   faEnvelope,
 } from '@fortawesome/free-solid-svg-icons';
 
-let mockData: ApplicationCreationPage1Data = {
+import ApplicationCreationPage1Component, { ApplicationCreationPage1Data, dropdownLanguage } from './application-creation-page1.component';
+
+const mockData: ApplicationCreationPage1Data = {
   firstName: 'Anna',
   lastName: 'Schmidt',
   email: 'anna.schmidt@example.com',

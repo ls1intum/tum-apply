@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import ApplicationCreationPage2Component, { ApplicationCreationPage2Data } from './application-creation-page2.component';
 import { ComponentRef } from '@angular/core';
 import { ApplicantDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faChevronDown, faChevronUp, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+
+import ApplicationCreationPage2Component, { ApplicationCreationPage2Data } from './application-creation-page2.component';
 
 const mockData: ApplicationCreationPage2Data = {
   bachelorDegreeName: 'B.Sc. Computer Science',

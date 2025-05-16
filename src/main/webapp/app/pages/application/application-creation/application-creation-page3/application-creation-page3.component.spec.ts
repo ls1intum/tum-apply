@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import ApplicationCreationPage3Component, { ApplicationCreationPage3Data } from './application-creation-page3.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendar, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { ComponentRef } from '@angular/core';
 
-let mockData: ApplicationCreationPage3Data = {
+import ApplicationCreationPage3Component, { ApplicationCreationPage3Data } from './application-creation-page3.component';
+
+const mockData: ApplicationCreationPage3Data = {
   desiredStartDate: '2032-3-2',
   experiences: 'I have experiences',
   motivation: 'I need more experiences',
@@ -35,5 +35,14 @@ describe('ApplicationCreationPage3Component', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should reflect user input in the bound model', () => {
+    const input = fixture.nativeElement.querySelector('jhi-string-input[label="What is your motivation to take this position?"] input');
+    input.value = 'Driven by innovation';
+    input.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    expect(component.data().motivation).toBe('Driven by innovation');
   });
 });

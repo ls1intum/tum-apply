@@ -1,10 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ComponentRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-
-import ApplicationCreationFormComponent from './application-creation-form.component';
-
 import { ApplicationResourceService, JobResourceService } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
@@ -18,6 +14,8 @@ import {
   faEnvelope,
 } from '@fortawesome/free-solid-svg-icons';
 import { HttpResponse } from '@angular/common/http';
+
+import ApplicationCreationFormComponent from './application-creation-form.component';
 
 class MockApplicationResourceService {
   getApplicationById = jest.fn().mockReturnValue(of({}));
@@ -44,7 +42,7 @@ describe('ApplicationCreationFormComponent create', () => {
             url: of([{ path: 'application' }, { path: 'create' }]),
             snapshot: {
               paramMap: {
-                get: (key: string) => {
+                get(key: string) {
                   if (key === 'job_id') return '123';
                   if (key === 'application_id') return '456';
                   return null;

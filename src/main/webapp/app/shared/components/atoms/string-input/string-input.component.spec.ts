@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentRef } from '@angular/core';
 
 import { StringInputComponent } from './string-input.component';
-import { ComponentRef } from '@angular/core';
-import ButtonGroupComponent from '../../molecules/button-group/button-group.component';
 
 describe('StringInputComponent', () => {
   let component: StringInputComponent;
