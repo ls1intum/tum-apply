@@ -1,7 +1,7 @@
 ARG WAR_FILE_STAGE="builder"
 
 
-FROM --platform=linux/amd64 docker.io/library/eclipse-temurin:21-jdk AS builder
+FROM --platform=$BUILDPLATFORM docker.io/library/eclipse-temurin:21-jdk AS builder
 RUN echo "Installing build dependencies" \
   && apt-get update && apt-get install -y --no-install-recommends python3 build-essential \
   && apt-get clean \
