@@ -438,7 +438,6 @@ export const TUMApplyPreset = definePreset(Lara, {
           },
         },
       },
-      color: '{primary.color}',
     },
   },
 });

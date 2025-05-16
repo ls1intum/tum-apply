@@ -1,33 +1,35 @@
-import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, Output, TemplateRef, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 
+export class TableColumn {
+  field!: string;
+  header!: string;
+  type?: string;
+  width!: string;
+  alignCenter?: boolean;
+  template?: TemplateRef<any>;
+}
+
 @Component({
   selector: 'jhi-dynamic-table',
+  standalone: true,
   imports: [CommonModule, TableModule, ButtonModule],
   templateUrl: './dynamic-table.component.html',
-  styleUrl: './dynamic-table.component.scss',
+  styleUrls: ['./dynamic-table.component.scss'],
 })
 export class DynamicTableComponent {
   readonly paginator = true;
   readonly lazy = true;
 
-  @Input({ required: true })
-  columns: {
-    field: string;
-    header: string;
-    type?: string;
-    width: string;
-    alignCenter?: boolean;
-    template?: TemplateRef<any>;
-  }[] = [];
-
-  @Input() data: any[] = [];
-  @Input() rows = 10;
-  @Input() totalRecords = 0;
-  @Input() loading = false;
-  @Input() selectAble = false;
+  // ⚠️ Note the <>[] syntax and default []
+  readonly columns = input<TableColumn[]>([]);
+  readonly data = input<any[]>([]);
+  readonly rows = input<number>(10);
+  readonly totalRecords = input<number>(0);
+  readonly loading = input<boolean>(false);
+  readonly selectAble = input<boolean>(false);
 
   @Output() lazyLoad = new EventEmitter<TableLazyLoadEvent>();
 

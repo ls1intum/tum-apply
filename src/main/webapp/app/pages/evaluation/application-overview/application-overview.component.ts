@@ -6,13 +6,12 @@ import { firstValueFrom } from 'rxjs';
 
 import { DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
-import { StatusBadgeComponent } from '../../../shared/components/atoms/status-badge/status-badge.component';
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../generated';
 
 @Component({
   selector: 'jhi-application-overview',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, DynamicTableComponent, StatusBadgeComponent, FaIconComponent],
+  imports: [CommonModule, ButtonComponent, DynamicTableComponent, FaIconComponent],
   templateUrl: './application-overview.component.html',
   styleUrl: './application-overview.component.scss',
 })

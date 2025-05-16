@@ -1,26 +1,26 @@
 <p-table
-  [value]="data"
+  [value]="data()"
   [paginator]="true"
   [rowsPerPageOptions]="[10, 20, 50]"
-  [totalRecords]="totalRecords"
+  [totalRecords]="totalRecords()"
   [scrollable]="true"
   scrollHeight="400px"
-  [rows]="rows"
+  [rows]="rows()"
   [lazy]="true"
   (onLazyLoad)="emitLazy($event)"
-  [loading]="loading"
+  [loading]="loading()"
   [autoLayout]="true"
   [tableStyle]="{ width: 'auto' }"
 >
   <!-- Header -->
   <ng-template pTemplate="header">
     <tr>
-      @if (selectAble) {
+      @if (selectAble()) {
         <th style="width: 5rem">
           <p-tableHeaderCheckbox />
         </th>
       }
-      @for (col of columns; track col.field) {
+      @for (col of columns(); track col.field) {
         <th [style.width]="col.width">
           {{ col.header }}
         </th>
@@ -31,12 +31,12 @@
   <!-- Body -->
   <ng-template let-rowData pTemplate="body">
     <tr>
-      @if (selectAble) {
+      @if (selectAble()) {
         <td>
           <p-tableCheckbox [value]="rowData" />
         </td>
       }
-      @for (col of columns; track col.field) {
+      @for (col of columns(); track col.field) {
         <td [style.width]="col.width" [ngClass]="{ 'text-center': col.alignCenter ?? false }">
           @if (col.template) {
             <ng-container *ngTemplateOutlet="col.template; context: { $implicit: rowData }" />
