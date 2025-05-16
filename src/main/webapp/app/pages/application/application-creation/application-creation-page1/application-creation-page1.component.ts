@@ -22,6 +22,12 @@ export type ApplicationCreationPage1Data = {
   postcode: string;
 };
 
+export let dropdownGenderGlobal: DropdownOption[] = [
+  { value: 'female', name: 'female' },
+  { value: 'male', name: 'male' },
+  { value: 'other', name: 'other' },
+];
+
 @Component({
   selector: 'jhi-application-creation-page1',
   imports: [CommonModule, StringInputComponent, DividerComponent, DropdownComponent],
@@ -31,9 +37,5 @@ export type ApplicationCreationPage1Data = {
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
-  dropdownGender: DropdownOption[] = [
-    { value: 'female', name: 'female' },
-    { value: 'male', name: 'male' },
-    { value: 'other', name: 'other' },
-  ];
+  dropdownGender = dropdownGenderGlobal;
 }

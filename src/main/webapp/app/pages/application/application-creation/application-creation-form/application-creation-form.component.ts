@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
+  dropdownGenderGlobal,
 } from '../application-creation-page1/application-creation-page1.component';
 import ApplicationCreationPage3Component, {
   ApplicationCreationPage3Data,
@@ -33,7 +34,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
     lastName: '',
     email: '',
     phoneNumber: '',
-    gender: '',
+    gender: undefined,
     nationality: '',
     language: '',
     dateOfBirth: '',
@@ -100,7 +101,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
       lastName: application.applicant?.user?.lastName ?? '',
       email: application.applicant?.user?.email ?? '',
       phoneNumber: application.applicant?.user?.phoneNumber ?? '',
-      gender: application.applicant?.user?.gender ?? '',
+      gender: dropdownGenderGlobal.find(val => val.value === application.applicant?.user?.gender),
       nationality: application.applicant?.user?.nationality ?? '',
       language: application.applicant?.user?.selectedLanguage ?? '',
       dateOfBirth: application.applicant?.user?.birthday ?? '',
@@ -237,7 +238,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
           firstName: this.page1.firstName,
           lastName: this.page1.lastName,
           email: this.page1.email,
-          gender: this.page1.gender,
+          gender: this.page1.gender?.value,
           linkedinUrl: this.page1.linkedIn,
           nationality: this.page1.nationality,
           phoneNumber: this.page1.phoneNumber,
