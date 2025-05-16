@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, model, output } from '@angular/core';
+import { Component, OnInit, model, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ApplicationForApplicantDTO } from 'app/generated';
 
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
-import { ApplicationForApplicantDTO } from 'app/generated';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;

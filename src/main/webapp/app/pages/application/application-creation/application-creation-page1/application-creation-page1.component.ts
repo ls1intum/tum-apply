@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, model } from '@angular/core';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ApplicationForApplicantDTO } from 'app/generated';
 
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
-import { ApplicationForApplicantDTO } from 'app/generated';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
