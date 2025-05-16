@@ -1,8 +1,14 @@
 # Stage 1: Build Angular frontend with Node.js 22
 FROM --platform=linux/amd64 node:22 AS angular-build
 WORKDIR /tum-apply
-COPY . .
-RUN npm install
+COPY package.json package-lock.json ./
+COPY prebuild.mjs ./
+COPY angular.json tsconfig.json tsconfig.app.json ./
+COPY ngsw-config.json ./
+RUN npm ci
+
+COPY build.gradle ./
+COPY src/main/webapp ./src/main/webapp
 RUN npm run build -- --configuration production
 
 # Stage 2: Build Spring Boot backend with Gradle and Java 21
