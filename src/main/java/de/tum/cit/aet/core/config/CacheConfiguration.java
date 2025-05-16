@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.config;
 
 import com.github.benmanes.caffeine.jcache.configuration.CaffeineConfiguration;
-import de.tum.cit.aet.core.domain.Authority;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +52,6 @@ public class CacheConfiguration {
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
             createCache(cm, User.class.getName());
-            createCache(cm, Authority.class.getName());
             createCache(cm, User.class.getName() + ".authorities");
             // jhipster-needle-caffeine-add-entry
         };

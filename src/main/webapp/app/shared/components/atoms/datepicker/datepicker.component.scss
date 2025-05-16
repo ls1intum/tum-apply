@@ -1,6 +1,10 @@
 .custom-datepicker {
+  .p-datepicker {
+    margin-top: 0.25rem;
+  }
+
   .p-inputtext {
-    border-color: var(--p-border-default);
+    border: 0.1rem solid var(--p-border-default);
   }
 
   .p-inputtext:enabled:focus {
@@ -35,4 +39,9 @@
   .p-datepicker-decade {
     color: var(--p-primary-color);
   }
+}
+
+.required {
+  color: var(--p-danger-color) !important;
+  margin-left: 0.125rem;
 }
