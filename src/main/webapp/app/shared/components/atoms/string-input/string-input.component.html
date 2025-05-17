@@ -3,7 +3,7 @@
     'label-top': labelPosition() === 'top',
     'label-left': labelPosition() === 'left',
   }"
-  class="string-input-container"
+  class="input-container"
 >
   @if (label() !== undefined) {
     <label class="custom-label">
@@ -19,7 +19,6 @@
   <div class="input-wrapper" [ngClass]="{ error: error() }">
     <input
       type="text"
-      class="string-input"
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       [ngModel]="model()"
@@ -27,7 +26,7 @@
       [required]="required()"
       [style]="{ width: width() }"
       pInputText
-      class="custom-string-input"
+      class="custom-input"
     />
   </div>
 </div>

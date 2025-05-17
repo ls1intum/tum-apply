@@ -3,7 +3,7 @@
     'label-top': labelPosition() === 'top',
     'label-left': labelPosition() === 'left',
   }"
-  class="number-input-container"
+  class="input-container"
 >
   @if (label()) {
     <label class="custom-label" [for]="inputId()">
@@ -31,7 +31,7 @@
       [ngModel]="model()"
       (ngModelChange)="modelChange.emit($event)"
       [style]="{ width: width() }"
-      class="custom-number-input"
+      class="custom-input"
     />
   </div>
 </div>
