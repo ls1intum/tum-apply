@@ -1,0 +1,31 @@
+p-button > button:disabled {
+  background: var(--p-background-disabled);
+  border: var(--p-background-disabled) solid;
+  color: var(--p-color-disabled);
+}
+
+p-button > .p-button-outlined:disabled {
+  background: var(--p-background-default);
+  border: 0.1rem var(--p-background-disabled) solid;
+  color: var(--p-color-disabled);
+}
+
+p-button > .p-button-text:disabled {
+  background: var(--p-background-default);
+  border: 0.1rem var(--p-background-default) solid;
+  color: var(--p-color-disabled);
+}
+
+p-button > .p-button-outlined {
+  border: 0.1rem solid;
+}
+
+.jhi-button-badge-mini {
+  background: var(--p-danger-color);
+  color: black;
+  font-size: 0.75rem;
+  height: 1.2rem;
+  padding: 0.3rem;
+  min-width: 1.2rem;
+  box-shadow: var(--p-button-raised-shadow);
+}

@@ -156,6 +156,7 @@ coverage/
 /src/main/webapp/app/environments/environment.override.ts
 
 ######################
-# Package-lock.json
+# Package-lock.json and dist
 ######################
+dist
 package-lock.json

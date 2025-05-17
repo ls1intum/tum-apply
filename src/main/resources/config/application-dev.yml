@@ -33,9 +33,9 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://localhost:3306/TUMApply?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true
     username: root
-    password: 12345678
+    password:
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -63,8 +63,6 @@ springdoc:
 
 server:
   port: 8080
-  # make sure requests the proxy uri instead of the server one
-  forward-headers-strategy: native
 
 # ===================================================================
 # JHipster specific properties

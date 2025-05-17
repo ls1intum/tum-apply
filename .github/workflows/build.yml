@@ -1,4 +1,4 @@
-name: Build
+name: Build and Push Docker Image
 # The name of this workflow (Build) should be in sync with the test-e2e.yml workflow's workflow_run listener.
 
 on:
@@ -29,106 +29,10 @@ on:
     types:
       - created
 
-# Concurrency control for GitHub Actions workflow
-# Ensures efficient use of CI resources by canceling redundant runs where needed.
-#
-# - Pull requests: Cancel previous runs for the same PR to avoid redundant builds.
-#   Example: PR #42 → "build-pr-42"
-#
-# - Pushes (branches & tags): Each branch or tag runs independently. If a run is in progress for the same branch or tag, it is canceled.
-#   Example: Push to "develop" → "build-refs/heads/develop"
-#   Example: Push to "release/1.2.3" → "build-refs/heads/release/1.2.3"
-#   Example: Tag "v1.2.3" → "build-refs/tags/v1.2.3"
-#
-# - Releases: Each release runs independently.
-#   Example: Release for "v1.2.3" → "build-release-v1.2.3"
-#
-# - Default fallback: Ensures the workflow always has a concurrency group.
-#   Example: Unexpected event type → "build-default"
-concurrency:
-  group: |
-    ${{
-      github.event_name == 'pull_request' && format('build-pr-{0}', github.event.pull_request.number) ||
-      github.event_name == 'push' && format('build-{0}', github.ref) ||
-      github.event_name == 'release' && format('build-release-{0}', github.event.release.tag_name) ||
-      'build-default'
-    }}
-  cancel-in-progress: true
-
-# Keep this filename in sync with the filename environment variable (PR_AUTO_BUILD_FILE_NAME) in the testserver-deployment.yml workflow
-# and with the build_workflow_name environment variable in the staging-deployment.yml workflow
-
-# Keep in sync with codeql-analysis.yml and test.yml and analysis-of-endpoint-connections.yml
-env:
-  CI: true
-  node: 22
-  java: 21
-
 jobs:
   build:
-    name: Build .war artifact
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [client, server]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '${{ env.node }}'
-          cache: 'npm'
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '${{ env.java }}'
-          cache: 'gradle'
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-      - name: Production Build
-        run: ./gradlew -Pprod -Pwar clean bootWar
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tum-apply.war
-          path: build/libs/tum-apply-*.war
-      - name: Upload Release Artifact
-        if: github.event_name == 'release' && github.event.action == 'created'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: build/libs/tum-apply-${{ github.event.release.tag_name }}.war
-          asset_name: tum-apply.war
-          asset_content_type: application/x-webarchive
-
-  docker:
-    name: Build and push Docker Image
-    uses: docker/build-push-action@v5
+    uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
     with:
-      platforms: linux/amd64,linux/arm64
-      context: ./${{ matrix.service }}
-      file: ./src/main/docker/${{ matrix.service }}/Dockerfile
-      push: true
-      tags: ${{ steps.meta.outputs.tags }}
-      labels: ${{ steps.meta.outputs.labels }}
-
-    # Save Docker image tag as an artifact
-  save-docker-tag:
-    name: Save Docker Image Tag
-    needs: docker
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'ls1intum/tum-apply' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Save Docker Tag to File
-        run: |
-          echo "${{ needs.docker.outputs.image_tag }}" > docker-tag.txt
-          echo "Using Docker tag: ${{ needs.docker.outputs.image_tag }}"
-
-      - name: Upload Docker Tag as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-tag
-          path: docker-tag.txt
+      image-name: ghcr.io/ls1intum/tum-apply
+      docker-file: Dockerfile
+    secrets: inherit

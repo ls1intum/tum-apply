@@ -1,0 +1,39 @@
+name: Deploy to a test-server
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Which branch to deploy'
+        required: true
+        type: string
+      commit_sha:
+        description: 'Commit SHA to deploy'
+        required: false
+      environment_name:
+        description: 'Which environment to deploy (e.g. artemis-test7.artemis.cit.tum.de, etc.).'
+        required: true
+        type: string
+      triggered_by:
+        description: 'Username that triggered deployment (not required, shown if triggered via GitHub UI, logged if triggered via GitHub app)'
+        required: false
+        type: string
+
+concurrency: ${{ github.event.inputs.environment_name }}
+
+env:
+  CI: true
+  # Keep filename in sync with the workflow responsible for automatic builds on PRs
+  PR_AUTO_BUILD_FILE_NAME: 'build.yml'
+  RAW_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.inputs.branch_name }}
+
+jobs:
+  deploy:
+    uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
+    with:
+      environment: ${{ inputs.environment_name }}
+      docker-compose-file: './docker/compose.yaml'
+      main-image-name: ls1intum/tum-apply
+      image-tag: ${{ inputs.image-tag }}
+      deployment-base-path: '/opt/tum-apply'
+    secrets: inherit

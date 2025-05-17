@@ -7,7 +7,12 @@
   class="dropdown-wrapper"
 >
   @if (label()) {
-    <label class="dropdown-label">{{ label() }}</label>
+    <label class="dropdown-label"
+      >{{ label() }}
+      @if (required()) {
+        <span class="required">*</span>
+      }
+    </label>
   }
   <p-dropdown
     (ngModelChange)="onSelectionChange($event)"
@@ -22,7 +27,7 @@
     class="custom-dropdown"
   >
     <ng-template pTemplate="dropdownicon">
-      <fa-icon [icon]="isOpen ? faChevronUp : faChevronDown" />
+      <fa-icon [icon]="isOpen ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']" />
     </ng-template>
   </p-dropdown>
 </div>
