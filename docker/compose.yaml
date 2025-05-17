@@ -9,7 +9,7 @@ services:
       - MYSQL_ROOT_PASSWORD=""
       - MYSQL_DATABASE="tumapply"
     ports:
-      - 127.0.0.1:3306:3306
+      - '127.0.0.1:3306:3306'
     expose:
       - '3306'
     command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
@@ -56,8 +56,6 @@ services:
       - SPRING_DATASOURCE_URL="jdbc:mysql://mysql:3306/tum-apply"
       - SPRING_DATASOURCE_USERNAME="root"
       - SPRING_DATASOURCE_PASSWORD=""
-    ports:
-      - 127.0.0.1:8080:8080
     expose:
       - '8080'
     healthcheck:
