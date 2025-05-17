@@ -139,6 +139,44 @@ SecurityUtils.hasCurrentUserAnyOfAuthorities("ADMIN","PROFESSOR");
 
 ---
 
+### 👤 `/api/users/me` Endpoint
+
+The `GET /api/users/me` endpoint allows the client to fetch details of the currently logged-in user.
+
+#### Behavior:
+
+- ✅ **Authenticated and user exists**: returns user data and roles.
+- 🆕 **Authenticated but user not in DB**: creates new user with data from the JWT and assigns role `APPLICANT`.
+- ❌ **Unauthenticated**: returns `401 Unauthorized`.
+
+#### Example response:
+
+```json
+{
+  "userId": "fcf4722e-757f-427f-bae1-1c960b0dd531",
+  "email": "admin1@tumapply.local",
+  "firstName": "Admin",
+  "lastName": "One",
+  "roles": ["APPLICANT"],
+  "researchGroup": {
+    "researchGroupId": "00000000-0000-0000-0000-000000000002",
+    "name": "Data Science Group"
+  }
+}
+```
+
+---
+
+### 🛠️ Role Management Behavior
+
+- Users are identified by their **email** (from the JWT `email` claim).
+- On first login:
+  - A new user is created with default values (`selectedLanguage = 'en'` etc.).
+  - The `APPLICANT` role is assigned **if no role exists** for the user.
+- Roles are linked using the `UserResearchGroupRole` entity.
+
+---
+
 ### 📁 Related Files
 
 - `AuthenticationService.java` – user creation and role loading
