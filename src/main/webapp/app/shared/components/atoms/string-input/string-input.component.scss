@@ -6,11 +6,20 @@
   &.label-left {
     flex-direction: row;
     align-items: center;
+
+    .input-wrapper,
+    .custom-string-input {
+      flex: 1;
+    }
   }
 
   // Add styling for labels on the top of the field
   &.label-top .custom-label {
     margin-bottom: 0.25rem;
+  }
+
+  .ng-fa-icon {
+    color: var(--p-primary-color);
   }
 
   .p-inputtext:enabled:focus {
@@ -24,7 +33,7 @@
   }
 
   .p-inputtext::placeholder {
-    color: var(--p-text-primary);
+    color: var(--p-background-disabled);
   }
 
   .p-inputtext:disabled {
