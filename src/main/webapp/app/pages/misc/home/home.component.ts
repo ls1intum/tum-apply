@@ -7,13 +7,7 @@ import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
-
-interface LocalDate {
-  year: number;
-  month: number;
-  day: number;
-}
+import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 
 @Component({
   selector: 'jhi-home',
@@ -25,10 +19,10 @@ export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
 
   // Datepicker:
-  selectedDate: LocalDate | null = null;
+  selectedDate: string | undefined = undefined;
   // Dropdown:
-  selectedLocation1: any;
-  selectedLocation2: any;
+  selectedLocation1: DropdownOption | undefined = undefined;
+  selectedLocation2: DropdownOption | undefined = undefined;
   locations = [
     { name: 'Munich Campus', value: 'munich', icon: 'chevron-up' },
     { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },

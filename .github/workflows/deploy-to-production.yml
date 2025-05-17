@@ -1,22 +1,21 @@
-name: Deploy to Production
+name: Deploy to a production
 
 on:
   workflow_dispatch:
     inputs:
       branch_name:
         description: 'Which branch to deploy'
-        required: false
+        required: true
         type: string
       commit_sha:
         description: 'Commit SHA to deploy'
-        required: true
-        type: string
+        required: false
       environment_name:
-        description: 'Which environment to deploy'
+        description: 'Which environment to deploy (e.g. artemis-test7.artemis.cit.tum.de, etc.).'
         required: true
         type: string
       triggered_by:
-        description: 'User who triggered the deploy'
+        description: 'Username that triggered deployment (not required, shown if triggered via GitHub UI, logged if triggered via GitHub app)'
         required: false
         type: string
 
@@ -29,150 +28,12 @@ env:
   RAW_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.inputs.branch_name }}
 
 jobs:
-  # Log the inputs for debugging
-  log-inputs:
-    name: Log Inputs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print Inputs
-        run: |
-          echo "Branch: ${{ github.event.inputs.branch_name }}"
-          echo "Environment: ${{ github.event.inputs.environment_name }}"
-          echo "Triggered by: ${{ github.event.inputs.triggered_by }}"
-          echo "RAW_URL: ${{ env.RAW_URL }}"
-
-  determine-build-context:
-    name: Determine Build Context
-    runs-on: ubuntu-latest
-    needs: log-inputs
-    outputs:
-      pr_number: ${{ steps.get_pr.outputs.pr_number }}
-      pr_head_sha: ${{ steps.get_pr.outputs.pr_head_sha }}
-      tag: ${{ steps.get_pr.outputs.tag }}
-    steps:
-      - name: Check if a PR exists for the branch
-        id: get_pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          BRANCH_NAME=${{ github.event.inputs.branch_name }}
-          echo "Checking if PR exists for branch: $BRANCH_NAME targeting 'main'."
-
-          PR_DETAILS=$(gh api repos/${{ github.repository }}/pulls \
-            --paginate \
-            --jq ".[] | select(.head.ref == \"$BRANCH_NAME\" and .base.ref == \"main\") | {number: .number, sha: .head.sha}")
-
-          PR_NUMBER=$(echo "$PR_DETAILS" | jq -r ".number")
-          PR_HEAD_SHA=$(echo "$PR_DETAILS" | jq -r ".sha")
-
-          if [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ]; then
-            echo "Found PR: $PR_NUMBER from branch: $BRANCH_NAME targeting 'main' with Head: $PR_HEAD_SHA."
-            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-            echo "pr_head_sha=$PR_HEAD_SHA" >> $GITHUB_OUTPUT
-            echo "tag=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
-          else
-            echo "No PR found for branch: $BRANCH_NAME targeting 'main'."
-            echo "pr_number=" >> $GITHUB_OUTPUT
-            echo "pr_head_sha=" >> $GITHUB_OUTPUT
-
-            # Fetch the latest commit SHA of the branch
-            LATEST_SHA=$(gh api repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME --jq '.object.sha')
-
-            if [ -z "$LATEST_SHA" ]; then
-              echo "::error::Could not find the latest commit SHA for branch $BRANCH_NAME."
-              exit 1
-            fi
-
-            echo "Latest SHA for branch $BRANCH_NAME is $LATEST_SHA."
-            # Set tag as branch-SHA
-            echo "tag=branch-$LATEST_SHA" >> $GITHUB_OUTPUT
-          fi
-
-  # Check if the build has run successfully (PR)
-  check-existing-build:
-    name: Check Existing Build
-    if: ${{ needs.determine-build-context.outputs.pr_number != '' }}
-    needs: determine-build-context
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get latest successful build for branch
-        id: check_build
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/${{ github.repository }}/actions/workflows/build.yml/runs?event=pull_request&status=success&head_sha=${{ needs.determine-build-context.outputs.pr_head_sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Fail if no successful build found
-        if: ${{ steps.check_build.conclusion == 'success' && fromJSON(steps.check_build.outputs.data).total_count == 0 }}
-        run: |
-          echo "::error::No successful build found for branch '${{ github.event.inputs.branch_name }}' with SHA '${{ needs.determine-build-context.outputs.pr_head_sha }}'."
-          exit 1
-
-  # Deploy to the test-server
   deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: Prod
-      url: '${{ vars.CLIENT_HOST }}'
-    steps:
-      - name: SSH to VM and Execute Docker-Compose Down
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ vars.VM_HOST }}
-          username: ${{ vars.VM_USERNAME }}
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
-          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
-          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
-          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          script: |
-            docker compose -f docker-compose.prod.yml --env-file=.env.prod down --remove-orphans --rmi all
-
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Copy Docker Compose File From Repo to VM Host
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ vars.VM_HOST }}
-          username: ${{ vars.VM_USERNAME }}
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
-          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
-          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
-          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          source: './docker-compose.prod.yml'
-          target: /home/${{ vars.VM_USERNAME }}
-
-      - name: SSH to VM and Create .env.prod
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ vars.VM_HOST }}
-          username: ${{ vars.VM_USERNAME }}
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
-          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
-          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
-          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          script: |
-            rm .env.prod
-            touch .env.prod
-            echo "PUBLIC_API_URL=${{ vars.PUBLIC_API_URL }}" >> .env.prod
-            echo "CLIENT_HOST=${{ vars.CLIENT_HOST }}" >> .env.prod
-            echo "APP_HOSTNAME=${{ vars.APP_HOSTNAME }}" >> .env.prod
-
-      - name: SSH to VM and Execute Docker-Compose Up
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ vars.VM_HOST }}
-          username: ${{ vars.VM_USERNAME }}
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
-          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
-          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
-          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          script: |
-            echo "Logging into Docker registry..."
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            echo "Starting Docker Compose..."
-            docker compose -f docker-compose.prod.yml --env-file=.env.prod up --pull=always -d
+    uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
+    with:
+      environment: ${{ inputs.environment_name }}
+      docker-compose-file: './docker/compose.yaml'
+      main-image-name: ls1intum/tum-apply
+      image-tag: ${{ inputs.image-tag }}
+      deployment-base-path: '/opt/tum-apply'
+    secrets: inherit

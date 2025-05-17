@@ -683,6 +683,74 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    stepper: {
+      step: {
+        padding: '0.5rem',
+        gap: '1rem',
+      },
+      stepHeader: {
+        padding: '0',
+        gap: '0.5rem',
+      },
+      separator: {
+        size: '0.1rem',
+        margin: '0 0 0 1.625rem',
+      },
+      stepTitle: {
+        fontWeight: '700',
+      },
+      stepNumber: {
+        size: '2.25rem',
+        fontSize: '1.125rem',
+        fontWeight: '700',
+        borderRadius: '50%',
+        shadow: 'none',
+      },
+      steppanels: {
+        padding: '0.875rem 0.5rem 1.125rem 0.5rem',
+      },
+      root: {
+        transitionDuration: '{transition.duration}',
+      },
+      colorScheme: {
+        light: {
+          separator: {
+            background: '{text.disabled}',
+            activeBackground: '{base.black}',
+          },
+          stepTitle: {
+            color: '{text.disabled}',
+            activeColor: '{base.black}',
+          },
+          stepNumber: {
+            background: '{background.disabled}',
+            activeBackground: '{primary.color}',
+            borderColor: '{background.disabled}',
+            activeBorderColor: '{primary.color}',
+            color: '{text.disabled}',
+            activeColor: '{text.onPrimary}',
+          },
+        },
+        dark: {
+          separator: {
+            background: '{text.disabled}',
+            activeBackground: '{base.white}',
+          },
+          stepTitle: {
+            color: '{text.disabled}',
+            activeColor: '{base.white}',
+          },
+          stepNumber: {
+            background: '{background.disabled}',
+            activeBackground: '{primary.color}',
+            borderColor: '{background.disabled}',
+            activeBorderColor: '{primary.color}',
+            color: '{text.disabled}',
+            activeColor: '{text.onPrimary}',
+          },
+        },
+      },
+    },
     tag: {
       fontSize: '0.75rem',
       alignItems: 'center',
