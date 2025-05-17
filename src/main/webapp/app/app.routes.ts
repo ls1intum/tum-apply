@@ -8,6 +8,7 @@ const routes: Routes = [
   {
     path: 'job-creation',
     loadComponent: () => import('./pages/job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
+    title: 'home.title',
   },
   {
     path: '',
