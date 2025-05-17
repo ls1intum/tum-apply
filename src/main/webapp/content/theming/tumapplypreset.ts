@@ -688,7 +688,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       alignItems: 'center',
       gap: '0',
       rounded: {
-        borderRadius: '9999rem',
+        borderRadius: '1rem',
       },
       colorScheme: {
         light: {
