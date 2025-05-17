@@ -20,6 +20,16 @@ public class AuthenticationService {
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
     }
 
+    /**
+     * Ensures that a user with the given email exists in the system.
+     * If no user is found, a new one is created with the provided email, first and last name.
+     * If the user has no assigned role, the default role {@code APPLICANT} is assigned.
+     *
+     * @param email     the email address used to identify the user (case-insensitive)
+     * @param firstName the first name to set if a new user is created
+     * @param lastName  the last name to set if a new user is created
+     * @return the existing or newly created {@link User} entity
+     */
     @Transactional
     public User provisionUserIfMissing(String email, String firstName, String lastName) {
         String normalizedEmail = email.toLowerCase(Locale.ROOT);

@@ -20,6 +20,14 @@ public class UserResource {
         this.authenticationService = authenticationService;
     }
 
+    /**
+     * Returns information about the currently authenticated user.
+     * If the user does not exist yet, a new user is created and assigned a default role.
+     * If no JWT is present, or it is not valid, the response will HTTP 401 Unauthorized.
+     *
+     * @param jwt the JWT of the authenticated user, injected by Spring Security
+     * @return the user data as {@link UserShortDTO}, or an empty response if unauthenticated
+     */
     @GetMapping("/me")
     public ResponseEntity<UserShortDTO> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
         if (jwt == null) {
