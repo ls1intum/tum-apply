@@ -22,7 +22,7 @@
           "options": {
             "allowedCommonJsDependencies": [],
             "outputPath": {
-              "base": "build/resources/main/static/",
+              "base": "src/resources/main/static/",
               "browser": ""
             },
             "index": "src/main/webapp/index.html",

@@ -16,7 +16,6 @@ FROM gradle:8.7.0-jdk21 AS gradle-build
 WORKDIR /tum-apply
 COPY . .
 # Copy Angular build output into Spring Boot static resources
-COPY --from=angular-build /tum-apply/build/resources/main/static/ ./tum-apply/build/resources/main/static/
 RUN gradle clean build -x test
 
 # Stage 3: Minimal Java 21 image to run the app
