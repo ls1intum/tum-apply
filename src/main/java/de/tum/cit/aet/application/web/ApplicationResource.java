@@ -1,14 +1,11 @@
 package de.tum.cit.aet.application.web;
 
-import de.tum.cit.aet.TumApplyApp;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import java.util.Set;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApplicationResource {
 
     private final ApplicationService applicationService;
-    private static final Logger LOG = LoggerFactory.getLogger(TumApplyApp.class);
 
     @Autowired
     public ApplicationResource(ApplicationService applicationService) {
@@ -40,11 +36,9 @@ public class ApplicationResource {
     @PostMapping
     public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
         // TODO check authorization
-        LOG.error("In here");
-        // if (createApplicationDTO == null || createApplicationDTO.applicant() == null ){ // TODO || createApplicationDTO.job() == null) {
-        //     return ResponseEntity.badRequest().build();
-        // }
-        LOG.error("In here2");
+        if (createApplicationDTO == null || createApplicationDTO.applicant() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(applicationService.createApplication(createApplicationDTO));
     }
 
