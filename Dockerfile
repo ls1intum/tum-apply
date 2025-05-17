@@ -1,5 +1,5 @@
 # Stage 1: Build Angular frontend with Node.js 22
-FROM --platform=linux/amd64 node:22 AS angular-build
+FROM --platform=$BUILDPLATFORM node:22 AS angular-build
 WORKDIR /tum-apply
 COPY package.json package-lock.json ./
 COPY prebuild.mjs ./
