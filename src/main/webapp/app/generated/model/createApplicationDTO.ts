@@ -9,9 +9,10 @@
  */
 import { JobCardDTO } from './jobCardDTO';
 import { CustomFieldAnswerDTO } from './customFieldAnswerDTO';
+import { ApplicantDTO } from './applicantDTO';
 
 export interface CreateApplicationDTO {
-  applicant?: string;
+  applicant?: ApplicantDTO;
   job?: JobCardDTO;
   desiredDate?: string;
   applicationState?: CreateApplicationDTO.ApplicationStateEnum;
