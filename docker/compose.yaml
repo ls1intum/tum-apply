@@ -51,8 +51,11 @@ services:
       org.springframework.boot.ignore: true
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
-    env_file:
-      - ../docker/tumapply.env
+    environment:
+      - SPRING_PROFILES_ACTIVE="dev"
+      - SPRING_DATASOURCE_URL="jdbc:mysql://mysql:3306/tum-apply"
+      - SPRING_DATASOURCE_USERNAME="root"
+      - SPRING_DATASOURCE_PASSWORD=""
     ports:
       - 127.0.0.1:8080:8080
     expose:
