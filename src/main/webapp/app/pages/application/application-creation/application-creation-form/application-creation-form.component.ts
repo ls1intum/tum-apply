@@ -15,10 +15,8 @@ import ApplicationCreationPage3Component, {
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
   bachelorGradingScale,
-  // bachelorGradingScale,
   getPage2FromApplication,
   masterGradingScale,
-  // masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
 type ApplicationFormMode = 'create' | 'edit' | 'view';
