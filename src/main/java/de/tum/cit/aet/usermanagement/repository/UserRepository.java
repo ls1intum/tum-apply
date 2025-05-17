@@ -19,7 +19,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         return getArbitraryValueElseThrow(findById(userId));
     }
 
-    @EntityGraph(attributePaths = { "researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup" })
+    @EntityGraph(attributePaths = { "researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup" })
     Optional<User> findWithResearchGroupRolesByEmailIgnoreCase(String email);
 
     boolean existsByEmailIgnoreCase(String email);
