@@ -46,7 +46,7 @@ services:
     labels:
       org.springframework.boot.ignore: true
   tumapply:
-    image: "ls1tum/tum-apply:${IMAGE_TAG}"
+    image: "ls1intum/tum-apply:${IMAGE_TAG}"
     env_file:
       - ../docker/tumapply.env
     ports:
