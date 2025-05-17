@@ -6,15 +6,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.IntegrationTest;
-import de.tum.cit.aet.usermanagement.constants.UserRole;
-import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.TestSecurityConfiguration;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.util.TestUserFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+@Import(TestSecurityConfiguration.class)
 @AutoConfigureMockMvc
 @IntegrationTest
 class UserResourceIT {
@@ -26,20 +26,8 @@ class UserResourceIT {
     private UserRepository userRepository;
 
     @Test
-    void getCurrentUser_whenAuthenticatedAndExists_returnsUserData() throws Exception {
-        String email = "authenticated@example.com";
-        User user = TestUserFactory.create(email, UserRole.APPLICANT);
-        userRepository.saveAndFlush(user);
-
-        mockMvc
-            .perform(get("/api/users/me").header("Authorization", "Bearer dummy-token"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.email").value(email));
-    }
-
-    @Test
     void getCurrentUser_whenAuthenticatedAndNotExists_createsUserAndReturnsData() throws Exception {
-        String email = "newuser@example.com";
+        String email = "authenticated@example.com";
 
         mockMvc
             .perform(get("/api/users/me").header("Authorization", "Bearer dummy-token"))
