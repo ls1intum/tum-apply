@@ -751,5 +751,17 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    floatlabel: {
+      root: {
+        color: '{background.disabled}',
+        focusColor: '{base.white}',
+        transitionDuration: '0.2s',
+        fontWeight: '200',
+        active: {
+          fontSize: '0.5rem',
+          fontWeight: '200',
+        },
+      },
+    },
   },
 });

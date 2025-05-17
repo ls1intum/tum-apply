@@ -1,31 +1,32 @@
 <form [formGroup]="page3Form">
-  <div class="form-row flex flex-col w-1/2">
+  <div class="flex flex-col w-1/2">
     <label>Desired Start Date<span class="text-red-600">*</span></label>
     <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
   </div>
   <jhi-divider label="Uploads" />
   <div class="form-row">
-    <jhi-string-input-temporary
-      label="What is your motivation to take this position?"
-      formControlName="motivation"
-      [required]="true"
-      [(value)]="data().motivation"
-    />
+    <label class="pb-4">What is your motivation to take this position?<span class="text-red-600">*</span></label>
+    <p-floatlabel>
+      <textarea class="w-full" rows="5" pTextarea formControlName="motivation" [(value)]="data().motivation"></textarea>
+      <label for="experiences">List professional or personal reasons</label>
+    </p-floatlabel>
+    <label class="pl-1 textarea-sublabel">Keep it concise but informative ...</label>
   </div>
   <div class="form-row">
-    <jhi-string-input-temporary
-      label="What are your special skills?"
-      formControlName="skills"
-      [required]="true"
-      [(value)]="data().skills"
-    />
+    <label class="pb-4">What are your special skills?<span class="text-red-600">*</span></label>
+    <p-floatlabel>
+      <textarea class="w-full" rows="5" pTextarea formControlName="skills" [(value)]="data().skills"></textarea>
+
+      <label for="experiences">Describe experiences and skills</label>
+    </p-floatlabel>
+    <label class="pl-1 textarea-sublabel">Why are you a good fit for this program or lab?</label>
   </div>
   <div class="form-row">
-    <jhi-string-input-temporary
-      label="If you already worked in research topics, what are your experiences?"
-      formControlName="experiences"
-      [required]="true"
-      [(value)]="data().experiences"
-    />
+    <label class="pb-4">If you already worked in research topics, what are your experiences?<span class="text-red-600">*</span></label>
+    <p-floatlabel>
+      <textarea class="w-full" rows="5" pTextarea formControlName="experiences" [(value)]="data().experiences"></textarea>
+      <label for="experiences">Discuss previous research projects, theses or publications</label>
+    </p-floatlabel>
+    <label class="pl-1 textarea-sublabel">Include your role, methods used, key findings, subjects, projects, ...</label>
   </div>
 </form>
