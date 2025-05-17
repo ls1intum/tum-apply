@@ -22,7 +22,7 @@
           "options": {
             "allowedCommonJsDependencies": [],
             "outputPath": {
-              "base": "dist/tum-apply",
+              "base": "src/resources/main/static/",
               "browser": ""
             },
             "index": "src/main/webapp/index.html",

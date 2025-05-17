@@ -2,10 +2,9 @@ name: tumapply
 services:
   mysql:
     image: mysql:9.2.0
-    volumes:
-      - ./config/mysql:/etc/mysql/conf.d
-    env_file:
-      - ../docker/mysql.env
+    environment:
+      - MYSQL_DATABASE=tumapply
+      - MYSQL_ROOT_PASSWORD=aniruddh
     expose:
       - '3306'
     command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
@@ -16,6 +15,8 @@ services:
       retries: 30
       start_period: 300s
     restart: always
+    networks:
+      - shared-network
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.1
     command: 'start-dev --import-realm'
@@ -31,36 +32,30 @@ services:
       - KC_HTTPS_PORT=9443
       - KC_HEALTH_ENABLED=true
       - KC_HTTP_MANAGEMENT_PORT=9990
-    # If you want to expose these ports outside your dev PC,
-    # remove the "127.0.0.1:" prefix
-    ports:
-      - 127.0.0.1:9080:9080
-      - 127.0.0.1:9443:9443
-    healthcheck:
-      test: 'bash /opt/keycloak/health-check.sh'
-      interval: 5s
-      timeout: 5s
-      # Increased retries due to slow Keycloak startup in GitHub Actions using MacOS
-      retries: 50
-      start_period: 10s
     labels:
       org.springframework.boot.ignore: true
+    networks:
+      - shared-network
   tumapply:
-    image: "ls1intum/tum-apply:${IMAGE_TAG}"
-    env_file:
-      - ../docker/tumapply.env
-    ports:
-      - '127.0.0.1:8080:8080'
+    image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev, api-docs
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=aniruddh
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
+      - SPRING_LIQUIBASE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
     expose:
       - '8080'
     healthcheck:
       test: wget -nv -t1 --spider http://localhost:8080/actuator/health || exit 1
-      start_period: 600s
+      start_period: 100s
       interval: 1s
     depends_on:
       mysql:
         condition: service_healthy
     restart: always
+    networks:
+      - shared-network
   nginx:
     image: nginx:1.27.4-alpine-slim
     ports:
@@ -81,3 +76,10 @@ services:
       - type: bind
         source: '/var/lib/rbg-cert/live/privkey.pem'
         target: '/certs/privkey.pem'
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    name: tumapply-shared-network
+    driver: bridge
