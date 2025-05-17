@@ -5,8 +5,6 @@ services:
     environment:
       - MYSQL_DATABASE=tumapply
       - MYSQL_ROOT_PASSWORD=aniruddh
-    ports:
-      - '3306:3306'
     expose:
       - '3306'
     command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
@@ -34,11 +32,6 @@ services:
       - KC_HTTPS_PORT=9443
       - KC_HEALTH_ENABLED=true
       - KC_HTTP_MANAGEMENT_PORT=9990
-    # If you want to expose these ports outside your dev PC,
-    # remove the "127.0.0.1:" prefix
-    ports:
-      - 127.0.0.1:9080:9080
-      - 127.0.0.1:9443:9443
     labels:
       org.springframework.boot.ignore: true
     networks:
@@ -51,8 +44,6 @@ services:
       - SPRING_DATASOURCE_PASSWORD=aniruddh
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
       - SPRING_LIQUIBASE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
-    ports:
-        - 8080:8080
     expose:
       - '8080'
     healthcheck:
