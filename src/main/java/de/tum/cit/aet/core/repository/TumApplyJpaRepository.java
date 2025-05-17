@@ -25,8 +25,8 @@ public interface TumApplyJpaRepository<T, ID> extends JpaRepository<T, ID> {
      * @return the entity if it exists
      */
     @NotNull
-    public default <U> U getArbitraryValueElseThrow(Optional<U> optional) {
-        return optional.orElseThrow(EntityNotFoundException::new);
+    default <U> U getArbitraryValueElseThrow(Optional<U> optional) {
+        return optional.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
     }
 
     /**
@@ -37,7 +37,7 @@ public interface TumApplyJpaRepository<T, ID> extends JpaRepository<T, ID> {
      * @param id       the id of the entity to find in string representation
      * @return the entity if it exists
      */
-    public default <U> U getArbitraryValueElseThrow(Optional<U> optional, String id) {
-        return optional.orElseThrow(() -> new EntityNotFoundException("Entity with id " + id + " does not exist"));
+    default <U> U getArbitraryValueElseThrow(Optional<U> optional, String id) {
+        return optional.orElseThrow(() -> EntityNotFoundException.forId("Entity", id));
     }
 }
