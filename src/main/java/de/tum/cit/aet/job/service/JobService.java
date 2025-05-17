@@ -75,7 +75,7 @@ public class JobService {
      */
     public JobCardDTO updateJob(UUID jobId, JobDetailDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        //        updateEntity(job, dto);
+        //updateEntity(job, dto);
         jobRepository.save(job);
         return toDto(job);
     }
