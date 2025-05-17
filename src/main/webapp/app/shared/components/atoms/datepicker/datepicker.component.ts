@@ -2,11 +2,12 @@ import { Component, ViewEncapsulation, effect, input, output, signal } from '@an
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
-  imports: [DatePickerModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, DatePickerModule, FormsModule, FontAwesomeModule],
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -14,10 +15,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 export class DatePickerComponent {
   isCalendarOpen = false;
 
-  width = input<string>('50%');
+  width = input<string>('100%');
   label = input<string>('Date');
   required = input<boolean>(false);
+  disabled = input<boolean>(false);
   placeholder = input<string>('Select a date...');
+  labelPosition = input<'top' | 'left'>('top');
 
   /**
    * Input date value in ISO format: 'YYYY-MM-DD'

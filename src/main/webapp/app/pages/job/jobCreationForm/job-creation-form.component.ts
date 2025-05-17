@@ -9,6 +9,7 @@ import { JobFormDTO } from '../../../generated';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../../shared/components/molecules/button-group/button-group.component';
+import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 /**
  * JobCreationFormComponent
  * ------------------------
@@ -28,6 +29,7 @@ import ButtonGroupComponent, { ButtonGroupData } from '../../../shared/component
     DatePickerComponent,
     ButtonComponent,
     ButtonGroupComponent,
+    StringInputComponent,
   ],
   providers: [JobResourceService],
 })

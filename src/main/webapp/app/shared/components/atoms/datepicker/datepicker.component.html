@@ -1,5 +1,12 @@
-<div [class.active]="isCalendarOpen" class="datepicker-container">
-  <label class="datepicker-label"
+<div
+  [class.active]="isCalendarOpen"
+  [ngClass]="{
+    'label-top': labelPosition() === 'top',
+    'label-left': labelPosition() === 'left',
+  }"
+  class="datepicker-container"
+>
+  <label class="custom-label"
     >{{ label() }}
     @if (required()) {
       <span class="required">*</span>
@@ -11,6 +18,7 @@
     (onShow)="isCalendarOpen = true"
     [(ngModel)]="modelDate"
     [placeholder]="placeholder()"
+    [disabled]="disabled()"
     [showButtonBar]="true"
     [style]="{ width: width() }"
     class="custom-datepicker"

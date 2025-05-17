@@ -30,7 +30,7 @@ export class DropdownComponent {
   iconField = input<string | undefined>(undefined); // For displaying custom icons for each dropdown item
   prefixIcon = input<string | undefined>(undefined); // For default icon for dropdown placeholder
   labelPosition = input<'top' | 'left'>('top');
-  width = input<string>('50%');
+  width = input<string>('100%');
 
   selectedChange = output<DropdownOption>();
 

@@ -1,0 +1,32 @@
+<div
+  [ngClass]="{
+    'label-top': labelPosition() === 'top',
+    'label-left': labelPosition() === 'left',
+  }"
+  class="input-container"
+>
+  @if (label() !== undefined) {
+    <label class="custom-label">
+      {{ label() }}
+      @if (icon() !== undefined) {
+        <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+      }
+      @if (required()) {
+        <span class="required">*</span>
+      }
+    </label>
+  }
+  <div class="input-wrapper" [ngClass]="{ error: error() }">
+    <input
+      type="text"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [ngModel]="model()"
+      (ngModelChange)="modelChange.emit($event)"
+      [required]="required()"
+      [style]="{ width: width() }"
+      pInputText
+      class="custom-input"
+    />
+  </div>
+</div>
