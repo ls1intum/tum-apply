@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * A connection between a user, a research group and a role.
@@ -17,6 +19,7 @@ public class UserResearchGroupRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "user_research_group_role_id", nullable = false)
     private UUID userResearchGroupRoleId;
 
