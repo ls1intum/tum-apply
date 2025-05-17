@@ -751,5 +751,24 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    checkbox: {
+      background: 'transparent',
+      checked: {
+        background: '{primary.color}',
+        hover: {
+          background: '{primary.hoverColor}',
+        },
+      },
+    },
+    paginator: {
+      background: '{background.default}',
+      nav: {
+        button: {
+          selected: {
+            background: '{primary.color}',
+          },
+        },
+      },
+    },
   },
 });
