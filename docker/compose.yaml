@@ -88,3 +88,8 @@ services:
       - type: bind
         source: '/var/lib/rbg-cert/live/privkey.pem'
         target: '/certs/privkey.pem'
+
+networks:
+  shared-network:
+    name: tumapply-shared-network
+    driver: bridge
