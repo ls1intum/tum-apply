@@ -4,7 +4,6 @@ import dayjs from 'dayjs/esm';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 import locale from '@angular/common/locales/en';
-import { RouterModule, RouterOutlet } from '@angular/router';
 
 import { fontAwesomeIcons } from './config/font-awesome-icons';
 import MainComponent from './layouts/main/main.component';
@@ -12,7 +11,7 @@ import MainComponent from './layouts/main/main.component';
 @Component({
   selector: 'jhi-app',
   template: '<jhi-main />',
-  imports: [MainComponent, RouterOutlet, RouterModule],
+  imports: [MainComponent],
 })
 export default class AppComponent {
   private readonly iconLibrary = inject(FaIconLibrary);
