@@ -1,17 +1,21 @@
 <jhi-divider label="Bachelor" />
 <div class="form-row">
-  <jhi-string-input
-    label="Bachelor Degree Name"
-    formControlName="bachelorDegreeName"
-    [required]="true"
-    [(value)]="data().bachelorDegreeName"
-  />
-  <jhi-string-input
-    label="Bachelor Degree University"
-    formControlName="bachelorDegreeUniversity"
-    [required]="true"
-    [(value)]="data().bachelorDegreeUniversity"
-  />
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary
+      label="Bachelor Degree Name"
+      formControlName="bachelorDegreeName"
+      [required]="true"
+      [(value)]="data().bachelorDegreeName"
+    />
+  </div>
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary
+      label="Bachelor Degree University"
+      formControlName="bachelorDegreeUniversity"
+      [required]="true"
+      [(value)]="data().bachelorDegreeUniversity"
+    />
+  </div>
 </div>
 <div class="form-row">
   <div class="w-1/2 pr-4">
@@ -25,18 +29,27 @@
     />
   </div>
   <div class="w-1/2 pr-4">
-    <jhi-string-input label="Bachelor Grade" formControlName="bachelorGrade" [required]="true" [(value)]="data().bachelorGrade" />
+    <jhi-string-input-temporary label="Bachelor Grade" formControlName="bachelorGrade" [required]="true" [(value)]="data().bachelorGrade" />
   </div>
 </div>
 <jhi-divider label="Master" />
 <div class="form-row">
-  <jhi-string-input label="Master Degree Name" formControlName="masterDegreeName" [required]="true" [(value)]="data().masterDegreeName" />
-  <jhi-string-input
-    label="Master Degree University"
-    formControlName="masterDegreeUniversity"
-    [required]="true"
-    [(value)]="data().masterDegreeUniversity"
-  />
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary
+      label="Master Degree Name"
+      formControlName="masterDegreeName"
+      [required]="true"
+      [(value)]="data().masterDegreeName"
+    />
+  </div>
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary
+      label="Master Degree University"
+      formControlName="masterDegreeUniversity"
+      [required]="true"
+      [(value)]="data().masterDegreeUniversity"
+    />
+  </div>
 </div>
 <div class="form-row">
   <div class="w-1/2 pr-4">
@@ -46,10 +59,10 @@
       width="100%"
       [required]="true"
       [items]="masterGradingScaleLocal"
-      [(selected)]="data().bachelorGradingScale"
+      [(selected)]="data().masterGradingScale"
     />
   </div>
   <div class="w-1/2 pr-4">
-    <jhi-string-input label="Master Grade" formControlName="masterGrade" [required]="true" [(value)]="data().masterGrade" />
+    <jhi-string-input-temporary label="Master Grade" formControlName="masterGrade" [required]="true" [(value)]="data().masterGrade" />
   </div>
 </div>

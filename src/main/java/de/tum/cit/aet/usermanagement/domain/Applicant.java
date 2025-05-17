@@ -4,7 +4,9 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import jakarta.persistence.*;
 import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -12,6 +14,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "applicants")
 public class Applicant extends User {

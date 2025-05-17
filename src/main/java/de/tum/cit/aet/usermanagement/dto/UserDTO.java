@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record UserDTO(
     UUID userId,
-    // ResearchGroup researchGroup,
+    // // ResearchGroup researchGroup,
     String email,
     String avatar,
     String firstName,

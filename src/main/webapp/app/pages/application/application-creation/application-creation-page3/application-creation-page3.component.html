@@ -5,7 +5,7 @@
   </div>
   <jhi-divider label="Uploads" />
   <div class="form-row">
-    <jhi-string-input
+    <jhi-string-input-temporary
       label="What is your motivation to take this position?"
       formControlName="motivation"
       [required]="true"
@@ -13,10 +13,15 @@
     />
   </div>
   <div class="form-row">
-    <jhi-string-input label="What are your special skills?" formControlName="skills" [required]="true" [(value)]="data().skills" />
+    <jhi-string-input-temporary
+      label="What are your special skills?"
+      formControlName="skills"
+      [required]="true"
+      [(value)]="data().skills"
+    />
   </div>
   <div class="form-row">
-    <jhi-string-input
+    <jhi-string-input-temporary
       label="If you already worked in research topics, what are your experiences?"
       formControlName="experiences"
       [required]="true"

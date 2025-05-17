@@ -9,11 +9,18 @@ import { DatePickerComponent } from '../../../../shared/components/atoms/datepic
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
-  // TODO cv
-  // TODO references
   motivation: string;
   skills: string;
   experiences: string;
+};
+
+export const getPage3FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage3Data => {
+  return {
+    desiredStartDate: application.desiredDate ?? '',
+    motivation: application.motivation ?? '',
+    skills: application.specialSkills ?? '',
+    experiences: application.projects ?? '',
+  };
 };
 
 @Component({
@@ -46,12 +53,3 @@ export default class ApplicationCreationPage3Component implements OnInit {
     });
   }
 }
-
-export const getPage3FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage3Data => {
-  return {
-    desiredStartDate: application.desiredDate ?? '',
-    motivation: application.motivation ?? '',
-    skills: application.specialSkills ?? '',
-    experiences: application.projects ?? '',
-  };
-};

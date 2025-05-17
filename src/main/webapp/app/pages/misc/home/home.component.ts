@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
@@ -16,8 +16,9 @@ import { DropdownComponent, DropdownOption } from '../../../shared/components/at
   imports: [SharedModule, RouterModule, ButtonComponent, DatePickerComponent, DropdownComponent],
 })
 export default class HomeComponent implements OnInit {
-  account = signal<Account | null>(null);
+  readonly router = inject(Router);
 
+  account = signal<Account | null>(null);
   // Datepicker:
   selectedDate: string | undefined = undefined;
   // Dropdown:

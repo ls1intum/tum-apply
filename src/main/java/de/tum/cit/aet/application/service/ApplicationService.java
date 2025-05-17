@@ -6,19 +6,30 @@ import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ApplicationService {
 
-    private final ApplicationRepository repository;
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationService.class);
 
-    public ApplicationService(ApplicationRepository repository) {
-        this.repository = repository;
+    private final ApplicationRepository applicationRepository;
+    private final JobRepository jobRepository;
+
+    public ApplicationService(ApplicationRepository applicationRepository, JobRepository jobRepository, UserRepository userRepository) {
+        this.applicationRepository = applicationRepository;
+        this.jobRepository = jobRepository;
     }
 
     /**
@@ -28,11 +39,38 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(CreateApplicationDTO createApplicationDTO) {
+        Applicant applicant = new Applicant();
+        applicant.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
+        applicant.setEmail(createApplicationDTO.applicant().user().email());
+        applicant.setFirstName(createApplicationDTO.applicant().user().firstName());
+        applicant.setLastName(createApplicationDTO.applicant().user().lastName());
+        applicant.setGender(createApplicationDTO.applicant().user().gender());
+        applicant.setNationality(createApplicationDTO.applicant().user().nationality());
+        applicant.setBirthday(createApplicationDTO.applicant().user().birthday());
+        applicant.setPhoneNumber(createApplicationDTO.applicant().user().phoneNumber());
+        applicant.setWebsite(createApplicationDTO.applicant().user().website());
+        applicant.setLinkedinUrl(createApplicationDTO.applicant().user().linkedinUrl());
+        applicant.setSelectedLanguage(createApplicationDTO.applicant().user().selectedLanguage());
+
+        applicant.setStreet(createApplicationDTO.applicant().street());
+        applicant.setPostalCode(createApplicationDTO.applicant().postalCode());
+        applicant.setCity(createApplicationDTO.applicant().city());
+        applicant.setCountry(createApplicationDTO.applicant().country());
+        applicant.setBachelorDegreeName(createApplicationDTO.applicant().bachelorDegreeName());
+        applicant.setBachelorGradingScale(createApplicationDTO.applicant().bachelorGradingScale());
+        applicant.setBachelorGrade(createApplicationDTO.applicant().bachelorGrade());
+        applicant.setBachelorUniversity(createApplicationDTO.applicant().bachelorUniversity());
+        applicant.setMasterDegreeName(createApplicationDTO.applicant().masterDegreeName());
+        applicant.setMasterGradingScale(createApplicationDTO.applicant().masterGradingScale());
+        applicant.setMasterGrade(createApplicationDTO.applicant().masterGrade());
+        applicant.setMasterUniversity(createApplicationDTO.applicant().masterUniversity());
+
+        Job job = jobRepository.getReferenceById(createApplicationDTO.jobId());
         Application application = new Application(
             null,
             null, // no applicationReview yet
-            null, //TODO get User from UUID
-            null, // TODO get Job from JobcardDTO
+            applicant,
+            job,
             createApplicationDTO.applicationState(),
             createApplicationDTO.desiredDate(),
             null,
@@ -43,13 +81,16 @@ public class ApplicationService {
             createApplicationDTO.specialSkills(),
             createApplicationDTO.motivation(),
             null,
-            null, // TODO get CustomAnswers from CustomAnswerDto,
-            null
+            new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
+            new HashSet<>()
         );
-
-        Application savedApplication = repository.save(application);
-
-        return ApplicationForApplicantDTO.getFromEntity(savedApplication);
+        try {
+            Application savedApplication = applicationRepository.save(application);
+            return ApplicationForApplicantDTO.getFromEntity(savedApplication);
+        } catch (Exception e) {
+            LOG.error("Error", e);
+        }
+        return null;
     }
 
     /**
@@ -58,7 +99,7 @@ public class ApplicationService {
      * @return Set of ApplicationForApplicantDTO which all have the same applicant
      */
     public Set<ApplicationForApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
-        return repository
+        return applicationRepository
             .findAllByApplicantUserId(applicantId)
             .stream()
             .map(ApplicationForApplicantDTO::getFromEntity)
@@ -71,7 +112,11 @@ public class ApplicationService {
      * @return Set of ApplicationForApplicantDTO which all have the same Job
      */
     public Set<ApplicationForApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
-        return repository.findAllByJobJobId(jobId).stream().map(ApplicationForApplicantDTO::getFromEntity).collect(Collectors.toSet());
+        return applicationRepository
+            .findAllByJobJobId(jobId)
+            .stream()
+            .map(ApplicationForApplicantDTO::getFromEntity)
+            .collect(Collectors.toSet());
     }
 
     /**
@@ -80,7 +125,7 @@ public class ApplicationService {
      * @return ApplicationForApplicantDTO with same Id as parameter applicationId
      */
     public ApplicationForApplicantDTO getApplicationById(UUID applicationId) {
-        Application application = repository.findById(applicationId).orElse(null);
+        Application application = applicationRepository.findById(applicationId).orElse(null);
         return ApplicationForApplicantDTO.getFromEntity(application);
     }
 
@@ -91,9 +136,9 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
-        Application application = repository.findById(updateApplicationDTO.applicationId()).orElse(null);
+        Application application = applicationRepository.findById(updateApplicationDTO.applicationId()).orElse(null);
         // TODO set values of application
-        Application updateApplication = repository.save(application);
+        Application updateApplication = applicationRepository.save(application);
         return ApplicationForApplicantDTO.getFromEntity(updateApplication);
     }
 
@@ -104,12 +149,12 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO withdrawApplication(UUID applicationId) {
-        Application application = repository.findById(applicationId).orElse(null);
+        Application application = applicationRepository.findById(applicationId).orElse(null);
         if (application == null) {
             return null;
         }
         application.setState(ApplicationState.WITHDRAWN);
-        Application savedApplication = repository.save(application);
+        Application savedApplication = applicationRepository.save(application);
         return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
@@ -119,6 +164,6 @@ public class ApplicationService {
      */
     @Transactional
     public void deleteApplication(UUID applicationId) {
-        repository.deleteById(applicationId);
+        applicationRepository.deleteById(applicationId);
     }
 }

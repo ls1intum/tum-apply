@@ -15,8 +15,10 @@ import ApplicationCreationPage3Component, {
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
   bachelorGradingScale,
+  // bachelorGradingScale,
   getPage2FromApplication,
   masterGradingScale,
+  // masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
 type ApplicationFormMode = 'create' | 'edit' | 'view';
@@ -96,10 +98,10 @@ export default class ApplicationCreationFormComponent implements OnInit {
       if (firstSegment === 'create') {
         this.mode = 'create';
         this.jobId = this.route.snapshot.paramMap.get('job_id')!;
-        // this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
-        //   this.title = job.title;
-        //   this.job = job;
-        // });
+        this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
+          this.title = job.title;
+          this.job = job;
+        });
       } else if (firstSegment === 'edit' || firstSegment === 'view') {
         this.mode = firstSegment;
         const applicationId = this.route.snapshot.paramMap.get('application_id')!;
@@ -120,7 +122,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
     };
     this.stepData.set([
       {
-        name: 'Personal Information', // TODO translation
+        name: 'Personal Information',
         panelTemplate: this.panel1,
         buttonGroupPrev: [
           {
@@ -170,7 +172,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         ],
       },
       {
-        name: 'Application Details', // TODO translation
+        name: 'Application Details',
         panelTemplate: this.panel3,
         buttonGroupPrev: [
           {
@@ -223,25 +225,28 @@ export default class ApplicationCreationFormComponent implements OnInit {
           phoneNumber: this.page1.phoneNumber,
           website: this.page1.website,
           selectedLanguage: this.page1.language?.value as string,
-          // id?
+          userId: '00000000-0000-0000-0000-000000000103',
         },
         bachelorDegreeName: this.page2.bachelorDegreeName,
         masterDegreeName: this.page2.masterDegreeName,
         bachelorGrade: this.page2.bachelorGrade,
         masterGrade: this.page2.masterGrade,
-        bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
-        masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
+        // bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
+        // masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
       },
       applicationState: state,
-      answers: new Set(),
       desiredDate: this.page3.desiredStartDate,
-      job: this.job,
       motivation: this.page3.motivation,
       specialSkills: this.page3.skills,
       projects: this.page3.experiences,
+      // answers: new Set(),
     };
+    const router = this.router;
     this.applicationResourceService.createApplication(createApplication).subscribe({
-      next() {},
+      next() {
+        alert('Successfully sent application');
+        router.navigate(['/']);
+      },
       error(err) {
         console.error('Failed to publish application:', err);
       },

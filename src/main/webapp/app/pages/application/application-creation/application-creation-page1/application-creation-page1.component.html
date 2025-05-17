@@ -1,11 +1,11 @@
 <div class="form-row">
-  <jhi-string-input label="First Name" id="firstName" [required]="true" [(value)]="data().firstName" />
-  <jhi-string-input label="Last Name" id="lastName" [required]="true" [(value)]="data().lastName" />
+  <jhi-string-input-temporary label="First Name" id="firstName" [required]="true" [(value)]="data().firstName" />
+  <jhi-string-input-temporary label="Last Name" id="lastName" [required]="true" [(value)]="data().lastName" />
 </div>
 <jhi-divider label="User Information" />
 <div class="form-row">
-  <jhi-string-input label="Email" icon="envelope" [disabled]="true" id="email" [required]="true" [(value)]="data().email" />
-  <jhi-string-input label="Phone Number" id="phoneNumber" [required]="true" [(value)]="data().phoneNumber" />
+  <jhi-string-input-temporary label="Email" icon="envelope" [disabled]="true" id="email" [required]="true" [(value)]="data().email" />
+  <jhi-string-input-temporary label="Phone Number" id="phoneNumber" [required]="true" [(value)]="data().phoneNumber" />
 </div>
 <div class="form-row">
   <div class="w-1/2 pr-4">
@@ -23,21 +23,32 @@
     <label>Date of Birth</label>
     <jhi-datepicker label="" width="100%" />
   </div>
-  <!-- <jhi-string-input label="Date Of Birth" id="dateOfBirth" [required]="true" [(value)]="data().dateOfBirth" /> -->
 </div>
 <div class="form-row">
-  <jhi-string-input label="Website" id="website" [(value)]="data().website" />
-  <jhi-string-input label="LinkedIn" id="linkedIn" [(value)]="data().linkedIn" />
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary label="Website" id="website" [(value)]="data().website" />
+  </div>
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary label="LinkedIn" id="linkedIn" [(value)]="data().linkedIn" />
+  </div>
 </div>
 <jhi-divider label="Address" />
 <div class="form-row">
-  <jhi-string-input label="Street" id="street" [required]="true" [(value)]="data().street" />
-  <jhi-string-input label="Streetnumber" id="streetnumber" [required]="true" [(value)]="data().streetnumber" />
+  <div class="w-3/4 pr-4">
+    <jhi-string-input-temporary label="Street" id="street" [required]="true" [(value)]="data().street" />
+  </div>
+  <div class="w-1/4 pr-4">
+    <jhi-string-input-temporary label="Streetnumber" id="streetnumber" [required]="true" [(value)]="data().streetnumber" />
+  </div>
 </div>
 <div class="form-row">
-  <jhi-string-input label="City" id="city" [required]="true" [(value)]="data().city" />
+  <jhi-string-input-temporary label="City" id="city" [required]="true" [(value)]="data().city" />
 </div>
 <div class="form-row">
-  <jhi-string-input label="Country" id="country" [required]="true" [(value)]="data().country" />
-  <jhi-string-input label="Postcode" id="postcode" [required]="true" [(value)]="data().postcode" />
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary label="Country" id="country" [required]="true" [(value)]="data().country" />
+  </div>
+  <div class="w-1/2 pr-4">
+    <jhi-string-input-temporary label="Postcode" id="postcode" [required]="true" [(value)]="data().postcode" />
+  </div>
 </div>

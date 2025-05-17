@@ -32,7 +32,7 @@ export const dropdownGender: DropdownOption[] = [
 ];
 
 export const dropdownLanguage: DropdownOption[] = [
-  { value: 'de', name: 'deutsch' },
+  { value: 'de', name: 'german' },
   { value: 'en', name: 'english' },
 ];
 

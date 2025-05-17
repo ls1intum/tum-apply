@@ -5,7 +5,7 @@ import SharedModule from 'app/shared/shared.module';
 import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
-  selector: 'jhi-string-input',
+  selector: 'jhi-string-input-temporary',
   imports: [SharedModule, InputTextModule, FontAwesomeModule],
   templateUrl: './string-input.component.html',
   styleUrl: './string-input.component.scss',
