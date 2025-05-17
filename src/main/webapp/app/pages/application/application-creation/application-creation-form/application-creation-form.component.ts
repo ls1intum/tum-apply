@@ -96,10 +96,10 @@ export default class ApplicationCreationFormComponent implements OnInit {
       if (firstSegment === 'create') {
         this.mode = 'create';
         this.jobId = this.route.snapshot.paramMap.get('job_id')!;
-        this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
-          this.title = job.title;
-          this.job = job;
-        });
+        // this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
+        //   this.title = job.title;
+        //   this.job = job;
+        // });
       } else if (firstSegment === 'edit' || firstSegment === 'view') {
         this.mode = firstSegment;
         const applicationId = this.route.snapshot.paramMap.get('application_id')!;
@@ -240,8 +240,12 @@ export default class ApplicationCreationFormComponent implements OnInit {
       specialSkills: this.page3.skills,
       projects: this.page3.experiences,
     };
-
-    this.applicationResourceService.createApplication(createApplication);
+    this.applicationResourceService.createApplication(createApplication).subscribe({
+      next() {},
+      error(err) {
+        console.error('Failed to publish application:', err);
+      },
+    });
   }
 
   onPage1ValidityChanged(isValid: boolean): void {
