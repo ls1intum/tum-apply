@@ -14,7 +14,7 @@ public class TestSecurityConfiguration {
         return token ->
             Jwt.withTokenValue(token)
                 .header("alg", "none")
-                .claim("email", "authenticated@example.com") // muss zu deinem Test passen!
+                .claim("email", "authenticated@example.com")
                 .claim("preferred_username", "authenticated@example.com")
                 .claim("given_name", "Test")
                 .claim("family_name", "User")
