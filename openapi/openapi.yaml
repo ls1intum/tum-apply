@@ -864,8 +864,9 @@
           "applicant": {
             "$ref": "#/components/schemas/ApplicantDTO"
           },
-          "job": {
-            "$ref": "#/components/schemas/JobCardDTO"
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
           },
           "desiredDate": {
             "type": "string",
@@ -890,13 +891,6 @@
           },
           "motivation": {
             "type": "string"
-          },
-          "answers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomFieldAnswerDTO"
-            },
-            "uniqueItems": true
           }
         }
       },
