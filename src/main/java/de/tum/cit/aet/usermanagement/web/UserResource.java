@@ -26,11 +26,11 @@ public class UserResource {
             return ResponseEntity.ok().build(); // no token = no user
         }
 
-        String preferredUsername = jwt.getClaimAsString("preferred_username");
+        String email = jwt.getClaimAsString("email");
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
 
-        User user = authenticationService.provisionUserIfMissing(preferredUsername, firstName, lastName);
+        User user = authenticationService.provisionUserIfMissing(email, firstName, lastName);
         return ResponseEntity.ok(new UserShortDTO(user));
     }
 }
