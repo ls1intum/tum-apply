@@ -1,21 +1,15 @@
-<jhi-dynamic-table
-  [columns]="[
-    { field: 'avatar', header: '', width: '5rem' },
-    { field: 'name', header: 'Name', width: '12rem' },
-    { field: 'state', header: 'Status', width: '10rem', alignCenter: true },
-    { field: 'jobName', header: 'Job', width: '26rem' },
-    { field: 'rating', header: 'Rating', width: '10rem' },
-    { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
-    { field: 'actions', header: '', width: '5rem', template: actionTemplate },
-  ]"
-  [data]="pageData()"
-  [totalRecords]="total()"
-  [rows]="pageSize()"
-  [selectAble]="true"
-  [loading]="loading()"
-  (lazyLoad)="loadPage($event)"
-/>
+<div class="body">
+  <jhi-dynamic-table
+    [columns]="columns"
+    [data]="pageData()"
+    [totalRecords]="total()"
+    [rows]="pageSize()"
+    [selectAble]="true"
+    [loading]="loading()"
+    (lazyLoad)="loadPage($event)"
+  />
 
-<ng-template #actionTemplate>
-  <jhi-button label="View" severity="primary" />
-</ng-template>
+  <ng-template #actionTemplate>
+    <jhi-button label="View" severity="primary" />
+  </ng-template>
+</div>

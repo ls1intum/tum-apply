@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 
-export class TableColumn {
+export class DynamicTableColumn {
   field!: string;
   header!: string;
   type?: string;
@@ -23,13 +23,12 @@ export class DynamicTableComponent {
   readonly paginator = true;
   readonly lazy = true;
 
-  // ⚠️ Note the <>[] syntax and default []
-  readonly columns = input<TableColumn[]>([]);
-  readonly data = input<any[]>([]);
-  readonly rows = input<number>(10);
-  readonly totalRecords = input<number>(0);
-  readonly loading = input<boolean>(false);
-  readonly selectAble = input<boolean>(false);
+  columns = input<DynamicTableColumn[]>([]);
+  data = input<any[]>([]);
+  rows = input<number>(10);
+  totalRecords = input<number>(0);
+  loading = input<boolean>(false);
+  selectAble = input<boolean>(false);
 
   @Output() lazyLoad = new EventEmitter<TableLazyLoadEvent>();
 

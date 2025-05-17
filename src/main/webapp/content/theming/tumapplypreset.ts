@@ -761,6 +761,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       },
     },
     paginator: {
+      background: '{background.default}',
       nav: {
         button: {
           selected: {
