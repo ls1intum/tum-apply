@@ -4,8 +4,12 @@ services:
     image: mysql:9.2.0
     volumes:
       - ./config/mysql:/etc/mysql/conf.d
-    env_file:
-      - ../docker/mysql.env
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD="yes"
+      - MYSQL_ROOT_PASSWORD=""
+      - MYSQL_DATABASE="tumapply"
+    ports:
+      - 127.0.0.1:3306:3306
     expose:
       - '3306'
     command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
@@ -46,11 +50,11 @@ services:
     labels:
       org.springframework.boot.ignore: true
   tumapply:
-    image: "ls1intum/tum-apply:${IMAGE_TAG}"
+    image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
     env_file:
       - ../docker/tumapply.env
     ports:
-      - '127.0.0.1:8080:8080'
+      - 127.0.0.1:8080:8080
     expose:
       - '8080'
     healthcheck:

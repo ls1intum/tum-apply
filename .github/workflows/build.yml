@@ -33,6 +33,6 @@ jobs:
   build:
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
     with:
-      image-name: ls1intum/tum-apply
+      image-name: ghcr.io/ls1intum/tum-apply
       docker-file: Dockerfile
     secrets: inherit
