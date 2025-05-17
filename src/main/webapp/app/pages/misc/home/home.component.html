@@ -36,11 +36,86 @@
 
     <div class="row mt-4">
       <div class="col-md-6">
+        <h3>Number Input - GPA (Top)</h3>
+        <jhi-number-input
+          [(model)]="testNumber"
+          [label]="'GPA'"
+          [placeholder]="'0.0 to 4.0'"
+          [labelPosition]="'top'"
+          [icon]="''"
+          [required]="true"
+          [min]="0"
+          [max]="4"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="2"
+        />
+        <br />
+      </div>
+
+      <div class="col-md-6">
+        <h3>Number Input - Years of Experience (Left)</h3>
+        <jhi-number-input
+          [(model)]="testExperience"
+          [label]="'Experience'"
+          [placeholder]="'0–50 years'"
+          [labelPosition]="'left'"
+          [icon]="'book'"
+          [min]="0"
+          [max]="50"
+          [minFractionDigits]="0"
+          [maxFractionDigits]="1"
+        />
+        <br />
+      </div>
+
+      <div class="col-md-6">
+        <h3>Number Input Test - Error</h3>
+        <jhi-number-input
+          [(model)]="testNumberError"
+          [label]="'Credits (Error)'"
+          [placeholder]="'Enter credits...'"
+          [labelPosition]="'top'"
+          [icon]="''"
+          [error]="true"
+        />
+        <br />
+      </div>
+
+      <div class="col-md-6">
+        <h3>Number Input Test - Disabled</h3>
+        <jhi-number-input
+          [(model)]="testNumberDisabled"
+          [label]="'ECTS (Disabled)'"
+          [placeholder]="'Field not editable...'"
+          [icon]="'lock'"
+          [disabled]="true"
+          [labelPosition]="'left'"
+        />
+        <br />
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
         <h3>String Input Test - Enabled</h3>
         <jhi-string-input
           [(model)]="testInput"
           [label]="'Your Name'"
           [placeholder]="'Enter your name...'"
+          [labelPosition]="'top'"
+          [icon]="'user'"
+          [required]="true"
+        />
+        <br />
+      </div>
+
+      <div class="col-md-6">
+        <h3>String Input Test - Enabled</h3>
+        <jhi-string-input
+          [(model)]="testInput"
+          [label]="'Your Name'"
+          [placeholder]="'Enter your name...'"
+          [labelPosition]="'left'"
           [icon]="'user'"
           [required]="true"
         />
@@ -72,7 +147,22 @@
       </div>
     </div>
 
-    <jhi-datepicker [(selectedDate)]="selectedDate" [label]="'Start Date'" [placeholder]="'Select a Start Date...'" [width]="'50%'" />
+    <jhi-datepicker
+      [(selectedDate)]="selectedDate"
+      [label]="'Start Date'"
+      [placeholder]="'Select a Start Date...'"
+      [width]="'50%'"
+      [labelPosition]="'top'"
+    />
+    <br />
+    <jhi-datepicker
+      [(selectedDate)]="selectedDate"
+      [label]="'Start Date'"
+      [placeholder]="'Select a Start Date...'"
+      [width]="'100%'"
+      [labelPosition]="'left'"
+    />
+    <br />
     <jhi-datepicker
       [(selectedDate)]="selectedDate"
       [label]="'Start Date'"

@@ -1,1 +1,37 @@
-<p>number-input works!</p>
+<div
+  [ngClass]="{
+    'label-top': labelPosition() === 'top',
+    'label-left': labelPosition() === 'left',
+  }"
+  class="number-input-container"
+>
+  @if (label()) {
+    <label class="custom-label" [for]="inputId()">
+      {{ label() }}
+      @if (icon()) {
+        <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+      }
+      @if (required()) {
+        <span class="required">*</span>
+      }
+    </label>
+  }
+
+  <div [ngClass]="{ error: error() }">
+    <p-inputnumber
+      [inputId]="inputId()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [required]="required()"
+      [useGrouping]="false"
+      [min]="min()"
+      [max]="max()"
+      [minFractionDigits]="minFractionDigits()"
+      [maxFractionDigits]="maxFractionDigits()"
+      [ngModel]="model()"
+      (ngModelChange)="modelChange.emit($event)"
+      [style]="{ width: width() }"
+      class="custom-number-input"
+    />
+  </div>
+</div>

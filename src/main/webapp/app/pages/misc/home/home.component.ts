@@ -9,12 +9,21 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
+import { NumberInputComponent } from '../../../shared/components/atoms/number-input/number-input.component';
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, ButtonComponent, DatePickerComponent, DropdownComponent, StringInputComponent],
+  imports: [
+    SharedModule,
+    RouterModule,
+    ButtonComponent,
+    DatePickerComponent,
+    DropdownComponent,
+    StringInputComponent,
+    NumberInputComponent,
+  ],
 })
 export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
@@ -24,6 +33,11 @@ export default class HomeComponent implements OnInit {
   // Dropdown:
   selectedLocation1: DropdownOption | undefined = undefined;
   selectedLocation2: DropdownOption | undefined = undefined;
+
+  testNumber: number | null = null;
+  testExperience: number | null = null;
+  testNumberError: number | null = null;
+  testNumberDisabled: number | null = null;
 
   testInput = '';
   testInputDisabled = '';

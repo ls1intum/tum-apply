@@ -21,4 +21,6 @@ export class StringInputComponent {
   error = input<boolean>(false);
   model = input<string>('');
   modelChange = output<string>();
+  labelPosition = input<'top' | 'left'>('top');
+  width = input<string>('100%');
 }

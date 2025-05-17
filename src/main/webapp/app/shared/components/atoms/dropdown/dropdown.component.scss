@@ -6,14 +6,10 @@
   &.label-left {
     flex-direction: row;
     align-items: center;
-
-    .dropdown-label {
-      margin-right: 1rem;
-    }
   }
 
   // Add styling for labels on the top of the dropdown
-  &.label-top .dropdown-label {
+  &.label-top .custom-label {
     margin-bottom: 0.25rem;
   }
 

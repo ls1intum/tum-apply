@@ -1,26 +1,42 @@
-c.p-inputtext:enabled:focus {
-  box-shadow: none;
-  border: 0.1rem solid var(--p-primary-color);
-}
+.string-input-container {
+  display: flex;
+  flex-direction: column;
 
-.p-inputtext {
-  color: var(--text-primary);
-  border: 0.1rem solid var(--p-border-default);
-}
+  // Add styling for labels on the left of the field
+  &.label-left {
+    flex-direction: row;
+    align-items: center;
+  }
 
-.p-inputtext::placeholder {
-  color: var(--p-text-primary);
-}
+  // Add styling for labels on the top of the field
+  &.label-top .custom-label {
+    margin-bottom: 0.25rem;
+  }
 
-.p-inputtext:disabled {
-  background-color: var(--p-background-disabled);
-  color: var(--p-text-disabled);
-}
+  .p-inputtext:enabled:focus {
+    box-shadow: none;
+    border: 0.1rem solid var(--p-primary-color);
+  }
 
-.p-inputtext:disabled::placeholder {
-  color: var(--p-text-disabled);
-}
+  .p-inputtext {
+    color: var(--text-primary);
+    border: 0.1rem solid var(--p-border-default);
+  }
 
-.error .p-inputtext {
-  border-color: var(--p-danger-color) !important;
+  .p-inputtext::placeholder {
+    color: var(--p-text-primary);
+  }
+
+  .p-inputtext:disabled {
+    background-color: var(--p-background-disabled);
+    color: var(--p-text-disabled);
+  }
+
+  .p-inputtext:disabled::placeholder {
+    color: var(--p-text-disabled);
+  }
+
+  .error .p-inputtext {
+    border-color: var(--p-danger-color) !important;
+  }
 }
