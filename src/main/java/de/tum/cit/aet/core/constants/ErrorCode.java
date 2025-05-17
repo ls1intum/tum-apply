@@ -1,0 +1,14 @@
+package de.tum.cit.aet.core.constants;
+
+public enum ErrorCode {
+    ACCESS_DENIED,
+    ENTITY_NOT_FOUND,
+    INTERNAL_ERROR,
+    INVALID_PARAMETER,
+    MAILING_ERROR,
+    OPERATION_NOT_ALLOWED,
+    RESOURCE_ALREADY_EXISTS,
+    UNAUTHORIZED,
+    UPLOAD_FAILED,
+    VALIDATION_ERROR,
+}
