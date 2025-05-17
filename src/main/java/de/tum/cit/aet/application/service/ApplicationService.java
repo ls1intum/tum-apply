@@ -14,15 +14,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ApplicationService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationService.class);
 
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
@@ -84,13 +80,8 @@ public class ApplicationService {
             new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
             new HashSet<>()
         );
-        try {
-            Application savedApplication = applicationRepository.save(application);
-            return ApplicationForApplicantDTO.getFromEntity(savedApplication);
-        } catch (Exception e) {
-            LOG.error("Error", e);
-        }
-        return null;
+        Application savedApplication = applicationRepository.save(application);
+        return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
     /**

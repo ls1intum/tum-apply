@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { Component, model, output } from '@angular/core';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from 'app/generated';
 
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -118,7 +119,38 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
+  valid = output<boolean>();
+
+  form!: FormGroup;
+
   dropdownGenderLocal = dropdownGender;
   dropdownLanguageLocal = dropdownLanguage;
   dropdownNationalityLocal = dropdownNationality;
+
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      firstName: [this.data().firstName, Validators.required],
+      lastName: [this.data().lastName, Validators.required],
+      email: [this.data().email, Validators.required],
+      phoneNumber: [this.data().phoneNumber, Validators.required],
+      dateOfBirth: [this.data().dateOfBirth, Validators.required],
+
+      street: [this.data().street, Validators.required],
+      city: [this.data().city, Validators.required],
+      country: [this.data().country, Validators.required],
+      postcode: [this.data().postcode, Validators.required],
+    });
+
+    this.form.valueChanges.subscribe(value => {
+      Object.assign(this.data(), value);
+    });
+
+    this.form.statusChanges.subscribe(() => {
+      this.valid.emit(this.form.valid);
+    });
+
+    this.valid.emit(this.form.valid);
+  }
 }

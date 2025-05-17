@@ -73,7 +73,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
   @ViewChild('panel3', { static: true }) panel3!: TemplateRef<any>;
 
   stepData = signal<StepData[]>([]);
-  title?: string = '';
+  title?: string = 'Machine Learning for Climate Science';
 
   jobId?: string;
   job?: JobCardDTO;

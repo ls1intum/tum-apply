@@ -33,7 +33,7 @@ public record ApplicationForApplicantDTO(
         }
         return new ApplicationForApplicantDTO(
             application.getApplicationId(),
-            ApplicantDTO.getFromEntity(application.getApplicant()), //new UserDTO(), //TODO
+            ApplicantDTO.getFromEntity(application.getApplicant()),
             null, // TODO JobDTO.getFromEntity(application.getJob()),
             application.getState(),
             application.getDesiredStartDate(),

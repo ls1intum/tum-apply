@@ -1,11 +1,11 @@
 <ng-template #panel1>
   <div class="h-full flex p-1 m-4">
-    <jhi-application-creation-page1 class="w-full" [(data)]="page1" />
+    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" />
   </div>
 </ng-template>
 <ng-template #panel2>
   <div class="h-full flex p-1 m-4">
-    <jhi-application-creation-page2 class="w-full" [(data)]="page2" />
+    <jhi-application-creation-page2 class="w-full" [(data)]="page2" (valid)="onPage2ValidityChanged($event)" />
   </div>
 </ng-template>
 <ng-template #panel3>
@@ -15,7 +15,7 @@
 </ng-template>
 
 <div class="ml-8 mb-8 p-2">
-  <h1 class="block">Machine Learning for Climate Science</h1>
+  <h1 class="block">{{ this.title }}</h1>
   <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>
 </div>
 <div class="m-4 p-1">

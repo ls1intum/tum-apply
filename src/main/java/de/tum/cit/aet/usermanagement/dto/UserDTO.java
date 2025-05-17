@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record UserDTO(
     UUID userId,
-    // // ResearchGroup researchGroup,
+    // TODO ResearchGroup researchGroup,
     String email,
     String avatar,
     String firstName,
@@ -18,8 +18,8 @@ public record UserDTO(
     String website,
     String linkedinUrl,
     String selectedLanguage
-    // postedJobs Set<JobDTO>
-    // Set<UserResearchGroupRoleDTO> researchGroupRoles
+    // TODO Set<JobDTO> postedJobs
+    // TODO Set<UserResearchGroupRoleDTO> researchGroupRoles
 ) {
     /**
      *

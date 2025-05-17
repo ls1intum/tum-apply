@@ -13,5 +13,5 @@ public record CreateApplicationDTO(
     String projects,
     String specialSkills,
     String motivation
-    // Set<CustomFieldAnswerDTO> answers
+    // TODO Set<CustomFieldAnswerDTO> answers
 ) {}
