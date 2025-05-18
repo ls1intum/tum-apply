@@ -97,6 +97,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         this.mode = 'create';
         this.jobId = this.route.snapshot.paramMap.get('job_id')!;
         this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (job.title !== undefined && job.title.trim().length > 0) {
             this.title = job.title;
           }
