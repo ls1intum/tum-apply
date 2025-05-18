@@ -705,7 +705,11 @@
             },
             "uniqueItems": true
           }
-        }
+        },
+        "required": [
+          "applicationId",
+          "applicationState"
+        ]
       },
       "CustomFieldAnswerDTO": {
         "type": "object",
@@ -892,7 +896,12 @@
           "motivation": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "applicant",
+          "applicationState",
+          "jobId"
+        ]
       },
       "ApplicationEvaluationListDTO": {
         "type": "object",
