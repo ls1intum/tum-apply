@@ -2,3 +2,66 @@
 
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
+
+/* -------------------------------
+   Custom Global Styles for Inputs
+---------------------------------- */
+.label-input-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  // Add styling for labels on the left of the field
+  &.label-left {
+    flex-direction: row;
+    align-items: center;
+
+    .input-wrapper,
+    .custom-input {
+      flex: 1;
+    }
+  }
+
+  // Add styling for labels on the top of the field
+  &.label-top .custom-label {
+    margin-bottom: 0.25rem;
+  }
+
+  .fa-circle-info {
+    color: var(--p-primary-color);
+  }
+
+  .p-inputtext:enabled:focus {
+    box-shadow: none;
+    border: 0.1rem solid var(--p-primary-color);
+  }
+
+  .p-inputtext {
+    color: var(--text-primary);
+    border: 0.1rem solid var(--p-border-default);
+  }
+
+  .p-inputtext::placeholder {
+    color: var(--p-background-disabled);
+  }
+
+  .p-inputtext:disabled {
+    background-color: var(--p-background-disabled);
+    color: var(--p-text-disabled);
+  }
+
+  .p-inputtext:disabled::placeholder {
+    color: var(--p-text-disabled);
+  }
+
+  .error .p-inputtext {
+    border-color: var(--p-danger-color);
+  }
+}
+
+.required {
+  color: var(--p-danger-color);
+}
+
+.error-text {
+  color: var(--p-danger-color);
+}

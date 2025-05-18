@@ -1,0 +1,52 @@
+<div class="input-container">
+  <div
+    [ngClass]="{
+      'label-top': labelPosition() === 'top',
+      'label-left': labelPosition() === 'left',
+    }"
+    class="label-input-wrapper"
+  >
+    @if (label()) {
+      <label class="custom-label" [for]="inputId()">
+        {{ label() }}
+        @if (icon()) {
+          <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+        }
+        @if (required()) {
+          <span class="required">*</span>
+        }
+      </label>
+    }
+
+    <div class="input-wrapper" [class.error]="getInputState() === 'invalid'">
+      <p-inputnumber
+        [inputId]="inputId()"
+        [placeholder]="placeholder()"
+        [disabled]="disabled()"
+        [ngModel]="model()"
+        (ngModelChange)="onInputChange($event)"
+        (onBlur)="onBlur()"
+        (onFocus)="onFocus()"
+        [required]="required()"
+        [style]="{ width: width() }"
+        autocomplete="off"
+        [useGrouping]="false"
+        [min]="min()"
+        [max]="max()"
+        [minFractionDigits]="minFractionDigits()"
+        [maxFractionDigits]="maxFractionDigits()"
+        class="custom-input"
+      />
+
+      @if (formControl) {
+        <input type="hidden" [formControl]="formControl" />
+      }
+    </div>
+  </div>
+
+  @if (getInputState() === 'invalid' && !isFocused) {
+    <div class="error-text">
+      {{ getErrorMessage() }}
+    </div>
+  }
+</div>

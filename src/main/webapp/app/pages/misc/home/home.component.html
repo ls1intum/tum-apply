@@ -28,6 +28,146 @@
     </div>
     <jhi-button severity="secondary" label="Create a Job" icon="tasks" (click)="goToJobCreation()" />
     <jhi-datepicker [(selectedDate)]="selectedDate" [label]="'Start Date'" [placeholder]="'Select a Start Date...'" [width]="'50%'" />
+    <jhi-button severity="secondary" label="Test" icon="tasks" />
+    <h1 class="underline">Testheader</h1>
+    <div class="m-2 flex flex-col">
+      <p>test</p>
+      <p>test</p>
+      <p>test</p>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <h3>Number Input - GPA (Top)</h3>
+        <jhi-number-input
+          [control]="form.get('experience') ?? undefined"
+          [model]="form.get('experience')?.value"
+          (modelChange)="form.get('experience')?.setValue($event)"
+          [label]="'Experience'"
+          [placeholder]="'0–50 years'"
+          [labelPosition]="'top'"
+          [icon]="'book'"
+          [min]="0"
+          [max]="50"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="3"
+          [width]="'50%'"
+        />
+        <br />
+      </div>
+
+      <div class="col-md-6">
+        <h3>Number Input - Years of Experience (Left)</h3>
+        <jhi-number-input
+          [control]="form.get('experience') ?? undefined"
+          [model]="form.get('experience')?.value"
+          (modelChange)="form.get('experience')?.setValue($event)"
+          [label]="'Experience'"
+          [placeholder]="'0–50 years'"
+          [labelPosition]="'left'"
+          [icon]="'book'"
+          [min]="0"
+          [max]="50"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="3"
+          [width]="'50%'"
+        />
+        <br />
+      </div>
+
+      <div class="col-md-6">
+        <h3>Number Input Test - Disabled</h3>
+        <jhi-number-input
+          [control]="form.get('experience') ?? undefined"
+          [model]="form.get('experience')?.value"
+          (modelChange)="form.get('experience')?.setValue($event)"
+          [label]="'Experience'"
+          [placeholder]="'0–50 years'"
+          [labelPosition]="'top'"
+          [icon]="'book'"
+          [min]="0"
+          [max]="50"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="3"
+          [disabled]="true"
+          [width]="'50%'"
+        />
+        <br />
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <h3>String Input Test - Top</h3>
+        <jhi-string-input
+          [label]="'Your Name'"
+          [placeholder]="'Enter your name...'"
+          [labelPosition]="'top'"
+          [icon]="'user'"
+          [model]="form.get('name')?.value"
+          (modelChange)="form.get('name')?.setValue($event)"
+          [control]="form.get('name') ?? undefined"
+          [id]="'name-input'"
+          [width]="'50%'"
+        />
+      </div>
+
+      <div class="col-md-6">
+        <h3>String Input Test - Left</h3>
+        <jhi-string-input
+          [label]="'Your Name'"
+          [placeholder]="'Enter your name...'"
+          [labelPosition]="'left'"
+          [icon]="'user'"
+          [model]="form.get('name')?.value"
+          (modelChange)="form.get('name')?.setValue($event)"
+          [control]="form.get('name') ?? undefined"
+          [id]="'name-input'"
+          [width]="'50%'"
+        />
+      </div>
+
+      <div class="col-md-6">
+        <h3>String Input Test - Disabled</h3>
+        <jhi-string-input
+          [label]="'Your Name'"
+          [placeholder]="'Enter your name...'"
+          [labelPosition]="'top'"
+          [icon]="'user'"
+          [model]="form.get('name')?.value"
+          (modelChange)="form.get('name')?.setValue($event)"
+          [control]="form.get('name') ?? undefined"
+          [id]="'name-input'"
+          [disabled]="true"
+          [width]="'50%'"
+        />
+        <br />
+      </div>
+    </div>
+
+    <jhi-datepicker
+      [(selectedDate)]="selectedDate"
+      [label]="'Start Date'"
+      [placeholder]="'Select a Start Date...'"
+      [width]="'50%'"
+      [labelPosition]="'top'"
+    />
+    <br />
+    <jhi-datepicker
+      [(selectedDate)]="selectedDate"
+      [label]="'Start Date'"
+      [placeholder]="'Select a Start Date...'"
+      [width]="'50%'"
+      [labelPosition]="'left'"
+    />
+    <br />
+    <jhi-datepicker
+      [(selectedDate)]="selectedDate"
+      [label]="'Start Date'"
+      [placeholder]="'Select a Start Date...'"
+      [width]="'50%'"
+      [disabled]="true"
+    />
 
     <div class="row">
       <div class="col-md-6">
