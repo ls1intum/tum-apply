@@ -5,9 +5,9 @@ import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
+import { DividerModule } from 'primeng/divider';
 
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
-import { DividerModule } from 'primeng/divider';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;

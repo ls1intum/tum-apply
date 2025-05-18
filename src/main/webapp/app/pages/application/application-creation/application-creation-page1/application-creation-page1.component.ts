@@ -3,10 +3,10 @@ import { Component, OnInit, model, output } from '@angular/core';
 import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DividerModule } from 'primeng/divider';
 
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
-import { DividerModule } from 'primeng/divider';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
