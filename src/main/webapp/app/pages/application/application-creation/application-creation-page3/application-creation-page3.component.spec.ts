@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faCalendar, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faChevronDown, faChevronUp, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { ComponentRef } from '@angular/core';
 
 import ApplicationCreationPage3Component, { ApplicationCreationPage3Data } from './application-creation-page3.component';
@@ -28,6 +28,8 @@ describe('ApplicationCreationPage3Component', () => {
     library.addIcons(faChevronDown);
     library.addIcons(faChevronUp);
     library.addIcons(faCalendar);
+    library.addIcons(faCloudArrowUp);
+
     componentRef = fixture.componentRef;
     componentRef.setInput('data', mockData);
     fixture.detectChanges();

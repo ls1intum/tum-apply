@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, model, output } from '@angular/core';
+import { Component, OnInit, model, output } from '@angular/core';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from 'app/generated';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -116,7 +116,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',
 })
-export default class ApplicationCreationPage1Component {
+export default class ApplicationCreationPage1Component implements OnInit {
   data = model.required<ApplicationCreationPage1Data>();
 
   valid = output<boolean>();
