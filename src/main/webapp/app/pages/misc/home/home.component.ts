@@ -32,11 +32,17 @@ export default class HomeComponent implements OnInit {
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
+  constructor(private router: Router) {}
+
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => this.account.set(account));
   }
 
   login(): void {
     this.loginService.login();
+  }
+
+  goToJobCreation(): void {
+    this.router.navigate(['/job-creation']);
   }
 }
