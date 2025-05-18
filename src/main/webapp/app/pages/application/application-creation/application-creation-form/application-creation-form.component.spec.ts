@@ -38,7 +38,6 @@ describe('ApplicationCreationFormComponent create', () => {
               paramMap: {
                 get(key: string) {
                   if (key === 'job_id') return '123';
-                  if (key === 'application_id') return '456';
                   return null;
                 },
               },

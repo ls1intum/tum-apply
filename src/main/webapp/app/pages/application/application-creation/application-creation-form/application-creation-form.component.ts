@@ -6,16 +6,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
-  getPage1FromApplication,
 } from '../application-creation-page1/application-creation-page1.component';
 import ApplicationCreationPage3Component, {
   ApplicationCreationPage3Data,
-  getPage3FromApplication,
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
   bachelorGradingScale,
-  getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
