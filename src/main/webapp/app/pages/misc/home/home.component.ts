@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
@@ -47,6 +47,8 @@ export default class HomeComponent implements OnInit {
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
+  constructor(private router: Router) {}
+
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => this.account.set(account));
 
@@ -58,5 +60,9 @@ export default class HomeComponent implements OnInit {
 
   login(): void {
     this.loginService.login();
+  }
+
+  goToJobCreation(): void {
+    this.router.navigate(['/job-creation']);
   }
 }
