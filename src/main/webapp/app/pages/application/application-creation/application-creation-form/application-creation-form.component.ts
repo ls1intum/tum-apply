@@ -103,14 +103,6 @@ export default class ApplicationCreationFormComponent implements OnInit {
           }
           this.job = job;
         });
-      } else if (firstSegment === 'edit' || firstSegment === 'view') {
-        this.mode = firstSegment;
-        const applicationId = this.route.snapshot.paramMap.get('application_id')!;
-        this.applicationResourceService.getApplicationById(applicationId).subscribe(application => {
-          this.page1 = getPage1FromApplication(application);
-          this.page2 = getPage2FromApplication(application);
-          this.page3 = getPage3FromApplication(application);
-        });
       } else {
         this.router.navigate(['/404']);
       }
