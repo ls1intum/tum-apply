@@ -33,8 +33,8 @@ export const dropdownGender: DropdownOption[] = [
 ];
 
 export const dropdownLanguage: DropdownOption[] = [
-  { value: 'de', name: 'german' },
-  { value: 'en', name: 'english' },
+  { value: 'de', name: 'German' },
+  { value: 'en', name: 'English' },
 ];
 
 export const dropdownNationality: DropdownOption[] = [
