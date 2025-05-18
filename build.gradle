@@ -61,7 +61,11 @@ if (project.hasProperty("prod")) {
 }
 
 if (project.hasProperty("war")) {
-    apply from: "gradle/war.gradle"
+  apply from: "gradle/war.gradle"
+}
+
+tasks.register("npmSetCacheDockerfile", NpmTask) {
+  args = ["set", "cache", "/opt/tum-apply/.npm"]
 }
 
 idea {
