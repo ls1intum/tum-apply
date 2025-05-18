@@ -1,4 +1,4 @@
-import { HttpHeaders, HttpParameterCodec, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
 import { CustomHttpParameterCodec } from './encoder';
 import { Configuration } from './configuration';
 
