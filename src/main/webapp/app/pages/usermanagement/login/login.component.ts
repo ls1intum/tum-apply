@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { keycloakService } from '../../../core/auth/keycloak.service';
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
+import { AuthCardComponent } from '../../../shared/components/organisms/auth-card/auth-card.component';
 
 /**
  * LoginComponent
@@ -10,7 +10,7 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
  */
 @Component({
   selector: 'jhi-login',
-  imports: [ButtonComponent],
+  imports: [AuthCardComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
