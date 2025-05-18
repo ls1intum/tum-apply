@@ -31,6 +31,11 @@ export default class MainComponent implements OnInit {
     // try to log in automatically
     this.accountService.identity().subscribe();
 
+    this.router.events.subscribe(() => {
+      const currentUrl = this.router.url;
+      this.showLayout = !(currentUrl.startsWith('/login') || currentUrl.startsWith('/register'));
+    });
+
     this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
       this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
       dayjs.locale(langChangeEvent.lang);
