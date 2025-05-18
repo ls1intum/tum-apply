@@ -11,6 +11,11 @@ const routes: Routes = [
     title: 'login',
   },
   {
+    path: 'register',
+    loadComponent: () => import('./pages/usermanagement/register/register.component').then(m => m.RegisterComponent),
+    title: 'register',
+  },
+  {
     path: 'job-creation',
     canActivate: [UserRouteAccessService],
     data: { authorities: [Authority.ADMIN, Authority.PROFESSOR] },
