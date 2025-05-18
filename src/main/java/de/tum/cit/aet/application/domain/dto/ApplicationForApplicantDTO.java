@@ -5,6 +5,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -12,10 +13,10 @@ import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationForApplicantDTO(
-    UUID applicationId,
+    @NotNull UUID applicationId,
     ApplicantDTO applicant,
     JobCardDTO job,
-    ApplicationState applicationState,
+    @NotNull ApplicationState applicationState,
     LocalDate desiredDate,
     String projects,
     String specialSkills,

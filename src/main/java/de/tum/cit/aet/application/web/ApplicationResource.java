@@ -36,10 +36,9 @@ public class ApplicationResource {
     @PostMapping
     public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
         // TODO check authorization
-        if (createApplicationDTO == null || createApplicationDTO.applicant() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(applicationService.createApplication(createApplicationDTO));
+
+        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(createApplicationDTO);
+        return ResponseEntity.ok(applicationForApplicantDTO);
     }
 
     /**

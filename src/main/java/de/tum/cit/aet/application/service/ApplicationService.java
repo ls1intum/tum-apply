@@ -6,6 +6,7 @@ import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -35,6 +36,15 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(CreateApplicationDTO createApplicationDTO) {
+        if (
+            applicationRepository.existsByApplicantUserIdAndJobJobId(
+                createApplicationDTO.applicant().user().userId(),
+                createApplicationDTO.jobId()
+            )
+        ) {
+            throw new OperationNotAllowedException("Applicant has already applied for this position");
+        }
+
         Applicant applicant = new Applicant();
         applicant.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
         applicant.setEmail(createApplicationDTO.applicant().user().email());
