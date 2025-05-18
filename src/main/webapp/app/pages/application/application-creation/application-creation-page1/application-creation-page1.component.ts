@@ -29,7 +29,7 @@ export type ApplicationCreationPage1Data = {
 export const dropdownGender: DropdownOption[] = [
   { value: 'female', name: 'female' },
   { value: 'male', name: 'male' },
-  { value: 'other', name: 'other' },
+  { value: 'Other', name: 'other' },
 ];
 
 export const dropdownLanguage: DropdownOption[] = [
