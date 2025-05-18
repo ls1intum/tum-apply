@@ -1,19 +1,20 @@
 import { Component, Input } from '@angular/core';
-import { TabViewModule } from 'primeng/tabview';
+import { TabsModule } from 'primeng/tabs';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
+import { keycloakService } from '../../../../core/auth/keycloak.service';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [ButtonComponent, ButtonGroupComponent, TabViewModule],
+  imports: [ButtonComponent, ButtonGroupComponent, TabsModule],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
 })
 export class AuthCardComponent {
   @Input() mode: 'login' | 'register' = 'login';
-  activeTabIndex = 0;
+  value = 0;
 
   studentButtons(): ButtonGroupData {
     return {
@@ -42,5 +43,9 @@ export class AuthCardComponent {
         },
       ],
     };
+  }
+
+  onTUMSSOLogin(): void {
+    keycloakService.login();
   }
 }
