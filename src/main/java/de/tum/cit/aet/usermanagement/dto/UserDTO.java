@@ -1,11 +1,12 @@
 package de.tum.cit.aet.usermanagement.dto;
 
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
 
 /**
- * DTO for {@link de.tum.cit.aet.usermanagement.domain.User}
+ * DTO for {@link User}
  */
 @Data
 public class UserDTO {
@@ -28,7 +29,7 @@ public class UserDTO {
         // default constructor
     }
 
-    public UserDTO(de.tum.cit.aet.usermanagement.domain.User user) {
+    public UserDTO(User user) {
         this.userId = user.getUserId();
         this.email = user.getEmail();
         this.avatar = user.getAvatar();
