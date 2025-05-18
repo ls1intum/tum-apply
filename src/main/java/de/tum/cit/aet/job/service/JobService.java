@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
@@ -8,7 +9,6 @@ import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
@@ -74,8 +74,8 @@ public class JobService {
      * @return the updated job card DTO
      */
     public JobCardDTO updateJob(UUID jobId, JobDetailDTO dto) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("Job not found with ID: " + jobId));
-        // updateEntity(job, dto);
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        //updateEntity(job, dto);
         jobRepository.save(job);
         return toDto(job);
     }
@@ -107,7 +107,7 @@ public class JobService {
      * @return the job card DTO with detailed info
      */
     public JobCardDTO getJobDetails(UUID jobId) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("Job not found with ID: " + jobId));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         return toDto(job);
     }
 
