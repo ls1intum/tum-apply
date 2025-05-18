@@ -202,6 +202,11 @@ export default class ApplicationCreationFormComponent implements OnInit {
   }
 
   sendCreateApplicationData(state: 'SAVED' | 'SENT'): void {
+    if (this.jobId === undefined) {
+      alert('Error while trying to read jobId');
+      // TODO better error handling
+      return;
+    }
     const createApplication: CreateApplicationDTO = {
       applicant: {
         user: {
