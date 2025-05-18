@@ -40,9 +40,7 @@ describe('ApplicationCreationPage3Component', () => {
   });
 
   it('should reflect user input in the bound model', () => {
-    const input = fixture.nativeElement.querySelector(
-      'jhi-string-input-temporary[label="What is your motivation to take this position?"] input',
-    );
+    const input = fixture.nativeElement.querySelector('textarea[formControlName="motivation"]');
     input.value = 'Driven by innovation';
     input.dispatchEvent(new Event('input'));
 
