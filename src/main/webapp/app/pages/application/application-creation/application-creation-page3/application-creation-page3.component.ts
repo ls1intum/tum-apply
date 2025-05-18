@@ -9,6 +9,7 @@ import { DividerComponent } from 'app/shared/components/atoms/divider/divider.co
 import { ApplicationForApplicantDTO } from 'app/generated';
 
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
+import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
@@ -28,7 +29,15 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page3',
-  imports: [CommonModule, ReactiveFormsModule, FloatLabelModule, DividerComponent, DatePickerComponent, TextareaModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FloatLabelModule,
+    DividerComponent,
+    DatePickerComponent,
+    TextareaModule,
+    UploadButtonComponent,
+  ],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
 })

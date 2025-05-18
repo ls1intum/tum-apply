@@ -32,6 +32,11 @@
     <jhi-string-input-temporary label="Bachelor Grade" formControlName="bachelorGrade" [required]="true" [(value)]="data().bachelorGrade" />
   </div>
 </div>
+<div class="form-row justify-center">
+  <div class="w-1/2">
+    <jhi-upload-button uploadText="Please upload your Bachelor Certificate" />
+  </div>
+</div>
 <jhi-divider label="Master" />
 <div class="form-row">
   <div class="w-1/2 pr-4">
@@ -64,5 +69,10 @@
   </div>
   <div class="w-1/2 pr-4">
     <jhi-string-input-temporary label="Master Grade" formControlName="masterGrade" [required]="true" [(value)]="data().masterGrade" />
+  </div>
+</div>
+<div class="form-row justify-center">
+  <div class="w-1/2">
+    <jhi-upload-button uploadText="Please upload your Master Certificate" />
   </div>
 </div>
