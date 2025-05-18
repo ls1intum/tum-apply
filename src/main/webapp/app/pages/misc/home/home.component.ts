@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import SharedModule from 'app/shared/shared.module';
-import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -11,6 +10,7 @@ import { DatePickerComponent } from '../../../shared/components/atoms/datepicker
 import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { NumberInputComponent } from '../../../shared/components/atoms/number-input/number-input.component';
+import { keycloakService } from '../../../core/auth/keycloak.service';
 
 @Component({
   selector: 'jhi-home',
@@ -45,7 +45,6 @@ export default class HomeComponent implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly accountService = inject(AccountService);
-  private readonly loginService = inject(LoginService);
 
   constructor(private router: Router) {}
 
@@ -59,7 +58,7 @@ export default class HomeComponent implements OnInit {
   }
 
   login(): void {
-    this.loginService.login();
+    keycloakService.login();
   }
 
   goToJobCreation(): void {
