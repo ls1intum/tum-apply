@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
@@ -30,11 +30,17 @@ export default class HomeComponent implements OnInit {
   ];
   private readonly accountService = inject(AccountService);
 
+  constructor(private router: Router) {}
+
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => this.account.set(account));
   }
 
   login(): void {
     keycloakService.login();
+  }
+
+  goToJobCreation(): void {
+    this.router.navigate(['/job-creation']);
   }
 }
