@@ -32,6 +32,7 @@
             [labelPosition]="'top'"
             [model]="basicInfoForm.get('title')?.value"
             (modelChange)="onSelectionChange(basicInfoForm, 'title', $event)"
+            [control]="basicInfoForm.get('title') ?? undefined"
           />
         </div>
 
@@ -44,6 +45,7 @@
               [icon]="'circle-info'"
               [model]="basicInfoForm.get('researchArea')?.value"
               (modelChange)="onSelectionChange(basicInfoForm, 'researchArea', $event)"
+              [control]="basicInfoForm.get('researchArea') ?? undefined"
             />
           </div>
 

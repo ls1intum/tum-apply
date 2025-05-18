@@ -17,22 +17,36 @@
     </label>
   }
 
-  <div class="input-wrapper" [ngClass]="{ error: error() }">
+  <div class="input-wrapper" [class.error]="getInputState() === 'invalid'">
     <p-inputnumber
       [inputId]="inputId()"
       [placeholder]="placeholder()"
       [disabled]="disabled()"
+      [ngModel]="model()"
+      (ngModelChange)="onInputChange($event)"
+      (onBlur)="onBlur()"
+      (onFocus)="onFocus()"
       [required]="required()"
+      [style]="{ width: width() }"
+      autocomplete="off"
       [useGrouping]="false"
       [min]="min()"
       [max]="max()"
       [minFractionDigits]="minFractionDigits()"
       [maxFractionDigits]="maxFractionDigits()"
-      [ngModel]="model()"
-      (ngModelChange)="modelChange.emit($event)"
-      [style]="{ width: width() }"
-      autocomplete="off"
       class="custom-input"
     />
+
+    @if (formControl) {
+      <input type="hidden" [formControl]="formControl" />
+    }
   </div>
+
+  @if (getInputState() === 'invalid' && !isFocused) {
+    <div class="error-text">
+      @if (formControl?.hasError('required')) {
+        <span>This field is required</span>
+      }
+    </div>
+  }
 </div>

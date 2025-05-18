@@ -5,10 +5,10 @@
   }"
   class="input-container"
 >
-  @if (label() !== undefined) {
-    <label class="custom-label">
+  @if (label()) {
+    <label class="custom-label" [for]="id()">
       {{ label() }}
-      @if (icon() !== undefined) {
+      @if (icon()) {
         <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
       }
       @if (required()) {
@@ -16,18 +16,34 @@
       }
     </label>
   }
-  <div class="input-wrapper" [ngClass]="{ error: error() }">
+
+  <div class="input-wrapper" [class.error]="getInputState() === 'invalid'">
     <input
+      [id]="id()"
       type="text"
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       [ngModel]="model()"
-      (ngModelChange)="modelChange.emit($event)"
+      (ngModelChange)="onInputChange($event)"
+      (blur)="onBlur()"
+      (focus)="onFocus()"
       [required]="required()"
       [style]="{ width: width() }"
       autocomplete="off"
       pInputText
       class="custom-input"
     />
+
+    @if (formControl) {
+      <input type="hidden" [formControl]="formControl" />
+    }
   </div>
+
+  @if (getInputState() === 'invalid' && !isFocused) {
+    <div class="error-text">
+      @if (formControl?.hasError('required')) {
+        <span>This field is required</span>
+      }
+    </div>
+  }
 </div>

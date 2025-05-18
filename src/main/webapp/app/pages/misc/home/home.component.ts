@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
@@ -28,30 +29,31 @@ import { NumberInputComponent } from '../../../shared/components/atoms/number-in
 export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
 
+  form!: FormGroup;
+
   // Datepicker:
   selectedDate: string | undefined = undefined;
   // Dropdown:
   selectedLocation1: DropdownOption | undefined = undefined;
   selectedLocation2: DropdownOption | undefined = undefined;
 
-  testNumber: number | null = null;
-  testExperience: number | null = null;
-  testNumberError: number | null = null;
-  testNumberDisabled: number | null = null;
-
-  testInput = '';
-  testInputDisabled = '';
-
   locations = [
     { name: 'Munich Campus', value: 'munich', icon: 'chevron-up' },
     { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },
     { name: 'Weihenstephan Campus', value: 'weihenstephan', icon: 'map-marker-alt' },
   ];
+
+  private readonly fb = inject(FormBuilder);
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => this.account.set(account));
+
+    this.form = this.fb.group({
+      experience: [null, [Validators.required, Validators.min(0), Validators.max(50)]],
+      name: ['', [Validators.required]],
+    });
   }
 
   login(): void {

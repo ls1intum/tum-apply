@@ -54,10 +54,14 @@
   }
 
   .error .p-inputtext {
-    border-color: var(--p-danger-color) !important;
+    border-color: var(--p-danger-color);
   }
 }
 
 .required {
-  color: var(--p-danger-color) !important;
+  color: var(--p-danger-color);
+}
+
+.error-text {
+  color: var(--p-danger-color);
 }

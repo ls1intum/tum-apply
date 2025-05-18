@@ -38,16 +38,18 @@
       <div class="col-md-6">
         <h3>Number Input - GPA (Top)</h3>
         <jhi-number-input
-          [(model)]="testNumber"
-          [label]="'GPA'"
-          [placeholder]="'0.0 to 4.0'"
+          [control]="form.get('experience') ?? undefined"
+          [model]="form.get('experience')?.value"
+          (modelChange)="form.get('experience')?.setValue($event)"
+          [label]="'Experience'"
+          [placeholder]="'0–50 years'"
           [labelPosition]="'top'"
-          [icon]="''"
-          [required]="true"
+          [icon]="'book'"
           [min]="0"
-          [max]="4"
+          [max]="50"
           [minFractionDigits]="1"
-          [maxFractionDigits]="2"
+          [maxFractionDigits]="3"
+          [width]="'50%'"
         />
         <br />
       </div>
@@ -55,28 +57,18 @@
       <div class="col-md-6">
         <h3>Number Input - Years of Experience (Left)</h3>
         <jhi-number-input
-          [(model)]="testExperience"
+          [control]="form.get('experience') ?? undefined"
+          [model]="form.get('experience')?.value"
+          (modelChange)="form.get('experience')?.setValue($event)"
           [label]="'Experience'"
           [placeholder]="'0–50 years'"
           [labelPosition]="'left'"
           [icon]="'book'"
           [min]="0"
           [max]="50"
-          [minFractionDigits]="0"
-          [maxFractionDigits]="1"
-        />
-        <br />
-      </div>
-
-      <div class="col-md-6">
-        <h3>Number Input Test - Error</h3>
-        <jhi-number-input
-          [(model)]="testNumberError"
-          [label]="'Credits (Error)'"
-          [placeholder]="'Enter credits...'"
-          [labelPosition]="'top'"
-          [icon]="''"
-          [error]="true"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="3"
+          [width]="'50%'"
         />
         <br />
       </div>
@@ -84,12 +76,19 @@
       <div class="col-md-6">
         <h3>Number Input Test - Disabled</h3>
         <jhi-number-input
-          [(model)]="testNumberDisabled"
-          [label]="'ECTS (Disabled)'"
-          [placeholder]="'Field not editable...'"
-          [icon]="'lock'"
+          [control]="form.get('experience') ?? undefined"
+          [model]="form.get('experience')?.value"
+          (modelChange)="form.get('experience')?.setValue($event)"
+          [label]="'Experience'"
+          [placeholder]="'0–50 years'"
+          [labelPosition]="'top'"
+          [icon]="'book'"
+          [min]="0"
+          [max]="50"
+          [minFractionDigits]="1"
+          [maxFractionDigits]="3"
           [disabled]="true"
-          [labelPosition]="'left'"
+          [width]="'50%'"
         />
         <br />
       </div>
@@ -97,51 +96,48 @@
 
     <div class="row mt-4">
       <div class="col-md-6">
-        <h3>String Input Test - Enabled</h3>
+        <h3>String Input Test - Top</h3>
         <jhi-string-input
-          [(model)]="testInput"
           [label]="'Your Name'"
           [placeholder]="'Enter your name...'"
           [labelPosition]="'top'"
           [icon]="'user'"
-          [required]="true"
+          [model]="form.get('name')?.value"
+          (modelChange)="form.get('name')?.setValue($event)"
+          [control]="form.get('name') ?? undefined"
+          [id]="'name-input'"
+          [width]="'50%'"
         />
-        <br />
       </div>
 
       <div class="col-md-6">
-        <h3>String Input Test - Enabled</h3>
+        <h3>String Input Test - Left</h3>
         <jhi-string-input
-          [(model)]="testInput"
           [label]="'Your Name'"
           [placeholder]="'Enter your name...'"
           [labelPosition]="'left'"
           [icon]="'user'"
-          [required]="true"
+          [model]="form.get('name')?.value"
+          (modelChange)="form.get('name')?.setValue($event)"
+          [control]="form.get('name') ?? undefined"
+          [id]="'name-input'"
+          [width]="'50%'"
         />
-        <br />
-      </div>
-
-      <div class="col-md-6">
-        <h3>String Input Test - Enabled - Error</h3>
-        <jhi-string-input
-          [(model)]="testInputDisabled"
-          [label]="'Error Field'"
-          [placeholder]="'Error Field Placeholder'"
-          [icon]=""
-          [error]="true"
-        />
-        <br />
       </div>
 
       <div class="col-md-6">
         <h3>String Input Test - Disabled</h3>
         <jhi-string-input
-          [(model)]="testInputDisabled"
-          [label]="'Disabled Field'"
-          [placeholder]="'Cannot edit this...'"
-          [icon]="'lock'"
+          [label]="'Your Name'"
+          [placeholder]="'Enter your name...'"
+          [labelPosition]="'top'"
+          [icon]="'user'"
+          [model]="form.get('name')?.value"
+          (modelChange)="form.get('name')?.setValue($event)"
+          [control]="form.get('name') ?? undefined"
+          [id]="'name-input'"
           [disabled]="true"
+          [width]="'50%'"
         />
         <br />
       </div>
