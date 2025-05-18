@@ -11,8 +11,7 @@
 export interface ApplicationEvaluationOverviewDTO {
   applicationId?: string;
   avatar?: string;
-  firstName?: string;
-  lastName?: string;
+  name?: string;
   state?: ApplicationEvaluationOverviewDTO.StateEnum;
   jobName?: string;
   rating?: number;
