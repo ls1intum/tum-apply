@@ -755,6 +755,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       root: {
         color: '{background.disabled}',
         focusColor: '{base.white}',
+        activeColor: '{base.white}',
         transitionDuration: '0.2s',
         fontWeight: '200',
         active: {

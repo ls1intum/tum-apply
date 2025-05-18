@@ -115,4 +115,21 @@ VALUES
  'Develop data pipelines, analyze massive datasets, publish results.',
  'Master in Computer Science or Data Science, SQL and Python skills.',
  'APPLICANT_FOUND',
- '2025-10-01');
+ '2025-10-01'),
+ 
+ -- Job 6 (Fully filled out again, normal, no user has applied to this one yet)
+('00000000-0000-0000-0000-000000010006',
+ '00000000-0000-0000-0000-000000000102',
+ '00000000-0000-0000-0000-000000000001',
+ 'Computer Engineering',
+ 'Edge Computing',
+ 'MUNICH',
+ 20,
+ 3,
+ 'GOVERNMENT_FUNDED',
+ 'Research Assistant: Edge AI',
+ 'Conduct experiments on edge AI models and low-power devices.',
+ 'Design systems, collect data, implement ML models, publish outcomes.',
+ 'Bachelor in CS/CE, experience with embedded systems and TensorFlow Lite.',
+ 'PUBLISHED',
+ '2025-11-01');

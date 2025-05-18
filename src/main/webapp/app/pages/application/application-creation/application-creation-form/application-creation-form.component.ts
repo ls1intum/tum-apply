@@ -224,6 +224,7 @@ export default class ApplicationCreationFormComponent implements OnInit {
         // bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
         // masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
       },
+      jobId: this.jobId,
       applicationState: state,
       desiredDate: this.page3.desiredStartDate,
       motivation: this.page3.motivation,
