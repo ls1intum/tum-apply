@@ -19,7 +19,7 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
-type ApplicationFormMode = 'create' | 'edit' | 'view';
+type ApplicationFormMode = 'create'; /* TODO | 'edit' | 'view' */
 
 @Component({
   selector: 'jhi-application-creation-form',
