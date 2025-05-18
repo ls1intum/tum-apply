@@ -751,5 +751,31 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    tabs: {
+      colorScheme: {
+        light: {
+          tab: {
+            background: '{background.surface}',
+            activeBackground: '{background.surface}',
+            color: '{border.default}',
+            activeColor: '{primary.color}',
+          },
+          tabpanel: {
+            background: '{background.surface}',
+          },
+        },
+        dark: {
+          tab: {
+            background: '{background.surface}',
+            activeBackground: '{background.surface}',
+            color: '{border.default}',
+            activeColor: '{primary.color}',
+          },
+          tabpanel: {
+            background: '{background.surface}',
+          },
+        },
+      },
+    },
   },
 });
