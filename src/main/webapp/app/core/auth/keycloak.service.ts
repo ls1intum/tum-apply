@@ -1,7 +1,6 @@
 // client/src/app/keycloak/keycloak.service.ts
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
-
-import { environment } from '../../environments/environment';
+import { environment } from 'app/environments/environment';
 
 class KeycloakService {
   private keycloak!: Keycloak;
