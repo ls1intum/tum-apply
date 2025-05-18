@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { Tag } from 'primeng/tag';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
 
@@ -14,4 +14,6 @@ export class TagComponent {
   icon = input<IconDefinition | undefined>(undefined);
   round = input<boolean>(false);
   iconRight = input<boolean>(false);
+
+  readonly iconProp = computed(() => this.icon() as IconDefinition);
 }

@@ -1,11 +1,11 @@
 <p-tag [severity]="color()" [rounded]="round()" class="custom-tag">
   @if (icon() && !iconRight()) {
-    <fa-icon [icon]="icon()!" class="icon left" />
+    <fa-icon [icon]="iconProp()" class="icon left" />
   }
 
   <span class="text">{{ text() }}</span>
 
   @if (icon() && iconRight()) {
-    <fa-icon [icon]="icon()!" class="icon right" />
+    <fa-icon [icon]="iconProp()" class="icon right" />
   }
 </p-tag>
