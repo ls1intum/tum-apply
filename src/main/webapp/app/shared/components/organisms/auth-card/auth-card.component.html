@@ -1,0 +1,35 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <img alt="TUM Logo" class="tum-logo" src="/content/images/tum-logo.gif" />
+      <h2>{{ mode === 'register' ? 'Create your TUMApply Account' : 'Sign in to TUMApply' }}</h2>
+    </div>
+
+    <p-tabView [(activeIndex)]="activeTabIndex">
+      <p-tabPanel header="Student / Applicant">
+        <jhi-button-group [data]="studentButtons()" />
+      </p-tabPanel>
+      <p-tabPanel header="Professor / Supervisor">
+        <p class="login-description">
+          {{
+            mode === 'register'
+              ? 'As a TUM professor or supervisor, you can simply use your TUM login credentials.'
+              : 'TUM Single Sign-On is required for professors and supervisors.'
+          }}
+        </p>
+        <div class="login-providers">
+          <jhi-button [disabled]="false" [label]="mode === 'register' ? 'Register with TUM SSO' : 'Sign in with TUM SSO'" />
+        </div>
+        <p class="login-hint">TUM Single Sign-On is required for professors and supervisors.</p>
+      </p-tabPanel>
+    </p-tabView>
+
+    <p class="login-footer">
+      @if (mode === 'register') {
+        <span> Already have a TUMApply account? <a routerLink="/login">Sign in here</a> </span>
+      } @else if (mode === 'login') {
+        <span> Don't have a TUMApply account yet? <a routerLink="/register">Register here</a> </span>
+      }
+    </p>
+  </div>
+</div>
