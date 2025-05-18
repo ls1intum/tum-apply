@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
@@ -13,7 +13,7 @@ import { DropdownComponent, DropdownOption } from '../../../shared/components/at
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, ButtonComponent, DatePickerComponent, DropdownComponent],
+  imports: [SharedModule, ButtonComponent, DatePickerComponent, DropdownComponent],
 })
 export default class HomeComponent implements OnInit {
   readonly router = inject(Router);
