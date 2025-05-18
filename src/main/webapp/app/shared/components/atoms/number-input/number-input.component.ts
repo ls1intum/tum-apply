@@ -66,4 +66,21 @@ export class NumberInputComponent {
     if (this.formControl?.invalid) return 'invalid';
     return 'valid';
   }
+
+  getErrorMessage(): string | null {
+    const control = this.formControl;
+    if (!control?.errors) return null;
+
+    const firstErrorKey = Object.keys(control.errors)[0];
+    const errorValue = control.errors[firstErrorKey];
+
+    const defaultMessages: Record<string, string> = {
+      required: 'This field is required',
+      min: `Minimum value is ${errorValue?.min}`,
+      max: `Maximum value is ${errorValue?.max}`,
+      pattern: 'Invalid format',
+    };
+
+    return defaultMessages[firstErrorKey] ?? `Invalid: ${firstErrorKey}`;
+  }
 }

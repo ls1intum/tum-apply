@@ -59,4 +59,21 @@ export class StringInputComponent {
     if (this.formControl?.invalid) return 'invalid';
     return 'valid';
   }
+
+  getErrorMessage(): string | null {
+    const control = this.formControl;
+    if (!control?.errors) return null;
+
+    const firstErrorKey = Object.keys(control.errors)[0];
+    const errorValue = control.errors[firstErrorKey];
+
+    const defaultMessages: Record<string, string> = {
+      required: 'This field is required',
+      minlength: `Minimum length is ${errorValue?.requiredLength}`,
+      maxlength: `Maximum length is ${errorValue?.requiredLength}`,
+      pattern: 'Invalid format',
+    };
+
+    return defaultMessages[firstErrorKey] ?? `Invalid: ${firstErrorKey}`;
+  }
 }

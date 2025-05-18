@@ -43,9 +43,7 @@
 
   @if (getInputState() === 'invalid' && !isFocused) {
     <div class="error-text">
-      @if (formControl?.hasError('required')) {
-        <span>This field is required</span>
-      }
+      {{ getErrorMessage() }}
     </div>
   }
 </div>
