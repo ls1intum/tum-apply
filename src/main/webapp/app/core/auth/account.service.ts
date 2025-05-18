@@ -1,87 +1,80 @@
 import { Injectable, Signal, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { TranslateService } from '@ngx-translate/core';
-import { Observable, ReplaySubject, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, shareReplay, tap } from 'rxjs/operators';
-import { StateStorageService } from 'app/core/auth/state-storage.service';
-import { Account } from 'app/core/auth/account.model';
+import { Router } from '@angular/router';
 
 import { ApplicationConfigService } from '../config/application-config.service';
+
+import { StateStorageService } from './state-storage.service';
+import { Account } from './account.model';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   private readonly userIdentity = signal<Account | null>(null);
-  private readonly authenticationState = new ReplaySubject<Account | null>(1);
-  private accountCache$?: Observable<Account> | null;
-
-  private readonly translateService = inject(TranslateService);
   private readonly http = inject(HttpClient);
-  private readonly stateStorageService = inject(StateStorageService);
   private readonly router = inject(Router);
+  private readonly stateStorageService = inject(StateStorageService);
   private readonly applicationConfigService = inject(ApplicationConfigService);
 
-  authenticate(identity: Account | null): void {
-    this.userIdentity.set(identity);
-    this.authenticationState.next(this.userIdentity());
-    if (!identity) {
-      this.accountCache$ = null;
-    }
-  }
+  private accountCache$?: Observable<Account> | null;
 
+  /**
+   * Returns a readonly signal of the current user account.
+   */
   trackCurrentAccount(): Signal<Account | null> {
     return this.userIdentity.asReadonly();
   }
 
+  /**
+   * Returns true if the user has at least one of the given authorities.
+   */
   hasAnyAuthority(authorities: string[] | string): boolean {
-    const userIdentity = this.userIdentity();
-    if (!userIdentity) {
-      return false;
-    }
-    if (!Array.isArray(authorities)) {
-      authorities = [authorities];
-    }
-    return userIdentity.authorities.some((authority: string) => authorities.includes(authority));
+    const user = this.userIdentity();
+    if (!user) return false;
+    const userAuthorities = user.authorities;
+    const required = Array.isArray(authorities) ? authorities : [authorities];
+    return required.some(role => userAuthorities.includes(role));
   }
 
-  identity(force?: boolean): Observable<Account | null> {
+  /**
+   * Loads the current user account from the backend if not cached or forced.
+   */
+  identity(force?: boolean): Observable<Account> {
     if (!this.accountCache$ || force === true) {
-      this.accountCache$ = this.fetch().pipe(
-        tap((account: Account) => {
-          this.authenticate(account);
-
-          // After retrieve the account info, the language will be changed to
-          // the user's preferred language configured in the account setting
-          // unless user have chosen another language in the current session
-          if (this.stateStorageService.getLocale() == null) {
-            this.translateService.use(account.langKey);
-          }
-
+      this.accountCache$ = this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/users/me')).pipe(
+        tap(account => {
+          this.userIdentity.set(account);
           this.navigateToStoredUrl();
         }),
-        shareReplay(),
+        shareReplay(1),
+        catchError(err => {
+          this.userIdentity.set(null);
+          return throwError(() => err);
+        }),
       );
     }
-    return this.accountCache$.pipe(catchError(() => of(null)));
+    return this.accountCache$;
   }
 
+  /**
+   * Returns true if the user is currently authenticated.
+   */
   isAuthenticated(): boolean {
     return this.userIdentity() !== null;
   }
 
-  getAuthenticationState(): Observable<Account | null> {
-    return this.authenticationState.asObservable();
-  }
-
-  private fetch(): Observable<Account> {
-    return this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/account'));
+  /**
+   * Clears the cached user state.
+   */
+  reset(): void {
+    this.userIdentity.set(null);
+    this.accountCache$ = null;
   }
 
   private navigateToStoredUrl(): void {
-    // previousState can be set in the authExpiredInterceptor and in the userRouteAccessService
-    // if login is successful, go to stored previousState and clear previousState
     const previousUrl = this.stateStorageService.getUrl();
-    if (previousUrl != null) {
+    if (previousUrl) {
       this.stateStorageService.clearUrl();
       this.router.navigateByUrl(previousUrl);
     }

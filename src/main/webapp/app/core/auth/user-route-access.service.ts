@@ -1,35 +1,41 @@
-import { inject, isDevMode } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
-import { map } from 'rxjs/operators';
-import { AccountService } from 'app/core/auth/account.service';
-import { LoginService } from 'app/pages/usermanagement/login/login.service';
+import { inject } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
+import { catchError, map, of } from 'rxjs';
 
-import { StateStorageService } from './state-storage.service';
+import { keycloakService } from './keycloak.service';
+import { AccountService } from './account.service';
 
-export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  const accountService = inject(AccountService);
+export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot) => {
   const router = inject(Router);
-  const stateStorageService = inject(StateStorageService);
-  const loginService = inject(LoginService);
+  const accountService = inject(AccountService);
+
+  const requiredRoles: string[] = next.data['authorities'] ?? [];
+
+  // Not logged in? Redirect to Keycloak
+  if (!keycloakService.isLoggedIn()) {
+    keycloakService.login(); // redirect
+    return of(false);
+  }
+
+  // Load user if not already loaded
   return accountService.identity().pipe(
     map(account => {
-      if (account) {
-        const { authorities } = next.data;
-
-        if (!authorities || authorities.length === 0 || accountService.hasAnyAuthority(authorities)) {
-          return true;
-        }
-
-        if (isDevMode()) {
-          console.error('User does not have any of the required authorities:', authorities);
-        }
-        router.navigate(['accessdenied']);
+      if (!account) {
+        router.navigate(['/accessdenied']);
         return false;
       }
 
-      stateStorageService.storeUrl(state.url);
-      loginService.login();
+      if (requiredRoles.length === 0 || accountService.hasAnyAuthority(requiredRoles)) {
+        return true;
+      }
+
+      console.warn('Access denied – missing roles:', requiredRoles);
+      router.navigate(['/accessdenied']);
       return false;
+    }),
+    catchError(() => {
+      router.navigate(['/accessdenied']);
+      return of(false);
     }),
   );
 };
