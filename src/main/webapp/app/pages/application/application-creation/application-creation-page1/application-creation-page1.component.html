@@ -2,7 +2,7 @@
   <jhi-string-input-temporary label="First Name" id="firstName" [required]="true" [(value)]="data().firstName" />
   <jhi-string-input-temporary label="Last Name" id="lastName" [required]="true" [(value)]="data().lastName" />
 </div>
-<jhi-divider label="User Information" />
+<p-divider layout="horizontal">User Information</p-divider>
 <div class="form-row">
   <jhi-string-input-temporary label="Email" icon="envelope" [disabled]="true" id="email" [required]="true" [(value)]="data().email" />
   <jhi-string-input-temporary label="Phone Number" id="phoneNumber" [required]="true" [(value)]="data().phoneNumber" />
@@ -32,7 +32,7 @@
     <jhi-string-input-temporary label="LinkedIn" id="linkedIn" [(value)]="data().linkedIn" />
   </div>
 </div>
-<jhi-divider label="Address" />
+<p-divider layout="horizontal">Address</p-divider>
 <div class="form-row">
   <div class="w-3/4 pr-4">
     <jhi-string-input-temporary label="Street" id="street" [required]="true" [(value)]="data().street" />

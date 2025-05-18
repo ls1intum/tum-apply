@@ -3,11 +3,11 @@ import { Component, OnInit, model, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
+import { DividerModule } from 'primeng/divider';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
@@ -27,15 +27,7 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page3',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FloatLabelModule,
-    DividerComponent,
-    DatePickerComponent,
-    TextareaModule,
-    UploadButtonComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, FloatLabelModule, DividerModule, DatePickerComponent, TextareaModule, UploadButtonComponent],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
 })

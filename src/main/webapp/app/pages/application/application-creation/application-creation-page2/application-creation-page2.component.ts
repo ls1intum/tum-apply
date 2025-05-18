@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, model, output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
-import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
 import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
+import { DividerModule } from 'primeng/divider';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
@@ -48,7 +48,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page2',
-  imports: [CommonModule, StringInputTemporaryComponent, DividerComponent, DropdownComponent, UploadButtonComponent],
+  imports: [CommonModule, StringInputTemporaryComponent, DividerModule, DropdownComponent, UploadButtonComponent],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
 })
