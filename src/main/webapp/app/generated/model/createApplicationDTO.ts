@@ -10,10 +10,10 @@
 import { ApplicantDTO } from './applicantDTO';
 
 export interface CreateApplicationDTO {
-  applicant?: ApplicantDTO;
-  jobId?: string;
+  applicant: ApplicantDTO;
+  jobId: string;
   desiredDate?: string;
-  applicationState?: CreateApplicationDTO.ApplicationStateEnum;
+  applicationState: CreateApplicationDTO.ApplicationStateEnum;
   projects?: string;
   specialSkills?: string;
   motivation?: string;

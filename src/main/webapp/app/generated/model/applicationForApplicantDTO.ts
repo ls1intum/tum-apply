@@ -12,10 +12,10 @@ import { CustomFieldAnswerDTO } from './customFieldAnswerDTO';
 import { ApplicantDTO } from './applicantDTO';
 
 export interface ApplicationForApplicantDTO {
-  applicationId?: string;
+  applicationId: string;
   applicant?: ApplicantDTO;
   job?: JobCardDTO;
-  applicationState?: ApplicationForApplicantDTO.ApplicationStateEnum;
+  applicationState: ApplicationForApplicantDTO.ApplicationStateEnum;
   desiredDate?: string;
   projects?: string;
   specialSkills?: string;
