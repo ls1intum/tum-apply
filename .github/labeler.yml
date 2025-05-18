@@ -24,20 +24,20 @@ config-change:
 
 application:
   - changed-files:
-      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/application
-      - any-glob-to-any-file: src/main/webapp/app/pages/application
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/application/**
+      - any-glob-to-any-file: src/main/webapp/app/pages/application/**
 
 job:
   - changed-files:
-      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/job
-      - any-glob-to-any-file: src/main/webapp/app/pages/job
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/job/**
+      - any-glob-to-any-file: src/main/webapp/app/pages/job/**
 
 evaluation:
   - changed-files:
-      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/evaluation
-      - any-glob-to-any-file: src/main/webapp/app/pages/evaluation
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/evaluation/**
+      - any-glob-to-any-file: src/main/webapp/app/pages/evaluation/**
 
-usermanagement:
+user management:
   - changed-files:
-      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/usermanagement
-      - any-glob-to-any-file: src/main/webapp/app/pages/usermanagement
+      - any-glob-to-any-file: src/main/java/de/tum/cit/aet/usermanagement/**
+      - any-glob-to-any-file: src/main/webapp/app/pages/usermanagement/**

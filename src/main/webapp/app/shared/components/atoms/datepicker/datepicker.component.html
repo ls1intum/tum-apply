@@ -1,5 +1,10 @@
 <div [class.active]="isCalendarOpen" class="datepicker-container">
-  <label class="datepicker-label">{{ label() }}</label>
+  <label class="datepicker-label"
+    >{{ label() }}
+    @if (required()) {
+      <span class="required">*</span>
+    }
+  </label>
   <p-datepicker
     (ngModelChange)="onDateChange($event)"
     (onHide)="isCalendarOpen = false"
@@ -15,7 +20,7 @@
     showIcon="true"
   >
     <ng-template pTemplate="triggericon">
-      <fa-icon [icon]="faCalendar" />
+      <fa-icon [icon]="['fas', 'calendar']" />
     </ng-template>
   </p-datepicker>
 </div>

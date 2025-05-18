@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
@@ -7,13 +7,7 @@ import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { DropdownComponent } from '../../../shared/components/atoms/dropdown/dropdown.component';
-
-interface LocalDate {
-  year: number;
-  month: number;
-  day: number;
-}
+import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 
 @Component({
   selector: 'jhi-home',
@@ -25,10 +19,10 @@ export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
 
   // Datepicker:
-  selectedDate: LocalDate | null = null;
+  selectedDate: string | undefined = undefined;
   // Dropdown:
-  selectedLocation1: any;
-  selectedLocation2: any;
+  selectedLocation1: DropdownOption | undefined = undefined;
+  selectedLocation2: DropdownOption | undefined = undefined;
   locations = [
     { name: 'Munich Campus', value: 'munich', icon: 'chevron-up' },
     { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },
@@ -37,11 +31,17 @@ export default class HomeComponent implements OnInit {
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
+  constructor(private router: Router) {}
+
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => this.account.set(account));
   }
 
   login(): void {
     this.loginService.login();
+  }
+
+  goToJobCreation(): void {
+    this.router.navigate(['/job-creation']);
   }
 }
