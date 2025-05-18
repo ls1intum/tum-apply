@@ -1,6 +1,7 @@
 // client/src/app/keycloak/keycloak.service.ts
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
-import { environment } from 'app/environments/environment';
+
+import { environment } from '../../environments/environment';
 
 class KeycloakService {
   private keycloak!: Keycloak;
@@ -16,11 +17,32 @@ class KeycloakService {
     });
 
     const options: KeycloakInitOptions = {
-      onLoad: 'login-required',
+      onLoad: 'check-sso',
+      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       checkLoginIframe: false,
+      pkceMethod: 'S256',
+      enableLogging: environment.keycloak.enableLogging,
     };
 
-    return await this.keycloak.init(options);
+    try {
+      return await this.keycloak.init(options);
+    } catch (err) {
+      const currentPath = window.location.pathname;
+      const protectedPaths = ['/admin', '/account', '/profile']; // z. B. definieren
+
+      const isProtected = protectedPaths.some(path => currentPath.startsWith(path));
+
+      console.warn('🔁 Keycloak init failed:', err);
+
+      if (isProtected && (err as { error?: string }).error !== 'access_denied') {
+        console.warn('🔐 Protected route without login – redirecting to Keycloak');
+        this.keycloak.login();
+      } else {
+        console.warn('🌐 Public route – no login redirect');
+      }
+
+      return false;
+    }
   }
 
   /**

@@ -11,5 +11,6 @@ export const environment = {
     url: 'http://localhost:9080/',
     realm: 'tumapply',
     clientId: 'tumapply-client',
+    enableLogging: true,
   },
 };
