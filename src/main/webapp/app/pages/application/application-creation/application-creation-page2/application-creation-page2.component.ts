@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
 import { DividerComponent } from 'app/shared/components/atoms/divider/divider.component';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
-import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 
 export type ApplicationCreationPage2Data = {
@@ -48,7 +48,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page2',
-  imports: [CommonModule, StringInputComponent, DividerComponent, DropdownComponent, UploadButtonComponent],
+  imports: [CommonModule, StringInputTemporaryComponent, DividerComponent, DropdownComponent, UploadButtonComponent],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
 })

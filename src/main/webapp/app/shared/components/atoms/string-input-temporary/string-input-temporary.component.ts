@@ -7,17 +7,17 @@ import { InputTextModule } from 'primeng/inputtext';
 @Component({
   selector: 'jhi-string-input-temporary',
   imports: [SharedModule, InputTextModule, FontAwesomeModule],
-  templateUrl: './string-input.component.html',
-  styleUrl: './string-input.component.scss',
+  templateUrl: './string-input-temporary.component.html',
+  styleUrl: './string-input-temporary.component.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => StringInputComponent),
+      useExisting: forwardRef(() => StringInputTemporaryComponent),
       multi: true,
     },
   ],
 })
-export class StringInputComponent implements ControlValueAccessor {
+export class StringInputTemporaryComponent implements ControlValueAccessor {
   label = input<string>('');
   value = model.required<string>();
   icon = input<string | undefined>(undefined);
