@@ -1,5 +1,40 @@
-<div class="login-container">
-  <h1>Welcome to TumApply</h1>
-  <p>Please log in to continue.</p>
-  <jhi-button (click)="login()" label="Login with TUM ID" severity="primary" />
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <img alt="TUM Logo" class="tum-logo" src="content/images/tum-logo.gif" />
+      <h2>Create your TUMApply Account</h2>
+    </div>
+
+    <div class="login-tabs">
+      <button class="tab active">Student / Applicant</button>
+      <button class="tab disabled">Professor / Supervisor</button>
+    </div>
+
+    <p class="login-description">Create an account with one of these providers to start your application journey.</p>
+
+    <div class="login-providers">
+      <jhi-button
+        [disabled]="true"
+        [icon]="'fa-brands fa-windows'"
+        [label]="'Register with Microsoft'"
+        [severity]="'secondary'"
+        [variant]="'outlined'"
+      />
+
+      <jhi-button
+        [disabled]="true"
+        [icon]="'fa-brands fa-apple'"
+        [label]="'Register with Apple'"
+        [severity]="'secondary'"
+        [variant]="'outlined'"
+      />
+
+      <jhi-button [disabled]="true" [icon]="'apple'" [label]="'Register with Google'" [severity]="'secondary'" [variant]="'outlined'" />
+    </div>
+
+    <p class="login-footer">
+      Already have an account?
+      <a routerLink="/login">Sign in</a>
+    </p>
+  </div>
 </div>
