@@ -35,7 +35,12 @@
               "src/main/webapp/favicon.ico",
               "src/main/webapp/manifest.webapp",
               "src/main/webapp/robots.txt",
-              "src/main/webapp/i18n"
+              "src/main/webapp/i18n",
+              {
+                "glob": "silent-check-sso.html",
+                "input": "src/main/webapp/content",
+                "output": "/assets/"
+              }
             ],
             "styles": ["node_modules/primeicons/primeicons.css", "src/main/webapp/content/scss/global.scss"],
             "scripts": []
