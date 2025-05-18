@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, TemplateRef, input } from '@angular/core';
+import { Component, TemplateRef, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -28,9 +28,9 @@ export class DynamicTableComponent {
   rows = input<number>(10);
   totalRecords = input<number>(0);
   loading = input<boolean>(false);
-  selectAble = input<boolean>(false);
+  selectable = input<boolean>(false);
 
-  @Output() lazyLoad = new EventEmitter<TableLazyLoadEvent>();
+  lazyLoad = output<TableLazyLoadEvent>();
 
   emitLazy(event: TableLazyLoadEvent): void {
     this.lazyLoad.emit(event);

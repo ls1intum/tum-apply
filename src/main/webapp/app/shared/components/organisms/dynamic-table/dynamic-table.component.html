@@ -4,7 +4,7 @@
   [rowsPerPageOptions]="[10, 20, 50]"
   [totalRecords]="totalRecords()"
   [scrollable]="true"
-  scrollHeight="25rem"
+  scrollHeight="45rem"
   [rows]="rows()"
   [lazy]="true"
   (onLazyLoad)="emitLazy($event)"
@@ -15,7 +15,7 @@
   <!-- Header -->
   <ng-template pTemplate="header">
     <tr>
-      @if (selectAble()) {
+      @if (selectable()) {
         <th style="width: 5rem">
           <p-tableHeaderCheckbox />
         </th>
@@ -31,7 +31,7 @@
   <!-- Body -->
   <ng-template let-rowData pTemplate="body">
     <tr>
-      @if (selectAble()) {
+      @if (selectable()) {
         <td>
           <p-tableCheckbox [value]="rowData" />
         </td>
