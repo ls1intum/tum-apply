@@ -1,15 +1,15 @@
 <div class="relative">
   <p-button
+    [ariaLabel]="label() === undefined ? icon() : undefined"
     [disabled]="disabled()"
-    [variant]="variant()"
-    [severity]="severity()"
+    [label]="label()"
     [raised]="numberOfFavorites() !== undefined"
     [rounded]="label() === undefined"
-    [label]="label()"
-    [ariaLabel]="label() === undefined ? icon() : undefined"
+    [severity]="severity()"
+    [variant]="variant()"
   >
     @if (icon() !== undefined) {
-      <fa-icon [icon]="['fas', icon() ?? '']" />
+      <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
     }
   </p-button>
   @if (numberOfFavorites() !== undefined) {
