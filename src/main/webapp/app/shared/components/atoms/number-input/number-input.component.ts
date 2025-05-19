@@ -52,7 +52,7 @@ export class NumberInputComponent implements OnInit {
     return ctrl ? (ctrl as FormControl) : undefined;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // Needed in order to trigger change of inputState
     const ctrl = this.formControl;
     if (ctrl) {
