@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
+import { RouterModule } from '@angular/router';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
@@ -8,7 +9,7 @@ import { keycloakService } from '../../../../core/auth/keycloak.service';
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [ButtonComponent, ButtonGroupComponent, TabsModule],
+  imports: [ButtonComponent, ButtonGroupComponent, TabsModule, RouterModule],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
 })
