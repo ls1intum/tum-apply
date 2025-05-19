@@ -27,14 +27,14 @@ export type ApplicationCreationPage1Data = {
 };
 
 export const dropdownGender: DropdownOption[] = [
-  { value: 'Female', name: 'female' },
-  { value: 'Male', name: 'male' },
-  { value: 'Other', name: 'other' },
+  { value: 'female', name: 'Female' },
+  { value: 'male', name: 'Male' },
+  { value: 'other', name: 'Other' },
 ];
 
 export const dropdownLanguage: DropdownOption[] = [
-  { value: 'de', name: 'german' },
-  { value: 'en', name: 'english' },
+  { value: 'de', name: 'German' },
+  { value: 'en', name: 'English' },
 ];
 
 export const dropdownNationality: DropdownOption[] = [
