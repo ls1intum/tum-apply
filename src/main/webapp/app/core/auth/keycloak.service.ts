@@ -51,7 +51,9 @@ class KeycloakService {
    * Triggers the Keycloak login flow.
    */
   login(): void {
-    this.keycloak.login();
+    this.keycloak.login({
+      redirectUri: window.location.origin + '/',
+    });
   }
 
   /**
@@ -59,7 +61,7 @@ class KeycloakService {
    */
   logout(): void {
     this.keycloak.logout({
-      redirectUri: window.location.origin,
+      redirectUri: window.location.origin + '/',
     });
   }
 
