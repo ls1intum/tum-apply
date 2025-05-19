@@ -194,7 +194,7 @@ export default class ApplicationCreationFormComponent {
     this.init(route);
   }
 
-  async init(route: ActivatedRoute) {
+  async init(route: ActivatedRoute): Promise<void> {
     const segments = await firstValueFrom(route.url);
     const firstSegment = segments[1]?.path;
     if (firstSegment === 'create') {
@@ -216,11 +216,6 @@ export default class ApplicationCreationFormComponent {
   }
 
   sendCreateApplicationData(state: 'SAVED' | 'SENT'): void {
-    if (this.jobId === undefined) {
-      alert('Error while trying to read jobId');
-      // TODO better error handling
-      return;
-    }
     const createApplication: CreateApplicationDTO = {
       applicant: {
         user: {
