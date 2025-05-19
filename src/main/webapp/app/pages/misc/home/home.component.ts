@@ -29,7 +29,7 @@ import { NumberInputComponent } from '../../../shared/components/atoms/number-in
 export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
 
-  form!: FormGroup;
+  form: FormGroup = new FormGroup({});
 
   // Datepicker:
   selectedDate: string | undefined = undefined;

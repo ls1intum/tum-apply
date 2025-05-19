@@ -6,15 +6,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.core.exception.handler.GlobalExceptionHandler;
+import de.tum.cit.aet.core.service.AuthenticationService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = de.tum.cit.aet.core.web.rest.errors.TestExceptionController.class)
-@Import(GlobalExceptionHandler.class)
+@WebMvcTest(controllers = TestExceptionController.class)
+@Import({ GlobalExceptionHandler.class, GlobalExceptionHandlerTest.TestConfig.class })
 @AutoConfigureMockMvc(addFilters = false)
 class GlobalExceptionHandlerTest {
 
@@ -201,5 +205,14 @@ class GlobalExceptionHandlerTest {
             .andExpect(jsonPath("$.errorCode").value("INVALID_PARAMETER"))
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.fieldErrors[0].field").value("number"));
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Bean
+        public AuthenticationService authenticationService() {
+            return Mockito.mock(AuthenticationService.class);
+        }
     }
 }

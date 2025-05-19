@@ -18,7 +18,7 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="getInputState() === 'invalid'">
+    <div class="input-wrapper" [class.error]="inputState() === 'invalid'">
       <p-inputnumber
         [inputId]="inputId()"
         [placeholder]="placeholder()"
@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  @if (getInputState() === 'invalid' && !isFocused) {
+  @if (inputState() === 'invalid' && !isFocused()) {
     <div class="error-text">
       <!--{{ getErrorMessage() }}-->
     </div>
