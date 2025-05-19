@@ -1,8 +1,9 @@
-import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule } from '@angular/common';
-import { ApplicationResourceService, CreateApplicationDTO, JobCardDTO, JobResourceService } from 'app/generated';
+import { ApplicationResourceService, CreateApplicationDTO, JobResourceService } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -30,7 +31,7 @@ type ApplicationFormMode = 'create'; /* TODO | 'edit' | 'view' */
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
 })
-export default class ApplicationCreationFormComponent implements OnInit {
+export default class ApplicationCreationFormComponent {
   page1: ApplicationCreationPage1Data = {
     firstName: '',
     lastName: '',
@@ -65,55 +66,23 @@ export default class ApplicationCreationFormComponent implements OnInit {
     experiences: '',
   };
 
-  @ViewChild('panel1', { static: true }) panel1!: TemplateRef<any>;
-  @ViewChild('panel2', { static: true }) panel2!: TemplateRef<any>;
-  @ViewChild('panel3', { static: true }) panel3!: TemplateRef<any>;
+  panel1 = viewChild<TemplateRef<any>>('panel1');
+  panel2 = viewChild<TemplateRef<any>>('panel2');
+  panel3 = viewChild<TemplateRef<any>>('panel3');
 
-  stepData = signal<StepData[]>([]);
-  title?: string = 'Machine Learning for Climate Science';
-
-  jobId?: string;
-  job?: JobCardDTO;
-
-  mode?: ApplicationFormMode;
-
-  page1Valid = signal<boolean>(false);
-  page2Valid = signal<boolean>(false);
-  page3Valid = signal<boolean>(false);
-
-  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
-
-  private applicationResourceService = inject(ApplicationResourceService);
-  private jobResourceService = inject(JobResourceService);
-  private router = inject(Router);
-
-  constructor(private route: ActivatedRoute) {
-    this.route.url.subscribe(segments => {
-      const firstSegment = segments[1]?.path;
-      if (firstSegment === 'create') {
-        this.mode = 'create';
-        this.jobId = this.route.snapshot.paramMap.get('job_id')!;
-        this.jobResourceService.getJobDetails(this.jobId).subscribe(job => {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          if (job.title !== undefined && job.title.trim().length > 0) {
-            this.title = job.title;
-          }
-          this.job = job;
-        });
-      } else {
-        this.router.navigate(['/404']);
-      }
-    });
-  }
-
-  ngOnInit(): void {
+  stepData = computed<StepData[]>(() => {
     const sendData = (state: 'SAVED' | 'SENT'): void => {
       this.sendCreateApplicationData(state);
     };
-    this.stepData.set([
-      {
+
+    const steps: StepData[] = [];
+    const panel1 = this.panel1();
+    const panel2 = this.panel2();
+    const panel3 = this.panel3();
+    if (panel1) {
+      steps.push({
         name: 'Personal Information',
-        panelTemplate: this.panel1,
+        panelTemplate: panel1,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -135,10 +104,12 @@ export default class ApplicationCreationFormComponent implements OnInit {
             changePanel: true,
           },
         ],
-      },
-      {
+      });
+    }
+    if (panel2) {
+      steps.push({
         name: 'Education',
-        panelTemplate: this.panel2,
+        panelTemplate: panel2,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -160,10 +131,12 @@ export default class ApplicationCreationFormComponent implements OnInit {
             changePanel: true,
           },
         ],
-      },
-      {
+      });
+    }
+    if (panel3) {
+      steps.push({
         name: 'Application Details',
-        panelTemplate: this.panel3,
+        panelTemplate: panel3,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -197,8 +170,49 @@ export default class ApplicationCreationFormComponent implements OnInit {
             changePanel: false,
           },
         ],
-      },
-    ]);
+      });
+    }
+    return steps;
+  });
+  title = 'Machine Learning for Climate Science';
+
+  jobId = '';
+
+  mode: ApplicationFormMode = 'create';
+
+  page1Valid = signal<boolean>(false);
+  page2Valid = signal<boolean>(false);
+  page3Valid = signal<boolean>(false);
+
+  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
+
+  private applicationResourceService = inject(ApplicationResourceService);
+  private jobResourceService = inject(JobResourceService);
+  private router = inject(Router);
+
+  constructor(private route: ActivatedRoute) {
+    this.init(route);
+  }
+
+  async init(route: ActivatedRoute) {
+    const segments = await firstValueFrom(route.url);
+    const firstSegment = segments[1]?.path;
+    if (firstSegment === 'create') {
+      this.mode = 'create';
+      const jobId = this.route.snapshot.paramMap.get('job_id');
+      if (jobId === null) {
+        alert('Error: this is no valid jobId');
+      } else {
+        this.jobId = jobId;
+      }
+      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId));
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (job.title !== undefined && job.title.trim().length > 0) {
+        this.title = job.title;
+      }
+    } else {
+      alert('Error: this is no valid application page link');
+    }
   }
 
   sendCreateApplicationData(state: 'SAVED' | 'SENT'): void {

@@ -19,7 +19,7 @@ import { InputTextModule } from 'primeng/inputtext';
 })
 export class StringInputTemporaryComponent implements ControlValueAccessor {
   label = input<string>('');
-  value = model.required<string>();
+  value = model<string>();
   icon = input<string | undefined>(undefined);
   id = input<string>();
   disabled = input<boolean>(false);

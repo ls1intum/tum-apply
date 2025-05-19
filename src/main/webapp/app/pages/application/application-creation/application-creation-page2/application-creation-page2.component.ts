@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, model, output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, effect, inject, model, output, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
 import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
@@ -48,39 +48,52 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page2',
-  imports: [CommonModule, StringInputTemporaryComponent, DividerModule, DropdownComponent, UploadButtonComponent],
+  imports: [CommonModule, StringInputTemporaryComponent, DividerModule, DropdownComponent, UploadButtonComponent, ReactiveFormsModule],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
 })
-export default class ApplicationCreationPage2Component implements OnInit {
+export default class ApplicationCreationPage2Component {
   bachelorGradingScaleLocal = bachelorGradingScale;
   masterGradingScaleLocal = masterGradingScale;
 
   data = model.required<ApplicationCreationPage2Data>();
   valid = output<boolean>();
 
-  form!: FormGroup;
+  page2Form = signal<FormGroup | undefined>(undefined);
 
-  constructor(private fb: FormBuilder) {}
+  fb = inject(FormBuilder);
 
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      bachelorDegreeName: [this.data().bachelorDegreeName, Validators.required],
-      bachelorDegreeUniversity: [this.data().bachelorDegreeUniversity, Validators.required],
-      bachelorGrade: [this.data().bachelorGrade, Validators.required],
-      masterDegreeName: [this.data().masterDegreeName, Validators.required],
-      masterDegreeUniversity: [this.data().masterDegreeUniversity, Validators.required],
-      masterGrade: [this.data().masterGrade, Validators.required],
+  constructor() {
+    effect(() => {
+      const currentData = this.data();
+      this.page2Form.set(
+        this.fb.group({
+          bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
+          bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
+          bachelorGrade: [currentData.bachelorGrade, Validators.required],
+          masterDegreeName: [currentData.masterDegreeName, Validators.required],
+          masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
+          masterGrade: [currentData.masterGrade, Validators.required],
+        }),
+      );
     });
 
-    this.form.valueChanges.subscribe(value => {
-      Object.assign(this.data(), value);
-    });
+    effect(() => {
+      const form = this.page2Form();
+      if (form) {
+        form.valueChanges.subscribe(value => {
+          this.data.set({
+            ...this.data(),
+            ...value,
+          });
 
-    this.form.statusChanges.subscribe(() => {
-      this.valid.emit(this.form.valid);
-    });
+          this.valid.emit(form.valid);
+        });
 
-    this.valid.emit(this.form.valid);
+        form.statusChanges.subscribe(() => {
+          this.valid.emit(form.valid);
+        });
+      }
+    });
   }
 }

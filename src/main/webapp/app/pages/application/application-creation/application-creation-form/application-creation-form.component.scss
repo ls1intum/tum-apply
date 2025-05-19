@@ -3,3 +3,8 @@ h1 {
   font-size: xx-large;
   color: var(--p-secondary-color);
 }
+
+.panel {
+  height: 100%;
+  display: flex;
+}

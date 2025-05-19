@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, model, output } from '@angular/core';
+import { Component, effect, inject, model, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -31,27 +31,41 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
 })
-export default class ApplicationCreationPage3Component implements OnInit {
+export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
 
   valid = output<boolean>();
 
-  page3Form!: FormGroup;
+  page3Form = signal<FormGroup | undefined>(undefined);
 
-  constructor(private fb: FormBuilder) {}
+  fb = inject(FormBuilder);
 
-  ngOnInit(): void {
-    this.page3Form = this.fb.group({
-      experiences: [this.data().experiences, Validators.required],
-      motivation: [this.data().motivation, Validators.required],
-      skills: [this.data().skills, Validators.required],
+  constructor() {
+    effect(() => {
+      const currentData = this.data(); // will throw until data is set
+      this.page3Form.set(
+        this.fb.group({
+          experiences: [currentData.experiences, Validators.required],
+          motivation: [currentData.motivation, Validators.required],
+          skills: [currentData.skills, Validators.required],
+        }),
+      );
+
+      this.valid.emit(this.page3Form()?.valid ?? false);
     });
 
-    this.page3Form.valueChanges.subscribe(value => {
-      this.data().experiences = value.experiences;
-      this.data().motivation = value.motivation;
-      this.data().skills = value.skills;
-      this.valid.emit(this.page3Form.valid);
+    effect(() => {
+      const form = this.page3Form();
+      if (form) {
+        form.valueChanges.subscribe(value => {
+          this.data.set({
+            ...this.data(),
+            ...value,
+          });
+
+          this.valid.emit(form.valid);
+        });
+      }
     });
   }
 }

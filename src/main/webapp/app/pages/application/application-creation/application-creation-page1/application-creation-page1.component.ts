@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, model, output } from '@angular/core';
+import { Component, effect, inject, model, output, signal } from '@angular/core';
 import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -116,41 +116,54 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',
 })
-export default class ApplicationCreationPage1Component implements OnInit {
+export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
   valid = output<boolean>();
-
-  form!: FormGroup;
 
   dropdownGenderLocal = dropdownGender;
   dropdownLanguageLocal = dropdownLanguage;
   dropdownNationalityLocal = dropdownNationality;
 
-  constructor(private fb: FormBuilder) {}
+  page1Form = signal<FormGroup | undefined>(undefined);
 
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      firstName: [this.data().firstName, Validators.required],
-      lastName: [this.data().lastName, Validators.required],
-      email: [this.data().email, Validators.required],
-      phoneNumber: [this.data().phoneNumber, Validators.required],
-      dateOfBirth: [this.data().dateOfBirth, Validators.required],
+  fb = inject(FormBuilder);
 
-      street: [this.data().street, Validators.required],
-      city: [this.data().city, Validators.required],
-      country: [this.data().country, Validators.required],
-      postcode: [this.data().postcode, Validators.required],
+  constructor() {
+    effect(() => {
+      const currentData = this.data();
+      this.page1Form.set(
+        this.fb.group({
+          firstName: [currentData.firstName, Validators.required],
+          lastName: [currentData.lastName, Validators.required],
+          email: [currentData.email, Validators.required],
+          phoneNumber: [currentData.phoneNumber, Validators.required],
+          dateOfBirth: [currentData.dateOfBirth, Validators.required],
+
+          street: [currentData.street, Validators.required],
+          city: [currentData.city, Validators.required],
+          country: [currentData.country, Validators.required],
+          postcode: [currentData.postcode, Validators.required],
+        }),
+      );
     });
 
-    this.form.valueChanges.subscribe(value => {
-      Object.assign(this.data(), value);
-    });
+    effect(() => {
+      const form = this.page1Form();
+      if (form) {
+        form.valueChanges.subscribe(value => {
+          this.data.set({
+            ...this.data(),
+            ...value,
+          });
 
-    this.form.statusChanges.subscribe(() => {
-      this.valid.emit(this.form.valid);
-    });
+          this.valid.emit(form.valid);
+        });
 
-    this.valid.emit(this.form.valid);
+        form.statusChanges.subscribe(() => {
+          this.valid.emit(form.valid);
+        });
+      }
+    });
   }
 }
