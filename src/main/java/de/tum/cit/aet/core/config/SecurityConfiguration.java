@@ -45,7 +45,10 @@ public class SecurityConfiguration {
      */
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
+        http
+            .csrf(csrf -> csrf.disable())
+            .addFilterAfter(new SpaWebFilter(), BasicAuthenticationFilter.class)
+            .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
         return http.build();
     }
 
