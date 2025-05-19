@@ -38,15 +38,14 @@
         class="custom-input"
       />
 
-      @if (formControl) {
-        <input type="hidden" [formControl]="formControl" />
+      @if (formControl()) {
+        <input type="hidden" [formControl]="formControl()" />
+      }
+    </div>
+    <div class="error-text">
+      @if (inputState() === 'invalid' && !isFocused()) {
+        {{ errorMessage() }}
       }
     </div>
   </div>
-
-  @if (inputState() === 'invalid' && !isFocused()) {
-    <div class="error-text">
-      <!--{{ getErrorMessage() }}-->
-    </div>
-  }
 </div>

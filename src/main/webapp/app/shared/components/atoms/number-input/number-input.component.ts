@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, input, output, signal } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -11,7 +11,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule, InputNumberModule, ReactiveFormsModule, InputNumberModule],
 })
-export class NumberInputComponent implements OnInit {
+export class NumberInputComponent {
   control = input<AbstractControl | undefined>(undefined);
   disabled = input<boolean>(false);
   icon = input<string | undefined>(undefined);
@@ -37,9 +37,8 @@ export class NumberInputComponent implements OnInit {
 
   readonly inputState = computed(() => {
     this.formValidityVersion();
-
     if (!this.isTouched()) return 'untouched';
-    if (this.formControl?.invalid === true) return 'invalid';
+    if (this.formControl().invalid) return 'invalid';
     return 'valid';
   });
 
@@ -47,28 +46,42 @@ export class NumberInputComponent implements OnInit {
   isTouched = signal(false);
   isFocused = signal(false);
 
-  get formControl(): FormControl | undefined {
-    const ctrl = this.control();
-    return ctrl ? (ctrl as FormControl) : undefined;
-  }
+  formControl = signal<FormControl>(new FormControl(''));
 
-  ngOnInit(): void {
-    // Needed in order to trigger change of inputState
-    const ctrl = this.formControl;
-    if (ctrl) {
-      ctrl.statusChanges.subscribe(() => {
-        this.formValidityVersion.update(v => v + 1); // increment
+  errorMessage = computed<string | null>(() => {
+    const ctrl = this.formControl();
+    const errors = ctrl.errors;
+    if (!errors) return null;
+    const key = Object.keys(errors)[0];
+    const val = errors[key];
+    const defaults: Record<string, string> = {
+      required: 'This field is required',
+      minlength: `Minimum value is ${val.min}`,
+      maxlength: `Maximum value is ${val.max}`,
+      pattern: 'Invalid format',
+    };
+    return defaults[key] ?? `Invalid: ${key}`;
+  });
+
+  constructor() {
+    effect(onCleanup => {
+      const ctrl = this.control() as FormControl;
+      this.formControl.set(ctrl);
+      if (!ctrl) return;
+      const sub = ctrl.statusChanges.subscribe(() => {
+        this.formValidityVersion.update(v => v + 1);
       });
-    }
+      onCleanup(() => sub.unsubscribe());
+    });
   }
 
   onInputChange(value: number): void {
     this.modelChange.emit(value);
-
-    if (this.formControl) {
-      this.formControl.setValue(value);
-      this.formControl.markAsDirty();
-      this.formControl.updateValueAndValidity();
+    const ctrl = this.formControl();
+    if (ctrl) {
+      ctrl.setValue(value);
+      ctrl.markAsDirty();
+      ctrl.updateValueAndValidity();
     }
   }
 
@@ -79,22 +92,5 @@ export class NumberInputComponent implements OnInit {
 
   onFocus(): void {
     this.isFocused.set(true);
-  }
-
-  getErrorMessage(): string | null {
-    const control = this.formControl;
-    if (!control?.errors) return null;
-
-    const firstErrorKey = Object.keys(control.errors)[0];
-    const errorValue = control.errors[firstErrorKey];
-
-    const defaultMessages: Record<string, string> = {
-      required: 'This field is required',
-      min: `Minimum value is ${errorValue?.min}`,
-      max: `Maximum value is ${errorValue?.max}`,
-      pattern: 'Invalid format',
-    };
-
-    return defaultMessages[firstErrorKey] ?? `Invalid: ${firstErrorKey}`;
   }
 }
