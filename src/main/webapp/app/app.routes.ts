@@ -44,6 +44,10 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import(`./entities/entity.routes`),
   },
+  {
+    path: 'badge-playground',
+    loadComponent: () => import('./pages/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
+  },
   ...errorRoute,
 ];
 

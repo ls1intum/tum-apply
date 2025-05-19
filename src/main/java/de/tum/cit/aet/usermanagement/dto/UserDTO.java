@@ -4,9 +4,11 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * DTO for {@link User}
+ */
 public record UserDTO(
     UUID userId,
-    // TODO ResearchGroup researchGroup,
     String email,
     String avatar,
     String firstName,
@@ -17,9 +19,8 @@ public record UserDTO(
     String phoneNumber,
     String website,
     String linkedinUrl,
-    String selectedLanguage
-    // TODO Set<JobDTO> postedJobs
-    // TODO Set<UserResearchGroupRoleDTO> researchGroupRoles
+    String selectedLanguage,
+    ResearchGroupShortDTO researchGroupShortDTO
 ) {
     /**
      *
@@ -42,7 +43,8 @@ public record UserDTO(
             user.getPhoneNumber(),
             user.getWebsite(),
             user.getLinkedinUrl(),
-            user.getSelectedLanguage()
+            user.getSelectedLanguage(),
+            new ResearchGroupShortDTO(user.getResearchGroup())
         );
     }
 }
