@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, TemplateRef, ViewChild, signal } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
@@ -14,28 +14,28 @@ import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService 
   templateUrl: './application-overview.component.html',
   styleUrl: './application-overview.component.scss',
 })
-export class ApplicationOverviewComponent implements AfterViewInit {
-  @ViewChild('actionTemplate') actionTemplate!: TemplateRef<any>;
-  columns: DynamicTableColumn[] = [];
-
+export class ApplicationOverviewComponent {
   loading = signal(false);
   pageData = signal<ApplicationEvaluationOverviewDTO[]>([]);
   pageSize = signal(10);
   total = signal(0);
 
-  constructor(private evaluationService: ApplicationEvaluationResourceService) {}
+  readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
 
-  ngAfterViewInit(): void {
-    this.columns = [
+  readonly columns = computed<DynamicTableColumn[]>(() => {
+    const tpl = this.actionTemplate();
+    return [
       { field: 'avatar', header: '', width: '5rem' },
       { field: 'name', header: 'Name', width: '12rem' },
       { field: 'state', header: 'Status', width: '10rem', alignCenter: true },
       { field: 'jobName', header: 'Job', width: '26rem' },
       { field: 'rating', header: 'Rating', width: '10rem' },
       { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
-      { field: 'actions', header: '', width: '5rem', template: this.actionTemplate },
+      { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
-  }
+  });
+
+  private readonly evaluationService = inject(ApplicationEvaluationResourceService);
 
   async loadPage(event: TableLazyLoadEvent): Promise<void> {
     this.loading.set(true);
