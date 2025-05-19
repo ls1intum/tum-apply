@@ -741,6 +741,18 @@
       "DocumentDTO": {
         "type": "object"
       },
+      "ResearchGroupShortDTO": {
+        "type": "object",
+        "properties": {
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "UserDTO": {
         "type": "object",
         "properties": {
@@ -781,6 +793,9 @@
           },
           "selectedLanguage": {
             "type": "string"
+          },
+          "researchGroupShortDTO": {
+            "$ref": "#/components/schemas/ResearchGroupShortDTO"
           }
         }
       },

@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ResearchGroupShortDTO } from './researchGroupShortDTO';
 
 export interface UserDTO {
   userId?: string;
@@ -21,4 +22,5 @@ export interface UserDTO {
   website?: string;
   linkedinUrl?: string;
   selectedLanguage?: string;
+  researchGroupShortDTO?: ResearchGroupShortDTO;
 }
