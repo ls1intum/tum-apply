@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Signal, inject } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { keycloakService } from '../../../../core/auth/keycloak.service';
+import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 
 @Component({
   selector: 'jhi-auth-card',
@@ -15,7 +16,12 @@ import { keycloakService } from '../../../../core/auth/keycloak.service';
 })
 export class AuthCardComponent {
   @Input() mode: 'login' | 'register' = 'login';
-  value = 0;
+  private authTabService = inject(AuthTabService);
+  value: Signal<number> = this.authTabService.getSelectedTab();
+
+  onTabChange(newValue: string | number): void {
+    this.authTabService.setSelectedTab(Number(newValue));
+  }
 
   studentButtons(): ButtonGroupData {
     return {
