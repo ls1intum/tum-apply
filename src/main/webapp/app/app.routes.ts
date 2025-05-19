@@ -8,11 +8,15 @@ const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./pages/usermanagement/login/login.component').then(m => m.LoginComponent),
+    canActivate: [UserRouteAccessService],
+    data: { publicOnly: true },
     title: 'login',
   },
   {
     path: 'register',
     loadComponent: () => import('./pages/usermanagement/register/register.component').then(m => m.RegisterComponent),
+    canActivate: [UserRouteAccessService],
+    data: { publicOnly: true },
     title: 'register',
   },
   {

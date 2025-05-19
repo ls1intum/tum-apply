@@ -10,14 +10,26 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
   const accountService = inject(AccountService);
 
   const requiredRoles: string[] = next.data['authorities'] ?? [];
+  const publicOnly: boolean = next.data['publicOnly'] ?? false;
 
-  // Not logged in? Redirect to Keycloak
-  if (!keycloakService.isLoggedIn()) {
-    keycloakService.login(); // redirect
+  // If route is publicOnly and user is logged in, redirect to home
+  if (publicOnly && keycloakService.isLoggedIn()) {
+    router.navigate(['/']);
     return of(false);
   }
 
-  // Load user if not already loaded
+  // If route requires authentication and user is not logged in, redirect to login
+  if (!publicOnly && !keycloakService.isLoggedIn()) {
+    keycloakService.login();
+    return of(false);
+  }
+
+  // If no roles required or publicOnly route, allow access
+  if (requiredRoles.length === 0 || publicOnly) {
+    return of(true);
+  }
+
+  // Load user if not already loaded and roles are required
   return accountService.identity().pipe(
     map(account => {
       if (!account) {
@@ -25,7 +37,7 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
         return false;
       }
 
-      if (requiredRoles.length === 0 || accountService.hasAnyAuthority(requiredRoles)) {
+      if (accountService.hasAnyAuthority(requiredRoles)) {
         return true;
       }
 
