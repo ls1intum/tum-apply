@@ -23,23 +23,26 @@ class KeycloakService {
       enableLogging: environment.keycloak.enableLogging,
     };
 
+    const currentPath = window.location.pathname;
+    const publicPaths = ['/login', '/register'];
+    const isPublicPath = publicPaths.some(path => currentPath === path);
+
     try {
-      return await this.keycloak.init(options);
-    } catch (err) {
-      const currentPath = window.location.pathname;
-      const protectedPaths = ['/admin', '/account', '/profile']; // z. B. definieren
+      const authenticated = await this.keycloak.init(options);
 
-      const isProtected = protectedPaths.some(path => currentPath.startsWith(path));
-
-      console.warn('🔁 Keycloak init failed:', err);
-
-      if (isProtected && (err as { error?: string }).error !== 'access_denied') {
+      if (!authenticated && !isPublicPath) {
         console.warn('🔐 Protected route without login – redirecting to Keycloak');
         this.keycloak.login();
-      } else {
-        console.warn('🌐 Public route – no login redirect');
       }
 
+      return authenticated;
+    } catch (err) {
+      if (!isPublicPath && (err as { error?: string }).error !== 'access_denied') {
+        console.warn('🔐 Protected route without login – redirecting to Keycloak');
+        this.keycloak.login();
+      }
+
+      console.warn('🔁 Keycloak init failed:', err);
       return false;
     }
   }
