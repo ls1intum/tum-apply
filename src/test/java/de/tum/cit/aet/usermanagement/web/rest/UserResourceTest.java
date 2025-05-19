@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import(TestSecurityConfiguration.class)
 @AutoConfigureMockMvc
 @IntegrationTest
-class UserResourceIT {
+class UserResourceTest {
 
     @Autowired
     private MockMvc mockMvc;
