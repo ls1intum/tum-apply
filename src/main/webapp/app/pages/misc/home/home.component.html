@@ -1,3 +1,23 @@
+<!-- Authentication Buttons and Status -->
+<div class="auth-section mb-4">
+  <div class="d-flex gap-2 mb-2">
+    @if (account() !== null) {
+      <jhi-button severity="danger" label="Logout" icon="sign-out-alt" (click)="logout()" />
+    } @else {
+      <jhi-button severity="primary" label="Login" icon="sign-in-alt" (click)="login()" />
+    }
+  </div>
+  <div [ngClass]="account() !== null ? 'alert-success' : 'alert-warning'" class="alert">
+    @if (account(); as account) {
+      <span
+        >Logged in as: <strong>{{ account.email }}</strong></span
+      >
+    } @else {
+      <span>Not logged in</span>
+    }
+  </div>
+</div>
+
 <div class="row">
   <div class="col-md-3">
     <span class="hipster img-fluid rounded"></span>
@@ -26,9 +46,9 @@
         </div>
       }
     </div>
-    <jhi-button severity="secondary" label="Create a Job" icon="tasks" (click)="goToJobCreation()" />
+    <jhi-button (click)="goToJobCreation()" icon="tasks" label="Create a Job" severity="secondary" />
     <jhi-datepicker [(selectedDate)]="selectedDate" [label]="'Start Date'" [placeholder]="'Select a Start Date...'" [width]="'50%'" />
-    <jhi-button severity="secondary" label="Test" icon="tasks" />
+    <jhi-button icon="tasks" label="Test" severity="secondary" />
     <h1 class="underline">Testheader</h1>
     <div class="m-2 flex flex-col">
       <p>test</p>
@@ -40,17 +60,17 @@
       <div class="col-md-6">
         <h3>Number Input - GPA (Top)</h3>
         <jhi-number-input
-          [control]="form.get('experience') ?? undefined"
-          [model]="form.get('experience')?.value"
           (modelChange)="form.get('experience')?.setValue($event)"
-          [label]="'Experience'"
-          [placeholder]="'0–50 years'"
-          [labelPosition]="'top'"
+          [control]="form.get('experience') ?? undefined"
           [icon]="'book'"
-          [min]="0"
+          [labelPosition]="'top'"
+          [label]="'Experience'"
+          [maxFractionDigits]="3"
           [max]="50"
           [minFractionDigits]="1"
-          [maxFractionDigits]="3"
+          [min]="0"
+          [model]="form.get('experience')?.value"
+          [placeholder]="'0–50 years'"
           [width]="'50%'"
         />
         <br />
@@ -59,17 +79,17 @@
       <div class="col-md-6">
         <h3>Number Input - Years of Experience (Left)</h3>
         <jhi-number-input
-          [control]="form.get('experience') ?? undefined"
-          [model]="form.get('experience')?.value"
           (modelChange)="form.get('experience')?.setValue($event)"
-          [label]="'Experience'"
-          [placeholder]="'0–50 years'"
-          [labelPosition]="'left'"
+          [control]="form.get('experience') ?? undefined"
           [icon]="'book'"
-          [min]="0"
+          [labelPosition]="'left'"
+          [label]="'Experience'"
+          [maxFractionDigits]="3"
           [max]="50"
           [minFractionDigits]="1"
-          [maxFractionDigits]="3"
+          [min]="0"
+          [model]="form.get('experience')?.value"
+          [placeholder]="'0–50 years'"
           [width]="'50%'"
         />
         <br />
@@ -78,18 +98,18 @@
       <div class="col-md-6">
         <h3>Number Input Test - Disabled</h3>
         <jhi-number-input
-          [control]="form.get('experience') ?? undefined"
-          [model]="form.get('experience')?.value"
           (modelChange)="form.get('experience')?.setValue($event)"
-          [label]="'Experience'"
-          [placeholder]="'0–50 years'"
-          [labelPosition]="'top'"
+          [control]="form.get('experience') ?? undefined"
+          [disabled]="true"
           [icon]="'book'"
-          [min]="0"
+          [labelPosition]="'top'"
+          [label]="'Experience'"
+          [maxFractionDigits]="3"
           [max]="50"
           [minFractionDigits]="1"
-          [maxFractionDigits]="3"
-          [disabled]="true"
+          [min]="0"
+          [model]="form.get('experience')?.value"
+          [placeholder]="'0–50 years'"
           [width]="'50%'"
         />
         <br />
@@ -100,14 +120,14 @@
       <div class="col-md-6">
         <h3>String Input Test - Top</h3>
         <jhi-string-input
-          [label]="'Your Name'"
-          [placeholder]="'Enter your name...'"
-          [labelPosition]="'top'"
-          [icon]="'user'"
-          [model]="form.get('name')?.value"
           (modelChange)="form.get('name')?.setValue($event)"
           [control]="form.get('name') ?? undefined"
+          [icon]="'user'"
           [id]="'name-input'"
+          [labelPosition]="'top'"
+          [label]="'Your Name'"
+          [model]="form.get('name')?.value"
+          [placeholder]="'Enter your name...'"
           [width]="'50%'"
         />
       </div>
@@ -115,14 +135,14 @@
       <div class="col-md-6">
         <h3>String Input Test - Left</h3>
         <jhi-string-input
-          [label]="'Your Name'"
-          [placeholder]="'Enter your name...'"
-          [labelPosition]="'left'"
-          [icon]="'user'"
-          [model]="form.get('name')?.value"
           (modelChange)="form.get('name')?.setValue($event)"
           [control]="form.get('name') ?? undefined"
+          [icon]="'user'"
           [id]="'name-input'"
+          [labelPosition]="'left'"
+          [label]="'Your Name'"
+          [model]="form.get('name')?.value"
+          [placeholder]="'Enter your name...'"
           [width]="'50%'"
         />
       </div>
@@ -130,15 +150,15 @@
       <div class="col-md-6">
         <h3>String Input Test - Disabled</h3>
         <jhi-string-input
-          [label]="'Your Name'"
-          [placeholder]="'Enter your name...'"
-          [labelPosition]="'top'"
-          [icon]="'user'"
-          [model]="form.get('name')?.value"
           (modelChange)="form.get('name')?.setValue($event)"
           [control]="form.get('name') ?? undefined"
-          [id]="'name-input'"
           [disabled]="true"
+          [icon]="'user'"
+          [id]="'name-input'"
+          [labelPosition]="'top'"
+          [label]="'Your Name'"
+          [model]="form.get('name')?.value"
+          [placeholder]="'Enter your name...'"
           [width]="'50%'"
         />
         <br />
@@ -147,26 +167,26 @@
 
     <jhi-datepicker
       [(selectedDate)]="selectedDate"
-      [label]="'Start Date'"
-      [placeholder]="'Select a Start Date...'"
-      [width]="'50%'"
       [labelPosition]="'top'"
+      [label]="'Start Date'"
+      [placeholder]="'Select a Start Date...'"
+      [width]="'50%'"
     />
     <br />
     <jhi-datepicker
       [(selectedDate)]="selectedDate"
-      [label]="'Start Date'"
-      [placeholder]="'Select a Start Date...'"
-      [width]="'50%'"
       [labelPosition]="'left'"
+      [label]="'Start Date'"
+      [placeholder]="'Select a Start Date...'"
+      [width]="'50%'"
     />
     <br />
     <jhi-datepicker
       [(selectedDate)]="selectedDate"
+      [disabled]="true"
       [label]="'Start Date'"
       [placeholder]="'Select a Start Date...'"
       [width]="'50%'"
-      [disabled]="true"
     />
 
     <div class="row">

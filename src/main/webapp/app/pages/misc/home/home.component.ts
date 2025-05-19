@@ -1,16 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
-import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
+import { keycloakService } from '../../../core/auth/keycloak.service';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { NumberInputComponent } from '../../../shared/components/atoms/number-input/number-input.component';
-import { keycloakService } from '../../../core/auth/keycloak.service';
 
 @Component({
   selector: 'jhi-home',
@@ -27,7 +26,7 @@ import { keycloakService } from '../../../core/auth/keycloak.service';
   ],
 })
 export default class HomeComponent implements OnInit {
-  account = signal<Account | null>(null);
+  account = inject(AccountService).trackCurrentAccount();
 
   form!: FormGroup;
 
@@ -49,8 +48,6 @@ export default class HomeComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.accountService.identity().subscribe(account => this.account.set(account));
-
     this.form = this.fb.group({
       experience: [null, [Validators.required, Validators.min(0), Validators.max(50)]],
       name: ['', [Validators.required]],
@@ -59,6 +56,10 @@ export default class HomeComponent implements OnInit {
 
   login(): void {
     keycloakService.login();
+  }
+
+  logout(): void {
+    keycloakService.logout();
   }
 
   goToJobCreation(): void {
