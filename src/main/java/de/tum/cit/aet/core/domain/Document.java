@@ -1,11 +1,9 @@
 package de.tum.cit.aet.core.domain;
 
-import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.CustomFieldAnswer;
-import de.tum.cit.aet.core.constants.DocumentType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import java.util.UUID;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,22 +14,15 @@ import lombok.Setter;
 public class Document extends AbstractAuditingEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "document_id", nullable = false)
-    private UUID documentId;
+    @Column(name = "sha256_id", length = 64)
+    private String sha256Id;
 
-    @Column(name = "type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private DocumentType type;
+    @Column(name = "path", nullable = false)
+    private String path;
 
-    @Column(name = "document_path")
-    private String documentPath;
+    @Column(name = "mime_type", nullable = false)
+    private String mimeType;
 
-    @ManyToOne
-    @JoinColumn(name = "custom_field_answer_id")
-    private CustomFieldAnswer customFieldAnswer;
-
-    @ManyToOne
-    @JoinColumn(name = "application_id")
-    private Application application;
+    @Column(name = "size_bates", nullable = false)
+    private Long sizeBytes;
 }
