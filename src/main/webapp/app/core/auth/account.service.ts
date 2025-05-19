@@ -32,7 +32,7 @@ export class AccountService {
   hasAnyAuthority(authorities: string[] | string): boolean {
     const user = this.userIdentity();
     if (!user) return false;
-    const userAuthorities = user.authorities;
+    const userAuthorities = user.roles;
     const required = Array.isArray(authorities) ? authorities : [authorities];
     return required.some(role => userAuthorities.includes(role));
   }

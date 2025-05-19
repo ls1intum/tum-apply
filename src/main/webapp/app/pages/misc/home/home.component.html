@@ -9,9 +9,14 @@
   </div>
   <div [ngClass]="account() !== null ? 'alert-success' : 'alert-warning'" class="alert">
     @if (account(); as account) {
-      <span
-        >Logged in as: <strong>{{ account.email }}</strong></span
-      >
+      <div>
+        <span>
+          Logged in as: <strong>{{ account.email }}</strong>
+        </span>
+        <span>
+          You have the <strong>{{ account.roles?.join(', ') ?? '' }}</strong> role(s)
+        </span>
+      </div>
     } @else {
       <span>Not logged in</span>
     }
@@ -30,8 +35,8 @@
       @if (account() !== null) {
         <div class="alert alert-success">
           @if (account(); as accountRef) {
-            <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }"
-              >You are logged in as user &quot;{{ accountRef.login }}&quot;.</span
+            <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.email }"
+              >You are logged in as user &quot;{{ accountRef.email }}&quot;.</span
             >
           }
         </div>
