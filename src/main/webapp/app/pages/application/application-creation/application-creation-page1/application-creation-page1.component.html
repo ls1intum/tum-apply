@@ -1,54 +1,100 @@
-<div class="form-row">
-  <jhi-string-input label="First Name" id="firstName" [required]="true" [(model)]="data().firstName" />
-  <jhi-string-input label="Last Name" id="lastName" [required]="true" [(model)]="data().lastName" />
-</div>
-<p-divider layout="horizontal">User Information</p-divider>
-<div class="form-row">
-  <jhi-string-input label="Email" icon="envelope" [disabled]="true" id="email" [required]="true" [(model)]="data().email" />
-  <jhi-string-input label="Phone Number" id="phoneNumber" [required]="true" [(model)]="data().phoneNumber" />
-</div>
-<div class="form-row">
-  <div class="w-1/2 pr-4">
-    <jhi-dropdown width="100%" label="Gender" [items]="dropdownGenderLocal" id="gender" [(selected)]="data().gender" />
+<form [formGroup]="page1Form()">
+  <div class="form-row">
+    <jhi-string-input
+      label="First Name"
+      id="firstName"
+      [required]="true"
+      [(model)]="data().firstName"
+      [control]="page1Form().controls.firstName"
+    />
+    <jhi-string-input
+      label="Last Name"
+      id="lastName"
+      [required]="true"
+      [(model)]="data().lastName"
+      [control]="page1Form().controls.lastName"
+    />
   </div>
-  <div class="w-1/2 pr-4">
-    <jhi-dropdown width="100%" label="Nationality" [items]="dropdownNationalityLocal" id="nationality" [(selected)]="data().nationality" />
+  <p-divider layout="horizontal">User Information</p-divider>
+  <div class="form-row">
+    <jhi-string-input
+      label="Email"
+      icon="envelope"
+      [disabled]="true"
+      id="email"
+      [required]="true"
+      [(model)]="data().email"
+      [control]="page1Form().controls.email"
+    />
+    <jhi-string-input
+      label="Phone Number"
+      id="phoneNumber"
+      [required]="true"
+      [(model)]="data().phoneNumber"
+      [control]="page1Form().controls.phoneNumber"
+    />
   </div>
-</div>
-<div class="form-row">
-  <div class="w-1/2 pr-4">
-    <jhi-dropdown width="100%" label="Language" [items]="dropdownLanguageLocal" id="language" [(selected)]="data().language" />
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-dropdown width="100%" label="Gender" [items]="dropdownGenderLocal" id="gender" [(selected)]="data().gender" />
+    </div>
+    <div class="w-1/2 pr-4">
+      <jhi-dropdown
+        width="100%"
+        label="Nationality"
+        [items]="dropdownNationalityLocal"
+        id="nationality"
+        [(selected)]="data().nationality"
+      />
+    </div>
   </div>
-  <div class="w-1/2 pr-4">
-    <label>Date of Birth</label>
-    <jhi-datepicker [(selectedDate)]="data().dateOfBirth" label="" width="100%" />
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-dropdown width="100%" label="Language" [items]="dropdownLanguageLocal" id="language" [(selected)]="data().language" />
+    </div>
+    <div class="w-1/2 pr-4">
+      <label>Date of Birth</label>
+      <jhi-datepicker [(selectedDate)]="data().dateOfBirth" label="" width="100%" />
+    </div>
   </div>
-</div>
-<div class="form-row">
-  <div class="w-1/2 pr-4">
-    <jhi-string-input label="Website" id="website" [(model)]="data().website" />
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-string-input label="Website" id="website" [(model)]="data().website" />
+    </div>
+    <div class="w-1/2 pr-4">
+      <jhi-string-input label="LinkedIn" id="linkedIn" [(model)]="data().linkedIn" />
+    </div>
   </div>
-  <div class="w-1/2 pr-4">
-    <jhi-string-input label="LinkedIn" id="linkedIn" [(model)]="data().linkedIn" />
+  <p-divider layout="horizontal">Address</p-divider>
+  <div class="form-row">
+    <div class="w-3/4 pr-4">
+      <jhi-string-input label="Street" id="street" [required]="true" [(model)]="data().street" [control]="page1Form().controls.street" />
+    </div>
+    <div class="w-1/4 pr-4">
+      <jhi-string-input label="Streetnumber" id="streetnumber" [required]="true" [(model)]="data().streetnumber" />
+    </div>
   </div>
-</div>
-<p-divider layout="horizontal">Address</p-divider>
-<div class="form-row">
-  <div class="w-3/4 pr-4">
-    <jhi-string-input label="Street" id="street" [required]="true" [(model)]="data().street" />
+  <div class="form-row">
+    <jhi-string-input label="City" id="city" [required]="true" [(model)]="data().city" [control]="page1Form().controls.city" />
   </div>
-  <div class="w-1/4 pr-4">
-    <jhi-string-input label="Streetnumber" id="streetnumber" [required]="true" [(model)]="data().streetnumber" />
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Country"
+        id="country"
+        [required]="true"
+        [(model)]="data().country"
+        [control]="page1Form().controls.country"
+      />
+    </div>
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Postcode"
+        id="postcode"
+        [required]="true"
+        [(model)]="data().postcode"
+        [control]="page1Form().controls.postcode"
+      />
+    </div>
   </div>
-</div>
-<div class="form-row">
-  <jhi-string-input label="City" id="city" [required]="true" [(model)]="data().city" />
-</div>
-<div class="form-row">
-  <div class="w-1/2 pr-4">
-    <jhi-string-input label="Country" id="country" [required]="true" [(model)]="data().country" />
-  </div>
-  <div class="w-1/2 pr-4">
-    <jhi-string-input label="Postcode" id="postcode" [required]="true" [(model)]="data().postcode" />
-  </div>
-</div>
+</form>
