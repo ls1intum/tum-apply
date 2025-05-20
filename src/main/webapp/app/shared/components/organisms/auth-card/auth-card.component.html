@@ -4,7 +4,7 @@
     <h1>{{ mode === 'register' ? 'Create your TUMApply Account' : 'Sign in to TUMApply' }}</h1>
   </div>
 
-  <p-tabs [value]="value()" (valueChange)="onTabChange($event)" class="login-content">
+  <p-tabs (valueChange)="onTabChange($event)" [value]="value()" class="login-content">
     <p-tablist>
       <p-tab [value]="0">Student / Applicant</p-tab>
       <p-tab [value]="1">Professor / Supervisor</p-tab>
@@ -30,7 +30,7 @@
           <jhi-button
             (click)="onTUMSSOLogin()"
             [disabled]="false"
-            [label]="mode === 'register' ? 'Register with TUM SSO' : 'Sign in with TUM SSO'"
+            [label]="mode === 'register' ? 'Register with TUM' : 'Sign in with TUM'"
           />
         </div>
         <p class="login-hint">TUM Single Sign-On is required for professors and supervisors.</p>
