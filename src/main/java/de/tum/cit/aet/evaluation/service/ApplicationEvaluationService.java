@@ -2,6 +2,8 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.specification.ApplicationEvaluationSpecification;
@@ -26,20 +28,24 @@ public class ApplicationEvaluationService {
         ApplicationState.REJECTED
     );
 
+    private static final Set<String> SORTABLE_FIELDS = Set.of("rating", "createdAt", "applicant.lastName", "state");
+
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
 
     /**
+     * Retrieves a paginated and optionally sorted list of applications for a given research group.
+     *
      * @param researchGroup the research group whose applications are to be retrieved
-     * @param pageSize      the number of applications per page (must be ≥ 1)
-     * @param pageNumber    the page index to retrieve (0-based)
+     * @param pageDTO       containing the page number and page size for pagination
+     * @param sortDTO       containing the optional field and direction used for sorting the results
      * @return an {@link ApplicationEvaluationListDTO} containing application overviews
-     * and the total number of matching records
+     *         and the total number of matching records
      */
-    public ApplicationEvaluationListDTO getAllApplications(ResearchGroup researchGroup, int pageSize, int pageNumber) {
+    public ApplicationEvaluationListDTO getAllApplications(ResearchGroup researchGroup, PageDTO pageDTO, SortDTO sortDTO) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
 
         Specification<Application> specification = ApplicationEvaluationSpecification.build(researchGroupId, VIEWABLE_STATES);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         Page<Application> applicationsPage = applicationEvaluationRepository.findAll(specification, pageable);
 
         return ApplicationEvaluationListDTO.fromPage(applicationsPage);
