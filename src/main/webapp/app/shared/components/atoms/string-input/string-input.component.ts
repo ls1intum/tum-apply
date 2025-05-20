@@ -59,7 +59,6 @@ export class StringInputComponent {
     effect(onCleanup => {
       const ctrl = this.control() as FormControl;
       this.formControl.set(ctrl);
-      if (!ctrl) return;
       const sub = ctrl.statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
       });
@@ -70,11 +69,9 @@ export class StringInputComponent {
   onInputChange(value: string): void {
     this.modelChange.emit(value);
     const ctrl = this.formControl();
-    if (ctrl) {
-      ctrl.setValue(value);
-      ctrl.markAsDirty();
-      ctrl.updateValueAndValidity();
-    }
+    ctrl.setValue(value);
+    ctrl.markAsDirty();
+    ctrl.updateValueAndValidity();
   }
 
   onBlur(): void {
