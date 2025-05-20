@@ -611,6 +611,56 @@
           }
         }
       },
+      "ApplicantDTO": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserDTO"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "bachelorDegreeName": {
+            "type": "string"
+          },
+          "bachelorGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "bachelorGrade": {
+            "type": "string"
+          },
+          "bachelorUniversity": {
+            "type": "string"
+          },
+          "masterDegreeName": {
+            "type": "string"
+          },
+          "masterGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "masterGrade": {
+            "type": "string"
+          },
+          "masterUniversity": {
+            "type": "string"
+          }
+        }
+      },
       "ApplicationForApplicantDTO": {
         "type": "object",
         "properties": {
@@ -619,8 +669,7 @@
             "format": "uuid"
           },
           "applicant": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/ApplicantDTO"
           },
           "job": {
             "$ref": "#/components/schemas/JobCardDTO"
@@ -636,12 +685,18 @@
               "WITHDRAWN"
             ]
           },
-          "motivation": {
-            "type": "string"
-          },
           "desiredDate": {
             "type": "string",
             "format": "date"
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
           },
           "customFields": {
             "type": "array",
@@ -650,7 +705,11 @@
             },
             "uniqueItems": true
           }
-        }
+        },
+        "required": [
+          "applicationId",
+          "applicationState"
+        ]
       },
       "CustomFieldAnswerDTO": {
         "type": "object",
@@ -681,6 +740,64 @@
       },
       "DocumentDTO": {
         "type": "object"
+      },
+      "ResearchGroupShortDTO": {
+        "type": "object",
+        "properties": {
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UserDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "researchGroupShortDTO": {
+            "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
       },
       "JobFormDTO": {
         "type": "object",
@@ -764,11 +881,11 @@
         "type": "object",
         "properties": {
           "applicant": {
+            "$ref": "#/components/schemas/ApplicantDTO"
+          },
+          "jobId": {
             "type": "string",
             "format": "uuid"
-          },
-          "job": {
-            "$ref": "#/components/schemas/JobCardDTO"
           },
           "desiredDate": {
             "type": "string",
@@ -793,15 +910,13 @@
           },
           "motivation": {
             "type": "string"
-          },
-          "answers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomFieldAnswerDTO"
-            },
-            "uniqueItems": true
           }
-        }
+        },
+        "required": [
+          "applicant",
+          "applicationState",
+          "jobId"
+        ]
       },
       "ApplicationEvaluationListDTO": {
         "type": "object",

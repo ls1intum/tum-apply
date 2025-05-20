@@ -1,3 +1,4 @@
+export * from './applicantDTO';
 export * from './applicationEvaluationListDTO';
 export * from './applicationEvaluationOverviewDTO';
 export * from './applicationForApplicantDTO';
@@ -6,4 +7,6 @@ export * from './customFieldAnswerDTO';
 export * from './jobCardDTO';
 export * from './jobDetailDTO';
 export * from './jobFormDTO';
+export * from './researchGroupShortDTO';
 export * from './updateApplicationDTO';
+export * from './userDTO';
