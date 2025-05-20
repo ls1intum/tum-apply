@@ -38,7 +38,10 @@ export class StringInputComponent {
   isTouched = signal(false);
   isFocused = signal(false);
 
-  formControl = signal<FormControl>(new FormControl(''));
+  formControl = computed(() => {
+    const ctrl = this.control();
+    return ctrl instanceof FormControl ? ctrl : new FormControl('');
+  });
 
   errorMessage = computed<string | null>(() => {
     const ctrl = this.formControl();
@@ -57,10 +60,7 @@ export class StringInputComponent {
 
   constructor() {
     effect(onCleanup => {
-      const ctrl = this.control();
-      if (!(ctrl instanceof FormControl)) return;
-      this.formControl.set(ctrl);
-      const sub = ctrl.statusChanges.subscribe(() => {
+      const sub = this.formControl().statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
       });
       onCleanup(() => sub.unsubscribe());
