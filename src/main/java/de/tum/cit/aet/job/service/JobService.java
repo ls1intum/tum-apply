@@ -10,7 +10,6 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -117,6 +116,38 @@ public class JobService {
 
     private JobCardDTO toDto(Job job) {
         // Placeholder for the detailed implementation
-        return new JobCardDTO(UUID.randomUUID(), "", "", "", UUID.randomUUID(), 0, Instant.now(), "", JobState.PUBLISHED, Instant.now());
+        return new JobCardDTO(
+            UUID.randomUUID(),
+            job.getTitle(),
+            job.getFieldOfStudies(),
+            job.getLocation(),
+            job.getSupervisingProfessor().getUserId(),
+            job.getWorkload(),
+            job.getStartDate(),
+            job.getCreatedAt()
+        );
+    }
+
+    /**
+     * Retrieves a list of all available jobs.
+     *
+     * @return list of job cards
+     */
+    public List<JobCardDTO> getAvailableJobs() {
+        List<Job> jobs = jobRepository.findByState(JobState.PUBLISHED);
+        return jobs.stream().map(this::toJobCardDTO).toList();
+    }
+
+    private JobCardDTO toJobCardDTO(Job job) {
+        return new JobCardDTO(
+            UUID.randomUUID(),
+            job.getTitle(),
+            job.getFieldOfStudies(),
+            job.getLocation(),
+            job.getSupervisingProfessor().getUserId(),
+            job.getWorkload(),
+            job.getStartDate(),
+            job.getCreatedAt()
+        );
     }
 }
