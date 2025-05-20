@@ -3,19 +3,19 @@
     <p-divider layout="horizontal">Bachelor</p-divider>
     <div class="form-row">
       <div class="w-1/2 pr-4">
-        <jhi-string-input-temporary
+        <jhi-string-input
           label="Bachelor Degree Name"
           formControlName="bachelorDegreeName"
           [required]="true"
-          [(value)]="data().bachelorDegreeName"
+          [(model)]="data().bachelorDegreeName"
         />
       </div>
       <div class="w-1/2 pr-4">
-        <jhi-string-input-temporary
+        <jhi-string-input
           label="Bachelor Degree University"
           formControlName="bachelorDegreeUniversity"
           [required]="true"
-          [(value)]="data().bachelorDegreeUniversity"
+          [(model)]="data().bachelorDegreeUniversity"
         />
       </div>
     </div>
@@ -31,12 +31,7 @@
         />
       </div>
       <div class="w-1/2 pr-4">
-        <jhi-string-input-temporary
-          label="Bachelor Grade"
-          formControlName="bachelorGrade"
-          [required]="true"
-          [(value)]="data().bachelorGrade"
-        />
+        <jhi-string-input label="Bachelor Grade" formControlName="bachelorGrade" [required]="true" [(model)]="data().bachelorGrade" />
       </div>
     </div>
     <div class="form-row justify-center">
@@ -47,19 +42,19 @@
     <p-divider layout="horizontal">Master</p-divider>
     <div class="form-row">
       <div class="w-1/2 pr-4">
-        <jhi-string-input-temporary
+        <jhi-string-input
           label="Master Degree Name"
           formControlName="masterDegreeName"
           [required]="true"
-          [(value)]="data().masterDegreeName"
+          [(model)]="data().masterDegreeName"
         />
       </div>
       <div class="w-1/2 pr-4">
-        <jhi-string-input-temporary
+        <jhi-string-input
           label="Master Degree University"
           formControlName="masterDegreeUniversity"
           [required]="true"
-          [(value)]="data().masterDegreeUniversity"
+          [(model)]="data().masterDegreeUniversity"
         />
       </div>
     </div>
@@ -75,7 +70,7 @@
         />
       </div>
       <div class="w-1/2 pr-4">
-        <jhi-string-input-temporary label="Master Grade" formControlName="masterGrade" [required]="true" [(value)]="data().masterGrade" />
+        <jhi-string-input label="Master Grade" formControlName="masterGrade" [required]="true" [(model)]="data().masterGrade" />
       </div>
     </div>
     <div class="form-row justify-center">

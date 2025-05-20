@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, model, output, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
-import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
+
+import { StringInputComponent } from '../../../../shared/components/atoms/string-input/string-input.component';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
@@ -48,7 +49,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page2',
-  imports: [CommonModule, StringInputTemporaryComponent, DividerModule, DropdownComponent, UploadButtonComponent, ReactiveFormsModule],
+  imports: [CommonModule, DividerModule, DropdownComponent, UploadButtonComponent, ReactiveFormsModule, StringInputComponent],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
 })
@@ -59,41 +60,41 @@ export default class ApplicationCreationPage2Component {
   data = model.required<ApplicationCreationPage2Data>();
   valid = output<boolean>();
 
-  page2Form = signal<FormGroup | undefined>(undefined);
+  page2Form = computed(() => {
+    const currentData = this.data();
+    return this.fb.group({
+      bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
+      bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
+      bachelorGrade: [currentData.bachelorGrade, Validators.required],
+      masterDegreeName: [currentData.masterDegreeName, Validators.required],
+      masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
+      masterGrade: [currentData.masterGrade, Validators.required],
+    });
+  });
 
   fb = inject(FormBuilder);
 
   constructor() {
-    effect(() => {
-      const currentData = this.data();
-      this.page2Form.set(
-        this.fb.group({
-          bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
-          bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
-          bachelorGrade: [currentData.bachelorGrade, Validators.required],
-          masterDegreeName: [currentData.masterDegreeName, Validators.required],
-          masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
-          masterGrade: [currentData.masterGrade, Validators.required],
-        }),
-      );
-    });
-
-    effect(() => {
+    effect(onCleanup => {
       const form = this.page2Form();
-      if (form) {
-        form.valueChanges.subscribe(value => {
-          this.data.set({
-            ...this.data(),
-            ...value,
-          });
-
-          this.valid.emit(form.valid);
+      const valueSubscription = form.valueChanges.subscribe(value => {
+        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
+        this.data.set({
+          ...this.data(),
+          ...normalizedValue,
         });
 
-        form.statusChanges.subscribe(() => {
-          this.valid.emit(form.valid);
-        });
-      }
+        this.valid.emit(form.valid);
+      });
+
+      const statusSubscription = form.statusChanges.subscribe(() => {
+        this.valid.emit(form.valid);
+      });
+
+      onCleanup(() => {
+        valueSubscription.unsubscribe();
+        statusSubscription.unsubscribe();
+      });
     });
   }
 }

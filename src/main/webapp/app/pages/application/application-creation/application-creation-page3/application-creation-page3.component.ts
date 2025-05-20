@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, model, output, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ApplicationForApplicantDTO } from 'app/generated';
@@ -36,36 +36,38 @@ export default class ApplicationCreationPage3Component {
 
   valid = output<boolean>();
 
-  page3Form = signal<FormGroup | undefined>(undefined);
+  page3Form = computed(() => {
+    const currentData = this.data();
+    return this.fb.group({
+      experiences: [currentData.experiences, Validators.required],
+      motivation: [currentData.motivation, Validators.required],
+      skills: [currentData.skills, Validators.required],
+    });
+  });
 
   fb = inject(FormBuilder);
 
   constructor() {
-    effect(() => {
-      const currentData = this.data(); // will throw until data is set
-      this.page3Form.set(
-        this.fb.group({
-          experiences: [currentData.experiences, Validators.required],
-          motivation: [currentData.motivation, Validators.required],
-          skills: [currentData.skills, Validators.required],
-        }),
-      );
-
-      this.valid.emit(this.page3Form()?.valid ?? false);
-    });
-
-    effect(() => {
+    effect(onCleanup => {
       const form = this.page3Form();
-      if (form) {
-        form.valueChanges.subscribe(value => {
-          this.data.set({
-            ...this.data(),
-            ...value,
-          });
-
-          this.valid.emit(form.valid);
+      const valueSubscription = form.valueChanges.subscribe(value => {
+        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
+        this.data.set({
+          ...this.data(),
+          ...normalizedValue,
         });
-      }
+
+        this.valid.emit(form.valid);
+      });
+
+      const statusSubscription = form.statusChanges.subscribe(() => {
+        this.valid.emit(form.valid);
+      });
+
+      onCleanup(() => {
+        valueSubscription.unsubscribe();
+        statusSubscription.unsubscribe();
+      });
     });
   }
 }

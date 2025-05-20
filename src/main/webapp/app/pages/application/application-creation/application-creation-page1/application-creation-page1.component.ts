@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, model, output } from '@angular/core';
-import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
+import { StringInputComponent } from '../../../../shared/components/atoms/string-input/string-input.component';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -112,7 +112,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page1',
-  imports: [CommonModule, StringInputTemporaryComponent, DividerModule, DropdownComponent, DatePickerComponent],
+  imports: [CommonModule, DividerModule, DropdownComponent, DatePickerComponent, StringInputComponent],
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',
 })
