@@ -56,8 +56,8 @@ export class NumberInputComponent {
     const val = errors[key];
     const defaults: Record<string, string> = {
       required: 'This field is required',
-      minlength: `Minimum value is ${val.min}`,
-      maxlength: `Maximum value is ${val.max}`,
+      min: `Minimum value is ${val.min}`,
+      max: `Maximum value is ${val.max}`,
       pattern: 'Invalid format',
     };
     return defaults[key] ?? `Invalid: ${key}`;
