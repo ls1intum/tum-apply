@@ -1,0 +1,52 @@
+<p-table
+  [value]="data()"
+  [paginator]="true"
+  [rowsPerPageOptions]="[10, 20, 50]"
+  [totalRecords]="totalRecords()"
+  [scrollable]="true"
+  scrollHeight="45rem"
+  [rows]="rows()"
+  [lazy]="true"
+  (onLazyLoad)="emitLazy($event)"
+  [loading]="loading()"
+  [autoLayout]="true"
+  [tableStyle]="{ width: 'auto' }"
+>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <tr>
+      @if (selectable()) {
+        <th class="selection-col">
+          <p-tableHeaderCheckbox />
+        </th>
+      }
+      @for (col of columns(); track col.field) {
+        <th [style.width]="col.width">
+          {{ col.header }}
+        </th>
+      }
+    </tr>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template let-rowData pTemplate="body">
+    <tr>
+      @if (selectable()) {
+        <td>
+          <p-tableCheckbox [value]="rowData" />
+        </td>
+      }
+      @for (col of columns(); track col.field) {
+        <td [style.width]="col.width" [ngClass]="{ 'text-center': col.alignCenter ?? false }">
+          @if (col.template) {
+            <ng-container *ngTemplateOutlet="col.template; context: { $implicit: rowData }" />
+          } @else if (col.type === 'date') {
+            {{ rowData[col.field] | date: 'dd.MM.yyyy' }}
+          } @else {
+            {{ rowData[col.field] }}
+          }
+        </td>
+      }
+    </tr>
+  </ng-template>
+</p-table>
