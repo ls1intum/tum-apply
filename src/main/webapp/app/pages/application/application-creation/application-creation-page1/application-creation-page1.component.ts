@@ -125,7 +125,21 @@ export default class ApplicationCreationPage1Component {
   dropdownLanguageLocal = dropdownLanguage;
   dropdownNationalityLocal = dropdownNationality;
 
-  page1Form = signal<FormGroup | undefined>(undefined);
+    page1Form = computed(() => {
+    const currentData = this.data();
+    return this.fb.group({
+      firstName: [currentData.firstName, Validators.required],
+      lastName: [currentData.lastName, Validators.required],
+      email: [currentData.email, Validators.required],
+      phoneNumber: [currentData.phoneNumber, Validators.required],
+      dateOfBirth: [currentData.dateOfBirth, Validators.required],
+
+      street: [currentData.street, Validators.required],
+      city: [currentData.city, Validators.required],
+      country: [currentData.country, Validators.required],
+      postcode: [currentData.postcode, Validators.required],
+    });
+  });
 
   fb = inject(FormBuilder);
 
