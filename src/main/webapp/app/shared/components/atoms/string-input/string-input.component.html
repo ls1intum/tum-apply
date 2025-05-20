@@ -22,7 +22,7 @@
       <input
         [id]="id()"
         type="text"
-        [placeholder]="placeholder()"
+        [placeholder]="placeholder() ?? ''"
         [disabled]="disabled()"
         [ngModel]="model()"
         (ngModelChange)="onInputChange($event)"
