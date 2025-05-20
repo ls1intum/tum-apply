@@ -129,29 +129,11 @@ export default class ApplicationCreationPage1Component {
 
   fb = inject(FormBuilder);
 
-  constructor() {
-    effect(() => {
-      const currentData = this.data();
-      this.page1Form.set(
-        this.fb.group({
-          firstName: [currentData.firstName, Validators.required],
-          lastName: [currentData.lastName, Validators.required],
-          email: [currentData.email, Validators.required],
-          phoneNumber: [currentData.phoneNumber, Validators.required],
-          dateOfBirth: [currentData.dateOfBirth, Validators.required],
-
-          street: [currentData.street, Validators.required],
-          city: [currentData.city, Validators.required],
-          country: [currentData.country, Validators.required],
-          postcode: [currentData.postcode, Validators.required],
-        }),
-      );
-    });
-
-    effect(() => {
+constructor() {
+    effect(onCleanup => {
       const form = this.page1Form();
       if (form) {
-        form.valueChanges.subscribe(value => {
+        const valueSubscription = form.valueChanges.subscribe(value => {
           this.data.set({
             ...this.data(),
             ...value,
@@ -160,8 +142,13 @@ export default class ApplicationCreationPage1Component {
           this.valid.emit(form.valid);
         });
 
-        form.statusChanges.subscribe(() => {
+        const statusSubscription = form.statusChanges.subscribe(() => {
           this.valid.emit(form.valid);
+        });
+
+        onCleanup(() => {
+          valueSubscription.unsubscribe();
+          statusSubscription.unsubscribe();
         });
       }
     });
