@@ -27,5 +27,50 @@
       }
     </div>
     <jhi-button severity="secondary" label="Create a Job" icon="tasks" (click)="goToJobCreation()" />
+    <!-- Testing Number Input and String Input -->
+    <!-- <div class="mt-4">
+      <h4>Example Inputs</h4>
+
+      <jhi-string-input
+        [label]="'Name (Top)'"
+        [control]="form.get('exampleStringTop') ?? undefined"
+        [required]="true"
+        [width]="'50%'"
+        [labelPosition]="'top'"
+        [placeholder]="'Enter your name'"
+      ></jhi-string-input>
+
+      <jhi-string-input
+        [label]="'Name (Left)'"
+        [control]="form.get('exampleStringLeft') ?? undefined"
+        [required]="true"
+        [width]="'50%'"
+        [labelPosition]="'left'"
+        [placeholder]="'Minimum 3 characters'"
+      ></jhi-string-input>
+
+      <jhi-number-input
+        [label]="'Workload (Top)'"
+        [control]="form.get('exampleNumberTop') ?? undefined"
+        [required]="true"
+        [width]="'50%'"
+        [labelPosition]="'top'"
+        [placeholder]="'Minimum 1'"
+        [min]="1"
+        [maxFractionDigits]="0"
+      ></jhi-number-input>
+
+      <jhi-number-input
+        [label]="'Workload (Left)'"
+        [control]="form.get('exampleNumberLeft') ?? undefined"
+        [required]="true"
+        [width]="'50%'"
+        [labelPosition]="'left'"
+        [placeholder]="'Max 100'"
+        [max]="100"
+        [maxFractionDigits]="0"
+      ></jhi-number-input>
+    </div>
+    -->
   </div>
 </div>
