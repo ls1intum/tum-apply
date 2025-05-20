@@ -1,0 +1,11 @@
+.border-primary {
+  border: solid var(--p-primary-color) 0.1rem;
+}
+
+.border-neutral {
+  border: solid var(--p-background-disabled) 0.1rem;
+}
+
+.background-primary {
+  color: var(--p-primary-color);
+}

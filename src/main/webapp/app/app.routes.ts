@@ -21,6 +21,10 @@ const routes: Routes = [
     outlet: 'navbar',
   },
   {
+    path: 'application/create/:job_id',
+    loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
+  },
+  {
     path: 'playground/button',
     loadComponent: () => import('./pages/misc/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
   },

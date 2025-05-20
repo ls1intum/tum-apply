@@ -3,47 +3,48 @@ package de.tum.cit.aet.usermanagement.dto;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.LocalDate;
 import java.util.UUID;
-import lombok.Data;
 
 /**
  * DTO for {@link User}
  */
-@Data
-public class UserDTO {
-
-    private UUID userId;
-    private String email;
-    private String avatar;
-    private String firstName;
-    private String lastName;
-    private String gender;
-    private String nationality;
-    private LocalDate birthday;
-    private String phoneNumber;
-    private String website;
-    private String linkedinUrl;
-    private String selectedLanguage;
-    private ResearchGroupShortDTO researchGroup;
-
-    public UserDTO() {
-        // default constructor
-    }
-
-    public UserDTO(User user) {
-        this.userId = user.getUserId();
-        this.email = user.getEmail();
-        this.avatar = user.getAvatar();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.gender = user.getGender();
-        this.nationality = user.getNationality();
-        this.birthday = user.getBirthday();
-        this.phoneNumber = user.getPhoneNumber();
-        this.website = user.getWebsite();
-        this.linkedinUrl = user.getLinkedinUrl();
-        this.selectedLanguage = user.getSelectedLanguage();
-        if (user.getResearchGroup() != null) {
-            this.researchGroup = new ResearchGroupShortDTO(user.getResearchGroup());
+public record UserDTO(
+    UUID userId,
+    String email,
+    String avatar,
+    String firstName,
+    String lastName,
+    String gender,
+    String nationality,
+    LocalDate birthday,
+    String phoneNumber,
+    String website,
+    String linkedinUrl,
+    String selectedLanguage,
+    ResearchGroupShortDTO researchGroupShortDTO
+) {
+    /**
+     *
+     * @param user
+     * @return The userDTO from the user
+     */
+    public static UserDTO getFromEntity(User user) {
+        if (user == null) {
+            return null;
         }
+        return new UserDTO(
+            user.getUserId(),
+            user.getEmail(),
+            user.getAvatar(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getGender(),
+            user.getNationality(),
+            user.getBirthday(),
+            user.getPhoneNumber(),
+            user.getWebsite(),
+            user.getLinkedinUrl(),
+            user.getSelectedLanguage(),
+            new ResearchGroupShortDTO(user.getResearchGroup())
+        );
     }
 }
