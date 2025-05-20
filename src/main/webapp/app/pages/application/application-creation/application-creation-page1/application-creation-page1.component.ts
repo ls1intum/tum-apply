@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, model, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, model, output } from '@angular/core';
 import { StringInputTemporaryComponent } from 'app/shared/components/atoms/string-input-temporary/string-input-temporary.component';
 import { ApplicationForApplicantDTO } from 'app/generated';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 
 import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
@@ -125,7 +125,7 @@ export default class ApplicationCreationPage1Component {
   dropdownLanguageLocal = dropdownLanguage;
   dropdownNationalityLocal = dropdownNationality;
 
-    page1Form = computed(() => {
+  page1Form = computed(() => {
     const currentData = this.data();
     return this.fb.group({
       firstName: [currentData.firstName, Validators.required],
@@ -143,14 +143,15 @@ export default class ApplicationCreationPage1Component {
 
   fb = inject(FormBuilder);
 
-constructor() {
+  constructor() {
     effect(onCleanup => {
       const form = this.page1Form();
       if (form) {
         const valueSubscription = form.valueChanges.subscribe(value => {
+          const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
           this.data.set({
             ...this.data(),
-            ...value,
+            ...normalizedValue,
           });
 
           this.valid.emit(form.valid);
