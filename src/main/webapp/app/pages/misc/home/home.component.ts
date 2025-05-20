@@ -6,29 +6,17 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
-import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
-
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, ButtonComponent, DatePickerComponent, DropdownComponent],
+  imports: [SharedModule, ButtonComponent],
 })
 export default class HomeComponent implements OnInit {
   readonly router = inject(Router);
 
   account = signal<Account | null>(null);
-  // Datepicker:
-  selectedDate: string | undefined = undefined;
-  // Dropdown:
-  selectedLocation1: DropdownOption | undefined = undefined;
-  selectedLocation2: DropdownOption | undefined = undefined;
-  locations = [
-    { name: 'Munich Campus', value: 'munich', icon: 'chevron-up' },
-    { name: 'Garching Campus', value: 'garching', icon: 'chevron-down' },
-    { name: 'Weihenstephan Campus', value: 'weihenstephan', icon: 'map-marker-alt' },
-  ];
+
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
 
