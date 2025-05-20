@@ -146,26 +146,24 @@ export default class ApplicationCreationPage1Component {
   constructor() {
     effect(onCleanup => {
       const form = this.page1Form();
-      if (form) {
-        const valueSubscription = form.valueChanges.subscribe(value => {
-          const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-          this.data.set({
-            ...this.data(),
-            ...normalizedValue,
-          });
-
-          this.valid.emit(form.valid);
+      const valueSubscription = form.valueChanges.subscribe(value => {
+        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
+        this.data.set({
+          ...this.data(),
+          ...normalizedValue,
         });
 
-        const statusSubscription = form.statusChanges.subscribe(() => {
-          this.valid.emit(form.valid);
-        });
+        this.valid.emit(form.valid);
+      });
 
-        onCleanup(() => {
-          valueSubscription.unsubscribe();
-          statusSubscription.unsubscribe();
-        });
-      }
+      const statusSubscription = form.statusChanges.subscribe(() => {
+        this.valid.emit(form.valid);
+      });
+
+      onCleanup(() => {
+        valueSubscription.unsubscribe();
+        statusSubscription.unsubscribe();
+      });
     });
   }
 }
