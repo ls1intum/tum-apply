@@ -66,6 +66,7 @@ export class NumberInputComponent {
   constructor() {
     effect(onCleanup => {
       const ctrl = this.control() as FormControl;
+      if (!ctrl) return;
       this.formControl.set(ctrl);
       const sub = ctrl.statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
