@@ -7,11 +7,12 @@ import locale from '@angular/common/locales/en';
 import { RouterModule } from '@angular/router';
 
 import { fontAwesomeIcons } from './config/font-awesome-icons';
+import MainComponent from './layouts/main/main.component';
 
 @Component({
   selector: 'jhi-app',
   template: '<jhi-main />',
-  imports: [RouterModule],
+  imports: [RouterModule, MainComponent],
 })
 export default class AppComponent {
   private readonly iconLibrary = inject(FaIconLibrary);
