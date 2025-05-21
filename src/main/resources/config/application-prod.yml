@@ -44,6 +44,11 @@ spring:
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048
         useServerPrepStmts: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://tumapply.aet.cit.tum.de/realms/tumapply
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: prod
