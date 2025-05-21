@@ -129,25 +129,11 @@ public class JobService {
     }
 
     /**
-     * Retrieves a list of all available jobs.
+     * Fetches all jobs with state PUBLISHED as job cards.
      *
-     * @return list of job cards
+     * @return list of JobCardDTOs
      */
     public List<JobCardDTO> getAvailableJobs() {
-        List<Job> jobs = jobRepository.findByState(JobState.PUBLISHED);
-        return jobs.stream().map(this::toJobCardDTO).toList();
-    }
-
-    private JobCardDTO toJobCardDTO(Job job) {
-        return new JobCardDTO(
-            UUID.randomUUID(),
-            job.getTitle(),
-            job.getFieldOfStudies(),
-            job.getLocation(),
-            job.getSupervisingProfessor().getUserId(),
-            job.getWorkload(),
-            job.getStartDate(),
-            job.getCreatedAt()
-        );
+        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED);
     }
 }

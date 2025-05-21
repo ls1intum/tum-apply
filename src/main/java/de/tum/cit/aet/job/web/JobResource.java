@@ -44,9 +44,9 @@ public class JobResource {
     }*/
 
     /**
-     * {@code GET /api/jobs/available} : Get all available (open) jobs.
+     * GET /api/jobs/available : Returns all published jobs.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs as JobCardDTOs.
      */
     @GetMapping("/available")
     public ResponseEntity<List<JobCardDTO>> getAvailableJobs() {

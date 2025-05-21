@@ -8,12 +8,12 @@ import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record JobCardDTO(
-    UUID id,
+    UUID jobId,
     String title,
     String fieldOfStudies,
     Campus location,
     UUID professorId,
-    int workload,
+    Integer workload,
     LocalDate startDate,
     Instant createdAt
 ) {}
