@@ -1,8 +1,10 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
+import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -70,13 +72,13 @@ public class JobService {
      * @param dto   the updated job details
      * @return the updated job card DTO
      */
-    /*TO-DO
     public JobCardDTO updateJob(UUID jobId, JobDetailDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         //updateEntity(job, dto);
         jobRepository.save(job);
-        return toDto(job);
-    }*/
+        //return toDto(job);
+        return null;
+    }
 
     /**
      * Deletes a job posting by ID.
@@ -104,11 +106,11 @@ public class JobService {
      * @param jobId the ID of the job
      * @return the job card DTO with detailed info
      */
-    /* TO-DO
     public JobCardDTO getJobDetails(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        return toDto(job);
-    }*/
+        //return toDto(job);
+        return null;
+    }
 
     private void updateEntity(Job job, JobFormDTO dto) {
         // TODO: implement field mappings
