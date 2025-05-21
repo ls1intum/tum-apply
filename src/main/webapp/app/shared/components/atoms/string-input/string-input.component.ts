@@ -26,23 +26,19 @@ export class StringInputComponent {
   id = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
-
+  // State tracking
+  isTouched = signal(false);
+  isFocused = signal(false);
+  formControl = computed(() => {
+    const ctrl = this.control();
+    return ctrl instanceof FormControl ? ctrl : new FormControl('');
+  });
   readonly inputState = computed(() => {
     this.formValidityVersion();
     if (!this.isTouched()) return 'untouched';
     if (this.formControl().invalid) return 'invalid';
     return 'valid';
   });
-
-  // State tracking
-  isTouched = signal(false);
-  isFocused = signal(false);
-
-  formControl = computed(() => {
-    const ctrl = this.control();
-    return ctrl instanceof FormControl ? ctrl : new FormControl('');
-  });
-
   errorMessage = computed<string | null>(() => {
     const ctrl = this.formControl();
     const errors = ctrl.errors;

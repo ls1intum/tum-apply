@@ -6,12 +6,12 @@ import SharedModule from 'app/shared/shared.module';
 import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 import { LANGUAGES } from 'app/config/language.constants';
 import { AccountService } from 'app/core/auth/account.service';
-import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import { SessionStorageService } from 'ngx-webstorage';
 
 import { VERSION } from '../../app.constants';
+import { keycloakService } from '../../core/auth/keycloak.service';
 
 import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
@@ -31,7 +31,6 @@ export default class NavbarComponent implements OnInit {
   account = inject(AccountService).trackCurrentAccount();
   entitiesNavbarItems: NavbarItem[] = [];
 
-  private readonly loginService = inject(LoginService);
   private readonly translateService = inject(TranslateService);
   private readonly stateStorageService = inject(StateStorageService);
   private readonly profileService = inject(ProfileService);
@@ -67,12 +66,12 @@ export default class NavbarComponent implements OnInit {
   }
 
   login(): void {
-    this.loginService.login();
+    keycloakService.login();
   }
 
   logout(): void {
     this.collapseNavbar();
-    this.loginService.logout();
+    keycloakService.logout();
     this.router.navigate(['']);
   }
 

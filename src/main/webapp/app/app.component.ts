@@ -12,7 +12,7 @@ import MainComponent from './layouts/main/main.component';
 @Component({
   selector: 'jhi-app',
   template: '<jhi-main />',
-  imports: [MainComponent, RouterModule],
+  imports: [RouterModule, MainComponent],
 })
 export default class AppComponent {
   private readonly iconLibrary = inject(FaIconLibrary);

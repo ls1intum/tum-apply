@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
-import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
+import { keycloakService } from '../../../core/auth/keycloak.service';
 
 @Component({
   selector: 'jhi-home',
@@ -18,14 +19,13 @@ export default class HomeComponent implements OnInit {
   account = signal<Account | null>(null);
 
   private readonly accountService = inject(AccountService);
-  private readonly loginService = inject(LoginService);
 
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => this.account.set(account));
   }
 
   login(): void {
-    this.loginService.login();
+    keycloakService.login();
   }
 
   goToJobCreation(): void {

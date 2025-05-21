@@ -46,13 +46,25 @@ function inferVersion() {
 // --develop flag is used to enable debug mode
 const args = process.argv.slice(2);
 const developFlag = args.includes('--develop');
+const keycloakConfig = {
+  url: 'http://localhost:9080/',
+  realm: 'tumapply',
+  clientId: 'tumapply-client',
+  enableLogging: true,
+};
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
 export const __VERSION__ = '${process.env.APP_VERSION || inferVersion()}';
-// The root URL for API calls, ending with a '/' - for example: \`"https://www.jhipster.tech:8081/myservice/"\`.
-// If you use an API server, in \`prod\` mode, you will need to enable CORS
-// (see the \`jhipster.cors\` common JHipster property in the \`application-*.yml\` configurations)
 export const I18N_HASH = '${languagesHash.hash}';
+export const environment = {
+  production: ${!developFlag},
+  keycloak: {
+    url: '${keycloakConfig.url}',
+    realm: '${keycloakConfig.realm}',
+    clientId: '${keycloakConfig.clientId}',
+    enableLogging: ${keycloakConfig.enableLogging},
+  },
+};
 `;
 fs.writeFileSync(path.resolve(__dirname, 'src', 'main', 'webapp', 'app', 'environments', 'environment.override.ts'), environmentConfig);
 

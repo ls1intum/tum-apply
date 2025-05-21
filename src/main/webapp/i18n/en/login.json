@@ -1,19 +1,24 @@
 {
   "login": {
-    "title": "Sign in",
-    "form": {
-      "password": "Password",
-      "password.placeholder": "Your password",
-      "rememberme": "Remember me",
-      "button": "Sign in"
+    "header": "Sign in to TUMApply",
+    "tabs": {
+      "student": "Student / Applicant",
+      "professor": "Professor / Supervisor"
+    },
+    "buttons": {
+      "microsoft": "Sign in with Microsoft",
+      "apple": "Sign in with Apple",
+      "google": "Sign in with Google",
+      "tum": "Sign in with TUM SSO"
+    },
+    "texts": {
+      "professor": "TUM Single Sign-On is required for professors and supervisors.",
+      "accountmissing": "Don't have a TUMApply account yet? <a href=\"/register\">Register here</a>."
     },
     "messages": {
       "error": {
-        "authentication": "<strong>Failed to sign in!</strong> Please check your credentials and try again."
+        "authentication": "<strong>Login failed!</strong> Please check your credentials and try again."
       }
-    },
-    "password": {
-      "forgot": "Did you forget your password?"
     }
   }
 }

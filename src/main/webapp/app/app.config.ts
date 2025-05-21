@@ -1,6 +1,6 @@
-import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
-import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
+import { provideRouter, RouterModule, TitleStrategy, withRouterConfig } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
@@ -19,7 +19,7 @@ import routes from './app.routes';
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { AppPageTitleStrategy } from './app-page-title-strategy';
 import { missingTranslationHandler, translatePartialLoader } from './config/translation.config';
-import { AuthExpiredInterceptor } from './core/interceptor/auth-expired.interceptor';
+import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 
@@ -78,7 +78,7 @@ export const appConfig: ApplicationConfig = {
      */
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthExpiredInterceptor,
+      useClass: AuthInterceptor,
       multi: true,
     },
     {

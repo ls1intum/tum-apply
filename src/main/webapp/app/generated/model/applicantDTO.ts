@@ -24,6 +24,7 @@ export interface ApplicantDTO {
   masterGrade?: string;
   masterUniversity?: string;
 }
+
 export namespace ApplicantDTO {
   export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
   export const BachelorGradingScaleEnum = {

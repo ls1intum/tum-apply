@@ -5,3 +5,12 @@
 export const __DEBUG_INFO_ENABLED__ = false;
 export const __VERSION__ = '0.0.0';
 export const I18N_HASH = '';
+export const environment = {
+  production: false,
+  keycloak: {
+    url: 'http://localhost:9080/',
+    realm: 'tumapply',
+    clientId: 'tumapply-client',
+    enableLogging: true,
+  },
+};

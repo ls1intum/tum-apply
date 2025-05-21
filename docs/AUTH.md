@@ -137,6 +137,17 @@ Or check them programmatically:
 SecurityUtils.hasCurrentUserAnyOfAuthorities("ADMIN","PROFESSOR");
 ```
 
+### 🔍 How to Check Roles on the Client
+
+In the Angular client, you can determine the currently logged-in user's role(s) by calling the `/api/users/me` endpoint
+after login.
+
+#### Notes:
+
+- The response contains the `roles` array, which can include one or multiple roles.
+- Make sure the token is sent with the request (automatically added if using the HTTP interceptor).
+- Use this role information to control visibility of menus, routes, and functionality in the UI.
+
 ---
 
 ### 👤 `/api/users/me` Endpoint

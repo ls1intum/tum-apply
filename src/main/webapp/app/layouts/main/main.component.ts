@@ -4,6 +4,7 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
+import { keycloakService } from 'app/core/auth/keycloak.service';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
@@ -15,8 +16,8 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
   imports: [RouterOutlet, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent implements OnInit {
+  showLayout = true;
   private readonly renderer: Renderer2;
-
   private readonly router = inject(Router);
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
   private readonly accountService = inject(AccountService);
@@ -28,13 +29,24 @@ export default class MainComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // try to log in automatically
-    this.accountService.identity().subscribe();
+    keycloakService.init().then(() => {
+      let currentUrl = this.router.url;
+      const isPublicRoute = currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
 
-    this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
-      this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
-      dayjs.locale(langChangeEvent.lang);
-      this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
+      if (!isPublicRoute) {
+        this.accountService.identity().subscribe();
+      }
+
+      this.router.events.subscribe(() => {
+        currentUrl = this.router.url;
+        this.showLayout = !(currentUrl.startsWith('/login') || currentUrl.startsWith('/register'));
+      });
+
+      this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
+        this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
+        dayjs.locale(langChangeEvent.lang);
+        this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
+      });
     });
   }
 }

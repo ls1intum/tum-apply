@@ -55,9 +55,15 @@
       "enabled": true,
       "publicClient": true,
       "protocol": "openid-connect",
-      "redirectUris": ["*"],
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["http://localhost:4200"],
       "standardFlowEnabled": true,
-      "directAccessGrantsEnabled": true
+      "directAccessGrantsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+",
+        "access.token.lifespan": "300"
+      }
     }
   ]
 }

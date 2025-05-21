@@ -23,7 +23,6 @@ public record UserDTO(
     ResearchGroupShortDTO researchGroupShortDTO
 ) {
     /**
-     *
      * @param user
      * @return The userDTO from the user
      */

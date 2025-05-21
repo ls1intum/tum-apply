@@ -1,23 +1,24 @@
 {
   "register": {
-    "title": "Registrierung",
-    "form": {
-      "button": "Registrieren"
+    "header": "Erstellen Sie Ihr TUMApply-Konto",
+    "tabs": {
+      "student": "Student / Bewerber",
+      "professor": "Professor / Betreuer"
+    },
+    "buttons": {
+      "microsoft": "Registrieren mit Microsoft",
+      "apple": "Registrieren mit Apple",
+      "google": "Registrieren mit Google",
+      "tum": "Registrieren mit TUM SSO"
+    },
+    "texts": {
+      "professor": "TUM Single Sign-On ist für Professoren und Betreuer erforderlich.",
+      "professorcreate": "Als TUM-Professor oder Betreuer können Sie einfach ihre TUM Anmeldedaten nutzen.",
+      "accountmissing": "Sie haben bereits ein TUMApply-Konto? <a href=\"/register\">Melden Sie sich hier</a>."
     },
     "messages": {
-      "validate": {
-        "login": {
-          "required": "Ihr Benutzername wird benötigt.",
-          "minlength": "Ihr Benutzername muss mindestens ein Zeichen lang sein.",
-          "maxlength": "Ihr Benutzername darf nicht länger als 50 Zeichen sein.",
-          "pattern": "Ihr Benutzername ist ungültig."
-        }
-      },
-      "success": "<strong>Registrierung gespeichert!</strong> Bitte überprüfen Sie Ihre E-Mails für die Bestätigung.",
       "error": {
-        "fail": "<strong>Registrierung fehlgeschlagen!</strong> Bitte versuchen Sie es später nochmal.",
-        "userexists": "<strong>Benutzername bereits vergeben!</strong> Bitte wählen Sie einen anderen aus.",
-        "emailexists": "<strong>E-Mail-Adresse wird bereits verwendet!</strong> Bitte wählen Sie eine andere aus."
+        "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Überprüfen Sie bitte Ihre Angaben und versuchen Sie es erneut."
       }
     }
   }

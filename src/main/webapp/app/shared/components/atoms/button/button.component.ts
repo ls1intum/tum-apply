@@ -33,4 +33,11 @@ export class ButtonComponent {
   label = input<string | undefined>(undefined);
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
+
+  iconPrefix(): 'fas' | 'fab' {
+    if (this.icon() === 'microsoft' || this.icon() === 'google' || this.icon() === 'apple') {
+      return 'fab';
+    }
+    return 'fas';
+  }
 }

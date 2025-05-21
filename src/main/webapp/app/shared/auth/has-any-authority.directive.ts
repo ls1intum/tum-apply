@@ -16,7 +16,7 @@ import { AccountService } from 'app/core/auth/account.service';
   selector: '[jhiHasAnyAuthority]',
 })
 export default class HasAnyAuthorityDirective {
-  public authorities = input<string | string[]>([], { alias: 'jhiHasAnyAuthority' });
+  public roles = input<string | string[]>([], { alias: 'jhiHasAnyAuthority' });
 
   private readonly templateRef = inject(TemplateRef<any>);
   private readonly viewContainerRef = inject(ViewContainerRef);
@@ -24,7 +24,7 @@ export default class HasAnyAuthorityDirective {
   constructor() {
     const accountService = inject(AccountService);
     const currentAccount = accountService.trackCurrentAccount();
-    const hasPermission = computed(() => currentAccount()?.authorities && accountService.hasAnyAuthority(this.authorities()));
+    const hasPermission = computed(() => currentAccount()?.roles && accountService.hasAnyAuthority(this.roles()));
 
     effect(() => {
       if (hasPermission() === true) {

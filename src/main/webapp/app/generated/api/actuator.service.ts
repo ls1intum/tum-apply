@@ -10,8 +10,7 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext } from '@angular/common/http';
-import { CustomHttpParameterCodec } from '../encoder';
+import { HttpClient, HttpContext, HttpEvent, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
@@ -318,7 +317,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/caches/${this.configuration.encodeParam({ name: 'cache', value: cache, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/caches/${this.configuration.encodeParam({
+      name: 'cache',
+      value: cache,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined,
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters,
@@ -488,7 +495,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/caches/${this.configuration.encodeParam({ name: 'cache', value: cache, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/caches/${this.configuration.encodeParam({
+      name: 'cache',
+      value: cache,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined,
+    })}`;
     return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters,
@@ -743,7 +758,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/configprops/${this.configuration.encodeParam({ name: 'prefix', value: prefix, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/configprops/${this.configuration.encodeParam({
+      name: 'prefix',
+      value: prefix,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined,
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -823,7 +846,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/loggers/${this.configuration.encodeParam({ name: 'name', value: name, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/loggers/${this.configuration.encodeParam({
+      name: 'name',
+      value: name,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined,
+    })}`;
     return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: body,
@@ -1028,7 +1059,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/env/${this.configuration.encodeParam({ name: 'toMatch', value: toMatch, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/env/${this.configuration.encodeParam({
+      name: 'toMatch',
+      value: toMatch,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined,
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -1308,7 +1347,9 @@ export class ActuatorService extends BaseService {
     }
 
     let localVarPath = `/management`;
-    return this.httpClient.request<{ [key: string]: { [key: string]: Link } }>('get', `${this.configuration.basePath}${localVarPath}`, {
+    return this.httpClient.request<{
+      [key: string]: { [key: string]: Link };
+    }>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       withCredentials: this.configuration.withCredentials,
@@ -1502,7 +1543,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/loggers/${this.configuration.encodeParam({ name: 'name', value: name, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/loggers/${this.configuration.encodeParam({
+      name: 'name',
+      value: name,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined,
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,

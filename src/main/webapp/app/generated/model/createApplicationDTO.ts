@@ -18,6 +18,7 @@ export interface CreateApplicationDTO {
   specialSkills?: string;
   motivation?: string;
 }
+
 export namespace CreateApplicationDTO {
   export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
   export const ApplicationStateEnum = {
