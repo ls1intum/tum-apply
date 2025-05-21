@@ -9,8 +9,7 @@ import java.util.UUID;
 public record ApplicationEvaluationOverviewDTO(
     UUID applicationId,
     String avatar,
-    String firstName,
-    String lastName,
+    String name,
     ApplicationState state,
     String jobName,
     Integer rating,
@@ -31,8 +30,7 @@ public record ApplicationEvaluationOverviewDTO(
         return new ApplicationEvaluationOverviewDTO(
             application.getApplicationId(),
             application.getApplicant().getAvatar(),
-            application.getApplicant().getFirstName(),
-            application.getApplicant().getLastName(),
+            application.getApplicant().getFirstName() + " " + application.getApplicant().getLastName(),
             application.getState(),
             application.getJob().getTitle(),
             application.getRating(),

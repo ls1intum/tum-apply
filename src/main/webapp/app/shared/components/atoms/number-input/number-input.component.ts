@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -33,54 +33,58 @@ export class NumberInputComponent {
   minFractionDigits = input<number | undefined>(undefined);
   maxFractionDigits = input<number | undefined>(undefined);
 
+  readonly formValidityVersion = signal(0);
   // State tracking
-  isTouched = false;
-  isFocused = false;
-
-  get formControl(): FormControl | undefined {
+  isTouched = signal(false);
+  isFocused = signal(false);
+  formControl = computed(() => {
     const ctrl = this.control();
-    return ctrl ? (ctrl as FormControl) : undefined;
+    return ctrl instanceof FormControl ? ctrl : new FormControl('');
+  });
+  readonly inputState = computed(() => {
+    this.formValidityVersion();
+    if (!this.isTouched()) return 'untouched';
+    if (this.formControl().invalid) return 'invalid';
+    return 'valid';
+  });
+  errorMessage = computed<string | null>(() => {
+    const ctrl = this.formControl();
+    const errors = ctrl.errors;
+    if (!errors) return null;
+    const key = Object.keys(errors)[0];
+    const val = errors[key];
+    const defaults: Record<string, string> = {
+      required: 'This field is required',
+      min: `Minimum value is ${val.min}`,
+      max: `Maximum value is ${val.max}`,
+      pattern: 'Invalid format',
+    };
+    return defaults[key] ?? `Invalid: ${key}`;
+  });
+
+  constructor() {
+    effect(onCleanup => {
+      const sub = this.formControl().statusChanges.subscribe(() => {
+        this.formValidityVersion.update(v => v + 1);
+      });
+      onCleanup(() => sub.unsubscribe());
+    });
   }
 
   onInputChange(value: number): void {
     this.modelChange.emit(value);
-
-    if (this.formControl) {
-      this.formControl.setValue(value);
-      this.formControl.markAsDirty();
-      this.formControl.updateValueAndValidity();
-    }
+    const ctrl = this.formControl();
+    ctrl.setValue(value);
+    ctrl.markAsDirty();
+    ctrl.updateValueAndValidity();
   }
 
   onBlur(): void {
-    this.isTouched = true;
-    this.isFocused = false;
+    this.isTouched.set(true);
+    this.isFocused.set(false);
   }
 
   onFocus(): void {
-    this.isFocused = true;
-  }
-
-  getInputState(): string {
-    if (!this.isTouched) return 'untouched';
-    if (this.formControl?.invalid) return 'invalid';
-    return 'valid';
-  }
-
-  getErrorMessage(): string | null {
-    const control = this.formControl;
-    if (!control?.errors) return null;
-
-    const firstErrorKey = Object.keys(control.errors)[0];
-    const errorValue = control.errors[firstErrorKey];
-
-    const defaultMessages: Record<string, string> = {
-      required: 'This field is required',
-      min: `Minimum value is ${errorValue?.min}`,
-      max: `Maximum value is ${errorValue?.max}`,
-      pattern: 'Invalid format',
-    };
-
-    return defaultMessages[firstErrorKey] ?? `Invalid: ${firstErrorKey}`;
+    this.isFocused.set(true);
   }
 }

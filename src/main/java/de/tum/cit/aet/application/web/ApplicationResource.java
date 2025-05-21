@@ -8,14 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/applications")
@@ -29,22 +22,18 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param createApplicationDTO The data necessary to create an Application
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if the createApplicationDTO is invalid
      */
     @PostMapping
     public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
         // TODO check authorization
-        if (createApplicationDTO == null || createApplicationDTO.applicant() == null || createApplicationDTO.job() == null) {
-            return ResponseEntity.badRequest().build();
-        }
 
-        return ResponseEntity.ok(applicationService.createApplication(createApplicationDTO));
+        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(createApplicationDTO);
+        return ResponseEntity.ok(applicationForApplicantDTO);
     }
 
     /**
-     *
      * @param application the updated application
      * @return updated ApplicationForApplicantDTO
      */
@@ -56,7 +45,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param applicationId the UUID of the application
      * @return the ApplicationForApplicantDTO if found, otherwise 404 Not Found
      */
@@ -72,7 +60,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param applicationId the UUID of the application
      * @return 204 No Content when deletion is successful
      */
@@ -84,7 +71,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param applicantId the UUID of the applicant
      * @return Set of ApplicationForApplicantDTOm where the applicant has the applicantId as UUID
      */
@@ -96,7 +82,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param jobId the UUID of the Job
      * @return Set of ApplicationForApplicantDTOs where the job has the jobId as UUID
      */

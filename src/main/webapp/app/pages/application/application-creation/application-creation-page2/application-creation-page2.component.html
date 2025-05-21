@@ -1,0 +1,90 @@
+<form [formGroup]="page2Form()">
+  <p-divider layout="horizontal">Bachelor</p-divider>
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Bachelor Degree Name"
+        [required]="true"
+        [(model)]="data().bachelorDegreeName"
+        [control]="page2Form().get('bachelorDegreeName') ?? undefined"
+      />
+    </div>
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Bachelor Degree University"
+        [required]="true"
+        [(model)]="data().bachelorDegreeUniversity"
+        [control]="page2Form().controls.bachelorDegreeUniversity"
+      />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-dropdown
+        label="Bachelor Grading Scale"
+        [disabled]="true"
+        width="100%"
+        [required]="true"
+        [items]="bachelorGradingScaleLocal"
+        [(selected)]="data().bachelorGradingScale"
+      />
+    </div>
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Bachelor Grade"
+        [required]="true"
+        [(model)]="data().bachelorGrade"
+        [control]="page2Form().controls.bachelorGrade"
+      />
+    </div>
+  </div>
+  <div class="form-row justify-center">
+    <div class="w-1/2">
+      <jhi-upload-button uploadText="Please upload your Bachelor Certificate" />
+    </div>
+  </div>
+  <p-divider layout="horizontal">Master</p-divider>
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Master Degree Name"
+        [required]="true"
+        [(model)]="data().masterDegreeName"
+        [control]="page2Form().controls.masterDegreeName"
+      />
+    </div>
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Master Degree University"
+        [required]="true"
+        [(model)]="data().masterDegreeUniversity"
+        [control]="page2Form().controls.masterDegreeUniversity"
+      />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="w-1/2 pr-4">
+      <jhi-dropdown
+        label="Master Grading Scale"
+        [disabled]="true"
+        width="100%"
+        [required]="true"
+        [items]="masterGradingScaleLocal"
+        [(selected)]="data().masterGradingScale"
+      />
+    </div>
+    <div class="w-1/2 pr-4">
+      <jhi-string-input
+        label="Master Grade"
+        [required]="true"
+        [(model)]="data().masterGrade"
+        [control]="page2Form().controls.masterGrade"
+      />
+    </div>
+  </div>
+  <div class="form-row justify-center">
+    <div class="w-1/2">
+      <jhi-upload-button uploadText="Please upload your Master Certificate" />
+    </div>
+  </div>
+</form>

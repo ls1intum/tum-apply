@@ -37,6 +37,10 @@ const routes: Routes = [
     outlet: 'navbar',
   },
   {
+    path: 'application/create/:job_id',
+    loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
+  },
+  {
     path: 'playground/button',
     canActivate: [UserRouteAccessService],
     data: { authorities: [Authority.ADMIN] },
@@ -57,6 +61,15 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import(`./entities/entity.routes`),
+  },
+  {
+    path: 'badge-playground',
+    loadComponent: () => import('./pages/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
+  },
+  {
+    path: 'evaluation/overview',
+    loadComponent: () =>
+      import('./pages/evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
   },
   ...errorRoute,
 ];
