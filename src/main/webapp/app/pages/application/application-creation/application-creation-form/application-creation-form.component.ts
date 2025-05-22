@@ -7,17 +7,20 @@ import { firstValueFrom } from 'rxjs';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
+  getPage1FromApplication,
 } from '../application-creation-page1/application-creation-page1.component';
 import ApplicationCreationPage3Component, {
   ApplicationCreationPage3Data,
+  getPage3FromApplication,
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
   bachelorGradingScale,
+  getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
-type ApplicationFormMode = 'create'; /* TODO | 'edit' | 'view' */
+type ApplicationFormMode = 'create' | 'edit';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -210,6 +213,17 @@ export default class ApplicationCreationFormComponent {
       if (job.title !== undefined && job.title.trim().length > 0) {
         this.title = job.title;
       }
+    } else if (firstSegment === 'edit') {
+      this.mode = 'edit';
+      const applicationId = this.route.snapshot.paramMap.get('application_id');
+      if (applicationId === null) {
+        alert('Error: this is no valid applicationId');
+        return;
+      }
+      const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
+      this.page1 = getPage1FromApplication(application);
+      this.page2 = getPage2FromApplication(application);
+      this.page3 = getPage3FromApplication(application);
     } else {
       alert('Error: this is no valid application page link');
     }
