@@ -18,20 +18,49 @@ import org.springframework.stereotype.Repository;
 public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID> {
     @Query(
         """
-            SELECT new your.package.ApplicationForApplicantDTO(
+            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
                 a.applicationId,
-                new your.package.ApplicantDTO(ap.applicantId, ap.name),
-                new your.package.JobCardDTO(j.jobId, j.title),
+                new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
+                    new de.tum.cit.aet.usermanagement.dto.UserDTO(
+                        ap.userId,
+                        ap.email,
+                        ap.avatar,
+                        ap.firstName,
+                        ap.lastName,
+                        ap.gender,
+                        ap.nationality,
+                        ap.birthday,
+                        ap.phoneNumber,
+                        ap.website,
+                        ap.linkedinUrl,
+                        ap.selectedLanguage,
+                        NULL
+                    ),
+                    ap.street,
+                    ap.postalCode,
+                    ap.city,
+                    ap.country,
+                    ap.bachelorDegreeName,
+                    ap.bachelorGradingScale,
+                    ap.bachelorGrade,
+                    ap.bachelorUniversity,
+                    ap.masterDegreeName,
+                    ap.masterGradingScale,
+                    ap.masterGrade,
+                    ap.masterUniversity
+                    ),
+                NULL,
                 a.state,
                 a.desiredStartDate,
                 a.projects,
                 a.specialSkills,
                 a.motivation,
-                NULL  -- Placeholder for customFields, cannot fetch complex sets directly in constructor expression
+                NULL
             )
             FROM Application a
             JOIN a.applicant ap
             JOIN a.job j
+
             WHERE a.applicationId = :id
         """
     )
@@ -42,33 +71,41 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
             a.applicationId,
             new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
-                ap.userId,
-                ap.email,
-                ap.firstName,
-                ap.lastName,
-                ap.gender,
-                ap.nationality,
-                ap.birthday,
-                ap.phoneNumber,
-                ap.website,
-                ap.linkedinUrl,
-                ap.selectedLanguage
+                new de.tum.cit.aet.usermanagement.dto.UserDTO(
+                    ap.userId,
+                    ap.email,
+                    ap.avatar,
+                    ap.firstName,
+                    ap.lastName,
+                    ap.gender,
+                    ap.nationality,
+                    ap.birthday,
+                    ap.phoneNumber,
+                    ap.website,
+                    ap.linkedinUrl,
+                    ap.selectedLanguage,
+                    NULL
+                ),
+                ap.street,
+                ap.postalCode,
+                ap.city,
+                ap.country,
+                ap.bachelorDegreeName,
+                ap.bachelorGradingScale,
+                ap.bachelorGrade,
+                ap.bachelorUniversity,
+                ap.masterDegreeName,
+                ap.masterGradingScale,
+                ap.masterGrade,
+                ap.masterUniversity
             ),
-            new de.tum.cit.aet.job.dto.JobCardDTO(
-                j.jobId,
-                j.title,
-                j.fieldOfStudies,
-                j.location,
-                j.supervisingProfessor.userId,
-                j.workload,
-                j.startDate,
-                j.createdAt
-            ),
+            NULL,
             a.state,
             a.desiredStartDate,
             a.projects,
             a.specialSkills,
-            a.motivation
+            a.motivation,
+            NULL
         )
         FROM Application a
         JOIN a.applicant ap
@@ -82,9 +119,11 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
             SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
                 a.applicationId,
-                new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
+            new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
+                new de.tum.cit.aet.usermanagement.dto.UserDTO(
                     ap.userId,
                     ap.email,
+                    ap.avatar,
                     ap.firstName,
                     ap.lastName,
                     ap.gender,
@@ -93,23 +132,29 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     ap.phoneNumber,
                     ap.website,
                     ap.linkedinUrl,
-                    ap.selectedLanguage
+                    ap.selectedLanguage,
+                    NULL
                 ),
-                new de.tum.cit.aet.job.dto.JobCardDTO(
-                    j.jobId,
-                    j.title,
-                    j.fieldOfStudies,
-                    j.location,
-                    j.supervisingProfessor.userId,
-                    j.workload,
-                    j.startDate,
-                    j.createdAt
-                ),
+                ap.street,
+                ap.postalCode,
+                ap.city,
+                ap.country,
+                ap.bachelorDegreeName,
+                ap.bachelorGradingScale,
+                ap.bachelorGrade,
+                ap.bachelorUniversity,
+                ap.masterDegreeName,
+                ap.masterGradingScale,
+                ap.masterGrade,
+                ap.masterUniversity
+            ),
+                NULL,
                 a.state,
                 a.desiredStartDate,
                 a.projects,
                 a.specialSkills,
-                a.motivation
+                a.motivation,
+                NULL
             )
             FROM Application a
             JOIN a.applicant ap
@@ -178,22 +223,49 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
 
     @Query(
         """
-            SELECT new your.package.ApplicationForApplicantDTO(
+            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
                 a.applicationId,
-                new your.package.ApplicantDTO(ap.applicantId, ap.name),
-                new your.package.JobCardDTO(j.jobId, j.title),
+                new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
+                    new de.tum.cit.aet.usermanagement.dto.UserDTO(
+                        ap.userId,
+                        ap.email,
+                        ap.avatar,
+                        ap.firstName,
+                        ap.lastName,
+                        ap.gender,
+                        ap.nationality,
+                        ap.birthday,
+                        ap.phoneNumber,
+                        ap.website,
+                        ap.linkedinUrl,
+                        ap.selectedLanguage,
+                        NULL
+                    ),
+                    ap.street,
+                    ap.postalCode,
+                    ap.city,
+                    ap.country,
+                    ap.bachelorDegreeName,
+                    ap.bachelorGradingScale,
+                    ap.bachelorGrade,
+                    ap.bachelorUniversity,
+                    ap.masterDegreeName,
+                    ap.masterGradingScale,
+                    ap.masterGrade,
+                    ap.masterUniversity
+                ),
+                NULL,
                 a.state,
                 a.desiredStartDate,
                 a.projects,
                 a.specialSkills,
                 a.motivation,
-                NULL  -- customFields to be populated later
+                NULL
             )
             FROM Application a
-            JOIN a.applicant ap
-            JOIN ap.user u
             JOIN a.job j
-            WHERE u.id = :userId AND j.jobId = :jobId
+            JOIN a.applicant ap
+            WHERE ap.id = :userId AND j.jobId = :jobId
         """
     )
     ApplicationForApplicantDTO getApplicationDtoByApplicantUserIdAndJobJobId(@Param("userId") UUID userId, @Param("jobId") UUID jobId);
