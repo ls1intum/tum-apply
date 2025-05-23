@@ -4,11 +4,10 @@
   [rowsPerPageOptions]="[10, 20, 50]"
   [totalRecords]="totalRecords()"
   [scrollable]="true"
-  scrollHeight="45rem"
+  [first]="page() * rows()"
   [rows]="rows()"
   [lazy]="true"
   (onLazyLoad)="emitLazy($event)"
-  [loading]="loading()"
   [autoLayout]="true"
   [tableStyle]="{ width: 'auto' }"
 >

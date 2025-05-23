@@ -1,12 +1,13 @@
 <div class="body">
+  <jhi-sort-bar [totalRecords]="total()" [sortableFields]="sortableFields" (sortChange)="loadOnSortEmit($event)" />
   <jhi-dynamic-table
     [columns]="columns()"
     [data]="pageData()"
     [totalRecords]="total()"
+    [page]="page()"
     [rows]="pageSize()"
-    [selectable]="true"
-    [loading]="loading()"
-    (lazyLoad)="loadPage($event)"
+    [selectable]="false"
+    (lazyLoad)="loadOnTableEmit($event)"
   />
 
   <ng-template #actionTemplate>

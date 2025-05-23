@@ -59,6 +59,10 @@
     color: var(--p-text-primary);
   }
 
+  .p-select {
+    background: transparent;
+  }
+
   // Override primeng styling of selected item in dropdown menu
   .p-select-option.p-select-option-selected.p-focus {
     background: var(--p-background-surface-alt);
