@@ -26,9 +26,12 @@ public class ApplicationService {
     }
 
     /**
+     * Creates a new job application for the given applicant and job.
+     * If an application already exists for the applicant and job, an exception is thrown.
      *
-     * @param createApplicationDTO
-     * @return created ApplicationForApplicantDTO
+     * @param createApplicationDTO DTO containing application and applicant data
+     * @return the created ApplicationForApplicantDTO
+     * @throws OperationNotAllowedException if the applicant has already applied for the job
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(CreateApplicationDTO createApplicationDTO) {
@@ -84,36 +87,40 @@ public class ApplicationService {
     }
 
     /**
+     * Retrieves all applications submitted by a specific applicant.
      *
-     * @param applicantId
-     * @return Set of ApplicationForApplicantDTO which all have the same applicant
+     * @param applicantId the UUID of the applicant
+     * @return a set of ApplicationForApplicantDTO for the given applicant
      */
     public Set<ApplicationForApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
         return applicationRepository.findAllDtosByApplicantUserId(applicantId);
     }
 
     /**
+     * Retrieves all applications for a specific job.
      *
-     * @param jobId
-     * @return Set of ApplicationForApplicantDTO which all have the same Job
+     * @param jobId the UUID of the job
+     * @return a set of ApplicationForApplicantDTO for the given job
      */
     public Set<ApplicationForApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
         return applicationRepository.findAllDtosByJobJobId(jobId);
     }
 
     /**
+     * Retrieves an application by its ID.
      *
-     * @param applicationId
-     * @return ApplicationForApplicantDTO with same Id as parameter applicationId
+     * @param applicationId the UUID of the application
+     * @return the ApplicationForApplicantDTO with the given ID
      */
     public ApplicationForApplicantDTO getApplicationById(UUID applicationId) {
         return applicationRepository.findDtoById(applicationId);
     }
 
     /**
+     * Updates an existing application with new information.
      *
-     * @param updateApplicationDTO
-     * @return updated ApplicationForApplicantDTO with updated values
+     * @param updateApplicationDTO DTO containing updated application data
+     * @return the updated ApplicationForApplicantDTO
      */
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
@@ -129,9 +136,10 @@ public class ApplicationService {
     }
 
     /**
+     * Withdraws an application by setting its state to WITHDRAWN.
+     * If the application does not exist, the method does nothing.
      *
-     * @param applicationId
-     * @return withdrawn ApplicationForApplicantDTO
+     * @param applicationId the UUID of the application to withdraw
      */
     @Transactional
     public void withdrawApplication(UUID applicationId) {
@@ -144,8 +152,9 @@ public class ApplicationService {
     }
 
     /**
+     * Deletes an application by its ID.
      *
-     * @param applicationId
+     * @param applicationId the UUID of the application to delete
      */
     @Transactional
     public void deleteApplication(UUID applicationId) {
