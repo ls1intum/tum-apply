@@ -9,5 +9,21 @@
  */
 
 export interface UpdateApplicationDTO {
-  applicationId?: string;
+  applicationId: string;
+  desiredDate?: string;
+  applicationState: UpdateApplicationDTO.ApplicationStateEnum;
+  projects?: string;
+  specialSkills?: string;
+  motivation?: string;
+}
+export namespace UpdateApplicationDTO {
+  export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
+  export const ApplicationStateEnum = {
+    Saved: 'SAVED' as ApplicationStateEnum,
+    Sent: 'SENT' as ApplicationStateEnum,
+    Accepted: 'ACCEPTED' as ApplicationStateEnum,
+    InReview: 'IN_REVIEW' as ApplicationStateEnum,
+    Rejected: 'REJECTED' as ApplicationStateEnum,
+    Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
+  };
 }

@@ -129,14 +129,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -579,8 +572,36 @@
           "applicationId": {
             "type": "string",
             "format": "uuid"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
           }
-        }
+        },
+        "required": [
+          "applicationId",
+          "applicationState"
+        ]
       },
       "ApplicantDTO": {
         "type": "object",
