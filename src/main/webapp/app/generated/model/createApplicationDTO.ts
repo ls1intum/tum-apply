@@ -7,18 +7,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { JobCardDTO } from './jobCardDTO';
-import { CustomFieldAnswerDTO } from './customFieldAnswerDTO';
+import { ApplicantDTO } from './applicantDTO';
 
 export interface CreateApplicationDTO {
-  applicant?: string;
-  job?: JobCardDTO;
+  applicant: ApplicantDTO;
+  jobId: string;
   desiredDate?: string;
-  applicationState?: CreateApplicationDTO.ApplicationStateEnum;
+  applicationState: CreateApplicationDTO.ApplicationStateEnum;
   projects?: string;
   specialSkills?: string;
   motivation?: string;
-  answers?: Set<CustomFieldAnswerDTO>;
 }
 export namespace CreateApplicationDTO {
   export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
