@@ -77,3 +77,63 @@
 .selection-col {
   width: 5rem;
 }
+
+.job-card {
+  overflow: hidden;
+  border: 0.1rem solid var(--p-primary-color);
+  max-width: 20rem;
+
+  .card-header {
+    position: relative;
+    background: linear-gradient(to right, var(--p-primary-color), pink);
+    color: var(--p-text-on-primary);
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .card-icon {
+      font-size: 1.5rem;
+    }
+
+    .timestamp {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+    }
+  }
+
+  .card-body {
+    .card-info {
+      margin: 0 0 1rem 0;
+
+      .info-item {
+        display: flex;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+
+        fa-icon {
+          color: var(--p-primary-color);
+          margin-right: 0.5rem;
+
+          .svg-inline--fa {
+            width: 1.2rem;
+          }
+        }
+      }
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .p-card-body {
+    padding: 0.7rem;
+  }
+}
