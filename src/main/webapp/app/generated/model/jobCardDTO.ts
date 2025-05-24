@@ -9,7 +9,7 @@
  */
 
 export interface JobCardDTO {
-  jobId?: string;
+  jobId: string;
   title?: string;
   fieldOfStudies?: string;
   location?: JobCardDTO.LocationEnum;

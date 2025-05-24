@@ -7,9 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ApplicantDTO } from './applicantDTO';
 
 export interface UpdateApplicationDTO {
   applicationId: string;
+  applicant: ApplicantDTO;
   desiredDate?: string;
   applicationState: UpdateApplicationDTO.ApplicationStateEnum;
   projects?: string;

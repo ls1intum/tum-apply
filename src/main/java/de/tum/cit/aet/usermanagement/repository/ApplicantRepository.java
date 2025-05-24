@@ -2,7 +2,6 @@ package de.tum.cit.aet.usermanagement.repository;
 
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -19,7 +18,7 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
     @Modifying
     @Query(
         value = """
-            INSERT INTO applicant (
+            INSERT INTO applicants (
                 user_id, email, first_name, last_name, gender, nationality, birthday, phone_number,
                 website, linkedin_url, selected_language, street, postal_code, city, country,
                 bachelor_degree_name, bachelor_grading_scale, bachelor_grade, bachelor_university,
@@ -63,17 +62,7 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
     @Modifying
     @Query(
         value = """
-            UPDATE applicant SET
-                email = :email,
-                first_name = :firstName,
-                last_name = :lastName,
-                gender = :gender,
-                nationality = :nationality,
-                birthday = :birthday,
-                phone_number = :phoneNumber,
-                website = :website,
-                linkedin_url = :linkedinUrl,
-                selected_language = :selectedLanguage,
+            UPDATE applicants SET
                 street = :street,
                 postal_code = :postalCode,
                 city = :city,
@@ -91,28 +80,18 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
         nativeQuery = true
     )
     void updateApplicant(
-        @Param("userId") UUID userId,
-        @Param("email") String email,
-        @Param("firstName") String firstName,
-        @Param("lastName") String lastName,
-        @Param("gender") String gender,
-        @Param("nationality") String nationality,
-        @Param("birthday") LocalDate birthday,
-        @Param("phoneNumber") String phoneNumber,
-        @Param("website") String website,
-        @Param("linkedinUrl") String linkedinUrl,
-        @Param("selectedLanguage") String selectedLanguage,
         @Param("street") String street,
         @Param("postalCode") String postalCode,
         @Param("city") String city,
         @Param("country") String country,
         @Param("bachelorDegreeName") String bachelorDegreeName,
-        @Param("bachelorGradingScale") GradingScale bachelorGradingScale,
+        @Param("bachelorGradingScale") String bachelorGradingScale,
         @Param("bachelorGrade") String bachelorGrade,
         @Param("bachelorUniversity") String bachelorUniversity,
         @Param("masterDegreeName") String masterDegreeName,
-        @Param("masterGradingScale") GradingScale masterGradingScale,
+        @Param("masterGradingScale") String masterGradingScale,
         @Param("masterGrade") String masterGrade,
-        @Param("masterUniversity") String masterUniversity
+        @Param("masterUniversity") String masterUniversity,
+        @Param("userId") UUID userId
     );
 }
