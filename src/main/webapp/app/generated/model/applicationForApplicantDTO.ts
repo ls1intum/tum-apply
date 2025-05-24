@@ -14,7 +14,7 @@ import { ApplicantDTO } from './applicantDTO';
 export interface ApplicationForApplicantDTO {
   applicationId: string;
   applicant?: ApplicantDTO;
-  job?: JobCardDTO;
+  job: JobCardDTO;
   applicationState: ApplicationForApplicantDTO.ApplicationStateEnum;
   desiredDate?: string;
   projects?: string;
