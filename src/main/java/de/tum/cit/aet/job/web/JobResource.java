@@ -34,12 +34,24 @@ public class JobResource {
      * @param sorting Optional sorting parameter for job results.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs.
      */
-    @GetMapping("/available")
+    /* TO-DO
+        @GetMapping("/available")
     public ResponseEntity<List<JobCardDTO>> getAvailableJobs(
         @RequestParam(required = false) String filter,
         @RequestParam(required = false) String sorting
     ) {
         return ResponseEntity.ok(jobService.getAvailableJobs(filter, sorting));
+    }*/
+
+    /**
+     * GET /api/jobs/available : Returns all published jobs.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs as JobCardDTOs.
+     */
+    @GetMapping("/available")
+    public ResponseEntity<List<JobCardDTO>> getAvailableJobs() {
+        List<JobCardDTO> jobs = jobService.getAvailableJobs();
+        return ResponseEntity.ok(jobs);
     }
 
     /**
