@@ -209,7 +209,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  title = 'Machine Learning for Climate Science';
+  title = signal<string>('');
 
   jobId = '';
   applicationId?: string;
@@ -244,7 +244,7 @@ export default class ApplicationCreationFormComponent {
       const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId));
 
       if (job.title !== undefined && job.title.trim().length > 0) {
-        this.title = job.title;
+        this.title.set(job.title);
       }
     } else if (firstSegment === 'edit') {
       this.mode = 'edit';
@@ -256,7 +256,7 @@ export default class ApplicationCreationFormComponent {
       const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
       this.jobId = application.job.jobId;
       if (application.job.title !== undefined && application.job.title.trim().length > 0) {
-        this.title = application.job.title;
+        this.title.set(application.job.title);
       }
       this.applicationId = application.applicationId;
       this.page1.set(getPage1FromApplication(application));
@@ -359,9 +359,13 @@ export default class ApplicationCreationFormComponent {
   }
 
   discardApplication() {
+    const router = this.router;
     if (this.applicationId !== undefined) {
       this.applicationResourceService.deleteApplication(this.applicationId).subscribe({
-        next() {},
+        next() {
+          alert('Application sucessfully deleted');
+          router.navigate(['/']);
+        },
         error(err) {
           alert('Error deleting this application' + err.statusText);
           console.error('Failed to delete this application');
