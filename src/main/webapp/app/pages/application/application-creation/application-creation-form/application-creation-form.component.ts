@@ -79,6 +79,10 @@ export default class ApplicationCreationFormComponent {
       this.sendCreateApplicationData(state);
     };
 
+    const discardApplication = (): void => {
+      this.discardApplication();
+    };
+
     const steps: StepData[] = [];
     const panel1 = this.panel1();
     const panel2 = this.panel2();
@@ -99,6 +103,15 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
+          {
+            severity: 'danger',
+            onClick() {
+              discardApplication();
+            },
+            disabled: false,
+            label: 'Discard',
+            changePanel: false,
+          },
           {
             severity: 'primary',
             icon: 'arrow-right',
@@ -126,6 +139,15 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
+          {
+            severity: 'danger',
+            onClick() {
+              discardApplication();
+            },
+            disabled: false,
+            label: 'Discard',
+            changePanel: false,
+          },
           {
             severity: 'primary',
             icon: 'arrow-right',
@@ -161,6 +183,15 @@ export default class ApplicationCreationFormComponent {
             },
             disabled: false,
             label: 'Save Draft',
+            changePanel: false,
+          },
+          {
+            severity: 'danger',
+            onClick() {
+              discardApplication();
+            },
+            disabled: false,
+            label: 'Discard',
             changePanel: false,
           },
           {
@@ -324,6 +355,20 @@ export default class ApplicationCreationFormComponent {
           console.error('Failed to save application:', err);
         },
       });
+    }
+  }
+
+  discardApplication() {
+    if (this.applicationId !== undefined) {
+      this.applicationResourceService.deleteApplication(this.applicationId).subscribe({
+        next() {},
+        error(err) {
+          alert('Error deleting this application' + err.statusText);
+          console.error('Failed to delete this application');
+        },
+      });
+    } else {
+      this.router.navigate(['/']);
     }
   }
 
