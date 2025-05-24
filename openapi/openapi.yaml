@@ -129,14 +129,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -547,7 +540,7 @@
       "JobCardDTO": {
         "type": "object",
         "properties": {
-          "id": {
+          "jobId": {
             "type": "string",
             "format": "uuid"
           },
@@ -558,7 +551,16 @@
             "type": "string"
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
           },
           "professorId": {
             "type": "string",
@@ -570,19 +572,7 @@
           },
           "startDate": {
             "type": "string",
-            "format": "date-time"
-          },
-          "description": {
-            "type": "string"
-          },
-          "state": {
-            "type": "string",
-            "enum": [
-              "DRAFT",
-              "PUBLISHED",
-              "CLOSED",
-              "APPLICANT_FOUND"
-            ]
+            "format": "date"
           },
           "createdAt": {
             "type": "string",
@@ -590,26 +580,8 @@
           }
         },
         "required": [
-          "createdAt",
-          "description",
-          "fieldOfStudies",
-          "id",
-          "location",
-          "professorId",
-          "startDate",
-          "state",
-          "title",
-          "workload"
+          "jobId"
         ]
-      },
-      "UpdateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
       },
       "ApplicantDTO": {
         "type": "object",
@@ -658,6 +630,108 @@
           },
           "masterUniversity": {
             "type": "string"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "ResearchGroupShortDTO": {
+        "type": "object",
+        "properties": {
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/ApplicantDTO"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "applicant",
+          "applicationId",
+          "applicationState"
+        ]
+      },
+      "UserDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "researchGroupShortDTO": {
+            "$ref": "#/components/schemas/ResearchGroupShortDTO"
           }
         }
       },
@@ -708,7 +782,8 @@
         },
         "required": [
           "applicationId",
-          "applicationState"
+          "applicationState",
+          "job"
         ]
       },
       "CustomFieldAnswerDTO": {
@@ -740,64 +815,6 @@
       },
       "DocumentDTO": {
         "type": "object"
-      },
-      "ResearchGroupShortDTO": {
-        "type": "object",
-        "properties": {
-          "researchGroupId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "UserDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          },
-          "selectedLanguage": {
-            "type": "string"
-          },
-          "researchGroupShortDTO": {
-            "$ref": "#/components/schemas/ResearchGroupShortDTO"
-          }
-        }
       },
       "JobFormDTO": {
         "type": "object",
