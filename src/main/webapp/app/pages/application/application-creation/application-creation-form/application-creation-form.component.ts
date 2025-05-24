@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ApplicationResourceService, CreateApplicationDTO, JobResourceService, UpdateApplicationDTO } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -19,7 +20,6 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
-import { HttpErrorResponse } from '@angular/common/http';
 
 type ApplicationFormMode = 'create' | 'edit';
 
