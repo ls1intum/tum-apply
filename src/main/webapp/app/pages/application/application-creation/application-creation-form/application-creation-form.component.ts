@@ -222,7 +222,6 @@ export default class ApplicationCreationFormComponent {
         return;
       }
       const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
-      console.log(JSON.stringify(application));
       this.jobId = application.job.jobId;
       if (application.job.title !== undefined && application.job.title.trim().length > 0) {
         this.title = application.job.title;
@@ -275,7 +274,7 @@ export default class ApplicationCreationFormComponent {
           router.navigate(['/']);
         },
         error(err) {
-          alert('Failed to publish application:' + err.statusText);
+          alert('Failed to publish application:' + err.statusText.toString());
           console.error('Failed to publish application:', err);
         },
       });
@@ -320,7 +319,7 @@ export default class ApplicationCreationFormComponent {
           router.navigate(['/']);
         },
         error(err) {
-          alert('Failed to save application:' + err.statusText);
+          alert('Failed to save application:' + err.statusText.toString());
           console.error('Failed to save application:', err);
         },
       });
