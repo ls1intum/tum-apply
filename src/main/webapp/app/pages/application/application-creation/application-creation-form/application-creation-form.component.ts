@@ -210,7 +210,7 @@ export default class ApplicationCreationFormComponent {
         this.jobId = jobId;
       }
       const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId));
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
       if (job.title !== undefined && job.title.trim().length > 0) {
         this.title = job.title;
       }
