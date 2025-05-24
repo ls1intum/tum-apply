@@ -9,6 +9,7 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,16 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ApplicantRepository applicantRepository;
+    private final UserRepository userRepository;
 
-    public ApplicationService(ApplicationRepository applicationRepository, ApplicantRepository applicantRepository) {
+    public ApplicationService(
+        ApplicationRepository applicationRepository,
+        ApplicantRepository applicantRepository,
+        UserRepository userRepository
+    ) {
         this.applicationRepository = applicationRepository;
         this.applicantRepository = applicantRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -45,8 +52,7 @@ public class ApplicationService {
         }
 
         ApplicantDTO applicantDto = createApplicationDTO.applicant();
-        applicantRepository.updateApplicant(
-            UUID.fromString("00000000-0000-0000-0000-000000000103"),
+        userRepository.updateUser(
             applicantDto.user().email(),
             applicantDto.user().firstName(),
             applicantDto.user().lastName(),
@@ -57,18 +63,22 @@ public class ApplicationService {
             applicantDto.user().website(),
             applicantDto.user().linkedinUrl(),
             applicantDto.user().selectedLanguage(),
+            UUID.fromString("00000000-0000-0000-0000-000000000103")
+        );
+        applicantRepository.updateApplicant(
             applicantDto.street(),
             applicantDto.postalCode(),
             applicantDto.city(),
             applicantDto.country(),
             applicantDto.bachelorDegreeName(),
-            applicantDto.bachelorGradingScale(),
+            applicantDto.bachelorGradingScale().name(),
             applicantDto.bachelorGrade(),
             applicantDto.bachelorUniversity(),
             applicantDto.masterDegreeName(),
-            applicantDto.masterGradingScale(),
+            applicantDto.masterGradingScale().name(),
             applicantDto.masterGrade(),
-            applicantDto.masterUniversity()
+            applicantDto.masterUniversity(),
+            UUID.fromString("00000000-0000-0000-0000-000000000103")
         );
 
         applicationRepository.insertApplication(
@@ -131,6 +141,35 @@ public class ApplicationService {
             updateApplicationDTO.projects(),
             updateApplicationDTO.specialSkills(),
             updateApplicationDTO.motivation()
+        );
+        ApplicantDTO applicantDto = updateApplicationDTO.applicant();
+        applicantRepository.updateApplicant(
+            applicantDto.street(),
+            applicantDto.postalCode(),
+            applicantDto.city(),
+            applicantDto.country(),
+            applicantDto.bachelorDegreeName(),
+            applicantDto.bachelorGradingScale().name(),
+            applicantDto.bachelorGrade(),
+            applicantDto.bachelorUniversity(),
+            applicantDto.masterDegreeName(),
+            applicantDto.masterGradingScale().name(),
+            applicantDto.masterGrade(),
+            applicantDto.masterUniversity(),
+            applicantDto.user().userId()
+        );
+        userRepository.updateUser(
+            applicantDto.user().email(),
+            applicantDto.user().firstName(),
+            applicantDto.user().lastName(),
+            applicantDto.user().gender(),
+            applicantDto.user().nationality(),
+            applicantDto.user().birthday(),
+            applicantDto.user().phoneNumber(),
+            applicantDto.user().website(),
+            applicantDto.user().linkedinUrl(),
+            applicantDto.user().selectedLanguage(),
+            applicantDto.user().userId()
         );
         return applicationRepository.findDtoById(updateApplicationDTO.applicationId());
     }

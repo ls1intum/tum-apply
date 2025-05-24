@@ -48,8 +48,17 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     ap.masterGradingScale,
                     ap.masterGrade,
                     ap.masterUniversity
-                    ),
-                NULL,
+                ),
+                new de.tum.cit.aet.job.dto.JobCardDTO(
+                    j.jobId,
+                    j.title,
+                    j.fieldOfStudies,
+                    j.location,
+                    j.supervisingProfessor.userId,
+                    j.workload,
+                    j.startDate,
+                    j.createdAt
+                ),
                 a.state,
                 a.desiredStartDate,
                 a.projects,
@@ -187,10 +196,10 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Modifying
     @Query(
         value = """
-            INSERT INTO application (
+            INSERT INTO applications (
                 applicant_id,
                 job_id,
-                state,
+                application_state,
                 desired_start_date,
                 projects,
                 special_skills,
@@ -220,8 +229,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Modifying
     @Query(
         value = """
-            UPDATE application SET
-                state = :state,
+            UPDATE applications SET
+                application_state = :state,
                 desired_start_date = :desiredDate,
                 projects = :projects,
                 special_skills = :specialSkills,
@@ -297,6 +306,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     )
     ApplicationForApplicantDTO getApplicationDtoByApplicantUserIdAndJobJobId(@Param("userId") UUID userId, @Param("jobId") UUID jobId);
 
-    @Query("update Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
+    @Query("UPDATE Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
     void withdrawApplicationById(UUID applicationId);
 }
