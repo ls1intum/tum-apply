@@ -19,6 +19,7 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 type ApplicationFormMode = 'create' | 'edit';
 
@@ -274,7 +275,7 @@ export default class ApplicationCreationFormComponent {
           router.navigate(['/']);
         },
         error(err) {
-          alert('Failed to publish application:' + err.statusText.toString());
+          alert('Failed to publish application:' + (err as HttpErrorResponse).statusText);
           console.error('Failed to publish application:', err);
         },
       });
@@ -319,7 +320,7 @@ export default class ApplicationCreationFormComponent {
           router.navigate(['/']);
         },
         error(err) {
-          alert('Failed to save application:' + err.statusText.toString());
+          alert('Failed to save application:' + (err as HttpErrorResponse).statusText);
           console.error('Failed to save application:', err);
         },
       });
