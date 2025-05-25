@@ -235,24 +235,6 @@
           "job-resource"
         ],
         "operationId": "getAvailableJobs",
-        "parameters": [
-          {
-            "name": "filter",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sorting",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -547,7 +529,7 @@
       "JobCardDTO": {
         "type": "object",
         "properties": {
-          "id": {
+          "jobId": {
             "type": "string",
             "format": "uuid"
           },
@@ -558,7 +540,16 @@
             "type": "string"
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
           },
           "professorId": {
             "type": "string",
@@ -570,19 +561,7 @@
           },
           "startDate": {
             "type": "string",
-            "format": "date-time"
-          },
-          "description": {
-            "type": "string"
-          },
-          "state": {
-            "type": "string",
-            "enum": [
-              "DRAFT",
-              "PUBLISHED",
-              "CLOSED",
-              "APPLICANT_FOUND"
-            ]
+            "format": "date"
           },
           "createdAt": {
             "type": "string",
@@ -590,16 +569,8 @@
           }
         },
         "required": [
-          "createdAt",
-          "description",
-          "fieldOfStudies",
-          "id",
-          "location",
-          "professorId",
-          "startDate",
-          "state",
-          "title",
-          "workload"
+          "jobId",
+          "professorId"
         ]
       },
       "UpdateApplicationDTO": {
