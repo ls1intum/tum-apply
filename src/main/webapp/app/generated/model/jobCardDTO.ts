@@ -9,23 +9,24 @@
  */
 
 export interface JobCardDTO {
-  id: string;
-  title: string;
-  fieldOfStudies: string;
-  location: string;
+  jobId: string;
+  title?: string;
+  fieldOfStudies?: string;
+  location?: JobCardDTO.LocationEnum;
   professorId: string;
-  workload: number;
-  startDate: string;
-  description: string;
-  state: JobCardDTO.StateEnum;
-  createdAt: string;
+  workload?: number;
+  startDate?: string;
+  createdAt?: string;
 }
 export namespace JobCardDTO {
-  export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
-  export const StateEnum = {
-    Draft: 'DRAFT' as StateEnum,
-    Published: 'PUBLISHED' as StateEnum,
-    Closed: 'CLOSED' as StateEnum,
-    ApplicantFound: 'APPLICANT_FOUND' as StateEnum,
+  export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
+  export const LocationEnum = {
+    Garching: 'GARCHING' as LocationEnum,
+    GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
+    Heilbronn: 'HEILBRONN' as LocationEnum,
+    Munich: 'MUNICH' as LocationEnum,
+    Straubing: 'STRAUBING' as LocationEnum,
+    Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
+    Singapore: 'SINGAPORE' as LocationEnum,
   };
 }
