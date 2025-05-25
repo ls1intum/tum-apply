@@ -36,6 +36,7 @@
       severity="secondary"
       label="Edit the application of 'Student Assistant in UX Research'"
       (click)="this.router.navigate(['/application/edit/bce85235-25b7-46c2-988c-9290be79dc57'])"
+      [disabled]="!this.application_exists()"
     />
   </div>
 </div>
