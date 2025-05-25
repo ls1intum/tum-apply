@@ -94,8 +94,8 @@ jobs:
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@v1.1.0
     with:
       ref: ${{ github.event.inputs.branch_name }}
-      image-name: ls1intum/artemis
-      docker-file: ./docker/artemis/Dockerfile
+      image-name: ls1intum/tum-apply
+      docker-file: ./Dockerfile
       tags: ${{ needs.determine-build-context.outputs.tag }}
 
   # Check if the build has run successfully (PR)

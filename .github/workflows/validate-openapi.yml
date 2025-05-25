@@ -144,6 +144,10 @@ jobs:
         if: env.CHANGE_DETECTED == 'true'
         run: ./gradlew openApiGenerate
 
+      - name: Format generated client code
+        if: env.CHANGE_DETECTED == 'true'
+        run: npx prettier --write ./src/main/webapp/app/generated
+
       - name: Check for client code differences
         if: env.CHANGE_DETECTED == 'true'
         id: check_client_code
