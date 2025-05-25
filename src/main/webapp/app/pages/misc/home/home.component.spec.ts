@@ -6,9 +6,9 @@ import { of } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
+import { ApplicationResourceService } from 'app/generated';
 
 import HomeComponent from './home.component';
-import { ApplicationResourceService } from 'app/generated';
 
 class MockApplicationResourceService {
   getApplicationById = jest.fn().mockReturnValue(of({}));
