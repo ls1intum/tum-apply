@@ -118,6 +118,7 @@ jobs:
           echo "::error::No successful build found for branch '${{ github.event.inputs.branch_name }}' with SHA '${{ needs.determine-build-context.outputs.pr_head_sha }}'."
           exit 1
   deploy:
+    if: always() && (needs.conditional-build.result == 'success' || needs.check-existing-build.result == 'success')
     uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
     with:
       environment: ${{ inputs.environment_name }}
