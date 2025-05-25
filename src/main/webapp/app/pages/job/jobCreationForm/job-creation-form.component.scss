@@ -109,21 +109,6 @@ header {
 .form-field {
   margin-bottom: 1.25rem;
 
-  label {
-    display: block;
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
-
-    .required {
-      color: var(--p-danger-color);
-      margin-left: 0.125rem;
-    }
-
-    .disabled {
-      color: var(--p-background-disabled);
-    }
-  }
-
   input,
   textarea,
   select {
@@ -149,6 +134,7 @@ header {
 
   textarea {
     resize: vertical;
+    margin-top: 0.25rem;
   }
 
   .form-footer {
@@ -181,6 +167,7 @@ header {
   position: relative;
 
   .icon-input-wrapper {
+    margin-top: 0.25rem;
     display: flex;
     align-items: center;
 

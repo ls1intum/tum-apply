@@ -751,6 +751,19 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    floatlabel: {
+      root: {
+        color: '{background.disabled}',
+        focusColor: '{base.white}',
+        activeColor: '{base.white}',
+        transitionDuration: '0.2s',
+        fontWeight: '200',
+        active: {
+          fontSize: '0.5rem',
+          fontWeight: '200',
+        },
+      },
+    },
     tag: {
       fontSize: '0.75rem',
       alignItems: 'center',
@@ -818,6 +831,25 @@ export const TUMApplyPreset = definePreset(Lara, {
         contrast: {
           background: '{accent.color}',
           color: '{accent.inverse}',
+        },
+      },
+    },
+    checkbox: {
+      background: 'transparent',
+      checked: {
+        background: '{primary.color}',
+        hover: {
+          background: '{primary.hoverColor}',
+        },
+      },
+    },
+    paginator: {
+      background: '{background.default}',
+      nav: {
+        button: {
+          selected: {
+            background: '{primary.color}',
+          },
         },
       },
     },
