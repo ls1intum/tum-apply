@@ -8,6 +8,12 @@ import { Account } from 'app/core/auth/account.model';
 import { LoginService } from 'app/pages/usermanagement/login/login.service';
 
 import HomeComponent from './home.component';
+import { ApplicationResourceService } from 'app/generated';
+
+class MockApplicationResourceService {
+  getApplicationById = jest.fn().mockReturnValue(of({}));
+  createApplication = jest.fn();
+}
 
 describe('Home Component', () => {
   let comp: HomeComponent;
@@ -28,7 +34,14 @@ describe('Home Component', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [HomeComponent],
-      providers: [AccountService, LoginService],
+      providers: [
+        AccountService,
+        LoginService,
+        {
+          provide: ApplicationResourceService,
+          useClass: MockApplicationResourceService,
+        },
+      ],
     })
       .overrideTemplate(HomeComponent, '')
       .compileComponents();
