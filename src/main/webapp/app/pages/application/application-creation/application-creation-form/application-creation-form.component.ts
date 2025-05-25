@@ -358,7 +358,7 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  discardApplication() {
+  discardApplication(): void {
     const router = this.router;
     if (this.applicationId !== undefined) {
       this.applicationResourceService.deleteApplication(this.applicationId).subscribe({
@@ -367,7 +367,7 @@ export default class ApplicationCreationFormComponent {
           router.navigate(['/']);
         },
         error(err) {
-          alert('Error deleting this application' + err.statusText);
+          alert('Error deleting this application' + (err as HttpErrorResponse).statusText);
           console.error('Failed to delete this application');
         },
       });
