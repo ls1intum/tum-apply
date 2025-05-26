@@ -1,0 +1,16 @@
+<div class="job-overview">
+  <h2 class="mb-4">Available Jobs</h2>
+
+  <div class="job-grid">
+    <jhi-job-card
+      *ngFor="let job of jobCards"
+      [title]="job.title"
+      [fieldOfStudies]="job.fieldOfStudies"
+      [location]="job.location"
+      [professor]="job.professorId"
+      [workload]="getWorkload(job.workload)"
+      [startDate]="job.startDate"
+      [timestamp]="getRelativeTime(job.createdAt)"
+    />
+  </div>
+</div>
