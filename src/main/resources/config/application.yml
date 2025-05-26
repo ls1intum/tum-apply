@@ -230,4 +230,8 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+# Application specific properties:
+aet:
+  storage:
+    root: /data/docs
+    max-size-bytes: 26214400

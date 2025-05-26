@@ -1,21 +1,18 @@
 package de.tum.cit.aet.application.web;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.usermanagement.domain.User;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/applications")
@@ -122,5 +119,21 @@ public class ApplicationResource {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/{applicationId}/bachelor-transcript")
+    public ResponseEntity<Void> uploadBachelorTranscript(
+        @PathVariable UUID applicationId,
+        @RequestParam("files") List<MultipartFile> files
+    ) {
+        User user = new User();
+        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
+
+        Application application = new Application();
+        application.setApplicationId(UUID.fromString(applicationId.toString()));
+
+        applicationService.uploadBachelorTranscripts(files, application, user);
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -4,7 +4,8 @@ import de.tum.cit.aet.core.constants.FileExtension;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.User;
+import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,7 +16,10 @@ import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HexFormat;
+import java.util.Optional;
+import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
@@ -25,7 +29,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class FileStorageService {
+public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
@@ -42,7 +46,7 @@ public class FileStorageService {
 
     private static final EnumSet<FileExtension> ALLOWED_EXTENSIONS = EnumSet.allOf(FileExtension.class);
 
-    public FileStorageService(
+    public DocumentService(
         DocumentRepository documentRepository,
         @Value("${aet.storage.root:/data/docs}") String rootDir,
         @Value("${aet.storage.max-size-bytes:26214400}") long maxFileSize
@@ -60,15 +64,22 @@ public class FileStorageService {
         }
     }
 
+    public Document upload(MultipartFile multipartFile, User user) {
+        validate(multipartFile);
+        try {
+            return store(multipartFile, user);
+        } catch (IOException ioe) {
+            throw new UploadException("Cannot store file", ioe);
+        }
+    }
+
     /**
      * Stores the binary, creates or re-uses the Document row, and returns it.
      *
      * @throws UploadException for business-rule violations
      * @throws IOException     for low-level I/O errors
      */
-    public Document store(MultipartFile file, Applicant applicant) throws IOException {
-        validate(file);
-
+    private Document store(MultipartFile file, User user) throws IOException {
         FileExtension ext = parseExtension(file);
         String hash = computeFileHash(file);
         String storageFilename = hash + '.' + ext.getExtension();
@@ -84,7 +95,7 @@ public class FileStorageService {
 
         // Either insert new Document or reuse existing row
         return documentRepository
-            .findById(hash)
+            .findBySha256Id(hash)
             .orElseGet(() -> {
                 String mime = Optional.ofNullable(file.getContentType()).orElse("application/octet-stream");
                 Document doc = new Document();
@@ -92,16 +103,20 @@ public class FileStorageService {
                 doc.setPath(path.toString());
                 doc.setMimeType(mime);
                 doc.setSizeBytes(file.getSize());
+                doc.setUploadedBy(user);
                 return documentRepository.save(doc);
             });
     }
 
-    public List<Document> store(List<MultipartFile> files, Applicant applicant) throws IOException {
-        List<Document> documents = new ArrayList<>(files.size());
-        for (MultipartFile file : files) {
-            documents.add(store(file, applicant));
+    public Resource download(UUID documentId) {
+        Document document = documentRepository
+            .findById(documentId)
+            .orElseThrow(() -> new EntityNotFoundException("Document with id " + documentId + " not found"));
+        try {
+            return load(document);
+        } catch (IOException e) {
+            throw new UploadException("Could not load document", e);
         }
-        return documents;
     }
 
     /**
@@ -111,9 +126,7 @@ public class FileStorageService {
      * @throws NoSuchFileException if the DB row exists but the binary is gone
      * @throws UploadException     if the ID is unknown
      */
-    public Resource load(String sha256) throws IOException {
-        Document document = documentRepository.findById(sha256).orElseThrow(() -> new UploadException("Document not found"));
-
+    private Resource load(Document document) throws IOException {
         Path path = Paths.get(document.getPath()).normalize();
         if (!path.startsWith(root)) {
             throw new IllegalStateException("Stored path lies outside storage root: " + path);
@@ -124,18 +137,6 @@ public class FileStorageService {
             throw new NoSuchFileException("Binary not found on disk: " + path);
         }
         return resource;
-    }
-
-    /**
-     * Convenience overload: load several files by their SHA-256 ids.
-     * Order of resources matches order of ids supplied.
-     */
-    public List<Resource> load(List<String> sha256List) throws IOException {
-        List<Resource> resources = new ArrayList<>(sha256List.size());
-        for (String sha256 : sha256List) {
-            resources.add(load(sha256));
-        }
-        return resources;
     }
 
     private void validate(MultipartFile file) {
@@ -167,10 +168,8 @@ public class FileStorageService {
         sha256.reset();
 
         try (DigestInputStream in = new DigestInputStream(file.getInputStream(), sha256)) {
-            // drain the stream into a black hole
             in.transferTo(OutputStream.nullOutputStream());
         }
-
         return HexFormat.of().withLowerCase().formatHex(sha256.digest());
     }
 }

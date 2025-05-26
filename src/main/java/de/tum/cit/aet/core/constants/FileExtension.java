@@ -6,12 +6,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum FileExtension {
-    PDF("pdf"),
-    PNG("png"),
-    JPEG("jpeg"),
-    JPG("jpg"),
-    GIF("gif"),
-    WEBP("webp");
+    PDF("pdf");
+
+    //    PNG("png"),
+    //    JPEG("jpeg"),
+    //    JPG("jpg"),
+    //    GIF("gif"),
+    //    WEBP("webp");
 
     private String extension;
 }
