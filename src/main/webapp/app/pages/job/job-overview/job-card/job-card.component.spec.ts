@@ -1,10 +1,14 @@
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial } from '@fortawesome/free-solid-svg-icons';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { JobCardComponent } from './job-card.component';
+import { By } from '@angular/platform-browser';
 
 describe('JobCardComponent', () => {
   let component: JobCardComponent;
   let fixture: ComponentFixture<JobCardComponent>;
+  let library: FaIconLibrary;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -13,10 +17,55 @@ describe('JobCardComponent', () => {
 
     fixture = TestBed.createComponent(JobCardComponent);
     component = fixture.componentInstance;
+
+    library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial);
+
+    fixture.componentRef.setInput('jobTitle', 'Test Job');
+    fixture.componentRef.setInput('fieldOfStudies', 'Computer Science');
+    fixture.componentRef.setInput('location', 'Munich');
+    fixture.componentRef.setInput('professor', 'Prof. John Doe');
+    fixture.componentRef.setInput('workload', '20%');
+    fixture.componentRef.setInput('startDate', '2025-10-01');
+    fixture.componentRef.setInput('timestamp', '2001-09-01T10:00:00Z'); // equates to 23.5 years ago
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should display the job title', () => {
+    const title = fixture.debugElement.nativeElement.querySelector('.card-title');
+    expect(title.textContent).toContain('Test Job');
+  });
+
+  it('should display all job info fields correctly', () => {
+    const compiled = fixture.nativeElement;
+    expect(compiled.textContent).toContain('Computer Science');
+    expect(compiled.textContent).toContain('Munich');
+    expect(compiled.textContent).toContain('Prof. John Doe');
+    expect(compiled.textContent).toContain('20%');
+    expect(compiled.textContent).toContain('Start: 2025-10-01');
+  });
+
+  it('should display relative timestamp', () => {
+    const timestamp = fixture.nativeElement.querySelector('.timestamp');
+    expect(timestamp.textContent).toContain('23.5 years ago');
+  });
+
+  it('should trigger onViewDetails when "View Details" button is clicked', () => {
+    const spy = jest.spyOn(component, 'onViewDetails');
+    const button = fixture.debugElement.query(By.css('.view-button')).nativeElement;
+    button.click();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should trigger onApply when "Apply" button is clicked', () => {
+    const spy = jest.spyOn(component, 'onApply');
+    const button = fixture.debugElement.query(By.css('.apply-button')).nativeElement;
+    button.click();
+    expect(spy).toHaveBeenCalled();
   });
 });
