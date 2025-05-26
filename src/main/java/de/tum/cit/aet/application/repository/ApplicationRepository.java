@@ -196,39 +196,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Modifying
     @Query(
         value = """
-            INSERT INTO applications (
-                applicant_id,
-                job_id,
-                application_state,
-                desired_start_date,
-                projects,
-                special_skills,
-                motivation
-            ) VALUES (
-                :applicantId,
-                :jobId,
-                :state,
-                :desiredDate,
-                :projects,
-                :specialSkills,
-                :motivation
-            )
-        """,
-        nativeQuery = true
-    )
-    void insertApplication(
-        @Param("applicantId") UUID applicantId,
-        @Param("jobId") UUID jobId,
-        @Param("state") String state,
-        @Param("desiredDate") LocalDate desiredDate,
-        @Param("projects") String projects,
-        @Param("specialSkills") String specialSkills,
-        @Param("motivation") String motivation
-    );
-
-    @Modifying
-    @Query(
-        value = """
             UPDATE applications SET
                 application_state = :state,
                 desired_start_date = :desiredDate,

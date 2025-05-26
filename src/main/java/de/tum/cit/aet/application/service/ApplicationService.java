@@ -7,9 +7,13 @@ import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -20,15 +24,18 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ApplicantRepository applicantRepository;
+    private final JobRepository jobRepository;
     private final UserRepository userRepository;
 
     public ApplicationService(
         ApplicationRepository applicationRepository,
         ApplicantRepository applicantRepository,
+        JobRepository jobRepository,
         UserRepository userRepository
     ) {
         this.applicationRepository = applicationRepository;
         this.applicantRepository = applicantRepository;
+        this.jobRepository = jobRepository;
         this.userRepository = userRepository;
     }
 
@@ -51,49 +58,53 @@ public class ApplicationService {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
 
-        ApplicantDTO applicantDto = createApplicationDTO.applicant();
-        userRepository.updateUser(
-            applicantDto.user().email(),
-            applicantDto.user().firstName(),
-            applicantDto.user().lastName(),
-            applicantDto.user().gender(),
-            applicantDto.user().nationality(),
-            applicantDto.user().birthday(),
-            applicantDto.user().phoneNumber(),
-            applicantDto.user().website(),
-            applicantDto.user().linkedinUrl(),
-            applicantDto.user().selectedLanguage(),
-            UUID.fromString("00000000-0000-0000-0000-000000000103")
-        );
-        applicantRepository.updateApplicant(
-            applicantDto.street(),
-            applicantDto.postalCode(),
-            applicantDto.city(),
-            applicantDto.country(),
-            applicantDto.bachelorDegreeName(),
-            applicantDto.bachelorGradingScale().name(),
-            applicantDto.bachelorGrade(),
-            applicantDto.bachelorUniversity(),
-            applicantDto.masterDegreeName(),
-            applicantDto.masterGradingScale().name(),
-            applicantDto.masterGrade(),
-            applicantDto.masterUniversity(),
-            UUID.fromString("00000000-0000-0000-0000-000000000103")
-        );
+        Applicant applicant = new Applicant();
+        applicant.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
+        applicant.setEmail(createApplicationDTO.applicant().user().email());
+        applicant.setFirstName(createApplicationDTO.applicant().user().firstName());
+        applicant.setLastName(createApplicationDTO.applicant().user().lastName());
+        applicant.setGender(createApplicationDTO.applicant().user().gender());
+        applicant.setNationality(createApplicationDTO.applicant().user().nationality());
+        applicant.setBirthday(createApplicationDTO.applicant().user().birthday());
+        applicant.setPhoneNumber(createApplicationDTO.applicant().user().phoneNumber());
+        applicant.setWebsite(createApplicationDTO.applicant().user().website());
+        applicant.setLinkedinUrl(createApplicationDTO.applicant().user().linkedinUrl());
+        applicant.setSelectedLanguage(createApplicationDTO.applicant().user().selectedLanguage());
 
-        applicationRepository.insertApplication(
-            createApplicationDTO.applicant().user().userId(),
-            createApplicationDTO.jobId(),
-            createApplicationDTO.applicationState().name(),
+        applicant.setStreet(createApplicationDTO.applicant().street());
+        applicant.setPostalCode(createApplicationDTO.applicant().postalCode());
+        applicant.setCity(createApplicationDTO.applicant().city());
+        applicant.setCountry(createApplicationDTO.applicant().country());
+        applicant.setBachelorDegreeName(createApplicationDTO.applicant().bachelorDegreeName());
+        applicant.setBachelorGradingScale(createApplicationDTO.applicant().bachelorGradingScale());
+        applicant.setBachelorGrade(createApplicationDTO.applicant().bachelorGrade());
+        applicant.setBachelorUniversity(createApplicationDTO.applicant().bachelorUniversity());
+        applicant.setMasterDegreeName(createApplicationDTO.applicant().masterDegreeName());
+        applicant.setMasterGradingScale(createApplicationDTO.applicant().masterGradingScale());
+        applicant.setMasterGrade(createApplicationDTO.applicant().masterGrade());
+        applicant.setMasterUniversity(createApplicationDTO.applicant().masterUniversity());
+
+        Job job = jobRepository.getReferenceById(createApplicationDTO.jobId());
+        Application application = new Application(
+            null,
+            null, // no applicationReview yet
+            applicant,
+            job,
+            createApplicationDTO.applicationState(),
             createApplicationDTO.desiredDate(),
+            null,
+            null,
+            null,
+            null,
             createApplicationDTO.projects(),
             createApplicationDTO.specialSkills(),
-            createApplicationDTO.motivation()
+            createApplicationDTO.motivation(),
+            null,
+            new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
+            new HashSet<>()
         );
-        return applicationRepository.getApplicationDtoByApplicantUserIdAndJobJobId(
-            createApplicationDTO.applicant().user().userId(),
-            createApplicationDTO.jobId()
-        );
+        Application savedApplication = applicationRepository.save(application);
+        return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
     /**

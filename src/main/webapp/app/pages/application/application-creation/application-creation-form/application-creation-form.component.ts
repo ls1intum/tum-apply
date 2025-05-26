@@ -252,7 +252,7 @@ export default class ApplicationCreationFormComponent {
             phoneNumber: this.page1().phoneNumber,
             website: this.page1().website,
             selectedLanguage: this.page1().language?.value as string,
-            userId: '00000000-0000-0000-0000-000000000103',
+            userId: '00000000-0000-0000-0000-000000000106',
           },
           bachelorDegreeName: this.page2().bachelorDegreeName,
           masterDegreeName: this.page2().masterDegreeName,
