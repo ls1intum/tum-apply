@@ -9,8 +9,8 @@
  */
 
 
-export interface ResearchGroupShortDTO { 
-    researchGroupId?: string;
-    name?: string;
+export interface Link { 
+    href?: string;
+    templated?: boolean;
 }
 

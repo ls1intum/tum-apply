@@ -7,6 +7,8 @@ export * from './customFieldAnswerDTO';
 export * from './jobCardDTO';
 export * from './jobDetailDTO';
 export * from './jobFormDTO';
+export * from './link';
 export * from './researchGroupShortDTO';
 export * from './updateApplicationDTO';
 export * from './userDTO';
+export * from './userShortDTO';
