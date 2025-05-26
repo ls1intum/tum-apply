@@ -1,4 +1,4 @@
-import { Component, Input, Signal, inject } from '@angular/core';
+import { Component, Signal, inject, input } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 
@@ -15,8 +15,8 @@ import { AuthTabService } from '../../../../core/auth/auth-tab.service';
   styleUrls: ['./auth-card.component.scss'],
 })
 export class AuthCardComponent {
-  @Input() mode: 'login' | 'register' = 'login';
-  private authTabService = inject(AuthTabService);
+  mode = input<'login' | 'register'>('login');
+  authTabService = inject(AuthTabService);
   value: Signal<number> = this.authTabService.getSelectedTab();
 
   onTabChange(newValue: string | number): void {
@@ -28,21 +28,21 @@ export class AuthCardComponent {
       direction: 'vertical',
       buttons: [
         {
-          label: this.mode === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
+          label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
           icon: 'microsoft',
           severity: 'secondary',
           disabled: true,
           onClick() {},
         },
         {
-          label: this.mode === 'register' ? 'Register with Apple' : 'Sign in with Apple',
+          label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
           icon: 'apple',
           severity: 'secondary',
           disabled: true,
           onClick() {},
         },
         {
-          label: this.mode === 'register' ? 'Register with Google' : 'Sign in with Google',
+          label: this.mode() === 'register' ? 'Register with Google' : 'Sign in with Google',
           icon: 'google',
           severity: 'secondary',
           disabled: true,
