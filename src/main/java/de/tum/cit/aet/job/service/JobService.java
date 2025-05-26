@@ -10,7 +10,6 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -77,7 +76,8 @@ public class JobService {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         //updateEntity(job, dto);
         jobRepository.save(job);
-        return toDto(job);
+        //return toDto(job);
+        return null;
     }
 
     /**
@@ -108,15 +108,20 @@ public class JobService {
      */
     public JobCardDTO getJobDetails(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        return toDto(job);
+        //return toDto(job);
+        return null;
     }
 
     private void updateEntity(Job job, JobFormDTO dto) {
         // TODO: implement field mappings
     }
 
-    private JobCardDTO toDto(Job job) {
-        // Placeholder for the detailed implementation
-        return new JobCardDTO(UUID.randomUUID(), "", "", "", UUID.randomUUID(), 0, Instant.now(), "", JobState.PUBLISHED, Instant.now());
+    /**
+     * Fetches all jobs with state PUBLISHED as job cards.
+     *
+     * @return list of JobCardDTOs
+     */
+    public List<JobCardDTO> getAvailableJobs() {
+        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED);
     }
 }
