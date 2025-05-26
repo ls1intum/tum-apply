@@ -1,5 +1,3 @@
-jest.mock('app/core/auth/account.service');
-
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { Router, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -10,7 +8,11 @@ import { InterpolatableTranslationObject, LangChangeEvent, TranslateModule, Tran
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 
+import { Account } from '../../core/auth/account.model';
+
 import MainComponent from './main.component';
+
+jest.mock('app/core/auth/account.service');
 
 describe('MainComponent', () => {
   let comp: MainComponent;
@@ -40,8 +42,8 @@ describe('MainComponent', () => {
     titleService = TestBed.inject(Title);
     translateService = TestBed.inject(TranslateService);
     mockAccountService = TestBed.inject(AccountService);
-    mockAccountService.identity = jest.fn(() => of(null));
-    mockAccountService.getAuthenticationState = jest.fn(() => of(null));
+    mockAccountService.identity = jest.fn(() => of(null as unknown as Account));
+    (mockAccountService as any).getAuthenticationState = jest.fn(() => of(null as unknown as Account));
     ngZone = TestBed.inject(NgZone);
     router = TestBed.inject(Router);
     document = TestBed.inject(DOCUMENT);
