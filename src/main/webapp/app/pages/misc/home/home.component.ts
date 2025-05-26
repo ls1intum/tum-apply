@@ -5,12 +5,13 @@ import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { JobCardComponent } from '../../job/job-overview/job-card/job-card.component';
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, ButtonComponent],
+  imports: [SharedModule, ButtonComponent, JobCardComponent],
 })
 export default class HomeComponent implements OnInit {
   readonly router = inject(Router);

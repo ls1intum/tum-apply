@@ -2,7 +2,7 @@
   <ng-template #header>
     <div class="card-header">
       <div class="card-icon">
-        <fa-icon [icon]="faFlaskVial"></fa-icon>
+        <fa-icon [icon]="['fas', 'flask-vial']"></fa-icon>
       </div>
       <div class="timestamp">{{ jobCard.timestamp }}</div>
     </div>
@@ -14,11 +14,11 @@
 
   <div class="card-body">
     <ul class="card-info">
-      <li class="info-item"><fa-icon [icon]="faGraduationCap"></fa-icon> {{ jobCard.fieldOfStudies }}</li>
-      <li class="info-item"><fa-icon [icon]="faLocationDot"></fa-icon> {{ jobCard.location }}</li>
-      <li class="info-item"><fa-icon [icon]="faUser"></fa-icon> {{ jobCard.professor }}</li>
-      <li class="info-item"><fa-icon [icon]="faClock"></fa-icon> {{ jobCard.workload }}</li>
-      <li class="info-item"><fa-icon [icon]="faCalendar"></fa-icon> Start: {{ jobCard.startDate }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'graduation-cap']"></fa-icon> {{ jobCard.fieldOfStudies }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'location-dot']"></fa-icon> {{ jobCard.location }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'user']"></fa-icon> {{ jobCard.professor }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'clock']"></fa-icon> {{ jobCard.workload }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'calendar']"></fa-icon> Start: {{ jobCard.startDate }}</li>
     </ul>
 
     <div class="card-actions">

@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { CardModule } from 'primeng/card';
-import { faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial } from '@fortawesome/free-solid-svg-icons';
-
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonComponent } from '../../../../shared/components/atoms/button/button.component';
 
@@ -13,14 +11,6 @@ import { ButtonComponent } from '../../../../shared/components/atoms/button/butt
   imports: [FontAwesomeModule, CardModule, ButtonComponent],
 })
 export class JobCardComponent {
-  // FontAwesome icons
-  faGraduationCap = faGraduationCap;
-  faLocationDot = faLocationDot;
-  faUser = faUser;
-  faClock = faClock;
-  faCalendar = faCalendar;
-  faFlaskVial = faFlaskVial;
-
   jobCard = {
     title: 'Deep Learning for Medical Imaging Diagnostics',
     timestamp: '1 month ago',
