@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonComponent } from '../../../../shared/components/atoms/button/button.component';
@@ -11,15 +11,13 @@ import { ButtonComponent } from '../../../../shared/components/atoms/button/butt
   imports: [FontAwesomeModule, CardModule, ButtonComponent],
 })
 export class JobCardComponent {
-  jobCard = {
-    title: 'Deep Learning for Medical Imaging Diagnostics',
-    timestamp: '1 month ago',
-    fieldOfStudies: 'Informatics',
-    location: 'Garching',
-    professor: 'Prof. Dr. Krusche',
-    workload: '60%',
-    startDate: 'Dec 1, 2025',
-  };
+  jobTitle = input<string>('');
+  fieldOfStudies = input<string>('');
+  location = input<string>('');
+  professor = input<string>('');
+  workload = input<string>('');
+  startDate = input<string>('');
+  timestamp = input<string>('');
 
   onViewDetails(): void {
     alert('View Details clicked!');
@@ -27,5 +25,30 @@ export class JobCardComponent {
 
   onApply(): void {
     alert('Apply clicked!');
+  }
+
+  getRelativeTime(date: string | undefined): string {
+    if (!date) {
+      return '';
+    }
+    const now = new Date();
+    const past = new Date(date);
+    const diffMilliSeconds = now.getTime() - past.getTime();
+
+    const diffDays = Math.floor(diffMilliSeconds / (1000 * 60 * 60 * 24));
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.round((diffDays / 365) * 2) / 2;
+
+    if (diffDays < 7) {
+      return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+    } else if (diffDays < 21) {
+      return diffDays < 14 ? '1 week ago' : '2 weeks ago';
+    } else if (diffDays == 21) {
+      return '3 weeks ago';
+    } else if (diffMonths < 12) {
+      return diffMonths <= 1 ? '1 month ago' : `${diffMonths} months ago`;
+    } else {
+      return diffYears === 1 ? '1 year ago' : `${diffYears} years ago`;
+    }
   }
 }

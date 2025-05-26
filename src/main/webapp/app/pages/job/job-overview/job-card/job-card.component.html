@@ -4,21 +4,21 @@
       <div class="card-icon">
         <fa-icon [icon]="['fas', 'flask-vial']"></fa-icon>
       </div>
-      <div class="timestamp">{{ jobCard.timestamp }}</div>
+      <div class="timestamp">{{ getRelativeTime(timestamp()) }}</div>
     </div>
   </ng-template>
 
   <ng-template #title>
-    <div class="card-title">{{ jobCard.title }}</div>
+    <div class="card-title">{{ jobTitle() }}</div>
   </ng-template>
 
   <div class="card-body">
     <ul class="card-info">
-      <li class="info-item"><fa-icon [icon]="['fas', 'graduation-cap']"></fa-icon> {{ jobCard.fieldOfStudies }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'location-dot']"></fa-icon> {{ jobCard.location }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'user']"></fa-icon> {{ jobCard.professor }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'clock']"></fa-icon> {{ jobCard.workload }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'calendar']"></fa-icon> Start: {{ jobCard.startDate }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'graduation-cap']"></fa-icon> {{ fieldOfStudies() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'location-dot']"></fa-icon> {{ location() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'user']"></fa-icon> {{ professor() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'clock']"></fa-icon> {{ workload() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'calendar']"></fa-icon> Start: {{ startDate() }}</li>
     </ul>
 
     <div class="card-actions">
