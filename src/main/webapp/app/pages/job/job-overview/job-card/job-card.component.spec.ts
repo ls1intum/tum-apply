@@ -1,9 +1,9 @@
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faClock, faFlaskVial, faGraduationCap, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { JobCardComponent } from './job-card.component';
-import { By } from '@angular/platform-browser';
 
 describe('JobCardComponent', () => {
   let component: JobCardComponent;

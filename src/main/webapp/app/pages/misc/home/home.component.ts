@@ -5,6 +5,7 @@ import { LoginService } from 'app/pages/usermanagement/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
 import { JobCardComponent } from '../../job/job-overview/job-card/job-card.component';
 
 @Component({

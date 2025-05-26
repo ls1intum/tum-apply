@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 import { ButtonComponent } from '../../../../shared/components/atoms/button/button.component';
 
 @Component({
@@ -28,7 +29,7 @@ export class JobCardComponent {
   }
 
   getRelativeTime(date: string | undefined): string {
-    if (!date) {
+    if (date === undefined) {
       return '';
     }
     const now = new Date();
@@ -43,7 +44,7 @@ export class JobCardComponent {
       return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
     } else if (diffDays < 21) {
       return diffDays < 14 ? '1 week ago' : '2 weeks ago';
-    } else if (diffDays == 21) {
+    } else if (diffDays === 21) {
       return '3 weeks ago';
     } else if (diffMonths < 12) {
       return diffMonths <= 1 ? '1 month ago' : `${diffMonths} months ago`;
