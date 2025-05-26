@@ -85,7 +85,8 @@
 
   .card-header {
     position: relative;
-    background: linear-gradient(to left, var(--p-secondary-color), pink);
+    //background: linear-gradient(to left, var(--p-secondary-color), pink);
+    background: var(--p-secondary-color);
     color: var(--p-text-on-primary);
     height: 6rem;
     display: flex;
