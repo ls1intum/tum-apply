@@ -3,7 +3,7 @@ import com.gorylenko.GenerateGitPropertiesTask
 // This section is required so that the latest version of the liquibase gradle plugin works
 buildscript {
     dependencies {
-      classpath "org.liquibase:liquibase-core:${liquibaseVersion}"
+        classpath "org.liquibase:liquibase-core:${liquibaseVersion}"
     }
 }
 
@@ -32,8 +32,8 @@ version = "0.1.0"
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_21
-  targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 ext {
@@ -61,11 +61,11 @@ if (project.hasProperty("prod")) {
 }
 
 if (project.hasProperty("war")) {
-  apply from: "gradle/war.gradle"
+    apply from: "gradle/war.gradle"
 }
 
 tasks.register("npmSetCacheDockerfile", NpmTask) {
-  args = ["set", "cache", "/opt/tum-apply/.npm"]
+    args = ["set", "cache", "/opt/tum-apply/.npm"]
 }
 
 idea {
@@ -129,40 +129,40 @@ configurations {
 }
 
 openApi {
-  apiDocsUrl.set("http://localhost:8080/api-docs")
-  outputDir.set(file("$rootDir/openapi"))
-  outputFileName.set("openapi.yaml")
-  waitTimeInSeconds.set(120)
-  customBootRun {
-    jvmArgs = [
-      "-Dspring.profiles.active=dev,no-liquibase",
-      "-Dspringdoc.packages-to-scan=de.tum.cit.aet.application.web, de.tum.cit.aet.evaluation.web, de.tum.cit.aet.job.web",
-      "-Dspring.docker.compose.enabled=false",
-      "-Dspring.docker.compose.lifecycle-management=none"
-    ]
-    args.set([
-            "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-            "--spring.datasource.username=sa",
-            "--spring.datasource.password=",
-            "--spring.datasource.driver-class-name=org.h2.Driver"
-            ])
-  }
+    apiDocsUrl.set("http://localhost:8080/api-docs")
+    outputDir.set(file("$rootDir/openapi"))
+    outputFileName.set("openapi.yaml")
+    waitTimeInSeconds.set(120)
+    customBootRun {
+        jvmArgs = [
+                "-Dspring.profiles.active=dev,no-liquibase",
+                "-Dspringdoc.packages-to-scan=de.tum.cit.aet.application.web, de.tum.cit.aet.evaluation.web, de.tum.cit.aet.job.web",
+                "-Dspring.docker.compose.enabled=false",
+                "-Dspring.docker.compose.lifecycle-management=none"
+        ]
+        args.set([
+                "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+                "--spring.datasource.username=sa",
+                "--spring.datasource.password=",
+                "--spring.datasource.driver-class-name=org.h2.Driver"
+        ])
+    }
 }
 
 openApiGenerate {
-  generatorName = "typescript-angular"
-  inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
-  outputDir.set("${rootDir}/src/main/webapp/app/generated")
-  apiPackage = "api"
-  modelPackage = "model"
-  invokerPackage = "invoker"
-  validateSpec.set(false)
-  configOptions = [
-    serviceSuffix: "Service",
-    supportsES6: "true",
-    npmName: "@tumapply/api-client",
-    npmVersion: "${project.version}"
-  ]
+    generatorName = "typescript-angular"
+    inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
+    outputDir.set("${rootDir}/src/main/webapp/app/generated")
+    apiPackage = "api"
+    modelPackage = "model"
+    invokerPackage = "invoker"
+    validateSpec.set(false)
+    configOptions = [
+            serviceSuffix: "Service",
+            supportsES6  : "true",
+            npmName      : "@tumapply/api-client",
+            npmVersion   : "${project.version}"
+    ]
 }
 
 repositories {
@@ -202,7 +202,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
     implementation "org.springframework.boot:spring-boot-starter-undertow"
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
-      exclude module: "spring-boot-starter-undertow"
+        exclude module: "spring-boot-starter-undertow"
     }
     implementation "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-validation"
@@ -238,6 +238,7 @@ dependencies {
     annotationProcessor "org.glassfish.jaxb:jaxb-runtime"
     annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"
     developmentOnly "org.springframework.boot:spring-boot-docker-compose"
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
 

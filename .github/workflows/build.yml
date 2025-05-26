@@ -29,6 +29,16 @@ on:
     types:
       - created
 
+concurrency:
+  group: |
+    ${{
+      github.event_name == 'pull_request' && format('build-pr-{0}', github.event.pull_request.number) ||
+      github.event_name == 'push' && format('build-{0}', github.ref) ||
+      github.event_name == 'release' && format('build-release-{0}', github.event.release.tag_name) ||
+      'build-default'
+    }}
+  cancel-in-progress: true
+
 jobs:
   build:
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
