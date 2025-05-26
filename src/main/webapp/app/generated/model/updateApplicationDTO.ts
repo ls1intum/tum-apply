@@ -7,28 +7,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ApplicantDTO } from './applicantDTO';
 
 
 export interface UpdateApplicationDTO { 
-    applicationId: string;
-    applicant: ApplicantDTO;
-    desiredDate?: string;
-    applicationState: UpdateApplicationDTO.ApplicationStateEnum;
-    projects?: string;
-    specialSkills?: string;
-    motivation?: string;
+    applicationId?: string;
 }
-export namespace UpdateApplicationDTO {
-    export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
-    export const ApplicationStateEnum = {
-        Saved: 'SAVED' as ApplicationStateEnum,
-        Sent: 'SENT' as ApplicationStateEnum,
-        Accepted: 'ACCEPTED' as ApplicationStateEnum,
-        InReview: 'IN_REVIEW' as ApplicationStateEnum,
-        Rejected: 'REJECTED' as ApplicationStateEnum,
-        Withdrawn: 'WITHDRAWN' as ApplicationStateEnum
-    };
-}
-
 

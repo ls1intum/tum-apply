@@ -14,7 +14,7 @@ export interface JobCardDTO {
     title?: string;
     fieldOfStudies?: string;
     location?: JobCardDTO.LocationEnum;
-    professorId?: string;
+    professorId: string;
     workload?: number;
     startDate?: string;
     createdAt?: string;
