@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, Signal, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -6,11 +6,11 @@ import { Injectable, signal } from '@angular/core';
 export class AuthTabService {
   private selectedTab = signal<number>(0);
 
-  getSelectedTab() {
+  getSelectedTab(): Signal<number> {
     return this.selectedTab;
   }
 
-  setSelectedTab(tab: number) {
+  setSelectedTab(tab: number): void {
     this.selectedTab.set(tab);
   }
 }

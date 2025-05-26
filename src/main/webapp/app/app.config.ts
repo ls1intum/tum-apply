@@ -1,6 +1,6 @@
-import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
-import { provideRouter, RouterModule, TitleStrategy, withRouterConfig } from '@angular/router';
+import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
@@ -31,7 +31,10 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       theme: {
         preset: TUMApplyPreset,
-        options: { darkModeSelector: '.tum-apply-dark-mode', cssLayer: { name: 'primeng', order: 'theme, base, primeng' } },
+        options: {
+          darkModeSelector: '.tum-apply-dark-mode',
+          cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
+        },
       },
     }),
     importProvidersFrom(BrowserModule),

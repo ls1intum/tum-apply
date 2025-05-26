@@ -31,12 +31,7 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
 
   // Load user if not already loaded and roles are required
   return accountService.identity().pipe(
-    map(account => {
-      if (!account) {
-        router.navigate(['/accessdenied']);
-        return false;
-      }
-
+    map(() => {
       if (accountService.hasAnyAuthority(requiredRoles)) {
         return true;
       }
