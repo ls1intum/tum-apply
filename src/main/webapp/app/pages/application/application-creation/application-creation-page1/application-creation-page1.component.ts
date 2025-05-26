@@ -20,7 +20,6 @@ export type ApplicationCreationPage1Data = {
   website: string;
   linkedIn: string;
   street: string;
-  streetnumber: string;
   city: string;
   country: string;
   postcode: string;
@@ -106,7 +105,6 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     city: application.applicant?.city ?? '',
     country: application.applicant?.country ?? '',
     postcode: application.applicant?.postalCode ?? '',
-    streetnumber: '', // TODO
   };
 };
 

@@ -51,7 +51,6 @@ export default class ApplicationCreationFormComponent {
     city: '',
     country: '',
     postcode: '',
-    streetnumber: '',
   });
   page2 = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
