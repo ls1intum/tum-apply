@@ -9,10 +9,14 @@ import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 
 import { Account } from '../../core/auth/account.model';
+import { MockKeycloakService } from '../../core/auth/keycloak.service.mock';
 
 import MainComponent from './main.component';
 
 jest.mock('app/core/auth/account.service');
+jest.mock('app/core/auth/keycloak.service', () => ({
+  keycloakService: new MockKeycloakService(),
+}));
 
 describe('MainComponent', () => {
   let comp: MainComponent;
@@ -215,16 +219,16 @@ describe('MainComponent', () => {
       comp.ngOnInit();
 
       // WHEN
-      translateService.onLangChange.emit({ lang: 'lang1', translations: {} as InterpolatableTranslationObject });
+      translateService.onLangChange.emit({ lang: 'en', translations: {} as InterpolatableTranslationObject });
 
       // THEN
-      expect(document.querySelector('html')?.getAttribute('lang')).toEqual('lang1');
+      expect(document.querySelector('html')?.getAttribute('lang')).toEqual('en');
 
       // WHEN
-      translateService.onLangChange.emit({ lang: 'lang2', translations: {} as InterpolatableTranslationObject });
+      translateService.onLangChange.emit({ lang: 'en', translations: {} as InterpolatableTranslationObject });
 
       // THEN
-      expect(document.querySelector('html')?.getAttribute('lang')).toEqual('lang2');
+      expect(document.querySelector('html')?.getAttribute('lang')).toEqual('en');
     });
   });
 });
