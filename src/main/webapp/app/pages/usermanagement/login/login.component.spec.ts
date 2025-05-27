@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
+import { By } from '@angular/platform-browser';
 
 import { MockKeycloakService } from '../../../core/auth/keycloak.service.mock';
 
@@ -31,5 +32,27 @@ describe('LoginComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have a login-page-wrapper div', () => {
+    const wrapperDiv = fixture.debugElement.query(By.css('.login-page-wrapper'));
+    expect(wrapperDiv).toBeTruthy();
+  });
+
+  it('should include the auth-card component', () => {
+    const authCardComponent = fixture.debugElement.query(By.css('jhi-auth-card'));
+    expect(authCardComponent).toBeTruthy();
+  });
+
+  it('should pass login mode to auth-card component', () => {
+    const authCardComponent = fixture.debugElement.query(By.css('jhi-auth-card'));
+    expect(authCardComponent).toBeTruthy();
+    expect(authCardComponent.attributes['ng-reflect-mode']).toBe('login');
+  });
+
+  it('should render the component within the login-page-wrapper', () => {
+    const wrapperDiv = fixture.debugElement.query(By.css('.login-page-wrapper'));
+    const authCardWithinWrapper = wrapperDiv.query(By.css('jhi-auth-card'));
+    expect(authCardWithinWrapper).toBeTruthy();
   });
 });
