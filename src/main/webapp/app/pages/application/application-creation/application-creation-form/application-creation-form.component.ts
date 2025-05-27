@@ -177,7 +177,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  title = '';
+  title = 'Student Assistant in UX Research';
 
   jobId = '';
   applicationId?: string;
