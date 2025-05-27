@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { By } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 
 import { MockKeycloakService } from '../../../core/auth/keycloak.service.mock';
 
@@ -18,6 +19,12 @@ describe('LoginComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {},
+        },
+      ],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);

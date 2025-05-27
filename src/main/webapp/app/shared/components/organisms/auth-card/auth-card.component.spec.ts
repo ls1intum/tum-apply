@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { keycloakService } from 'app/core/auth/keycloak.service';
+import { ActivatedRoute } from '@angular/router';
 
 import { AuthCardComponent } from './auth-card.component';
 
@@ -19,6 +20,12 @@ describe('AuthCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AuthCardComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {},
+        },
+      ],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
