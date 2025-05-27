@@ -177,7 +177,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  title = 'Machine Learning for Climate Science';
+  title = '';
 
   jobId = '';
   applicationId?: string;
