@@ -560,83 +560,10 @@
             "type": "string",
             "format": "date-time"
           }
-<<<<<<< HEAD
         },
         "required": [
           "jobId",
           "professorId"
-        ]
-      },
-      "UpdateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-||||||| parent of b07f52bc (fix: update application)
-        }
-      },
-      "UpdateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-=======
->>>>>>> b07f52bc (fix: update application)
-        },
-        "required": [
-          "jobId"
         ]
       },
       "ApplicantDTO": {
