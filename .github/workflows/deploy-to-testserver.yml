@@ -29,7 +29,6 @@ env:
 
 jobs:
   deploy:
-    if: always() && (needs.conditional-build.result == 'success' || needs.check-existing-build.result == 'success')
     uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
     with:
       environment: ${{ inputs.environment_name }}
