@@ -1,7 +1,6 @@
 package de.tum.cit.aet.job.service;
 
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
@@ -11,8 +10,6 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -127,5 +124,4 @@ public class JobService {
     public List<JobCardDTO> getAvailableJobs() {
         return jobRepository.findAllJobCardsByState(JobState.PUBLISHED);
     }
-
 }
