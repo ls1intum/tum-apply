@@ -1,6 +1,7 @@
 // client/src/app/keycloak/keycloak.service.ts
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
-import { environment } from 'app/environments/environment';
+
+import { environment } from '../../environments/environment';
 
 class KeycloakService {
   private keycloak!: Keycloak;
@@ -97,7 +98,7 @@ class KeycloakService {
    * Returns true if the user is currently logged in.
    */
   isLoggedIn(): boolean {
-    return !!this.keycloak.authenticated;
+    return Boolean(this.keycloak.authenticated);
   }
 }
 
