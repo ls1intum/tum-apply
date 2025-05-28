@@ -87,6 +87,7 @@ management:
     mail:
       enabled: false
 
-tumapply:
+aet:
   storage:
-    root: ./build/test-docs
+    root: build/test-docs
+    max-size-bytes: 26214400
