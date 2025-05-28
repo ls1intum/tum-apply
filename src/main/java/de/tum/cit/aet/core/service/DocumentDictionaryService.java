@@ -5,6 +5,7 @@ import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.service.support.DocumentDictionaryOwnerSetter;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -57,6 +58,19 @@ public class DocumentDictionaryService {
                 save(newEntry);
             }
         }
+    }
+
+    /**
+     * Retrieves a {@link DocumentDictionary} entity by its unique identifier.
+     *
+     * @param id the UUID of the DocumentDictionary to retrieve
+     * @return the {@link DocumentDictionary} entity associated with the given ID
+     * @throws EntityNotFoundException if no DocumentDictionary is found for the provided ID
+     */
+    public DocumentDictionary findDocumentDictionaryById(UUID id) {
+        return documentDictionaryRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Document dictionary with id " + id + " not found"));
     }
 
     /**

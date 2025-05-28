@@ -9,7 +9,6 @@ import de.tum.cit.aet.job.constants.CustomFieldType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,21 +19,24 @@ public class CustomFieldAnswerService {
     private final DocumentDictionaryService documentDictionaryService;
     private final DocumentService documentService;
 
+    /**
+     * Retrieves all document dictionaries associated with the given custom field answer.
+     *
+     * @param customFieldAnswer the custom field answer to retrieve documents for
+     * @return a list of associated {@link DocumentDictionary} objects
+     */
     public List<DocumentDictionary> getDocuments(CustomFieldAnswer customFieldAnswer) {
         return documentDictionaryService.getDocumentDictionaries(customFieldAnswer);
     }
 
-    public List<Resource> downloadDocuments(CustomFieldAnswer customFieldAnswer) {
-        if (!customFieldAnswer.getCustomField().getCustomFieldType().equals(CustomFieldType.FILE_UPLOAD)) {
-            throw new IllegalArgumentException("CustomField is no FileUpload");
-        }
-        List<DocumentDictionary> documentDictionaries = getDocuments(customFieldAnswer);
-        return documentDictionaries
-            .stream()
-            .map(documentDictionary -> documentService.download(documentDictionary.getDocument().getDocumentId()))
-            .toList();
-    }
-
+    /**
+     * Uploads a list of files and associates them with a given custom field answer and user.
+     *
+     * @param files the list of files to upload
+     * @param customFieldAnswer the custom field answer to associate the uploaded documents with
+     * @param user the user uploading the documents
+     * @throws IllegalArgumentException if the custom field is not of type FILE_UPLOAD
+     */
     public void uploadDocuments(List<MultipartFile> files, CustomFieldAnswer customFieldAnswer, User user) {
         if (!customFieldAnswer.getCustomField().getCustomFieldType().equals(CustomFieldType.FILE_UPLOAD)) {
             throw new IllegalArgumentException("CustomField is no FileUpload");
@@ -43,6 +45,12 @@ public class CustomFieldAnswerService {
         updateDocumentDictionaries(customFieldAnswer, documents);
     }
 
+    /**
+     * Updates the document dictionaries associated with the given custom field answer using the provided documents.
+     *
+     * @param customFieldAnswer the custom field answer to associate the documents with
+     * @param newDocuments the list of new documents to update in the dictionaries
+     */
     protected void updateDocumentDictionaries(CustomFieldAnswer customFieldAnswer, List<Document> newDocuments) {
         documentDictionaryService.updateDocumentDictionaries(getDocuments(customFieldAnswer), newDocuments, null, dd ->
             dd.setCustomFieldAnswer(customFieldAnswer)

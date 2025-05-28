@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -209,63 +208,6 @@ public class ApplicationService {
      */
     public List<DocumentDictionary> getMasterTranscripts(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
-    }
-
-    /**
-     * Downloads all CV documents for the given application.
-     *
-     * @param application the application whose CVs should be downloaded
-     * @return list of resources representing the downloaded CVs
-     */
-    public Resource downloadCV(Application application) {
-        List<DocumentDictionary> documentDictionaries = getCVs(application);
-        return documentDictionaries
-            .stream()
-            .map(documentDictionary -> documentService.download(documentDictionary.getDocument().getDocumentId()))
-            .toList()
-            .getFirst();
-    }
-
-    /**
-     * Downloads all reference documents for the given application.
-     *
-     * @param application the application whose references should be downloaded
-     * @return list of resources representing the downloaded references
-     */
-    public List<Resource> downloadReferences(Application application) {
-        List<DocumentDictionary> documentDictionaries = getReferences(application);
-        return documentDictionaries
-            .stream()
-            .map(documentDictionary -> documentService.download(documentDictionary.getDocument().getDocumentId()))
-            .toList();
-    }
-
-    /**
-     * Downloads all bachelor transcript documents for the given application.
-     *
-     * @param application the application whose bachelor transcripts should be downloaded
-     * @return list of resources representing the downloaded bachelor transcripts
-     */
-    public List<Resource> downloadBachelorTranscripts(Application application) {
-        List<DocumentDictionary> documentDictionaries = getBachelorTranscripts(application);
-        return documentDictionaries
-            .stream()
-            .map(documentDictionary -> documentService.download(documentDictionary.getDocument().getDocumentId()))
-            .toList();
-    }
-
-    /**
-     * Downloads all master transcript documents for the given application.
-     *
-     * @param application the application whose master transcripts should be downloaded
-     * @return list of resources representing the downloaded master transcripts
-     */
-    public List<Resource> downloadMasterTranscripts(Application application) {
-        List<DocumentDictionary> documentDictionaries = getMasterTranscripts(application);
-        return documentDictionaries
-            .stream()
-            .map(documentDictionary -> documentService.download(documentDictionary.getDocument().getDocumentId()))
-            .toList();
     }
 
     /**
