@@ -119,11 +119,17 @@ public class ApplicationResource {
         }
     }
 
-    //TODO this is for testing purposes only and will be removed
-    /***
+    //TODO this is only for testing and can be removed
+    /**
+     * Test endpoint for uploading multiple documents related to an application.
+     * <p>
+     * <b>Note:</b> This endpoint is for testing purposes only and will be removed.
+     * File uploads should be integrated into {@code createApplication()} and {@code updateApplication()}.
+     * </p>
      *
-     * This resource shows how to upload multiple documents
-     * The actual upload of files should be included in createApplication() & updateApplication()
+     * @param applicationId the ID of the application to associate the uploaded documents with
+     * @param files the list of documents to be uploaded as {@link MultipartFile}s
+     * @return {@link ResponseEntity} with HTTP 200 OK if the upload succeeds
      */
     @PostMapping("/{applicationId}/test-documents")
     public ResponseEntity<Void> testUploadDocuments(@PathVariable UUID applicationId, @RequestParam("files") List<MultipartFile> files) {
