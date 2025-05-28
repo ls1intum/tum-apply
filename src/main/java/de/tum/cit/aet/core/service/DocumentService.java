@@ -5,7 +5,6 @@ import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
-import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,7 +18,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.Optional;
-import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
@@ -107,10 +105,7 @@ public class DocumentService {
             });
     }
 
-    public Resource download(UUID documentId) {
-        Document document = documentRepository
-            .findById(documentId)
-            .orElseThrow(() -> new EntityNotFoundException("Document with id " + documentId + " not found"));
+    public Resource download(Document document) {
         try {
             return load(document);
         } catch (IOException e) {

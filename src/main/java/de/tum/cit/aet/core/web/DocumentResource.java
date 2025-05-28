@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/document-download")
+@RequestMapping("/api/documents")
 @AllArgsConstructor
 public class DocumentResource {
 
@@ -30,6 +30,6 @@ public class DocumentResource {
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentDictionaryId) {
         //TODO authorize access
         DocumentDictionary documentDictionary = documentDictionaryService.findDocumentDictionaryById(documentDictionaryId);
-        return ResponseEntity.ok(documentService.download(documentDictionary.getDocument().getDocumentId()));
+        return ResponseEntity.ok(documentService.download(documentDictionary.getDocument()));
     }
 }
