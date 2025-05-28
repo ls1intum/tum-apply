@@ -35,7 +35,6 @@ export class JobCardComponent {
     const now = new Date();
     const past = new Date(date);
     const diffMilliSeconds = now.getTime() - past.getTime();
-
     const diffDays = Math.floor(diffMilliSeconds / (1000 * 60 * 60 * 24));
     const diffMonths = Math.floor(diffDays / 30);
     const diffYears = Math.round((diffDays / 365) * 2) / 2;
