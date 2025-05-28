@@ -52,11 +52,10 @@ public class DocumentService {
         @Value("${aet.storage.max-size-bytes:26214400}") long maxFileSize
     ) throws NoSuchAlgorithmException {
         this.documentRepository = documentRepository;
-        this.root = Paths.get(rootDir);
+        this.root = Paths.get(rootDir).toAbsolutePath().normalize();
         this.maxFileSize = maxFileSize;
         this.sha256 = MessageDigest.getInstance("SHA-256");
 
-        // Ensure root exists once at startup
         try {
             Files.createDirectories(root);
         } catch (IOException ioe) {
@@ -151,7 +150,10 @@ public class DocumentService {
     private FileExtension parseExtension(MultipartFile file) {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         try {
-            FileExtension ext = FileExtension.valueOf(extension);
+            if (!StringUtils.hasText(extension)) {
+                throw new UploadException("Empty file or missing extension");
+            }
+            FileExtension ext = FileExtension.valueOf(extension.toUpperCase());
             if (!ALLOWED_EXTENSIONS.contains(ext)) {
                 throw new UploadException("File extension not allowed: ." + extension);
             }

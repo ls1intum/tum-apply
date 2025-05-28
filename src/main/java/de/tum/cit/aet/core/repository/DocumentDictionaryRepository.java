@@ -15,5 +15,5 @@ public interface DocumentDictionaryRepository extends TumApplyJpaRepository<Docu
 
     List<DocumentDictionary> findByApplicationAndDocumentType(Application application, DocumentType documentType);
 
-    List<DocumentDictionary> findByCustomFieldAnswerAndDocumentType(CustomFieldAnswer customFieldAnswer, DocumentType documentType);
+    List<DocumentDictionary> findByCustomFieldAnswer(CustomFieldAnswer customFieldAnswer);
 }

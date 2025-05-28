@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -119,19 +120,26 @@ public class ApplicationResource {
         }
     }
 
-    @PostMapping("/{applicationId}/bachelor-transcript")
-    public ResponseEntity<Void> uploadBachelorTranscript(
-        @PathVariable UUID applicationId,
-        @RequestParam("files") List<MultipartFile> files
-    ) {
+    @PostMapping("/{applicationId}/test-documents")
+    public ResponseEntity<Void> testUploadDocuments(@PathVariable UUID applicationId, @RequestParam("files") List<MultipartFile> files) {
         User user = new User();
         user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
 
         Application application = new Application();
         application.setApplicationId(UUID.fromString(applicationId.toString()));
 
-        applicationService.uploadBachelorTranscripts(files, application, user);
+        //applicationService.uploadBachelorTranscripts(files, application, user);
+        applicationService.uploadMasterTranscripts(files, application, user);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{applicationId}/test-documents")
+    public ResponseEntity<Resource> testDownloadDocuments(@PathVariable UUID applicationId) {
+        Application application = new Application();
+        application.setApplicationId(UUID.fromString(applicationId.toString()));
+
+        //return ResponseEntity.ok(applicationService.downloadBachelorTranscripts(application));
+        return ResponseEntity.ok(applicationService.downloadMasterTranscripts(application).getFirst());
     }
 }

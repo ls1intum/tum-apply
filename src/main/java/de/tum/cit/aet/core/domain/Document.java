@@ -26,7 +26,7 @@ public class Document extends AbstractAuditingEntity {
     @Column(name = "mime_type", nullable = false)
     private String mimeType;
 
-    @Column(name = "size_bates", nullable = false)
+    @Column(name = "size_bytes", nullable = false)
     private Long sizeBytes;
 
     @ManyToOne

@@ -233,5 +233,5 @@ jhipster:
 # Application specific properties:
 aet:
   storage:
-    root: /data/docs
+    root: storage/docs
     max-size-bytes: 26214400

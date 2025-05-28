@@ -16,7 +16,6 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -172,30 +171,67 @@ public class ApplicationService {
         applicationRepository.deleteById(applicationId);
     }
 
+    /**
+     * Retrieves all CV document entries for the given application.
+     *
+     * @param application the application to retrieve CVs for
+     * @return list of document dictionary entries of type CV
+     */
     public List<DocumentDictionary> getCVs(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.CV);
     }
 
+    /**
+     * Retrieves all reference document entries for the given application.
+     *
+     * @param application the application to retrieve references for
+     * @return list of document dictionary entries of type REFERENCE
+     */
     public List<DocumentDictionary> getReferences(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.REFERENCE);
     }
 
+    /**
+     * Retrieves all bachelor transcript document entries for the given application.
+     *
+     * @param application the application to retrieve bachelor transcripts for
+     * @return list of document dictionary entries of type BACHELOR_TRANSCRIPT
+     */
     public List<DocumentDictionary> getBachelorTranscripts(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
+    /**
+     * Retrieves all master transcript document entries for the given application.
+     *
+     * @param application the application to retrieve master transcripts for
+     * @return list of document dictionary entries of type MASTER_TRANSCRIPT
+     */
     public List<DocumentDictionary> getMasterTranscripts(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
     }
 
-    public List<Resource> downloadCVs(Application application) {
+    /**
+     * Downloads all CV documents for the given application.
+     *
+     * @param application the application whose CVs should be downloaded
+     * @return list of resources representing the downloaded CVs
+     */
+    public Resource downloadCV(Application application) {
         List<DocumentDictionary> documentDictionaries = getCVs(application);
         return documentDictionaries
             .stream()
             .map(documentDictionary -> documentService.download(documentDictionary.getDocument().getDocumentId()))
-            .toList();
+            .toList()
+            .getFirst();
     }
 
+    /**
+     * Downloads all reference documents for the given application.
+     *
+     * @param application the application whose references should be downloaded
+     * @return list of resources representing the downloaded references
+     */
     public List<Resource> downloadReferences(Application application) {
         List<DocumentDictionary> documentDictionaries = getReferences(application);
         return documentDictionaries
@@ -204,6 +240,12 @@ public class ApplicationService {
             .toList();
     }
 
+    /**
+     * Downloads all bachelor transcript documents for the given application.
+     *
+     * @param application the application whose bachelor transcripts should be downloaded
+     * @return list of resources representing the downloaded bachelor transcripts
+     */
     public List<Resource> downloadBachelorTranscripts(Application application) {
         List<DocumentDictionary> documentDictionaries = getBachelorTranscripts(application);
         return documentDictionaries
@@ -212,6 +254,12 @@ public class ApplicationService {
             .toList();
     }
 
+    /**
+     * Downloads all master transcript documents for the given application.
+     *
+     * @param application the application whose master transcripts should be downloaded
+     * @return list of resources representing the downloaded master transcripts
+     */
     public List<Resource> downloadMasterTranscripts(Application application) {
         List<DocumentDictionary> documentDictionaries = getMasterTranscripts(application);
         return documentDictionaries
@@ -220,49 +268,63 @@ public class ApplicationService {
             .toList();
     }
 
+    /**
+     * Uploads a single CV document and updates the dictionary mapping.
+     *
+     * @param cv the uploaded CV file
+     * @param application the application the CV belongs to
+     * @param user the user uploading the document
+     */
     public void uploadCV(MultipartFile cv, Application application, User user) {
         Document document = documentService.upload(cv, user);
         updateDocumentDictionaries(application, DocumentType.CV, List.of(document));
     }
 
+    /**
+     * Uploads multiple reference documents and updates the dictionary mapping.
+     *
+     * @param references the uploaded reference files
+     * @param application the application the references belong to
+     * @param user the user uploading the documents
+     */
     public void uploadReferences(List<MultipartFile> references, Application application, User user) {
         List<Document> documents = references.stream().map(file -> documentService.upload(file, user)).toList();
         updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
     }
 
+    /**
+     * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
+     *
+     * @param bachelorTranscripts the uploaded bachelor transcript files
+     * @param application the application the transcripts belong to
+     * @param user the user uploading the documents
+     */
     public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
         List<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).toList();
         updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
     }
 
+    /**
+     * Uploads multiple master transcript documents and updates the dictionary mapping.
+     *
+     * @param masterTranscripts the uploaded master transcript files
+     * @param application the application the transcripts belong to
+     * @param user the user uploading the documents
+     */
     public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
         List<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).toList();
         updateDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT, documents);
     }
 
-    public void updateDocumentDictionaries(Application application, DocumentType type, List<Document> newDocuments) {
+    /**
+     * Updates the document dictionary entries for a given application and document type.
+     *
+     * @param application    the application to associate the documents with
+     * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
+     * @param newDocuments   the list of newly uploaded documents to associate
+     */
+    protected void updateDocumentDictionaries(Application application, DocumentType type, List<Document> newDocuments) {
         List<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
-
-        Set<UUID> newDocumentIds = newDocuments.stream().map(Document::getDocumentId).collect(Collectors.toSet());
-
-        Set<UUID> existingDocumentIds = existingEntries.stream().map(dd -> dd.getDocument().getDocumentId()).collect(Collectors.toSet());
-
-        // Delete entries that are no longer used
-        for (DocumentDictionary dd : existingEntries) {
-            if (!newDocumentIds.contains(dd.getDocument().getDocumentId())) {
-                documentDictionaryService.delete(dd);
-            }
-        }
-
-        // Add new entries
-        for (Document doc : newDocuments) {
-            if (!existingDocumentIds.contains(doc.getDocumentId())) {
-                DocumentDictionary newEntry = new DocumentDictionary();
-                newEntry.setApplication(application);
-                newEntry.setDocument(doc);
-                newEntry.setDocumentType(type);
-                documentDictionaryService.save(newEntry);
-            }
-        }
+        documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
     }
 }
