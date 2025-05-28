@@ -363,43 +363,121 @@
       <column name="document_id" type="CHAR(36)">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="type" type="ENUM('BACHELOR_TRANSCRIPT','MASTER_TRANSCRIPT','CV','CUSTOM')">
+
+      <column name="sha256_id" type="VARCHAR(64)">
+        <constraints unique="true"/>
+      </column>
+
+      <column name="path" type="TEXT">
         <constraints nullable="false"/>
       </column>
-      <column name="document_path" type="TEXT">
+
+      <column name="mime_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="custom_field_answer_id" type="CHAR(36)"/>
-      <column name="application_id" type="CHAR(36)"/>
+
+      <column name="size_bytes" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="uploaded_by" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+
       <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>
+
       <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>
       </column>
     </createTable>
 
-    <addForeignKeyConstraint baseTableName="documents" baseColumnNames="custom_field_answer_id"
-                             constraintName="fk_documents_custom_field_answer"
-                             referencedTableName="custom_field_answers" referencedColumnNames="custom_field_answer_id"
+    <addForeignKeyConstraint baseTableName="documents"
+                             baseColumnNames="uploaded_by"
+                             constraintName="fk_documents_uploaded_by"
+                             referencedTableName="users"
+                             referencedColumnNames="user_id"
                              onDelete="CASCADE"/>
 
-    <addForeignKeyConstraint baseTableName="documents" baseColumnNames="application_id"
-                             constraintName="fk_documents_application"
-                             referencedTableName="applications" referencedColumnNames="application_id"
-                             onDelete="CASCADE"/>
-
-    <createIndex indexName="idx_documents_custom_field_answer" tableName="documents">
-      <column name="custom_field_answer_id"/>
-    </createIndex>
-
-    <createIndex indexName="idx_documents_application" tableName="documents">
-      <column name="application_id"/>
+    <createIndex indexName="idx_documents_uploaded_by" tableName="documents">
+      <column name="uploaded_by"/>
     </createIndex>
 
     <sql>
-      ALTER TABLE documents MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+      ALTER TABLE documents
+        MODIFY last_modified_at TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
     </sql>
+  </changeSet>
+
+
+  <changeSet id="012_create_document_dictionary" author="moritz-schmidt">
+    <createTable tableName="document_dictionary">
+      <column name="document_dictionary_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="document_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="applicant_id" type="CHAR(36)"/>
+
+      <column name="application_id" type="CHAR(36)"/>
+
+      <column name="custom_field_answer_id" type="CHAR(36)"/>
+
+      <column name="document_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <!-- Foreign Keys -->
+    <addForeignKeyConstraint baseTableName="document_dictionary"
+                             baseColumnNames="document_id"
+                             constraintName="fk_document_dictionary_document"
+                             referencedTableName="documents"
+                             referencedColumnNames="document_id"
+                             onDelete="CASCADE"/>
+
+    <addForeignKeyConstraint baseTableName="document_dictionary"
+                             baseColumnNames="applicant_id"
+                             constraintName="fk_document_dictionary_applicant"
+                             referencedTableName="applicants"
+                             referencedColumnNames="user_id"
+                             onDelete="CASCADE"/>
+
+    <addForeignKeyConstraint baseTableName="document_dictionary"
+                             baseColumnNames="application_id"
+                             constraintName="fk_document_dictionary_application"
+                             referencedTableName="applications"
+                             referencedColumnNames="application_id"
+                             onDelete="CASCADE"/>
+
+    <addForeignKeyConstraint baseTableName="document_dictionary"
+                             baseColumnNames="custom_field_answer_id"
+                             constraintName="fk_document_dictionary_custom_field_answer"
+                             referencedTableName="custom_field_answers"
+                             referencedColumnNames="custom_field_answer_id"
+                             onDelete="CASCADE"/>
+
+    <!-- Indexes -->
+    <createIndex indexName="idx_document_dictionary_document_id" tableName="document_dictionary">
+      <column name="document_id"/>
+    </createIndex>
+
+    <createIndex indexName="idx_document_dictionary_applicant_id" tableName="document_dictionary">
+      <column name="applicant_id"/>
+    </createIndex>
+
+    <createIndex indexName="idx_document_dictionary_application_id" tableName="document_dictionary">
+      <column name="application_id"/>
+    </createIndex>
+
+    <createIndex indexName="idx_document_dictionary_custom_field_answer_id" tableName="document_dictionary">
+      <column name="custom_field_answer_id"/>
+    </createIndex>
   </changeSet>
 
 
