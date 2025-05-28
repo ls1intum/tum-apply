@@ -13,7 +13,7 @@ public record JobCardDTO(
     String title,
     String fieldOfStudies,
     Campus location,
-    @NotNull UUID professorId,
+    String professorName,
     Integer workload,
     LocalDate startDate,
     Instant createdAt

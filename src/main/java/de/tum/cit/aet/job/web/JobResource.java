@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,10 +50,18 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs as JobCardDTOs.
      */
     @GetMapping("/available")
-    public ResponseEntity<List<JobCardDTO>> getAvailableJobs() {
-        List<JobCardDTO> jobs = jobService.getAvailableJobs();
+    public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "8") int size
+    ) {
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(page, size);
         return ResponseEntity.ok(jobs);
     }
+
+    // public ResponseEntity<List<JobCardDTO>> getAvailableJobs() {
+    // List<JobCardDTO> jobs = jobService.getAvailableJobs();
+    // return ResponseEntity.ok(jobs);
+    // }
 
     /**
      * {@code POST /api/jobs} : Create a new job posting.

@@ -11,6 +11,11 @@ const routes: Routes = [
     title: 'home.title',
   },
   {
+    path: 'job-overview',
+    loadComponent: () => import('./pages/job/job-overview/job-card-list/job-card-list.component').then(m => m.JobCardListComponent),
+    title: 'home.title',
+  },
+  {
     path: '',
     loadComponent: () => import('./pages/misc/home/home.component'),
     title: 'home.title',
