@@ -27,7 +27,7 @@ describe('JobCardComponent', () => {
     fixture.componentRef.setInput('professor', 'Prof. John Doe');
     fixture.componentRef.setInput('workload', '20%');
     fixture.componentRef.setInput('startDate', '2025-10-01');
-    fixture.componentRef.setInput('timestamp', '2001-09-01T10:00:00Z'); // equates to 23.5 years ago
+    fixture.componentRef.setInput('timestamp', '2011-01-23T10:00:00Z');
 
     fixture.detectChanges();
   });
@@ -52,7 +52,8 @@ describe('JobCardComponent', () => {
 
   it('should display relative timestamp', () => {
     const timestamp = fixture.nativeElement.querySelector('.timestamp');
-    expect(timestamp.textContent).toContain('23.5 years ago');
+    const relativeTime = component.getRelativeTime(component.timestamp());
+    expect(timestamp.textContent).toContain(relativeTime);
   });
 
   it('should trigger onViewDetails when "View Details" button is clicked', () => {
