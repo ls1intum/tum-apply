@@ -1,9 +1,12 @@
 package de.tum.cit.aet.application.web;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import jakarta.validation.constraints.Min;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -120,5 +124,14 @@ public class ApplicationResource {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<List<ApplicationOverviewDTO>> getApplicationPages(
+        @RequestParam UUID applicantId, // will be removed when can be accessed through login
+        @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
+        @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
+    ) {
+        return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
     }
 }
