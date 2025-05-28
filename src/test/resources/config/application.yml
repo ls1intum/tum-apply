@@ -86,3 +86,7 @@ management:
   health:
     mail:
       enabled: false
+
+tumapply:
+  storage:
+    root: ./build/test-docs
