@@ -61,6 +61,14 @@ public class DocumentService {
         }
     }
 
+    /**
+     * Uploads a file and stores it as a document.
+     *
+     * @param multipartFile the file to be uploaded
+     * @param user the user uploading the file
+     * @return the stored document
+     * @throws UploadException if the file cannot be stored
+     */
     public Document upload(MultipartFile multipartFile, User user) {
         validate(multipartFile);
         try {
@@ -105,6 +113,13 @@ public class DocumentService {
             });
     }
 
+    /**
+     * Downloads the given document as a resource.
+     *
+     * @param document the document to be downloaded
+     * @return the resource representing the downloaded document
+     * @throws UploadException if the document cannot be loaded
+     */
     public Resource download(Document document) {
         try {
             return load(document);
