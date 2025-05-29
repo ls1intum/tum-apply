@@ -28,8 +28,6 @@ import {
   faEnvelope,
   faEye,
   faFlag,
-  faFlaskVial,
-  faGraduationCap,
   faHeart,
   faHome,
   faList,
