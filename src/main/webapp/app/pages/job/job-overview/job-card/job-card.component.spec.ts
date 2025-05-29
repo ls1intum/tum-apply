@@ -27,7 +27,7 @@ describe('JobCardComponent', () => {
     fixture.componentRef.setInput('professor', 'Prof. John Doe');
     fixture.componentRef.setInput('workload', '20%');
     fixture.componentRef.setInput('startDate', '2025-10-01');
-    fixture.componentRef.setInput('timestamp', '2011-01-23T10:00:00Z');
+    fixture.componentRef.setInput('relativeTime', 'Today');
 
     fixture.detectChanges();
   });
@@ -48,25 +48,20 @@ describe('JobCardComponent', () => {
     expect(compiled.textContent).toContain('Prof. John Doe');
     expect(compiled.textContent).toContain('20%');
     expect(compiled.textContent).toContain('Start: 2025-10-01');
-  });
-
-  it('should display relative timestamp', () => {
-    const timestamp = fixture.nativeElement.querySelector('.timestamp');
-    const relativeTime = component.getRelativeTime(component.timestamp());
-    expect(timestamp.textContent).toContain(relativeTime);
+    expect(compiled.textContent).toContain('Today');
   });
 
   it('should trigger onViewDetails when "View Details" button is clicked', () => {
     const spy = jest.spyOn(component, 'onViewDetails');
     const button = fixture.debugElement.query(By.css('.view-button')).nativeElement;
     button.click();
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should trigger onApply when "Apply" button is clicked', () => {
     const spy = jest.spyOn(component, 'onApply');
     const button = fixture.debugElement.query(By.css('.apply-button')).nativeElement;
     button.click();
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
