@@ -1,1 +1,13 @@
-<p>header works!</p>
+<header class="app-header">
+  <div class="logo-section">
+    <img alt="TUM Logo" class="tum-logo" src="content/images/TUM Logo.svg" />
+    <span class="app-name">Apply</span>
+  </div>
+
+  <div class="actions-section">
+    <div class="language-switch"><span class="active">DE</span><span>|</span><span>EN</span></div>
+    <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
+    <button class="login-button">Login</button>
+    <button class="register-button">Register</button>
+  </div>
+</header>
