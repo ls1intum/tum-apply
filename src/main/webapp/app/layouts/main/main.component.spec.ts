@@ -229,6 +229,10 @@ describe('MainComponent', () => {
       expect(document.querySelector('html')?.getAttribute('lang')).toEqual('en');
     });
   });
+
+  it('should create the component', () => {
+    expect(comp).toBeTruthy();
+  });
 });
 
 @Component({
