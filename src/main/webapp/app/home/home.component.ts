@@ -2,9 +2,9 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { CommonModule } from '@angular/common';
 
 import { JobCardComponent } from '../job/job-overview/job-card/job-card.component';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'jhi-home',
