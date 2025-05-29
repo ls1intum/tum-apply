@@ -27,7 +27,7 @@ export class DynamicTableComponent {
   data = input<any[]>([]);
   rows = input<number>(10);
   totalRecords = input<number>(0);
-  loading = input<boolean>(false);
+  page = input<number>(0);
   selectable = input<boolean>(false);
 
   lazyLoad = output<TableLazyLoadEvent>();
