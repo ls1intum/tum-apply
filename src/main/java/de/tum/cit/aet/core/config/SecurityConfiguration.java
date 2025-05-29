@@ -123,7 +123,7 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/swagger-ui/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/jobs/create")
+                    .requestMatchers(HttpMethod.POST, "/api/jobs")
                     .permitAll();
             })
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())));
