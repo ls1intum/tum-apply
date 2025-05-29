@@ -28,6 +28,7 @@ export type ButtonGroupData = {
   imports: [CommonModule, ButtonComponent],
   templateUrl: './button-group.component.html',
   styleUrl: './button-group.component.scss',
+  standalone: true,
 })
 export default class ButtonGroupComponent {
   data = input.required<ButtonGroupData>();

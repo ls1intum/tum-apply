@@ -1,19 +1,24 @@
 {
   "login": {
-    "title": "Anmeldung",
-    "form": {
-      "password": "Passwort",
-      "password.placeholder": "Ihr Passwort",
-      "rememberme": "Automatische Anmeldung",
-      "button": "Anmelden"
+    "header": "Melde dich bei TUMApply an",
+    "tabs": {
+      "student": "Student / Bewerber",
+      "professor": "Professor / Betreuer"
+    },
+    "buttons": {
+      "microsoft": "Anmelden mit Microsoft",
+      "apple": "Anmelden mit Apple",
+      "google": "Anmelden mit Google",
+      "tum": "Anmelden mit TUM SSO"
+    },
+    "texts": {
+      "professor": "TUM Single Sign-On ist für Professoren und Betreuer erforderlich.",
+      "accountmissing": "Sie haben noch kein TUMApply-Konto? <a href=\"/register\">Registrieren Sie sich hier</a>."
     },
     "messages": {
       "error": {
         "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Überprüfen Sie bitte Ihre Angaben und versuchen Sie es erneut."
       }
-    },
-    "password": {
-      "forgot": "Sie haben Ihr Passwort vergessen?"
     }
   }
 }

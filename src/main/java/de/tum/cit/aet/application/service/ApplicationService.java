@@ -30,7 +30,6 @@ public class ApplicationService {
     }
 
     /**
-     *
      * @param createApplicationDTO
      * @return created ApplicationForApplicantDTO
      */
@@ -95,7 +94,6 @@ public class ApplicationService {
     }
 
     /**
-     *
      * @param applicantId
      * @return Set of ApplicationForApplicantDTO which all have the same applicant
      */
@@ -108,7 +106,6 @@ public class ApplicationService {
     }
 
     /**
-     *
      * @param jobId
      * @return Set of ApplicationForApplicantDTO which all have the same Job
      */
@@ -121,7 +118,6 @@ public class ApplicationService {
     }
 
     /**
-     *
      * @param applicationId
      * @return ApplicationForApplicantDTO with same Id as parameter applicationId
      */
@@ -131,7 +127,6 @@ public class ApplicationService {
     }
 
     /**
-     *
      * @param updateApplicationDTO
      * @return updated ApplicationForApplicantDTO with updated values
      */
@@ -144,7 +139,6 @@ public class ApplicationService {
     }
 
     /**
-     *
      * @param applicationId
      * @return withdrawn ApplicationForApplicantDTO
      */
@@ -160,7 +154,6 @@ public class ApplicationService {
     }
 
     /**
-     *
      * @param applicationId
      */
     @Transactional

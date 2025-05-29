@@ -115,6 +115,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   imports: [CommonModule, ReactiveFormsModule, DividerModule, DropdownComponent, DatePickerComponent, StringInputComponent],
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
@@ -124,7 +125,7 @@ export default class ApplicationCreationPage1Component {
   dropdownGenderLocal = dropdownGender;
   dropdownLanguageLocal = dropdownLanguage;
   dropdownNationalityLocal = dropdownNationality;
-
+  fb = inject(FormBuilder);
   page1Form = computed(() => {
     const currentData = this.data();
     return this.fb.group({
@@ -140,8 +141,6 @@ export default class ApplicationCreationPage1Component {
       postcode: [currentData.postcode, Validators.required],
     });
   });
-
-  fb = inject(FormBuilder);
 
   constructor() {
     effect(onCleanup => {

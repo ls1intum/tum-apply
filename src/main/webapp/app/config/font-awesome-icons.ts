@@ -1,6 +1,10 @@
 import {
+  faArrowDown19,
+  faArrowDownAZ,
   faArrowLeft,
   faArrowRight,
+  faArrowUp19,
+  faArrowUpAZ,
   faAsterisk,
   faBan,
   faBars,
@@ -53,8 +57,14 @@ import {
   faUsersCog,
   faWrench,
 } from '@fortawesome/free-solid-svg-icons';
+import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 
 export const fontAwesomeIcons = [
+  faApple,
+  faArrowDown19,
+  faArrowUp19,
+  faArrowDownAZ,
+  faArrowUpAZ,
   faArrowLeft,
   faArrowRight,
   faAsterisk,
@@ -79,8 +89,10 @@ export const fontAwesomeIcons = [
   faEnvelope,
   faEye,
   faFlag,
+  faGoogle,
   faHeart,
   faHome,
+  faMicrosoft,
   faList,
   faLocationDot,
   faLock,
