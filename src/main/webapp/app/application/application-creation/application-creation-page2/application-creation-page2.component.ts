@@ -6,7 +6,7 @@ import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/d
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 
-import { StringInputComponent } from '../../../../shared/components/atoms/string-input/string-input.component';
+import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;

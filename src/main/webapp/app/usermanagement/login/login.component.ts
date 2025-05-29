@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
-import { AuthCardComponent } from '../../../shared/components/organisms/auth-card/auth-card.component';
+import { AuthCardComponent } from '../../shared/components/organisms/auth-card/auth-card.component';
+import { CommonModule } from '@angular/common';
 
 /**
  * LoginComponent
@@ -9,8 +10,9 @@ import { AuthCardComponent } from '../../../shared/components/organisms/auth-car
  */
 @Component({
   selector: 'jhi-login',
-  imports: [AuthCardComponent],
+  imports: [AuthCardComponent, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
+  standalone: true,
 })
 export class LoginComponent {}
