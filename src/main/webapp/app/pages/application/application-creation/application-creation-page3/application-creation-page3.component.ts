@@ -30,12 +30,13 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
   imports: [CommonModule, ReactiveFormsModule, FloatLabelModule, DividerModule, DatePickerComponent, TextareaModule, UploadButtonComponent],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
 
   valid = output<boolean>();
-
+  fb = inject(FormBuilder);
   page3Form = computed(() => {
     const currentData = this.data();
     return this.fb.group({
@@ -44,8 +45,6 @@ export default class ApplicationCreationPage3Component {
       skills: [currentData.skills, Validators.required],
     });
   });
-
-  fb = inject(FormBuilder);
 
   constructor() {
     effect(onCleanup => {

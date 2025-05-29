@@ -1,39 +1,40 @@
 package de.tum.cit.aet.core.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
-
+import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.function.Supplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.*;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
+import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-import tech.jhipster.config.JHipsterProperties;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
-    private final JHipsterProperties jHipsterProperties;
+    private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
+    private final CorsFilter corsFilter;
 
-    public SecurityConfiguration(JHipsterProperties jHipsterProperties) {
-        this.jHipsterProperties = jHipsterProperties;
+    public SecurityConfiguration(CustomJwtAuthenticationConverter customJwtAuthenticationConverter, CorsFilter corsFilter) {
+        this.customJwtAuthenticationConverter = customJwtAuthenticationConverter;
+        this.corsFilter = corsFilter;
     }
 
     /**
@@ -46,59 +47,82 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(withDefaults())
-            .csrf(csrf ->
-                csrf
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
-            )
+            // Disables CSRF (Cross-Site Request Forgery) protection; useful in stateless APIs where the token management is unnecessary.
+            .csrf(CsrfConfigurer::disable)
+            // Adds a CORS (Cross-Origin Resource Sharing) filter before the username/password authentication to handle cross-origin requests.
+            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+            // Adds a custom filter for Single Page Applications (SPA), i.e. the client, after the basic authentication filter.
+            .addFilterAfter(new SpaWebFilter(), BasicAuthenticationFilter.class)
+            // Configures security headers.
             .headers(headers ->
                 headers
-                    .contentSecurityPolicy(csp -> csp.policyDirectives(jHipsterProperties.getSecurity().getContentSecurityPolicy()))
-                    .frameOptions(FrameOptionsConfig::sameOrigin)
+                    // Sets Content Security Policy (CSP) directives to prevent XSS attacks.
+                    .contentSecurityPolicy(csp -> csp.policyDirectives("script-src 'self' 'unsafe-inline' 'unsafe-eval'"))
+                    // Prevents the website from being framed, avoiding clickjacking attacks.
+                    .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
+                    // Sets Referrer Policy to limit the amount of referrer information sent with requests.
                     .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                    // Disables HTTP Strict Transport Security as it is managed at the reverse proxy level (typically nginx).
+                    .httpStrictTransportSecurity((HeadersConfigurer.HstsConfig::disable))
+                    // Defines Permissions Policy to restrict what features the browser is allowed to use.
                     .permissionsPolicyHeader(permissions ->
                         permissions.policy(
-                            "camera=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()"
+                            "camera=(), fullscreen=(*), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()"
                         )
                     )
             )
+            // Configures sessions to be stateless; appropriate for REST APIs where no session is required.
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // Configures authorization for various URL patterns. The patterns are considered in order.
             .authorizeHttpRequests(requests ->
-                // prettier-ignore
                 requests
-                    .requestMatchers("/", "/index.html", "/*.js", "/*.txt", "/*.json", "/*.map", "/*.css").permitAll()
-                    .requestMatchers("/*.ico", "/*.png", "/*.svg", "/*.webapp").permitAll()
-                    .requestMatchers("/manifest.webapp", "/robots.txt").permitAll()
-                    .requestMatchers("/app/**").permitAll()
-                    .requestMatchers("/i18n/*.json").permitAll()
-                    .requestMatchers("/content/**").permitAll()
-                    .requestMatchers("/swagger-ui/**").permitAll()
-                    .requestMatchers(("/api-docs.yaml")).permitAll()
-                    .requestMatchers(("/api-docs")).permitAll()
-                    .requestMatchers("/api/authenticate").permitAll()
-                    .requestMatchers("/api/auth-info").permitAll()
-                    .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                    .requestMatchers("/api/**").authenticated()
-                    .requestMatchers("/v3/api-docs/**").hasAuthority("ADMIN")
-                    .requestMatchers("/management/health").permitAll()
-                    .requestMatchers("/management/health/**").permitAll()
-                    .requestMatchers("/management/info").permitAll()
-                    .requestMatchers("/management/prometheus").permitAll()
-                    .requestMatchers("/management/**").hasAuthority("ADMIN")
+                    // NOTE: Always have a look at {@link de.tum.cit.aet.artemis.core.security.filter.SpaWebFilter} to see which URLs are forwarded to the SPA
+                    // Client related URLs and publicly accessible information (allowed for everyone).
+                    .requestMatchers("/", "/index.html", "/public/**")
+                    .permitAll()
+                    .requestMatchers("/*.js", "/*.css", "/*.map", "/*.json")
+                    .permitAll()
+                    .requestMatchers("/manifest.webapp", "/robots.txt")
+                    .permitAll()
+                    .requestMatchers("/content/**", "/i18n/*.json", "/logo/*")
+                    .permitAll()
+                    // Information and health endpoints do not need authentication
+                    .requestMatchers("/management/info", "/management/health")
+                    .permitAll()
+                    // Admin area requires specific authority.
+                    .requestMatchers("/api/*/admin/**")
+                    .hasAuthority("ADMIN")
+                    // Publicly accessible API endpoints (allowed for everyone).
+                    .requestMatchers("/api/*/public/**")
+                    .permitAll()
+                    .requestMatchers("/api/**")
+                    .authenticated()
+                    .requestMatchers("/login/webauthn")
+                    .permitAll()
+                    // Websocket and other specific endpoints allowed without authentication.
+                    .requestMatchers("/websocket/**")
+                    .permitAll()
+                    .requestMatchers("/.well-known/jwks.json")
+                    .permitAll()
+                    .requestMatchers("/.well-known/assetlinks.json")
+                    .permitAll()
+                    // Prometheus endpoint protected by IP address.
+                    .requestMatchers("/management/prometheus/**")
+                    .permitAll()
+                    .requestMatchers(("/api-docs"))
+                    .permitAll()
+                    .requestMatchers(("/api-docs.yaml"))
+                    .permitAll()
+                    .requestMatchers("/swagger-ui/**")
+                    .permitAll()
             )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())));
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter)));
         return http.build();
     }
 
     @Bean
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
-    }
-
-    Converter<Jwt, AbstractAuthenticationToken> authenticationConverter() {
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setPrincipalClaimName(PREFERRED_USERNAME);
-        return jwtAuthenticationConverter;
     }
 
     /**

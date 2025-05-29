@@ -52,6 +52,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   imports: [CommonModule, DividerModule, DropdownComponent, UploadButtonComponent, ReactiveFormsModule, StringInputComponent],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationPage2Component {
   bachelorGradingScaleLocal = bachelorGradingScale;
@@ -59,7 +60,7 @@ export default class ApplicationCreationPage2Component {
 
   data = model.required<ApplicationCreationPage2Data>();
   valid = output<boolean>();
-
+  fb = inject(FormBuilder);
   page2Form = computed(() => {
     const currentData = this.data();
     return this.fb.group({
@@ -71,8 +72,6 @@ export default class ApplicationCreationPage2Component {
       masterGrade: [currentData.masterGrade, Validators.required],
     });
   });
-
-  fb = inject(FormBuilder);
 
   constructor() {
     effect(onCleanup => {

@@ -30,6 +30,7 @@ type ApplicationFormMode = 'create'; /* TODO | 'edit' | 'view' */
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationFormComponent {
   page1: ApplicationCreationPage1Data = {
@@ -69,7 +70,13 @@ export default class ApplicationCreationFormComponent {
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
-
+  title = 'Machine Learning for Climate Science';
+  jobId = '';
+  mode: ApplicationFormMode = 'create';
+  page1Valid = signal<boolean>(false);
+  page2Valid = signal<boolean>(false);
+  page3Valid = signal<boolean>(false);
+  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   stepData = computed<StepData[]>(() => {
     const sendData = (state: 'SAVED' | 'SENT'): void => {
       this.sendCreateApplicationData(state);
@@ -174,18 +181,6 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  title = 'Machine Learning for Climate Science';
-
-  jobId = '';
-
-  mode: ApplicationFormMode = 'create';
-
-  page1Valid = signal<boolean>(false);
-  page2Valid = signal<boolean>(false);
-  page3Valid = signal<boolean>(false);
-
-  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
-
   private applicationResourceService = inject(ApplicationResourceService);
   private jobResourceService = inject(JobResourceService);
   private router = inject(Router);

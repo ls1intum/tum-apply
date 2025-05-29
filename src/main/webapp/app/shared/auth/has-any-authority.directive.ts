@@ -14,23 +14,35 @@ import { AccountService } from 'app/core/auth/account.service';
  */
 @Directive({
   selector: '[jhiHasAnyAuthority]',
+  standalone: true,
 })
 export default class HasAnyAuthorityDirective {
-  public authorities = input<string | string[]>([], { alias: 'jhiHasAnyAuthority' });
+  public roles = input<string | string[]>([], { alias: 'jhiHasAnyAuthority' });
 
   private readonly templateRef = inject(TemplateRef<any>);
   private readonly viewContainerRef = inject(ViewContainerRef);
 
+  private embeddedViewCreated = false;
+
   constructor() {
     const accountService = inject(AccountService);
     const currentAccount = accountService.trackCurrentAccount();
-    const hasPermission = computed(() => currentAccount()?.authorities && accountService.hasAnyAuthority(this.authorities()));
+
+    const hasPermission = computed(() => {
+      const user = currentAccount();
+      const roles = this.roles();
+      return !!user?.roles && !!roles.length && accountService.hasAnyAuthority(roles);
+    });
 
     effect(() => {
-      if (hasPermission() === true) {
-        this.viewContainerRef.createEmbeddedView(this.templateRef);
+      if (hasPermission()) {
+        if (!this.embeddedViewCreated) {
+          this.viewContainerRef.createEmbeddedView(this.templateRef);
+          this.embeddedViewCreated = true;
+        }
       } else {
         this.viewContainerRef.clear();
+        this.embeddedViewCreated = false;
       }
     });
   }
