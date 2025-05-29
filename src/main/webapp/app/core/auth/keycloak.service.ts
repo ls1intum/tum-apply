@@ -4,7 +4,7 @@ import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 import { environment } from '../../environments/environment';
 
 class KeycloakService {
-  private keycloak!: Keycloak;
+  private keycloak: Keycloak | undefined;
 
   /**
    * Initializes the Keycloak client and determines login status.
@@ -33,14 +33,14 @@ class KeycloakService {
 
       if (!authenticated && !isPublicPath) {
         console.warn('🔐 Protected route without login – redirecting to Keycloak');
-        this.keycloak.login();
+        await this.keycloak.login();
       }
 
       return authenticated;
     } catch (err) {
       if (!isPublicPath && (err as { error?: string }).error !== 'access_denied') {
         console.warn('🔐 Protected route without login – redirecting to Keycloak');
-        this.keycloak.login();
+        await this.keycloak.login();
       }
 
       console.warn('🔁 Keycloak init failed:', err);
@@ -52,6 +52,10 @@ class KeycloakService {
    * Triggers the Keycloak login flow.
    */
   login(): void {
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return;
+    }
     this.keycloak.login({
       redirectUri: window.location.origin + '/',
     });
@@ -61,6 +65,10 @@ class KeycloakService {
    * Triggers the Keycloak logout and redirect.
    */
   logout(): void {
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return;
+    }
     this.keycloak.logout({
       redirectUri: window.location.origin + '/',
     });
@@ -70,6 +78,10 @@ class KeycloakService {
    * Returns the current token.
    */
   getToken(): string | undefined {
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return;
+    }
     return this.keycloak.token;
   }
 
@@ -77,6 +89,10 @@ class KeycloakService {
    * Returns the current username.
    */
   getUsername(): string {
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return '';
+    }
     return this.keycloak.tokenParsed?.preferred_username ?? '';
   }
 
@@ -84,6 +100,10 @@ class KeycloakService {
    * Checks if the user has a specific role.
    */
   hasRole(role: string): boolean {
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return false;
+    }
     return this.keycloak.tokenParsed?.realm_access?.roles.includes(role) ?? false;
   }
 
@@ -91,6 +111,10 @@ class KeycloakService {
    * Returns all realm roles assigned to the user.
    */
   getUserRoles(): string[] {
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return [];
+    }
     return this.keycloak.tokenParsed?.realm_access?.roles ?? [];
   }
 
@@ -98,6 +122,10 @@ class KeycloakService {
    * Returns true if the user is currently logged in.
    */
   isLoggedIn(): boolean {
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return false;
+    }
     return Boolean(this.keycloak.authenticated);
   }
 }
