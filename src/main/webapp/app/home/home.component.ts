@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
-import { JobCardComponent } from '../../job/job-overview/job-card/job-card.component';
+import { JobCardComponent } from '../job/job-overview/job-card/job-card.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
