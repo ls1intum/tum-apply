@@ -122,6 +122,8 @@ public class SecurityConfiguration {
                     .requestMatchers(("/api-docs.yaml"))
                     .permitAll()
                     .requestMatchers("/swagger-ui/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/jobs/create")
                     .permitAll();
             })
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())));
