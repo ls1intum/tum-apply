@@ -30,7 +30,11 @@ export default class MainComponent {
 
   constructor() {
     this.renderer = this.rootRenderer.createRenderer(document.querySelector('html'), null);
-
+    this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
+      this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
+      dayjs.locale(langChangeEvent.lang);
+      this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
+    });
     effect(() => {
       this.initApp();
     });
@@ -48,12 +52,6 @@ export default class MainComponent {
 
     this.router.events.subscribe(() => {
       this.currentUrl.set(this.router.url);
-    });
-
-    this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
-      this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
-      dayjs.locale(langChangeEvent.lang);
-      this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
   }
 }
