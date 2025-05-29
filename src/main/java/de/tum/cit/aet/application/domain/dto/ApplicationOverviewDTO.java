@@ -1,14 +1,20 @@
 package de.tum.cit.aet.application.domain.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-public record ApplicationOverviewDTO(
-    @NotNull UUID applicationId,
-    @NotNull String jobTitle,
-    @NotNull String researchGroup,
-    @NotNull ApplicationState applicationState,
-    LocalDate submitted
-) {}
+@AllArgsConstructor
+@Getter
+@Setter
+public class ApplicationOverviewDTO {
+
+    private UUID applicationId;
+    private String jobTitle;
+    private String researchGroup;
+    private ApplicationState applicationState;
+    private Instant createdAt;
+}

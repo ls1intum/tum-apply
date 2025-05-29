@@ -1021,17 +1021,11 @@
               "WITHDRAWN"
             ]
           },
-          "submitted": {
+          "createdAt": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
-        },
-        "required": [
-          "applicationId",
-          "applicationState",
-          "jobTitle",
-          "researchGroup"
-        ]
+        }
       }
     }
   }

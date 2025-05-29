@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the {@link Application} entity.
  */
 @Repository
-public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID> {
+public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID>, ApplicationEntityRepository {
     Set<Application> findAllByApplicantUserId(UUID applicantId);
 
     Set<Application> findAllByJobJobId(UUID jobId);

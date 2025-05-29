@@ -1,18 +1,22 @@
 import { Component, computed, inject, signal, TemplateRef, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
+import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [DynamicTableComponent, ButtonComponent],
+  imports: [DynamicTableComponent, ButtonComponent, BadgeModule],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
 export default class ApplicationOverviewForApplicantComponent {
   readonly applicantId = '00000000-0000-0000-0000-000000000104';
+
+  private readonly router = inject(Router);
 
   loading = signal(false);
   pageData = signal<ApplicationOverviewDTO[]>([]);
@@ -20,15 +24,19 @@ export default class ApplicationOverviewForApplicantComponent {
   total = signal(0);
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+  readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
+  readonly createdTemplate = viewChild.required<TemplateRef<unknown>>('createdTemplate');
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
-    const tpl = this.actionTemplate();
+    const actionTemplate = this.actionTemplate();
+    const badgeTemplate = this.badgeTemplate();
+    const createdTemplate = this.createdTemplate();
     return [
-      { field: 'jobTitle', header: 'Position Title', width: '5rem' },
-      { field: 'research_group', header: 'Research Group', width: '12rem' },
-      { field: 'state', header: 'Status', width: '10rem', alignCenter: true },
-      { field: 'submitted_since', header: 'Submitted', width: '26rem' },
-      { field: 'actions', header: '', width: '5rem', template: tpl },
+      { field: 'jobTitle', header: 'Position Title', width: '34rem' },
+      { field: 'researchGroup', header: 'Research Group', width: '20rem' },
+      { field: 'badges', header: 'Status', width: '10rem', template: badgeTemplate },
+      { field: 'created', header: 'Created', width: '10rem', template: createdTemplate },
+      { field: 'actions', header: '', width: '15rem', template: actionTemplate },
     ];
   });
 
@@ -45,9 +53,7 @@ export default class ApplicationOverviewForApplicantComponent {
       const res = await firstValueFrom(this.applicationService.getApplicationPages(this.applicantId, rows, page).pipe());
 
       setTimeout(() => {
-        // this.pageData.set(res.applications ?? []);
-        // this.total.set(res.totalRecords ?? 0);
-        this.pageData.set([...res]);
+        this.pageData.set(res);
         this.total.set(res.length);
       });
     } catch (error) {
@@ -55,5 +61,52 @@ export default class ApplicationOverviewForApplicantComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  onViewApplication(applicationId: string): void {
+    this.router.navigate([`/application/edit/${applicationId}`]);
+  }
+
+  onDeleteApplication(applicationId: string): void {
+    // TODO nicer looking confirm
+    const confirmDelete = confirm('Do you really want to delete this application?');
+    if (confirmDelete) {
+      this.applicationService.deleteApplication(applicationId);
+    }
+  }
+
+  onWithdrawApplication(applicationId: string): void {
+    // TODO nicer looking confirm
+    const confirmWithdraw = confirm('Do you really want to withdraw this application?');
+    if (confirmWithdraw) {
+      this.applicationService.withdrawApplication(applicationId);
+    }
+  }
+
+  calculateDate(createdDateString: string): string {
+    // console.log(createdDate);
+    const now = new Date();
+    const createdDate = new Date(createdDateString);
+    const seconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 1) return 'just now';
+
+    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+
+    const hours = Math.floor(seconds / 3600);
+    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+
+    const days = Math.floor(seconds / 86400);
+    if (days < 7) return `${days} day${days !== 1 ? 's' : ''} ago`;
+
+    const weeks = Math.floor(seconds / 604800);
+    if (weeks < 5) return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
+
+    const months = Math.floor(seconds / 2592000); // 30 days
+    if (months < 12) return `${months} month${months !== 1 ? 's' : ''} ago`;
+
+    const years = Math.floor(seconds / 31536000); // 365 days
+    return `${years} year${years !== 1 ? 's' : ''} ago`;
   }
 }

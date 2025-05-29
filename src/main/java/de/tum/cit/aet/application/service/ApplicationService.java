@@ -171,7 +171,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllApplications'");
+        // throw new UnsupportedOperationException("Unimplemented method 'getAllApplications'");
+        return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
     }
 }
