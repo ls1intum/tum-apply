@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, TemplateRef, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
