@@ -125,7 +125,7 @@ export default class ApplicationCreationPage1Component {
   dropdownGenderLocal = dropdownGender;
   dropdownLanguageLocal = dropdownLanguage;
   dropdownNationalityLocal = dropdownNationality;
-
+  fb = inject(FormBuilder);
   page1Form = computed(() => {
     const currentData = this.data();
     return this.fb.group({
@@ -141,8 +141,6 @@ export default class ApplicationCreationPage1Component {
       postcode: [currentData.postcode, Validators.required],
     });
   });
-
-  fb = inject(FormBuilder);
 
   constructor() {
     effect(onCleanup => {
