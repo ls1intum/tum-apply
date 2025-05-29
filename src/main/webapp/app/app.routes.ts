@@ -16,11 +16,6 @@ const routes: Routes = [
     title: 'home.title',
   },
   {
-    path: '',
-    loadComponent: () => import('./layouts/navbar/navbar.component'),
-    outlet: 'navbar',
-  },
-  {
     path: 'application/create/:job_id',
     loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
   },
