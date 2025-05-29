@@ -2,28 +2,28 @@ import com.gorylenko.GenerateGitPropertiesTask
 
 // This section is required so that the latest version of the liquibase gradle plugin works
 buildscript {
-    dependencies {
-        classpath "org.liquibase:liquibase-core:${liquibaseVersion}"
-    }
+  dependencies {
+    classpath "org.liquibase:liquibase-core:${liquibaseVersion}"
+  }
 }
 
 plugins {
-    id "checkstyle"
-    id "idea"
-    id "java"
-    id "jacoco"
-    id "com.diffplug.spotless" version "7.0.3"
-    id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
-    id "com.github.ben-manes.versions" version "0.52.0"
-    id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
-    id "com.google.cloud.tools.jib" version "3.4.5"
-    id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
-    id "io.spring.dependency-management" version "1.1.7"
-    id "org.liquibase.gradle" version "${liquibasePluginVersion}"
-    id "org.sonarqube" version "6.2.0.5505"
-    id "org.springframework.boot" version "${springBootVersion}"
-    id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
-    id "org.openapi.generator" version "7.12.0"
+  id "checkstyle"
+  id "idea"
+  id "java"
+  id "jacoco"
+  id "com.diffplug.spotless" version "7.0.3"
+  id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
+  id "com.github.ben-manes.versions" version "0.52.0"
+  id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
+  id "com.google.cloud.tools.jib" version "3.4.5"
+  id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
+  id "io.spring.dependency-management" version "1.1.7"
+  id "org.liquibase.gradle" version "${liquibasePluginVersion}"
+  id "org.sonarqube" version "6.2.0.5505"
+  id "org.springframework.boot" version "${springBootVersion}"
+  id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
+  id "org.openapi.generator" version "7.12.0"
 }
 
 group = "de.tum.cit.aet"
@@ -32,248 +32,248 @@ version = "0.1.0"
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+  sourceCompatibility = JavaVersion.VERSION_21
+  targetCompatibility = JavaVersion.VERSION_21
 }
 
 ext {
-    springProfiles = ""
+  springProfiles = ""
 }
 
 wrapper {
-    gradleVersion = "8.13"
+  gradleVersion = "8.13"
 }
 
 spotless {
-    java {
-        target "src/*/java/**/*.java"
-        // removeUnusedImports()
-    }
+  java {
+    target "src/*/java/**/*.java"
+    // removeUnusedImports()
+  }
 }
 
 //apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
 if (project.hasProperty("prod")) {
-    apply from: "gradle/profile_prod.gradle"
+  apply from: "gradle/profile_prod.gradle"
 } else {
-    apply from: "gradle/profile_dev.gradle"
+  apply from: "gradle/profile_dev.gradle"
 }
 
 if (project.hasProperty("war")) {
-    apply from: "gradle/war.gradle"
+  apply from: "gradle/war.gradle"
 }
 
 tasks.register("npmSetCacheDockerfile", NpmTask) {
-    args = ["set", "cache", "/opt/tum-apply/.npm"]
+  args = ["set", "cache", "/opt/tum-apply/.npm"]
 }
 
 idea {
-    module {
-        excludeDirs += files("node_modules")
-    }
+  module {
+    excludeDirs += files("node_modules")
+  }
 }
 
 defaultTasks "bootRun"
 
 springBoot {
-    mainClass = "de.tum.cit.aet.TumApplyApp"
+  mainClass = "de.tum.cit.aet.TumApplyApp"
 }
 
 test {
-    useJUnitPlatform()
-    exclude "**/*IT*", "**/*IntTest*"
-    testLogging {
-        events 'FAILED', 'SKIPPED'
-    }
-    jvmArgs += '-Djava.security.egd=file:/dev/./urandom -Xmx512m'
-    testClassesDirs = testing.suites.test.sources.output.classesDirs
-    classpath = testing.suites.test.sources.runtimeClasspath
-    reports.html.required = false
+  useJUnitPlatform()
+  exclude "**/*IT*", "**/*IntTest*"
+  testLogging {
+    events 'FAILED', 'SKIPPED'
+  }
+  jvmArgs += '-Djava.security.egd=file:/dev/./urandom -Xmx512m'
+  testClassesDirs = testing.suites.test.sources.output.classesDirs
+  classpath = testing.suites.test.sources.runtimeClasspath
+  reports.html.required = false
 }
 
 modernizer {
-    failOnViolations = false
-    includeTestClasses = true
-    // Copy the rule name as defined in https://github.com/gaul/modernizer-maven-plugin/blob/master/modernizer-maven-plugin/src/main/resources/modernizer.xml to exclude it
-    exclusions = ["java/util/Optional.get:()Ljava/lang/Object;"]
+  failOnViolations = false
+  includeTestClasses = true
+  // Copy the rule name as defined in https://github.com/gaul/modernizer-maven-plugin/blob/master/modernizer-maven-plugin/src/main/resources/modernizer.xml to exclude it
+  exclusions = ["java/util/Optional.get:()Ljava/lang/Object;"]
 }
 
 tasks.register("testReport", TestReport) {
-    destinationDirectory.set(layout.buildDirectory.dir("reports/tests"))
-    testResults.from(tasks.named("test"))
+  destinationDirectory.set(layout.buildDirectory.dir("reports/tests"))
+  testResults.from(tasks.named("test"))
 }
 
 tasks.register("integrationTestReport", TestReport) {
-    destinationDirectory.set(layout.buildDirectory.dir("reports/tests"))
-    testResults.from(tasks.named("integrationTest"))
+  destinationDirectory.set(layout.buildDirectory.dir("reports/tests"))
+  testResults.from(tasks.named("integrationTest"))
 }
 
 tasks.withType(GenerateGitPropertiesTask).configureEach {
-    outputs.doNotCacheIf("Task is always executed") { true }
+  outputs.doNotCacheIf("Task is always executed") { true }
 }
 
 checkstyle {
-    // Exclude everything under the build directory
-    toolVersion = "${checkstyleVersion}"
-    configFile = file("checkstyle.xml")
-    checkstyleTest.enabled = false
-    maxErrors = 0
+  // Exclude everything under the build directory
+  toolVersion = "${checkstyleVersion}"
+  configFile = file("checkstyle.xml")
+  checkstyleTest.enabled = false
+  maxErrors = 0
 }
 
 checkstyleMain.source = "src/main/java"
 
 
 configurations {
-    providedRuntime
+  providedRuntime
 }
 
 openApi {
-    apiDocsUrl.set("http://localhost:8080/api-docs")
-    outputDir.set(file("$rootDir/openapi"))
-    outputFileName.set("openapi.yaml")
-    waitTimeInSeconds.set(120)
-    customBootRun {
-        jvmArgs = [
-                "-Dspring.profiles.active=dev,no-liquibase",
-                "-Dspringdoc.packages-to-scan=de.tum.cit.aet.application.web, de.tum.cit.aet.evaluation.web, de.tum.cit.aet.job.web",
-                "-Dspring.docker.compose.enabled=false",
-                "-Dspring.docker.compose.lifecycle-management=none"
-        ]
-        args.set([
-                "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-                "--spring.datasource.username=sa",
-                "--spring.datasource.password=",
-                "--spring.datasource.driver-class-name=org.h2.Driver"
-        ])
-    }
+  apiDocsUrl.set("http://localhost:8080/api-docs")
+  outputDir.set(file("$rootDir/openapi"))
+  outputFileName.set("openapi.yaml")
+  waitTimeInSeconds.set(120)
+  customBootRun {
+    jvmArgs = [
+      "-Dspring.profiles.active=dev,no-liquibase",
+      "-Dspringdoc.packages-to-scan=de.tum.cit.aet.application.web, de.tum.cit.aet.evaluation.web, de.tum.cit.aet.job.web",
+      "-Dspring.docker.compose.enabled=false",
+      "-Dspring.docker.compose.lifecycle-management=none"
+    ]
+    args.set([
+      "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+      "--spring.datasource.username=sa",
+      "--spring.datasource.password=",
+      "--spring.datasource.driver-class-name=org.h2.Driver"
+    ])
+  }
 }
 
 openApiGenerate {
-    generatorName = "typescript-angular"
-    inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
-    outputDir.set("${rootDir}/src/main/webapp/app/generated")
-    apiPackage = "api"
-    modelPackage = "model"
-    invokerPackage = "invoker"
-    validateSpec.set(false)
-    configOptions = [
-            serviceSuffix: "Service",
-            supportsES6  : "true",
-            npmName      : "@tumapply/api-client",
-            npmVersion   : "${project.version}"
-    ]
+  generatorName = "typescript-angular"
+  inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
+  outputDir.set("${rootDir}/src/main/webapp/app/generated")
+  apiPackage = "api"
+  modelPackage = "model"
+  invokerPackage = "invoker"
+  validateSpec.set(false)
+  configOptions = [
+    serviceSuffix: "Service",
+    supportsES6  : "true",
+    npmName      : "@tumapply/api-client",
+    npmVersion   : "${project.version}"
+  ]
 }
 
 repositories {
-    mavenCentral()
-    mavenLocal()
+  mavenCentral()
+  mavenLocal()
 }
 
 dependencies {
 
-    // import JHipster dependencies BOM
-    implementation platform("tech.jhipster:jhipster-dependencies:${jhipsterDependenciesVersion}")
+  // import JHipster dependencies BOM
+  implementation platform("tech.jhipster:jhipster-dependencies:${jhipsterDependenciesVersion}")
 
-    implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
+  implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
 
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    testImplementation("com.tngtech.archunit:archunit-junit5-api:${archunitJunit5Version}") {
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation "io.micrometer:micrometer-registry-prometheus-simpleclient"
-    implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
-    implementation "org.apache.commons:commons-lang3"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-    implementation "org.springframework.boot:spring-boot-loader-tools"
-    implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-aop"
-    implementation "org.springframework.boot:spring-boot-starter-logging"
-    implementation "org.springframework.boot:spring-boot-starter-mail"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
-    implementation "org.springframework.boot:spring-boot-starter-undertow"
-    implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
-        exclude module: "spring-boot-starter-undertow"
-    }
-    implementation "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-validation"
-    testImplementation "org.springframework.boot:spring-boot-test"
-    testImplementation "org.springframework.security:spring-security-test"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation "org.springframework.security:spring-security-data"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
-    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
-    implementation "com.mysql:mysql-connector-j"
-    implementation "com.zaxxer:HikariCP:6.3.0"
-    implementation "org.hibernate.orm:hibernate-core"
-    implementation "org.hibernate.validator:hibernate-validator"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+  testImplementation("com.tngtech.archunit:archunit-junit5-api:${archunitJunit5Version}") {
+    exclude group: "org.slf4j", module: "slf4j-api"
+  }
+  testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
+    exclude group: "org.slf4j", module: "slf4j-api"
+  }
+  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient"
+  implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
+  implementation "org.apache.commons:commons-lang3"
+  annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+  implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+  annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+  implementation "org.springframework.boot:spring-boot-loader-tools"
+  implementation "org.springframework.boot:spring-boot-starter-actuator"
+  implementation "org.springframework.boot:spring-boot-starter-aop"
+  implementation "org.springframework.boot:spring-boot-starter-logging"
+  implementation "org.springframework.boot:spring-boot-starter-mail"
+  implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+  implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+  testImplementation "org.springframework.boot:spring-boot-starter-test"
+  implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+  implementation "org.springframework.boot:spring-boot-starter-undertow"
+  implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+    exclude module: "spring-boot-starter-undertow"
+  }
+  implementation "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
+  implementation "org.springframework.boot:spring-boot-starter-validation"
+  testImplementation "org.springframework.boot:spring-boot-test"
+  testImplementation "org.springframework.security:spring-security-test"
+  implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+  implementation "org.springframework.security:spring-security-data"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
+  implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
+  implementation "com.mysql:mysql-connector-j"
+  implementation "com.zaxxer:HikariCP:6.3.0"
+  implementation "org.hibernate.orm:hibernate-core"
+  implementation "org.hibernate.validator:hibernate-validator"
 
-    implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
+  implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
-    implementation "org.springframework.boot:spring-boot-starter-cache"
-    implementation "com.github.ben-manes.caffeine:caffeine:3.2.0"
-    implementation "com.github.ben-manes.caffeine:jcache:3.2.0"
-    implementation "javax.cache:cache-api"
-    implementation "org.hibernate.orm:hibernate-jcache"
-
-
-    // needed for OpenAPI generation
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
-    runtimeOnly "com.h2database:h2"
+  implementation "org.springframework.boot:spring-boot-starter-cache"
+  implementation "com.github.ben-manes.caffeine:caffeine:3.2.0"
+  implementation "com.github.ben-manes.caffeine:jcache:3.2.0"
+  implementation "javax.cache:cache-api"
+  implementation "org.hibernate.orm:hibernate-jcache"
 
 
-    testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
-    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
-    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
-    testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
-    annotationProcessor "org.glassfish.jaxb:jaxb-runtime"
-    annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"
-    developmentOnly "org.springframework.boot:spring-boot-docker-compose"
-    developmentOnly "org.springframework.boot:spring-boot-devtools"
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
+  // needed for OpenAPI generation
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+  runtimeOnly "com.h2database:h2"
 
-    testCompileOnly("org.projectlombok:lombok:1.18.38")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+
+  testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
+  testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+  testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+  testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+  annotationProcessor "org.glassfish.jaxb:jaxb-runtime"
+  annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"
+  developmentOnly "org.springframework.boot:spring-boot-docker-compose"
+  developmentOnly "org.springframework.boot:spring-boot-devtools"
+  compileOnly("org.projectlombok:lombok:1.18.38")
+  annotationProcessor("org.projectlombok:lombok:1.18.38")
+
+  testCompileOnly("org.projectlombok:lombok:1.18.38")
+  testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 tasks.register("cleanResources", Delete) {
-    delete(layout.buildDirectory.dir("resources"))
+  delete(layout.buildDirectory.dir("resources"))
 }
 
 wrapper {
-    gradleVersion = "8.13"
+  gradleVersion = "8.13"
 }
 
 node {
-    download = true
-    version = "${node_version}"
-    npmVersion = "${npm_version}"
+  download = true
+  version = "${node_version}"
+  npmVersion = "${npm_version}"
 }
 
 def isNonStable = { String version ->
-    def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> version.toUpperCase().contains(it) }
-    def regex = /^[0-9,.v-]+(-r)?$/
-    return !stableKeyword && !(version ==~ regex)
+  def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> version.toUpperCase().contains(it) }
+  def regex = /^[0-9,.v-]+(-r)?$/
+  return !stableKeyword && !(version ==~ regex)
 }
 
 tasks.named("dependencyUpdates").configure {
-    rejectVersionIf {
-        isNonStable(it.candidate.version)
-    }
+  rejectVersionIf {
+    isNonStable(it.candidate.version)
+  }
 
-    rejectVersionIf {
-        isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
-    }
+  rejectVersionIf {
+    isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+  }
 }
 
 
