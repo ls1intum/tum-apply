@@ -1,0 +1,87 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid #ccc;
+  background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+
+    .tum-logo {
+      height: 32px;
+      margin-right: 8px;
+    }
+
+    .app-name {
+      font-weight: 600;
+      color: #0078f0;
+    }
+  }
+
+  .search-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
+    .search-input {
+      width: 100%;
+      max-width: 300px;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  }
+
+  .actions-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .language-switch {
+      font-size: 0.85rem;
+      color: #0078f0;
+
+      .active {
+        font-weight: bold;
+      }
+
+      span {
+        margin: 0 2px;
+        cursor: pointer;
+      }
+    }
+
+    .settings-button {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #0078f0;
+    }
+
+    .login-button {
+      background-color: #0078f0;
+      color: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .register-button {
+      background: white;
+      border: 1px solid #0078f0;
+      color: #0078f0;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  }
+}
