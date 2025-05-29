@@ -1,4 +1,5 @@
-import { Component, OnInit, Renderer2, RendererFactory2, inject } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
@@ -15,10 +16,11 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
   providers: [AppPageTitleStrategy],
   imports: [RouterOutlet, FooterComponent, PageRibbonComponent],
 })
-export default class MainComponent implements OnInit {
+export default class MainComponent {
   showLayout = true;
   private readonly renderer: Renderer2;
   private readonly router = inject(Router);
+  private currentUrl = signal(this.router.url);
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
   private readonly accountService = inject(AccountService);
   private readonly translateService = inject(TranslateService);
@@ -26,22 +28,24 @@ export default class MainComponent implements OnInit {
 
   constructor() {
     this.renderer = this.rootRenderer.createRenderer(document.querySelector('html'), null);
-  }
 
-  ngOnInit(): void {
-    keycloakService.init().then(() => {
-      let currentUrl = this.router.url;
-      const isPublicRoute = currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
+    const isPublicRoute = computed(() => {
+      const url = this.currentUrl();
+      return url.startsWith('/login') || url.startsWith('/register');
+    });
 
-      if (!isPublicRoute) {
-        this.accountService.identity().subscribe();
+    effect(() => {
+      if (!isPublicRoute()) {
+        toSignal(this.accountService.identity())();
       }
+    });
 
-      this.router.events.subscribe(() => {
-        currentUrl = this.router.url;
-        this.showLayout = !(currentUrl.startsWith('/login') || currentUrl.startsWith('/register'));
-      });
+    this.router.events.subscribe(() => {
+      this.currentUrl.set(this.router.url);
+      this.showLayout = !isPublicRoute();
+    });
 
+    keycloakService.init().then(() => {
       this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
         this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
         dayjs.locale(langChangeEvent.lang);
