@@ -24,7 +24,6 @@ public record ApplicationForApplicantDTO(
     Set<CustomFieldAnswerDTO> customFields
 ) {
     /**
-     *
      * @param application
      * @return
      */

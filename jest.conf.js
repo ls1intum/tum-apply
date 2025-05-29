@@ -12,7 +12,7 @@ module.exports = {
   },
   roots: ['<rootDir>', `<rootDir>/${baseUrl}`],
   modulePaths: [`<rootDir>/${baseUrl}`],
-  setupFiles: ['jest-date-mock'],
+  setupFiles: ['jest-date-mock', '<rootDir>/src/main/webapp/setup-jest.js'],
   cacheDirectory: '<rootDir>/build/jest-cache',
   coverageDirectory: '<rootDir>/build/test-results/',
   moduleNameMapper: pathsToModuleNameMapper(paths, { prefix: `<rootDir>/${baseUrl}/` }),

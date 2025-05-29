@@ -7,6 +7,7 @@ import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawes
   imports: [Tag, FontAwesomeModule],
   templateUrl: './tag.component.html',
   styleUrl: './tag.component.scss',
+  standalone: true,
 })
 export class TagComponent {
   text = input<string>('');

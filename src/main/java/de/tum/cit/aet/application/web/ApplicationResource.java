@@ -33,7 +33,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param createApplicationDTO The data necessary to create an Application
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if the createApplicationDTO is invalid
      */
@@ -46,7 +45,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param application the updated application
      * @return updated ApplicationForApplicantDTO
      */
@@ -58,7 +56,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param applicationId the UUID of the application
      * @return the ApplicationForApplicantDTO if found, otherwise 404 Not Found
      */
@@ -74,7 +71,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param applicationId the UUID of the application
      * @return 204 No Content when deletion is successful
      */
@@ -86,7 +82,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param applicantId the UUID of the applicant
      * @return Set of ApplicationForApplicantDTOm where the applicant has the applicantId as UUID
      */
@@ -98,7 +93,6 @@ public class ApplicationResource {
     }
 
     /**
-     *
      * @param jobId the UUID of the Job
      * @return Set of ApplicationForApplicantDTOs where the job has the jobId as UUID
      */
