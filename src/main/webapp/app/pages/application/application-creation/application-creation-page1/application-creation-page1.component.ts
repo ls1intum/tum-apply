@@ -115,6 +115,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   imports: [CommonModule, ReactiveFormsModule, DividerModule, DropdownComponent, DatePickerComponent, StringInputComponent],
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
