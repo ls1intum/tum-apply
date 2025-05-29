@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
-import { ButtonComponent } from '../../../../shared/components/atoms/button/button.component';
+import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-job-card',

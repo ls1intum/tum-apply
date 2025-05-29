@@ -4,7 +4,7 @@ import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-ico
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
-import { MockKeycloakService } from '../../../core/auth/keycloak.service.mock';
+import { MockKeycloakService } from '../../core/auth/keycloak.service.mock';
 
 import { LoginComponent } from './login.component';
 

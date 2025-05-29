@@ -96,6 +96,8 @@ public class SecurityConfiguration {
                     // Publicly accessible API endpoints (allowed for everyone).
                     .requestMatchers("/api/*/public/**")
                     .permitAll()
+                    .requestMatchers("/api/**")
+                    .authenticated()
                     .requestMatchers("/login/webauthn")
                     .permitAll()
                     // Websocket and other specific endpoints allowed without authentication.

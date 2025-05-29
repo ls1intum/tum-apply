@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 
-import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../generated';
-import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
+import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
+import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
+import { Sort, SortBarComponent, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 
 @Component({
   selector: 'jhi-application-overview',

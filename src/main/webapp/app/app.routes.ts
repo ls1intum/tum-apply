@@ -7,14 +7,14 @@ import { Authority } from './config/authority.constants';
 const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./pages/usermanagement/login/login.component').then(m => m.LoginComponent),
+    loadComponent: () => import('./usermanagement/login/login.component').then(m => m.LoginComponent),
     canActivate: [UserRouteAccessService],
     data: { publicOnly: true },
     title: 'login',
   },
   {
     path: 'register',
-    loadComponent: () => import('./pages/usermanagement/register/register.component').then(m => m.RegisterComponent),
+    loadComponent: () => import('./usermanagement/register/register.component').then(m => m.RegisterComponent),
     canActivate: [UserRouteAccessService],
     data: { publicOnly: true },
     title: 'register',
@@ -23,12 +23,12 @@ const routes: Routes = [
     path: 'job-creation',
     canActivate: [UserRouteAccessService],
     data: { authorities: [Authority.ADMIN, Authority.PROFESSOR] },
-    loadComponent: () => import('./pages/job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
+    loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
     title: 'home.title',
   },
   {
     path: '',
-    loadComponent: () => import('./pages/misc/home/home.component'),
+    loadComponent: () => import('./home/home.component'),
     title: 'home.title',
   },
   {
@@ -38,19 +38,19 @@ const routes: Routes = [
   },
   {
     path: 'application/create/:job_id',
-    loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
+    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
   },
   {
     path: 'playground/button',
     canActivate: [UserRouteAccessService],
     data: { authorities: [Authority.ADMIN] },
-    loadComponent: () => import('./pages/misc/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
+    loadComponent: () => import('./playground/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
   },
   {
     path: 'playground/stepper',
     canActivate: [UserRouteAccessService],
     data: { authorities: [Authority.ADMIN] },
-    loadComponent: () => import('./pages/misc/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
+    loadComponent: () => import('./playground/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
   },
   {
     path: 'admin',
@@ -64,12 +64,12 @@ const routes: Routes = [
   },
   {
     path: 'badge-playground',
-    loadComponent: () => import('./pages/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
+    loadComponent: () => import('./playground/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
   },
   {
     path: 'evaluation/overview',
     loadComponent: () =>
-      import('./pages/evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
+      import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
   },
   ...errorRoute,
 ];

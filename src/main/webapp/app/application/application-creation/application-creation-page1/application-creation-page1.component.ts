@@ -4,9 +4,9 @@ import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 
-import { DropdownComponent, DropdownOption } from '../../../../shared/components/atoms/dropdown/dropdown.component';
-import { DatePickerComponent } from '../../../../shared/components/atoms/datepicker/datepicker.component';
-import { StringInputComponent } from '../../../../shared/components/atoms/string-input/string-input.component';
+import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
+import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
+import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
