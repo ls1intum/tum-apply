@@ -28,6 +28,7 @@ export enum SortDirection {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sort-bar.component.html',
   styleUrls: ['./sort-bar.component.scss'],
+  standalone: true,
 })
 export class SortBarComponent {
   totalRecords = input.required<number>();

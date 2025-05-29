@@ -30,6 +30,7 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
   imports: [CommonModule, ReactiveFormsModule, FloatLabelModule, DividerModule, DatePickerComponent, TextareaModule, UploadButtonComponent],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
