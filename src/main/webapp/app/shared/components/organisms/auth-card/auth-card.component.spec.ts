@@ -59,12 +59,13 @@ describe('AuthCardComponent', () => {
   it('should call authTabService.setSelectedTab when onTabChange is called', () => {
     const authTabServiceSpy = jest.spyOn(component.authTabService, 'setSelectedTab');
     component.onTabChange(1);
+    expect(authTabServiceSpy).toHaveBeenCalledTimes(1);
     expect(authTabServiceSpy).toHaveBeenCalledWith(1);
   });
 
   it('should call keycloakService.login when onTUMSSOLogin is called', () => {
     const keycloakServiceSpy = jest.spyOn(keycloakService, 'login');
     component.onTUMSSOLogin();
-    expect(keycloakServiceSpy).toHaveBeenCalled();
+    expect(keycloakServiceSpy).toHaveBeenCalledTimes(1);
   });
 });
