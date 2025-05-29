@@ -1,17 +1,11 @@
-<jhi-page-ribbon />
+<jhi-header />
 
-@if (showLayout) {
-  <div>
-    <router-outlet name="navbar" />
-  </div>
-}
+<jhi-page-ribbon />
 
 <div class="container-fluid">
   <div class="card jh-card">
     <router-outlet />
   </div>
 
-  @if (showLayout) {
-    <jhi-footer />
-  }
+  <jhi-footer />
 </div>
