@@ -36,7 +36,7 @@ export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
 
   valid = output<boolean>();
-
+  fb = inject(FormBuilder);
   page3Form = computed(() => {
     const currentData = this.data();
     return this.fb.group({
@@ -45,8 +45,6 @@ export default class ApplicationCreationPage3Component {
       skills: [currentData.skills, Validators.required],
     });
   });
-
-  fb = inject(FormBuilder);
 
   constructor() {
     effect(onCleanup => {

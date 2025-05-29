@@ -60,7 +60,7 @@ export default class ApplicationCreationPage2Component {
 
   data = model.required<ApplicationCreationPage2Data>();
   valid = output<boolean>();
-
+  fb = inject(FormBuilder);
   page2Form = computed(() => {
     const currentData = this.data();
     return this.fb.group({
@@ -72,8 +72,6 @@ export default class ApplicationCreationPage2Component {
       masterGrade: [currentData.masterGrade, Validators.required],
     });
   });
-
-  fb = inject(FormBuilder);
 
   constructor() {
     effect(onCleanup => {
