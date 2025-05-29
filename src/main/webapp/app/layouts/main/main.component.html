@@ -1,6 +1,6 @@
 <jhi-page-ribbon />
 
-@if (showLayout) {
+@if (showLayout()) {
   <div>
     <router-outlet name="navbar" />
   </div>
@@ -11,7 +11,7 @@
     <router-outlet />
   </div>
 
-  @if (showLayout) {
+  @if (showLayout()) {
     <jhi-footer />
   }
 </div>
