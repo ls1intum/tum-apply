@@ -30,6 +30,7 @@ type ApplicationFormMode = 'create'; /* TODO | 'edit' | 'view' */
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationFormComponent {
   page1: ApplicationCreationPage1Data = {

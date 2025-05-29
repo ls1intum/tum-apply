@@ -8,6 +8,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   imports: [SharedModule, ButtonComponent],
+  standalone: true,
 })
 export default class HomeComponent {
   readonly router = inject(Router);

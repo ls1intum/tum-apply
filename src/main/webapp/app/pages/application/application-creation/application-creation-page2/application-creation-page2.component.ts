@@ -52,6 +52,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   imports: [CommonModule, DividerModule, DropdownComponent, UploadButtonComponent, ReactiveFormsModule, StringInputComponent],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
+  standalone: true,
 })
 export default class ApplicationCreationPage2Component {
   bachelorGradingScaleLocal = bachelorGradingScale;
