@@ -32,6 +32,12 @@ public record JobCardDTO(
         this(jobId, title, fieldOfStudies, formatLocation(location), professorName, workload, startDate, getRelativeTime(createdAt));
     }
 
+    /**
+     * Formats a {@link Campus} enum value into a capitalized string with the rest in lowercase.
+     *
+     * @param location The campus enum value to format.
+     * @return A human-readable formatted location string.
+     */
     public static String formatLocation(Campus location) {
         if (location == null) {
             return "";
@@ -40,6 +46,17 @@ public record JobCardDTO(
         return name.charAt(0) + name.substring(1).toLowerCase();
     }
 
+    /**
+     * Calculates a human-readable string representing how long ago the job was created.
+     * - Today
+     * - X days ago
+     * - X weeks ago
+     * - X months ago
+     * - X years ago (in 0.5 year intervals)
+     *
+     * @param createdAt The creation timestamp of the job.
+     * @return A string like "Today", "3 days ago", "2.5 years ago".
+     */
     public static String getRelativeTime(Instant createdAt) {
         if (createdAt == null) return "";
 
