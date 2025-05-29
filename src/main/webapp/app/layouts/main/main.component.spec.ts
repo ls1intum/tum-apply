@@ -64,7 +64,6 @@ describe('MainComponent', () => {
       jest.spyOn(translateService, 'get').mockImplementation((key: string | string[]) => of(`${key as string} translated`));
       translateService.currentLang = 'en';
       jest.spyOn(titleService, 'setTitle');
-      comp.ngOnInit();
     });
 
     describe('navigation end', () => {
@@ -216,7 +215,6 @@ describe('MainComponent', () => {
   describe('page language attribute', () => {
     it('should change page language attribute on language change', () => {
       // GIVEN
-      comp.ngOnInit();
 
       // WHEN
       translateService.onLangChange.emit({ lang: 'en', translations: {} as InterpolatableTranslationObject });
