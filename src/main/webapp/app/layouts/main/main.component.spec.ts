@@ -7,16 +7,17 @@ import { of } from 'rxjs';
 import { InterpolatableTranslationObject, LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
-
-import { Account } from '../../core/auth/account.model';
-import { MockKeycloakService } from '../../core/auth/keycloak.service.mock';
+import { User } from 'app/core/auth/account.service';
 
 import MainComponent from './main.component';
 
 jest.mock('app/core/auth/account.service');
-jest.mock('app/core/auth/keycloak.service', () => ({
-  keycloakService: new MockKeycloakService(),
-}));
+jest.mock('app/core/auth/keycloak.service', () => {
+  const { MockKeycloakService } = jest.requireActual('app/core/auth/keycloak.service.mock');
+  return {
+    keycloakService: new MockKeycloakService(),
+  };
+});
 
 describe('MainComponent', () => {
   let comp: MainComponent;
@@ -25,7 +26,7 @@ describe('MainComponent', () => {
   let translateService: TranslateService;
   let mockAccountService: AccountService;
   let ngZone: NgZone;
-  const routerState: any = { snapshot: { root: { data: {} } } };
+  const routerState: { snapshot: { root: { data: Record<string, unknown> } } } = { snapshot: { root: { data: {} } } };
   let router: Router;
   let document: Document;
 
@@ -47,7 +48,7 @@ describe('MainComponent', () => {
     translateService = TestBed.inject(TranslateService);
     mockAccountService = TestBed.inject(AccountService);
     mockAccountService.loaded = signal(true);
-    (mockAccountService as any).getAuthenticationState = jest.fn(() => of(null as unknown as Account));
+    mockAccountService.user = signal<User | undefined>(undefined);
     ngZone = TestBed.inject(NgZone);
     router = TestBed.inject(Router);
     document = TestBed.inject(DOCUMENT);
@@ -69,7 +70,7 @@ describe('MainComponent', () => {
     describe('navigation end', () => {
       it('should set page title to default title if pageTitle is missing on routes', fakeAsync(() => {
         // WHEN
-        ngZone.run(navigateByUrlFn(''));
+        void ngZone.run(navigateByUrlFn(''));
         tick();
 
         // THEN
@@ -81,7 +82,7 @@ describe('MainComponent', () => {
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        ngZone.run(navigateByUrlFn(''));
+        void ngZone.run(navigateByUrlFn(''));
         tick();
 
         // THEN
@@ -99,7 +100,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(navigateByUrlFn('home'));
+        void ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
@@ -117,7 +118,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(navigateByUrlFn('home'));
+        void ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
@@ -140,7 +141,7 @@ describe('MainComponent', () => {
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        ngZone.run(navigateByUrlFn(''));
+        void ngZone.run(navigateByUrlFn(''));
         tick();
 
         // THEN
@@ -167,7 +168,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(navigateByUrlFn('home'));
+        void ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
@@ -194,7 +195,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(navigateByUrlFn('home'));
+        void ngZone.run(navigateByUrlFn('home'));
         tick();
 
         // THEN
