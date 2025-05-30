@@ -11,10 +11,7 @@ import { KeycloakService } from '../../core/auth/keycloak.service';
 
 import { LoginComponent } from './login.component';
 
-jest.mock('app/core/auth/keycloak.service', () => ({
-  keycloakService: new MockKeycloakService(),
-}));
-jest.mock('../../core/auth/keycloak.service');
+jest.mock('app/core/auth/account.service');
 jest.mock('app/generated/api/userResource.service');
 
 describe('LoginComponent', () => {

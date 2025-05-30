@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { AccountService, User } from 'app/core/auth/account.service';
+import { signal } from '@angular/core';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 
 import { HeaderComponent } from './header.component';
+
+jest.mock('app/core/auth/account.service');
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -8,8 +15,23 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeaderComponent],
+      imports: [HeaderComponent, TranslateModule.forRoot()],
+      providers: [
+        TranslateService,
+        TranslateStore,
+        {
+          provide: AccountService,
+          useValue: {
+            user: signal<User | undefined>(undefined),
+            loaded: signal(true),
+          },
+        },
+      ],
     }).compileComponents();
+
+    const library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faSun);
+    library.addIcons(faMoon);
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
