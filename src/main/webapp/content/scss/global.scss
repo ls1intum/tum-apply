@@ -81,20 +81,24 @@
 .job-card {
   overflow: hidden;
   border: 0.1rem solid var(--p-primary-color);
-  max-width: 20rem;
+  // max-width: 20rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   .card-header {
     position: relative;
-    //background: linear-gradient(to left, var(--p-secondary-color), pink);
-    background: var(--p-secondary-color);
-    color: var(--p-text-on-primary);
+    background: linear-gradient(to right, var(--header-color, var(--p-secondary-color)), var(--p-secondary-color));
     height: 6rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--p-text-on-primary);
+    padding: 0 1rem;
 
     .card-icon {
       font-size: 1.5rem;
+      color: var(--p-text-on-primary);
     }
 
     .timestamp {
@@ -108,9 +112,33 @@
     }
   }
 
+  // Make the card title have consistent height
+  .p-card-title {
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+
+    .card-title {
+      line-height: 1.2;
+      overflow: hidden;
+    }
+  }
+
+  .p-card-body {
+    padding: 0.7rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
   .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
     .card-info {
       margin: 0 0 1rem 0;
+      flex: 1;
 
       .info-item {
         display: flex;
@@ -131,10 +159,8 @@
     .card-actions {
       display: flex;
       justify-content: space-between;
+      margin-top: auto; // Push buttons to bottom
+      flex-shrink: 0; // Prevent buttons from shrinking
     }
-  }
-
-  .p-card-body {
-    padding: 0.7rem;
   }
 }
