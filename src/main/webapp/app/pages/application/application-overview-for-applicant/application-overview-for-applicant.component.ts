@@ -14,15 +14,12 @@ import { BadgeModule } from 'primeng/badge';
   styleUrl: './application-overview-for-applicant.component.scss',
 })
 export default class ApplicationOverviewForApplicantComponent {
-  readonly applicantId = '00000000-0000-0000-0000-000000000104';
-
-  private readonly router = inject(Router);
-
   loading = signal(false);
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal(10);
   total = signal(0);
 
+  readonly applicantId = '00000000-0000-0000-0000-000000000104';
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
   readonly createdTemplate = viewChild.required<TemplateRef<unknown>>('createdTemplate');
@@ -39,6 +36,8 @@ export default class ApplicationOverviewForApplicantComponent {
       { field: 'actions', header: '', width: '15rem', template: actionTemplate },
     ];
   });
+
+  private readonly router = inject(Router);
 
   private readonly applicationService = inject(ApplicationResourceService);
 
