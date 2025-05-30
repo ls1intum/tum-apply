@@ -67,11 +67,14 @@
   </div>
   <p-divider layout="horizontal">Address</p-divider>
   <div class="form-row">
-    <div class="w-3/4 pr-4">
-      <jhi-string-input label="Street" id="street" [required]="true" [(model)]="data().street" [control]="page1Form().controls.street" />
-    </div>
-    <div class="w-1/4 pr-4">
-      <jhi-string-input label="Streetnumber" id="streetnumber" [required]="true" [(model)]="data().streetnumber" />
+    <div class="w-full pr-4">
+      <jhi-string-input
+        label="Adress Line"
+        id="street"
+        [required]="true"
+        [(model)]="data().street"
+        [control]="page1Form().controls.street"
+      />
     </div>
   </div>
   <div class="form-row">

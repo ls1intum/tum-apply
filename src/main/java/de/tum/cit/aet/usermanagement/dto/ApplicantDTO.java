@@ -2,9 +2,10 @@ package de.tum.cit.aet.usermanagement.dto;
 
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import jakarta.validation.constraints.NotNull;
 
 public record ApplicantDTO(
-    UserDTO user,
+    @NotNull UserDTO user,
     String street,
     String postalCode,
     String city,

@@ -26,7 +26,6 @@ const mockData: ApplicationCreationPage1Data = {
   website: 'https://annaschmidt.dev',
   linkedIn: 'https://www.linkedin.com/in/annaschmidt',
   street: 'Hauptstraße',
-  streetnumber: '12A',
   city: 'Berlin',
   country: 'Germany',
   postcode: '10115',

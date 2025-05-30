@@ -1,12 +1,12 @@
 import { Component, Signal, inject, input } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { keycloakService } from '../../../../core/auth/keycloak.service';
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'jhi-auth-card',
