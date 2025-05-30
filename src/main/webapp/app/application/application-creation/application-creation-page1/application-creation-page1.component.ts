@@ -131,7 +131,6 @@ export default class ApplicationCreationPage1Component {
       lastName: [currentData.lastName, Validators.required],
       email: [currentData.email, Validators.required],
       phoneNumber: [currentData.phoneNumber, Validators.required],
-      dateOfBirth: [currentData.dateOfBirth, Validators.required],
 
       street: [currentData.street, Validators.required],
       city: [currentData.city, Validators.required],
