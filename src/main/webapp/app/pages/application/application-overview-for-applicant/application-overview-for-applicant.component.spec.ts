@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 import { ApplicationResourceService } from 'app/generated';
 import { of } from 'rxjs';
+
+import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
 class MockApplicationResourceService {
   getApplicationPages = jest.fn().mockReturnValue(of([]));
