@@ -28,7 +28,7 @@ const routes: Routes = [
   },
   {
     path: 'job-overview',
-    loadComponent: () => import('./job/job-overview/job-card-list/job-card-list.component').then(m => m.JobCardListComponent),
+    loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
     title: 'home.title',
   },
   {
