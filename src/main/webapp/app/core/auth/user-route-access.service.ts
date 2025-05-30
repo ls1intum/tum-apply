@@ -1,10 +1,9 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
-import { catchError, map, of } from 'rxjs';
 
 import { AccountService } from './account.service';
 
-export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot) => {
+export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRouteSnapshot) => {
   const router = inject(Router);
   const accountService = inject(AccountService);
 
@@ -13,35 +12,27 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
 
   // If route is publicOnly and user is logged in, redirect to home
   if (publicOnly && accountService.signedIn()) {
-    router.navigate(['/']);
-    return of(false);
+    await router.navigate(['/']);
+    return false;
   }
 
   // If route requires authentication and user is not logged in, redirect to login
   if (!publicOnly && !accountService.signedIn()) {
-    accountService.signIn();
-    return of(false);
+    await accountService.signIn();
+    return false;
   }
 
   // If no roles required or publicOnly route, allow access
   if (requiredRoles.length === 0 || publicOnly) {
-    return of(true);
+    return true;
   }
 
-  // Load user if not already loaded and roles are required
-  return accountService.identity().pipe(
-    map(() => {
-      if (accountService.hasAnyAuthority(requiredRoles)) {
-        return true;
-      }
+  // Check authorities
+  if (accountService.hasAnyAuthority(requiredRoles)) {
+    return true;
+  }
 
-      console.warn('Access denied – missing roles:', requiredRoles);
-      router.navigate(['/accessdenied']);
-      return false;
-    }),
-    catchError(() => {
-      router.navigate(['/accessdenied']);
-      return of(false);
-    }),
-  );
+  console.warn('Access denied – missing roles:', requiredRoles);
+  await router.navigate(['/accessdenied']);
+  return false;
 };

@@ -4,7 +4,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
-import { firstValueFrom } from 'rxjs';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
@@ -36,7 +35,7 @@ export default class MainComponent {
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
     effect(() => {
-      this.initApp();
+      void this.initApp();
     });
   }
 
@@ -45,7 +44,11 @@ export default class MainComponent {
     const isPublicRoute = currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
 
     if (!isPublicRoute) {
-      await firstValueFrom(this.accountService.identity());
+      if (!this.accountService.loaded()) {
+        console.warn('User not loaded, redirecting to login.');
+        await this.router.navigate(['/login']);
+        return;
+      }
     }
 
     this.router.events.subscribe(() => {
