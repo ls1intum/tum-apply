@@ -231,6 +231,9 @@ export default class ApplicationCreationFormComponent {
       this.page1.set(getPage1FromApplication(application));
       this.page2.set(getPage2FromApplication(application));
       this.page3.set(getPage3FromApplication(application));
+      console.log(this.page1());
+      console.log(this.page2());
+      console.log(this.page3());
     } else {
       alert('Error: this is no valid application page link');
     }
@@ -306,6 +309,12 @@ export default class ApplicationCreationFormComponent {
           masterGrade: this.page2().masterGrade,
           bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
           masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
+          city: this.page1().city,
+          country: this.page1().country,
+          postalCode: this.page1().postcode,
+          street: this.page1().street,
+          bachelorUniversity: this.page2().bachelorDegreeUniversity,
+          masterUniversity: this.page2().masterDegreeUniversity,
         },
         applicationState: state,
         desiredDate: this.page3().desiredStartDate,
