@@ -47,6 +47,8 @@ public class JobResource {
     /**
      * GET /api/jobs/available : Returns all published jobs.
      *
+     * @param page the page number for pagination (zero-based).
+     * @param size the number of records per page.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs as JobCardDTOs.
      */
     @GetMapping("/available")
