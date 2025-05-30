@@ -1,24 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ApplicationForApplicantDTO, ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
 class MockApplicationResourceService {
-  getApplicationPages(_applicantId: string, pageSize = 10, pageNumber = 0) {
+  deleteApplication = jest.fn().mockReturnValue(of(undefined));
+  withdrawApplication = jest.fn().mockReturnValue(of(undefined));
+  getApplicationPages(_applicantId: string, pageSize = 10, pageNumber = 0): Observable<ApplicationOverviewDTO[]> {
     const start = pageNumber * pageSize;
     const end = start + pageSize;
     const pagedData: ApplicationOverviewDTO[] = mockApplications.slice(start, end);
     return of(pagedData);
   }
 
-  getApplicationPagesLength() {
+  getApplicationPagesLength(): Observable<number> {
     return of(mockApplications.length);
   }
-
-  deleteApplication = jest.fn().mockReturnValue(of(undefined));
-  withdrawApplication = jest.fn().mockReturnValue(of(undefined));
 }
 
 const mockApplications: ApplicationOverviewDTO[] = [
