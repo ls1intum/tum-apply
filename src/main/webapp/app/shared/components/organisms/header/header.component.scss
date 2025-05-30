@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   border-bottom: 3px solid var(--p-border-default);
   background-color: var(--p-background-default);
   position: sticky;
@@ -11,15 +11,12 @@
 
   .logo-section {
     display: flex;
-    justify-content: center;
     align-items: center;
     gap: 0.5rem;
     color: var(--p-primary-color);
     font-family: Inter;
     font-size: 1rem;
-    font-style: normal;
     font-weight: 700;
-    line-height: normal;
     cursor: pointer;
 
     .tum-logo {
@@ -57,7 +54,7 @@
 
     .profile {
       display: flex;
-      padding: 0.75rem 0.5rem;
+      padding: 0.25rem 0.25rem;
       align-items: center;
       gap: 1rem;
       color: var(--p-text-primary);
