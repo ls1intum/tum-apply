@@ -16,8 +16,8 @@ import { BadgeModule } from 'primeng/badge';
 export default class ApplicationOverviewForApplicantComponent {
   loading = signal(false);
   pageData = signal<ApplicationOverviewDTO[]>([]);
-  pageSize = signal(10);
-  total = signal(0);
+  pageSize = signal<number>(10);
+  total = signal<number>(0);
 
   lastLazyLoadEvent = signal<TableLazyLoadEvent | undefined>(undefined);
 
@@ -111,7 +111,6 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   calculateDate(createdDateString: string): string {
-    // console.log(createdDate);
     const now = new Date();
     const createdDate = new Date(createdDateString);
     const seconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
