@@ -1,12 +1,11 @@
 package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
-import de.tum.cit.aet.evaluation.repository.specification.ApplicationEvaluationSpecification;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import java.util.Set;
 import java.util.UUID;
@@ -14,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,10 +42,13 @@ public class ApplicationEvaluationService {
     public ApplicationEvaluationListDTO getAllApplications(ResearchGroup researchGroup, PageDTO pageDTO, SortDTO sortDTO) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
 
-        Specification<Application> specification = ApplicationEvaluationSpecification.build(researchGroupId, VIEWABLE_STATES);
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), sortDTO.toSpringSort(SORTABLE_FIELDS));
-        Page<Application> applicationsPage = applicationEvaluationRepository.findAll(specification, pageable);
+        Page<ApplicationEvaluationOverviewDTO> applicationsPage = applicationEvaluationRepository.findApplications(
+            researchGroupId,
+            VIEWABLE_STATES,
+            pageable
+        );
 
-        return ApplicationEvaluationListDTO.fromPage(applicationsPage);
+        return new ApplicationEvaluationListDTO(applicationsPage.get().toList(), applicationsPage.getTotalElements());
     }
 }
