@@ -231,9 +231,6 @@ export default class ApplicationCreationFormComponent {
       this.page1.set(getPage1FromApplication(application));
       this.page2.set(getPage2FromApplication(application));
       this.page3.set(getPage3FromApplication(application));
-      console.log(this.page1());
-      console.log(this.page2());
-      console.log(this.page3());
     } else {
       alert('Error: this is no valid application page link');
     }
