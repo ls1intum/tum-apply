@@ -84,7 +84,7 @@ export default class ApplicationOverviewForApplicantComponent {
           const event = this.lastLazyLoadEvent();
           if (event) this.loadPage(event);
         },
-        error: err => {
+        error(err) {
           alert('Error withdrawing the application');
           console.error('Delete failed', err);
         },
@@ -102,7 +102,7 @@ export default class ApplicationOverviewForApplicantComponent {
           const event = this.lastLazyLoadEvent();
           if (event) this.loadPage(event);
         },
-        error: err => {
+        error(err) {
           alert('Error withdrawing the application');
           console.error('Withdraw failed', err);
         },
