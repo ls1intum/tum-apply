@@ -5,9 +5,18 @@
   </div>
 
   <div class="actions-section">
-    <div class="language-switch"><span class="active">DE</span><span>|</span><span>EN</span></div>
+    <div class="language-switch">
+      @for (language of languages; track language; let isLast = $last) {
+        <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage === language }" class="language-button">
+          {{ language.toUpperCase() }}
+        </button>
+        @if (!isLast) {
+          <span class="divider">|</span>
+        }
+      }
+    </div>
     <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
-    <button class="login-button">Login</button>
-    <button class="register-button">Register</button>
+    <jhi-button label="{{ 'header.login' | translate }}" severity="primary" />
+    <jhi-button label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
   </div>
 </header>
