@@ -2,7 +2,6 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 
-import { keycloakService } from './keycloak.service';
 import { AccountService } from './account.service';
 
 export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot) => {
@@ -13,14 +12,14 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
   const publicOnly: boolean = next.data['publicOnly'] ?? false;
 
   // If route is publicOnly and user is logged in, redirect to home
-  if (publicOnly && keycloakService.isLoggedIn()) {
+  if (publicOnly && accountService.signedIn()) {
     router.navigate(['/']);
     return of(false);
   }
 
   // If route requires authentication and user is not logged in, redirect to login
-  if (!publicOnly && !keycloakService.isLoggedIn()) {
-    keycloakService.login();
+  if (!publicOnly && !accountService.signedIn()) {
+    accountService.signIn();
     return of(false);
   }
 

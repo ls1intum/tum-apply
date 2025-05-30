@@ -1,21 +1,33 @@
-// client/src/app/keycloak/keycloak.service.ts
+import { Injectable } from '@angular/core';
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 
 import { environment } from '../../environments/environment';
 
-class KeycloakService {
-  private keycloak: Keycloak | undefined;
+export interface UserProfile {
+  sub: string;
+  email: string;
+  given_name: string;
+  family_name: string;
+  token: string;
+}
+@Injectable({ providedIn: 'root' })
+export class KeycloakService {
+  _keycloak: Keycloak | undefined;
+  profile: UserProfile | undefined;
+
+  get keycloak(): Keycloak {
+    this._keycloak ??= new Keycloak({
+      url: environment.keycloak.url,
+      realm: environment.keycloak.realm,
+      clientId: environment.keycloak.clientId,
+    });
+    return this._keycloak;
+  }
 
   /**
    * Initializes the Keycloak client and determines login status.
    */
   async init(): Promise<boolean> {
-    this.keycloak = new Keycloak({
-      url: environment.keycloak.url,
-      realm: environment.keycloak.realm,
-      clientId: environment.keycloak.clientId,
-    });
-
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
@@ -24,26 +36,18 @@ class KeycloakService {
       enableLogging: environment.keycloak.enableLogging,
     };
 
-    const currentPath = window.location.pathname;
-    const publicPaths = ['/login', '/register'];
-    const isPublicPath = publicPaths.some(path => currentPath === path);
-
     try {
       const authenticated = await this.keycloak.init(options);
-
-      if (!authenticated && !isPublicPath) {
-        console.warn('🔐 Protected route without login – redirecting to Keycloak');
-        await this.keycloak.login();
+      if (!authenticated) {
+        console.warn('Keycloak not authenticated.');
+        return authenticated;
       }
+      this.profile = (await this.keycloak.loadUserInfo()) as unknown as UserProfile;
+      this.profile.token = this.keycloak.token ?? '';
 
       return authenticated;
     } catch (err) {
-      if (!isPublicPath && (err as { error?: string }).error !== 'access_denied') {
-        console.warn('🔐 Protected route without login – redirecting to Keycloak');
-        await this.keycloak.login();
-      }
-
-      console.warn('🔁 Keycloak init failed:', err);
+      console.error('🔁 Keycloak init failed:', err);
       return false;
     }
   }
@@ -51,37 +55,33 @@ class KeycloakService {
   /**
    * Triggers the Keycloak login flow.
    */
-  login(): void {
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return;
+  async login(): Promise<void> {
+    try {
+      await this.keycloak.login({
+        redirectUri: window.location.origin + '/',
+      });
+    } catch (err) {
+      console.error('Login failed:', err);
     }
-    this.keycloak.login({
-      redirectUri: window.location.origin + '/',
-    });
   }
 
   /**
    * Triggers the Keycloak logout and redirect.
    */
-  logout(): void {
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return;
+  async logout(): Promise<void> {
+    try {
+      await this.keycloak.logout({
+        redirectUri: window.location.origin + '/',
+      });
+    } catch (err) {
+      console.error('Logout failed:', err);
     }
-    this.keycloak.logout({
-      redirectUri: window.location.origin + '/',
-    });
   }
 
   /**
    * Returns the current token.
    */
   getToken(): string | undefined {
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return;
-    }
     return this.keycloak.token;
   }
 
@@ -89,10 +89,6 @@ class KeycloakService {
    * Returns the current username.
    */
   getUsername(): string {
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return '';
-    }
     return this.keycloak.tokenParsed?.preferred_username ?? '';
   }
 
@@ -100,11 +96,6 @@ class KeycloakService {
    * Returns the current user's first name.
    */
   getFirstName(): string {
-    console.log('Keycloak tokenParsed:', this.keycloak?.tokenParsed);
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return '';
-    }
     return this.keycloak.tokenParsed?.given_name ?? '';
   }
 
@@ -112,10 +103,6 @@ class KeycloakService {
    * Checks if the user has a specific role.
    */
   hasRole(role: string): boolean {
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return false;
-    }
     return this.keycloak.tokenParsed?.realm_access?.roles.includes(role) ?? false;
   }
 
@@ -123,10 +110,6 @@ class KeycloakService {
    * Returns all realm roles assigned to the user.
    */
   getUserRoles(): string[] {
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return [];
-    }
     return this.keycloak.tokenParsed?.realm_access?.roles ?? [];
   }
 
@@ -134,14 +117,6 @@ class KeycloakService {
    * Returns true if the user is currently logged in.
    */
   isLoggedIn(): boolean {
-    console.warn(this.keycloak);
-    console.warn('Keycloak authenticated:', this.keycloak?.authenticated);
-    if (!this.keycloak) {
-      console.error('Keycloak client is not initialized yet.');
-      return false;
-    }
     return Boolean(this.keycloak.authenticated);
   }
 }
-
-export const keycloakService = new KeycloakService();

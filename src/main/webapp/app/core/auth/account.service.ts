@@ -1,16 +1,45 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, shareReplay, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { isPlatformServer } from '@angular/common';
 
 import { ApplicationConfigService } from '../config/application-config.service';
 
 import { StateStorageService } from './state-storage.service';
 import { Account } from './account.model';
+import { KeycloakService } from './keycloak.service';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  anonymous: boolean;
+  bearer: string;
+}
+
+export const ANONYMOUS_USER: User = {
+  id: '',
+  email: 'nomail',
+  name: 'no user',
+  anonymous: true,
+  bearer: '',
+};
+
+export interface SecurityState {
+  loaded: boolean;
+  user: User | undefined;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
+  #keycloakService = inject(KeycloakService);
+  loaded = signal(false);
+  user = signal<User | undefined>(undefined);
+
+  loadedUser = computed(() => (this.loaded() ? this.user() : undefined));
+  signedIn = computed(() => this.loaded() && !this.user()?.anonymous);
   private readonly userIdentity = signal<Account | null>(null);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
@@ -19,11 +48,43 @@ export class AccountService {
 
   private accountCache$?: Observable<Account> | null;
 
-  /**
-   * Returns a readonly signal of the current user account.
-   */
-  trackCurrentAccount(): Signal<Account | null> {
-    return this.userIdentity.asReadonly();
+  constructor() {
+    this.onInit();
+  }
+
+  async onInit(): Promise<void> {
+    const isServer = isPlatformServer(inject(PLATFORM_ID));
+    const keycloakService = inject(KeycloakService);
+    if (isServer) {
+      this.user.set(ANONYMOUS_USER);
+      this.loaded.set(true);
+      return;
+    }
+
+    const isLoggedIn = await keycloakService.init();
+    if (isLoggedIn && keycloakService.profile) {
+      const { sub, email, given_name, family_name, token } = keycloakService.profile;
+      const user = {
+        id: sub,
+        email,
+        name: `${given_name} ${family_name}`,
+        anonymous: false,
+        bearer: token,
+      };
+      this.user.set(user);
+      this.loaded.set(true);
+    } else {
+      this.user.set(ANONYMOUS_USER);
+      this.loaded.set(true);
+    }
+  }
+
+  async signIn(): Promise<void> {
+    await this.#keycloakService.login();
+  }
+
+  async signOut(): Promise<void> {
+    await this.#keycloakService.logout();
   }
 
   /**
@@ -55,13 +116,6 @@ export class AccountService {
       );
     }
     return this.accountCache$;
-  }
-
-  /**
-   * Returns true if the user is currently authenticated.
-   */
-  isAuthenticated(): boolean {
-    return this.userIdentity() !== null;
   }
 
   /**

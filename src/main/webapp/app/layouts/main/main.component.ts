@@ -4,7 +4,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
-import { keycloakService } from 'app/core/auth/keycloak.service';
 import { firstValueFrom } from 'rxjs';
 
 import FooterComponent from '../footer/footer.component';
@@ -42,8 +41,6 @@ export default class MainComponent {
   }
 
   private async initApp(): Promise<void> {
-    await keycloakService.init();
-
     const currentUrl = this.router.url;
     const isPublicRoute = currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
 

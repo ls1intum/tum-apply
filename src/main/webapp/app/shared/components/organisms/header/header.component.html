@@ -4,8 +4,6 @@
     <span class="app-name">Apply</span>
   </div>
 
-  <div>{{ userFirstName() }}</div>
-
   <div class="actions-section">
     <div class="language-switch">
       @for (language of languages; track language; let isLast = $last) {
@@ -18,7 +16,13 @@
       }
     </div>
     <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
-    <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
-    <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
+    @if (user(); as userValue) {
+      @if (userValue.anonymous) {
+        <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
+        <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
+      } @else {
+        <div class="flex items-center">loggedin</div>
+      }
+    }
   </div>
 </header>
