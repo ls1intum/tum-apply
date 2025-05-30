@@ -28,7 +28,7 @@ export class HeaderComponent {
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {
       this.currentLanguage = language;
-      this.translateService.use(language);
+      this.translateService.use(language.toLowerCase());
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
