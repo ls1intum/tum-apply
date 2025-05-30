@@ -67,8 +67,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 NULL
             )
             FROM Application a
-            JOIN a.applicant ap
-            JOIN a.job j
+            LEFT JOIN a.applicant ap
+            LEFT JOIN a.job j
 
             WHERE a.applicationId = :id
         """
@@ -126,8 +126,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             NULL
         )
         FROM Application a
-        JOIN a.applicant ap
-        JOIN a.job j
+        LEFT JOIN a.applicant ap
+        LEFT JOIN a.job j
         WHERE ap.userId = :applicantId
         """
     )
@@ -184,8 +184,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 NULL
             )
             FROM Application a
-            JOIN a.applicant ap
-            JOIN a.job j
+            LEFT JOIN a.applicant ap
+            LEFT JOIN a.job j
             WHERE j.jobId = :jobId
         """
     )
@@ -266,8 +266,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 NULL
             )
             FROM Application a
-            JOIN a.job j
-            JOIN a.applicant ap
+            LEFT JOIN a.job j
+            LEFT JOIN a.applicant ap
             WHERE ap.id = :userId AND j.jobId = :jobId
         """
     )
