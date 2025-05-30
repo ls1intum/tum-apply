@@ -1,5 +1,5 @@
 <header class="app-header">
-  <div class="logo-section">
+  <div class="logo-section" (click)="navigateToHome()">
     <img alt="TUM Logo" class="tum-logo" src="content/images/TUM Logo.svg" />
     <span class="app-name">Apply</span>
   </div>
@@ -16,7 +16,7 @@
       }
     </div>
     <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
-    <jhi-button label="{{ 'header.login' | translate }}" severity="primary" />
-    <jhi-button label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
+    <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
+    <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
   </div>
 </header>

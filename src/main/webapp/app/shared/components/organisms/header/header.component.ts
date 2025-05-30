@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 
@@ -17,7 +18,10 @@ export class HeaderComponent {
   currentLanguage = 'EN';
   languages = LANGUAGES.map(lang => lang.toUpperCase());
 
-  constructor(private translateService: TranslateService) {}
+  constructor(
+    private translateService: TranslateService,
+    private router: Router,
+  ) {}
 
   toggleColorScheme(): void {
     const className = 'tum-apply-dark-mode';
@@ -32,5 +36,18 @@ export class HeaderComponent {
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
+  }
+
+  navigateToHome(): void {
+    void this.router.navigate(['/']);
+  }
+
+  navigateToLogin(): void {
+    console.log('Navigating to login');
+    void this.router.navigate(['/login']);
+  }
+
+  navigateToRegister(): void {
+    void this.router.navigate(['/register']);
   }
 }
