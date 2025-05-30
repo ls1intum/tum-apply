@@ -2,18 +2,22 @@
   "name": "@tumapply/api-client",
   "version": "0.1.0",
   "description": "OpenAPI client for @tumapply/api-client",
-  "keywords": [
-    "openapi-client",
-    "openapi-generator"
-  ],
+  "author": "OpenAPI-Generator Contributors",
   "repository": {
     "type": "git",
     "url": "https://github.com/GIT_USER_ID/GIT_REPO_ID.git"
   },
+  "keywords": [
+    "openapi-client",
+    "openapi-generator"
+  ],
   "license": "Unlicense",
-  "author": "OpenAPI-Generator Contributors",
   "scripts": {
     "build": "ng-packagr -p ng-package.json"
+  },
+  "peerDependencies": {
+    "@angular/core": "^19.0.0",
+    "rxjs": "^7.4.0"
   },
   "devDependencies": {
     "@angular/common": "^19.0.0",
@@ -26,9 +30,4 @@
     "rxjs": "^7.4.0",
     "typescript": ">=5.5.0 <5.7.0",
     "zone.js": "^0.15.0"
-  },
-  "peerDependencies": {
-    "@angular/core": "^19.0.0",
-    "rxjs": "^7.4.0"
-  }
-}
+  }}

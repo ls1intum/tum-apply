@@ -8,6 +8,7 @@ import { IFilterOptions } from './filter.model';
   selector: 'jhi-filter',
   imports: [SharedModule],
   templateUrl: './filter.component.html',
+  standalone: true,
 })
 export default class FilterComponent {
   readonly filters = input.required<IFilterOptions>();

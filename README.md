@@ -287,7 +287,7 @@ jhipster:
 ### Doing API-First development using openapi-generator-cli
 
 [OpenAPI-Generator]() is configured for this application. You can generate API code from the
-`src/main/resources/swagger/api.yml` definition file by running:
+`openapi/openapi.yml` definition file by running:
 
 ```bash
 ./gradlew openApiGenerate
@@ -295,11 +295,12 @@ jhipster:
 
 Then implements the generated delegate classes with `@Service` classes.
 
-To edit the `api.yml` definition file, you can use a tool such as [Swagger-Editor](). Start a local instance of the
-swagger-editor using docker by running: `docker compose -f src/main/docker/swagger-editor.yml up -d`. The editor will
-then be reachable at [http://localhost:7742](http://localhost:7742).
+To generate the `openapi.yml` definition file, you can use the following command:
 
-Refer to [Doing API-First development][] for more details.
+```bash
+./gradlew generateApiDocs -x webapp
+```
+
 The build system will install automatically the recommended version of Node and npm.
 
 We provide a wrapper to launch npm.

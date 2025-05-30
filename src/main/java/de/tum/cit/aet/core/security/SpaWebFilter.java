@@ -19,15 +19,12 @@ public class SpaWebFilter extends OncePerRequestFilter {
         // @formatter:off
         if (
             !path.startsWith("/api") &&
-            !path.startsWith("/management") &&
-            !path.startsWith("/time") &&
-            !path.startsWith("/public") &&
-            !path.startsWith("/websocket") &&
-            !path.startsWith("/git") &&
-            !path.startsWith("/webauthn") && // required for passkey authentication
-            !path.startsWith("/login/webauthn") && // required for passkey authentication
-            !path.contains(".") &&
-            path.matches("/(.*)")
+                        !path.startsWith("/management") &&
+                        !path.startsWith("/time") &&
+                        !path.startsWith("/public") &&
+                        !path.startsWith("/git") &&
+                        !path.contains(".") &&
+                        path.matches("/(.*)")
         ) {
             // @formatter:on
             request.getRequestDispatcher("/").forward(request, response);
