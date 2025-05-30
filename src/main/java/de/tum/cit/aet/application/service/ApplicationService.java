@@ -53,7 +53,6 @@ public class ApplicationService {
         ) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-
         Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
         applicant.setFirstName(createApplicationDTO.applicant().user().firstName());
         applicant.setLastName(createApplicationDTO.applicant().user().lastName());
@@ -63,7 +62,9 @@ public class ApplicationService {
         applicant.setPhoneNumber(createApplicationDTO.applicant().user().phoneNumber());
         applicant.setWebsite(createApplicationDTO.applicant().user().website());
         applicant.setLinkedinUrl(createApplicationDTO.applicant().user().linkedinUrl());
-        applicant.setSelectedLanguage(createApplicationDTO.applicant().user().selectedLanguage());
+        if (createApplicationDTO.applicant().user().selectedLanguage() != null) {
+            applicant.setSelectedLanguage(createApplicationDTO.applicant().user().selectedLanguage());
+        }
 
         applicant.setStreet(createApplicationDTO.applicant().street());
         applicant.setPostalCode(createApplicationDTO.applicant().postalCode());
@@ -159,7 +160,9 @@ public class ApplicationService {
         applicant.setPhoneNumber(applicantDTO.user().phoneNumber());
         applicant.setWebsite(applicantDTO.user().website());
         applicant.setLinkedinUrl(applicantDTO.user().linkedinUrl());
-        applicant.setSelectedLanguage(applicantDTO.user().selectedLanguage());
+        if (applicantDTO.user().selectedLanguage() != null) {
+            applicant.setSelectedLanguage(applicantDTO.user().selectedLanguage());
+        }
 
         applicant.setStreet(applicantDTO.street());
         applicant.setPostalCode(applicantDTO.postalCode());
