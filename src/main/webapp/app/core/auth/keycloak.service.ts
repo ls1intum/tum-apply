@@ -97,6 +97,18 @@ class KeycloakService {
   }
 
   /**
+   * Returns the current user's first name.
+   */
+  getFirstName(): string {
+    console.log('Keycloak tokenParsed:', this.keycloak?.tokenParsed);
+    if (!this.keycloak) {
+      console.error('Keycloak client is not initialized yet.');
+      return '';
+    }
+    return this.keycloak.tokenParsed?.given_name ?? '';
+  }
+
+  /**
    * Checks if the user has a specific role.
    */
   hasRole(role: string): boolean {
@@ -122,6 +134,8 @@ class KeycloakService {
    * Returns true if the user is currently logged in.
    */
   isLoggedIn(): boolean {
+    console.warn(this.keycloak);
+    console.warn('Keycloak authenticated:', this.keycloak?.authenticated);
     if (!this.keycloak) {
       console.error('Keycloak client is not initialized yet.');
       return false;
