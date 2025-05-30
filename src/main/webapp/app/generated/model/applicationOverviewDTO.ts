@@ -14,7 +14,7 @@ export interface ApplicationOverviewDTO {
     jobTitle?: string;
     researchGroup?: string;
     applicationState?: ApplicationOverviewDTO.ApplicationStateEnum;
-    submitted?: string;
+    createdAt?: string;
 }
 export namespace ApplicationOverviewDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
