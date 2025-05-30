@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
-import { keycloakService } from 'app/core/auth/keycloak.service';
 import { ActivatedRoute } from '@angular/router';
+import { KeycloakService } from 'app/core/auth/keycloak.service';
 
 import { AuthCardComponent } from './auth-card.component';
 
@@ -63,8 +63,8 @@ describe('AuthCardComponent', () => {
     expect(authTabServiceSpy).toHaveBeenCalledWith(1);
   });
 
-  it('should call keycloakService.login when onTUMSSOLogin is called', () => {
-    const keycloakServiceSpy = jest.spyOn(keycloakService, 'login');
+  it('should call KeycloakService.login when onTUMSSOLogin is called', () => {
+    const keycloakServiceSpy = jest.spyOn(KeycloakService.prototype, 'login');
     component.onTUMSSOLogin();
     expect(keycloakServiceSpy).toHaveBeenCalledTimes(1);
   });

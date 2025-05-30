@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angul
 import { Router, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, signal } from '@angular/core';
 import { of } from 'rxjs';
 import { InterpolatableTranslationObject, LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
@@ -46,7 +46,7 @@ describe('MainComponent', () => {
     titleService = TestBed.inject(Title);
     translateService = TestBed.inject(TranslateService);
     mockAccountService = TestBed.inject(AccountService);
-    mockAccountService.identity = jest.fn(() => of(null as unknown as Account));
+    mockAccountService.loaded = signal(true);
     (mockAccountService as any).getAuthenticationState = jest.fn(() => of(null as unknown as Account));
     ngZone = TestBed.inject(NgZone);
     router = TestBed.inject(Router);

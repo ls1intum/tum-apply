@@ -17,9 +17,6 @@ import { HeaderComponent } from '../../shared/components/organisms/header/header
 })
 export default class MainComponent {
   currentUrl = signal(inject(Router).url);
-  showLayout = computed(() => {
-    return !(this.currentUrl().startsWith('/login') || this.currentUrl().startsWith('/register'));
-  });
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
@@ -41,7 +38,7 @@ export default class MainComponent {
 
   private async initApp(): Promise<void> {
     const currentUrl = this.router.url;
-    const isPublicRoute = currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
+    const isPublicRoute = currentUrl === '/' || currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
 
     if (!isPublicRoute) {
       if (!this.accountService.loaded()) {
