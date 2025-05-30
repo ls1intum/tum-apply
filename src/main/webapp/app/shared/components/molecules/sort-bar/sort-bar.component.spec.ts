@@ -83,7 +83,7 @@ describe('SortBarComponent', () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith({
       field: 'age',
-      direction: SortDirection.ASC,
+      direction: SortDirection.DESC,
     } as Sort);
   });
 
@@ -95,14 +95,14 @@ describe('SortBarComponent', () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenLastCalledWith({
       field: 'name',
-      direction: SortDirection.DESC,
+      direction: SortDirection.ASC,
     });
     component.toggleDirection();
     fixture.detectChanges();
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenLastCalledWith({
       field: 'name',
-      direction: SortDirection.ASC,
+      direction: SortDirection.DESC,
     });
   });
 
@@ -112,6 +112,6 @@ describe('SortBarComponent', () => {
     component.onSortFieldChange({ name: 'Age', value: 'age' });
     component.toggleDirection();
     fixture.detectChanges();
-    expect(spy.mock.calls).toEqual([[{ field: 'age', direction: SortDirection.ASC }], [{ field: 'age', direction: SortDirection.DESC }]]);
+    expect(spy.mock.calls).toEqual([[{ field: 'age', direction: SortDirection.DESC }], [{ field: 'age', direction: SortDirection.ASC }]]);
   });
 });
