@@ -405,6 +405,38 @@
         }
       }
     },
+    "/api/applications/pages/length": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationPagesLength",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications/job/{jobId}": {
       "get": {
         "tags": [

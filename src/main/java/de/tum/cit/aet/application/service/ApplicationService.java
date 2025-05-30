@@ -7,6 +7,7 @@ import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -160,11 +161,17 @@ public class ApplicationService {
      */
     @Transactional
     public void deleteApplication(UUID applicationId) {
+        if (!applicationRepository.existsById(applicationId)) {
+            throw new EntityNotFoundException("Application with ID " + applicationId + " not found");
+        }
         applicationRepository.deleteById(applicationId);
     }
 
     public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
-        // throw new UnsupportedOperationException("Unimplemented method 'getAllApplications'");
         return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
+    }
+
+    public long getNumberOfTotalApplications(UUID applicantId) {
+        return this.applicationRepository.countByApplicant_UserId(applicantId);
     }
 }

@@ -35,9 +35,9 @@ VALUES
 
 ('4c05bf7d-f06c-44da-982b-7760fa49771c', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010001', 'IN_REVIEW', '2025-09-01', 'Ever since I built my first robot in high school, I knew I wanted to pursue intelligent systems.', 1),
 
-('db7fdef7-37f6-474b-a646-9068da9135ca', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010002', 'SENT', '2025-09-10', 'Ever since I built my first robot in high school, I knew I wanted to pursue intelligent systems.', 0),
+('db7fdef7-37f6-474b-a646-9068da9135ca', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010002', 'ACCEPTED', '2025-09-10', 'Ever since I built my first robot in high school, I knew I wanted to pursue intelligent systems.', 0),
 
 ('bce85235-25b7-46c2-988c-9290be79dc57', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010004', 'SAVED', '2025-06-11', 'Ever since I built my first robot in high school, I knew I wanted to pursue intelligent systems.', 1),
 
-('cafc966e-1927-4593-bd36-986e8f06db25', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010005', 'SAVED', NULL, NULL, NULL);
+('cafc966e-1927-4593-bd36-986e8f06db25', '00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000010005', 'REJECTED', NULL, NULL, NULL);
 

@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -18,6 +18,8 @@ export default class ApplicationOverviewForApplicantComponent {
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal(10);
   total = signal(0);
+
+  lastLazyLoadEvent = signal<TableLazyLoadEvent | undefined>(undefined);
 
   readonly applicantId = '00000000-0000-0000-0000-000000000104';
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -41,7 +43,14 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private readonly applicationService = inject(ApplicationResourceService);
 
+  constructor() {
+    effect(() => {
+      this.applicationService.getApplicationPagesLength(this.applicantId).subscribe(val => this.total.set(val));
+    });
+  }
+
   async loadPage(event: TableLazyLoadEvent): Promise<void> {
+    this.lastLazyLoadEvent.set(event);
     this.loading.set(true);
 
     const first = event.first ?? 0;
@@ -53,7 +62,6 @@ export default class ApplicationOverviewForApplicantComponent {
 
       setTimeout(() => {
         this.pageData.set(res);
-        this.total.set(res.length);
       });
     } catch (error) {
       console.error('Failed to load applications:', error);
@@ -70,7 +78,17 @@ export default class ApplicationOverviewForApplicantComponent {
     // TODO nicer looking confirm
     const confirmDelete = confirm('Do you really want to delete this application?');
     if (confirmDelete) {
-      this.applicationService.deleteApplication(applicationId);
+      this.applicationService.deleteApplication(applicationId).subscribe({
+        next: () => {
+          alert('Application successfully deleted');
+          const event = this.lastLazyLoadEvent();
+          if (event) this.loadPage(event);
+        },
+        error: err => {
+          alert('Error withdrawing the application');
+          console.error('Delete failed', err);
+        },
+      });
     }
   }
 
@@ -78,7 +96,17 @@ export default class ApplicationOverviewForApplicantComponent {
     // TODO nicer looking confirm
     const confirmWithdraw = confirm('Do you really want to withdraw this application?');
     if (confirmWithdraw) {
-      this.applicationService.withdrawApplication(applicationId);
+      this.applicationService.withdrawApplication(applicationId).subscribe({
+        next: () => {
+          alert('Application successfully withdrawn');
+          const event = this.lastLazyLoadEvent();
+          if (event) this.loadPage(event);
+        },
+        error: err => {
+          alert('Error withdrawing the application');
+          console.error('Withdraw failed', err);
+        },
+      });
     }
   }
 

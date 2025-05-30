@@ -26,8 +26,11 @@
       @case ('REJECTED') {
         <p-badge value="Rejected" severity="danger" />
       }
+      @case ('WITHDRAWN') {
+        <p-badge value="Withdrawn" severity="contrast" />
+      }
       @default {
-        <p-badge value="row.applicationState" severity="warn" />
+        <p-badge [value]="row.applicationState" severity="warn" />
       }
     }
   </ng-template>
@@ -40,11 +43,14 @@
 
   <ng-template #actionTemplate let-row>
     <div class="flex space-x-2">
-      <jhi-button label="View" severity="primary" (click)="onViewApplication(row.applicationId)" />
-      @if (row.applicationState === 'SENT' || row.applicationState === 'IN_REVIEW' || row.applicationState === 'REJCETED') {
+      <jhi-button label="View" [disabled]="true" severity="primary" (click)="onViewApplication(row.applicationId)" />
+      @if (['SENT', 'IN_REVIEW', 'REJCETED'].includes(row.applicationState)) {
         <jhi-button label="Withdraw" severity="danger" variant="outlined" (click)="onWithdrawApplication(row.applicationId)" />
-      } @else {
+      }
+      @if (['SAVED'].includes(row.applicationState)) {
         <jhi-button label="Update" severity="primary" variant="outlined" (click)="onViewApplication(row.applicationId)" />
+      }
+      @if (['SAVED'].includes(row.applicationState)) {
         <jhi-button label="Delete" severity="danger" (click)="onDeleteApplication(row.applicationId)" />
       }
     </div>

@@ -16,4 +16,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     Set<Application> findAllByJobJobId(UUID jobId);
 
     boolean existsByApplicantUserIdAndJobJobId(UUID applicantId, UUID jobId);
+
+    long countByApplicant_UserId(UUID applicantId);
 }
