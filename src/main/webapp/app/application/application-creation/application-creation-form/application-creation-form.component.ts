@@ -21,7 +21,12 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
-type ApplicationFormMode = 'create' | 'edit';
+const ApplicationFormModes = {
+  CREATE: 'create',
+  EDIT: 'edit',
+} as const;
+
+type ApplicationFormMode = (typeof ApplicationFormModes)[keyof typeof ApplicationFormModes];
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -202,8 +207,8 @@ export default class ApplicationCreationFormComponent {
   async init(route: ActivatedRoute): Promise<void> {
     const segments = await firstValueFrom(route.url);
     const firstSegment = segments[1]?.path;
-    if (firstSegment === 'create') {
-      this.mode = 'create';
+    if (firstSegment === ApplicationFormModes.CREATE) {
+      this.mode = ApplicationFormModes.CREATE;
       const jobId = this.route.snapshot.paramMap.get('job_id');
       if (jobId === null) {
         alert('Error: this is no valid jobId');
@@ -215,8 +220,8 @@ export default class ApplicationCreationFormComponent {
       if (job.title !== undefined && job.title.trim().length > 0) {
         this.title = job.title;
       }
-    } else if (firstSegment === 'edit') {
-      this.mode = 'edit';
+    } else if (firstSegment === ApplicationFormModes.EDIT) {
+      this.mode = ApplicationFormModes.EDIT;
       const applicationId = this.route.snapshot.paramMap.get('application_id');
       if (applicationId === null) {
         alert('Error: this is no valid applicationId');
@@ -238,7 +243,7 @@ export default class ApplicationCreationFormComponent {
 
   sendCreateApplicationData(state: 'SAVED' | 'SENT'): void {
     const router = this.router;
-    if (this.mode === 'create') {
+    if (this.mode === ApplicationFormModes.CREATE) {
       const createApplication: CreateApplicationDTO = {
         applicant: {
           user: {
