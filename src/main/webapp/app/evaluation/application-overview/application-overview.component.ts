@@ -5,13 +5,14 @@ import { firstValueFrom } from 'rxjs';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
+import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService, PageDTO, SortDTO } from '../../generated';
 import { Sort, SortBarComponent, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
+import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 
 @Component({
   selector: 'jhi-application-overview',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, DynamicTableComponent, SortBarComponent],
+  imports: [CommonModule, ButtonComponent, DynamicTableComponent, SortBarComponent, TagComponent],
   templateUrl: './application-overview.component.html',
   styleUrl: './application-overview.component.scss',
 })
@@ -20,17 +21,19 @@ export class ApplicationOverviewComponent {
   pageSize = signal(10);
   page = signal(0);
   sortBy = signal<string>('createdAt');
-  sortDirection = signal<'ASC' | 'DESC'>('ASC');
+  sortDirection = signal<'ASC' | 'DESC'>('DESC');
   total = signal(0);
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+  readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
+    const stateTpl = this.stateTemplate();
     return [
       // { field: 'avatar', header: '', width: '5rem' },
       { field: 'name', header: 'Name', width: '12rem' },
-      { field: 'state', header: 'Status', width: '10rem', alignCenter: true },
+      { field: 'state', header: 'Status', width: '10rem', alignCenter: true, template: stateTpl },
       { field: 'jobName', header: 'Job', width: '26rem' },
       { field: 'rating', header: 'Rating', width: '10rem' },
       { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
@@ -64,10 +67,10 @@ export class ApplicationOverviewComponent {
   }
 
   async loadPage(): Promise<void> {
-    // For testing/debugging
-    // console.warn('Loading', this.page(), this.pageSize(), this.sortBy(), this.sortDirection());
     try {
-      const res = await firstValueFrom(this.evaluationService.getApplications(this.pageSize(), this.page()).pipe());
+      const pageDto: PageDTO = { pageNumber: this.page(), pageSize: this.pageSize() };
+      const sortDto: SortDTO = { sortBy: this.sortBy(), direction: this.sortDirection() };
+      const res = await firstValueFrom(this.evaluationService.getApplications(pageDto, sortDto));
 
       setTimeout(() => {
         this.pageData.set(res.applications ?? []);
@@ -76,5 +79,25 @@ export class ApplicationOverviewComponent {
     } catch (error) {
       console.error('Failed to load applications:', error);
     }
+  }
+
+  mapStateText(state: string): string {
+    const map: Record<string, string> = {
+      SENT: 'Unopened',
+      ACCEPTED: 'Approved',
+      REJECTED: 'Rejected',
+      IN_REVIEW: 'In Review',
+    };
+    return map[state] ?? 'Unknown';
+  }
+
+  mapStateSeverity(state: string): 'success' | 'warn' | 'danger' | 'info' {
+    const map: Record<string, 'success' | 'warn' | 'danger' | 'info'> = {
+      SENT: 'info',
+      ACCEPTED: 'success',
+      REJECTED: 'danger',
+      IN_REVIEW: 'warn',
+    };
+    return map[state] ?? undefined;
   }
 }

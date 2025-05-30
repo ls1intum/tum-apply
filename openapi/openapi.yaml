@@ -260,25 +260,19 @@
         "operationId": "getApplications",
         "parameters": [
           {
-            "name": "pageSize",
+            "name": "pageDTO",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 25,
-              "minimum": 1
+              "$ref": "#/components/schemas/PageDTO"
             }
           },
           {
-            "name": "pageNumber",
+            "name": "sortDto",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0,
-              "minimum": 0
+              "$ref": "#/components/schemas/SortDTO"
             }
           }
         ],
@@ -877,6 +871,36 @@
           "jobId"
         ]
       },
+      "PageDTO": {
+        "type": "object",
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
+      "SortDTO": {
+        "type": "object",
+        "properties": {
+          "sortBy": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "ASC",
+              "DESC"
+            ]
+          }
+        }
+      },
       "ApplicationEvaluationListDTO": {
         "type": "object",
         "properties": {
@@ -925,7 +949,7 @@
           },
           "appliedAt": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         }
       }
