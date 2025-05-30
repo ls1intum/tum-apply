@@ -8,8 +8,8 @@ import { AccountService } from '../auth/account.service';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const keycloakService = inject(AccountService);
-    const bearer = keycloakService.user()?.bearer;
+    const accountService = inject(AccountService);
+    const bearer = accountService.user()?.bearer;
 
     if (bearer != null) {
       request = request.clone({
@@ -23,7 +23,7 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
           console.warn('Unauthorized - redirecting to login...');
-          keycloakService.signIn();
+          accountService.signIn();
         }
         return throwError(() => error);
       }),

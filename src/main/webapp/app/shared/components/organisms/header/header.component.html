@@ -21,7 +21,11 @@
         <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
         <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
       } @else {
-        <div class="flex items-center">loggedin</div>
+        <div class="profile">
+          <fa-icon class="profile-icon" icon="user" />
+          <span class="font-medium">{{ user()?.name }}</span>
+        </div>
+        <jhi-button (click)="logout()" label="{{ 'header.logout' | translate }}" severity="primary" variant="outlined" />
       }
     }
   </div>

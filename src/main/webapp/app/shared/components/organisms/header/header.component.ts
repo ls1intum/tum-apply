@@ -1,16 +1,17 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
-import { AccountService } from 'app/core/auth/account.service';
+import { AccountService, User } from 'app/core/auth/account.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, TranslateModule],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
@@ -19,7 +20,7 @@ export class HeaderComponent {
   currentLanguage = 'EN';
   languages = LANGUAGES.map(lang => lang.toUpperCase());
   accountService = inject(AccountService);
-  user = this.accountService.user;
+  user: WritableSignal<User | undefined> = this.accountService.user;
 
   constructor(
     private translateService: TranslateService,
@@ -36,6 +37,10 @@ export class HeaderComponent {
 
   navigateToRegister(): void {
     void this.router.navigate(['/register']);
+  }
+
+  logout(): void {
+    this.accountService.signOut();
   }
 
   toggleColorScheme(): void {
