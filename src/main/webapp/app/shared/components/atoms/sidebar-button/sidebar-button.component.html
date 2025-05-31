@@ -1,4 +1,4 @@
-<div class="sidebar-button" [class.active]="isActive()">
+<div class="sidebar-button" [class.active]="isActive()" (click)="navigate()">
   @if (icon() !== undefined) {
     <fa-icon [icon]="['fas', icon() ?? '']" class="icon" [class.active]="isActive()" />
   }

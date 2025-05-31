@@ -50,4 +50,12 @@ describe('SidebarButtonComponent', () => {
     const buttonElement: HTMLElement = fixture.nativeElement.querySelector('.sidebar-button');
     expect(buttonElement.classList).toContain('active');
   });
+
+  it('should call navigate method when clicked', () => {
+    const navigateSpy = jest.spyOn(component, 'navigate');
+    const buttonElement: HTMLElement = fixture.nativeElement.querySelector('.sidebar-button');
+
+    buttonElement.click();
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
+  });
 });

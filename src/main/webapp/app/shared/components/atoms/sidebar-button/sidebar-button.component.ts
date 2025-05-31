@@ -11,4 +11,9 @@ export class SidebarButtonComponent {
   icon = input<string | undefined>(undefined);
   label = input<string>('');
   isActive = input<boolean>(false);
+  link = input<string>('/');
+
+  navigate(): void {
+    window.location.href = this.link();
+  }
 }
