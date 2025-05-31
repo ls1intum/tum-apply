@@ -8,7 +8,7 @@ import ApplicationOverviewForApplicantComponent from './application-overview-for
 class MockApplicationResourceService {
   deleteApplication = jest.fn().mockReturnValue(of(undefined));
   withdrawApplication = jest.fn().mockReturnValue(of(undefined));
-  getApplicationPages(_applicantId: string, pageSize = 10, pageNumber = 0): Observable<ApplicationOverviewDTO[]> {
+  getApplicationPages(pageSize = 10, pageNumber = 0): Observable<ApplicationOverviewDTO[]> {
     const start = pageNumber * pageSize;
     const end = start + pageSize;
     const pagedData: ApplicationOverviewDTO[] = mockApplications.slice(start, end);
@@ -99,7 +99,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    expect(spy).toHaveBeenCalledWith('00000000-0000-0000-0000-000000000104');
+    expect(spy).toHaveBeenCalledWith();
   });
 
   it('should have default signals', () => {
