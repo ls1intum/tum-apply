@@ -84,6 +84,10 @@ export default class ApplicationCreationFormComponent {
       this.sendCreateApplicationData(state);
     };
 
+    const deleteApplication = (): void => {
+      this.deleteApplication();
+    };
+
     const steps: StepData[] = [];
     const panel1 = this.panel1();
     const panel2 = this.panel2();
@@ -104,6 +108,15 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
+          {
+            severity: 'danger',
+            onClick() {
+              deleteApplication();
+            },
+            disabled: false,
+            label: 'Delete',
+            changePanel: false,
+          },
           {
             severity: 'primary',
             icon: 'arrow-right',
@@ -131,6 +144,15 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
+          {
+            severity: 'danger',
+            onClick() {
+              deleteApplication();
+            },
+            disabled: false,
+            label: 'Delete',
+            changePanel: false,
+          },
           {
             severity: 'primary',
             icon: 'arrow-right',
@@ -169,6 +191,15 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
           {
+            severity: 'danger',
+            onClick() {
+              deleteApplication();
+            },
+            disabled: false,
+            label: 'Delete',
+            changePanel: false,
+          },
+          {
             severity: 'primary',
             icon: 'paper-plane',
             onClick() {
@@ -183,7 +214,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  title = 'Student Assistant in UX Research';
+  title = signal<string>('');
 
   jobId = '';
   applicationId?: string;
@@ -218,7 +249,7 @@ export default class ApplicationCreationFormComponent {
       const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId));
 
       if (job.title !== undefined && job.title.trim().length > 0) {
-        this.title = job.title;
+        this.title.set(job.title);
       }
     } else if (firstSegment === ApplicationFormModes.EDIT) {
       this.mode = ApplicationFormModes.EDIT;
@@ -230,7 +261,7 @@ export default class ApplicationCreationFormComponent {
       const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
       this.jobId = application.job.jobId;
       if (application.job.title !== undefined && application.job.title.trim().length > 0) {
-        this.title = application.job.title;
+        this.title.set(application.job.title);
       }
       this.applicationId = application.applicationId;
       this.page1.set(getPage1FromApplication(application));
@@ -341,6 +372,24 @@ export default class ApplicationCreationFormComponent {
           console.error('Failed to save application:', err);
         },
       });
+    }
+  }
+
+  deleteApplication(): void {
+    const router = this.router;
+    if (this.applicationId !== undefined) {
+      this.applicationResourceService.deleteApplication(this.applicationId).subscribe({
+        next() {
+          alert('Application sucessfully deleted');
+          router.navigate(['/']);
+        },
+        error(err) {
+          alert('Error deleting this application' + (err as HttpErrorResponse).statusText);
+          console.error('Failed to delete this application');
+        },
+      });
+    } else {
+      this.router.navigate(['/']);
     }
   }
 
