@@ -30,4 +30,20 @@ describe('JobOverviewPageComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render the page heading', () => {
+    const heading = fixture.nativeElement.querySelector('h1');
+    expect(heading).toBeTruthy();
+    expect(heading.textContent).toContain('Find Your Perfect Position');
+  });
+
+  it('should render the JobCardListComponent', () => {
+    const jobCardList = fixture.nativeElement.querySelector('jhi-job-card-list');
+    expect(jobCardList).toBeTruthy();
+  });
+
+  it('should match the DOM structure', () => {
+    expect(fixture.nativeElement.innerHTML).toContain('Find Your Perfect Position');
+    expect(fixture.nativeElement.querySelector('jhi-job-card-list')).not.toBeNull();
+  });
 });
