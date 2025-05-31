@@ -1,11 +1,17 @@
 <div class="sidebar">
   @for (category of categories; track category.title) {
-    <p-panel class="panel" header="Test" [toggleable]="true">
-      @for (button of category.buttons; track button.text) {
-        <jhi-sidebar-button [icon]="button.icon" [label]="button.text" [link]="button.link" [isActive]="true">
-          <span text>{{ button.text }}</span>
-        </jhi-sidebar-button>
-      }
+    <p-panel
+      styleClass="panel"
+      [header]="category.title"
+      [toggleable]="true"
+      expandIcon="pi pi-chevron-down"
+      collapseIcon="pi pi-chevron-up"
+    >
+      <div class="buttons">
+        @for (button of category.buttons; track button.text) {
+          <jhi-sidebar-button [icon]="button.icon" [label]="button.text" [link]="button.link" [isActive]="isActive(button.link)" />
+        }
+      </div>
     </p-panel>
   }
 </div>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
+import { Router } from '@angular/router';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 
@@ -12,7 +13,10 @@ import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-butto
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  constructor(private accountService: AccountService) {}
+  constructor(
+    private accountService: AccountService,
+    private router: Router,
+  ) {}
 
   get categories(): { title: string; buttons: { icon: string; text: string; link: string }[] }[] | undefined {
     const categoryConfig = {
@@ -36,9 +40,9 @@ export class SidebarComponent {
         {
           title: 'Manage',
           buttons: [
-            { icon: 'home', text: 'Home', link: '/dashboard' },
+            { icon: 'home', text: 'Home', link: '/' },
             { icon: 'folder', text: 'My Positions', link: '/my-positions' },
-            { icon: 'plus', text: 'Create Position', link: '/create-position' },
+            { icon: 'plus', text: 'Create Position', link: '/job-creation' },
           ],
         },
         {
@@ -82,7 +86,10 @@ export class SidebarComponent {
       ],
     };
     const authorities = this.accountService.user()?.authorities;
-    console.log(authorities?.map((authority: UserShortDTO.RolesEnum) => categoryConfig[authority]).flat());
     return authorities?.map((authority: UserShortDTO.RolesEnum) => categoryConfig[authority]).flat();
+  }
+
+  isActive(link: string): boolean {
+    return this.router.url === link;
   }
 }

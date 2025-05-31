@@ -1,36 +1,38 @@
 .sidebar {
   display: flex;
+  height: 100%;
+  width: 15.625rem;
   flex-direction: column;
-  width: 250px; /* Adjusted width for better visibility */
-  height: 100vh; /* Full viewport height */
-  position: sticky;
+  justify-content: flex;
   top: 0;
+  position: sticky;
+  align-items: flex-start;
   background: var(--p-background-surface);
   border-right: 1px solid var(--p-border-default);
-  overflow-y: auto; /* Ensure scrollability if content overflows */
-  padding: 1rem; /* Added padding for better spacing */
 
-  .panel {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    background-color: var(--p-background-secondary);
-    border-radius: 8px;
+  ::ng-deep .panel {
+    width: 15.625rem;
+    border: none;
+    background-color: transparent;
+    border-radius: 0;
+
+    .p-panel-header {
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 400;
+      background-color: transparent;
+
+      .p-panel-header-icon {
+        color: var(--p-text-primary);
+      }
+    }
   }
 
-  .category {
-    margin-bottom: 1rem;
-  }
-
-  .category-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-
-  .category-buttons {
+  .buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 0.25rem;
   }
 
   jhi-sidebar-button {
