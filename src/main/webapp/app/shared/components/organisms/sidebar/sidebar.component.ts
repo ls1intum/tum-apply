@@ -3,12 +3,13 @@ import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [PanelModule, SidebarButtonComponent],
+  imports: [PanelModule, SidebarButtonComponent, TranslateModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
@@ -22,66 +23,66 @@ export class SidebarComponent {
     const categoryConfig = {
       APPLICANT: [
         {
-          title: 'Dashboard',
+          title: 'sidebar.dashboard.dashboard',
           buttons: [
-            { icon: 'home', text: 'Home', link: '/' },
-            { icon: 'search', text: 'Find Positions', link: '/positions' },
+            { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
+            { icon: 'search', text: 'sidebar.dashboard.findpositions', link: '/positions' },
           ],
         },
         {
-          title: 'Applications',
+          title: 'sidebar.applications.applications',
           buttons: [
-            { icon: 'file', text: 'My Applications', link: '/applications' },
-            { icon: 'bookmark', text: 'Saved Positions', link: '/saved' },
+            { icon: 'file', text: 'sidebar.applications.myapplications', link: '/applications' },
+            { icon: 'bookmark', text: 'sidebar.applications.savedpositions', link: '/saved' },
           ],
         },
       ],
       PROFESSOR: [
         {
-          title: 'Manage',
+          title: 'sidebar.manage.manage',
           buttons: [
-            { icon: 'home', text: 'Home', link: '/' },
-            { icon: 'folder', text: 'My Positions', link: '/my-positions' },
-            { icon: 'plus', text: 'Create Position', link: '/job-creation' },
+            { icon: 'home', text: 'sidebar.manage.home', link: '/' },
+            { icon: 'folder', text: 'sidebar.manage.mypositions', link: '/my-positions' },
+            { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job-creation' },
           ],
         },
         {
-          title: 'Applications',
-          buttons: [{ icon: 'file-contract', text: 'Review Applications', link: '/review' }],
+          title: 'sidebar.applications.applications',
+          buttons: [{ icon: 'file-contract', text: 'sidebar.applications.reviewapplications', link: '/review' }],
         },
         {
-          title: 'Research Group',
+          title: 'sidebar.researchgroup.researchgroup',
           buttons: [
-            { icon: 'microscope', text: 'Your Group', link: '/group' },
-            { icon: 'people-roof', text: 'Your Members', link: '/members' },
+            { icon: 'microscope', text: 'sidebar.researchgroup.yourgroup', link: '/group' },
+            { icon: 'people-roof', text: 'sidebar.researchgroup.yourmembers', link: '/members' },
           ],
         },
       ],
       ADMIN: [
         {
-          title: 'Dashboard',
+          title: 'sidebar.dashboard.dashboard',
           buttons: [
-            { icon: 'home', text: 'Home', link: '/' },
-            { icon: 'chart-line', text: 'Analytics', link: '/analytics' },
+            { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
+            { icon: 'chart-line', text: 'sidebar.dashboard.analytics', link: '/analytics' },
           ],
         },
         {
-          title: 'Content',
+          title: 'sidebar.content.content',
           buttons: [
-            { icon: 'folder', text: 'All Positions', link: '/all-positions' },
-            { icon: 'microscope', text: 'Research Groups', link: '/research-groups' },
+            { icon: 'folder', text: 'sidebar.content.allpositions', link: '/all-positions' },
+            { icon: 'microscope', text: 'sidebar.content.researchgroups', link: '/research-groups' },
           ],
         },
         {
-          title: 'Users',
+          title: 'sidebar.users.users',
           buttons: [
-            { icon: 'users', text: 'Manage Users', link: '/manage-users' },
-            { icon: 'file', text: 'Applications', link: '/applications' },
+            { icon: 'users', text: 'sidebar.users.manageusers', link: '/manage-users' },
+            { icon: 'file', text: 'sidebar.users.file', link: '/applications' },
           ],
         },
         {
-          title: 'System',
-          buttons: [{ icon: 'wrench', text: 'System Settings', link: '/settings' }],
+          title: 'sidebar.system.system',
+          buttons: [{ icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/settings' }],
         },
       ],
     };
