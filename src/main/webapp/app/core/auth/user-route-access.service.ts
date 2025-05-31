@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { AccountService } from './account.service';
 
@@ -7,7 +8,7 @@ export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRoute
   const router = inject(Router);
   const accountService = inject(AccountService);
 
-  const requiredRoles: string[] = next.data['authorities'] ?? [];
+  const requiredRoles: UserShortDTO.RolesEnum[] = next.data['authorities'] ?? [];
   const publicOnly: boolean = next.data['publicOnly'] ?? false;
 
   // If route is publicOnly and user is logged in, redirect to home
