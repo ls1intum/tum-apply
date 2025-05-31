@@ -4,9 +4,10 @@ import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-ico
 import { ActivatedRoute } from '@angular/router';
 import { signal } from '@angular/core';
 import { TranslateService, TranslateStore } from '@ngx-translate/core';
-import { AccountService, User } from 'app/core/auth/account.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 import { AuthCardComponent } from './auth-card.component';
+import { User } from 'app/core/auth/account.model';
 
 jest.mock('app/core/auth/account.service');
 

@@ -7,9 +7,9 @@ import { of } from 'rxjs';
 import { InterpolatableTranslationObject, LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
-import { User } from 'app/core/auth/account.service';
 
 import MainComponent from './main.component';
+import { User } from 'app/core/auth/account.model';
 
 jest.mock('app/core/auth/account.service');
 jest.mock('app/core/auth/keycloak.service', () => {

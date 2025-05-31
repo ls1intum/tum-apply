@@ -2,7 +2,8 @@ import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { AccountService, User } from 'app/core/auth/account.service';
+import { AccountService } from 'app/core/auth/account.service';
+import { User } from 'app/core/auth/account.model';
 
 @Component({
   imports: [],

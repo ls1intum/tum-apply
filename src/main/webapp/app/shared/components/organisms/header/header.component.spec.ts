@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
-import { AccountService, User } from 'app/core/auth/account.service';
+import { AccountService } from 'app/core/auth/account.service';
 import { signal } from '@angular/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faMoon, faSun, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { HeaderComponent } from './header.component';
+import { User } from 'app/core/auth/account.model';
 
 jest.mock('app/core/auth/account.service');
 
