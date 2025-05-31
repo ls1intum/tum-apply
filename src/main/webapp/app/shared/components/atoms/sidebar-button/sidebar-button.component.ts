@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -14,7 +15,11 @@ export class SidebarButtonComponent {
   isActive = input<boolean>(false);
   link = input<string>('/');
 
+  constructor(private router: Router) {}
+
   navigate(): void {
-    window.location.href = this.link();
+    this.router.navigate([this.link()]).catch((err: unknown) => {
+      console.error('Navigation error:', err);
+    });
   }
 }
