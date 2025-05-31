@@ -1,6 +1,7 @@
 dependencies {
     implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
     testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
 }
 
 ext {
@@ -20,16 +21,16 @@ bootRun {
 task webapp(type: NpmTask) {
     inputs.property('appVersion', project.version)
     inputs.files("build.gradle")
-        .withPropertyName('build.gradle')
-        .withPathSensitivity(PathSensitivity.RELATIVE)
+            .withPropertyName('build.gradle')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.files('angular.json', 'package-lock.json', 'package.json', 'tsconfig.app.json', 'tsconfig.json')
-        .withPropertyName('angular-build')
-        .withPathSensitivity(PathSensitivity.RELATIVE)
+            .withPropertyName('angular-build')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.dir("src/main/webapp/")
-        .withPropertyName("src/main/webapp/")
-        .withPathSensitivity(PathSensitivity.RELATIVE)
+            .withPropertyName("src/main/webapp/")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     outputs.dir("build/resources/main/static/")
-        .withPropertyName("webapp-build-dir")
+            .withPropertyName("webapp-build-dir")
 
     dependsOn npmInstall
 

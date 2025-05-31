@@ -54,7 +54,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.title,
                     j.fieldOfStudies,
                     j.location,
-                    j.supervisingProfessor.userId,
+                    CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                     j.workload,
                     j.startDate,
                     j.createdAt
@@ -67,8 +67,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 NULL
             )
             FROM Application a
-            JOIN a.applicant ap
-            JOIN a.job j
+            LEFT JOIN a.applicant ap
+            LEFT JOIN a.job j
 
             WHERE a.applicationId = :id
         """
@@ -113,7 +113,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.title,
                 j.fieldOfStudies,
                 j.location,
-                j.supervisingProfessor.userId,
+                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                 j.workload,
                 j.startDate,
                 j.createdAt
@@ -126,8 +126,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             NULL
         )
         FROM Application a
-        JOIN a.applicant ap
-        JOIN a.job j
+        LEFT JOIN a.applicant ap
+        LEFT JOIN a.job j
         WHERE ap.userId = :applicantId
         """
     )
@@ -171,7 +171,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.title,
                     j.fieldOfStudies,
                     j.location,
-                    j.supervisingProfessor.userId,
+                    CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                     j.workload,
                     j.startDate,
                     j.createdAt
@@ -184,47 +184,14 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 NULL
             )
             FROM Application a
-            JOIN a.applicant ap
-            JOIN a.job j
+            LEFT JOIN a.applicant ap
+            LEFT JOIN a.job j
             WHERE j.jobId = :jobId
         """
     )
     Set<ApplicationForApplicantDTO> findAllDtosByJobJobId(UUID jobId);
 
     boolean existsByApplicantUserIdAndJobJobId(UUID applicantId, UUID jobId);
-
-    @Modifying
-    @Query(
-        value = """
-            INSERT INTO applications (
-                applicant_id,
-                job_id,
-                application_state,
-                desired_start_date,
-                projects,
-                special_skills,
-                motivation
-            ) VALUES (
-                :applicantId,
-                :jobId,
-                :state,
-                :desiredDate,
-                :projects,
-                :specialSkills,
-                :motivation
-            )
-        """,
-        nativeQuery = true
-    )
-    void insertApplication(
-        @Param("applicantId") UUID applicantId,
-        @Param("jobId") UUID jobId,
-        @Param("state") String state,
-        @Param("desiredDate") LocalDate desiredDate,
-        @Param("projects") String projects,
-        @Param("specialSkills") String specialSkills,
-        @Param("motivation") String motivation
-    );
 
     @Modifying
     @Query(
@@ -286,7 +253,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.title,
                     j.fieldOfStudies,
                     j.location,
-                    j.supervisingProfessor.userId,
+                    CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                     j.workload,
                     j.startDate,
                     j.createdAt
@@ -299,8 +266,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 NULL
             )
             FROM Application a
-            JOIN a.job j
-            JOIN a.applicant ap
+            LEFT JOIN a.job j
+            LEFT JOIN a.applicant ap
             WHERE ap.id = :userId AND j.jobId = :jobId
         """
     )

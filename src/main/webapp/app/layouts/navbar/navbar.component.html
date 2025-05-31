@@ -144,16 +144,10 @@
         >
           @let accountRef = account();
           <a class="nav-link dropdown-toggle" data-cy="accountMenu" href="javascript:void(0);" id="account-menu" ngbDropdownToggle>
-            @if (!accountRef?.imageUrl) {
-              <span>
-                <fa-icon icon="user" />
-                <span jhiTranslate="global.menu.account.main">Account</span>
-              </span>
-            } @else {
-              <span>
-                <img [src]="accountRef!.imageUrl" class="profile-image rounded-circle" alt="Avatar" />
-              </span>
-            }
+            <span>
+              <fa-icon icon="user" />
+              <span jhiTranslate="global.menu.account.main">Account</span>
+            </span>
           </a>
           <ul aria-labelledby="account-menu" class="dropdown-menu" ngbDropdownMenu>
             @if (accountRef !== null) {

@@ -228,24 +228,6 @@
           "job-resource"
         ],
         "operationId": "getAvailableJobs",
-        "parameters": [
-          {
-            "name": "filter",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sorting",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -551,20 +533,10 @@
             "type": "string"
           },
           "location": {
-            "type": "string",
-            "enum": [
-              "GARCHING",
-              "GARCHING_HOCHBRUECK",
-              "HEILBRONN",
-              "MUNICH",
-              "STRAUBING",
-              "WEIHENSTEPHAN",
-              "SINGAPORE"
-            ]
+            "type": "string"
           },
-          "professorId": {
-            "type": "string",
-            "format": "uuid"
+          "professorName": {
+            "type": "string"
           },
           "workload": {
             "type": "integer",
@@ -574,9 +546,8 @@
             "type": "string",
             "format": "date"
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "relativeTime": {
+            "type": "string"
           }
         },
         "required": [

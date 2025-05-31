@@ -7,9 +7,12 @@ import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -20,16 +23,16 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ApplicantRepository applicantRepository;
-    private final UserRepository userRepository;
+    private final JobRepository jobRepository;
 
     public ApplicationService(
         ApplicationRepository applicationRepository,
         ApplicantRepository applicantRepository,
-        UserRepository userRepository
+        JobRepository jobRepository
     ) {
         this.applicationRepository = applicationRepository;
         this.applicantRepository = applicantRepository;
-        this.userRepository = userRepository;
+        this.jobRepository = jobRepository;
     }
 
     /**
@@ -50,50 +53,54 @@ public class ApplicationService {
         ) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
+        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
+        applicant.setFirstName(createApplicationDTO.applicant().user().firstName());
+        applicant.setLastName(createApplicationDTO.applicant().user().lastName());
+        applicant.setGender(createApplicationDTO.applicant().user().gender());
+        applicant.setNationality(createApplicationDTO.applicant().user().nationality());
+        applicant.setBirthday(createApplicationDTO.applicant().user().birthday());
+        applicant.setPhoneNumber(createApplicationDTO.applicant().user().phoneNumber());
+        applicant.setWebsite(createApplicationDTO.applicant().user().website());
+        applicant.setLinkedinUrl(createApplicationDTO.applicant().user().linkedinUrl());
+        if (createApplicationDTO.applicant().user().selectedLanguage() != null) {
+            applicant.setSelectedLanguage(createApplicationDTO.applicant().user().selectedLanguage());
+        }
 
-        ApplicantDTO applicantDto = createApplicationDTO.applicant();
-        userRepository.updateUser(
-            applicantDto.user().email(),
-            applicantDto.user().firstName(),
-            applicantDto.user().lastName(),
-            applicantDto.user().gender(),
-            applicantDto.user().nationality(),
-            applicantDto.user().birthday(),
-            applicantDto.user().phoneNumber(),
-            applicantDto.user().website(),
-            applicantDto.user().linkedinUrl(),
-            applicantDto.user().selectedLanguage(),
-            UUID.fromString("00000000-0000-0000-0000-000000000103")
-        );
-        applicantRepository.updateApplicant(
-            applicantDto.street(),
-            applicantDto.postalCode(),
-            applicantDto.city(),
-            applicantDto.country(),
-            applicantDto.bachelorDegreeName(),
-            applicantDto.bachelorGradingScale().name(),
-            applicantDto.bachelorGrade(),
-            applicantDto.bachelorUniversity(),
-            applicantDto.masterDegreeName(),
-            applicantDto.masterGradingScale().name(),
-            applicantDto.masterGrade(),
-            applicantDto.masterUniversity(),
-            UUID.fromString("00000000-0000-0000-0000-000000000103")
-        );
+        applicant.setStreet(createApplicationDTO.applicant().street());
+        applicant.setPostalCode(createApplicationDTO.applicant().postalCode());
+        applicant.setCity(createApplicationDTO.applicant().city());
+        applicant.setCountry(createApplicationDTO.applicant().country());
+        applicant.setBachelorDegreeName(createApplicationDTO.applicant().bachelorDegreeName());
+        applicant.setBachelorGradingScale(createApplicationDTO.applicant().bachelorGradingScale());
+        applicant.setBachelorGrade(createApplicationDTO.applicant().bachelorGrade());
+        applicant.setBachelorUniversity(createApplicationDTO.applicant().bachelorUniversity());
+        applicant.setMasterDegreeName(createApplicationDTO.applicant().masterDegreeName());
+        applicant.setMasterGradingScale(createApplicationDTO.applicant().masterGradingScale());
+        applicant.setMasterGrade(createApplicationDTO.applicant().masterGrade());
+        applicant.setMasterUniversity(createApplicationDTO.applicant().masterUniversity());
+        applicantRepository.save(applicant);
 
-        applicationRepository.insertApplication(
-            createApplicationDTO.applicant().user().userId(),
-            createApplicationDTO.jobId(),
-            createApplicationDTO.applicationState().name(),
+        Job job = jobRepository.getReferenceById(createApplicationDTO.jobId());
+        Application application = new Application(
+            null,
+            null, // no applicationReview yet
+            applicant,
+            job,
+            createApplicationDTO.applicationState(),
             createApplicationDTO.desiredDate(),
+            null,
+            null,
+            null,
+            null,
             createApplicationDTO.projects(),
             createApplicationDTO.specialSkills(),
-            createApplicationDTO.motivation()
+            createApplicationDTO.motivation(),
+            null,
+            new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
+            new HashSet<>()
         );
-        return applicationRepository.getApplicationDtoByApplicantUserIdAndJobJobId(
-            createApplicationDTO.applicant().user().userId(),
-            createApplicationDTO.jobId()
-        );
+        Application savedApplication = applicationRepository.save(application);
+        return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
     /**
@@ -142,35 +149,35 @@ public class ApplicationService {
             updateApplicationDTO.specialSkills(),
             updateApplicationDTO.motivation()
         );
-        ApplicantDTO applicantDto = updateApplicationDTO.applicant();
-        applicantRepository.updateApplicant(
-            applicantDto.street(),
-            applicantDto.postalCode(),
-            applicantDto.city(),
-            applicantDto.country(),
-            applicantDto.bachelorDegreeName(),
-            applicantDto.bachelorGradingScale().name(),
-            applicantDto.bachelorGrade(),
-            applicantDto.bachelorUniversity(),
-            applicantDto.masterDegreeName(),
-            applicantDto.masterGradingScale().name(),
-            applicantDto.masterGrade(),
-            applicantDto.masterUniversity(),
-            applicantDto.user().userId()
-        );
-        userRepository.updateUser(
-            applicantDto.user().email(),
-            applicantDto.user().firstName(),
-            applicantDto.user().lastName(),
-            applicantDto.user().gender(),
-            applicantDto.user().nationality(),
-            applicantDto.user().birthday(),
-            applicantDto.user().phoneNumber(),
-            applicantDto.user().website(),
-            applicantDto.user().linkedinUrl(),
-            applicantDto.user().selectedLanguage(),
-            applicantDto.user().userId()
-        );
+        ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
+
+        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
+        applicant.setFirstName(applicantDTO.user().firstName());
+        applicant.setLastName(applicantDTO.user().lastName());
+        applicant.setGender(applicantDTO.user().gender());
+        applicant.setNationality(applicantDTO.user().nationality());
+        applicant.setBirthday(applicantDTO.user().birthday());
+        applicant.setPhoneNumber(applicantDTO.user().phoneNumber());
+        applicant.setWebsite(applicantDTO.user().website());
+        applicant.setLinkedinUrl(applicantDTO.user().linkedinUrl());
+        if (applicantDTO.user().selectedLanguage() != null) {
+            applicant.setSelectedLanguage(applicantDTO.user().selectedLanguage());
+        }
+
+        applicant.setStreet(applicantDTO.street());
+        applicant.setPostalCode(applicantDTO.postalCode());
+        applicant.setCity(applicantDTO.city());
+        applicant.setCountry(applicantDTO.country());
+        applicant.setBachelorDegreeName(applicantDTO.bachelorDegreeName());
+        applicant.setBachelorGradingScale(applicantDTO.bachelorGradingScale());
+        applicant.setBachelorGrade(applicantDTO.bachelorGrade());
+        applicant.setBachelorUniversity(applicantDTO.bachelorUniversity());
+        applicant.setMasterDegreeName(applicantDTO.masterDegreeName());
+        applicant.setMasterGradingScale(applicantDTO.masterGradingScale());
+        applicant.setMasterGrade(applicantDTO.masterGrade());
+        applicant.setMasterUniversity(applicantDTO.masterUniversity());
+        applicantRepository.save(applicant);
+
         return applicationRepository.findDtoById(updateApplicationDTO.applicationId());
     }
 
