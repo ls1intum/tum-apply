@@ -3,9 +3,11 @@ package de.tum.cit.aet.application.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -13,6 +15,7 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -204,6 +207,17 @@ public class ApplicationService {
      */
     @Transactional
     public void deleteApplication(UUID applicationId) {
+        if (!applicationRepository.existsById(applicationId)) {
+            throw new EntityNotFoundException("Application with ID " + applicationId + " not found");
+        }
         applicationRepository.deleteById(applicationId);
+    }
+
+    public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
+        return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
+    }
+
+    public long getNumberOfTotalApplications(UUID applicantId) {
+        return this.applicationRepository.countByApplicant_UserId(applicantId);
     }
 }

@@ -30,12 +30,10 @@ public record UserDTO(
         if (user == null) {
             return null;
         }
-
         ResearchGroupShortDTO researchGroupShortDTO = null;
         if (user.getResearchGroup() != null) {
             researchGroupShortDTO = new ResearchGroupShortDTO(user.getResearchGroup());
         }
-
         return new UserDTO(
             user.getUserId(),
             user.getEmail(),

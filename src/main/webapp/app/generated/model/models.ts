@@ -2,6 +2,7 @@ export * from './applicantDTO';
 export * from './applicationEvaluationListDTO';
 export * from './applicationEvaluationOverviewDTO';
 export * from './applicationForApplicantDTO';
+export * from './applicationOverviewDTO';
 export * from './createApplicationDTO';
 export * from './customFieldAnswerDTO';
 export * from './jobCardDTO';
