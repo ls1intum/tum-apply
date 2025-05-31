@@ -9,8 +9,9 @@
  */
 
 
-export interface Link { 
-    href?: string;
-    templated?: boolean;
+export interface SortObject { 
+    empty?: boolean;
+    unsorted?: boolean;
+    sorted?: boolean;
 }
 
