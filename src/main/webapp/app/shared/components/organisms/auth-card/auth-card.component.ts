@@ -5,8 +5,8 @@ import { CommonModule } from '@angular/common';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
-import { keycloakService } from '../../../../core/auth/keycloak.service';
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
+import { AccountService } from '../../../../core/auth/account.service';
 
 @Component({
   selector: 'jhi-auth-card',
@@ -19,6 +19,7 @@ export class AuthCardComponent {
   mode = input<'login' | 'register'>('login');
   authTabService = inject(AuthTabService);
   value: Signal<number> = this.authTabService.getSelectedTab();
+  accountService = inject(AccountService);
 
   onTabChange(newValue: string | number): void {
     this.authTabService.setSelectedTab(Number(newValue));
@@ -54,6 +55,6 @@ export class AuthCardComponent {
   }
 
   onTUMSSOLogin(): void {
-    keycloakService.login();
+    void this.accountService.signIn();
   }
 }

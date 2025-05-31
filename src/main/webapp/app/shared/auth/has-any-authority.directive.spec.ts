@@ -1,11 +1,8 @@
-jest.mock('app/core/auth/account.service');
-
-import { Component, ElementRef, WritableSignal, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { AccountService } from 'app/core/auth/account.service';
-import { Account } from 'app/core/auth/account.model';
+import { AccountService, User } from 'app/core/auth/account.service';
 
 @Component({
   imports: [],
@@ -15,9 +12,16 @@ class TestHasAnyAuthorityDirectiveComponent {
   content = viewChild<ElementRef>('content');
 }
 
+jest.mock('app/core/auth/account.service');
+jest.mock('app/core/auth/keycloak.service', () => {
+  const { MockKeycloakService } = jest.requireActual('app/core/auth/keycloak.service.mock');
+  return {
+    keycloakService: new MockKeycloakService(),
+  };
+});
+
 describe('HasAnyAuthorityDirective tests', () => {
   let mockAccountService: AccountService;
-  let currentAccount: WritableSignal<Account | null>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -28,8 +32,8 @@ describe('HasAnyAuthorityDirective tests', () => {
 
   beforeEach(() => {
     mockAccountService = TestBed.inject(AccountService);
-    currentAccount = signal<Account | null>({ activated: true, authorities: [] } as any);
-    mockAccountService.trackCurrentAccount = jest.fn(() => currentAccount);
+    mockAccountService.loaded = signal(true);
+    mockAccountService.user = signal<User | undefined>(undefined);
   });
 
   describe('set jhiHasAnyAuthority', () => {

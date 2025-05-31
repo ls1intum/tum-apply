@@ -1,26 +1,22 @@
-import { Component, Renderer2, RendererFactory2, computed, effect, inject, signal } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, effect, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
-import { keycloakService } from 'app/core/auth/keycloak.service';
-import { firstValueFrom } from 'rxjs';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
+import { HeaderComponent } from '../../shared/components/organisms/header/header.component';
 
 @Component({
   selector: 'jhi-main',
   templateUrl: './main.component.html',
   providers: [AppPageTitleStrategy],
-  imports: [RouterOutlet, FooterComponent, PageRibbonComponent],
+  imports: [HeaderComponent, RouterOutlet, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
   currentUrl = signal(inject(Router).url);
-  showLayout = computed(() => {
-    return !(this.currentUrl().startsWith('/login') || this.currentUrl().startsWith('/register'));
-  });
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
@@ -36,18 +32,20 @@ export default class MainComponent {
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
     effect(() => {
-      this.initApp();
+      void this.initApp();
     });
   }
 
   private async initApp(): Promise<void> {
-    await keycloakService.init();
-
     const currentUrl = this.router.url;
-    const isPublicRoute = currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
+    const isPublicRoute = currentUrl === '/' || currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
 
     if (!isPublicRoute) {
-      await firstValueFrom(this.accountService.identity());
+      if (!this.accountService.loaded()) {
+        console.warn('User not loaded, redirecting to login.');
+        await this.router.navigate(['/login']);
+        return;
+      }
     }
 
     this.router.events.subscribe(() => {

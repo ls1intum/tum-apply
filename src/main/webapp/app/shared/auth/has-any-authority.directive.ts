@@ -26,12 +26,11 @@ export default class HasAnyAuthorityDirective {
 
   constructor() {
     const accountService = inject(AccountService);
-    const currentAccount = accountService.trackCurrentAccount();
 
     const hasPermission = computed(() => {
-      const user = currentAccount();
-      const roles = this.roles();
-      return !!user?.roles && !!roles.length && accountService.hasAnyAuthority(roles);
+      const rolesInput = this.roles();
+      const roles: string[] = Array.isArray(rolesInput) ? rolesInput.reduce<string[]>((acc, role) => acc.concat(role), []) : [rolesInput];
+      return accountService.hasAnyAuthority(roles);
     });
 
     effect(() => {
