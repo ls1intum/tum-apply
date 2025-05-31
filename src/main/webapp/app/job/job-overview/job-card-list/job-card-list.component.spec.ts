@@ -39,7 +39,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should call loadJobs on init and populate jobs and totalRecords', () => {
-    expect(mockJobService.getAvailableJobs).toHaveBeenCalledWith(0, component.pageSize);
+    expect(mockJobService.getAvailableJobs).toHaveBeenCalledWith(0, component.pageSize());
     expect(component.jobs().length).toBe(0);
     expect(component.totalRecords()).toBe(0);
   });
