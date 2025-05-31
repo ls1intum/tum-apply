@@ -1,15 +1,16 @@
-.main-layout {
+.header {
+  width: 100%;
+}
+
+.main-page {
   display: flex;
-  height: 100vh;
-}
 
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
+  .sidebar {
+    position: sticky;
+    top: 0;
+  }
 
-.content {
-  flex: 1;
-  overflow: auto;
+  .content {
+    overflow-y: auto;
+  }
 }
