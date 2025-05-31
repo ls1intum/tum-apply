@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
+  standalone: true,
   selector: 'jhi-sidebar-button',
   imports: [FontAwesomeModule],
   templateUrl: './sidebar-button.component.html',
