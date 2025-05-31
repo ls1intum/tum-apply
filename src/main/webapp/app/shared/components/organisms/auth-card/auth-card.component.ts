@@ -55,6 +55,6 @@ export class AuthCardComponent {
   }
 
   onTUMSSOLogin(): void {
-    this.accountService.signIn();
+    void this.accountService.signIn();
   }
 }

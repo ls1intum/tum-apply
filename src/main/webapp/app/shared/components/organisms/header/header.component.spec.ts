@@ -3,7 +3,7 @@ import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translat
 import { AccountService, User } from 'app/core/auth/account.service';
 import { signal } from '@angular/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faMoon, faSun, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { HeaderComponent } from './header.component';
 
@@ -32,6 +32,7 @@ describe('HeaderComponent', () => {
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faSun);
     library.addIcons(faMoon);
+    library.addIcons(faUser);
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
@@ -43,24 +44,24 @@ describe('HeaderComponent', () => {
   });
 
   it('should navigate to home when logo is clicked', () => {
-    const navigateSpy = spyOn(component, 'navigateToHome');
+    const navigateSpy = jest.spyOn(component, 'navigateToHome');
     const logoElement = fixture.nativeElement.querySelector('.logo-section');
     logoElement.click();
-    expect(navigateSpy).toHaveBeenCalled();
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should toggle language when language button is clicked', () => {
-    const toggleLanguageSpy = spyOn(component, 'toggleLanguage');
+    const toggleLanguageSpy = jest.spyOn(component, 'toggleLanguage');
     const languageButton = fixture.nativeElement.querySelector('.language-button');
     languageButton.click();
-    expect(toggleLanguageSpy).toHaveBeenCalled();
+    expect(toggleLanguageSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should toggle color scheme when button is clicked', () => {
-    const toggleColorSchemeSpy = spyOn(component, 'toggleColorScheme');
-    const colorSchemeButton = fixture.nativeElement.querySelector('jhi-button[icon]');
+  it('should toggle color scheme when the first jhi-button is clicked', () => {
+    const toggleColorSchemeSpy = jest.spyOn(component, 'toggleColorScheme');
+    const colorSchemeButton = fixture.nativeElement.querySelector('jhi-button');
     colorSchemeButton.click();
-    expect(toggleColorSchemeSpy).toHaveBeenCalled();
+    expect(toggleColorSchemeSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should display user name if user is logged in', () => {
@@ -77,9 +78,17 @@ describe('HeaderComponent', () => {
   });
 
   it('should call logout when logout button is clicked', () => {
-    const logoutSpy = spyOn(component, 'logout');
-    const logoutButton = fixture.nativeElement.querySelector('jhi-button[label="header.logout"]');
+    component.user.set({
+      id: '1',
+      name: 'Test User',
+      email: 'test@example.com',
+      anonymous: false,
+      bearer: 'token',
+    });
+    fixture.detectChanges();
+    const logoutSpy = jest.spyOn(component, 'logout');
+    const logoutButton = fixture.nativeElement.querySelector('jhi-button[ng-reflect-label="header.logout"]');
     logoutButton.click();
-    expect(logoutSpy).toHaveBeenCalled();
+    expect(logoutSpy).toHaveBeenCalledTimes(1);
   });
 });
