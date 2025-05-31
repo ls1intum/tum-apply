@@ -1,0 +1,8 @@
+<div class="sidebar-button" [class.active]="isActive()">
+  @if (icon() !== undefined) {
+    <fa-icon [icon]="['fas', icon() ?? '']" class="icon" [class.active]="isActive()" />
+  }
+  <div class="text">
+    {{ label() }}
+  </div>
+</div>
