@@ -1,82 +1,88 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { isPlatformServer } from '@angular/common';
+import { UserResourceService } from 'app/generated/api/userResource.service';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
-import { ApplicationConfigService } from '../config/application-config.service';
+import { KeycloakService } from './keycloak.service';
+import { ANONYMOUS_USER, User } from './account.model';
 
-import { StateStorageService } from './state-storage.service';
-import { Account } from './account.model';
+export interface SecurityState {
+  loaded: boolean;
+  user: User | undefined;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
-  private readonly userIdentity = signal<Account | null>(null);
-  private readonly http = inject(HttpClient);
-  private readonly router = inject(Router);
-  private readonly stateStorageService = inject(StateStorageService);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
+  #keycloakService = inject(KeycloakService);
+  #userResourceService = inject(UserResourceService);
+  loaded = signal(false);
+  user = signal<User | undefined>(undefined);
 
-  private accountCache$?: Observable<Account> | null;
+  loadedUser = computed(() => (this.loaded() ? this.user() : undefined));
+  signedIn = computed(() => {
+    const user = this.user();
+    return this.loaded() && user != null && !user.anonymous;
+  });
 
-  /**
-   * Returns a readonly signal of the current user account.
-   */
-  trackCurrentAccount(): Signal<Account | null> {
-    return this.userIdentity.asReadonly();
+  constructor() {
+    void this.onInit();
   }
 
-  /**
-   * Returns true if the user has at least one of the given authorities.
-   */
-  hasAnyAuthority(authorities: string[] | string): boolean {
-    const user = this.userIdentity();
-    if (!user) return false;
-    const userAuthorities = user.roles;
-    const required = Array.isArray(authorities) ? authorities : [authorities];
-    return required.some(role => userAuthorities.includes(role));
-  }
-
-  /**
-   * Loads the current user account from the backend if not cached or forced.
-   */
-  identity(force?: boolean): Observable<Account> {
-    if (!this.accountCache$ || force === true) {
-      this.accountCache$ = this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/users/me')).pipe(
-        tap(account => {
-          this.userIdentity.set(account);
-          this.navigateToStoredUrl();
-        }),
-        shareReplay(1),
-        catchError(err => {
-          this.userIdentity.set(null);
-          return throwError(() => err);
-        }),
-      );
+  async onInit(): Promise<void> {
+    const isServer = isPlatformServer(inject(PLATFORM_ID));
+    const keycloakService = inject(KeycloakService);
+    if (isServer) {
+      this.user.set(ANONYMOUS_USER);
+      this.loaded.set(true);
+      return;
     }
-    return this.accountCache$;
-  }
 
-  /**
-   * Returns true if the user is currently authenticated.
-   */
-  isAuthenticated(): boolean {
-    return this.userIdentity() !== null;
-  }
+    const isLoggedIn = await keycloakService.init();
+    if (isLoggedIn && keycloakService.profile) {
+      const { sub, email, given_name, family_name, token } = keycloakService.profile;
+      const user = {
+        id: sub,
+        email,
+        name: `${given_name} ${family_name}`,
+        anonymous: false,
+        bearer: token,
+      };
+      this.user.set(user);
+      this.loaded.set(true);
 
-  /**
-   * Clears the cached user state.
-   */
-  reset(): void {
-    this.userIdentity.set(null);
-    this.accountCache$ = null;
-  }
-
-  private navigateToStoredUrl(): void {
-    const previousUrl = this.stateStorageService.getUrl();
-    if (previousUrl) {
-      this.stateStorageService.clearUrl();
-      this.router.navigateByUrl(previousUrl);
+      await this.fetchAuthorities();
+    } else {
+      this.user.set(ANONYMOUS_USER);
+      this.loaded.set(true);
     }
+  }
+
+  async signIn(): Promise<void> {
+    await this.#keycloakService.login();
+  }
+
+  async signOut(): Promise<void> {
+    await this.#keycloakService.logout();
+  }
+
+  async fetchAuthorities(): Promise<void> {
+    try {
+      const userShortDTO = await firstValueFrom(this.#userResourceService.getCurrentUser());
+      const currentUser = this.user();
+      if (currentUser) {
+        this.user.set({
+          ...currentUser,
+          authorities: userShortDTO.roles,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch authorities:', error);
+    }
+  }
+
+  hasAnyAuthority(requiredRoles: UserShortDTO.RolesEnum[]): boolean {
+    const user = this.user();
+    return requiredRoles.some(role => user?.authorities?.includes(role) ?? false);
   }
 }

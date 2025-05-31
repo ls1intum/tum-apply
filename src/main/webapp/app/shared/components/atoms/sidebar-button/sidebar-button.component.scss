@@ -1,0 +1,33 @@
+.sidebar-button {
+  display: flex;
+  height: 2.75rem;
+  padding: 0.75rem 1rem;
+  align-items: center;
+  color: var(--p-text-primary);
+  gap: 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--p-primary-hover-color-outlined);
+  }
+
+  &.active {
+    background-color: var(--p-primary-color);
+    color: var(--p-text-on-primary);
+  }
+
+  .icon {
+    color: var(--p-primary-color);
+
+    &.active {
+      color: var(--p-text-on-primary);
+    }
+  }
+
+  .text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

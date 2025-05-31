@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": {
+      "dashboard": "Dashboard",
+      "home": "Home",
+      "findpositions": "Find Positions",
+      "analytics": "Analytics"
+    },
+    "applications": {
+      "applications": "Applications",
+      "myapplications": "My Applications",
+      "savedpositions": "Saved Positions",
+      "reviewapplications": "Review Applications"
+    },
+    "manage": {
+      "manage": "Manage",
+      "home": "Home",
+      "mypositions": "My Positions",
+      "createposition": "Create Position"
+    },
+    "researchgroup": {
+      "researchgroup": "Research Group",
+      "yourgroup": "Your Group",
+      "yourmembers": "Your Members"
+    },
+    "content": {
+      "content": "Content",
+      "allpositions": "All Positions",
+      "researchgroups": "Research Groups"
+    },
+    "users": {
+      "users": "Users",
+      "manageusers": "Manage Users",
+      "file": "Applications"
+    },
+    "system": {
+      "system": "System",
+      "systemsettings": "System Settings"
+    }
+  }
+}

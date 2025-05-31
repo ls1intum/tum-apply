@@ -1,0 +1,41 @@
+{
+  "sidebar": {
+    "dashboard": {
+      "dashboard": "Dashboard",
+      "home": "Startseite",
+      "findpositions": "Positionen finden",
+      "analytics": "Analysen"
+    },
+    "applications": {
+      "applications": "Bewerbungen",
+      "myapplications": "Meine Bewerbungen",
+      "savedpositions": "Gespeicherte Positionen",
+      "reviewapplications": "Bewerbungen prüfen"
+    },
+    "manage": {
+      "manage": "Verwalten",
+      "home": "Startseite",
+      "mypositions": "Meine Positionen",
+      "createposition": "Position erstellen"
+    },
+    "researchgroup": {
+      "researchgroup": "Forschungsgruppe",
+      "yourgroup": "Ihre Gruppe",
+      "yourmembers": "Ihre Mitglieder"
+    },
+    "content": {
+      "content": "Inhalt",
+      "allpositions": "Alle Positionen",
+      "researchgroups": "Forschungsgruppen"
+    },
+    "users": {
+      "users": "Benutzer",
+      "manageusers": "Benutzer verwalten",
+      "file": "Bewerbungen"
+    },
+    "system": {
+      "system": "System",
+      "systemsettings": "Systemeinstellungen"
+    }
+  }
+}
