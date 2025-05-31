@@ -1,1 +1,10 @@
-<p>sidebar works!</p>
+<div class="sidebar">
+  <div *ngFor="let category of categories" class="category">
+    <h3 class="category-title">{{ category.title }}</h3>
+    <div class="category-buttons">
+      <jhi-sidebar-button *ngFor="let button of category.buttons" [iconName]="button.icon">
+        <span text>{{ button.text }}</span>
+      </jhi-sidebar-button>
+    </div>
+  </div>
+</div>
