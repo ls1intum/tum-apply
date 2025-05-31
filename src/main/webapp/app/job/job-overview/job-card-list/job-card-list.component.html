@@ -18,7 +18,7 @@
 <p-table
   [value]="jobs()"
   [paginator]="true"
-  [rows]="pageSize"
+  [rows]="pageSize()"
   [totalRecords]="totalRecords()"
   [lazy]="true"
   (onLazyLoad)="onLazyLoad($event)"

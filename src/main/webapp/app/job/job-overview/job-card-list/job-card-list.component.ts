@@ -16,20 +16,20 @@ import { JobCardComponent } from '../job-card/job-card.component';
 export class JobCardListComponent {
   jobs = signal<JobCardDTO[]>([]);
   totalRecords = signal<number>(0);
-  pageSize = 8;
+  pageSize = signal<number>(8);
 
   private jobService = inject(JobResourceService);
 
   constructor() {
     // Trigger the first load of the job list
     effect(() => {
-      this.onLazyLoad({ first: 0, rows: this.pageSize });
+      this.onLazyLoad({ first: 0, rows: this.pageSize() });
     });
   }
 
   onLazyLoad(event: TableLazyLoadEvent): void {
-    const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize));
-    const size = event.rows ?? this.pageSize;
+    const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
+    const size = event.rows ?? this.pageSize();
     this.loadJobs(page, size);
   }
 
