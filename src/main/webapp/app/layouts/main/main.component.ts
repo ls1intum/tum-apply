@@ -1,9 +1,10 @@
-import { Component, Renderer2, RendererFactory2, effect, inject, signal } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
+import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
@@ -12,11 +13,15 @@ import { HeaderComponent } from '../../shared/components/organisms/header/header
 @Component({
   selector: 'jhi-main',
   templateUrl: './main.component.html',
+  styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [HeaderComponent, RouterOutlet, FooterComponent, PageRibbonComponent],
+  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
   currentUrl = signal(inject(Router).url);
+  loggedIn = computed(() => {
+    return this.accountService.signedIn();
+  });
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);

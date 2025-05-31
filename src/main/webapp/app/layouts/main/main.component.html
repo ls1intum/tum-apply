@@ -1,11 +1,18 @@
-<jhi-header />
+<div class="main-layout">
+  @if (loggedIn()) {
+    <jhi-sidebar class="sidebar" />
+  }
+  <div class="content">
+    <jhi-header />
 
-<jhi-page-ribbon />
+    <jhi-page-ribbon />
 
-<div class="container-fluid">
-  <div class="card jh-card">
-    <router-outlet />
+    <div class="container-fluid">
+      <div class="card jh-card">
+        <router-outlet />
+      </div>
+
+      <jhi-footer />
+    </div>
   </div>
-
-  <jhi-footer />
 </div>
