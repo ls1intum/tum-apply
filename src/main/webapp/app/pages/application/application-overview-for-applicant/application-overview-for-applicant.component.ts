@@ -21,7 +21,6 @@ export default class ApplicationOverviewForApplicantComponent {
 
   lastLazyLoadEvent = signal<TableLazyLoadEvent | undefined>(undefined);
 
-  readonly applicantId = '00000000-0000-0000-0000-000000000104';
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
   readonly createdTemplate = viewChild.required<TemplateRef<unknown>>('createdTemplate');
@@ -45,7 +44,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
   constructor() {
     effect(() => {
-      this.applicationService.getApplicationPagesLength(this.applicantId).subscribe(val => this.total.set(val));
+      this.applicationService.getApplicationPagesLength().subscribe(val => this.total.set(val));
     });
   }
 
@@ -58,7 +57,7 @@ export default class ApplicationOverviewForApplicantComponent {
     const page = first / rows;
 
     try {
-      const res = await firstValueFrom(this.applicationService.getApplicationPages(this.applicantId, rows, page).pipe());
+      const res = await firstValueFrom(this.applicationService.getApplicationPages(rows, page).pipe());
 
       setTimeout(() => {
         this.pageData.set(res);

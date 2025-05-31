@@ -118,15 +118,16 @@ public class ApplicationResource {
 
     @GetMapping("/pages")
     public ResponseEntity<List<ApplicationOverviewDTO>> getApplicationPages(
-        @RequestParam UUID applicantId, // will be removed when can be accessed through login
         @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
         @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
     ) {
+        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); //temporary for testing purposes
         return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
     }
 
     @GetMapping("/pages/length")
-    public ResponseEntity<Long> getApplicationPagesLength(@RequestParam UUID applicantId) {
+    public ResponseEntity<Long> getApplicationPagesLength() {
+        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); //temporary for testing purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
     }
 }

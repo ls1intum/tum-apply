@@ -350,15 +350,6 @@
         "operationId": "getApplicationPages",
         "parameters": [
           {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
             "name": "pageSize",
             "in": "query",
             "required": false,
@@ -404,17 +395,6 @@
           "application-resource"
         ],
         "operationId": "getApplicationPagesLength",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
