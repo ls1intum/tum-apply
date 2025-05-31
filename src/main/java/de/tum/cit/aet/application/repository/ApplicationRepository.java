@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the {@link Application} entity.
  */
 @Repository
-public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID> {
+public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID>, ApplicationEntityRepository {
     @Query(
         """
             SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
