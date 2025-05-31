@@ -1,16 +1,30 @@
+.whole-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--p-background-default);
+}
+
 .header {
-  width: 100%;
+  flex: 0 0 auto;
 }
 
 .main-page {
+  flex: 1 1 auto;
   display: flex;
+  overflow: hidden;
 
   .sidebar {
-    position: sticky;
-    top: 0;
+    flex: 0 0 auto;
+    max-height: 100%;
+    overflow-y: auto;
   }
 
   .content {
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: auto;
+    align-items: center;
   }
 }
