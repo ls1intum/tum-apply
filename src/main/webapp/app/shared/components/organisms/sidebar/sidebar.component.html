@@ -1,10 +1,11 @@
 <div class="sidebar">
-  <div *ngFor="let category of categories" class="category">
-    <h3 class="category-title">{{ category.title }}</h3>
-    <div class="category-buttons">
-      <jhi-sidebar-button *ngFor="let button of category.buttons" [iconName]="button.icon">
-        <span text>{{ button.text }}</span>
-      </jhi-sidebar-button>
-    </div>
-  </div>
+  @for (category of categories; track category.title) {
+    <p-panel class="panel" header="Test" [toggleable]="true">
+      @for (button of category.buttons; track button.text) {
+        <jhi-sidebar-button [icon]="button.icon" [label]="button.text" [link]="button.link" [isActive]="true">
+          <span text>{{ button.text }}</span>
+        </jhi-sidebar-button>
+      }
+    </p-panel>
+  }
 </div>

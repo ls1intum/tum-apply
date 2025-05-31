@@ -1,14 +1,18 @@
-import { Component, input } from '@angular/core';
+import { Component } from '@angular/core';
+import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { PanelModule } from 'primeng/panel';
+
+import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [],
+  imports: [PanelModule, SidebarButtonComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  role = input<UserShortDTO.RolesEnum | undefined>(undefined);
+  constructor(private accountService: AccountService) {}
 
   get categories(): { title: string; buttons: { icon: string; text: string; link: string }[] }[] | undefined {
     const categoryConfig = {
@@ -39,13 +43,13 @@ export class SidebarComponent {
         },
         {
           title: 'Applications',
-          buttons: [{ icon: 'file', text: 'Review Applications', link: '/review' }],
+          buttons: [{ icon: 'file-contract', text: 'Review Applications', link: '/review' }],
         },
         {
           title: 'Research Group',
           buttons: [
-            { icon: 'users', text: 'Your Group', link: '/group' },
-            { icon: 'user-friends', text: 'Your Members', link: '/members' },
+            { icon: 'microscope', text: 'Your Group', link: '/group' },
+            { icon: 'people-roof', text: 'Your Members', link: '/members' },
           ],
         },
       ],
@@ -53,31 +57,32 @@ export class SidebarComponent {
         {
           title: 'Dashboard',
           buttons: [
-            { icon: 'home', text: 'Home', link: '/dashboard' },
-            { icon: 'chart-bar', text: 'Analytics', link: '/analytics' },
+            { icon: 'home', text: 'Home', link: '/' },
+            { icon: 'chart-line', text: 'Analytics', link: '/analytics' },
           ],
         },
         {
           title: 'Content',
           buttons: [
             { icon: 'folder', text: 'All Positions', link: '/all-positions' },
-            { icon: 'users', text: 'Research Groups', link: '/research-groups' },
+            { icon: 'microscope', text: 'Research Groups', link: '/research-groups' },
           ],
         },
         {
           title: 'Users',
           buttons: [
-            { icon: 'user-cog', text: 'Manage Users', link: '/manage-users' },
+            { icon: 'users', text: 'Manage Users', link: '/manage-users' },
             { icon: 'file', text: 'Applications', link: '/applications' },
           ],
         },
         {
           title: 'System',
-          buttons: [{ icon: 'cogs', text: 'System Settings', link: '/settings' }],
+          buttons: [{ icon: 'wrench', text: 'System Settings', link: '/settings' }],
         },
       ],
     };
-    const role = this.role();
-    return role && categoryConfig[role];
+    const authorities = this.accountService.user()?.authorities;
+    console.log(authorities?.map((authority: UserShortDTO.RolesEnum) => categoryConfig[authority]).flat());
+    return authorities?.map((authority: UserShortDTO.RolesEnum) => categoryConfig[authority]).flat();
   }
 }
