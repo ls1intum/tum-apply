@@ -46,7 +46,7 @@ const routes: Routes = [
   },
   {
     path: 'application/edit/:application_id',
-    loadComponent: () => import('./pages/application/application-creation/application-creation-form/application-creation-form.component'),
+    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
   },
   {
     path: 'playground/button',

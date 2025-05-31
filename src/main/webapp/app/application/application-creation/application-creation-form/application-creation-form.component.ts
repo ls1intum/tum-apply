@@ -84,8 +84,8 @@ export default class ApplicationCreationFormComponent {
       this.sendCreateApplicationData(state);
     };
 
-    const discardApplication = (): void => {
-      this.discardApplication();
+    const deleteApplication = (): void => {
+      this.deleteApplication();
     };
 
     const steps: StepData[] = [];
@@ -111,10 +111,10 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'danger',
             onClick() {
-              discardApplication();
+              deleteApplication();
             },
             disabled: false,
-            label: 'Discard',
+            label: 'Delete',
             changePanel: false,
           },
           {
@@ -147,10 +147,10 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'danger',
             onClick() {
-              discardApplication();
+              deleteApplication();
             },
             disabled: false,
-            label: 'Discard',
+            label: 'Delete',
             changePanel: false,
           },
           {
@@ -193,10 +193,10 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'danger',
             onClick() {
-              discardApplication();
+              deleteApplication();
             },
             disabled: false,
-            label: 'Discard',
+            label: 'Delete',
             changePanel: false,
           },
           {
@@ -375,7 +375,7 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  discardApplication(): void {
+  deleteApplication(): void {
     const router = this.router;
     if (this.applicationId !== undefined) {
       this.applicationResourceService.deleteApplication(this.applicationId).subscribe({
