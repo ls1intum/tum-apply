@@ -23,7 +23,6 @@ jest.mock('app/core/auth/keycloak.service', () => {
 
 describe('HasAnyAuthorityDirective tests', () => {
   let mockAccountService: AccountService;
-  let currentAccount: WritableSignal<Account | null>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -36,13 +35,6 @@ describe('HasAnyAuthorityDirective tests', () => {
     mockAccountService = TestBed.inject(AccountService);
     mockAccountService.loaded = signal(true);
     mockAccountService.user = signal<User | undefined>(undefined);
-
-    currentAccount = signal<Account | null>({
-      roles: [],
-      email: '',
-      firstName: '',
-      lastName: '',
-    });
   });
 
   describe('set jhiHasAnyAuthority', () => {

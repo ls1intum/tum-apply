@@ -1,4 +1,4 @@
-import { Component, Renderer2, RendererFactory2, computed, effect, inject, signal } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, effect, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
