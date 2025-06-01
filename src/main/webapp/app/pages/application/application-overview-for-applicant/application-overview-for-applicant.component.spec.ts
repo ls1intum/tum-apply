@@ -26,42 +26,42 @@ const mockApplications: ApplicationOverviewDTO[] = [
     jobTitle: 'Postdoctoral Researcher - AI Ethics',
     researchGroup: 'Ethics & Society Lab',
     applicationState: 'SENT',
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+    timeSinceCreation: '2 days ago',
   },
   {
     applicationId: 'app-002',
     jobTitle: 'PhD in Machine Learning',
     researchGroup: 'ML Systems',
     applicationState: 'IN_REVIEW',
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
+    timeSinceCreation: '10 days ago',
   },
   {
     applicationId: 'app-003',
     jobTitle: 'Data Scientist Intern',
     researchGroup: 'Data Insights',
     applicationState: 'SAVED',
-    createdAt: new Date().toISOString(), // now
+    timeSinceCreation: 'Today',
   },
   {
     applicationId: 'app-004',
     jobTitle: 'Senior Research Scientist',
     researchGroup: 'Advanced Robotics',
     applicationState: 'ACCEPTED',
-    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 1 month ago
+    timeSinceCreation: '1 month ago',
   },
   {
     applicationId: 'app-005',
     jobTitle: 'Research Assistant - Computational Biology',
     researchGroup: 'Bioinformatics Lab',
     applicationState: 'REJECTED',
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+    timeSinceCreation: '5 days ago',
   },
   {
     applicationId: 'app-006',
     jobTitle: 'Junior Software Engineer',
     researchGroup: 'Platform Engineering',
     applicationState: 'WITHDRAWN',
-    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 days ago
+    timeSinceCreation: '15 days ago',
   },
 ];
 
@@ -166,13 +166,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
     expect(applicationService.withdrawApplication).toHaveBeenCalledWith('app-id');
     expect(reloadSpy).toHaveBeenCalled();
-  });
-
-  it('should calculate relative date correctly', () => {
-    const now = new Date();
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-    const result = component.calculateDate(oneHourAgo.toISOString());
-    expect(result).toBe('1 hour ago');
   });
 
   it('should handle error in loadPage()', async () => {

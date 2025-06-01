@@ -35,12 +35,6 @@
     }
   </ng-template>
 
-  <ng-template #createdTemplate let-row>
-    <span class="w-full">
-      {{ calculateDate(row.createdAt) }}
-    </span>
-  </ng-template>
-
   <ng-template #actionTemplate let-row>
     <div class="flex space-x-2">
       <jhi-button label="View" [disabled]="true" severity="primary" (click)="onViewApplication(row.applicationId)" />

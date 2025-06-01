@@ -23,17 +23,15 @@ export default class ApplicationOverviewForApplicantComponent {
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
-  readonly createdTemplate = viewChild.required<TemplateRef<unknown>>('createdTemplate');
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
-    const createdTemplate = this.createdTemplate();
     return [
       { field: 'jobTitle', header: 'Position Title', width: '34rem' },
       { field: 'researchGroup', header: 'Research Group', width: '20rem' },
       { field: 'badges', header: 'Status', width: '10rem', template: badgeTemplate },
-      { field: 'created', header: 'Created', width: '10rem', template: createdTemplate },
+      { field: 'timeSinceCreation', header: 'Created', width: '10rem' },
       { field: 'actions', header: '', width: '15rem', template: actionTemplate },
     ];
   });
@@ -107,31 +105,5 @@ export default class ApplicationOverviewForApplicantComponent {
         },
       });
     }
-  }
-
-  calculateDate(createdDateString: string): string {
-    const now = new Date();
-    const createdDate = new Date(createdDateString);
-    const seconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
-
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 1) return 'just now';
-
-    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-
-    const hours = Math.floor(seconds / 3600);
-    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-
-    const days = Math.floor(seconds / 86400);
-    if (days < 7) return `${days} day${days !== 1 ? 's' : ''} ago`;
-
-    const weeks = Math.floor(seconds / 604800);
-    if (weeks < 5) return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
-
-    const months = Math.floor(seconds / 2592000); // 30 days
-    if (months < 12) return `${months} month${months !== 1 ? 's' : ''} ago`;
-
-    const years = Math.floor(seconds / 31536000); // 365 days
-    return `${years} year${years !== 1 ? 's' : ''} ago`;
   }
 }
