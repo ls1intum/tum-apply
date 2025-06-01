@@ -87,7 +87,7 @@ export class SidebarComponent {
       ],
     };
     const authorities = this.accountService.user()?.authorities;
-    return authorities?.map((authority: UserShortDTO.RolesEnum) => categoryConfig[authority]).flat();
+    return authorities?.map((authority: string) => categoryConfig[authority as UserShortDTO.RolesEnum]).flat();
   }
 
   isActive(link: string): boolean {
