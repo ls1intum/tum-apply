@@ -1,4 +1,4 @@
-import { Component, WritableSignal, effect, inject, signal } from '@angular/core';
+import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { map } from 'rxjs';
+import { fromEventPattern } from 'rxjs';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 
@@ -18,7 +19,14 @@ import { ButtonComponent } from '../../atoms/button/button.component';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
-  isDarkMode = signal(document.body.classList.contains('tum-apply-dark-mode'));
+  bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
+    const observer = new MutationObserver(handler as MutationCallback);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }).pipe(map(() => document.body.classList.contains('tum-apply-dark-mode')));
+  isDarkMode = toSignal(this.bodyClassChanges$, {
+    initialValue: document.body.classList.contains('tum-apply-dark-mode'),
+  });
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
     initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
   });
@@ -50,7 +58,6 @@ export class HeaderComponent {
   toggleColorScheme(): void {
     const className = 'tum-apply-dark-mode';
     document.body.classList.toggle(className);
-    this.isDarkMode.set(document.body.classList.contains(className));
   }
 
   toggleLanguage(language: string): void {
