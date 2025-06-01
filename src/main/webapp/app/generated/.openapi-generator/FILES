@@ -5,6 +5,7 @@ api.module.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
+api/documentResource.service.ts
 api/jobResource.service.ts
 configuration.ts
 encoder.ts

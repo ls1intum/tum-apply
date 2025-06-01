@@ -6,6 +6,7 @@ import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.usermanagement.domain.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -121,6 +122,7 @@ public class ApplicationResource {
      * @param files the list of documents to be uploaded as {@link MultipartFile}s
      * @return {@link ResponseEntity} with HTTP 200 OK if the upload succeeds
      */
+    @Hidden
     @PostMapping("/{applicationId}/test-documents")
     public ResponseEntity<Void> testUploadDocuments(@PathVariable UUID applicationId, @RequestParam("files") List<MultipartFile> files) {
         //simulate current user
