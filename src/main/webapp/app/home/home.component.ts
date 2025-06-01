@@ -17,6 +17,10 @@ export default class HomeComponent {
     this.router.navigate(['/job-creation']);
   }
 
+  goToApplicationOverviewForApplicants(): void {
+    this.router.navigate(['/application/overview']);
+  }
+
   goToJobsOverview(): void {
     this.router.navigate(['/job-overview']);
   }
