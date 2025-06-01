@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService, PageDTO, SortDTO } from '../../generated';
+import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { Sort, SortBarComponent, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 
@@ -68,9 +68,9 @@ export class ApplicationOverviewComponent {
 
   async loadPage(): Promise<void> {
     try {
-      const pageDto: PageDTO = { pageNumber: this.page(), pageSize: this.pageSize() };
-      const sortDto: SortDTO = { sortBy: this.sortBy(), direction: this.sortDirection() };
-      const res = await firstValueFrom(this.evaluationService.getApplications(pageDto, sortDto));
+      const res = await firstValueFrom(
+        this.evaluationService.getApplications(this.pageSize(), this.page(), this.sortBy(), this.sortDirection()),
+      );
 
       setTimeout(() => {
         this.pageData.set(res.applications ?? []);

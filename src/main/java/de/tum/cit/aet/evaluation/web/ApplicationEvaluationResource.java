@@ -8,6 +8,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,8 +32,8 @@ public class ApplicationEvaluationResource {
      */
     @GetMapping("/applications")
     public ResponseEntity<ApplicationEvaluationListDTO> getApplications(
-        @Valid @ModelAttribute PageDTO pageDTO,
-        @ModelAttribute SortDTO sortDto
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @ModelAttribute SortDTO sortDto
     ) {
         //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
         ResearchGroup researchGroup = new ResearchGroup();

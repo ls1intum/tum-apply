@@ -272,19 +272,43 @@
         "operationId": "getApplications",
         "parameters": [
           {
-            "name": "pageDTO",
+            "name": "pageSize",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/PageDTO"
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
             }
           },
           {
-            "name": "sortDto",
+            "name": "pageNumber",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "$ref": "#/components/schemas/SortDTO"
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -922,13 +946,20 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
+          "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "first": {
             "type": "boolean"
@@ -953,13 +984,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "empty": {
             "type": "boolean"
           }
@@ -968,12 +992,13 @@
       "PageableObject": {
         "type": "object",
         "properties": {
-          "offset": {
+          "pageSize": {
             "type": "integer",
-            "format": "int64"
+            "format": "int32"
           },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
           },
           "unpaged": {
             "type": "boolean"
@@ -981,57 +1006,26 @@
           "paged": {
             "type": "boolean"
           },
-          "pageNumber": {
+          "offset": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
           }
         }
       },
       "SortObject": {
         "type": "object",
         "properties": {
-          "empty": {
-            "type": "boolean"
-          },
           "unsorted": {
             "type": "boolean"
           },
           "sorted": {
             "type": "boolean"
-          }
-        }
-      },
-      "PageDTO": {
-        "type": "object",
-        "properties": {
-          "pageSize": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 1
           },
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 0
-          }
-        }
-      },
-      "SortDTO": {
-        "type": "object",
-        "properties": {
-          "sortBy": {
-            "type": "string"
-          },
-          "direction": {
-            "type": "string",
-            "enum": [
-              "ASC",
-              "DESC"
-            ]
+          "empty": {
+            "type": "boolean"
           }
         }
       },
