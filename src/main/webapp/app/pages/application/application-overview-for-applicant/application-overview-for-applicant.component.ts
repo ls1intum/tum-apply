@@ -65,6 +65,7 @@ export default class ApplicationOverviewForApplicantComponent {
       this.total.set(tempTotal);
     } catch (error) {
       alert('Failed to load total application count');
+      console.error('Failed to load total application count', error);
     }
   }
 
