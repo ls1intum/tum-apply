@@ -47,6 +47,20 @@ export class ApplicationOverviewComponent {
     { displayName: 'Rating', field: 'rating', type: 'NUMBER' },
   ];
 
+  readonly stateTextMap = signal<Record<string, string>>({
+    SENT: 'Unopened',
+    ACCEPTED: 'Approved',
+    REJECTED: 'Rejected',
+    IN_REVIEW: 'In Review',
+  });
+
+  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
+    SENT: 'info',
+    ACCEPTED: 'success',
+    REJECTED: 'danger',
+    IN_REVIEW: 'warn',
+  });
+
   private readonly evaluationService = inject(ApplicationEvaluationResourceService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -79,25 +93,5 @@ export class ApplicationOverviewComponent {
     } catch (error) {
       console.error('Failed to load applications:', error);
     }
-  }
-
-  mapStateText(state: string): string {
-    const map: Record<string, string> = {
-      SENT: 'Unopened',
-      ACCEPTED: 'Approved',
-      REJECTED: 'Rejected',
-      IN_REVIEW: 'In Review',
-    };
-    return map[state] ?? 'Unknown';
-  }
-
-  mapStateSeverity(state: string): 'success' | 'warn' | 'danger' | 'info' {
-    const map: Record<string, 'success' | 'warn' | 'danger' | 'info'> = {
-      SENT: 'info',
-      ACCEPTED: 'success',
-      REJECTED: 'danger',
-      IN_REVIEW: 'warn',
-    };
-    return map[state] ?? undefined;
   }
 }

@@ -18,6 +18,6 @@
   </ng-template>
 
   <ng-template #stateTemplate let-application>
-    <jhi-tag [text]="mapStateText(application.state)" [color]="mapStateSeverity(application.state)" />
+    <jhi-tag [text]="stateTextMap()[application.state] || 'Unknown'" [color]="stateSeverityMap()[application.state] || 'info'" />
   </ng-template>
 </div>
