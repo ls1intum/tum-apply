@@ -47,9 +47,9 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         //Main Query
         CriteriaQuery<ApplicationEvaluationOverviewDTO> query = cb.createQuery(ApplicationEvaluationOverviewDTO.class);
         Root<Application> root = query.from(Application.class);
-        Join<?, ?> applicant = root.join("applicant");
-        Join<?, ?> job = root.join("job");
-        Join<?, ?> researchGroup = job.join("researchGroup");
+        Join<?, ?> applicant = root.join(Application_.APPLICANT);
+        Join<?, ?> job = root.join(Application_.JOB);
+        Join<?, ?> researchGroup = job.join(Job_.RESEARCH_GROUP);
 
         List<Predicate> predicates = buildPredicates(cb, root, researchGroup, researchGroupId, states);
         query.where(predicates.toArray(new Predicate[0]));
@@ -80,8 +80,8 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         //Count Query
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<Application> countRoot = countQuery.from(Application.class);
-        Join<?, ?> countJob = countRoot.join("job");
-        Join<?, ?> countRG = countJob.join("researchGroup");
+        Join<?, ?> countJob = countRoot.join(Application_.JOB);
+        Join<?, ?> countRG = countJob.join(Job_.RESEARCH_GROUP);
 
         List<Predicate> countPredicates = buildPredicates(cb, countRoot, countRG, researchGroupId, states);
         countQuery.select(cb.count(countRoot)).where(countPredicates.toArray(new Predicate[0]));
