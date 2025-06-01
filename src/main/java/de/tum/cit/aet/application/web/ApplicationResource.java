@@ -99,13 +99,9 @@ public class ApplicationResource {
      * @return the withdrawn ApplicationForApplicantDTO, or 404 Not Found if not found
      */
     @PutMapping("/withdraw/{applicationId}")
-    public ResponseEntity<ApplicationForApplicantDTO> withdrawApplication(@PathVariable UUID applicationId) {
+    public ResponseEntity<Void> withdrawApplication(@PathVariable UUID applicationId) {
         // TODO check authorization
-        ApplicationForApplicantDTO withdrawnApplication = applicationService.withdrawApplication(applicationId);
-        if (withdrawnApplication != null) {
-            return ResponseEntity.ok(withdrawnApplication);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        applicationService.withdrawApplication(applicationId);
+        return ResponseEntity.ok().build();
     }
 }

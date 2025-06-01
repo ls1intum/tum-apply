@@ -27,6 +27,11 @@ const routes: Routes = [
     title: 'home.title',
   },
   {
+    path: 'job-overview',
+    loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
+    title: 'home.title',
+  },
+  {
     path: '',
     loadComponent: () => import('./home/home.component'),
     title: 'home.title',
@@ -38,6 +43,10 @@ const routes: Routes = [
   },
   {
     path: 'application/create/:job_id',
+    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
+  },
+  {
+    path: 'application/edit/:application_id',
     loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
   },
   {
