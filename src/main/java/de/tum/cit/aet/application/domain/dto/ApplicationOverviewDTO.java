@@ -15,7 +15,7 @@ public class ApplicationOverviewDTO {
     private String jobTitle;
     private String researchGroup;
     private ApplicationState applicationState;
-    private String createdAtString;
+    private String timeSinceCreation;
 
     public ApplicationOverviewDTO(
         UUID applicationId,
@@ -28,7 +28,7 @@ public class ApplicationOverviewDTO {
         this.jobTitle = jobTitle;
         this.researchGroup = researchGroup;
         this.applicationState = applicationState;
-        this.createdAtString = getRelativeTime(createdAt);
+        this.timeSinceCreation = getRelativeTime(createdAt);
     }
 
     /**
