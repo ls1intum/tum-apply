@@ -80,6 +80,10 @@ const routes: Routes = [
     loadComponent: () =>
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
   },
+  {
+    path: 'playground/editor',
+    loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
+  },
   ...errorRoute,
 ];
 

@@ -1,0 +1,19 @@
+<form [formGroup]="form()">
+  <div class="m-2">
+    <jhi-editor
+      label="Motivation"
+      id="motivation"
+      [required]="true"
+      [(model)]="motivation"
+      [control]="form().controls.firstName"
+      icon="house"
+    />
+    <!-- [disabled]="true" -->
+  </div>
+  <div class="m-2">
+    <p class="block"><b>Html value:</b></p>
+    <span class="border rounded p-1">
+      {{ motivation() }}
+    </span>
+  </div>
+</form>
