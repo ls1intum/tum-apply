@@ -1,9 +1,9 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.core.dto;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-public class RelativeTimeLabelService {
+public class InstantToRelativeTimeLabelTranslator {
 
     /**
      * Calculates a human-readable string representing how long ago the job was
@@ -17,7 +17,7 @@ public class RelativeTimeLabelService {
      * @param createdAt The creation timestamp of the job.
      * @return A string like "Today", "3 days ago", "2.5 years ago".
      */
-    public static String getRelativeTime(Instant createdAt) {
+    public static String getRelativeTimeLabel(Instant createdAt) {
         if (createdAt == null) return "";
 
         Instant now = Instant.now();

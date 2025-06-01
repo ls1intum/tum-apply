@@ -1,7 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.tum.cit.aet.core.service.RelativeTimeLabelService;
+import de.tum.cit.aet.core.dto.InstantToRelativeTimeLabelTranslator;
 import de.tum.cit.aet.job.constants.Campus;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
@@ -39,7 +39,7 @@ public record JobCardDTO(
             professorName,
             workload,
             startDate,
-            RelativeTimeLabelService.getRelativeTime(createdAt)
+            InstantToRelativeTimeLabelTranslator.getRelativeTimeLabel(createdAt)
         );
     }
 
