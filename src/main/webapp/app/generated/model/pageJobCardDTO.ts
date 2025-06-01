@@ -21,8 +21,8 @@ export interface PageJobCardDTO {
     content?: Array<JobCardDTO>;
     number?: number;
     sort?: SortObject;
-    pageable?: PageableObject;
     numberOfElements?: number;
+    pageable?: PageableObject;
     empty?: boolean;
 }
 

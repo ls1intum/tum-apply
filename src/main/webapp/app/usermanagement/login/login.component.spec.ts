@@ -3,14 +3,16 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { UserResourceService } from 'app/generated/api/userResource.service';
 
 import { MockKeycloakService } from '../../core/auth/keycloak.service.mock';
+import { AccountService } from '../../core/auth/account.service';
+import { KeycloakService } from '../../core/auth/keycloak.service';
 
 import { LoginComponent } from './login.component';
 
-jest.mock('app/core/auth/keycloak.service', () => ({
-  keycloakService: new MockKeycloakService(),
-}));
+jest.mock('app/core/auth/account.service');
+jest.mock('app/generated/api/userResource.service');
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -22,6 +24,22 @@ describe('LoginComponent', () => {
       providers: [
         {
           provide: ActivatedRoute,
+          useValue: {},
+        },
+        {
+          provide: AccountService,
+          useValue: {
+            hasAnyAuthority: jest.fn(),
+            user: jest.fn(),
+            loaded: jest.fn(),
+          },
+        },
+        {
+          provide: KeycloakService,
+          useClass: MockKeycloakService,
+        },
+        {
+          provide: UserResourceService,
           useValue: {},
         },
       ],

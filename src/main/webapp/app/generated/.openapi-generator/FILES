@@ -6,6 +6,7 @@ api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
+api/documentResource.service.ts
 api/jobResource.service.ts
 api/userResource.service.ts
 configuration.ts
@@ -16,6 +17,7 @@ model/applicantDTO.ts
 model/applicationEvaluationListDTO.ts
 model/applicationEvaluationOverviewDTO.ts
 model/applicationForApplicantDTO.ts
+model/applicationOverviewDTO.ts
 model/createApplicationDTO.ts
 model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
