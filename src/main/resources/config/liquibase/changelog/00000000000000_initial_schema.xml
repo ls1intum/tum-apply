@@ -410,6 +410,37 @@
         DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
     </sql>
   </changeSet>
+  <changeSet id="012_create_internal_comments" author="assistant">
+    <createTable tableName="internal_comments">
+      <column name="internal_comment_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="created_by" type="CHAR(36)"/>
+      <column name="application_id" type="CHAR(36)"/>
+      <column name="message" type="LONGTEXT"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="internal_comments" baseColumnNames="created_by"
+                             constraintName="fk_internal_comment_user"
+                             referencedTableName="users" referencedColumnNames="user_id"
+                             onDelete="CASCADE"/>
+
+    <addForeignKeyConstraint baseTableName="internal_comments" baseColumnNames="application_id"
+                             constraintName="fk_internal_comment_application"
+                             referencedTableName="applications" referencedColumnNames="application_id"
+                             onDelete="CASCADE"/>
+
+    <sql>
+      ALTER TABLE internal_comments MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+    </sql>
+
+  </changeSet>
 
 
   <changeSet id="012_create_document_dictionary" author="moritz-schmidt">
