@@ -1017,7 +1017,6 @@
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 25,
               "minimum": 1
             }
           },
@@ -1028,8 +1027,27 @@
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 0,
               "minimum": 0
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -1973,7 +1991,7 @@
           },
           "appliedAt": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         }
       },
