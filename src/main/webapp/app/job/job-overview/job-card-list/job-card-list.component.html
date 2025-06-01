@@ -2,6 +2,7 @@
   <div class="job-card-grid">
     @for (job of jobs(); track job.jobId) {
       <jhi-job-card
+        [jobId]="job.jobId"
         [jobTitle]="job.title || 'No Title specified'"
         [fieldOfStudies]="job.fieldOfStudies || 'No Field of Studies specified'"
         [location]="job.location?.toString() || 'No Location specified'"
