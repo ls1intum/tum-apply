@@ -3,6 +3,7 @@ package de.tum.cit.aet.evaluation.repository.impl;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.Application_;
+import de.tum.cit.aet.core.util.CriteriaUtils;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.custom.ApplicationEvaluationRepositoryCustom;
 import de.tum.cit.aet.job.domain.Job_;
@@ -18,7 +19,6 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -68,7 +68,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         );
 
         if (pageable.getSort().isSorted()) {
-            query.orderBy(buildSortOrders(cb, root, pageable.getSort()));
+            query.orderBy(CriteriaUtils.buildSortOrders(cb, root, pageable.getSort()));
         }
 
         List<ApplicationEvaluationOverviewDTO> results = em
@@ -115,39 +115,5 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
             predicates.add(root.get(Application_.STATE).in(states));
         }
         return predicates;
-    }
-
-    /**
-     * Converts a {@link Sort} object into a list of JPA {@link Order} objects for use in a Criteria query.
-     *
-     * @param cb    the {@link CriteriaBuilder} to build order expressions
-     * @param root  the root entity of the query
-     * @param sort  the Spring Data {@link Sort} specification
-     * @return a list of {@link Order} instances representing sorting conditions
-     */
-    private List<Order> buildSortOrders(CriteriaBuilder cb, Root<Application> root, Sort sort) {
-        List<Order> orders = new ArrayList<>();
-        for (Sort.Order s : sort) {
-            Path<Object> path = resolvePath(root, s.getProperty());
-            orders.add(s.isAscending() ? cb.asc(path) : cb.desc(path));
-        }
-        return orders;
-    }
-
-    /**
-     * Resolves a potentially nested property path (e.g., "job.title") from the root entity.
-     *
-     * @param root         the root path of the query
-     * @param propertyPath a dot-separated string representing the path to resolve
-     * @return a resolved {@link Path} representing the specified property
-     */
-    @SuppressWarnings("unchecked")
-    private Path<Object> resolvePath(Path<?> root, String propertyPath) {
-        String[] parts = propertyPath.split("\\.");
-        Path<?> path = root;
-        for (String part : parts) {
-            path = path.get(part);
-        }
-        return (Path<Object>) path;
     }
 }
