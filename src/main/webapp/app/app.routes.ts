@@ -116,6 +116,10 @@ const routes: Routes = [
     loadComponent: () =>
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
   },
+  {
+    path: 'application/overview',
+    loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
+  },
 
   // ======================================================================================
   // Error Handling

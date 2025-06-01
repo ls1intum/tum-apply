@@ -409,8 +409,8 @@
         MODIFY last_modified_at TIMESTAMP NOT NULL
         DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
     </sql>
-  </changeSet>
-  <changeSet id="012_create_internal_comments" author="assistant">
+    </changeSet>
+    <changeSet id="012_create_internal_comments" author="assistant">
     <createTable tableName="internal_comments">
       <column name="internal_comment_id" type="CHAR(36)">
         <constraints primaryKey="true" nullable="false"/>
@@ -439,11 +439,9 @@
     <sql>
       ALTER TABLE internal_comments MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
     </sql>
-
   </changeSet>
 
-
-  <changeSet id="012_create_document_dictionary" author="moritz-schmidt">
+  <changeSet id="013_create_document_dictionary" author="moritz-schmidt">
     <createTable tableName="document_dictionary">
       <column name="document_dictionary_id" type="CHAR(36)">
         <constraints primaryKey="true" nullable="false"/>

@@ -38,19 +38,25 @@ export class ApplicationEvaluationResourceService extends BaseService {
     /**
      * @param pageSize 
      * @param pageNumber 
+     * @param sortBy 
+     * @param direction 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApplications(pageSize?: number, pageNumber?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationListDTO>;
-    public getApplications(pageSize?: number, pageNumber?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationListDTO>>;
-    public getApplications(pageSize?: number, pageNumber?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationListDTO>>;
-    public getApplications(pageSize?: number, pageNumber?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getApplications(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationListDTO>;
+    public getApplications(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationListDTO>>;
+    public getApplications(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationListDTO>>;
+    public getApplications(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>pageSize, 'pageSize');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>pageNumber, 'pageNumber');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>sortBy, 'sortBy');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>direction, 'direction');
 
         let localVarHeaders = this.defaultHeaders;
 
