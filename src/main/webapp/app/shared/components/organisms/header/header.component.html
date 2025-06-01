@@ -1,0 +1,32 @@
+<header class="app-header">
+  <div class="logo-section" (click)="navigateToHome()">
+    <img alt="TUM Logo" class="tum-logo" src="content/images/tum-logo-blue.svg" />
+    <span class="app-name">Apply</span>
+  </div>
+
+  <div class="actions-section">
+    <div class="language-switch">
+      @for (language of languages; track language; let isLast = $last) {
+        <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage === language }" class="language-button">
+          {{ language.toUpperCase() }}
+        </button>
+        @if (!isLast) {
+          <span class="divider">|</span>
+        }
+      }
+    </div>
+    <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
+    @if (user(); as userValue) {
+      @if (userValue.anonymous) {
+        <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
+        <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
+      } @else {
+        <div class="profile">
+          <fa-icon class="profile-icon" icon="user" />
+          <span class="font-medium">{{ user()?.name }}</span>
+        </div>
+        <jhi-button (click)="logout()" label="{{ 'header.logout' | translate }}" severity="primary" variant="outlined" />
+      }
+    }
+  </div>
+</header>

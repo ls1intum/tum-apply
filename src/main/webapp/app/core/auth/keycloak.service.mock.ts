@@ -1,10 +1,11 @@
 export class MockKeycloakService {
   init = jest.fn(() => Promise.resolve(true));
-  login = jest.fn();
-  logout = jest.fn();
+  login = jest.fn(() => Promise.resolve());
+  logout = jest.fn(() => Promise.resolve());
   getToken = jest.fn(() => 'mock-token');
   getUsername = jest.fn(() => 'mockuser');
-  hasRole = jest.fn(() => false);
-  getUserRoles = jest.fn(() => []);
+  getFirstName = jest.fn(() => 'MockFirstName');
+  hasRole = jest.fn((role: string) => role === 'mock-role');
+  getUserRoles = jest.fn(() => ['mock-role']);
   isLoggedIn = jest.fn(() => true);
 }
