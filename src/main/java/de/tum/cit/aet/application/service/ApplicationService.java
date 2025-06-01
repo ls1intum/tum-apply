@@ -18,25 +18,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@AllArgsConstructor
 @Service
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
-
-    public ApplicationService(
-        ApplicationRepository applicationRepository,
-        ApplicantRepository applicantRepository,
-        JobRepository jobRepository
-    ) {
-        this.applicationRepository = applicationRepository;
-        this.applicantRepository = applicantRepository;
-        this.jobRepository = jobRepository;
-    }
 
     /**
      * Creates a new job application for the given applicant and job.
