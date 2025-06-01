@@ -7,32 +7,26 @@ export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRoute
   const router = inject(Router);
   const accountService = inject(AccountService);
 
-  const requiredRoles: string[] = next.data['authorities'] ?? [];
-  const publicOnly: boolean = next.data['publicOnly'] ?? false;
+  const authorities: string[] = next.data['authorities'] ?? [];
+  const publicRoute: boolean = authorities.length === 0;
 
-  // If route is publicOnly and user is logged in, redirect to home
-  if (publicOnly && accountService.signedIn()) {
-    await router.navigate(['/']);
-    return false;
+  // If no roles required, allow access
+  if (publicRoute) {
+    return true;
   }
 
   // If route requires authentication and user is not logged in, redirect to login
-  if (!publicOnly && !accountService.signedIn()) {
-    await accountService.signIn();
+  if (!accountService.signedIn()) {
+    await router.navigate(['/login']);
     return false;
   }
 
-  // If no roles required or publicOnly route, allow access
-  if (requiredRoles.length === 0 || publicOnly) {
+  // if route requires authentication and user is logged in, check authorities
+  if (accountService.hasAnyAuthority(authorities)) {
     return true;
   }
 
-  // Check authorities
-  if (accountService.hasAnyAuthority(requiredRoles)) {
-    return true;
-  }
-
-  console.warn('Access denied – missing roles:', requiredRoles);
+  console.warn('Access denied – missing roles:', authorities);
   await router.navigate(['/accessdenied']);
   return false;
 };
