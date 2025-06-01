@@ -1,17 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
-import { keycloakService } from 'app/core/auth/keycloak.service';
 import { ActivatedRoute } from '@angular/router';
+import { signal } from '@angular/core';
+import { TranslateService, TranslateStore } from '@ngx-translate/core';
+import { AccountService, User } from 'app/core/auth/account.service';
 
 import { AuthCardComponent } from './auth-card.component';
 
-jest.mock('app/core/auth/keycloak.service', () => {
-  const { MockKeycloakService } = jest.requireActual('../../../../core/auth/keycloak.service.mock');
-  return {
-    keycloakService: new MockKeycloakService(),
-  };
-});
+jest.mock('app/core/auth/account.service');
 
 describe('AuthCardComponent', () => {
   let component: AuthCardComponent;
@@ -21,9 +18,19 @@ describe('AuthCardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AuthCardComponent],
       providers: [
+        TranslateService,
+        TranslateStore,
         {
           provide: ActivatedRoute,
           useValue: {},
+        },
+        {
+          provide: AccountService,
+          useValue: {
+            user: signal<User | undefined>(undefined),
+            loaded: signal(true),
+            signIn: jest.fn(),
+          },
         },
       ],
     }).compileComponents();
@@ -63,9 +70,9 @@ describe('AuthCardComponent', () => {
     expect(authTabServiceSpy).toHaveBeenCalledWith(1);
   });
 
-  it('should call keycloakService.login when onTUMSSOLogin is called', () => {
-    const keycloakServiceSpy = jest.spyOn(keycloakService, 'login');
+  it('should call AccountService.signIn when onTUMSSOLogin is called', () => {
+    const signInSpy = jest.spyOn(fixture.debugElement.injector.get(AccountService), 'signIn');
     component.onTUMSSOLogin();
-    expect(keycloakServiceSpy).toHaveBeenCalledTimes(1);
+    expect(signInSpy).toHaveBeenCalledTimes(1);
   });
 });
