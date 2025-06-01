@@ -2,10 +2,25 @@ import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core
 import { firstValueFrom } from 'rxjs';
 import { isPlatformServer } from '@angular/common';
 import { UserResourceService } from 'app/generated/api/userResource.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { KeycloakService } from './keycloak.service';
-import { ANONYMOUS_USER, User } from './account.model';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  anonymous: boolean;
+  bearer: string;
+  authorities?: string[];
+}
+
+export const ANONYMOUS_USER: User = {
+  id: '',
+  email: 'nomail',
+  name: 'no user',
+  anonymous: true,
+  bearer: '',
+};
 
 export interface SecurityState {
   loaded: boolean;
@@ -81,7 +96,7 @@ export class AccountService {
     }
   }
 
-  hasAnyAuthority(requiredRoles: UserShortDTO.RolesEnum[]): boolean {
+  hasAnyAuthority(requiredRoles: string[]): boolean {
     const user = this.user();
     return requiredRoles.some(role => user?.authorities?.includes(role) ?? false);
   }

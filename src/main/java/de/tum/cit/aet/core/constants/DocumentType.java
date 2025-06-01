@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum DocumentType {
     BACHELOR_TRANSCRIPT("BACHELOR_TRANSCRIPT"),
     MASTER_TRANSCRIPT("MASTER_TRANSCRIPT"),
+    REFERENCE("REFERENCE"),
     CV("CV"),
     CUSTOM("CUSTOM");
 

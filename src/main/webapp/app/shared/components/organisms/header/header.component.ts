@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { User } from 'app/core/auth/account.model';
-import { AccountService } from 'app/core/auth/account.service';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 
