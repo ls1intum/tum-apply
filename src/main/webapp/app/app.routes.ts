@@ -26,9 +26,9 @@ const routes: Routes = [
   // Playground
   // ======================================================================================
   {
-    path: 'badge-playground',
+    path: 'playground/badge',
     canActivate: [UserRouteAccessService],
-    data: { authorities: [] },
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
   },
   {
