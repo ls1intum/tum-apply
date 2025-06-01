@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CommonModule } from '@angular/common';
 
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
@@ -9,7 +10,7 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
   templateUrl: './job-card.component.html',
   styleUrls: ['./job-card.component.scss'],
   standalone: true,
-  imports: [FontAwesomeModule, CardModule, ButtonComponent],
+  imports: [FontAwesomeModule, CardModule, ButtonComponent, CommonModule],
 })
 export class JobCardComponent {
   jobTitle = input<string>('');
@@ -19,6 +20,10 @@ export class JobCardComponent {
   workload = input<string>('');
   startDate = input<string>('');
   relativeTime = input<string>('');
+  // TO-DO: Replace value of headerColor with a color corresponding to the field of study
+  headerColor = input<string>('var(--p-secondary-color)');
+  // TO-DO: Replace value of icon with an icon corresponding to the field of study
+  icon = input<string>('flask-vial');
 
   onViewDetails(): void {
     alert('View Details clicked!');

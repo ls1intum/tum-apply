@@ -12,6 +12,9 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -123,5 +126,17 @@ public class JobService {
      */
     public List<JobCardDTO> getAvailableJobs() {
         return jobRepository.findAllJobCardsByState(JobState.PUBLISHED);
+    }
+
+    /**
+     * Fetches all jobs with state PUBLISHED as job cards with pagination.
+     *
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @return Page of JobCardDTOs
+     */
+    public Page<JobCardDTO> getAvailableJobs(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, pageable);
     }
 }
