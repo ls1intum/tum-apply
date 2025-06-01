@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="col-md-3">
+    <span class="hipster img-fluid rounded"></span>
+  </div>
+
+  <div class="col-md-9">
+    <h1 class="display-4"><span jhiTranslate="home.title">Welcome to TUMApply!</span></h1>
+
+    <jhi-button (click)="goToJobCreation()" icon="tasks" label="Create a Job" severity="secondary" />
+    <jhi-button
+      (click)="this.router.navigate(['/application/create/00000000-0000-0000-0000-000000010006'])"
+      label="Apply to the position of 'Machine Learning for Climate Science'"
+      severity="secondary"
+    />
+    <jhi-button
+      severity="secondary"
+      label="Edit the application of 'Human-Computer Interaction'"
+      (click)="this.router.navigate(['/application/edit/bce85235-25b7-46c2-988c-9290be79dc57'])"
+    />
+    <div class="p-39">
+      <jhi-job-card
+        [jobTitle]="'Machine Learning for Climate Science'"
+        [fieldOfStudies]="'Computer Science'"
+        [location]="'Munich, Germany'"
+        [professor]="'Dr. Stephan Krusche'"
+        [workload]="'50%'"
+        [startDate]="'2023-11-01'"
+        [relativeTime]="'5 days ago'"
+      />
+    </div>
+  </div>
+</div>

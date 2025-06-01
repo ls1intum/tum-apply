@@ -19,7 +19,7 @@ import routes from './app.routes';
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { AppPageTitleStrategy } from './app-page-title-strategy';
 import { missingTranslationHandler, translatePartialLoader } from './config/translation.config';
-import { AuthExpiredInterceptor } from './core/interceptor/auth-expired.interceptor';
+import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 
@@ -31,7 +31,10 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       theme: {
         preset: TUMApplyPreset,
-        options: { darkModeSelector: '.tum-apply-dark-mode', cssLayer: { name: 'primeng', order: 'theme, base, primeng' } },
+        options: {
+          darkModeSelector: '.tum-apply-dark-mode',
+          cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
+        },
       },
     }),
     importProvidersFrom(BrowserModule),
@@ -78,7 +81,7 @@ export const appConfig: ApplicationConfig = {
      */
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthExpiredInterceptor,
+      useClass: AuthInterceptor,
       multi: true,
     },
     {

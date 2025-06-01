@@ -19,12 +19,12 @@ public class SpaWebFilter extends OncePerRequestFilter {
         // @formatter:off
         if (
             !path.startsWith("/api") &&
-            !path.startsWith("/management") &&
-            !path.startsWith("/time") &&
-            !path.startsWith("/public") &&
-            !path.startsWith("/git") &&
-            !path.contains(".") &&
-            path.matches("/(.*)")
+                        !path.startsWith("/management") &&
+                        !path.startsWith("/time") &&
+                        !path.startsWith("/public") &&
+                        !path.startsWith("/git") &&
+                        !path.contains(".") &&
+                        path.matches("/(.*)")
         ) {
             // @formatter:on
             request.getRequestDispatcher("/").forward(request, response);

@@ -1,0 +1,29 @@
+<p-card styleClass="job-card">
+  <ng-template #header>
+    <div class="card-header" [style.--header-color]="headerColor()">
+      <div class="card-icon">
+        <fa-icon [icon]="['fas', icon()]" />
+      </div>
+      <div class="timestamp">{{ relativeTime() }}</div>
+    </div>
+  </ng-template>
+
+  <ng-template #title>
+    <div class="card-title">{{ jobTitle() }}</div>
+  </ng-template>
+
+  <div class="card-body">
+    <ul class="card-info">
+      <li class="info-item"><fa-icon [icon]="['fas', 'graduation-cap']" /> {{ fieldOfStudies() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'location-dot']" /> {{ location() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'user']" /> {{ professor() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'clock']" /> {{ workload() }}</li>
+      <li class="info-item"><fa-icon [icon]="['fas', 'calendar']" /> Start: {{ startDate() }}</li>
+    </ul>
+
+    <div class="card-actions">
+      <jhi-button severity="primary" variant="outlined" label="View Details" (click)="onViewDetails()" class="view-button" />
+      <jhi-button severity="primary" label="Apply" (click)="onApply()" class="apply-button" />
+    </div>
+  </div>
+</p-card>

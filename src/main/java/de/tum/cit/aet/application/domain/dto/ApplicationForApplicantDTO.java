@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public record ApplicationForApplicantDTO(
     @NotNull UUID applicationId,
     ApplicantDTO applicant,
-    JobCardDTO job,
+    @NotNull JobCardDTO job,
     @NotNull ApplicationState applicationState,
     LocalDate desiredDate,
     String projects,
@@ -24,7 +24,6 @@ public record ApplicationForApplicantDTO(
     Set<CustomFieldAnswerDTO> customFields
 ) {
     /**
-     *
      * @param application
      * @return
      */
