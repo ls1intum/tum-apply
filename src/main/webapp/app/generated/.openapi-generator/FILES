@@ -2,10 +2,13 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
+api/documentResource.service.ts
 api/jobResource.service.ts
+api/userResource.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -20,6 +23,7 @@ model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
 model/jobDetailDTO.ts
 model/jobFormDTO.ts
+model/link.ts
 model/models.ts
 model/pageJobCardDTO.ts
 model/pageableObject.ts
@@ -27,6 +31,7 @@ model/researchGroupShortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/userDTO.ts
+model/userShortDTO.ts
 ng-package.json
 package.json
 param.ts

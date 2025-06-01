@@ -41,7 +41,6 @@ public class ApplicationEvaluationService {
         Specification<Application> specification = ApplicationEvaluationSpecification.build(researchGroupId, VIEWABLE_STATES);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Application> applicationsPage = applicationEvaluationRepository.findAll(specification, pageable);
-
         return ApplicationEvaluationListDTO.fromPage(applicationsPage);
     }
 }

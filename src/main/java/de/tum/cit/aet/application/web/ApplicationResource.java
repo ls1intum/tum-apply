@@ -1,10 +1,13 @@
 package de.tum.cit.aet.application.web;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.usermanagement.domain.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/applications")
@@ -129,5 +133,33 @@ public class ApplicationResource {
     public ResponseEntity<Long> getApplicationPagesLength() {
         final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); //temporary for testing purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
+    }
+
+    //TODO this is only for testing and can be removed
+    /**
+     * Test endpoint for uploading multiple documents related to an application.
+     * <p>
+     * <b>Note:</b> This endpoint is for testing purposes only and will be removed.
+     * File uploads should be integrated into {@code createApplication()} and {@code updateApplication()}.
+     * </p>
+     *
+     * @param applicationId the ID of the application to associate the uploaded documents with
+     * @param files the list of documents to be uploaded as {@link MultipartFile}s
+     * @return {@link ResponseEntity} with HTTP 200 OK if the upload succeeds
+     */
+    @Hidden
+    @PostMapping("/{applicationId}/test-documents")
+    public ResponseEntity<Void> testUploadDocuments(@PathVariable UUID applicationId, @RequestParam("files") List<MultipartFile> files) {
+        //simulate current user
+        User user = new User();
+        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
+
+        Application application = new Application();
+        application.setApplicationId(UUID.fromString(applicationId.toString()));
+
+        //applicationService.uploadBachelorTranscripts(files, application, user);
+        applicationService.uploadMasterTranscripts(files, application, user);
+
+        return ResponseEntity.ok().build();
     }
 }
