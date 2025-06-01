@@ -61,7 +61,7 @@ public class ApplicationOverviewDTO {
         if (diffMonths <= 1) return "1 month ago";
         if (diffMonths < 12) return diffMonths + " months ago";
 
-        // double diffYears = Math.round((diffDays / 365.0) * 2) / 2.0;
-        return diffDays + ""; //diffYears <= 1 ? "1 year ago" : diffYears + " years ago";
+        double diffYears = Math.round((diffDays / 365.0) * 2) / 2.0;
+        return diffYears <= 1 ? "1 year ago" : diffYears + " years ago";
     }
 }
