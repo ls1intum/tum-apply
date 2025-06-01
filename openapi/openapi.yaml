@@ -1132,6 +1132,74 @@
         }
       }
     },
+    "/api/applications/pages": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationPages",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 25,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationOverviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/pages/length": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationPagesLength",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications/job/{jobId}": {
       "get": {
         "tags": [
@@ -1906,6 +1974,35 @@
           "appliedAt": {
             "type": "string",
             "format": "date"
+          }
+        }
+      },
+      "ApplicationOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "jobTitle": {
+            "type": "string"
+          },
+          "researchGroup": {
+            "type": "string"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "timeSinceCreation": {
+            "type": "string"
           }
         }
       }

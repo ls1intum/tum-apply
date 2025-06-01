@@ -3,12 +3,14 @@ package de.tum.cit.aet.application.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
@@ -203,7 +205,18 @@ public class ApplicationService {
      */
     @Transactional
     public void deleteApplication(UUID applicationId) {
+        if (!applicationRepository.existsById(applicationId)) {
+            throw new EntityNotFoundException("Application with ID " + applicationId + " not found");
+        }
         applicationRepository.deleteById(applicationId);
+    }
+
+    public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
+        return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
+    }
+
+    public long getNumberOfTotalApplications(UUID applicantId) {
+        return this.applicationRepository.countByApplicant_UserId(applicantId);
     }
 
     /**
