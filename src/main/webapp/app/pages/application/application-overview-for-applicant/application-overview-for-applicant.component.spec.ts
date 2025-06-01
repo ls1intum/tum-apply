@@ -99,7 +99,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    expect(spy).toHaveBeenCalledWith();
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should have default signals', () => {
@@ -141,7 +141,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     component.onDeleteApplication('app-id');
 
     expect(applicationService.deleteApplication).toHaveBeenCalledWith('app-id');
-    expect(reloadSpy).toHaveBeenCalled();
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should withdraw application and reload data', () => {
@@ -165,7 +165,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     component.onWithdrawApplication('app-id');
 
     expect(applicationService.withdrawApplication).toHaveBeenCalledWith('app-id');
-    expect(reloadSpy).toHaveBeenCalled();
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should handle error in loadPage()', async () => {

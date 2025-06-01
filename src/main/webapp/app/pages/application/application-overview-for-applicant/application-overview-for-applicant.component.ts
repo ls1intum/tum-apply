@@ -13,17 +13,30 @@ import { BadgeModule } from 'primeng/badge';
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
+
+/**
+ *
+ * This Angular component is responsible for displaying a paginated and dynamic overview
+ * of applications submitted by the applicant. It uses a dynamic table
+ * to list applications along with relevant details such as job title, research group,
+ * application status, and creation time.
+ */
 export default class ApplicationOverviewForApplicantComponent {
   loading = signal(false);
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal<number>(10);
   total = signal<number>(0);
 
+  // Stores the last lazy load event to enable data refresh after actions
   lastLazyLoadEvent = signal<TableLazyLoadEvent | undefined>(undefined);
 
+  // Template reference for action buttons (e.g., View, Withdraw, Delete)
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+
+  // Template reference for status badge display
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  // Computed table column definitions including custom templates
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
@@ -42,8 +55,17 @@ export default class ApplicationOverviewForApplicantComponent {
 
   constructor() {
     effect(() => {
-      this.applicationService.getApplicationPagesLength().subscribe(val => this.total.set(val));
+      this.loadTotal();
     });
+  }
+
+  async loadTotal(): Promise<void> {
+    try {
+      const tempTotal = await firstValueFrom(this.applicationService.getApplicationPagesLength());
+      this.total.set(tempTotal);
+    } catch (error) {
+      alert('Failed to load total application count' + error);
+    }
   }
 
   async loadPage(event: TableLazyLoadEvent): Promise<void> {

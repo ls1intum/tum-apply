@@ -17,12 +17,7 @@
       label="Edit the application of 'Human-Computer Interaction'"
       (click)="this.router.navigate(['/application/edit/bce85235-25b7-46c2-988c-9290be79dc57'])"
     />
-    <jhi-button
-      (click)="this.router.navigate(['/application/overview'])"
-      label="View my Applications"
-      severity="secondary"
-      icon="table-list"
-    />
+    <jhi-button (click)="this.goToApplicationOverviewForApplicants()" label="View my Applications" severity="secondary" icon="table-list" />
     <div class="p-39">
       <jhi-job-card
         [jobTitle]="'Machine Learning for Climate Science'"
