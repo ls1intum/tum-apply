@@ -8,6 +8,8 @@ import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +25,9 @@ public class ApplicantService {
      * Retrieves all CV document entries for the given applicant.
      *
      * @param applicant the applicant to retrieve CVs for
-     * @return list of document dictionary entries of type CV
+     * @return set of document dictionary entries of type CV
      */
-    public List<DocumentDictionary> getCVs(Applicant applicant) {
+    public Set<DocumentDictionary> getCVs(Applicant applicant) {
         return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CV);
     }
 
@@ -33,9 +35,9 @@ public class ApplicantService {
      * Retrieves all reference document entries for the given applicant.
      *
      * @param applicant the applicant to retrieve references for
-     * @return list of document dictionary entries of type REFERENCE
+     * @return set of document dictionary entries of type REFERENCE
      */
-    public List<DocumentDictionary> getReferences(Applicant applicant) {
+    public Set<DocumentDictionary> getReferences(Applicant applicant) {
         return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.REFERENCE);
     }
 
@@ -43,9 +45,9 @@ public class ApplicantService {
      * Retrieves all bachelor transcript document entries for the given applicant.
      *
      * @param applicant the applicant to retrieve bachelor transcripts for
-     * @return list of document dictionary entries of type BACHELOR_TRANSCRIPT
+     * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
      */
-    public List<DocumentDictionary> getBachelorTranscripts(Applicant applicant) {
+    public Set<DocumentDictionary> getBachelorTranscripts(Applicant applicant) {
         return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
@@ -53,9 +55,9 @@ public class ApplicantService {
      * Retrieves all master transcript document entries for the given applicant.
      *
      * @param applicant the applicant to retrieve master transcripts for
-     * @return list of document dictionary entries of type MASTER_TRANSCRIPT
+     * @return set of document dictionary entries of type MASTER_TRANSCRIPT
      */
-    public List<DocumentDictionary> getMasterTranscripts(Applicant applicant) {
+    public Set<DocumentDictionary> getMasterTranscripts(Applicant applicant) {
         return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT);
     }
 
@@ -68,7 +70,7 @@ public class ApplicantService {
      */
     public void uploadCV(MultipartFile cv, Applicant applicant, User user) {
         Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(applicant, DocumentType.CV, List.of(document));
+        updateDocumentDictionaries(applicant, DocumentType.CV, Set.of(document));
     }
 
     /**
@@ -79,7 +81,7 @@ public class ApplicantService {
      * @param user the user uploading the documents
      */
     public void uploadReferences(List<MultipartFile> references, Applicant applicant, User user) {
-        List<Document> documents = references.stream().map(file -> documentService.upload(file, user)).toList();
+        Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(applicant, DocumentType.REFERENCE, documents);
     }
 
@@ -91,7 +93,7 @@ public class ApplicantService {
      * @param user the user uploading the documents
      */
     public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Applicant applicant, User user) {
-        List<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).toList();
+        Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT, documents);
     }
 
@@ -103,7 +105,7 @@ public class ApplicantService {
      * @param user the user uploading the documents
      */
     public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Applicant applicant, User user) {
-        List<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).toList();
+        Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT, documents);
     }
 
@@ -112,10 +114,10 @@ public class ApplicantService {
      *
      * @param applicant      the applicant to associate the documents with
      * @param type           the type of documents being updated (e.g., CV, REFERENCE)
-     * @param newDocuments   the list of newly uploaded documents to associate
+     * @param newDocuments   the set of newly uploaded documents to associate
      */
-    protected void updateDocumentDictionaries(Applicant applicant, DocumentType type, List<Document> newDocuments) {
-        List<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(applicant, type);
+    protected void updateDocumentDictionaries(Applicant applicant, DocumentType type, Set<Document> newDocuments) {
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(applicant, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplicant(applicant));
     }
 }

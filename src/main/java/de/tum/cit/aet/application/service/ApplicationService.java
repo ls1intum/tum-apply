@@ -210,9 +210,9 @@ public class ApplicationService {
      * Retrieves all CV document entries for the given application.
      *
      * @param application the application to retrieve CVs for
-     * @return list of document dictionary entries of type CV
+     * @return set of document dictionary entries of type CV
      */
-    public List<DocumentDictionary> getCVs(Application application) {
+    public Set<DocumentDictionary> getCVs(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.CV);
     }
 
@@ -220,9 +220,9 @@ public class ApplicationService {
      * Retrieves all reference document entries for the given application.
      *
      * @param application the application to retrieve references for
-     * @return list of document dictionary entries of type REFERENCE
+     * @return set of document dictionary entries of type REFERENCE
      */
-    public List<DocumentDictionary> getReferences(Application application) {
+    public Set<DocumentDictionary> getReferences(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.REFERENCE);
     }
 
@@ -230,9 +230,9 @@ public class ApplicationService {
      * Retrieves all bachelor transcript document entries for the given application.
      *
      * @param application the application to retrieve bachelor transcripts for
-     * @return list of document dictionary entries of type BACHELOR_TRANSCRIPT
+     * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
      */
-    public List<DocumentDictionary> getBachelorTranscripts(Application application) {
+    public Set<DocumentDictionary> getBachelorTranscripts(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
@@ -240,9 +240,9 @@ public class ApplicationService {
      * Retrieves all master transcript document entries for the given application.
      *
      * @param application the application to retrieve master transcripts for
-     * @return list of document dictionary entries of type MASTER_TRANSCRIPT
+     * @return set of document dictionary entries of type MASTER_TRANSCRIPT
      */
-    public List<DocumentDictionary> getMasterTranscripts(Application application) {
+    public Set<DocumentDictionary> getMasterTranscripts(Application application) {
         return documentDictionaryService.getDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
     }
 
@@ -255,7 +255,7 @@ public class ApplicationService {
      */
     public void uploadCV(MultipartFile cv, Application application, User user) {
         Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(application, DocumentType.CV, List.of(document));
+        updateDocumentDictionaries(application, DocumentType.CV, Set.of(document));
     }
 
     /**
@@ -266,7 +266,7 @@ public class ApplicationService {
      * @param user the user uploading the documents
      */
     public void uploadReferences(List<MultipartFile> references, Application application, User user) {
-        List<Document> documents = references.stream().map(file -> documentService.upload(file, user)).toList();
+        Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
     }
 
@@ -278,7 +278,7 @@ public class ApplicationService {
      * @param user the user uploading the documents
      */
     public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
-        List<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).toList();
+        Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
     }
 
@@ -290,7 +290,7 @@ public class ApplicationService {
      * @param user the user uploading the documents
      */
     public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
-        List<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).toList();
+        Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT, documents);
     }
 
@@ -299,10 +299,10 @@ public class ApplicationService {
      *
      * @param application    the application to associate the documents with
      * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
-     * @param newDocuments   the list of newly uploaded documents to associate
+     * @param newDocuments   the set of newly uploaded documents to associate
      */
-    protected void updateDocumentDictionaries(Application application, DocumentType type, List<Document> newDocuments) {
-        List<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
+    protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Document> newDocuments) {
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
     }
 }

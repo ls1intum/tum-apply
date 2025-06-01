@@ -9,7 +9,6 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.service.support.DocumentDictionaryOwnerSetter;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,8 +31,8 @@ public class DocumentDictionaryService {
      * @param ownerSetter     a functional interface used to set the owning entity (e.g., via {@code setApplicant()} or {@code setApplication()})
      */
     public void updateDocumentDictionaries(
-        List<DocumentDictionary> existingEntries,
-        List<Document> newDocuments,
+        Set<DocumentDictionary> existingEntries,
+        Set<Document> newDocuments,
         DocumentType type,
         DocumentDictionaryOwnerSetter ownerSetter
     ) {
@@ -97,9 +96,9 @@ public class DocumentDictionaryService {
      *
      * @param applicant the applicant whose documents to retrieve
      * @param documentType the type of document to filter by (e.g., BACHELOR_TRANSCRIPT)
-     * @return list of matching DocumentDictionary entries
+     * @return set of matching DocumentDictionary entries
      */
-    public List<DocumentDictionary> getDocumentDictionaries(Applicant applicant, DocumentType documentType) {
+    public Set<DocumentDictionary> getDocumentDictionaries(Applicant applicant, DocumentType documentType) {
         return documentDictionaryRepository.findByApplicantAndDocumentType(applicant, documentType);
     }
 
@@ -108,9 +107,9 @@ public class DocumentDictionaryService {
      *
      * @param application the application whose documents to retrieve
      * @param documentType the type of document to filter by (e.g., BACHELOR_TRANSCRIPT)
-     * @return list of matching DocumentDictionary entries
+     * @return set of matching DocumentDictionary entries
      */
-    public List<DocumentDictionary> getDocumentDictionaries(Application application, DocumentType documentType) {
+    public Set<DocumentDictionary> getDocumentDictionaries(Application application, DocumentType documentType) {
         return documentDictionaryRepository.findByApplicationAndDocumentType(application, documentType);
     }
 
@@ -118,9 +117,9 @@ public class DocumentDictionaryService {
      * Retrieves all DocumentDictionary entries for a given custom field answer.
      *
      * @param customFieldAnswer the custom field answer whose documents to retrieve
-     * @return list of matching DocumentDictionary entries
+     * @return set of matching DocumentDictionary entries
      */
-    public List<DocumentDictionary> getDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
+    public Set<DocumentDictionary> getDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
         return documentDictionaryRepository.findByCustomFieldAnswer(customFieldAnswer);
     }
 }

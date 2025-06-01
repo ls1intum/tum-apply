@@ -8,6 +8,8 @@ import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.job.constants.CustomFieldType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +25,9 @@ public class CustomFieldAnswerService {
      * Retrieves all document dictionaries associated with the given custom field answer.
      *
      * @param customFieldAnswer the custom field answer to retrieve documents for
-     * @return a list of associated {@link DocumentDictionary} objects
+     * @return a set of associated {@link DocumentDictionary} objects
      */
-    public List<DocumentDictionary> getDocuments(CustomFieldAnswer customFieldAnswer) {
+    public Set<DocumentDictionary> getDocuments(CustomFieldAnswer customFieldAnswer) {
         return documentDictionaryService.getDocumentDictionaries(customFieldAnswer);
     }
 
@@ -41,7 +43,7 @@ public class CustomFieldAnswerService {
         if (!customFieldAnswer.getCustomField().getCustomFieldType().equals(CustomFieldType.FILE_UPLOAD)) {
             throw new IllegalArgumentException("CustomField is no FileUpload");
         }
-        List<Document> documents = files.stream().map(file -> documentService.upload(file, user)).toList();
+        Set<Document> documents = files.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(customFieldAnswer, documents);
     }
 
@@ -49,9 +51,9 @@ public class CustomFieldAnswerService {
      * Updates the document dictionaries associated with the given custom field answer using the provided documents.
      *
      * @param customFieldAnswer the custom field answer to associate the documents with
-     * @param newDocuments the list of new documents to update in the dictionaries
+     * @param newDocuments the set of new documents to update in the dictionaries
      */
-    protected void updateDocumentDictionaries(CustomFieldAnswer customFieldAnswer, List<Document> newDocuments) {
+    protected void updateDocumentDictionaries(CustomFieldAnswer customFieldAnswer, Set<Document> newDocuments) {
         documentDictionaryService.updateDocumentDictionaries(getDocuments(customFieldAnswer), newDocuments, null, dd ->
             dd.setCustomFieldAnswer(customFieldAnswer)
         );
