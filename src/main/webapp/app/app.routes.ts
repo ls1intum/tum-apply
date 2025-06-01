@@ -9,6 +9,11 @@ const routes: Routes = [
   // Home
   // ======================================================================================
   {
+    path: 'job-overview',
+    loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
+    title: 'home.title',
+  },
+  {
     path: '',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
