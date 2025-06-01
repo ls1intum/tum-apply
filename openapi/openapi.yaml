@@ -1047,6 +1047,38 @@
         }
       }
     },
+    "/api/documents/{documentDictionaryId}": {
+      "get": {
+        "tags": [
+          "document-resource"
+        ],
+        "operationId": "downloadDocument",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications/{applicationId}": {
       "get": {
         "tags": [
