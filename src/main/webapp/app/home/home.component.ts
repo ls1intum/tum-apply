@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';

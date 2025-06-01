@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
 import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
 
 @Component({
@@ -65,7 +64,7 @@ export class EditorComponent {
   }
 
   onInputChange(event: EditorTextChangeEvent): void {
-    let value = event.htmlValue;
+    const value = event.htmlValue;
     this.modelChange.emit(value);
     const ctrl = this.formControl();
     ctrl.setValue(value);
