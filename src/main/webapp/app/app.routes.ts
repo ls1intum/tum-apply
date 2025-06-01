@@ -32,10 +32,6 @@ const routes: Routes = [
     loadComponent: () => import('./playground/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
   },
   {
-    path: 'application/edit/:application_id',
-    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
-  },
-  {
     path: 'playground/button',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
@@ -118,6 +114,8 @@ const routes: Routes = [
   },
   {
     path: 'application/overview',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
   },
 
