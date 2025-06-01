@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record JobCardDTO(
@@ -42,8 +44,10 @@ public record JobCardDTO(
         if (location == null) {
             return "";
         }
-        String name = location.name();
-        return name.charAt(0) + name.substring(1).toLowerCase();
+
+        return Arrays.stream(location.name().split("_"))
+            .map(part -> part.substring(0, 1).toUpperCase() + part.substring(1).toLowerCase())
+            .collect(Collectors.joining(" "));
     }
 
     /**

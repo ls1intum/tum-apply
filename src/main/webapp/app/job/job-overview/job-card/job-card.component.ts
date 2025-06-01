@@ -1,4 +1,5 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
+import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
@@ -13,6 +14,7 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
   imports: [FontAwesomeModule, CardModule, ButtonComponent, CommonModule],
 })
 export class JobCardComponent {
+  jobId = input<string>('');
   jobTitle = input<string>('');
   fieldOfStudies = input<string>('');
   location = input<string>('');
@@ -25,11 +27,13 @@ export class JobCardComponent {
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
   icon = input<string>('flask-vial');
 
+  private router = inject(Router);
+
   onViewDetails(): void {
     alert('View Details clicked!');
   }
 
   onApply(): void {
-    alert('Apply clicked!');
+    this.router.navigate([`/application/create/${this.jobId()}`]);
   }
 }
