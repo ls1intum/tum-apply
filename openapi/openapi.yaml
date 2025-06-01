@@ -1049,9 +1049,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "pageSize": {
             "type": "integer",
             "format": "int32"
@@ -1059,6 +1056,9 @@
           "pageNumber": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           },
           "paged": {
             "type": "boolean"
@@ -1071,10 +1071,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
