@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
 
+  .custom-label {
+    color: var(--p-text-color);
+  }
+
   // Add styling for labels on the left of the dropdown
   &.label-left {
     flex-direction: row;

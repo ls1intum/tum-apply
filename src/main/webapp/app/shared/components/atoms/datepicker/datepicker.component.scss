@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
 
+  .custom-label {
+    color: var(--p-text-color);
+  }
+
   // Add styling for labels on the left of the field
   &.label-left {
     flex-direction: row;
@@ -18,6 +22,7 @@
 
     .p-inputtext {
       border: 0.1rem solid var(--p-border-default);
+      background: transparent;
 
       &:disabled {
         background-color: var(--p-background-disabled);
