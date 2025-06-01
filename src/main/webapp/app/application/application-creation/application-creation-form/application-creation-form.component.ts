@@ -375,20 +375,23 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  deleteApplication(): void {
+  async deleteApplication(): Promise<void> {
+    let confirmResult = confirm('Are you sure you want to delete this application?');
+    if (!confirmResult) {
+      return;
+    }
     const router = this.router;
-    if (this.applicationId !== undefined) {
-      this.applicationResourceService.deleteApplication(this.applicationId).subscribe({
-        next() {
-          alert('Application sucessfully deleted');
-          router.navigate(['/']);
-        },
-        error(err) {
-          alert('Error deleting this application' + (err as HttpErrorResponse).statusText);
-          console.error('Failed to delete this application');
-        },
-      });
+    if (this.applicationId !== undefined && this.applicationId.trim().length !== 0) {
+      try {
+        await firstValueFrom(this.applicationResourceService.deleteApplication(this.applicationId));
+        alert('Application sucessfully deleted');
+        router.navigate(['/']);
+      } catch (err) {
+        alert('Error deleting this application' + (err as HttpErrorResponse).statusText);
+        console.error('Failed to delete this application');
+      }
     } else {
+      alert('There was an error because of an invalid applicationId');
       this.router.navigate(['/']);
     }
   }
