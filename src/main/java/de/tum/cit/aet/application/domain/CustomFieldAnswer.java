@@ -1,11 +1,9 @@
 package de.tum.cit.aet.application.domain;
 
-import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.converter.StringListConverter;
 import de.tum.cit.aet.job.domain.CustomField;
 import jakarta.persistence.*;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +29,4 @@ public class CustomFieldAnswer {
 
     @Convert(converter = StringListConverter.class)
     private List<String> answers;
-
-    @OneToMany(mappedBy = "customFieldAnswer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Document> documents;
 }

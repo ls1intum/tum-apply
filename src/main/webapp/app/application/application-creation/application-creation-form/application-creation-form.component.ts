@@ -376,7 +376,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   async deleteApplication(): Promise<void> {
-    let confirmResult = confirm('Are you sure you want to delete this application?');
+    const confirmResult = confirm('Are you sure you want to delete this application?');
     if (!confirmResult) {
       return;
     }
