@@ -13,6 +13,19 @@ Main page styles
   background-size: contain;
 }
 
+h1 {
+  color: var(--p-text-primary);
+}
+
+jhi-button {
+  display: inline-block;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
 /* wait autoprefixer update to allow simple generation of high pixel density media query */
 @media only screen and (-webkit-min-device-pixel-ratio: 2),
   only screen and (-moz-min-device-pixel-ratio: 2),
