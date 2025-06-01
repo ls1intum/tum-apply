@@ -136,7 +136,7 @@ openApi {
   customBootRun {
     jvmArgs = [
       "-Dspring.profiles.active=dev,no-liquibase",
-      "-Dspringdoc.packages-to-scan=de.tum.cit.aet.application.web, de.tum.cit.aet.evaluation.web, de.tum.cit.aet.job.web",
+      "-Dspringdoc.packages-to-scan=de.tum.cit.aet.application.web, de.tum.cit.aet.evaluation.web, de.tum.cit.aet.job.web, de.tum.cit.aet.usermanagement.web",
       "-Dspring.docker.compose.enabled=false",
       "-Dspring.docker.compose.lifecycle-management=none"
     ]

@@ -4,4 +4,6 @@ export * from './applicationResource.service';
 import { ApplicationResourceService } from './applicationResource.service';
 export * from './jobResource.service';
 import { JobResourceService } from './jobResource.service';
-export const APIS = [ApplicationEvaluationResourceService, ApplicationResourceService, JobResourceService];
+export * from './userResource.service';
+import { UserResourceService } from './userResource.service';
+export const APIS = [ApplicationEvaluationResourceService, ApplicationResourceService, JobResourceService, UserResourceService];

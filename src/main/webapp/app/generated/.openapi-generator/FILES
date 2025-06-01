@@ -6,6 +6,7 @@ api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
 api/jobResource.service.ts
+api/userResource.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -26,6 +27,7 @@ model/researchGroupShortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/userDTO.ts
+model/userShortDTO.ts
 ng-package.json
 package.json
 param.ts

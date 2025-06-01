@@ -13,3 +13,4 @@ export * from './researchGroupShortDTO';
 export * from './sortObject';
 export * from './updateApplicationDTO';
 export * from './userDTO';
+export * from './userShortDTO';

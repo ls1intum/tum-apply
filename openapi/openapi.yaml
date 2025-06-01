@@ -157,6 +157,26 @@
         }
       }
     },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserShortDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/{jobId}/details": {
       "get": {
         "tags": [
@@ -925,6 +945,38 @@
           "jobId"
         ]
       },
+      "UserShortDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "APPLICANT",
+                "PROFESSOR",
+                "ADMIN"
+              ]
+            }
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
+      },
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
@@ -981,6 +1033,9 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "unpaged": {
+            "type": "boolean"
+          },
           "paged": {
             "type": "boolean"
           },
@@ -991,9 +1046,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
@@ -1003,10 +1055,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
