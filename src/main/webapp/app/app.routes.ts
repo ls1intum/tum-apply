@@ -9,11 +9,6 @@ const routes: Routes = [
   // Home
   // ======================================================================================
   {
-    path: 'job-overview',
-    loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
-    title: 'home.title',
-  },
-  {
     path: '',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
@@ -85,6 +80,13 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
+    title: 'home.title',
+  },
+  {
+    path: 'job-overview',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
     title: 'home.title',
   },
 

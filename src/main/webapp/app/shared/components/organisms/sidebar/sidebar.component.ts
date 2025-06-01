@@ -26,7 +26,7 @@ export class SidebarComponent {
           title: 'sidebar.dashboard.dashboard',
           buttons: [
             { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
-            { icon: 'search', text: 'sidebar.dashboard.findpositions', link: '/positions' },
+            { icon: 'search', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
           ],
         },
         {
@@ -48,7 +48,13 @@ export class SidebarComponent {
         },
         {
           title: 'sidebar.applications.applications',
-          buttons: [{ icon: 'file-contract', text: 'sidebar.applications.reviewapplications', link: '/review' }],
+          buttons: [
+            {
+              icon: 'file-contract',
+              text: 'sidebar.applications.reviewapplications',
+              link: '/evaluation/overview',
+            },
+          ],
         },
         {
           title: 'sidebar.researchgroup.researchgroup',
