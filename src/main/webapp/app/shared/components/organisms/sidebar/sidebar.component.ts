@@ -32,7 +32,7 @@ export class SidebarComponent {
         {
           title: 'sidebar.applications.applications',
           buttons: [
-            { icon: 'file', text: 'sidebar.applications.myapplications', link: '/applications' },
+            { icon: 'file', text: 'sidebar.applications.myapplications', link: '/application/overview' },
             { icon: 'bookmark', text: 'sidebar.applications.savedpositions', link: '/saved' },
           ],
         },
