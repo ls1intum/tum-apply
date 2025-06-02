@@ -50,9 +50,14 @@ export class SidebarComponent {
           title: 'sidebar.applications.applications',
           buttons: [
             {
+              icon: 'file',
+              text: 'sidebar.applications.applicationoverview',
+              link: '/evaluation/overview',
+            },
+            {
               icon: 'file-contract',
               text: 'sidebar.applications.reviewapplications',
-              link: '/evaluation/overview',
+              link: '/evaluation/application',
             },
           ],
         },
