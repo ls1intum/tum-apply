@@ -3,12 +3,11 @@
   height: 100%;
   width: 15.625rem;
   flex-direction: column;
-  justify-content: flex;
   top: 0;
   position: sticky;
   align-items: flex-start;
   background: var(--p-background-surface);
-  border-right: 1px solid var(--p-border-default);
+  border-right: 0.1rem solid var(--p-border-default);
 
   ::ng-deep .panel {
     width: 15.625rem;
