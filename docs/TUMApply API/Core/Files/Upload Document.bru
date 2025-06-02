@@ -1,0 +1,16 @@
+meta {
+  name: Upload Document
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/applications/1c982d01-4560-437a-92d8-310aacb5991c/test-documents
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  files: @file(/Users/marcfett/Downloads/Test PDF.pdf)
+  files: @file(/Users/marcfett/Downloads/Test PDF.pdf)
+}
