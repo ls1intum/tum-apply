@@ -26,5 +26,11 @@
     flex: 1 1 auto;
     overflow: auto;
     align-items: center;
+
+    .content-flex {
+      display: flex;
+      flex: 1 1 auto;
+      padding: 20px;
+    }
   }
 }
