@@ -1,9 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { SidebarButtonComponent } from './sidebar-button.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { ButtonComponent } from '../button/button.component';
+
+import { SidebarButtonComponent } from './sidebar-button.component';
 
 describe('SidebarButtonComponent', () => {
   let component: SidebarButtonComponent;
