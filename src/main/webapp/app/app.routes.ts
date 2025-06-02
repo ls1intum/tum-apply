@@ -101,6 +101,12 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
   },
+  {
+    path: 'application/overview',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
+  },
 
   // ======================================================================================
   // Evaluation
@@ -111,12 +117,6 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () =>
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
-  },
-  {
-    path: 'application/overview',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
-    loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
   },
 
   // ======================================================================================
