@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
@@ -119,24 +120,8 @@ public class JobService {
         // TODO: implement field mappings
     }
 
-    /**
-     * Fetches all jobs with state PUBLISHED as job cards.
-     *
-     * @return list of JobCardDTOs
-     */
-    public List<JobCardDTO> getAvailableJobs() {
-        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED);
-    }
-
-    /**
-     * Fetches all jobs with state PUBLISHED as job cards with pagination.
-     *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @return Page of JobCardDTOs
-     */
-    public Page<JobCardDTO> getAvailableJobs(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, pageable);
     }
 }

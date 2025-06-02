@@ -1,13 +1,16 @@
 package de.tum.cit.aet.job.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,10 +56,11 @@ public class JobResource {
      */
     @GetMapping("/available")
     public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "8") int size
+        /*@RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "8") int size*/
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
     ) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(page, size);
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO);
         return ResponseEntity.ok(jobs);
     }
 
