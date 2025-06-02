@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -123,5 +124,10 @@ public class JobService {
     public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO) {
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, pageable);
+    }
+
+    public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+        return jobRepository.findAllJobsByProfessor(userId, pageable);
     }
 }

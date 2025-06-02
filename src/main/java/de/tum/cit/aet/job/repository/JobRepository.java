@@ -3,8 +3,8 @@ package de.tum.cit.aet.job.repository;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,13 +17,23 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
-    /**
-     * Retrieves all jobs posted by a specific professor as {@link JobCardDTO} projections.
-     *
-     * @param professorId the UUID of the professor (user) who created the job postings.
-     * @return a list of job DTOs created by the given professor.
-     */
-    //List<JobCardDTO> findAllJobsByProfessor(@Param("professorId") UUID professorId);
+    @Query(
+        """
+            SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
+                j.jobId,
+                j.supervisingProfessor.avatar,
+                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                j.state,
+                j.title,
+                j.startDate,
+                j.createdAt,
+                j.lastModifiedAt
+            )
+            FROM Job j
+            WHERE j.supervisingProfessor.userId = :userId
+        """
+    )
+    Page<CreatedJobDTO> findAllJobsByProfessor(@Param("userId") UUID userId, Pageable pageable);
 
     @Query(
         """
