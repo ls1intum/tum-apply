@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
+
 import { BaseInputDirective } from '../base-input/base-input.component';
 
 @Component({

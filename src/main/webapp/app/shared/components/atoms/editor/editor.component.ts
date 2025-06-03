@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, output, signal } from '@angular/core';
-import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
+
 import { BaseInputDirective } from '../base-input/base-input.component';
 
 @Component({
