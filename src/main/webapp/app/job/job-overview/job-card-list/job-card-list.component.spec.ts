@@ -46,7 +46,7 @@ describe('JobCardListComponent', () => {
 
   it('should call loadJobs with correct page and size on lazy load', () => {
     const spy = jest.spyOn(mockJobService, 'getAvailableJobs');
-    component.onLazyLoad({ first: 16, rows: 8 });
+    component.loadOnTableEmit({ first: 16, rows: 8 });
     expect(spy).toHaveBeenCalledWith(8, 2);
   });
 

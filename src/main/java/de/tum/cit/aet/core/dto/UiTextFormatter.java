@@ -32,6 +32,9 @@ public class UiTextFormatter {
      * @return a {@link LocalDate} representing the same date in the system's time zone
      */
     public static LocalDate formatTimeToLocalDate(Instant time) {
+        if (time == null) {
+            return null;
+        }
         return time.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
     }
 
