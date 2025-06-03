@@ -95,18 +95,7 @@ public class JobService {
     }
 
     /**
-     * Returns all jobs created by the given professor.
-     *
-     * @param professorId the ID of the professor
-     * @return list of job cards created by the professor
-     */
-    public List<JobCardDTO> getJobsByProfessor(UUID professorId) {
-        return null;
-        //return jobRepository.findAllJobsByProfessor(professorId);
-    }
-
-    /**
-     * Retrieves full details of a job posting.
+     * Returns full details of a job posting.
      *
      * @param jobId the ID of the job
      * @return the job card DTO with detailed info
@@ -121,11 +110,24 @@ public class JobService {
         // TODO: implement field mappings
     }
 
+    /**
+     * Returns a paginated list of jobs that are marked as published and available for applicants to apply to.
+     *
+     * @param pageDTO contains the page number and size for pagination
+     * @return a {@link Page} of {@link JobCardDTO} objects representing available jobs as cards
+     */
     public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO) {
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, pageable);
     }
 
+    /**
+     * Returns a paginated list of jobs created by a specific professor.
+     *
+     * @param userId  the UUID of the professor (user)
+     * @param pageDTO contains the page number and size for pagination
+     * @return a {@link Page} of {@link CreatedJobDTO} objects representing the professor's created jobs
+     */
     public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO) {
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         return jobRepository.findAllJobsByProfessor(userId, pageable);

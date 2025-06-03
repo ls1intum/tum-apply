@@ -48,10 +48,10 @@ public class JobResource {
     }*/
 
     /**
-     * {@code GET /api/jobs/available} : Retrieves a paginated list of all available (published) job postings.
+     * {@code GET /api/jobs/available} : Returns a paginated list of all available (published) job postings.
      *
      * <p>This endpoint returns job postings that are currently in the {@code PUBLISHED} state and
-     * can be applied to by users. Results are paginated based on the parameters provided in {@link PageDTO}.</p>
+     * that applicants are able to submit an application for. Results are paginated based on the parameters provided in {@link PageDTO}.</p>
      *
      * @param pageDTO the pagination information including page number (zero-based) and page size
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link JobCardDTO}
@@ -101,7 +101,7 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/professor/{userId}} : Retrieves a paginated list of jobs created by a specific professor.
+     * {@code GET /api/jobs/professor/{userId}} : Returns a paginated list of jobs created by a specific professor.
      *
      * <p>This endpoint allows fetching all job postings associated with a given professor,
      * identified by their user ID. Results are paginated using the {@link PageDTO} parameters.</p>

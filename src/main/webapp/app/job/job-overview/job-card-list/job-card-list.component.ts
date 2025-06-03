@@ -34,7 +34,7 @@ export class JobCardListComponent {
   }
 
   private loadJobs(page: number, size: number): void {
-    this.jobService.getAvailableJobs(page, size).subscribe({
+    this.jobService.getAvailableJobs(size, page).subscribe({
       next: (pageData: PageJobCardDTO) => {
         this.jobs.set(pageData.content ?? []);
         this.totalRecords.set(pageData.totalElements ?? 0);
