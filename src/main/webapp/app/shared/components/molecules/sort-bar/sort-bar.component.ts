@@ -37,7 +37,7 @@ export class SortBarComponent {
   sortChange = output<Sort>();
 
   selectedOption = signal<SortOption | undefined>(undefined);
-  isAsc = signal<boolean>(true);
+  isAsc = signal<boolean>(false);
 
   readonly currentOption = computed(() => this.selectedOption() ?? this.sortableFields()[0]);
 

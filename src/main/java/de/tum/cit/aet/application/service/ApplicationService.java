@@ -3,37 +3,42 @@ package de.tum.cit.aet.application.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
+import de.tum.cit.aet.core.service.DocumentDictionaryService;
+import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+@AllArgsConstructor
 @Service
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
+    private final DocumentService documentService;
+    private final DocumentDictionaryService documentDictionaryService;
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
-
-    public ApplicationService(
-        ApplicationRepository applicationRepository,
-        ApplicantRepository applicantRepository,
-        JobRepository jobRepository
-    ) {
-        this.applicationRepository = applicationRepository;
-        this.applicantRepository = applicantRepository;
-        this.jobRepository = jobRepository;
-    }
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -88,10 +93,6 @@ public class ApplicationService {
             job,
             createApplicationDTO.applicationState(),
             createApplicationDTO.desiredDate(),
-            null,
-            null,
-            null,
-            null,
             createApplicationDTO.projects(),
             createApplicationDTO.specialSkills(),
             createApplicationDTO.motivation(),
@@ -204,6 +205,117 @@ public class ApplicationService {
      */
     @Transactional
     public void deleteApplication(UUID applicationId) {
+        if (!applicationRepository.existsById(applicationId)) {
+            throw new EntityNotFoundException("Application with ID " + applicationId + " not found");
+        }
         applicationRepository.deleteById(applicationId);
+    }
+
+    public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
+        return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
+    }
+
+    public long getNumberOfTotalApplications(UUID applicantId) {
+        return this.applicationRepository.countByApplicant_UserId(applicantId);
+    }
+
+    /**
+     * Retrieves all CV document entries for the given application.
+     *
+     * @param application the application to retrieve CVs for
+     * @return set of document dictionary entries of type CV
+     */
+    public Set<DocumentDictionary> getCVs(Application application) {
+        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.CV);
+    }
+
+    /**
+     * Retrieves all reference document entries for the given application.
+     *
+     * @param application the application to retrieve references for
+     * @return set of document dictionary entries of type REFERENCE
+     */
+    public Set<DocumentDictionary> getReferences(Application application) {
+        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.REFERENCE);
+    }
+
+    /**
+     * Retrieves all bachelor transcript document entries for the given application.
+     *
+     * @param application the application to retrieve bachelor transcripts for
+     * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
+     */
+    public Set<DocumentDictionary> getBachelorTranscripts(Application application) {
+        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
+    }
+
+    /**
+     * Retrieves all master transcript document entries for the given application.
+     *
+     * @param application the application to retrieve master transcripts for
+     * @return set of document dictionary entries of type MASTER_TRANSCRIPT
+     */
+    public Set<DocumentDictionary> getMasterTranscripts(Application application) {
+        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
+    }
+
+    /**
+     * Uploads a single CV document and updates the dictionary mapping.
+     *
+     * @param cv the uploaded CV file
+     * @param application the application the CV belongs to
+     * @param user the user uploading the document
+     */
+    public void uploadCV(MultipartFile cv, Application application, User user) {
+        Document document = documentService.upload(cv, user);
+        updateDocumentDictionaries(application, DocumentType.CV, Set.of(document));
+    }
+
+    /**
+     * Uploads multiple reference documents and updates the dictionary mapping.
+     *
+     * @param references the uploaded reference files
+     * @param application the application the references belong to
+     * @param user the user uploading the documents
+     */
+    public void uploadReferences(List<MultipartFile> references, Application application, User user) {
+        Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
+        updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
+    }
+
+    /**
+     * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
+     *
+     * @param bachelorTranscripts the uploaded bachelor transcript files
+     * @param application the application the transcripts belong to
+     * @param user the user uploading the documents
+     */
+    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
+        Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
+        updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
+    }
+
+    /**
+     * Uploads multiple master transcript documents and updates the dictionary mapping.
+     *
+     * @param masterTranscripts the uploaded master transcript files
+     * @param application the application the transcripts belong to
+     * @param user the user uploading the documents
+     */
+    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
+        Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
+        updateDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT, documents);
+    }
+
+    /**
+     * Updates the document dictionary entries for a given application and document type.
+     *
+     * @param application    the application to associate the documents with
+     * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
+     * @param newDocuments   the set of newly uploaded documents to associate
+     */
+    protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Document> newDocuments) {
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
+        documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
     }
 }
