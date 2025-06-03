@@ -3,6 +3,7 @@ import { Component, computed, effect, input, output, signal } from '@angular/cor
 import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
+import { BaseInputDirective } from '../base-input/base-input.component';
 
 @Component({
   selector: 'jhi-editor',
@@ -10,59 +11,7 @@ import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
-export class EditorComponent {
-  control = input<AbstractControl | undefined>(undefined);
-  disabled = input<boolean>(false);
-  icon = input<string | undefined>(undefined);
-  label = input<string | undefined>(undefined);
-  placeholder = input<string | undefined>(undefined);
-  required = input<boolean>(false);
-  error = input<boolean>(false);
-  model = input<string>('');
-  modelChange = output<string>();
-  labelPosition = input<'top' | 'left'>('top');
-  width = input<string>('100%');
-  id = input<string | undefined>(undefined);
-
-  readonly formValidityVersion = signal(0);
-  // State tracking
-  isTouched = signal(false);
-  isFocused = signal(false);
-  formControl = computed(() => {
-    const ctrl = this.control();
-    return ctrl instanceof FormControl ? ctrl : new FormControl('');
-  });
-  readonly inputState = computed(() => {
-    this.formValidityVersion();
-    if (!this.isTouched()) return 'untouched';
-    if (this.formControl().invalid) return 'invalid';
-    return 'valid';
-  });
-
-  errorMessage = computed<string | null>(() => {
-    const ctrl = this.formControl();
-    const errors = ctrl.errors;
-    if (!errors) return null;
-    const key = Object.keys(errors)[0];
-    const val = errors[key];
-    const defaults: Record<string, string> = {
-      required: 'This field is required',
-      minlength: `Minimum length is ${val.requiredLength}`,
-      maxlength: `Maximum length is ${val.requiredLength}`,
-      pattern: 'Invalid format',
-    };
-    return defaults[key] ?? `Invalid: ${key}`;
-  });
-
-  constructor() {
-    effect(onCleanup => {
-      const sub = this.formControl().statusChanges.subscribe(() => {
-        this.formValidityVersion.update(v => v + 1);
-      });
-      onCleanup(() => sub.unsubscribe());
-    });
-  }
-
+export class EditorComponent extends BaseInputDirective<string> {
   onInputChange(event: EditorTextChangeEvent): void {
     const value = event.htmlValue;
     this.modelChange.emit(value);
@@ -70,14 +19,5 @@ export class EditorComponent {
     ctrl.setValue(value);
     ctrl.markAsDirty();
     ctrl.updateValueAndValidity();
-  }
-
-  onBlur(): void {
-    this.isTouched.set(true);
-    this.isFocused.set(false);
-  }
-
-  onFocus(): void {
-    this.isFocused.set(true);
   }
 }
