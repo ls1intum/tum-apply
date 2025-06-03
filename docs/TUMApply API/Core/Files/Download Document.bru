@@ -1,0 +1,15 @@
+meta {
+  name: Download Document
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/documents/:documentId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  documentId: 02f75c84-11b6-4e35-89f2-63c907022ae4
+}

@@ -12,16 +12,4 @@ import { CommonModule } from '@angular/common';
 })
 export default class HomeComponent {
   readonly router = inject(Router);
-
-  goToJobCreation(): void {
-    this.router.navigate(['/job-creation']);
-  }
-
-  goToApplicationOverviewForApplicants(): void {
-    this.router.navigate(['/application/overview']);
-  }
-
-  goToJobsOverview(): void {
-    this.router.navigate(['/job-overview']);
-  }
 }

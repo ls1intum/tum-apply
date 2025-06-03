@@ -9,11 +9,6 @@ const routes: Routes = [
   // Home
   // ======================================================================================
   {
-    path: 'job-overview',
-    loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
-    title: 'home.title',
-  },
-  {
     path: '',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
@@ -35,10 +30,6 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
-  },
-  {
-    path: 'application/edit/:application_id',
-    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
   },
   {
     path: 'playground/button',
@@ -91,6 +82,13 @@ const routes: Routes = [
     loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
     title: 'home.title',
   },
+  {
+    path: 'job-overview',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
+    title: 'home.title',
+  },
 
   // ======================================================================================
   // Application
@@ -107,6 +105,12 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
   },
+  {
+    path: 'application/overview',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
+  },
 
   // ======================================================================================
   // Evaluation
@@ -117,10 +121,6 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () =>
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
-  },
-  {
-    path: 'application/overview',
-    loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
   },
 
   // ======================================================================================

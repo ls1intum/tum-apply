@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1.5rem;
-  border-bottom: 3px solid var(--p-border-default);
+  border-bottom: 0.25rem solid var(--p-border-default);
   background-color: var(--p-background-default);
   position: sticky;
   top: 0;
@@ -19,7 +19,7 @@
     cursor: pointer;
 
     .tum-logo {
-      height: 32px;
+      height: 2.25rem;
     }
   }
 
@@ -60,10 +60,11 @@
 
       .profile-icon {
         display: flex;
-        padding: 0.5rem;
         justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
         align-items: center;
-        border-radius: 9999rem;
+        border-radius: 50%;
         background: var(--p-primary-color);
         color: var(--p-text-on-primary);
       }
