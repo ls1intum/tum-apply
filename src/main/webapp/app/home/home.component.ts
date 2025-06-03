@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [CommonModule, SharedModule, ButtonComponent],
+  imports: [CommonModule, SharedModule],
 })
 export default class HomeComponent {
   readonly router = inject(Router);
