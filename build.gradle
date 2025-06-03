@@ -201,7 +201,6 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
   testImplementation "org.springframework.boot:spring-boot-starter-test"
   implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
-  implementation "org.springframework.boot:spring-boot-starter-undertow"
   implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
     exclude module: "spring-boot-starter-undertow"
   }
@@ -209,14 +208,29 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-validation"
   testImplementation "org.springframework.boot:spring-boot-test"
   testImplementation "org.springframework.security:spring-security-test"
-  implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+
+//    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+
+  // START experimental for supporting Hibernate 7 (can be removed once Spring Boot 4.0.0 is released)
+  implementation "org.springframework.data:spring-data-jpa:4.0.0-M3"
+  implementation "org.springframework.data:spring-data-commons:4.0.0-M3"
+  implementation "jakarta.persistence:jakarta.persistence-api:3.2.0"
+  runtimeOnly "org.aspectj:aspectjweaver:1.9.24"
+  implementation "org.springframework:spring-aspects:6.2.7"
+  implementation "org.jspecify:jspecify:1.0.0"
+  // END experimental for supporting Hibernate 7
+
   implementation "org.springframework.security:spring-security-data"
-  implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
   implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
   implementation "com.mysql:mysql-connector-j"
   implementation "com.zaxxer:HikariCP:6.3.0"
-  implementation "org.hibernate.orm:hibernate-core"
-  implementation "org.hibernate.validator:hibernate-validator"
+
+  annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen:${hibernateVersion}"
+  annotationProcessor "org.hibernate.orm:hibernate-core:${hibernateVersion}"
+  implementation "org.hibernate.orm:hibernate-core:${hibernateVersion}"
+  implementation "org.hibernate.orm:hibernate-envers:${hibernateVersion}"
+  implementation "org.hibernate.orm:hibernate-jcache:${hibernateVersion}"
+  implementation "org.hibernate.validator:hibernate-validator:9.0.0.Final"
 
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
@@ -224,7 +238,7 @@ dependencies {
   implementation "com.github.ben-manes.caffeine:caffeine:3.2.0"
   implementation "com.github.ben-manes.caffeine:jcache:3.2.0"
   implementation "javax.cache:cache-api"
-  implementation "org.hibernate.orm:hibernate-jcache"
+
 
 
   // needed for OpenAPI generation
@@ -237,7 +251,6 @@ dependencies {
   testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
   testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
   annotationProcessor "org.glassfish.jaxb:jaxb-runtime"
-  annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"
   developmentOnly "org.springframework.boot:spring-boot-docker-compose"
   developmentOnly "org.springframework.boot:spring-boot-devtools"
   compileOnly("org.projectlombok:lombok:1.18.38")
