@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -15,7 +15,11 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 })
 export class ApplicationCardComponent {
   disabled = input<boolean>(false);
-  application = input<ApplicationEvaluationOverviewDTO>();
+  application = input<ApplicationEvaluationOverviewDTO | null>(null);
+
+  readonly isDisabled = computed(
+    () => this.disabled() || this.application()?.state === 'ACCEPTED' || this.application()?.state === 'REJECTED',
+  );
 
   readonly stateTextMap: Record<string, string> = {
     SENT: 'evaluation.statusBadge.SENT',

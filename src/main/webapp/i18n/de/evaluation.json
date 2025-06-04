@@ -11,7 +11,7 @@
 
     "statusBadge": {
       "SENT": "Ungelesen",
-      "ACCEPTED": "Genehmigt",
+      "ACCEPTED": "Angenommen",
       "REJECTED": "Abgelehnt",
       "IN_REVIEW": "In Prüfung"
     }

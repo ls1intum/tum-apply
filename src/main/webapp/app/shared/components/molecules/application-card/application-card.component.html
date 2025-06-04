@@ -27,7 +27,8 @@
 
   <!-- Action Buttons -->
   <div class="actions">
-    <jhi-button [label]="'evaluation.accept' | translate" variant="outlined" severity="success" icon="check" [disabled]="disabled()" />
-    <jhi-button [label]="'evaluation.reject' | translate" variant="outlined" severity="danger" icon="xmark" [disabled]="disabled()" />
+    <jhi-button [label]="'evaluation.accept' | translate" variant="outlined" severity="success" icon="check" [disabled]="isDisabled()" />
+
+    <jhi-button [label]="'evaluation.reject' | translate" variant="outlined" severity="danger" icon="xmark" [disabled]="isDisabled()" />
   </div>
 </div>

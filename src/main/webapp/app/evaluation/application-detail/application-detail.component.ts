@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
-import { ApplicationCardComponent } from '../../shared/components/molecules/applicant-card/application-card.component';
+import { ApplicationCardComponent } from '../../shared/components/molecules/application-card/application-card.component';
 import { ApplicationEvaluationOverviewDTO } from '../../generated';
 
 @Component({
