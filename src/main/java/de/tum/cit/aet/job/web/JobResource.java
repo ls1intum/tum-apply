@@ -1,13 +1,16 @@
 package de.tum.cit.aet.job.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
-import java.util.List;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,25 +48,19 @@ public class JobResource {
     }*/
 
     /**
-     * GET /api/jobs/available : Returns all published jobs.
+     * {@code GET /api/jobs/available} : Returns a paginated list of all available (published) job postings.
      *
-     * @param page the page number for pagination (zero-based).
-     * @param size the number of records per page.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs as JobCardDTOs.
+     * <p>This endpoint returns job postings that are currently in the {@code PUBLISHED} state and
+     * that applicants are able to submit an application for. Results are paginated based on the parameters provided in {@link PageDTO}.</p>
+     *
+     * @param pageDTO the pagination information including page number (zero-based) and page size
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link JobCardDTO}
      */
     @GetMapping("/available")
-    public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "8") int size
-    ) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(page, size);
+    public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO);
         return ResponseEntity.ok(jobs);
     }
-
-    // public ResponseEntity<List<JobCardDTO>> getAvailableJobs() {
-    // List<JobCardDTO> jobs = jobService.getAvailableJobs();
-    // return ResponseEntity.ok(jobs);
-    // }
 
     /**
      * {@code POST /api/jobs} : Create a new job posting.
@@ -104,14 +101,21 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/professor/{userId}} : Get all jobs posted by a specific professor.
+     * {@code GET /api/jobs/professor/{userId}} : Returns a paginated list of jobs created by a specific professor.
      *
-     * @param userId the ID of the professor (user).
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of jobs.
+     * <p>This endpoint allows fetching all job postings associated with a given professor,
+     * identified by their user ID. Results are paginated using the {@link PageDTO} parameters.</p>
+     *
+     * @param userId   the unique ID of the professor (user) whose job postings are being queried
+     * @param pageDTO  the pagination information including page number and page size
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link CreatedJobDTO}
      */
     @GetMapping("/professor/{userId}")
-    public ResponseEntity<List<JobCardDTO>> getJobsByProfessor(@PathVariable UUID userId) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(userId));
+    public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
+        @PathVariable UUID userId,
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+    ) {
+        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO));
     }
 
     /**

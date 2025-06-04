@@ -1,8 +1,9 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { CommonModule } from '@angular/common';
-import { JobCardDTO, JobResourceService, PageJobCardDTO } from 'app/generated';
+import { JobCardDTO, JobResourceService } from 'app/generated';
+import { firstValueFrom } from 'rxjs';
 
 import { JobCardComponent } from '../job-card/job-card.component';
 
@@ -16,32 +17,27 @@ import { JobCardComponent } from '../job-card/job-card.component';
 export class JobCardListComponent {
   jobs = signal<JobCardDTO[]>([]);
   totalRecords = signal<number>(0);
+  page = signal<number>(0);
   pageSize = signal<number>(8);
 
   private jobService = inject(JobResourceService);
 
-  constructor() {
-    // Trigger the first load of the job list
-    effect(() => {
-      this.onLazyLoad({ first: 0, rows: this.pageSize() });
-    });
-  }
-
-  onLazyLoad(event: TableLazyLoadEvent): void {
+  loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
     const size = event.rows ?? this.pageSize();
-    this.loadJobs(page, size);
+
+    this.page.set(page);
+    this.pageSize.set(size);
+    void this.loadJobs();
   }
 
-  private loadJobs(page: number, size: number): void {
-    this.jobService.getAvailableJobs(page, size).subscribe({
-      next: (pageData: PageJobCardDTO) => {
-        this.jobs.set(pageData.content ?? []);
-        this.totalRecords.set(pageData.totalElements ?? 0);
-      },
-      error(err) {
-        console.error('Failed to load jobs from API:', err);
-      },
-    });
+  async loadJobs(): Promise<void> {
+    try {
+      const pageData = await firstValueFrom(this.jobService.getAvailableJobs(this.pageSize(), this.page()));
+      this.jobs.set(pageData.content ?? []);
+      this.totalRecords.set(pageData.totalElements ?? 0);
+    } catch (error) {
+      console.error('Failed to load jobs from API:', error);
+    }
   }
 }

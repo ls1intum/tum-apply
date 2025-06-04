@@ -254,26 +254,6 @@
         }
       }
     },
-    "/api/users/me": {
-      "get": {
-        "tags": [
-          "user-resource"
-        ],
-        "operationId": "getCurrentUser",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserShortDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/management": {
       "get": {
         "tags": [
@@ -942,6 +922,26 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
           }
         ],
         "responses": {
@@ -950,10 +950,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/JobCardDTO"
-                  }
+                  "$ref": "#/components/schemas/PageCreatedJobDTO"
                 }
               }
             }
@@ -969,23 +966,23 @@
         "operationId": "getAvailableJobs",
         "parameters": [
           {
-            "name": "page",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 0
+              "minimum": 1
             }
           },
           {
-            "name": "size",
+            "name": "pageNumber",
             "in": "query",
             "required": false,
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 8
+              "minimum": 0
             }
           }
         ],
@@ -1782,38 +1779,6 @@
           "jobId"
         ]
       },
-      "UserShortDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "APPLICANT",
-                "PROFESSOR",
-                "ADMIN"
-              ]
-            }
-          },
-          "researchGroup": {
-            "$ref": "#/components/schemas/ResearchGroupShortDTO"
-          }
-        }
-      },
       "Link": {
         "type": "object",
         "properties": {
@@ -1857,7 +1822,49 @@
           }
         }
       },
-      "PageJobCardDTO": {
+      "CreatedJobDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "professorName": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "jobId"
+        ]
+      },
+      "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
           "totalPages": {
@@ -1881,7 +1888,7 @@
           "content": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/JobCardDTO"
+              "$ref": "#/components/schemas/CreatedJobDTO"
             }
           },
           "number": {
@@ -1891,12 +1898,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -1939,6 +1946,52 @@
             "type": "boolean"
           },
           "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageJobCardDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobCardDTO"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
             "type": "boolean"
           }
         }

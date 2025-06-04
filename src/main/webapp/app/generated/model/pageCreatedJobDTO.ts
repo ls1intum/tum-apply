@@ -8,17 +8,17 @@
  * Do not edit the class manually.
  */
 import { PageableObject } from './pageableObject';
-import { JobCardDTO } from './jobCardDTO';
+import { CreatedJobDTO } from './createdJobDTO';
 import { SortObject } from './sortObject';
 
 
-export interface PageJobCardDTO { 
+export interface PageCreatedJobDTO { 
     totalPages?: number;
     totalElements?: number;
     first?: boolean;
     last?: boolean;
     size?: number;
-    content?: Array<JobCardDTO>;
+    content?: Array<CreatedJobDTO>;
     number?: number;
     sort?: SortObject;
     pageable?: PageableObject;

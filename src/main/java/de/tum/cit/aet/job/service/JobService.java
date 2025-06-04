@@ -1,8 +1,10 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -93,18 +95,7 @@ public class JobService {
     }
 
     /**
-     * Returns all jobs created by the given professor.
-     *
-     * @param professorId the ID of the professor
-     * @return list of job cards created by the professor
-     */
-    public List<JobCardDTO> getJobsByProfessor(UUID professorId) {
-        return null;
-        //return jobRepository.findAllJobsByProfessor(professorId);
-    }
-
-    /**
-     * Retrieves full details of a job posting.
+     * Returns full details of a job posting.
      *
      * @param jobId the ID of the job
      * @return the job card DTO with detailed info
@@ -120,23 +111,25 @@ public class JobService {
     }
 
     /**
-     * Fetches all jobs with state PUBLISHED as job cards.
+     * Returns a paginated list of jobs that are marked as published and available for applicants to apply to.
      *
-     * @return list of JobCardDTOs
+     * @param pageDTO contains the page number and size for pagination
+     * @return a {@link Page} of {@link JobCardDTO} objects representing available jobs as cards
      */
-    public List<JobCardDTO> getAvailableJobs() {
-        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED);
+    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, pageable);
     }
 
     /**
-     * Fetches all jobs with state PUBLISHED as job cards with pagination.
+     * Returns a paginated list of jobs created by a specific professor.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @return Page of JobCardDTOs
+     * @param userId  the UUID of the professor (user)
+     * @param pageDTO contains the page number and size for pagination
+     * @return a {@link Page} of {@link CreatedJobDTO} objects representing the professor's created jobs
      */
-    public Page<JobCardDTO> getAvailableJobs(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, pageable);
+    public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+        return jobRepository.findAllJobsByProfessor(userId, pageable);
     }
 }

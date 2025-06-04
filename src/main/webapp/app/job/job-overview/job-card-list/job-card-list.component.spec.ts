@@ -39,15 +39,15 @@ describe('JobCardListComponent', () => {
   });
 
   it('should call loadJobs on init and populate jobs and totalRecords', () => {
-    expect(mockJobService.getAvailableJobs).toHaveBeenCalledWith(0, component.pageSize());
+    expect(mockJobService.getAvailableJobs).toHaveBeenCalledWith(component.pageSize(), 0);
     expect(component.jobs().length).toBe(0);
     expect(component.totalRecords()).toBe(0);
   });
 
   it('should call loadJobs with correct page and size on lazy load', () => {
     const spy = jest.spyOn(mockJobService, 'getAvailableJobs');
-    component.onLazyLoad({ first: 16, rows: 8 });
-    expect(spy).toHaveBeenCalledWith(2, 8);
+    component.loadOnTableEmit({ first: 16, rows: 8 });
+    expect(spy).toHaveBeenCalledWith(8, 2);
   });
 
   it('should display no jobs message when jobs array is empty', () => {
