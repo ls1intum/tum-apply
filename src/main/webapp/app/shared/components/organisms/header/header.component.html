@@ -7,7 +7,7 @@
   <div class="actions-section">
     <div class="language-switch">
       @for (language of languages; track language; let isLast = $last) {
-        <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage === language }" class="language-button">
+        <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage() === language }" class="language-button">
           {{ language.toUpperCase() }}
         </button>
         @if (!isLast) {

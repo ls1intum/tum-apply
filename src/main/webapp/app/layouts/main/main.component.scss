@@ -1,0 +1,36 @@
+.whole-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--p-background-default);
+}
+
+.header {
+  flex: 0 0 auto;
+}
+
+.main-page {
+  flex: 1 1 auto;
+  display: flex;
+  overflow: hidden;
+
+  .sidebar {
+    flex: 0 0 auto;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: auto;
+    align-items: center;
+
+    .content-flex {
+      display: flex;
+      flex: 1 1 auto;
+      padding: 2rem;
+    }
+  }
+}

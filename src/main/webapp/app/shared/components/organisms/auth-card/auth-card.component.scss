@@ -48,11 +48,13 @@
   word-break: break-word;
   text-align: center;
   box-sizing: border-box;
+  color: var(--p-text-primary);
 }
 
 .login-providers {
   display: flex;
   justify-content: center;
+  color: var(--p-text-primary);
 }
 
 .login-hint {
@@ -63,6 +65,7 @@
   text-align: center;
   font-size: 0.875rem;
   font-weight: 400;
+  color: var(--p-text-primary);
 }
 
 .login-footer {
@@ -70,6 +73,7 @@
   text-align: center;
   font-size: 0.875rem;
   font-weight: 400;
+  color: var(--p-text-primary);
 }
 
 .login-footer a {
