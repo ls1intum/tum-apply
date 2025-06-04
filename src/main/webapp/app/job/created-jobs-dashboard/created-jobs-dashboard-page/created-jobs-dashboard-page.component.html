@@ -1,0 +1,21 @@
+<div class="body">
+  <div class="table-wrapper">
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="jobs()"
+      [totalRecords]="totalRecords()"
+      [page]="page()"
+      [rows]="pageSize()"
+      [selectable]="true"
+      (lazyLoad)="loadOnTableEmit($event)"
+    />
+  </div>
+
+  <ng-template #actionTemplate>
+    <jhi-button label="View" severity="primary" />
+  </ng-template>
+
+  <ng-template #stateTemplate let-job>
+    <jhi-tag [text]="stateTextMap()[job.state] || 'Unknown'" [color]="stateSeverityMap()[job.state] || 'info'" />
+  </ng-template>
+</div>
