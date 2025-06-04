@@ -1,21 +1,23 @@
 <div class="card" [class.disabled]="disabled()">
   <!-- Header -->
   <div class="header">
-    <p class="name">Max Mustermann</p>
-    <jhi-tag [round]="true" text="Accepted" color="info" />
+    <p class="name">{{ application()?.name }}</p>
+    <jhi-tag [text]="stateTextMap()[application()?.state!] || 'Unknown'" [color]="stateSeverityMap()[application()?.state!] || 'info'" />
   </div>
 
   <!-- Job Title -->
   <div class="job">
     <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-    <span class="job-title"> Ai Systems and the opportunities and challenges super long description should not wrap </span>
+    <span class="job-title">
+      {{ application()?.jobName }}
+    </span>
   </div>
 
   <!-- Rating and Comments -->
   <div class="rating">
-    <jhi-rating [likertScale]="5" [rating]="2" />
+    <jhi-rating [rating]="application()?.rating ?? null" />
     <div class="comments">
-      <p>4</p>
+      <p>0</p>
       <fa-icon [icon]="['fas', 'comment-alt']" />
     </div>
   </div>

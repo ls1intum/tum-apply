@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { ApplicationEvaluationOverviewDTO } from '../../../../generated';
@@ -14,5 +14,19 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 })
 export class ApplicationCardComponent {
   disabled = input<boolean>(false);
-  application = input<ApplicationEvaluationOverviewDTO>;
+  application = input<ApplicationEvaluationOverviewDTO>();
+
+  readonly stateTextMap = signal<Record<string, string>>({
+    SENT: 'Unopened',
+    ACCEPTED: 'Approved',
+    REJECTED: 'Rejected',
+    IN_REVIEW: 'In Review',
+  });
+
+  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
+    SENT: 'info',
+    ACCEPTED: 'success',
+    REJECTED: 'danger',
+    IN_REVIEW: 'warn',
+  });
 }

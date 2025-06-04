@@ -119,7 +119,7 @@ const routes: Routes = [
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
   },
   {
-    path: 'evaluation/detail',
+    path: 'evaluation/application',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () => import('./evaluation/application-detail/application-detail.component').then(m => m.ApplicationDetailComponent),
