@@ -1,6 +1,10 @@
-<div class="bar">
-  <!-- Only render if rating is not null -->
-  @if (rating !== null) {
+<div
+  class="bar"
+  role="img"
+  [attr.aria-label]="getAriaParams() | translate: { value: rating(), total: likertScale(), label: getLabelKey() | translate }"
+  [attr.title]="getAriaParams() | translate: { value: rating(), total: likertScale(), label: getLabelKey() | translate }"
+>
+  @if (rating() !== null) {
     <div
       class="marker"
       [ngStyle]="{

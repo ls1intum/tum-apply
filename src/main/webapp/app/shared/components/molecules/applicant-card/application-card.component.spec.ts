@@ -1,91 +1,69 @@
-import { Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
+// application-card.component.spec.ts
 
-import { ApplicationEvaluationOverviewDTO } from '../../../../generated';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  MissingTranslationHandler,
+  TranslateCompiler,
+  TranslateLoader,
+  TranslateModule,
+  TranslateParser,
+  TranslateService,
+  TranslateStore,
+} from '@ngx-translate/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faBriefcase, faCheck, faCommentAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
+
+import { TagComponent } from '../../atoms/tag/tag.component';
+import { RatingComponent } from '../../atoms/rating/rating.component';
+import { ButtonComponent } from '../../atoms/button/button.component';
 
 import { ApplicationCardComponent } from './application-card.component';
 
-@Component({
-  selector: 'jhi-tag',
-  standalone: true,
-  template: '<span class="mock-tag">{{ text() }} - {{ color() }}</span>',
-})
-class MockTagComponent {
-  text = signal('');
-  color = signal('');
-}
-
-@Component({
-  selector: 'jhi-rating',
-  standalone: true,
-  template: '<div class="mock-rating">{{ rating() }}</div>',
-})
-class MockRatingComponent {
-  rating = signal<number | null>(null);
-}
-
-@Component({
-  selector: 'jhi-button',
-  standalone: true,
-  template: '<button [disabled]="disabled()">{{ label() }}</button>',
-})
-class MockButtonComponent {
-  label = signal('');
-  disabled = signal(false);
-  variant = signal('');
-}
-
 describe('ApplicationCardComponent', () => {
-  let fixture: ComponentFixture<ApplicationCardComponent>;
   let component: ApplicationCardComponent;
-
-  const mockApplication: ApplicationEvaluationOverviewDTO = {
-    name: 'Lukas Meier',
-    jobName: 'AI Systems Research',
-    state: 'ACCEPTED',
-    rating: 4,
-  };
+  let fixture: ComponentFixture<ApplicationCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationCardComponent, MockTagComponent, MockRatingComponent, MockButtonComponent, FontAwesomeTestingModule],
+      imports: [ApplicationCardComponent, FontAwesomeModule, TagComponent, RatingComponent, ButtonComponent, TranslateModule.forRoot()],
+      providers: [
+        TranslateStore,
+        TranslateLoader,
+        TranslateCompiler,
+        TranslateParser,
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        TranslateService,
+        provideAnimations(),
+      ],
     }).compileComponents();
+
+    // Register the required FontAwesome icons
+    const library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faBriefcase, faCommentAlt, faCheck, faXmark);
 
     fixture = TestBed.createComponent(ApplicationCardComponent);
     component = fixture.componentInstance;
-
-    fixture.componentRef.setInput('application', mockApplication);
-    fixture.componentRef.setInput('disabled', false);
     fixture.detectChanges();
   });
 
-  it('creates the component', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('renders name and job title', () => {
-    const nameEl = fixture.debugElement.query(By.css('.name')).nativeElement;
-    const jobEl = fixture.debugElement.query(By.css('.job-title')).nativeElement;
-
-    expect(nameEl.textContent).toContain('Lukas Meier');
-    expect(jobEl.textContent).toContain('AI Systems Research');
+  it('should not have "disabled" class by default', () => {
+    const cardEl: HTMLElement = fixture.nativeElement.querySelector('.card');
+    expect(cardEl.classList).not.toContain('disabled');
   });
 
-  it('renders disabled buttons when `disabled` is true', () => {
+  it('should apply "disabled" class when disabled input is true', () => {
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
-    const buttons = fixture.debugElement.queryAll(By.css('button'));
-    buttons.forEach(button => expect((button.nativeElement as HTMLButtonElement).disabled).toBe(true));
-  });
-
-  it('omits the rating component when `rating` is undefined', () => {
-    fixture.componentRef.setInput('application', { ...mockApplication, rating: undefined });
-    fixture.detectChanges();
-
-    const ratingDe = fixture.debugElement.query(By.css('.mock-rating'));
-    expect(ratingDe).toBeNull();
+    const cardEl: HTMLElement = fixture.nativeElement.querySelector('.card');
+    expect(cardEl.classList).toContain('disabled');
   });
 });

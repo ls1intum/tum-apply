@@ -70,6 +70,7 @@ import {
   faUsers,
   faUsersCog,
   faWrench,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 
@@ -148,4 +149,5 @@ export const fontAwesomeIcons = [
   faUsers,
   faUsersCog,
   faWrench,
+  faXmark,
 ];

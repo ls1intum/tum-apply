@@ -2,7 +2,10 @@
   <!-- Header -->
   <div class="header">
     <p class="name">{{ application()?.name }}</p>
-    <jhi-tag [text]="stateTextMap()[application()?.state!] || 'Unknown'" [color]="stateSeverityMap()[application()?.state!] || 'info'" />
+    <jhi-tag
+      [text]="'evaluation.statusBadge.' + (application()?.state || '') | translate"
+      [color]="stateSeverityMap[application()?.state!] || 'info'"
+    />
   </div>
 
   <!-- Job Title -->
@@ -24,7 +27,7 @@
 
   <!-- Action Buttons -->
   <div class="actions">
-    <jhi-button label="Accept" [disabled]="disabled()" />
-    <jhi-button label="Reject" variant="outlined" [disabled]="disabled()" />
+    <jhi-button [label]="'evaluation.accept' | translate" variant="outlined" severity="success" icon="check" [disabled]="disabled()" />
+    <jhi-button [label]="'evaluation.reject' | translate" variant="outlined" severity="danger" icon="xmark" [disabled]="disabled()" />
   </div>
 </div>

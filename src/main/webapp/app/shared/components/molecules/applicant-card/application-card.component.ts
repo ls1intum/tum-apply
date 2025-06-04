@@ -1,5 +1,6 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationEvaluationOverviewDTO } from '../../../../generated';
 import { TagComponent } from '../../atoms/tag/tag.component';
@@ -8,7 +9,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, RatingComponent, ButtonComponent],
+  imports: [FontAwesomeModule, TagComponent, RatingComponent, ButtonComponent, TranslateModule],
   templateUrl: './application-card.component.html',
   styleUrl: './application-card.component.scss',
 })
@@ -16,17 +17,17 @@ export class ApplicationCardComponent {
   disabled = input<boolean>(false);
   application = input<ApplicationEvaluationOverviewDTO>();
 
-  readonly stateTextMap = signal<Record<string, string>>({
-    SENT: 'Unopened',
-    ACCEPTED: 'Approved',
-    REJECTED: 'Rejected',
-    IN_REVIEW: 'In Review',
-  });
+  readonly stateTextMap: Record<string, string> = {
+    SENT: 'evaluation.statusBadge.SENT',
+    ACCEPTED: 'evaluation.statusBadge.ACCEPTED',
+    REJECTED: 'evaluation.statusBadge.REJECTED',
+    IN_REVIEW: 'evaluation.statusBadge.IN_REVIEW',
+  };
 
-  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
+  readonly stateSeverityMap: Record<string, 'success' | 'warn' | 'danger' | 'info'> = {
     SENT: 'info',
     ACCEPTED: 'success',
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
-  });
+  };
 }

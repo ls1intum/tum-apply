@@ -1,59 +1,130 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import {
+  MissingTranslationHandler,
+  TranslateCompiler,
+  TranslateLoader,
+  TranslateModule,
+  TranslateParser,
+  TranslateService,
+  TranslateStore,
+} from '@ngx-translate/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { RatingComponent } from './rating.component';
 
 describe('RatingComponent', () => {
-  let fixture: ComponentFixture<RatingComponent>;
   let component: RatingComponent;
+  let fixture: ComponentFixture<RatingComponent>;
+
+  const mockGetComputedStyle = {
+    getPropertyValue(prop: string) {
+      switch (prop) {
+        case '--p-success-200':
+          return '#00ff00';
+        case '--p-success-700':
+          return '#008800';
+        case '--p-warn-400':
+          return '#ffff00';
+        case '--p-danger-700':
+          return '#ff0000';
+        case '--p-warn-500':
+          return '#ffee00';
+        default:
+          return '';
+      }
+    },
+  } as unknown as CSSStyleDeclaration;
 
   beforeEach(async () => {
+    jest.spyOn(window, 'getComputedStyle').mockImplementation(() => mockGetComputedStyle);
+
     await TestBed.configureTestingModule({
-      imports: [RatingComponent],
+      imports: [RatingComponent, TranslateModule.forRoot()],
+      providers: [
+        TranslateStore,
+        TranslateLoader,
+        TranslateCompiler,
+        TranslateParser,
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        TranslateService,
+        provideAnimations(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RatingComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-  it('creates the component', () => {
-    fixture.detectChanges();
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('renders a centered marker for rating 0 on a 5 Likert scale', () => {
-    fixture.componentRef.setInput('rating', 0);
-    fixture.detectChanges();
-    const marker = fixture.debugElement.query(By.css('.marker')).nativeElement as HTMLElement;
-    expect(marker.style.left).toBe('50%');
-    expect(marker.style.width).toBe('19%');
-    expect(component.backgroundColor()).toBe('#FFBF0F');
+  it('should compute correct min and max for default likertScale=5', () => {
+    expect(component.min()).toBe(-2);
+    expect(component.max()).toBe(2);
   });
 
-  it('places the marker at the end for the maximum positive rating', () => {
-    fixture.componentRef.setInput('rating', 2);
-    fixture.detectChanges();
-    const marker = fixture.debugElement.query(By.css('.marker')).nativeElement as HTMLElement;
-    expect(marker.style.left).toBe('90%');
-    expect(marker.style.width).toBe('19%');
-    expect(component.backgroundColor()).toBe('#17723f');
+  it('should compute markerWidthPercent correctly for default likertScale=5', () => {
+    expect(component.markerWidthPercent()).toBe('18%'); // 100/5=20 → 20−2=18
   });
 
-  it('places the marker at the start for the maximum negative rating', () => {
+  it('should return empty offsetPercent when rating is null', () => {
+    expect(component.offsetPercent()).toBe('');
+  });
+
+  it('should compute offsetPercent correctly when rating equals min or max', () => {
     fixture.componentRef.setInput('rating', -2);
     fixture.detectChanges();
-    const marker = fixture.debugElement.query(By.css('.marker')).nativeElement as HTMLElement;
-    expect(marker.style.left).toBe('10%');
-    expect(marker.style.width).toBe('19%');
-    expect(component.backgroundColor()).toBe('#ac0c22');
+    expect(component.offsetPercent()).toBe('10%');
+
+    fixture.componentRef.setInput('rating', 2);
+    fixture.detectChanges();
+    expect(component.offsetPercent()).toBe('90%');
   });
 
-  it('recalculates values for a Likert 7 scale', () => {
-    fixture.componentRef.setInput('likertScale', 7);
-    fixture.componentRef.setInput('rating', 3);
+  it('should compute backgroundColor correctly for negative, neutral, and positive ratings', () => {
+    fixture.componentRef.setInput('rating', -2);
     fixture.detectChanges();
-    const marker = fixture.debugElement.query(By.css('.marker')).nativeElement as HTMLElement;
-    expect(parseFloat(marker.style.width)).toBeCloseTo(100 / 7 - 1);
-    expect(component.backgroundColor()).toBe('#17723f');
+    expect(component.backgroundColor()).toBe('#ff0000');
+
+    fixture.componentRef.setInput('rating', 0);
+    fixture.detectChanges();
+    expect(component.backgroundColor()).toBe('#ffee00');
+
+    fixture.componentRef.setInput('rating', 2);
+    fixture.detectChanges();
+    expect(component.backgroundColor()).toBe('#008800');
+  });
+
+  it('getAriaParams should return correct translation keys', () => {
+    fixture.componentRef.setInput('rating', null);
+    fixture.detectChanges();
+    expect(component.getAriaParams()).toBe('evaluation.noRating');
+
+    fixture.componentRef.setInput('rating', 1);
+    fixture.detectChanges();
+    expect(component.getAriaParams()).toBe('evaluation.ratingToolTip');
+  });
+
+  it('getLabelKey should return correct label key based on rating value', () => {
+    fixture.componentRef.setInput('rating', -1);
+    fixture.detectChanges();
+    expect(component.getLabelKey()).toBe('evaluation.negative');
+
+    fixture.componentRef.setInput('rating', 0);
+    fixture.detectChanges();
+    expect(component.getLabelKey()).toBe('evaluation.neutral');
+
+    fixture.componentRef.setInput('rating', 2);
+    fixture.detectChanges();
+    expect(component.getLabelKey()).toBe('evaluation.positive');
+
+    fixture.componentRef.setInput('rating', null);
+    fixture.detectChanges();
+    expect(component.getLabelKey()).toBe('');
   });
 });

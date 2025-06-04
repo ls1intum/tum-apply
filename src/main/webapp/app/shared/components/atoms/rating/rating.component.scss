@@ -5,15 +5,15 @@
   max-width: 15rem;
   height: 1.25rem;
   border-radius: 0.625rem;
-  border: 0.02rem solid var(--p-text-primary, #010205);
-  background: var(--p-background-surface-alt, #e6e6e6);
+  border: 0.02rem solid var(--p-text-primary);
+  background: var(--p-background-surface-alt);
+  cursor: help;
 }
 
 .marker {
   position: absolute;
-  padding: 0.01rem;
   top: 50%;
   transform: translate(-50%, -50%);
-  height: 1rem;
+  height: 80%;
   border-radius: 1rem;
 }
