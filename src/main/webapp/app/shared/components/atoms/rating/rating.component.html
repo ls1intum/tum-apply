@@ -1,0 +1,13 @@
+<div class="bar">
+  <!-- Only render if rating is not null -->
+  @if (rating !== null) {
+    <div
+      class="marker"
+      [ngStyle]="{
+        left: offsetPercent(),
+        width: markerWidthPercent(),
+        background: backgroundColor(),
+      }"
+    ></div>
+  }
+</div>

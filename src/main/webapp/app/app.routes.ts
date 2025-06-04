@@ -115,6 +115,12 @@ const routes: Routes = [
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
   },
   {
+    path: 'evaluation/detail',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () => import('./evaluation/application-detail/application-detail.component').then(m => m.ApplicationDetailComponent),
+  },
+  {
     path: 'application/overview',
     loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
   },
