@@ -1,34 +1,36 @@
-<div class="card" [class.disabled]="disabled()">
-  <!-- Header -->
-  <div class="header">
-    <p class="name">{{ application()?.name }}</p>
-    <jhi-tag
-      [text]="'evaluation.statusBadge.' + (application()?.state || '') | translate"
-      [color]="stateSeverityMap[application()?.state!] || 'info'"
-    />
-  </div>
+@if (application() !== null) {
+  <div class="card" [class.disabled]="disabled()">
+    <!-- Header -->
+    <div class="header">
+      <p class="name">{{ application()?.name }}</p>
+      <jhi-tag
+        [text]="'evaluation.statusBadge.' + (application()?.state || '') | translate"
+        [color]="stateSeverityMap[application()?.state!] || 'info'"
+      />
+    </div>
 
-  <!-- Job Title -->
-  <div class="job">
-    <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-    <span class="job-title">
-      {{ application()?.jobName }}
-    </span>
-  </div>
+    <!-- Job Title -->
+    <div class="job">
+      <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+      <span class="job-title">
+        {{ application()?.jobName }}
+      </span>
+    </div>
 
-  <!-- Rating and Comments -->
-  <div class="rating">
-    <jhi-rating [rating]="application()?.rating ?? null" />
-    <div class="comments">
-      <p>0</p>
-      <fa-icon [icon]="['fas', 'comment-alt']" />
+    <!-- Rating and Comments -->
+    <div class="rating">
+      <jhi-rating [rating]="application()?.rating ?? null" />
+      <div class="comments">
+        <p>0</p>
+        <fa-icon [icon]="['fas', 'comment-alt']" />
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <jhi-button [label]="'evaluation.accept' | translate" variant="outlined" severity="success" icon="check" [disabled]="isDisabled()" />
+
+      <jhi-button [label]="'evaluation.reject' | translate" variant="outlined" severity="danger" icon="xmark" [disabled]="isDisabled()" />
     </div>
   </div>
-
-  <!-- Action Buttons -->
-  <div class="actions">
-    <jhi-button [label]="'evaluation.accept' | translate" variant="outlined" severity="success" icon="check" [disabled]="isDisabled()" />
-
-    <jhi-button [label]="'evaluation.reject' | translate" variant="outlined" severity="danger" icon="xmark" [disabled]="isDisabled()" />
-  </div>
-</div>
+}
