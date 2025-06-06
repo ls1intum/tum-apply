@@ -1,19 +1,27 @@
 package de.tum.cit.aet.application.web;
 
+import de.tum.cit.aet.TumApplyApp;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +38,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicationResource {
 
     private final ApplicationService applicationService;
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationResource.class);
 
     @Autowired
     public ApplicationResource(ApplicationService applicationService) {
@@ -159,6 +169,45 @@ public class ApplicationResource {
 
         //applicationService.uploadBachelorTranscripts(files, application, user);
         applicationService.uploadMasterTranscripts(files, application, user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasRole('APPLICANT')")
+    @PostMapping("/{applicationId}/{documentType}/test-documents")
+    public ResponseEntity<Void> uploadDocuments(
+        @PathVariable UUID applicationId,
+        @PathVariable DocumentType documentType,
+        @RequestParam("files") List<MultipartFile> files
+    ) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        LOG.error(auth.toString());
+
+        //simulate current user
+        User user = new User();
+        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
+
+        Application application = new Application();
+        application.setApplicationId(UUID.fromString(applicationId.toString()));
+
+        //applicationService.uploadBachelorTranscripts(files, application, user);
+        switch (documentType) {
+            case BACHELOR_TRANSCRIPT:
+                applicationService.uploadBachelorTranscripts(files, application, user);
+                break;
+            case MASTER_TRANSCRIPT:
+                applicationService.uploadMasterTranscripts(files, application, user);
+                break;
+            case REFERENCE:
+                applicationService.uploadReferences(files, application, user);
+                break;
+            case CV:
+                applicationService.uploadCV(files.getFirst(), application, user);
+                break; // TODO
+            default:
+                throw new NotImplementedException(String.format("The type %s is not yet implemented", documentType.name()));
+        }
+        // applicationService.uploadMasterTranscripts(files, application, user);
 
         return ResponseEntity.ok().build();
     }
