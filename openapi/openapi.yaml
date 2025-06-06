@@ -254,26 +254,6 @@
         }
       }
     },
-    "/api/users/me": {
-      "get": {
-        "tags": [
-          "user-resource"
-        ],
-        "operationId": "getCurrentUser",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserShortDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/management": {
       "get": {
         "tags": [
@@ -1782,38 +1762,6 @@
           "jobId"
         ]
       },
-      "UserShortDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "APPLICANT",
-                "PROFESSOR",
-                "ADMIN"
-              ]
-            }
-          },
-          "researchGroup": {
-            "$ref": "#/components/schemas/ResearchGroupShortDTO"
-          }
-        }
-      },
       "Link": {
         "type": "object",
         "properties": {
@@ -1860,19 +1808,13 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -1890,6 +1832,12 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -1916,11 +1864,11 @@
           "paged": {
             "type": "boolean"
           },
-          "pageNumber": {
+          "pageSize": {
             "type": "integer",
             "format": "int32"
           },
-          "pageSize": {
+          "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
