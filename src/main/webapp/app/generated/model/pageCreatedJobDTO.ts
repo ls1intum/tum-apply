@@ -21,8 +21,8 @@ export interface PageCreatedJobDTO {
     content?: Array<CreatedJobDTO>;
     number?: number;
     sort?: SortObject;
-    pageable?: PageableObject;
     numberOfElements?: number;
+    pageable?: PageableObject;
     empty?: boolean;
 }
 

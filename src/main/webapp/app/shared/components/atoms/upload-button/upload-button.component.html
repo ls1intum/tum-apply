@@ -1,4 +1,7 @@
-<button class="border border-neutral flex flex-col justify-center rounded-md p-2 w-full" [disabled]="true">
+<!-- [disabled]="true" -->
+<!-- [disabled]="!selectedFile()" -->
+<button class="border border-neutral flex flex-col justify-center rounded-md p-2 w-full" (click)="uploadFile()">
+  <input type="file" (change)="onFileSelected($event)" />
   <p class="font-bold mt-1 mb-1">{{ uploadText() }}</p>
   <div class="flex w-full justify-center">
     <span class="flex border items-center justify-center rounded-full border-primary size-20">
@@ -6,4 +9,7 @@
     </span>
   </div>
   <p class="mt-1 mb-1 text-sm">Click or drag and drop files to here to upload.</p>
+  @if (isUploading()) {
+    <div>Upload Progress: {{ uploadProgress() }}%</div>
+  }
 </button>
