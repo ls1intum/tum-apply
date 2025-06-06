@@ -22,7 +22,7 @@
   [rows]="pageSize()"
   [totalRecords]="totalRecords()"
   [lazy]="true"
-  (onLazyLoad)="onLazyLoad($event)"
+  (onLazyLoad)="loadOnTableEmit($event)"
   [rowsPerPageOptions]="[8, 16, 24]"
   [autoLayout]="true"
   [tableStyle]="{ width: '100%' }"
