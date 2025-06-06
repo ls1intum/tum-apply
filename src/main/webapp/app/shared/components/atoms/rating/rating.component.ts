@@ -70,7 +70,11 @@ export class RatingComponent {
   }
 
   private lerpColor(c1: string, c2: string, t: number): string {
-    const parseHex = (hex: string): number[] => hex.match(/.{2}/g)!.map(h => parseInt(h, 16));
+    const parseHex = (hex: string): number[] => {
+      const parts = hex.replace(/^#/, '').match(/.{2}/g);
+      if (!parts || parts.length !== 3) return [0, 0, 0];
+      return parts.map(h => parseInt(h, 16));
+    };
 
     const [r1, g1, b1] = parseHex(c1.slice(1));
     const [r2, g2, b2] = parseHex(c2.slice(1));
