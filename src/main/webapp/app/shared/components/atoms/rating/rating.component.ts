@@ -1,0 +1,85 @@
+import { Component, computed, input } from '@angular/core';
+import { NgStyle } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
+
+@Component({
+  selector: 'jhi-rating',
+  imports: [NgStyle, TranslateModule],
+  templateUrl: './rating.component.html',
+  styleUrl: './rating.component.scss',
+})
+export class RatingComponent {
+  rating = input<number | null>(null);
+  likertScale = input<number>(5); // Likert 5 scale as default
+
+  readonly min = computed(() => -Math.floor(this.likertScale() / 2));
+  readonly max = computed(() => Math.floor(this.likertScale() / 2));
+
+  readonly markerWidthPercent = computed(() => {
+    return `${100 / this.likertScale() - 2}%`;
+  });
+
+  readonly offsetPercent = computed(() => {
+    if (this.rating() === null) {
+      return '';
+    }
+    const norm = ((this.rating() ?? 0) - this.min()) / this.likertScale();
+
+    const half = 100 / (2 * this.likertScale());
+    return `${norm * 100 + half}%`;
+  });
+
+  readonly backgroundColor = computed(() => {
+    if (this.rating() === null) {
+      return 'transparent';
+    }
+
+    const r = Math.min(Math.max(this.rating() ?? 0, this.min()), this.max());
+    const mid = 0;
+
+    const positiveStart = getComputedStyle(document.documentElement).getPropertyValue('--p-success-200').trim();
+    const positiveEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-success-700').trim();
+
+    const negativeStart = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-400').trim();
+    const negativeEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-danger-700').trim();
+
+    const neutral = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-500').trim();
+
+    if (r < mid) {
+      const negSteps = mid - this.min();
+      const depth = (mid - r) / negSteps;
+      return this.lerpColor(negativeStart, negativeEnd, depth);
+    } else if (r > mid) {
+      const posSteps = this.max() - mid;
+      const depth = (r - mid) / posSteps;
+      return this.lerpColor(positiveStart, positiveEnd, depth);
+    } else {
+      return neutral;
+    }
+  });
+
+  getAriaParams(): string {
+    return this.rating() === null ? 'evaluation.noRating' : 'evaluation.ratingToolTip';
+  }
+
+  getLabelKey(): string {
+    const value = this.rating();
+    if (value === null) return '';
+
+    return value > 0 ? 'evaluation.positive' : value < 0 ? 'evaluation.negative' : 'evaluation.neutral';
+  }
+
+  private lerpColor(c1: string, c2: string, t: number): string {
+    const parseHex = (hex: string): number[] => {
+      const parts = hex.replace(/^#/, '').match(/.{2}/g);
+      if (!parts || parts.length !== 3) return [0, 0, 0];
+      return parts.map(h => parseInt(h, 16));
+    };
+
+    const [r1, g1, b1] = parseHex(c1.slice(1));
+    const [r2, g2, b2] = parseHex(c2.slice(1));
+    const mix = (a: number, b: number): number => Math.round(a + (b - a) * t);
+
+    return `#${[mix(r1, r2), mix(g1, g2), mix(b1, b2)].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+  }
+}

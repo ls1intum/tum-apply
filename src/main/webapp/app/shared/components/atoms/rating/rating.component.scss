@@ -1,0 +1,19 @@
+.bar {
+  position: relative;
+  width: 100%;
+  min-width: 10rem;
+  max-width: 15rem;
+  height: 1.25rem;
+  border-radius: 0.625rem;
+  border: 0.02rem solid var(--p-text-primary);
+  background: var(--p-background-surface-alt);
+  cursor: help;
+}
+
+.marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 80%;
+  border-radius: 1rem;
+}

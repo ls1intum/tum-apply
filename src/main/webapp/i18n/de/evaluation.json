@@ -1,0 +1,19 @@
+{
+  "evaluation": {
+    "ratingToolTip": "Bewertung: {{value}} auf einer {{total}}-Likert Skala ({{label}})",
+    "positive": "Positiv",
+    "negative": "Negativ",
+    "neutral": "Neutral",
+    "noRating": "Keine Bewertung verfügbar",
+
+    "accept": "Annehmen",
+    "reject": "Ablehnen",
+
+    "statusBadge": {
+      "SENT": "Ungelesen",
+      "ACCEPTED": "Angenommen",
+      "REJECTED": "Abgelehnt",
+      "IN_REVIEW": "In Prüfung"
+    }
+  }
+}

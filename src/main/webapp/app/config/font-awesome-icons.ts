@@ -11,6 +11,7 @@ import {
   faBell,
   faBook,
   faBookmark,
+  faBriefcase,
   faCalendar,
   faCalendarAlt,
   faCaretLeft,
@@ -69,6 +70,7 @@ import {
   faUsers,
   faUsersCog,
   faWrench,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 
@@ -85,6 +87,7 @@ export const fontAwesomeIcons = [
   faBars,
   faBell,
   faBook,
+  faBriefcase,
   faCalendar,
   faCalendarAlt,
   faCaretLeft,
@@ -146,4 +149,5 @@ export const fontAwesomeIcons = [
   faUsers,
   faUsersCog,
   faWrench,
+  faXmark,
 ];
