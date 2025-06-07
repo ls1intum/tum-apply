@@ -10,6 +10,10 @@
   display: flex;
   flex-direction: column;
 
+  .custom-label {
+    color: var(--p-text-color);
+  }
+
   // Add styling for labels on the left of the field
   &.label-left {
     flex-direction: row;
@@ -38,6 +42,7 @@
   .p-inputtext {
     color: var(--text-primary);
     border: 0.1rem solid var(--p-border-default);
+    background: transparent;
   }
 
   .p-inputtext::placeholder {
@@ -85,6 +90,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--p-background-default);
+  color: var(--p-text-color);
 
   .card-header {
     position: relative;

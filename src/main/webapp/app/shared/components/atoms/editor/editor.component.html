@@ -1,0 +1,51 @@
+<div class="input-container">
+  <div
+    [ngClass]="{
+      'label-top': labelPosition() === 'top',
+      'label-left': labelPosition() === 'left',
+    }"
+    class="label-input-wrapper"
+  >
+    @if (label()) {
+      <label class="custom-label" [for]="id()">
+        {{ label() }}
+        @if (icon()) {
+          <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+        }
+        @if (required()) {
+          <span class="required">*</span>
+        }
+      </label>
+    }
+    <div class="input-wrapper" [class.error]="inputState() === 'invalid'">
+      <p-editor
+        [id]="id()"
+        type="text"
+        [placeholder]="placeholder() ?? ''"
+        [readonly]="disabled()"
+        [ngModel]="model()"
+        (onTextChange)="onInputChange($event)"
+        (blur)="onBlur()"
+        (focus)="onFocus()"
+        [required]="required()"
+        [style]="{ width: width() }"
+        autocomplete="off"
+        pInputText
+        class="custom-input"
+      >
+        <ng-template #header>
+          <span class="ql-formats">
+            <button type="button" class="ql-bold" aria-label="Bold"></button>
+            <button type="button" class="ql-italic" aria-label="Italic"></button>
+            <button type="button" class="ql-underline" aria-label="Underline"></button>
+          </span>
+        </ng-template>
+      </p-editor>
+    </div>
+    <div class="error-text">
+      @if (inputState() === 'invalid' && !isFocused()) {
+        <!-- {{ errorMessage() }} -->
+      }
+    </div>
+  </div>
+</div>

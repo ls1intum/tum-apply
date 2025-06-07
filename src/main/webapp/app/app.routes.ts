@@ -43,6 +43,10 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
   },
+  {
+    path: 'playground/editor',
+    loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
+  },
 
   // ======================================================================================
   // User Management
