@@ -2,42 +2,42 @@ package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
-import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.JobState;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record JobCardDTO(
+public record CreatedJobDTO(
     @NotNull UUID jobId,
-    String title,
-    String fieldOfStudies,
-    String location,
+    String avatar,
     String professorName,
-    Integer workload,
+    String state,
+    String title,
     LocalDate startDate,
-    String relativeTime
+    LocalDate createdAt,
+    LocalDate lastModifiedAt
 ) {
-    public JobCardDTO(
+    public CreatedJobDTO(
         @NotNull UUID jobId,
-        String title,
-        String fieldOfStudies,
-        Campus location,
+        String avatar,
         String professorName,
-        Integer workload,
+        JobState state,
+        String title,
         LocalDate startDate,
-        Instant createdAt
+        Instant createdAt,
+        Instant lastModifiedAt
     ) {
         this(
             jobId,
-            title,
-            fieldOfStudies,
-            UiTextFormatter.formatEnumValue(location),
+            avatar,
             professorName,
-            workload,
+            UiTextFormatter.formatEnumValue(state),
+            title,
             startDate,
-            UiTextFormatter.getRelativeTimeLabel(createdAt)
+            UiTextFormatter.formatTimeToLocalDate(createdAt),
+            UiTextFormatter.formatTimeToLocalDate(lastModifiedAt)
         );
     }
 }

@@ -109,7 +109,7 @@ const routes: Routes = [
     path: 'application/overview',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
-    loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
+    loadComponent: () => import('./application/application-overview-for-applicant/application-overview-for-applicant.component'),
   },
 
   // ======================================================================================
