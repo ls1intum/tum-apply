@@ -1,0 +1,73 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.5rem;
+  border-bottom: 0.25rem solid var(--p-border-default);
+  background-color: var(--p-background-default);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--p-primary-color);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    .tum-logo {
+      height: 2.25rem;
+    }
+  }
+
+  .actions-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .language-switch {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      button {
+        color: var(--p-primary-color);
+        cursor: pointer;
+
+        &.active {
+          font-weight: bold;
+        }
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .divider {
+      color: var(--p-primary-color);
+    }
+
+    .profile {
+      display: flex;
+      padding: 0.25rem 0.25rem;
+      align-items: center;
+      gap: 1rem;
+      color: var(--p-text-primary);
+
+      .profile-icon {
+        display: flex;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        align-items: center;
+        border-radius: 50%;
+        background: var(--p-primary-color);
+        color: var(--p-text-on-primary);
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { AuthCardComponent } from '../../shared/components/organisms/auth-card/auth-card.component';
-import { CommonModule } from '@angular/common';
 
 /**
  * LoginComponent
