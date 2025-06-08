@@ -34,6 +34,13 @@ services:
       - KC_HTTPS_PORT=9443
       - KC_HEALTH_ENABLED=true
       - KC_HTTP_MANAGEMENT_PORT=9990
+    healthcheck:
+      test: 'bash /opt/keycloak/health-check.sh'
+      interval: 5s
+      timeout: 5s
+      # Increased retries due to slow Keycloak startup in GitHub Actions using MacOS
+      retries: 50
+      start_period: 10s
     labels:
       org.springframework.boot.ignore: true
     networks:
