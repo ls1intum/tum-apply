@@ -17,6 +17,8 @@ services:
     restart: always
     networks:
       - shared-network
+    volumes:
+      - mysql_data:/var/lib/mysql
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.1
     command: 'start-dev --import-realm'
@@ -83,3 +85,6 @@ networks:
   shared-network:
     name: tumapply-shared-network
     driver: bridge
+
+volumes:
+  mysql_data:
