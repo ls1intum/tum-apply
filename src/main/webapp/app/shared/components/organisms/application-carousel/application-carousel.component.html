@@ -1,0 +1,22 @@
+<div class="carousel">
+  <!-- ◄ navigation -->
+  <button class="nav nav-left" aria-label="Previous" (click)="prev()" [disabled]="currentIndex() === 0">
+    <fa-icon [icon]="['fas', 'chevron-left']" />
+  </button>
+
+  <!-- cards (1 or 3) -->
+  <div class="cards">
+    @for (app of visibleApps(); track i; let i = $index) {
+      @if (app) {
+        <jhi-application-card [application]="app" [disabled]="isDisabled(i)" />
+      } @else {
+        <div class="card-placeholder"></div>
+      }
+    }
+  </div>
+
+  <!-- ► navigation -->
+  <button class="nav nav-right" aria-label="Next" (click)="next()" [disabled]="currentIndex() === totalCount() - 1">
+    <fa-icon [icon]="['fas', 'chevron-right']" />
+  </button>
+</div>

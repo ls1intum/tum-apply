@@ -1,34 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 
-import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
-import { ApplicationCardComponent } from '../../shared/components/molecules/application-card/application-card.component';
-import { ApplicationEvaluationOverviewDTO } from '../../generated';
+import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
+import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 
 @Component({
   selector: 'jhi-application-detail',
-  imports: [RatingComponent, ApplicationCardComponent],
+  imports: [ApplicationCarouselComponent],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
 })
-export class ApplicationDetailComponent {
-  testApplications: ApplicationEvaluationOverviewDTO[] = [
-    {
-      applicationId: '00000000-0000-0000-0000-000000000001',
-      avatar: undefined,
-      name: 'Lukas Meier',
-      state: 'IN_REVIEW',
-      jobName: 'AI Systems Research',
-      rating: 2,
-      appliedAt: '2025-05-28T14:32:00Z',
-    },
-    {
-      applicationId: '00000000-0000-0000-0000-000000000002',
-      avatar: undefined,
-      name: 'Sophie Schneider',
-      state: 'SENT',
-      jobName: 'Data Privacy and Ethics in Machine Learning as a very long description that should not break lines',
-      rating: -1,
-      appliedAt: '2025-05-30T09:15:00Z',
-    },
-  ];
+export class ApplicationDetailComponent implements OnInit {
+  applicationsOverview = signal<ApplicationEvaluationOverviewDTO[] | null>(null);
+
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
+  private readonly evaluationService = inject(ApplicationEvaluationResourceService);
 }
