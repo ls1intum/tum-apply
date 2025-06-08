@@ -63,10 +63,6 @@
   }
 }
 
-.ql-editor {
-  background: transparent;
-}
-
 .required {
   color: var(--p-danger-color);
 }
@@ -187,12 +183,20 @@
    does not grow with a larger placeholder
 --------------------------------------------------- */
 
+.ql-editor {
+  background: transparent;
+  color: var(--p-text-primary);
+}
+
+.ql-editor.ql-blank {
+  color: var(--p-background-disabled);
+}
+
 .ql-editor.ql-blank::before {
   content: none;
 }
 
 .ql-editor.ql-blank::after {
-  color: rgba(0, 0, 0, 0.6);
   content: attr(data-placeholder);
   display: block;
   font-style: italic;

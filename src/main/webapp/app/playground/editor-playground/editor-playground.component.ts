@@ -10,7 +10,7 @@ import { EditorComponent } from 'app/shared/components/atoms/editor/editor.compo
   styleUrl: './editor-playground.component.scss',
 })
 export class EditorPlaygroundComponent {
-  motivation = signal<string>('<p>Test</p><p><strong>Test</strong></p><p><em>Test</em></p><p><u>Test</u></p>');
+  motivation = signal<string>('');
 
   valid = output<boolean>();
 
