@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { EditorComponent } from './editor.component';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EditorModule } from 'primeng/editor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+import { EditorComponent } from './editor.component';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -24,9 +24,6 @@ describe('EditorComponent', () => {
   });
 
   it('should emit modelChange and update the form control on input change', () => {
-    const fixture = TestBed.createComponent(EditorComponent);
-    const component = fixture.componentInstance;
-
     const control = new FormControl('');
     fixture.componentRef.setInput('control', control);
 
@@ -41,9 +38,6 @@ describe('EditorComponent', () => {
   });
 
   it('should set isTouched and isFocused on blur', () => {
-    const fixture = TestBed.createComponent(EditorComponent);
-    const component = fixture.componentInstance;
-
     component.onBlur();
 
     expect(component.isTouched()).toBe(true);
@@ -51,17 +45,12 @@ describe('EditorComponent', () => {
   });
 
   it('should set isFocused on focus', () => {
-    const fixture = TestBed.createComponent(EditorComponent);
-    const component = fixture.componentInstance;
-
     component.onFocus();
 
     expect(component.isFocused()).toBe(true);
   });
 
   it('should compute inputState correctly', () => {
-    const fixture = TestBed.createComponent(EditorComponent);
-    const component = fixture.componentInstance;
     const control = new FormControl('', { validators: [Validators.required] });
 
     fixture.componentRef.setInput('control', control);
@@ -85,9 +74,6 @@ describe('EditorComponent', () => {
   });
 
   it('should return appropriate error message', () => {
-    const fixture = TestBed.createComponent(EditorComponent);
-    const component = fixture.componentInstance;
-
     const control = new FormControl('', Validators.required);
     fixture.componentRef.setInput('control', control);
     control.markAsTouched();
