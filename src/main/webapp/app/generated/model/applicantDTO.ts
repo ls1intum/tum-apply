@@ -11,7 +11,7 @@ import { UserDTO } from './userDTO';
 
 
 export interface ApplicantDTO { 
-    user?: UserDTO;
+    user: UserDTO;
     street?: string;
     postalCode?: string;
     city?: string;

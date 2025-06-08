@@ -1,0 +1,29 @@
+@if (jobs().length > 0) {
+  <div class="job-card-grid">
+    @for (job of jobs(); track job.jobId) {
+      <jhi-job-card
+        [jobId]="job.jobId"
+        [jobTitle]="job.title || 'No Title specified'"
+        [fieldOfStudies]="job.fieldOfStudies || 'No Field of Studies specified'"
+        [location]="job.location?.toString() || 'No Location specified'"
+        [professor]="job.professorName || 'No Professor specified'"
+        [workload]="job.workload?.toString() + '%' || '0'"
+        [startDate]="job.startDate?.toString() || 'No Start Date specified'"
+        [relativeTime]="job.relativeTime || ''"
+      />
+    }
+  </div>
+} @else {
+  <p class="no-jobs-text">No jobs found.</p>
+}
+<p-table
+  [value]="jobs()"
+  [paginator]="true"
+  [rows]="pageSize()"
+  [totalRecords]="totalRecords()"
+  [lazy]="true"
+  (onLazyLoad)="loadOnTableEmit($event)"
+  [rowsPerPageOptions]="[8, 16, 24]"
+  [autoLayout]="true"
+  [tableStyle]="{ width: '100%' }"
+/>

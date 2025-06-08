@@ -1,17 +1,18 @@
-<jhi-page-ribbon />
+<div class="whole-page">
+  <jhi-page-ribbon />
 
-@if (showLayout()) {
-  <div>
-    <router-outlet name="navbar" />
+  <jhi-header />
+
+  <div class="main-page">
+    @if (loggedIn()) {
+      <jhi-sidebar class="sidebar" />
+    }
+    <div class="content">
+      <div class="content-flex">
+        <router-outlet />
+      </div>
+
+      <jhi-footer />
+    </div>
   </div>
-}
-
-<div class="container-fluid">
-  <div class="card jh-card">
-    <router-outlet />
-  </div>
-
-  @if (showLayout()) {
-    <jhi-footer />
-  }
 </div>

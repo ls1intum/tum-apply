@@ -808,7 +808,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             color: '{secondary.inverse}',
           },
           info: {
-            background: '{info.color}',
+            background: '{neutral.300}',
             color: '{info.inverse}',
           },
           success: {
@@ -839,7 +839,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           color: '{secondary.inverse}',
         },
         info: {
-          background: '{info.color}',
+          background: '{neutral.300}',
           color: '{info.inverse}',
         },
         success: {
