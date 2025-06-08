@@ -63,6 +63,10 @@
   }
 }
 
+.ql-editor {
+  background: transparent;
+}
+
 .required {
   color: var(--p-danger-color);
 }
@@ -83,6 +87,9 @@
   width: 5rem;
 }
 
+/* -------------------------------
+   Custom Global Styles for Job Card
+---------------------------------- */
 .job-card {
   overflow: hidden;
   border: 0.1rem solid var(--p-primary-color);
