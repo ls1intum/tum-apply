@@ -204,3 +204,7 @@
   min-height: 1em;
   pointer-events: none;
 }
+
+.ql-editor ol li[data-list='bullet']:before {
+  content: '•';
+}
