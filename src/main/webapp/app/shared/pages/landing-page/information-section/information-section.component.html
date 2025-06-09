@@ -1,1 +1,8 @@
-<p>information-section works!</p>
+<div class="information-section">
+  <h2>{{ 'landingPage.informationSection.headline' | translate }}</h2>
+  <div class="tiles-container">
+    @for (card of cards; track card) {
+      <jhi-information-card [imageSrc]="card.imageSrc" [text]="card.text | translate" [link]="card.link" />
+    }
+  </div>
+</div>
