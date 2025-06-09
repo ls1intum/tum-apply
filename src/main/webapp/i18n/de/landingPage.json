@@ -1,0 +1,89 @@
+{
+  "landingPage": {
+    "title": "TUMApply",
+    "hero": {
+      "headline": "Beginnen Sie Ihre Promotion an der TUM",
+      "subline": "Die TUM bietet ein weltweit führendes Umfeld für Ihre Promotion.",
+      "button": "Offene Stellen"
+    },
+    "doctoralJourney": {
+      "headline": "Ihre Promotionsreise an der TUM",
+      "text": "Die Technische Universität München (TUM) ist fest davon überzeugt, dass Talent die Grundlage für exzellente akademische Ausbildung in der Promotion ist. Die TUM blickt auf eine lange Tradition in der Förderung von exzellenten Promovierenden zurück, die sich der Lösung gesellschaftlicher Herausforderungen widmen. Unterstützt von führenden Forschenden investiert die TUM umfassend in die Förderung junger Wissenschaftler, um selbstständig arbeiten und ihre Karriere starten zu können.",
+      "button1": "Warum TUM?",
+      "button2": "Mehr erfahren"
+    },
+    "applicationSteps": {
+      "headline": "Ihre Bewerbung in 4 Schritten",
+      "steps": {
+        "1": {
+          "title": "Offene Stellen finden",
+          "description": "Nutzen Sie Filter, um passende Stellen in verschiedenen Forschungsgruppen zu finden."
+        },
+        "2": {
+          "title": "Details prüfen",
+          "description": "Lesen Sie die Stellenbeschreibung, prüfen Sie die Voraussetzungen und sehen Sie, welche Dokumente benötigt werden."
+        },
+        "3": {
+          "title": "Bewerbung einreichen",
+          "description": "Erstellen Sie ein Konto, laden Sie Ihre Dokumente hoch und reichen Sie Ihre Bewerbung ein."
+        },
+        "4": {
+          "title": "Status verfolgen",
+          "description": "Bleiben Sie informiert. Sie erhalten Benachrichtigungen, wenn Ihre Bewerbung geprüft wurde, neue Stellen verfügbar sind oder gespeicherte Stellen entfernt werden."
+        }
+      },
+      "button": "Prozess ansehen"
+    },
+    "whyTum": {
+      "headline": "Warum die Technische Universität München wählen?",
+      "tiles": {
+        "1": "International Office",
+        "2": "Veranstaltungen",
+        "3": "Women-In-Science Netzwerk",
+        "4": "International Office",
+        "5": "Finanzierungsangebote",
+        "6": "Vielfalt der Community"
+      }
+    },
+    "voices": {
+      "headline": "Stimmen aus der Community",
+      "testimonials": {
+        "1": {
+          "name": "Aline Vogt",
+          "field": "Mathematik",
+          "quote": "Die TUM bietet einzigartige Forschungsmöglichkeiten."
+        },
+        "2": {
+          "name": "Lukas Müller",
+          "field": "Informatik",
+          "quote": "Ich schätze die Unterstützung und das Netzwerk an der TUM."
+        },
+        "3": {
+          "name": "Dr. Sofia Klein",
+          "field": "Biomedizinische Technik",
+          "quote": "Die Vielfalt an der TUM ist inspirierend."
+        },
+        "4": {
+          "name": "Max Richter",
+          "field": "Chemie",
+          "quote": "Die TUM ist führend in Innovation und Forschung."
+        },
+        "5": {
+          "name": "Emily Wagner",
+          "field": "Computer Vision",
+          "quote": "Ich fühle mich hier willkommen und gut unterstützt."
+        }
+      }
+    },
+    "faq": {
+      "headline": "Häufig gestellte Fragen",
+      "subheadline": "Hier finden Sie schnelle Antworten zu TUMApply",
+      "questions": {
+        "1": "Wie melde ich mich bei TUMApply an?",
+        "2": "Kann ich mich gleichzeitig auf mehrere Promotionsstellen bewerben?",
+        "3": "Welche Dokumente werden benötigt?",
+        "4": "Wie erfahre ich den Status meiner Bewerbung?"
+      }
+    }
+  }
+}

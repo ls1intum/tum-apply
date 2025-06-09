@@ -1,0 +1,89 @@
+{
+  "landingPage": {
+    "title": "TUMApply",
+    "hero": {
+      "headline": "Start Your Doctorate at TUM",
+      "subline": "TUM offers a world-class environment for your doctoral journey.",
+      "button": "Browse Positions"
+    },
+    "doctoralJourney": {
+      "headline": "Start Your Doctoral Journey at TUM",
+      "text": "The Technical University of Munich (TUM) is firmly grounded in the belief that talent is our asset to cultivating academic excellence in doctoral education. TUM boasts a long and proud tradition of fostering world-class doctoral candidates committed to finding solutions to the diverse challenges of our time. Supported by prominent researchers in their fields, TUM invests substantial resources in helping early-stage scientists to work independently and kick-start their careers.",
+      "button1": "Why TUM?",
+      "button2": "Find out more"
+    },
+    "applicationSteps": {
+      "headline": "Your Application in 4 Steps",
+      "steps": {
+        "1": {
+          "title": "Browse Open Positions",
+          "description": "Use filters to find relevant positions across different research groups."
+        },
+        "2": {
+          "title": "Check Details",
+          "description": "Read the job description, check eligibility, and see which documents are required."
+        },
+        "3": {
+          "title": "Submit Application",
+          "description": "Create an account, upload your documents, and submit your application."
+        },
+        "4": {
+          "title": "Track Status",
+          "description": "Stay updated. Get notified via mail when your application is reviewed, new job postings available or saved postings deleted."
+        }
+      },
+      "button": "View Process"
+    },
+    "whyTum": {
+      "headline": "Why choose the Technical University of Munich?",
+      "tiles": {
+        "1": "International Office",
+        "2": "Events",
+        "3": "Women-In-Science Network",
+        "4": "International Office",
+        "5": "Access to funding",
+        "6": "Community Diversity"
+      }
+    },
+    "voices": {
+      "headline": "Voices from the Community",
+      "testimonials": {
+        "1": {
+          "name": "Aline Vogt",
+          "field": "Mathematics",
+          "quote": "TUM offers a unique opportunity for research."
+        },
+        "2": {
+          "name": "Lukas Müller",
+          "field": "Informatics",
+          "quote": "I appreciate the support and network at TUM."
+        },
+        "3": {
+          "name": "Dr. Sofia Klein",
+          "field": "Biomedical Engineering",
+          "quote": "The diversity at TUM is inspiring."
+        },
+        "4": {
+          "name": "Max Richter",
+          "field": "Chemistry",
+          "quote": "TUM is a leader in innovation and research."
+        },
+        "5": {
+          "name": "Emily Wagner",
+          "field": "Computer Vision",
+          "quote": "I feel welcomed and supported here."
+        }
+      }
+    },
+    "faq": {
+      "headline": "Frequently Asked Questions",
+      "subheadline": "Find quick answers to common queries about TUMApply",
+      "questions": {
+        "1": "How do I log in to TUMApply?",
+        "2": "Can I apply for multiple Doctorate positions at once?",
+        "3": "What documents are required?",
+        "4": "How do I know my application status?"
+      }
+    }
+  }
+}
