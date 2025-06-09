@@ -16,19 +16,19 @@
       "headline": "Your Application in 4 Steps",
       "steps": {
         "1": {
-          "title": "Browse Open Positions",
+          "title": "1. Browse Open Positions",
           "description": "Use filters to find relevant positions across different research groups."
         },
         "2": {
-          "title": "Check Details",
+          "title": "2. Check Details",
           "description": "Read the job description, check eligibility, and see which documents are required."
         },
         "3": {
-          "title": "Submit Application",
+          "title": "3. Submit Application",
           "description": "Create an account, upload your documents, and submit your application."
         },
         "4": {
-          "title": "Track Status",
+          "title": "4. Track Status",
           "description": "Stay updated. Get notified via mail when your application is reviewed, new job postings available or saved postings deleted."
         }
       },

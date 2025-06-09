@@ -16,19 +16,19 @@
       "headline": "Ihre Bewerbung in 4 Schritten",
       "steps": {
         "1": {
-          "title": "Offene Stellen finden",
+          "title": "1. Offene Stellen finden",
           "description": "Nutzen Sie Filter, um passende Stellen in verschiedenen Forschungsgruppen zu finden."
         },
         "2": {
-          "title": "Details prüfen",
+          "title": "2. Details prüfen",
           "description": "Lesen Sie die Stellenbeschreibung, prüfen Sie die Voraussetzungen und sehen Sie, welche Dokumente benötigt werden."
         },
         "3": {
-          "title": "Bewerbung einreichen",
+          "title": "3. Bewerbung einreichen",
           "description": "Erstellen Sie ein Konto, laden Sie Ihre Dokumente hoch und reichen Sie Ihre Bewerbung ein."
         },
         "4": {
-          "title": "Status verfolgen",
+          "title": "4. Status verfolgen",
           "description": "Bleiben Sie informiert. Sie erhalten Benachrichtigungen, wenn Ihre Bewerbung geprüft wurde, neue Stellen verfügbar sind oder gespeicherte Stellen entfernt werden."
         }
       },
