@@ -13,7 +13,7 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
     loadComponent: () => import('./shared/pages/landing-page/landing-page.component').then(m => m.LandingPageComponent),
-    title: 'landingpage.title',
+    title: 'landingPage.title',
   },
   {
     path: '',
