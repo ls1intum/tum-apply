@@ -1,0 +1,68 @@
+.voice-card {
+  display: flex;
+  width: 18rem;
+  padding: 2rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.25rem;
+  border-radius: 1.25rem;
+  border: 0.25rem solid var(--p-text-on-primary);
+  background: var(--p-text-on-primary);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  align-self: stretch;
+
+  img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1 0 0;
+
+    .name {
+      align-self: stretch;
+      color: var(--p-text-primary);
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.25rem;
+    }
+
+    .field {
+      align-self: stretch;
+      color: var(--p-text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.25rem;
+    }
+  }
+}
+
+.quote-container {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  align-self: stretch;
+
+  .divider {
+    width: 0.2rem;
+    background-color: var(--p-accent-color);
+    align-self: stretch;
+  }
+
+  .quote {
+    flex: 1 0 0;
+    color: var(--p-text-secondary);
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    font-style: italic;
+  }
+}
