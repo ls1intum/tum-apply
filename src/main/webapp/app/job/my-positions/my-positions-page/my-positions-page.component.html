@@ -12,7 +12,11 @@
   </div>
 
   <ng-template #actionTemplate>
-    <jhi-button label="View" severity="primary" />
+    <div class="flex space-x-2">
+      <jhi-button label="View" severity="primary" />
+      <jhi-button label="Edit" severity="primary" variant="outlined" />
+      <jhi-button label="Delete" severity="danger" />
+    </div>
   </ng-template>
 
   <ng-template #stateTemplate let-job>

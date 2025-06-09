@@ -9,13 +9,13 @@ import { TagComponent } from '../../../shared/components/atoms/tag/tag.component
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
 @Component({
-  selector: 'jhi-created-jobs-dashboard-page',
+  selector: 'jhi-my-positions-page',
   standalone: true,
   imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent],
-  templateUrl: './created-jobs-dashboard-page.component.html',
-  styleUrl: './created-jobs-dashboard-page.component.scss',
+  templateUrl: './my-positions-page.component.html',
+  styleUrl: './my-positions-page.component.scss',
 })
-export class CreatedJobsDashboardPageComponent {
+export class MyPositionsPageComponent {
   jobs = signal<CreatedJobDTO[]>([]);
   totalRecords = signal<number>(0);
   page = signal<number>(0);
@@ -30,11 +30,11 @@ export class CreatedJobsDashboardPageComponent {
     return [
       { field: 'avatar', header: '', width: '5rem' },
       { field: 'professorName', header: 'Supervising Professor', width: '12rem' },
-      { field: 'state', header: 'Status', width: '10rem', alignCenter: true, template: stateTpl },
       { field: 'title', header: 'Job', width: '26rem' },
-      { field: 'startDate', header: 'Start date', type: 'date', width: '10rem' },
-      { field: 'createdAt', header: 'Created at', type: 'date', width: '10rem' },
-      { field: 'lastModifiedAt', header: 'Last modified at', type: 'date', width: '10rem' },
+      { field: 'state', header: 'Status', width: '10rem', alignCenter: true, template: stateTpl },
+      { field: 'startDate', header: 'Start Date', type: 'date', width: '10rem' },
+      { field: 'createdAt', header: 'Created', type: 'date', width: '10rem' },
+      { field: 'lastModifiedAt', header: 'Last Modified', type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });
