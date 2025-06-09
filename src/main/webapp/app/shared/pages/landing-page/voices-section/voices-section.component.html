@@ -2,7 +2,12 @@
   <h2>Voices from the Community</h2>
   <div class="voices-container">
     @for (voice of voices; track voice) {
-      <jhi-voice-card [name]="voice.name" [field]="voice.field" [quote]="voice.quote" [imageSrc]="voice.imageSrc" />
+      <jhi-voice-card
+        [name]="voice.name | translate"
+        [field]="voice.field | translate"
+        [quote]="voice.quote | translate"
+        [imageSrc]="voice.imageSrc"
+      />
     }
   </div>
 </div>

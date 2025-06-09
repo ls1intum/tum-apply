@@ -79,10 +79,22 @@
       "headline": "Frequently Asked Questions",
       "subheadline": "Find quick answers to common queries about TUMApply",
       "questions": {
-        "1": "How do I log in to TUMApply?",
-        "2": "Can I apply for multiple Doctorate positions at once?",
-        "3": "What documents are required?",
-        "4": "How do I know my application status?"
+        "login": {
+          "title": "How do I log in to TUMApply?",
+          "content": "You can log in using your TUM credentials, or alternatively via Microsoft or Google Single Sign-On."
+        },
+        "multipleApplications": {
+          "title": "Can I apply for multiple Doctoral positions at once?",
+          "content": "Yes, you can apply to multiple positions. Each application is handled individually by the respective supervisors."
+        },
+        "documents": {
+          "title": "What documents are required?",
+          "content": "You typically need a CV, transcripts, motivation letter, and degree certificates. Additional documents may be requested depending on the position."
+        },
+        "status": {
+          "title": "How do I know my application status?",
+          "content": "You will be notified by email once the status of your application changes. You can also track the status on your TUMApply dashboard."
+        }
       }
     }
   }

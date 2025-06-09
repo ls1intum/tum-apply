@@ -79,10 +79,22 @@
       "headline": "Häufig gestellte Fragen",
       "subheadline": "Hier finden Sie schnelle Antworten zu TUMApply",
       "questions": {
-        "1": "Wie melde ich mich bei TUMApply an?",
-        "2": "Kann ich mich gleichzeitig auf mehrere Promotionsstellen bewerben?",
-        "3": "Welche Dokumente werden benötigt?",
-        "4": "Wie erfahre ich den Status meiner Bewerbung?"
+        "login": {
+          "title": "Wie melde ich mich bei TUMApply an?",
+          "content": "Sie können sich mit Ihren TUM-Zugangsdaten oder alternativ über Microsoft oder Google Single Sign-On anmelden."
+        },
+        "multipleApplications": {
+          "title": "Kann ich mich gleichzeitig auf mehrere Promotionsstellen bewerben?",
+          "content": "Ja, Sie können sich auf mehrere Stellen bewerben. Jede Bewerbung wird individuell von den jeweiligen Betreuenden geprüft."
+        },
+        "documents": {
+          "title": "Welche Dokumente werden benötigt?",
+          "content": "In der Regel benötigen Sie einen Lebenslauf, Zeugnisse, ein Motivationsschreiben und Ihre Abschlussurkunden. Weitere Dokumente können je nach Stelle erforderlich sein."
+        },
+        "status": {
+          "title": "Wie erfahre ich den Status meiner Bewerbung?",
+          "content": "Sie werden per E-Mail benachrichtigt, sobald sich der Status Ihrer Bewerbung ändert. Den Status können Sie auch im TUMApply-Dashboard verfolgen."
+        }
       }
     }
   }
