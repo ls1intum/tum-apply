@@ -1,1 +1,8 @@
-<p>voices-section works!</p>
+<div class="voices-section">
+  <h2>Voices from the Community</h2>
+  <div class="voices-container">
+    @for (voice of voices; track voice) {
+      <jhi-voice-card [name]="voice.name" [field]="voice.field" [quote]="voice.quote" [imageSrc]="voice.imageSrc" />
+    }
+  </div>
+</div>
