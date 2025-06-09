@@ -13,9 +13,9 @@ import { ButtonComponent } from '../../../components/atoms/button/button.compone
 })
 export class HeroSectionComponent {
   images = [
-    '/content/images/landing-page-hero-section-1.jpg',
-    '/content/images/landing-page-hero-section-2.jpg',
-    '/content/images/landing-page-hero-section-3.jpg',
+    '/content/images/landing-page/landing-page-hero-section-1.png',
+    '/content/images/landing-page/landing-page-hero-section-2.png',
+    '/content/images/landing-page/landing-page-hero-section-3.png',
   ];
 
   getBackgroundClass(image: string): string {
