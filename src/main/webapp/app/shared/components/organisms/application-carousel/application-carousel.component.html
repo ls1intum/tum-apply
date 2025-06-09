@@ -1,8 +1,6 @@
 <div class="carousel">
   <!-- ◄ navigation -->
-  <button class="nav nav-left" aria-label="Previous" (click)="prev()" [disabled]="currentIndex() === 0">
-    <fa-icon [icon]="['fas', 'chevron-left']" />
-  </button>
+  <jhi-button class="nav nav-left" aria-label="Previous" icon="chevron-left" (click)="prev()" [disabled]="currentIndex() === 0" />
 
   <!-- cards (1 or 3) -->
   <div class="cards">
@@ -10,13 +8,17 @@
       @if (app) {
         <jhi-application-card [application]="app" [disabled]="isDisabled(i)" />
       } @else {
-        <div class="card-placeholder"></div>
+        <jhi-application-card [application]="app" [placeholder]="true" />
       }
     }
   </div>
 
   <!-- ► navigation -->
-  <button class="nav nav-right" aria-label="Next" (click)="next()" [disabled]="currentIndex() === totalCount() - 1">
-    <fa-icon [icon]="['fas', 'chevron-right']" />
-  </button>
+  <jhi-button
+    class="nav nav-right"
+    aria-label="Next"
+    icon="chevron-right"
+    (click)="next()"
+    [disabled]="currentIndex() === totalCount() - 1"
+  />
 </div>

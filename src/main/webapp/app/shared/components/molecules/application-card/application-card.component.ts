@@ -15,6 +15,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 })
 export class ApplicationCardComponent {
   disabled = input<boolean>(false);
+  placeholder = input<boolean>(false);
   application = input<ApplicationEvaluationOverviewDTO | null>(null);
 
   readonly isDisabled = computed(
