@@ -84,13 +84,10 @@ const routes: Routes = [
     loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
   },
   {
-    path: 'created-jobs-dashboard',
+    path: 'my-positions',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
-    loadComponent: () =>
-      import('./job/created-jobs-dashboard/created-jobs-dashboard-page/created-jobs-dashboard-page.component').then(
-        m => m.CreatedJobsDashboardPageComponent,
-      ),
+    loadComponent: () => import('./job/my-positions/my-positions-page/my-positions-page.component').then(m => m.MyPositionsPageComponent),
   },
 
   // ======================================================================================
