@@ -1,1 +1,15 @@
-<p>application-steps-section works!</p>
+<div class="application-steps-section">
+  <h2>{{ 'landingPage.applicationSteps.headline' | translate }}</h2>
+  <div class="application-steps">
+    <div class="steps">
+      @for (step of steps; track step.title; let i = $index) {
+        <jhi-application-step
+          [icon]="step.icon"
+          [title]="i + 1 + '. ' + (step.title | translate)"
+          [description]="step.description | translate"
+        />
+      }
+    </div>
+    <jhi-button label="{{ 'landingPage.applicationSteps.button' | translate }}" severity="primary" variant="outlined" />
+  </div>
+</div>
