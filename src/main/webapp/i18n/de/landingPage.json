@@ -34,15 +34,15 @@
       },
       "button": "Prozess ansehen"
     },
-    "whyTum": {
+    "informationSection": {
       "headline": "Warum die Technische Universität München wählen?",
       "tiles": {
-        "1": "International Office",
+        "1": "Exzellenz",
         "2": "Veranstaltungen",
-        "3": "Women-In-Science Netzwerk",
-        "4": "International Office",
-        "5": "Finanzierungsangebote",
-        "6": "Vielfalt der Community"
+        "3": "Women of TUM",
+        "4": "Internationalität",
+        "5": "Finanzierung",
+        "6": "Diversität"
       }
     },
     "voices": {

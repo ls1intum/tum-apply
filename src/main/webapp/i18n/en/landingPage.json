@@ -34,15 +34,15 @@
       },
       "button": "View Process"
     },
-    "whyTum": {
+    "informationSection": {
       "headline": "Why choose the Technical University of Munich?",
       "tiles": {
-        "1": "International Office",
+        "1": "Excellence",
         "2": "Events",
-        "3": "Women-In-Science Network",
-        "4": "International Office",
-        "5": "Access to funding",
-        "6": "Community Diversity"
+        "3": "Women of TUM",
+        "4": "Internationality",
+        "5": "Funding",
+        "6": "Diversity"
       }
     },
     "voices": {
