@@ -1,1 +1,10 @@
-<p>faq-section works!</p>
+<p-accordion [value]="0">
+  @for (tab of tabs; track tab.value) {
+    <p-accordion-panel [value]="tab.value">
+      <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
+      <p-accordion-content>
+        <p class="m-0">{{ tab.content | translate }}</p>
+      </p-accordion-content>
+    </p-accordion-panel>
+  }
+</p-accordion>
