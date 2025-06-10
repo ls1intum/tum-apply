@@ -81,7 +81,7 @@
       "questions": {
         "login": {
           "title": "Wie melde ich mich bei TUMApply an?",
-          "content": "Sie können sich mit Ihren TUM-Zugangsdaten oder alternativ über Microsoft oder Google Single Sign-On anmelden."
+          "content": "Sie können sich mit Ihren TUM-Zugangsdaten oder alternativ über Microsoft, Google oder Apple Single Sign-On anmelden."
         },
         "multipleApplications": {
           "title": "Kann ich mich gleichzeitig auf mehrere Promotionsstellen bewerben?",
@@ -89,11 +89,11 @@
         },
         "documents": {
           "title": "Welche Dokumente werden benötigt?",
-          "content": "In der Regel benötigen Sie einen Lebenslauf, Zeugnisse, ein Motivationsschreiben und Ihre Abschlussurkunden. Weitere Dokumente können je nach Stelle erforderlich sein."
+          "content": "In der Regel benötigen Sie einen Lebenslauf, Zeugnisse und Ihre Abschlussurkunden. Weitere Dokumente können je nach Stelle erforderlich sein."
         },
         "status": {
           "title": "Wie erfahre ich den Status meiner Bewerbung?",
-          "content": "Sie werden per E-Mail benachrichtigt, sobald sich der Status Ihrer Bewerbung ändert. Den Status können Sie auch im TUMApply-Dashboard verfolgen."
+          "content": "Sie werden per E-Mail benachrichtigt, sobald sich der Status Ihrer Bewerbung ändert. Den Status können Sie auch im TUMApply-Dashboard verfolgen, sofern Sie einen Account erstellt haben."
         }
       }
     }

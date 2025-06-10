@@ -81,7 +81,7 @@
       "questions": {
         "login": {
           "title": "How do I log in to TUMApply?",
-          "content": "You can log in using your TUM credentials, or alternatively via Microsoft or Google Single Sign-On."
+          "content": "You can log in using your TUM credentials, or alternatively via Microsoft, Google or Apple Single Sign-On."
         },
         "multipleApplications": {
           "title": "Can I apply for multiple Doctoral positions at once?",
@@ -89,11 +89,11 @@
         },
         "documents": {
           "title": "What documents are required?",
-          "content": "You typically need a CV, transcripts, motivation letter, and degree certificates. Additional documents may be requested depending on the position."
+          "content": "You typically need a CV, transcripts, and degree certificates. Additional documents may be requested depending on the position."
         },
         "status": {
           "title": "How do I know my application status?",
-          "content": "You will be notified by email once the status of your application changes. You can also track the status on your TUMApply dashboard."
+          "content": "You will be notified by email once the status of your application changes. You can also track the status on your TUMApply dashboard, if you created an account."
         }
       }
     }
