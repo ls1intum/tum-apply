@@ -1,4 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  MissingTranslationHandler,
+  TranslateCompiler,
+  TranslateLoader,
+  TranslateModule,
+  TranslateParser,
+  TranslateService,
+  TranslateStore,
+} from '@ngx-translate/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { FaqSectionComponent } from './faq-section.component';
 
@@ -8,7 +18,19 @@ describe('FaqSectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FaqSectionComponent],
+      imports: [FaqSectionComponent, TranslateModule.forRoot()],
+      providers: [
+        TranslateStore,
+        TranslateLoader,
+        TranslateCompiler,
+        TranslateParser,
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        TranslateService,
+        provideAnimations(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FaqSectionComponent);
