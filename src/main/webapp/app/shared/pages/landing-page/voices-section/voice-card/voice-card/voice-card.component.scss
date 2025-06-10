@@ -31,7 +31,7 @@
 
     .name {
       align-self: stretch;
-      color: var(--p-text-primary);
+      color: var(--p-base-black);
       font-size: 1.1rem;
       font-weight: 600;
       line-height: 1.25rem;
@@ -39,7 +39,7 @@
 
     .field {
       align-self: stretch;
-      color: var(--p-text-secondary);
+      color: var(--p-base-black);
       font-size: 0.9rem;
       line-height: 1.25rem;
     }
@@ -60,7 +60,7 @@
 
   .quote {
     flex: 1 0 0;
-    color: var(--p-text-secondary);
+    color: var(--p-base-black);
     font-size: 1.25rem;
     line-height: 1.5rem;
     font-style: italic;
