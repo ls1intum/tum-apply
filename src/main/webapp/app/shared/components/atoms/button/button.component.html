@@ -4,9 +4,9 @@
     [disabled]="disabled()"
     [label]="label()"
     [raised]="numberOfFavorites() !== undefined"
-    [rounded]="label() === undefined"
     [severity]="severity()"
     [variant]="variant()"
+    [styleClass]="label() === undefined ? 'rounded-full w-14 h-14' : ''"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
