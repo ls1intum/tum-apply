@@ -222,7 +222,7 @@ dependencies {
 
   implementation "org.springframework.boot:spring-boot-starter-cache"
   implementation "com.github.ben-manes.caffeine:caffeine:3.2.0"
-  implementation "com.github.ben-manes.caffeine:jcache:3.2.0"
+  implementation "com.github.ben-manes.caffeine:jcache:3.2.1"
   implementation "javax.cache:cache-api"
   implementation "org.hibernate.orm:hibernate-jcache"
 
