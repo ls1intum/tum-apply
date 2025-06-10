@@ -12,14 +12,9 @@ import { ButtonComponent } from '../../../components/atoms/button/button.compone
   styleUrl: './hero-section.component.scss',
 })
 export class HeroSectionComponent {
-  images = [
-    '/content/images/landing-page/landing-page-hero-section-1.png',
-    '/content/images/landing-page/landing-page-hero-section-2.png',
-    '/content/images/landing-page/landing-page-hero-section-3.png',
-  ];
+  images = ['landing-page-hero-section-1', 'landing-page-hero-section-2', 'landing-page-hero-section-3'];
 
   getBackgroundClass(image: string): string {
-    const fileName = image.split('/').pop()?.split('.')[0];
-    return `hero-background-${fileName}`;
+    return `hero-background-${image}`;
   }
 }
