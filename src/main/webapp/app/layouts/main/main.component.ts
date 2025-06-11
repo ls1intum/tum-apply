@@ -18,14 +18,15 @@ import { HeaderComponent } from '../../shared/components/organisms/header/header
   imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
+  readonly accountService = inject(AccountService);
+  loggedIn = computed(() => {
+    return this.accountService.signedIn();
+  });
   currentUrl = signal(inject(Router).url);
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
-  private readonly accountService = inject(AccountService);
-  loggedIn = computed(() => {
-    return this.accountService.signedIn();
-  });
+
   private readonly translateService = inject(TranslateService);
   private readonly rootRenderer = inject(RendererFactory2);
 
