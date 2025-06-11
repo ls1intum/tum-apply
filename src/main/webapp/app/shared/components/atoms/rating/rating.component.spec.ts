@@ -103,28 +103,28 @@ describe('RatingComponent', () => {
   it('getAriaParams should return correct translation keys', () => {
     fixture.componentRef.setInput('rating', null);
     fixture.detectChanges();
-    expect(component.getAriaParams()).toBe('evaluation.noRating');
+    expect(component.ariaParams()).toBe('evaluation.noRating');
 
     fixture.componentRef.setInput('rating', 1);
     fixture.detectChanges();
-    expect(component.getAriaParams()).toBe('evaluation.ratingToolTip');
+    expect(component.ariaParams()).toBe('evaluation.ratingToolTip');
   });
 
   it('getLabelKey should return correct label key based on rating value', () => {
     fixture.componentRef.setInput('rating', -1);
     fixture.detectChanges();
-    expect(component.getLabelKey()).toBe('evaluation.negative');
+    expect(component.labelKey()).toBe('evaluation.negative');
 
     fixture.componentRef.setInput('rating', 0);
     fixture.detectChanges();
-    expect(component.getLabelKey()).toBe('evaluation.neutral');
+    expect(component.labelKey()).toBe('evaluation.neutral');
 
     fixture.componentRef.setInput('rating', 2);
     fixture.detectChanges();
-    expect(component.getLabelKey()).toBe('evaluation.positive');
+    expect(component.labelKey()).toBe('evaluation.positive');
 
     fixture.componentRef.setInput('rating', null);
     fixture.detectChanges();
-    expect(component.getLabelKey()).toBe('');
+    expect(component.labelKey()).toBe('');
   });
 });

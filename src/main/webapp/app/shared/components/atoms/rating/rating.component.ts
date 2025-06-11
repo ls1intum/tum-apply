@@ -15,6 +15,12 @@ export class RatingComponent {
   readonly min = computed(() => -Math.floor(this.likertScale() / 2));
   readonly max = computed(() => Math.floor(this.likertScale() / 2));
 
+  readonly positiveStart = getComputedStyle(document.documentElement).getPropertyValue('--p-success-200').trim();
+  readonly positiveEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-success-700').trim();
+  readonly negativeStart = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-400').trim();
+  readonly negativeEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-danger-700').trim();
+  readonly neutral = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-500').trim();
+
   readonly markerWidthPercent = computed(() => {
     return `${100 / this.likertScale() - 2}%`;
   });
@@ -37,37 +43,29 @@ export class RatingComponent {
     const r = Math.min(Math.max(this.rating() ?? 0, this.min()), this.max());
     const mid = 0;
 
-    const positiveStart = getComputedStyle(document.documentElement).getPropertyValue('--p-success-200').trim();
-    const positiveEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-success-700').trim();
-
-    const negativeStart = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-400').trim();
-    const negativeEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-danger-700').trim();
-
-    const neutral = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-500').trim();
-
     if (r < mid) {
       const negSteps = mid - this.min();
       const depth = (mid - r) / negSteps;
-      return this.lerpColor(negativeStart, negativeEnd, depth);
+      return this.lerpColor(this.negativeStart, this.negativeEnd, depth);
     } else if (r > mid) {
       const posSteps = this.max() - mid;
       const depth = (r - mid) / posSteps;
-      return this.lerpColor(positiveStart, positiveEnd, depth);
+      return this.lerpColor(this.positiveStart, this.positiveEnd, depth);
     } else {
-      return neutral;
+      return this.neutral;
     }
   });
 
-  getAriaParams(): string {
+  readonly ariaParams = computed(() => {
     return this.rating() === null ? 'evaluation.noRating' : 'evaluation.ratingToolTip';
-  }
+  });
 
-  getLabelKey(): string {
+  readonly labelKey = computed(() => {
     const value = this.rating();
     if (value === null) return '';
 
     return value > 0 ? 'evaluation.positive' : value < 0 ? 'evaluation.negative' : 'evaluation.neutral';
-  }
+  });
 
   private lerpColor(c1: string, c2: string, t: number): string {
     const parseHex = (hex: string): number[] => {
