@@ -29,9 +29,15 @@ import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { KeycloakService } from './core/auth/keycloak.service';
+import { AccountService } from './core/auth/account.service';
 
-export function initializeKeycloak(keycloakService: KeycloakService) {
-  return () => keycloakService.init();
+export function initializeKeycloak(keycloakService: KeycloakService, accountService: AccountService) {
+  return async () => {
+    const success = await keycloakService.init();
+    if (success) {
+      await accountService.loadUser();
+    }
+  };
 }
 
 export const appConfig: ApplicationConfig = {
@@ -39,7 +45,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       useFactory: initializeKeycloak,
-      deps: [KeycloakService],
+      deps: [KeycloakService, AccountService],
       multi: true,
     },
     provideExperimentalZonelessChangeDetection(),

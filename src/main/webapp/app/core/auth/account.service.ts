@@ -39,7 +39,7 @@ export class AccountService {
     return requiredRoles.some(role => this.loadedUser()?.authorities?.includes(role) ?? false);
   }
 
-  private async loadUser(): Promise<void> {
+  async loadUser(): Promise<void> {
     const isLoggedIn = this.keycloakService.isLoggedIn();
     if (isLoggedIn) {
       const token = this.keycloakService.getToken();
