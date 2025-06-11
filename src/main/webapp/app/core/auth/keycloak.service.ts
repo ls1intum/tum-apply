@@ -60,7 +60,7 @@ export class KeycloakService {
   async login(redirectUri?: string): Promise<void> {
     try {
       await this.keycloak.login({
-        redirectUri: window.location.origin + (redirectUri ?? '/'),
+        redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
       });
     } catch (err) {
       console.error('Login failed:', err);

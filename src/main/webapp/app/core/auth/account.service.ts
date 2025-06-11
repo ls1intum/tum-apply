@@ -1,6 +1,5 @@
-import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { isPlatformServer } from '@angular/common';
 import { UserResourceService } from 'app/generated/api/userResource.service';
 
 import { UserShortDTO } from '../../generated';
@@ -27,23 +26,8 @@ export class AccountService {
   keycloakService = inject(KeycloakService);
   userResourceService = inject(UserResourceService);
 
-  constructor() {
-    void this.onInit();
-  }
-
-  async onInit(): Promise<void> {
-    const isServer = isPlatformServer(inject(PLATFORM_ID));
-    if (isServer) {
-      this.user.set(undefined);
-      this.loaded.set(true);
-      return;
-    }
-
-    await this.loadUser();
-  }
-
-  async signIn(): Promise<void> {
-    await this.keycloakService.login();
+  async signIn(redirectUri?: string): Promise<void> {
+    await this.keycloakService.login(redirectUri);
     await this.loadUser();
   }
 

@@ -27,7 +27,10 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error.status === 401) {
           console.warn('Unauthorized - redirecting to login...');
           const router = this.injector.get(Router);
-          void router.navigate(['/login']);
+          const currentUrl = router.url;
+          void router.navigate(['/login'], {
+            queryParams: { redirect: currentUrl },
+          });
         }
         return throwError(() => error);
       }),
