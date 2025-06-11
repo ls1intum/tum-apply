@@ -76,7 +76,6 @@ export class ApplicationCarouselComponent implements OnInit {
     const ULTRA_WIDE = '(min-width: 1920px)';
 
     this.bp.observe([SMALL, ULTRA_WIDE]).subscribe(result => {
-      console.warn(result);
       if (result.breakpoints[SMALL]) {
         this.cardsVisible.set(1);
       } else if (result.breakpoints[ULTRA_WIDE]) {
