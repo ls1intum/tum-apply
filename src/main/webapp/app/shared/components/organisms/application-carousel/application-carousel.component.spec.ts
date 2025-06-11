@@ -179,13 +179,15 @@ describe('ApplicationCarouselComponent', () => {
     tick();
     tick(0);
 
-    const eventRight = new KeyboardEvent('keydown', { key: 'ArrowRight' });
     component.totalCount.set(7);
-    fixture.debugElement.triggerEventHandler('keydown', eventRight);
+
+    const eventRight = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+    document.dispatchEvent(eventRight);
     expect(component.currentIndex()).toBe(1);
 
     const eventLeft = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
-    fixture.debugElement.triggerEventHandler('keydown', eventLeft);
+    document.dispatchEvent(eventLeft);
+    tick();
     expect(component.currentIndex()).toBe(0);
     flush();
   }));

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, input, signal } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
@@ -72,12 +72,14 @@ export class ApplicationCarouselComponent implements OnInit {
   });
 
   constructor(private readonly bp: BreakpointObserver) {
+    const SMALL = '(max-width: 1024px)';
     const ULTRA_WIDE = '(min-width: 1920px)';
 
-    this.bp.observe([Breakpoints.Handset, ULTRA_WIDE]).subscribe(({ breakpoints }) => {
-      if (breakpoints[Breakpoints.Handset]) {
+    this.bp.observe([SMALL, ULTRA_WIDE]).subscribe(result => {
+      console.warn(result);
+      if (result.breakpoints[SMALL]) {
         this.cardsVisible.set(1);
-      } else if (breakpoints[ULTRA_WIDE]) {
+      } else if (result.breakpoints[ULTRA_WIDE]) {
         this.cardsVisible.set(5);
       } else {
         this.cardsVisible.set(VISIBLE_DESKTOP);
@@ -95,8 +97,8 @@ export class ApplicationCarouselComponent implements OnInit {
   }
 
   // Listen to arrow keys for navigation
-  @HostListener('keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent): void {
+  @HostListener('document:keydown', ['$event'])
+  handleGlobalKeyDown(event: KeyboardEvent): void {
     switch (event.key) {
       case 'ArrowRight':
         event.preventDefault();
