@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inj
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../../generated';
@@ -9,7 +10,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;
-const WINDOW_SIZE = 5;
+const WINDOW_SIZE = 7;
 
 // Interface for pagination
 export interface Page {
@@ -19,7 +20,7 @@ export interface Page {
 
 @Component({
   selector: 'jhi-application-carousel',
-  imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent],
+  imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent, TranslateModule],
   templateUrl: './application-carousel.component.html',
   styleUrls: ['./application-carousel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,21 +67,27 @@ export class ApplicationCarouselComponent implements OnInit {
   });
 
   // Determine if a slot should be disabled (only center is enabled)
-  readonly isDisabled = computed(() => {
-    const middle = Math.floor(this.cardsVisible() / 2);
-    return (slot: number) => slot !== middle;
+  readonly middle = computed(() => {
+    return Math.floor(this.cardsVisible() / 2);
   });
 
   constructor(private readonly bp: BreakpointObserver) {
-    // Update visible card count based on screen size
-    this.bp.observe([Breakpoints.Handset]).subscribe(({ matches }) => {
-      this.cardsVisible.set(matches ? 1 : VISIBLE_DESKTOP);
+    const ULTRA_WIDE = '(min-width: 1920px)';
+
+    this.bp.observe([Breakpoints.Handset, ULTRA_WIDE]).subscribe(({ breakpoints }) => {
+      if (breakpoints[Breakpoints.Handset]) {
+        this.cardsVisible.set(1);
+      } else if (breakpoints[ULTRA_WIDE]) {
+        this.cardsVisible.set(5);
+      } else {
+        this.cardsVisible.set(VISIBLE_DESKTOP);
+      }
     });
   }
 
   ngOnInit(): void {
     if (this.applicationId() !== null) {
-      // TODO: Load and center on a specific application by ID
+      // TODO: Load window centered around given application
     } else {
       // Load initial batch of applications
       void this.loadInitialPage();
