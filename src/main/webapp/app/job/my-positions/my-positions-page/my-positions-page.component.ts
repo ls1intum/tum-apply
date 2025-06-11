@@ -2,6 +2,7 @@ import { Component, TemplateRef, computed, inject, signal, viewChild } from '@an
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { AccountService } from 'app/core/auth/account.service';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -20,6 +21,7 @@ export class MyPositionsPageComponent {
   totalRecords = signal<number>(0);
   page = signal<number>(0);
   pageSize = signal<number>(10);
+  userId = signal<string>('');
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
@@ -54,6 +56,7 @@ export class MyPositionsPageComponent {
   });
 
   private jobService = inject(JobResourceService);
+  private accountService = inject(AccountService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -66,8 +69,11 @@ export class MyPositionsPageComponent {
 
   private async loadJobs(): Promise<void> {
     try {
-      const userId = '00000000-0000-0000-0000-000000000105';
-      const pageData = await firstValueFrom(this.jobService.getJobsByProfessor(userId, this.pageSize(), this.page()));
+      this.userId.set(this.accountService.loadedUser()?.id ?? '');
+      if (this.userId() === '') {
+        return;
+      }
+      const pageData = await firstValueFrom(this.jobService.getJobsByProfessor(this.userId(), this.pageSize(), this.page()));
       this.jobs.set(pageData.content ?? []);
       this.totalRecords.set(pageData.totalElements ?? 0);
     } catch (error) {
