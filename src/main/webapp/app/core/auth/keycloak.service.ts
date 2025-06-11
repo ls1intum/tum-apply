@@ -10,10 +10,12 @@ export interface UserProfile {
   family_name: string;
   token: string;
 }
+
 @Injectable({ providedIn: 'root' })
 export class KeycloakService {
-  _keycloak: Keycloak | undefined;
   profile: UserProfile | undefined;
+
+  _keycloak: Keycloak | undefined;
 
   get keycloak(): Keycloak {
     this._keycloak ??= new Keycloak({
@@ -55,10 +57,10 @@ export class KeycloakService {
   /**
    * Triggers the Keycloak login flow.
    */
-  async login(): Promise<void> {
+  async login(redirectUri?: string): Promise<void> {
     try {
       await this.keycloak.login({
-        redirectUri: window.location.origin + '/',
+        redirectUri: window.location.origin + (redirectUri ?? '/'),
       });
     } catch (err) {
       console.error('Login failed:', err);
@@ -83,34 +85,6 @@ export class KeycloakService {
    */
   getToken(): string | undefined {
     return this.keycloak.token;
-  }
-
-  /**
-   * Returns the current username.
-   */
-  getUsername(): string {
-    return this.keycloak.tokenParsed?.preferred_username ?? '';
-  }
-
-  /**
-   * Returns the current user's first name.
-   */
-  getFirstName(): string {
-    return this.keycloak.tokenParsed?.given_name ?? '';
-  }
-
-  /**
-   * Checks if the user has a specific role.
-   */
-  hasRole(role: string): boolean {
-    return this.keycloak.tokenParsed?.realm_access?.roles.includes(role) ?? false;
-  }
-
-  /**
-   * Returns all realm roles assigned to the user.
-   */
-  getUserRoles(): string[] {
-    return this.keycloak.tokenParsed?.realm_access?.roles ?? [];
   }
 
   /**
