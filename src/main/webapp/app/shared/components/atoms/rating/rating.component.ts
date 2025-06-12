@@ -15,26 +15,34 @@ export class RatingComponent {
   readonly min = computed(() => -Math.floor(this.likertScale() / 2));
   readonly max = computed(() => Math.floor(this.likertScale() / 2));
 
+  // fetching predefined color variables from preset
   readonly positiveStart = getComputedStyle(document.documentElement).getPropertyValue('--p-success-200').trim();
   readonly positiveEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-success-700').trim();
   readonly negativeStart = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-400').trim();
   readonly negativeEnd = getComputedStyle(document.documentElement).getPropertyValue('--p-danger-700').trim();
   readonly neutral = getComputedStyle(document.documentElement).getPropertyValue('--p-warn-500').trim();
 
+  // compute width of inner rating marker | '-2%' is used for padding
   readonly markerWidthPercent = computed(() => {
     return `${100 / this.likertScale() - 2}%`;
   });
 
+  // calculate offset of inner marker relative to the left end of the outer bar
   readonly offsetPercent = computed(() => {
     if (this.rating() === null) {
       return '';
     }
     const norm = ((this.rating() ?? 0) - this.min()) / this.likertScale();
 
+    // Centering adjustment for marker position
     const half = 100 / (2 * this.likertScale());
     return `${norm * 100 + half}%`;
   });
 
+  // Computes the background color based on the rating value:
+  // - negative values use a gradient from negativeStart to negativeEnd
+  // - positive values use a gradient from positiveStart to positiveEnd
+  // - neutral uses a defined neutral color
   readonly backgroundColor = computed(() => {
     if (this.rating() === null) {
       return 'transparent';
@@ -56,10 +64,12 @@ export class RatingComponent {
     }
   });
 
+  // Sets ARIA label translation key for accessibility
   readonly ariaParams = computed(() => {
     return this.rating() === null ? 'evaluation.noRating' : 'evaluation.ratingToolTip';
   });
 
+  // Determines the label key based on rating value (positive/neutral/negative)
   readonly labelKey = computed(() => {
     const value = this.rating();
     if (value === null) return '';
@@ -67,7 +77,10 @@ export class RatingComponent {
     return value > 0 ? 'evaluation.positive' : value < 0 ? 'evaluation.negative' : 'evaluation.neutral';
   });
 
-  // Linearly interpolates between two hex colors based on a given factor `t`
+  /**
+   * Linearly interpolates between two hex color strings (c1 and c2)
+   * using a factor `t` (from 0 to 1), where 0 is all c1 and 1 is all c2.
+   */
   private lerpColor(c1: string, c2: string, t: number): string {
     // Helper function to convert a hex color string to an array of RGB integers
     const parseHex = (hex: string): number[] => {
