@@ -7,13 +7,13 @@
   gap: 1.25rem;
   align-self: stretch;
 
-  h2 {
+  .title {
     font-size: 2rem;
     font-weight: 700;
     color: var(--p-text-primary);
   }
 
-  p {
+  .subtitle {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--p-text-primary);

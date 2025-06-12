@@ -21,14 +21,14 @@
   gap: 2rem;
   max-width: 50rem;
 
-  h2 {
+  .title {
     color: var(--p-text-primary);
     text-align: center;
     font-size: 2.25rem;
     font-weight: 700;
   }
 
-  p {
+  .text {
     color: var(--p-text-primary);
     text-align: justify;
   }

@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import TranslateDirective from '../../../language/translate.directive';
+
 import { VoiceCardComponent } from './voice-card/voice-card/voice-card.component';
 
 @Component({
   selector: 'jhi-voices-section',
   standalone: true,
-  imports: [TranslateModule, VoiceCardComponent],
+  imports: [TranslateModule, VoiceCardComponent, TranslateDirective],
   templateUrl: './voices-section.component.html',
   styleUrl: './voices-section.component.scss',
 })

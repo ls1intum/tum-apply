@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { AccordionModule } from 'primeng/accordion';
 import { TranslateModule } from '@ngx-translate/core';
 
+import TranslateDirective from '../../../language/translate.directive';
+
 @Component({
   selector: 'jhi-faq-section',
   standalone: true,
-  imports: [AccordionModule, TranslateModule],
+  imports: [AccordionModule, TranslateModule, TranslateDirective],
   templateUrl: './faq-section.component.html',
   styleUrl: './faq-section.component.scss',
 })

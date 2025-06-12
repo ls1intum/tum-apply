@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../../components/molecules/button-group/button-group.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-doctoral-journey-section',
-  imports: [CommonModule, TranslateModule, ButtonGroupComponent],
+  imports: [CommonModule, TranslateModule, ButtonGroupComponent, TranslateDirective],
   templateUrl: './doctoral-journey-section.component.html',
   styleUrl: './doctoral-journey-section.component.scss',
 })

@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import TranslateDirective from '../../../language/translate.directive';
+
 import { InformationCardComponent } from './information-card/information-card/information-card.component';
 
 @Component({
   selector: 'jhi-information-section',
-  imports: [InformationCardComponent, TranslateModule],
+  imports: [InformationCardComponent, TranslateModule, TranslateDirective],
   templateUrl: './information-section.component.html',
   styleUrl: './information-section.component.scss',
 })

@@ -1,6 +1,6 @@
 <div class="faq-container">
-  <h2>{{ 'landingPage.faq.headline' | translate }}</h2>
-  <p>{{ 'landingPage.faq.subheadline' | translate }}</p>
+  <h2 class="title" jhiTranslate="landingPage.faq.headline"></h2>
+  <p class="subtitle" jhiTranslate="landingPage.faq.subheadline"></p>
   <p-accordion [value]="0">
     @for (tab of tabs; track tab.value) {
       <p-accordion-panel [value]="tab.value">

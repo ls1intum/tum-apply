@@ -9,7 +9,7 @@
   max-width: 25rem;
   width: 100%;
 
-  h3 {
+  .title {
     color: var(--p-text-primary);
     font-size: 1.5rem;
     font-weight: 600;
@@ -22,7 +22,7 @@
     min-height: calc(1.5rem * 1.2 * 2);
   }
 
-  p {
+  .description {
     color: var(--p-text-primary);
     text-align: center;
     display: -webkit-box;
