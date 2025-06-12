@@ -336,6 +336,15 @@ export const TUMApplyPreset = definePreset(Lara, {
               hoverColor: '{secondary.inverseColor}',
               activeBackground: '{secondary.activeColor}',
             },
+            contrast: {
+              background: '{accent.color}',
+              color: '{accent.inverseColor}',
+              hoverBackground: '{accent.hoverColor}',
+              hoverColor: '{accent.inverseColor}',
+              borderColor: '{accent.color}',
+              hoverBorderColor: '{accent.hoverColor}',
+              activeBackground: '{accent.activeColor}',
+            },
             success: {
               background: '{success.color}',
               color: '{success.inverseColor}',
@@ -515,6 +524,15 @@ export const TUMApplyPreset = definePreset(Lara, {
               hoverBackground: '{secondary.hoverColor}',
               hoverColor: '{secondary.inverseColor}',
               activeBackground: '{secondary.activeColor}',
+            },
+            contrast: {
+              background: '{accent.color}',
+              color: '{accent.inverseColor}',
+              hoverBackground: '{accent.hoverColor}',
+              hoverColor: '{accent.inverseColor}',
+              borderColor: '{accent.color}',
+              hoverBorderColor: '{accent.hoverColor}',
+              activeBackground: '{accent.activeColor}',
             },
             success: {
               background: '{success.color}',

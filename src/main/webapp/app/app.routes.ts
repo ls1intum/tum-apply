@@ -12,8 +12,8 @@ const routes: Routes = [
     path: '',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
-    loadComponent: () => import('./home/home.component'),
-    title: 'home.title',
+    loadComponent: () => import('./shared/pages/landing-page/landing-page.component').then(m => m.LandingPageComponent),
+    title: 'landingPage.title',
   },
   {
     path: '',
