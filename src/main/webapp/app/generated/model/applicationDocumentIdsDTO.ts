@@ -10,9 +10,9 @@
 
 
 export interface ApplicationDocumentIdsDTO { 
-    bachelorDocumentIds?: Set<string>;
-    masterDocumentIds?: Set<string>;
-    referenceDocumentIds?: Set<string>;
+    bachelorDocumentIds?: Array<string>;
+    masterDocumentIds?: Array<string>;
+    referenceDocumentIds?: Array<string>;
     cvDocumentId?: string;
 }
 

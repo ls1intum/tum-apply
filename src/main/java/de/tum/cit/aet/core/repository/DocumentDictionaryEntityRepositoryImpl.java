@@ -10,9 +10,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -37,9 +36,9 @@ public class DocumentDictionaryEntityRepositoryImpl implements DocumentDictionar
         List<DocumentDictionary> results = entityManager.createQuery(query).getResultList();
 
         ApplicationDocumentIdsDTO dto = new ApplicationDocumentIdsDTO();
-        Set<UUID> bachelorIds = new HashSet<>();
-        Set<UUID> masterIds = new HashSet<>();
-        Set<UUID> referenceIds = new HashSet<>();
+        List<UUID> bachelorIds = new ArrayList<>();
+        List<UUID> masterIds = new ArrayList<>();
+        List<UUID> referenceIds = new ArrayList<>();
 
         for (DocumentDictionary dd : results) {
             if (dd.getDocument() == null) continue;

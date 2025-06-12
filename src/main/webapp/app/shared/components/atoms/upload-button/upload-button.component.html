@@ -4,16 +4,16 @@
   (dragover)="onDragOver($event)"
   (dragleave)="onDragLeave($event)"
   (drop)="onDrop($event)"
-  [class]="{ 'drag-over': isDragOver(), 'background-disabled': this.documentIds() }"
-  [disabled]="this.documentIds()"
+  [class]="{ 'drag-over': isDragOver(), 'background-disabled': disabled() }"
+  [disabled]="disabled()"
 >
-  <input type="file" (change)="onFileSelected($event)" accept="application/pdf" hidden #fileInput />
-  @if (this.documentIds(); as documentIds) {
-    <p class="font-bold mt-1 mb-1 text-color">{{ documentIds.length }} Uploaded Document(s) for {{ documentType() }}</p>
+  <input type="file" (change)="onFileSelected($event)" accept="application/pdf" multiple hidden #fileInput />
+  @if (disabled()) {
+    <p class="font-bold mt-1 mb-1 text-color">{{ documentIds()?.length }} Uploaded Document(s) for {{ documentType() }}</p>
   } @else {
     <p class="font-bold mt-1 mb-1 text-color">{{ uploadText() }}</p>
   }
-  @if (this.documentIds(); as documentIds) {
+  @if (disabled()) {
     <div class="flex w-full justify-center">
       <span class="flex border items-center justify-center rounded-full border-success size-20">
         <fa-icon [icon]="['fas', 'check']" class="background-success" size="xl" />
@@ -25,7 +25,8 @@
         <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
       </span>
     </div>
-    <p class="mt-1 mb-1 text-sm text-color">Click or drag and drop files to here to upload.</p>
+    <p class="mt-1 text-sm text-color">Click or drag and drop files to here to upload.</p>
+    <p class="mt-1 mb-1 text-xs text-color">Max upload size: 1MB</p>
   }
   @if (isUploading()) {
     <div>Upload Progress: {{ uploadProgress() }}%</div>

@@ -61,6 +61,8 @@ export default class ApplicationCreationPage2Component {
   data = model.required<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
+  documentIdsBachelorTranscript = input<string[] | undefined>(undefined);
+  documentIdsMasterTranscript = input<string[] | undefined>(undefined);
 
   valid = output<boolean>();
   fb = inject(FormBuilder);

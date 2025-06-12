@@ -1,14 +1,14 @@
 package de.tum.cit.aet.application.domain.dto;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import lombok.Data;
 
 @Data
 public class ApplicationDocumentIdsDTO {
 
-    private Set<UUID> bachelorDocumentIds;
-    private Set<UUID> masterDocumentIds;
-    private Set<UUID> referenceDocumentIds;
+    private List<UUID> bachelorDocumentIds;
+    private List<UUID> masterDocumentIds;
+    private List<UUID> referenceDocumentIds;
     private UUID cvDocumentId;
 }

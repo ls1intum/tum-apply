@@ -36,6 +36,15 @@ export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
+  documentIdsCv = input<string | undefined>(undefined);
+  computedDocumentIdsCvSet = computed<string[] | undefined>(() => {
+    const documentIdsCv = this.documentIdsCv();
+    if (documentIdsCv) {
+      return [documentIdsCv];
+    }
+    return undefined;
+  });
+  documentIdsReferences = input<string[] | undefined>(undefined);
 
   valid = output<boolean>();
   fb = inject(FormBuilder);

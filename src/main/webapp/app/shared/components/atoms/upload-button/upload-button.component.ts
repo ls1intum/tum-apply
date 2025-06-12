@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   Injector,
+  computed,
   effect,
   inject,
   input,
@@ -15,7 +16,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApplicationResourceService } from 'app/generated';
 import { HttpEventType, HttpUploadProgressEvent } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, filter, map } from 'rxjs/operators';
+import { catchError, filter, map, share } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 const DocumentType = {
@@ -36,7 +37,9 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
   standalone: true,
 })
 export class UploadButtonComponent {
-  private injector = inject(Injector); // Inject the context
+  private injector = inject(Injector);
+
+  readonly maxUploadSizeInMb = 1;
 
   fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
@@ -44,7 +47,7 @@ export class UploadButtonComponent {
   documentType = input.required<DocumentType>();
   applicationId = input.required<string>();
 
-  documentIds = model<string[]>();
+  documentIds = model<string[] | undefined>();
 
   selectedFile = signal<File[] | undefined>(undefined);
   uploadProgress = signal<number>(0);
@@ -52,6 +55,11 @@ export class UploadButtonComponent {
   isDragOver = signal(false);
 
   valid = output<boolean>();
+
+  disabled = computed<boolean>(() => {
+    const documentIds = this.documentIds();
+    return documentIds !== undefined && documentIds.length !== 0;
+  });
 
   applicationService = inject(ApplicationResourceService);
 
@@ -68,8 +76,15 @@ export class UploadButtonComponent {
     const files = this.selectedFile();
     if (!files) return;
 
+    let totalSize = 0;
+    files.forEach(f => (totalSize += f.size));
+    if (totalSize > this.maxUploadSizeInMb * 1000 * 1000) {
+      alert('The total size of the file(s) being uploaded is too large. Upload aborted.');
+      return;
+    }
+
     this.isUploading.set(true);
-    const upload$ = this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true);
+    const upload$ = this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true).pipe(share());
 
     runInInjectionContext(this.injector, () => {
       const progress$ = upload$.pipe(

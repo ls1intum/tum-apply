@@ -1,7 +1,13 @@
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule } from '@angular/common';
-import { ApplicationResourceService, CreateApplicationDTO, JobResourceService, UpdateApplicationDTO } from 'app/generated';
+import {
+  ApplicationDocumentIdsDTO,
+  ApplicationResourceService,
+  CreateApplicationDTO,
+  JobResourceService,
+  UpdateApplicationDTO,
+} from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -214,6 +220,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
+
   title = signal<string>('');
 
   jobId = signal<string>('');
@@ -226,6 +233,8 @@ export default class ApplicationCreationFormComponent {
   page3Valid = signal<boolean>(false);
 
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
+
+  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
 
   private applicationResourceService = inject(ApplicationResourceService);
   private jobResourceService = inject(JobResourceService);
@@ -267,6 +276,13 @@ export default class ApplicationCreationFormComponent {
       this.page1.set(getPage1FromApplication(application));
       this.page2.set(getPage2FromApplication(application));
       this.page3.set(getPage3FromApplication(application));
+
+      firstValueFrom(this.applicationResourceService.getDocumentId(applicationId))
+        .then(ids => {
+          this.documentIds.set(ids);
+          console.log(ids);
+        })
+        .catch(() => alert('Error: fetching the document ids for this application'));
     } else {
       alert('Error: this is no valid application page link');
     }
