@@ -328,7 +328,7 @@ export default class ApplicationCreationFormComponent {
         return;
       }
       const updateApplication: UpdateApplicationDTO = {
-        applicationId: applicationId,
+        applicationId,
         applicant: {
           user: {
             birthday: this.page1().dateOfBirth,

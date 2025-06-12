@@ -1,7 +1,7 @@
 package de.tum.cit.aet.application.web;
 
-import de.tum.cit.aet.TumApplyApp;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
@@ -11,10 +11,8 @@ import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
@@ -193,10 +191,8 @@ public class ApplicationResource {
      * authenticated applicant.
      * <p>
      * This endpoint supports multipart file uploads and routes the uploaded files
-     * to the appropriate
-     * document handling service based on the {@code documentType}. The operation is
-     * restricted to users
-     * with the {@code ROLE_APPLICANT} authority.
+     * to the appropriate document handling service based on the {@code documentType}. The operation is
+     * restricted to users with the {@code ROLE_APPLICANT} authority.
      * </p>
      *
      * <p>
@@ -221,8 +217,7 @@ public class ApplicationResource {
      *                      logic
      * @param files         a list of files submitted in the multipart request
      * @return a 200 OK response if the documents were successfully processed
-     * @throws NotImplementedException if the given {@code documentType} is not
-     *                                 implemented
+     * @throws NotImplementedException if the given {@code documentType} is not implemented
      *
      * @see org.springframework.web.multipart.MultipartFile
      * @see io.swagger.v3.oas.annotations.parameters.RequestBody
@@ -238,14 +233,14 @@ public class ApplicationResource {
         )
     )
     @PreAuthorize("hasRole('APPLICANT')")
-    @PostMapping("/{applicationId}/{documentType}/test-documents")
-    public ResponseEntity<Void> uploadDocuments(
+    @PostMapping("/upload-documents/{applicationId}/{documentType}")
+    public ResponseEntity<Set<UUID>> uploadDocuments(
         @PathVariable UUID applicationId,
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        LOG.error(auth.getDetails().toString());
+        LOG.error(auth.getDetails().getClass().getName());
 
         // simulate current user
         User user = new User();
@@ -266,11 +261,18 @@ public class ApplicationResource {
                 break;
             case CV:
                 applicationService.uploadCV(files.getFirst(), application, user);
-                break; // TODO
+                break; // TODO only one file allowed
             default:
                 throw new NotImplementedException(String.format("The type %s is not yet implemented", documentType.name()));
         }
 
-        return ResponseEntity.ok().build();
+        Set<UUID> documentIdsOfUploadedDocuments = applicationService.getDocumentIdsOfApplicationAndType(application, documentType);
+
+        return ResponseEntity.ok(documentIdsOfUploadedDocuments);
+    }
+
+    @GetMapping("/getDocumentIds/{applicationId}")
+    public ResponseEntity<ApplicationDocumentIdsDTO> getDocumentId(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.getDocumentIdsOfApplication(applicationId));
     }
 }

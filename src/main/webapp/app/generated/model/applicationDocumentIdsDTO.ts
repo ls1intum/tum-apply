@@ -9,9 +9,10 @@
  */
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface ApplicationDocumentIdsDTO { 
+    bachelorDocumentIds?: Set<string>;
+    masterDocumentIds?: Set<string>;
+    referenceDocumentIds?: Set<string>;
+    cvDocumentId?: string;
 }
 

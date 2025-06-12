@@ -157,7 +157,7 @@
         }
       }
     },
-    "/api/applications/{applicationId}/{documentType}/test-documents": {
+    "/api/applications/upload-documents/{applicationId}/{documentType}": {
       "post": {
         "tags": [
           "application-resource"
@@ -201,7 +201,19 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
           }
         }
       }
@@ -593,6 +605,37 @@
                     "$ref": "#/components/schemas/ApplicationForApplicantDTO"
                   },
                   "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/getDocumentIds/{applicationId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getDocumentId",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDocumentIdsDTO"
                 }
               }
             }
@@ -1222,6 +1265,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1238,12 +1287,6 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -1267,18 +1310,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "paged": {
+          "unpaged": {
             "type": "boolean"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "unpaged": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paged": {
             "type": "boolean"
           }
         }
@@ -1289,10 +1332,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -1307,6 +1350,12 @@
           "totalPages": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1324,12 +1373,6 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -1421,6 +1464,39 @@
           },
           "timeSinceCreation": {
             "type": "string"
+          }
+        }
+      },
+      "ApplicationDocumentIdsDTO": {
+        "type": "object",
+        "properties": {
+          "bachelorDocumentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "masterDocumentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "referenceDocumentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "cvDocumentId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       }

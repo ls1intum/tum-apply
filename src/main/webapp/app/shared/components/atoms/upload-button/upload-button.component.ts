@@ -1,9 +1,22 @@
-import { Component, effect, ElementRef, inject, Injector, input, output, runInInjectionContext, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+  runInInjectionContext,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApplicationResourceService } from 'app/generated';
 import { HttpEventType, HttpUploadProgressEvent } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { filter, map } from 'rxjs/operators';
+import { catchError, filter, map } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 const DocumentType = {
   BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
@@ -27,15 +40,16 @@ export class UploadButtonComponent {
 
   fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
-  selectedFile = signal<File[] | undefined>(undefined);
-  uploadProgress = signal<number>(0);
-  isUploading = signal<boolean>(false);
-  uploadResponse = signal<any>(undefined);
-  isDragOver = signal(false);
-
   uploadText = input<string>('Please upload');
   documentType = input.required<DocumentType>();
   applicationId = input.required<string>();
+
+  documentIds = model<string[]>();
+
+  selectedFile = signal<File[] | undefined>(undefined);
+  uploadProgress = signal<number>(0);
+  isUploading = signal<boolean>(false);
+  isDragOver = signal(false);
 
   valid = output<boolean>();
 
@@ -77,15 +91,20 @@ export class UploadButtonComponent {
       const response$ = upload$.pipe(
         filter(event => event.type === HttpEventType.Response),
         map(event => event.body),
+        catchError(err => {
+          this.isUploading.set(false);
+          console.error('Upload failed:', err);
+          alert('Upload failed. Please try again later');
+          return of(null);
+        }),
       );
 
-      const uploadResponseSignal = toSignal(response$);
+      const uploadResponseSignal = toSignal(response$, { initialValue: null });
       effect(() => {
         const response = uploadResponseSignal();
-        console.log('here');
         if (response) {
           this.isUploading.set(false);
-          this.uploadResponse.set(response);
+          this.documentIds.set([...response]);
         }
       });
     });
