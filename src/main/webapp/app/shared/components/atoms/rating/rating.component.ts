@@ -2,6 +2,16 @@ import { Component, computed, input } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
+/**
+ * A visual rating bar component for displaying Likert-style ratings.
+ *
+ * Displays a colored marker on a horizontal scale, where both the position and color
+ * reflect the given rating value.
+ *
+ * The marker's width and color are calculated dynamically based on the selected scale
+ * (e.g., 5-point Likert, 7-point Likert) and the provided rating.
+ *   -> The color is calculated using a dynamic gradient
+ */
 @Component({
   selector: 'jhi-rating',
   imports: [NgStyle, TranslateModule],
@@ -10,7 +20,7 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class RatingComponent {
   rating = input<number | null>(null);
-  likertScale = input<number>(5); // Likert 5 scale as default
+  likertScale = input<number>(5); // Likert-5 scale as default
 
   readonly min = computed(() => -Math.floor(this.likertScale() / 2));
   readonly max = computed(() => Math.floor(this.likertScale() / 2));
