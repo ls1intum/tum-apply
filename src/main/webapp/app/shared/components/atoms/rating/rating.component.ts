@@ -67,17 +67,23 @@ export class RatingComponent {
     return value > 0 ? 'evaluation.positive' : value < 0 ? 'evaluation.negative' : 'evaluation.neutral';
   });
 
+  // Linearly interpolates between two hex colors based on a given factor `t`
   private lerpColor(c1: string, c2: string, t: number): string {
+    // Helper function to convert a hex color string to an array of RGB integers
     const parseHex = (hex: string): number[] => {
       const parts = hex.replace(/^#/, '').match(/.{2}/g);
       if (!parts || parts.length !== 3) return [0, 0, 0];
       return parts.map(h => parseInt(h, 16));
     };
 
+    // Parse RGB values from the two input hex colors
     const [r1, g1, b1] = parseHex(c1.slice(1));
     const [r2, g2, b2] = parseHex(c2.slice(1));
+
+    // Linear interpolation function between two values a and b
     const mix = (a: number, b: number): number => Math.round(a + (b - a) * t);
 
+    // Interpolate RGB values and convert back to a padded hex string
     return `#${[mix(r1, r2), mix(g1, g2), mix(b1, b2)].map(v => v.toString(16).padStart(2, '0')).join('')}`;
   }
 }
