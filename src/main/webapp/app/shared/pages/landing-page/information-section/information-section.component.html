@@ -1,0 +1,8 @@
+<div class="information-section">
+  <h2 class="title" jhiTranslate="landingPage.informationSection.headline"></h2>
+  <div class="tiles-container">
+    @for (card of cards; track card) {
+      <jhi-information-card [imageSrc]="card.imageSrc" [text]="card.text | translate" [link]="card.link" />
+    }
+  </div>
+</div>
