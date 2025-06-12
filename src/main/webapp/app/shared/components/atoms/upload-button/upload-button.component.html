@@ -1,7 +1,12 @@
-<!-- [disabled]="true" -->
-<!-- [disabled]="!selectedFile()" -->
-<button class="border border-neutral flex flex-col justify-center rounded-md p-2 w-full" (click)="uploadFile()">
-  <input type="file" (change)="onFileSelected($event)" />
+<button
+  class="border border-neutral flex flex-col justify-center rounded-md p-2 w-full"
+  (click)="triggerFileInput()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  [class]="{ 'drag-over': isDragOver() }"
+>
+  <input type="file" (change)="onFileSelected($event)" hidden #fileInput />
   <p class="font-bold mt-1 mb-1">{{ uploadText() }}</p>
   <div class="flex w-full justify-center">
     <span class="flex border items-center justify-center rounded-full border-primary size-20">

@@ -1,8 +1,19 @@
-import { HttpEventType } from '@angular/common/http';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, Injector, input, output, runInInjectionContext, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApplicationResourceService } from 'app/generated';
+import { HttpEventType, HttpUploadProgressEvent } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
+
+const DocumentType = {
+  BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
+  MASTER_TRANSCRIPT: 'MASTER_TRANSCRIPT',
+  REFERENCE: 'REFERENCE',
+  CV: 'CV',
+  CUSTOM: 'CUSTOM',
+} as const;
+
+type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
@@ -12,61 +23,100 @@ import { toSignal } from '@angular/core/rxjs-interop';
   standalone: true,
 })
 export class UploadButtonComponent {
-  uploadText = input<string>('Please upload');
+  private injector = inject(Injector); // Inject the context
 
-  selectedFile = signal<File | undefined>(undefined);
+  fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
+
+  selectedFile = signal<File[] | undefined>(undefined);
   uploadProgress = signal<number>(0);
   isUploading = signal<boolean>(false);
-  uploadResponse = signal<any>(undefined); // Could also define a proper type
+  uploadResponse = signal<any>(undefined);
+  isDragOver = signal(false);
 
-  applicationId = input<string>('d6c49666-2392-4184-ba12-2a0074b2d138'); // TODO
+  uploadText = input<string>('Please upload');
+  documentType = input.required<DocumentType>();
+  applicationId = input.required<string>();
 
   valid = output<boolean>();
 
   applicationService = inject(ApplicationResourceService);
-  // constructor(private fileUploadService: FileUploadService) {}
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile.set(input.files[0]); //TODO
+      const fileList: File[] = Array.from(input.files);
+      this.selectedFile.set(fileList);
     }
+    this.uploadFile();
   }
 
   uploadFile() {
-    const file = this.selectedFile();
-    if (!file) return;
+    const files = this.selectedFile();
+    if (!files) return;
 
     this.isUploading.set(true);
-    const upload$ = this.applicationService.uploadDocuments(this.applicationId(), 'BACHELOR_TRANSCRIPT', [file]);
+    const upload$ = this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true);
 
-    // const uploadSignal = toSignal(upload$, {
-    //   initialValue: { type: 'start' },
-    // });
+    runInInjectionContext(this.injector, () => {
+      const progress$ = upload$.pipe(
+        filter((event): event is HttpUploadProgressEvent => event.type === HttpEventType.UploadProgress),
+        map(event => {
+          if (event.total) {
+            return Math.round((event.loaded / event.total) * 100);
+          }
+          return 0;
+        }),
+      );
 
-    // effect(() => {
-    //   const event: any = uploadSignal();
+      const uploadProgressSignal = toSignal(progress$, { initialValue: 0 });
 
-    //   if (event.type === HttpEventType.UploadProgress && event.total) {
-    //     const progress = Math.round((100 * event.loaded) / event.total);
-    //     this.uploadProgress.set(progress);
-    //   }
+      effect(() => {
+        this.uploadProgress.set(uploadProgressSignal());
+      });
 
-    //   if (event.type === HttpEventType.Response) {
-    //     this.uploadResponse.set(event.body);
-    //     this.isUploading.set(false);
-    //   }
-    // });
+      const response$ = upload$.pipe(
+        filter(event => event.type === HttpEventType.Response),
+        map(event => event.body),
+      );
+
+      const uploadResponseSignal = toSignal(response$);
+      effect(() => {
+        const response = uploadResponseSignal();
+        console.log('here');
+        if (response) {
+          this.isUploading.set(false);
+          this.uploadResponse.set(response);
+        }
+      });
+    });
   }
 
-  // upload(file: File): Observable<HttpEvent<any>> {
-  //   const formData = new FormData();
-  //   formData.append('file', file);
+  triggerFileInput(): void {
+    this.fileInputRef()?.nativeElement.click();
+  }
 
-  //   const req = new HttpRequest('POST', this.uploadUrl, formData, {
-  //     reportProgress: true,
-  //   });
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver.set(true);
+  }
 
-  //   return this.http.request(req);
-  // }
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver.set(false);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver.set(false);
+
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      const files: File[] = Array.from(event.dataTransfer.files);
+      this.selectedFile.set(files);
+      this.uploadFile();
+      event.dataTransfer.clearData();
+    }
+  }
 }

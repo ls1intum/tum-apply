@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -34,6 +34,8 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
 })
 export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
+
+  applicationIdForDocuments = input<string | undefined>(undefined);
 
   valid = output<boolean>();
   fb = inject(FormBuilder);

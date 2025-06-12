@@ -5,14 +5,16 @@
       <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
     </div>
     <p-divider layout="horizontal">Uploads</p-divider>
-    <div class="flex mb-4">
-      <div class="w-1/2 mr-1">
-        <jhi-upload-button uploadText="Please upload your CV" />
+    @if (applicationIdForDocuments(); as applicationId) {
+      <div class="flex mb-4">
+        <div class="w-1/2 mr-1">
+          <jhi-upload-button uploadText="Please upload your CV" documentType="CV" [applicationId]="applicationId" />
+        </div>
+        <div class="w-1/2 ml-1">
+          <jhi-upload-button uploadText="Please upload your References" documentType="REFERENCE" [applicationId]="applicationId" />
+        </div>
       </div>
-      <div class="w-1/2 ml-1">
-        <jhi-upload-button uploadText="Please upload your References" />
-      </div>
-    </div>
+    }
     <div class="form-row">
       <label class="pb-4">What is your motivation to take this position?<span class="text-red-600">*</span></label>
       <p-floatlabel>

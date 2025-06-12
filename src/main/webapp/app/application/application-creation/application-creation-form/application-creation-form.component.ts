@@ -216,8 +216,8 @@ export default class ApplicationCreationFormComponent {
   });
   title = signal<string>('');
 
-  jobId = '';
-  applicationId?: string;
+  jobId = signal<string>('');
+  applicationId = signal<string | undefined>(undefined);
 
   mode: ApplicationFormMode = 'create';
 
@@ -244,9 +244,9 @@ export default class ApplicationCreationFormComponent {
       if (jobId === null) {
         alert('Error: this is no valid jobId');
       } else {
-        this.jobId = jobId;
+        this.jobId.set(jobId);
       }
-      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId));
+      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId()));
 
       if (job.title !== undefined && job.title.trim().length > 0) {
         this.title.set(job.title);
@@ -259,11 +259,11 @@ export default class ApplicationCreationFormComponent {
         return;
       }
       const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
-      this.jobId = application.job.jobId;
+      this.jobId.set(application.job.jobId);
       if (application.job.title !== undefined && application.job.title.trim().length > 0) {
         this.title.set(application.job.title);
       }
-      this.applicationId = application.applicationId;
+      this.applicationId.set(application.applicationId);
       this.page1.set(getPage1FromApplication(application));
       this.page2.set(getPage2FromApplication(application));
       this.page3.set(getPage3FromApplication(application));
@@ -303,7 +303,7 @@ export default class ApplicationCreationFormComponent {
           bachelorUniversity: this.page2().bachelorDegreeUniversity,
           masterUniversity: this.page2().masterDegreeUniversity,
         },
-        jobId: this.jobId,
+        jobId: this.jobId(),
         applicationState: state,
         desiredDate: this.page3().desiredStartDate,
         motivation: this.page3().motivation,
@@ -322,12 +322,13 @@ export default class ApplicationCreationFormComponent {
         },
       });
     } else {
-      if (this.applicationId === undefined) {
+      const applicationId = this.applicationId();
+      if (applicationId === undefined) {
         alert('There is an error with the applicationId');
         return;
       }
       const updateApplication: UpdateApplicationDTO = {
-        applicationId: this.applicationId,
+        applicationId: applicationId,
         applicant: {
           user: {
             birthday: this.page1().dateOfBirth,
@@ -381,9 +382,10 @@ export default class ApplicationCreationFormComponent {
       return;
     }
     const router = this.router;
-    if (this.applicationId !== undefined && this.applicationId.trim().length !== 0) {
+    const applicationId = this.applicationId();
+    if (applicationId !== undefined && applicationId.trim().length !== 0) {
       try {
-        await firstValueFrom(this.applicationResourceService.deleteApplication(this.applicationId));
+        await firstValueFrom(this.applicationResourceService.deleteApplication(applicationId));
         alert('Application sucessfully deleted');
         router.navigate(['/']);
       } catch (err) {

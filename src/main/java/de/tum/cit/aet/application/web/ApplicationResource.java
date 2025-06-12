@@ -10,6 +10,11 @@ import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +23,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -48,7 +54,8 @@ public class ApplicationResource {
 
     /**
      * @param createApplicationDTO The data necessary to create an Application
-     * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if the createApplicationDTO is invalid
+     * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
+     *         the createApplicationDTO is invalid
      */
     @PostMapping
     public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
@@ -97,7 +104,8 @@ public class ApplicationResource {
 
     /**
      * @param applicantId the UUID of the applicant
-     * @return Set of ApplicationForApplicantDTOm where the applicant has the applicantId as UUID
+     * @return Set of ApplicationForApplicantDTOm where the applicant has the
+     *         applicantId as UUID
      */
     @GetMapping("/applicant/{applicantId}")
     public ResponseEntity<Set<ApplicationForApplicantDTO>> getAllApplicationsOfApplicant(@PathVariable UUID applicantId) {
@@ -108,7 +116,8 @@ public class ApplicationResource {
 
     /**
      * @param jobId the UUID of the Job
-     * @return Set of ApplicationForApplicantDTOs where the job has the jobId as UUID
+     * @return Set of ApplicationForApplicantDTOs where the job has the jobId as
+     *         UUID
      */
     @GetMapping("/job/{jobId}")
     public ResponseEntity<Set<ApplicationForApplicantDTO>> getAllApplicationsOfJob(@PathVariable UUID jobId) {
@@ -121,7 +130,8 @@ public class ApplicationResource {
      * Withdraws a specific application.
      *
      * @param applicationId
-     * @return the withdrawn ApplicationForApplicantDTO, or 404 Not Found if not found
+     * @return the withdrawn ApplicationForApplicantDTO, or 404 Not Found if not
+     *         found
      */
     @PutMapping("/withdraw/{applicationId}")
     public ResponseEntity<Void> withdrawApplication(@PathVariable UUID applicationId) {
@@ -135,44 +145,98 @@ public class ApplicationResource {
         @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
         @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
     ) {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); //temporary for testing purposes
+        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+        // purposes
         return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
     }
 
     @GetMapping("/pages/length")
     public ResponseEntity<Long> getApplicationPagesLength() {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); //temporary for testing purposes
+        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+        // purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
     }
 
-    //TODO this is only for testing and can be removed
+    // TODO this is only for testing and can be removed
     /**
      * Test endpoint for uploading multiple documents related to an application.
      * <p>
      * <b>Note:</b> This endpoint is for testing purposes only and will be removed.
-     * File uploads should be integrated into {@code createApplication()} and {@code updateApplication()}.
+     * File uploads should be integrated into {@code createApplication()} and
+     * {@code updateApplication()}.
      * </p>
      *
-     * @param applicationId the ID of the application to associate the uploaded documents with
-     * @param files the list of documents to be uploaded as {@link MultipartFile}s
+     * @param applicationId the ID of the application to associate the uploaded
+     *                      documents with
+     * @param files         the list of documents to be uploaded as
+     *                      {@link MultipartFile}s
      * @return {@link ResponseEntity} with HTTP 200 OK if the upload succeeds
      */
     @Hidden
     @PostMapping("/{applicationId}/test-documents")
     public ResponseEntity<Void> testUploadDocuments(@PathVariable UUID applicationId, @RequestParam("files") List<MultipartFile> files) {
-        //simulate current user
+        // simulate current user
         User user = new User();
         user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
 
         Application application = new Application();
         application.setApplicationId(UUID.fromString(applicationId.toString()));
 
-        //applicationService.uploadBachelorTranscripts(files, application, user);
+        // applicationService.uploadBachelorTranscripts(files, application, user);
         applicationService.uploadMasterTranscripts(files, application, user);
 
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Handles the upload of various document types for a specific application by an
+     * authenticated applicant.
+     * <p>
+     * This endpoint supports multipart file uploads and routes the uploaded files
+     * to the appropriate
+     * document handling service based on the {@code documentType}. The operation is
+     * restricted to users
+     * with the {@code ROLE_APPLICANT} authority.
+     * </p>
+     *
+     * <p>
+     * <strong>Supported document types:</strong>
+     * </p>
+     * <ul>
+     * <li>{@code BACHELOR_TRANSCRIPT} – Uploads bachelor transcripts</li>
+     * <li>{@code MASTER_TRANSCRIPT} – Uploads master transcripts</li>
+     * <li>{@code REFERENCE} – Uploads reference documents</li>
+     * <li>{@code CV} – Uploads a single CV document (only the first file is
+     * used)</li>
+     * </ul>
+     *
+     * <p>
+     * If a document type is not supported, the method throws a
+     * {@link NotImplementedException}.
+     * </p>
+     *
+     * @param applicationId the UUID of the application to which the documents are
+     *                      associated
+     * @param documentType  the type of document being uploaded; determines routing
+     *                      logic
+     * @param files         a list of files submitted in the multipart request
+     * @return a 200 OK response if the documents were successfully processed
+     * @throws NotImplementedException if the given {@code documentType} is not
+     *                                 implemented
+     *
+     * @see org.springframework.web.multipart.MultipartFile
+     * @see io.swagger.v3.oas.annotations.parameters.RequestBody
+     * @see org.springframework.security.access.prepost.PreAuthorize
+     */
+    @Operation(
+        summary = "Upload documents",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(
+                mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                schema = @Schema(implementation = MultipartUploadRequest.class)
+            )
+        )
+    )
     @PreAuthorize("hasRole('APPLICANT')")
     @PostMapping("/{applicationId}/{documentType}/test-documents")
     public ResponseEntity<Void> uploadDocuments(
@@ -181,16 +245,15 @@ public class ApplicationResource {
         @RequestParam("files") List<MultipartFile> files
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        LOG.error(auth.toString());
+        LOG.error(auth.getDetails().toString());
 
-        //simulate current user
+        // simulate current user
         User user = new User();
         user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
 
         Application application = new Application();
         application.setApplicationId(UUID.fromString(applicationId.toString()));
 
-        //applicationService.uploadBachelorTranscripts(files, application, user);
         switch (documentType) {
             case BACHELOR_TRANSCRIPT:
                 applicationService.uploadBachelorTranscripts(files, application, user);
@@ -207,7 +270,6 @@ public class ApplicationResource {
             default:
                 throw new NotImplementedException(String.format("The type %s is not yet implemented", documentType.name()));
         }
-        // applicationService.uploadMasterTranscripts(files, application, user);
 
         return ResponseEntity.ok().build();
     }
