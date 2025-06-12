@@ -1,0 +1,41 @@
+.doctoral-journey-section {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding: 2rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-container img {
+  max-width: 32rem;
+  border-radius: 1.25rem;
+}
+
+.text-container {
+  display: flex;
+  padding: 2.5rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  max-width: 50rem;
+
+  .title {
+    color: var(--p-text-primary);
+    text-align: center;
+    font-size: 2.25rem;
+    font-weight: 700;
+  }
+
+  .text {
+    color: var(--p-text-primary);
+    text-align: justify;
+  }
+}
+
+.button-group {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
