@@ -15,16 +15,11 @@ export interface UserProfile {
 export class KeycloakService {
   profile: UserProfile | undefined;
 
-  _keycloak: Keycloak | undefined;
-
-  get keycloak(): Keycloak {
-    this._keycloak ??= new Keycloak({
-      url: environment.keycloak.url,
-      realm: environment.keycloak.realm,
-      clientId: environment.keycloak.clientId,
-    });
-    return this._keycloak;
-  }
+  private readonly keycloak = new Keycloak({
+    url: environment.keycloak.url,
+    realm: environment.keycloak.realm,
+    clientId: environment.keycloak.clientId,
+  });
 
   /**
    * Initializes the Keycloak client and determines login status.
