@@ -2,6 +2,7 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -10,10 +11,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/evaluation")
@@ -40,5 +38,17 @@ public class ApplicationEvaluationResource {
         researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
         return ResponseEntity.ok(applicationEvaluationService.getAllApplications(researchGroup, pageDTO, sortDto));
+    }
+
+    @GetMapping("/application/details")
+    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationDetails(
+        @RequestParam(required = false) UUID applicationId,
+        @RequestParam(required = false) Integer windowSize,
+        @ParameterObject @ModelAttribute SortDTO sortDto
+    ) {
+        ResearchGroup researchGroup = new ResearchGroup();
+        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+
+        return ResponseEntity.ok(applicationEvaluationService.getAllApplicationDetails(applicationId, windowSize, researchGroup, sortDto));
     }
 }
