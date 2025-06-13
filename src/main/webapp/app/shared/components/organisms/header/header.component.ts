@@ -6,8 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { map } from 'rxjs';
-import { fromEventPattern } from 'rxjs';
+import { fromEventPattern, map } from 'rxjs';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 
@@ -44,11 +43,17 @@ export class HeaderComponent {
   }
 
   navigateToLogin(): void {
-    void this.router.navigate(['/login']);
+    const currentUrl = this.router.url;
+    void this.router.navigate(['/login'], {
+      queryParams: { redirect: currentUrl },
+    });
   }
 
   navigateToRegister(): void {
-    void this.router.navigate(['/register']);
+    const currentUrl = this.router.url;
+    void this.router.navigate(['/register'], {
+      queryParams: { redirect: currentUrl },
+    });
   }
 
   logout(): void {

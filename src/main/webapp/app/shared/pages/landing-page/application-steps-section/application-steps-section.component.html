@@ -1,0 +1,11 @@
+<div class="application-steps-section">
+  <h2 class="title" jhiTranslate="landingPage.applicationSteps.headline"></h2>
+  <div class="application-steps">
+    <div class="steps">
+      @for (step of steps; track step.title) {
+        <jhi-application-step [icon]="step.icon" [title]="step.title | translate" [description]="step.description | translate" />
+      }
+    </div>
+    <jhi-button label="{{ 'landingPage.applicationSteps.button' | translate }}" severity="primary" variant="outlined" />
+  </div>
+</div>

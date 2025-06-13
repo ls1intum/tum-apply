@@ -69,7 +69,6 @@ describe('HeaderComponent', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      anonymous: false,
       bearer: 'token',
     });
     fixture.detectChanges();
@@ -82,7 +81,6 @@ describe('HeaderComponent', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      anonymous: false,
       bearer: 'token',
     });
     fixture.detectChanges();

@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonModule } from 'primeng/button';
 
-export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warn' | 'danger' | 'info';
+export type ButtonColor = 'primary' | 'secondary' | 'contrast' | 'success' | 'warn' | 'danger' | 'info';
 
 export type ButtonVariant = 'outlined' | 'text';
 
