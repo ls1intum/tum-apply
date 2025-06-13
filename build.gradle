@@ -159,13 +159,13 @@ openApiGenerate {
   invokerPackage = "invoker"
   validateSpec.set(false)
   typeMappings = [
-    "Set": "Array"
+    "set": "Array"
   ]
   configOptions = [
     serviceSuffix: "Service",
     supportsES6  : "true",
     npmName      : "@tumapply/api-client",
-    npmVersion   : "${project.version}"
+    npmVersion   : "${project.version}",
   ]
 }
 

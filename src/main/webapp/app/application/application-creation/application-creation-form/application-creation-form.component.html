@@ -10,8 +10,8 @@
       [(data)]="page2"
       (valid)="onPage2ValidityChanged($event)"
       [applicationIdForDocuments]="applicationId()"
-      [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentIds"
-      [documentIdsMasterTranscript]="documentIds()?.masterDocumentIds"
+      [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
+      [documentIdsMasterTranscript]="documentIds()?.masterDocumentDictionaryIds"
     />
   </div>
 </ng-template>
@@ -22,8 +22,8 @@
       [(data)]="page3"
       (valid)="onPage3ValidityChanged($event)"
       [applicationIdForDocuments]="applicationId()"
-      [documentIdsReferences]="documentIds()?.referenceDocumentIds"
-      [documentIdsCv]="documentIds()?.cvDocumentId"
+      [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
+      [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
     />
   </div>
 </ng-template>
