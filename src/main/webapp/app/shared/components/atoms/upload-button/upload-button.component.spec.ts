@@ -6,7 +6,7 @@ import { ApplicationResourceService } from 'app/generated';
 import { UploadButtonComponent } from './upload-button.component';
 
 class MockApplicationResourceService {
-  uploadDocuments(appId: string, docType: string, files: File[], observe: string, reportProgress: boolean) {
+  uploadDocuments(_appId: string, _docType: string, _files: File[], _observe: string, _reportProgress: boolean) {
     // Simulate an observable HTTP stream of events
     return of({ type: HttpEventType.UploadProgress, loaded: 50, total: 100 }, {
       type: HttpEventType.Response,
