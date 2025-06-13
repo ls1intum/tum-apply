@@ -1,5 +1,4 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentResourceService } from 'app/generated';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
