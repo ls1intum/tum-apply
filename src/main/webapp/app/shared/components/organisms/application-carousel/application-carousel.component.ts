@@ -18,6 +18,20 @@ export interface Page {
   limit: number;
 }
 
+/**
+ * ApplicationCarouselComponent
+ *
+ * This component displays a horizontal carousel of  applications,
+ * allowing reviewers to navigate through applications
+ *
+ * The component handles:
+ * - Lazy loading of applications from the backend.
+ * - Maintaining a sliding window of applications with fixed size.
+ * - Centering logic for focused/active application.
+ * - Responsiveness by adapting the number of visible applications
+ * - Keyboard accessibility and visual cues.
+ *
+ */
 @Component({
   selector: 'jhi-application-carousel',
   imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent, TranslateModule],
@@ -46,6 +60,7 @@ export class ApplicationCarouselComponent implements OnInit {
   applications = signal<ApplicationEvaluationOverviewDTO[]>([]);
   cardsVisible = signal(VISIBLE_DESKTOP); // Number of visible cards (responsive)
 
+  // Half of the window size — used for centering logic
   half = Math.floor(WINDOW_SIZE / 2); // Half the window size, used for centering
 
   // Compute the list of applications to display (always fills visible slots with null)
@@ -66,7 +81,7 @@ export class ApplicationCarouselComponent implements OnInit {
     return result;
   });
 
-  // Determine if a slot should be disabled (only center is enabled)
+  // Index of the center card, used to determine which card is active/focused
   readonly middle = computed(() => {
     return Math.floor(this.cardsVisible() / 2);
   });
@@ -75,6 +90,7 @@ export class ApplicationCarouselComponent implements OnInit {
     const SMALL = '(max-width: 1024px)';
     const ULTRA_WIDE = '(min-width: 1920px)';
 
+    // Set card visibility count responsively based on screen size
     this.bp.observe([SMALL, ULTRA_WIDE]).subscribe(result => {
       if (result.breakpoints[SMALL]) {
         this.cardsVisible.set(1);
@@ -142,7 +158,10 @@ export class ApplicationCarouselComponent implements OnInit {
     }
   }
 
-  // Load a page of applications from server
+  /**
+   * Loads a page of applications from backend.
+   * Also updates total count of applications.
+   */
   private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationOverviewDTO[] | null> {
     try {
       const res = await firstValueFrom(this.evaluationService.getApplications(offset, limit, this.sortBy(), this.sortDirection()));
@@ -157,7 +176,10 @@ export class ApplicationCarouselComponent implements OnInit {
     }
   }
 
-  // Load next application and append to the right
+  /**
+   * Loads the next application and appends it to the right side of the current window.
+   * Adjusts window to keep the size fixed (WINDOW_SIZE).
+   */
   private async loadNext(i: number): Promise<void> {
     const newEntry = await this.loadPage(i, 1);
     if (newEntry) {
@@ -171,7 +193,10 @@ export class ApplicationCarouselComponent implements OnInit {
     }
   }
 
-  // Load previous application and prepend to the left
+  /**
+   * Loads the previous application and prepends it to the left side of the window.
+   * Adjusts window to keep the size fixed (WINDOW_SIZE).
+   */
   private async loadPrev(i: number): Promise<void> {
     const newEntry = await this.loadPage(i, 1);
     if (newEntry) {
@@ -184,7 +209,10 @@ export class ApplicationCarouselComponent implements OnInit {
     }
   }
 
-  // Load the first page of applications on init
+  /**
+   * Loads the initial window of applications when component initializes.
+   * Uses half of the window size to center the first item.
+   */
   private async loadInitialPage(): Promise<void> {
     const data = await this.loadPage(0, this.half + 1);
     if (data) {
@@ -192,7 +220,11 @@ export class ApplicationCarouselComponent implements OnInit {
     }
   }
 
-  // Realign the current application window when it shifts out of sync
+  /**
+   * Trims or shifts the application window when the internal index drifts
+   * outside the center (e.g. after multiple navigations).
+   * Ensures the centered item is properly positioned in the middle.
+   */
   private updateApplications(): void {
     const windowIndex = this.windowIndex();
     const apps = this.applications();
