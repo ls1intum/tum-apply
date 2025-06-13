@@ -13,7 +13,7 @@
       "SENT": "Ungelesen",
       "ACCEPTED": "Angenommen",
       "REJECTED": "Abgelehnt",
-      "IN_REVIEW": "In Prüfung"
+      "IN_REVIEW": "In Bearbeitung"
     },
     "noApplicationsFound": "Keine Bewerbungen gefunden."
   }
