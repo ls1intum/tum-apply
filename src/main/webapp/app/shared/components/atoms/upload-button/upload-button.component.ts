@@ -63,9 +63,9 @@ export class UploadButtonComponent {
   private injector = inject(Injector);
 
   onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const fileList: File[] = Array.from(input.files);
+    const fileInput = event.target as HTMLInputElement;
+    if (fileInput.files && fileInput.files.length > 0) {
+      const fileList: File[] = Array.from(fileInput.files);
       this.selectedFile.set(fileList);
     }
     this.uploadFile();
