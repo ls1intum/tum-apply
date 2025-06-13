@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { DocumentViewerComponent } from './document-viewer.component';
 import { DocumentResourceService } from 'app/generated';
 import { of } from 'rxjs';
+
+import { DocumentViewerComponent } from './document-viewer.component';
 
 class MockDocumentResourceService {
   downloadDocument = jest.fn().mockReturnValue(of({}));
@@ -29,6 +29,7 @@ describe('DocumentViewerComponent', () => {
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput('documentDictionaryId', 'test-id');
     expect(component).toBeTruthy();
   });
 });
