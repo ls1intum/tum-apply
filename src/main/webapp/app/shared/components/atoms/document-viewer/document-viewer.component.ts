@@ -12,13 +12,13 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 })
 export class DocumentViewerComponent {
   private documentService = inject(DocumentResourceService);
-  documentId = input.required<string>();
+  documentDictionaryId = input.required<string>();
 
   pdfSrc = signal<Blob | null>(null);
 
   constructor() {
     effect(() => {
-      this.documentService.downloadDocument(this.documentId()).subscribe(
+      this.documentService.downloadDocument(this.documentDictionaryId()).subscribe(
         blob => {
           this.pdfSrc.set(blob);
         },
