@@ -1257,13 +1257,13 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           },
           "first": {
             "type": "boolean"
@@ -1310,9 +1310,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "paged": {
-            "type": "boolean"
-          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
@@ -1320,6 +1317,9 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "paged": {
+            "type": "boolean"
           },
           "unpaged": {
             "type": "boolean"
@@ -1332,10 +1332,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
@@ -1343,13 +1343,13 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           },
           "first": {
             "type": "boolean"
@@ -1470,28 +1470,31 @@
       "ApplicationDocumentIdsDTO": {
         "type": "object",
         "properties": {
-          "bachelorDocumentIds": {
+          "bachelorDocumentDictionaryIds": {
             "type": "array",
             "items": {
               "type": "string",
               "format": "uuid"
-            }
+            },
+            "uniqueItems": true
           },
-          "masterDocumentIds": {
+          "masterDocumentDictionaryIds": {
             "type": "array",
             "items": {
               "type": "string",
               "format": "uuid"
-            }
+            },
+            "uniqueItems": true
           },
-          "referenceDocumentIds": {
+          "referenceDocumentDictionaryIds": {
             "type": "array",
             "items": {
               "type": "string",
               "format": "uuid"
-            }
+            },
+            "uniqueItems": true
           },
-          "cvDocumentId": {
+          "cvDocumentDictionaryId": {
             "type": "string",
             "format": "uuid"
           }

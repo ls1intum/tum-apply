@@ -18,14 +18,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.NotImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicationResource {
 
     private final ApplicationService applicationService;
-
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationResource.class);
 
     @Autowired
     public ApplicationResource(ApplicationService applicationService) {
@@ -239,8 +233,7 @@ public class ApplicationResource {
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        LOG.error(auth.getDetails().getClass().getName());
+        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         // simulate current user
         User user = new User();

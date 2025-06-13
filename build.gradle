@@ -158,6 +158,9 @@ openApiGenerate {
   modelPackage = "model"
   invokerPackage = "invoker"
   validateSpec.set(false)
+  typeMappings = [
+    "Set": "Array"
+  ]
   configOptions = [
     serviceSuffix: "Service",
     supportsES6  : "true",
