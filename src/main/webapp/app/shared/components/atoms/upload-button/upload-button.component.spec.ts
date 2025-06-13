@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { of } from 'rxjs';
 import { ApplicationResourceService } from 'app/generated';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faCheck, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 import { UploadButtonComponent } from './upload-button.component';
 
@@ -25,6 +27,10 @@ describe('StringInputComponent', () => {
       providers: [{ provide: ApplicationResourceService, useClass: MockApplicationResourceService }],
     }).compileComponents();
 
+    const library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faCloudArrowUp);
+    library.addIcons(faCheck);
+
     fixture = TestBed.createComponent(UploadButtonComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('applicationId', 'test-app-id');
@@ -40,7 +46,7 @@ describe('StringInputComponent', () => {
     const component = fixture.componentInstance;
     const fakeFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
 
-    spyOn(component, 'uploadFile');
+    jest.spyOn(component, 'uploadFile');
     const event = { target: { files: [fakeFile] } } as unknown as Event;
 
     component.onFileSelected(event);
@@ -67,8 +73,8 @@ describe('StringInputComponent', () => {
     const largeFile = new File([new ArrayBuffer(2 * 1024 * 1024)], 'large.pdf'); // 2MB
     component.selectedFile.set([largeFile]);
 
-    spyOn(window, 'alert');
-    const spy = spyOn(component['applicationService'], 'uploadDocuments');
+    jest.spyOn(window, 'alert');
+    const spy = jest.spyOn(component['applicationService'], 'uploadDocuments');
 
     component.uploadFile();
 
