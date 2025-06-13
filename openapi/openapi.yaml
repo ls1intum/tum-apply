@@ -617,7 +617,7 @@
         "tags": [
           "application-resource"
         ],
-        "operationId": "getDocumentId",
+        "operationId": "getDocumentDictionaryIds",
         "parameters": [
           {
             "name": "applicationId",
@@ -1257,13 +1257,13 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
@@ -1310,6 +1310,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
@@ -1317,12 +1323,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "paged": {
-            "type": "boolean"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
@@ -1332,10 +1332,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -1343,13 +1343,13 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"

@@ -339,7 +339,7 @@ public class ApplicationService {
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
-    public ApplicationDocumentIdsDTO getDocumentIdsOfApplication(UUID applicationId) {
+    public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }

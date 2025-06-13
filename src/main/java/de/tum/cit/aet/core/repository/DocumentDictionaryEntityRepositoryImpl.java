@@ -44,7 +44,7 @@ public class DocumentDictionaryEntityRepositoryImpl implements DocumentDictionar
         for (DocumentDictionary dd : results) {
             if (dd.getDocument() == null) continue;
 
-            UUID docId = dd.getDocument().getDocumentId();
+            UUID docId = dd.getDocumentDictionaryId();
             switch (dd.getDocumentType()) {
                 case BACHELOR_TRANSCRIPT -> bachelorIds.add(docId);
                 case MASTER_TRANSCRIPT -> masterIds.add(docId);

@@ -181,41 +181,27 @@ public class ApplicationResource {
     }
 
     /**
-     * Handles the upload of various document types for a specific application by an
-     * authenticated applicant.
+     * Uploads documents for a specific application by an authenticated applicant.
      * <p>
-     * This endpoint supports multipart file uploads and routes the uploaded files
-     * to the appropriate document handling service based on the {@code documentType}. The operation is
-     * restricted to users with the {@code ROLE_APPLICANT} authority.
+     * Accepts multipart file uploads and routes them based on {@code documentType}.
+     * Only users with {@code ROLE_APPLICANT} are allowed.
      * </p>
      *
-     * <p>
-     * <strong>Supported document types:</strong>
-     * </p>
+     * <p><strong>Supported types:</strong></p>
      * <ul>
-     * <li>{@code BACHELOR_TRANSCRIPT} – Uploads bachelor transcripts</li>
-     * <li>{@code MASTER_TRANSCRIPT} – Uploads master transcripts</li>
-     * <li>{@code REFERENCE} – Uploads reference documents</li>
-     * <li>{@code CV} – Uploads a single CV document (only the first file is
-     * used)</li>
+     *   <li>{@code BACHELOR_TRANSCRIPT} – bachelor transcripts</li>
+     *   <li>{@code MASTER_TRANSCRIPT} – master transcripts</li>
+     *   <li>{@code REFERENCE} – reference documents</li>
+     *   <li>{@code CV} – only the first file is used</li>
      * </ul>
      *
-     * <p>
-     * If a document type is not supported, the method throws a
-     * {@link NotImplementedException}.
-     * </p>
+     * <p>Unsupported types throw {@link NotImplementedException}.</p>
      *
-     * @param applicationId the UUID of the application to which the documents are
-     *                      associated
-     * @param documentType  the type of document being uploaded; determines routing
-     *                      logic
-     * @param files         a list of files submitted in the multipart request
-     * @return a 200 OK response if the documents were successfully processed
-     * @throws NotImplementedException if the given {@code documentType} is not implemented
-     *
-     * @see org.springframework.web.multipart.MultipartFile
-     * @see io.swagger.v3.oas.annotations.parameters.RequestBody
-     * @see org.springframework.security.access.prepost.PreAuthorize
+     * @param applicationId UUID of the target application
+     * @param documentType type of document to upload
+     * @param files uploaded multipart files
+     * @return 200 OK if successful
+     * @throws NotImplementedException if the document type is unsupported
      */
     @Operation(
         summary = "Upload documents",
@@ -264,8 +250,15 @@ public class ApplicationResource {
         return ResponseEntity.ok(documentIdsOfUploadedDocuments);
     }
 
+    /**
+     * Retrieves document IDs associated with the given application.
+     *
+     * @param applicationId the UUID of the application
+     * @return the document ID mappings for the application
+     */
     @GetMapping("/getDocumentIds/{applicationId}")
-    public ResponseEntity<ApplicationDocumentIdsDTO> getDocumentId(@PathVariable UUID applicationId) {
-        return ResponseEntity.ok(applicationService.getDocumentIdsOfApplication(applicationId));
+    public ResponseEntity<ApplicationDocumentIdsDTO> getDocumentDictionaryIds(@PathVariable UUID applicationId) {
+        // TODO Authentication
+        return ResponseEntity.ok(applicationService.getDocumentDictionaryIdsOfApplication(applicationId));
     }
 }

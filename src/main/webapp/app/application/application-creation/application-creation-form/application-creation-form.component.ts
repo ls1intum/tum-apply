@@ -277,10 +277,9 @@ export default class ApplicationCreationFormComponent {
       this.page2.set(getPage2FromApplication(application));
       this.page3.set(getPage3FromApplication(application));
 
-      firstValueFrom(this.applicationResourceService.getDocumentId(applicationId))
+      firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
         .then(ids => {
           this.documentIds.set(ids);
-          console.log(ids);
         })
         .catch(() => alert('Error: fetching the document ids for this application'));
     } else {

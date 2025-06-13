@@ -422,12 +422,12 @@ export class ApplicationResourceService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDocumentId(applicationId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationDocumentIdsDTO>;
-    public getDocumentId(applicationId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationDocumentIdsDTO>>;
-    public getDocumentId(applicationId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationDocumentIdsDTO>>;
-    public getDocumentId(applicationId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getDocumentDictionaryIds(applicationId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationDocumentIdsDTO>;
+    public getDocumentDictionaryIds(applicationId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationDocumentIdsDTO>>;
+    public getDocumentDictionaryIds(applicationId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationDocumentIdsDTO>>;
+    public getDocumentDictionaryIds(applicationId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (applicationId === null || applicationId === undefined) {
-            throw new Error('Required parameter applicationId was null or undefined when calling getDocumentId.');
+            throw new Error('Required parameter applicationId was null or undefined when calling getDocumentDictionaryIds.');
         }
 
         let localVarHeaders = this.defaultHeaders;
