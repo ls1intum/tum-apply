@@ -1,0 +1,31 @@
+import { Component, effect, inject, input, signal } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DocumentResourceService } from 'app/generated';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+
+@Component({
+  selector: 'jhi-document-viewer',
+  imports: [NgxExtendedPdfViewerModule],
+  templateUrl: './document-viewer.component.html',
+  styleUrl: './document-viewer.component.scss',
+  standalone: true,
+})
+export class DocumentViewerComponent {
+  private documentService = inject(DocumentResourceService);
+  documentId = input.required<string>();
+
+  pdfSrc = signal<Blob | null>(null);
+
+  constructor() {
+    effect(() => {
+      this.documentService.downloadDocument(this.documentId()).subscribe(
+        blob => {
+          this.pdfSrc.set(blob);
+        },
+        error => {
+          console.error(error);
+        },
+      );
+    });
+  }
+}
