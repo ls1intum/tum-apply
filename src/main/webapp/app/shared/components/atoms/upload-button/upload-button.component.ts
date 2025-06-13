@@ -37,8 +37,6 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
   standalone: true,
 })
 export class UploadButtonComponent {
-  private injector = inject(Injector);
-
   readonly maxUploadSizeInMb = 1;
 
   fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
@@ -61,7 +59,8 @@ export class UploadButtonComponent {
     return documentIds !== undefined && documentIds.length !== 0;
   });
 
-  applicationService = inject(ApplicationResourceService);
+  private applicationService = inject(ApplicationResourceService);
+  private injector = inject(Injector);
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -72,7 +71,7 @@ export class UploadButtonComponent {
     this.uploadFile();
   }
 
-  uploadFile() {
+  uploadFile(): void {
     const files = this.selectedFile();
     if (!files) return;
 
