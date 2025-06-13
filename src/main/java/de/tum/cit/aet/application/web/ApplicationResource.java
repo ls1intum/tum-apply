@@ -187,21 +187,13 @@ public class ApplicationResource {
      * Only users with {@code ROLE_APPLICANT} are allowed.
      * </p>
      *
-     * <p><strong>Supported types:</strong></p>
-     * <ul>
-     *   <li>{@code BACHELOR_TRANSCRIPT} – bachelor transcripts</li>
-     *   <li>{@code MASTER_TRANSCRIPT} – master transcripts</li>
-     *   <li>{@code REFERENCE} – reference documents</li>
-     *   <li>{@code CV} – only the first file is used</li>
-     * </ul>
-     *
      * <p>Unsupported types throw {@link NotImplementedException}.</p>
      *
      * @param applicationId UUID of the target application
      * @param documentType type of document to upload
      * @param files uploaded multipart files
      * @return 200 OK if successful
-     * @throws NotImplementedException if the document type is unsupported
+     * @throws NotImplementedException if the document type is still unsupported
      */
     @Operation(
         summary = "Upload documents",
