@@ -7,16 +7,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../../generated';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;
 const WINDOW_SIZE = 7;
-
-// Interface for pagination
-export interface Page {
-  offset: number;
-  limit: number;
-}
 
 /**
  * ApplicationCarouselComponent
@@ -34,7 +29,7 @@ export interface Page {
  */
 @Component({
   selector: 'jhi-application-carousel',
-  imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent, TranslateModule],
+  imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent, TranslateModule, TranslateDirective],
   templateUrl: './application-carousel.component.html',
   styleUrls: ['./application-carousel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

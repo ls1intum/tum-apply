@@ -5,7 +5,7 @@
   <!-- cards (1 or 3) -->
   <div class="cards">
     @if (totalCount() === 0) {
-      <p>{{ 'evaluation.noApplicationsFound' | translate }}</p>
+      <p jhiTranslate="evaluation.noApplicationsFound">No Applications found.</p>
     } @else {
       @for (app of visibleApps(); track i; let i = $index) {
         @if (app) {
