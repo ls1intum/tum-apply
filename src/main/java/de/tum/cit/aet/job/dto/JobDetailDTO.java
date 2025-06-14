@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -23,7 +23,7 @@ public record JobDetailDTO(
     String tasks,
     String requirements,
     JobState state,
-    ZonedDateTime startDate
+    LocalDateTime startDate
     // TODO: Adjust this to a List of CustomFields
     // CustomField customFields
 ) {}

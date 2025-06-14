@@ -3,7 +3,7 @@ package de.tum.cit.aet.evaluation.domain;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,5 +33,5 @@ public class ApplicationReview {
 
     @CreationTimestamp
     @Column(name = "reviewed_at")
-    private ZonedDateTime reviewedAt;
+    private LocalDateTime reviewedAt;
 }

@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.dto;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -25,7 +25,7 @@ public class UiTextFormatter {
     }
 
     /**
-     * Calculates a human-readable string representing how much time has passed since the given {@link ZonedDateTime}.
+     * Calculates a human-readable string representing how much time has passed since the given {@link LocalDateTime}.
      * - Today
      * - X days ago
      * - X weeks ago
@@ -35,10 +35,10 @@ public class UiTextFormatter {
      * @param time The creation time of the job.
      * @return A string like "Today", "3 days ago", "2.5 years ago".
      */
-    public static String getRelativeTimeLabel(ZonedDateTime time) {
+    public static String getRelativeTimeLabel(LocalDateTime time) {
         if (time == null) return "";
 
-        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         long diffDays = ChronoUnit.DAYS.between(time, now);
 
         if (diffDays == 0) return "Today";
