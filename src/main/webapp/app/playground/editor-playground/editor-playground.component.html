@@ -1,0 +1,19 @@
+<form [formGroup]="form()">
+  <div class="m-2">
+    <jhi-editor
+      label="Motivation"
+      id="motivation"
+      [required]="true"
+      placeholder="Placeholder for motivation..."
+      [(model)]="motivation"
+      [control]="form().controls.firstName"
+      icon="house"
+    />
+  </div>
+  <div class="m-2">
+    <p class="block"><b>Html value:</b></p>
+    <div class="border rounded p-1 min-h-6 w-100 text-wrap word-break">
+      {{ motivation() }}
+    </div>
+  </div>
+</form>
