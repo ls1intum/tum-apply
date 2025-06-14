@@ -10,7 +10,11 @@
       <label class="custom-label" [for]="id()">
         {{ label() }}
         @if (icon()) {
-          <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+          @if (icon() == 'circle-info' && tooltipText()) {
+            <fa-icon class="icon" [icon]="['fas', icon() ?? '']" [pTooltip]="tooltipText()" tooltipPosition="top" />
+          } @else {
+            <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+          }
         }
         @if (required()) {
           <span class="required">*</span>
