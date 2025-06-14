@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
 import jakarta.validation.constraints.NotNull;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -27,7 +27,7 @@ public record JobCardDTO(
         String professorName,
         Integer workload,
         LocalDate startDate,
-        Instant createdAt
+        LocalDateTime createdAt
     ) {
         this(
             jobId,
