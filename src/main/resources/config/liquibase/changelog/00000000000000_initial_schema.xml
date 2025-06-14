@@ -436,7 +436,7 @@
                              referencedTableName="applications" referencedColumnNames="application_id"
                              onDelete="CASCADE"/>
 
-      <sql>
+    <sql>
       ALTER TABLE internal_comments MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
   </changeSet>
