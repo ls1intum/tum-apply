@@ -282,7 +282,6 @@
       referencedTableName="jobs" referencedColumnNames="job_id"/>
 
     <!-- keep last_modified_at automatically updated -->
-
     <sql>
       ALTER TABLE applications
         MODIFY last_modified_at DATETIME(3) NOT NULL
@@ -410,8 +409,8 @@
         MODIFY last_modified_at DATETIME(3) NOT NULL
         DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
-  </changeSet>
-  <changeSet id="012_create_internal_comments" author="assistant">
+    </changeSet>
+    <changeSet id="012_create_internal_comments" author="assistant">
     <createTable tableName="internal_comments">
       <column name="internal_comment_id" type="CHAR(36)">
         <constraints primaryKey="true" nullable="false"/>
@@ -436,7 +435,8 @@
                              constraintName="fk_internal_comment_application"
                              referencedTableName="applications" referencedColumnNames="application_id"
                              onDelete="CASCADE"/>
-    <sql>
+
+      <sql>
       ALTER TABLE internal_comments MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
   </changeSet>
