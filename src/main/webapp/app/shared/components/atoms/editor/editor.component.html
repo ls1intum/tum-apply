@@ -37,9 +37,9 @@
         <ng-template #header>
           <span class="ql-formats">
             <select class="ql-header">
-              <option value="1">Heading</option>
-              <option value="2">Subheading</option>
-              <option selected>Normal</option>
+              <option value="1" jhiTranslate="editor.header.heading" aria-label="heading"></option>
+              <option value="2" jhiTranslate="editor.header.subheading" aria-label="subheading"></option>
+              <option selected jhiTranslate="editor.header.normal" aria-label="normal"></option>
             </select>
           </span>
           <span class="ql-formats">
@@ -48,17 +48,17 @@
             <button type="button" class="ql-underline" aria-label="Underline"></button>
           </span>
           <span class="ql-formats">
-            <select class="ql-color"></select>
-            <select class="ql-background"></select>
+            <select class="ql-color" aria-label="color"></select>
+            <select class="ql-background" aria-label="background"></select>
           </span>
           <span class="ql-formats">
             <button class="ql-list" value="ordered" aria-label="Ordered List" type="button"></button>
             <button class="ql-list" value="bullet" aria-label="Unordered List" type="button"></button>
             <select class="ql-align">
               <option selected></option>
-              <option value="center">center</option>
-              <option value="right">right</option>
-              <option value="justify">justify</option>
+              <option value="center" jhiTranslate="editor.align.center" aria-label="Align center"></option>
+              <option value="right" jhiTranslate="editor.align.right" aria-label="Align right"></option>
+              <option value="justify" jhiTranslate="editor.align.justify" aria-label="Align justify"></option>
             </select>
           </span>
           <span class="ql-formats">
@@ -69,7 +69,7 @@
     </div>
     <div class="error-text">
       @if (inputState() === 'invalid' && !isFocused()) {
-        <!-- {{ errorMessage() }} -->
+        {{ errorMessage() }}
       }
     </div>
   </div>

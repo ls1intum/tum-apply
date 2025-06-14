@@ -22,8 +22,6 @@ export class NumberInputComponent extends BaseInputDirective<number | undefined>
   minFractionDigits = input<number | undefined>(undefined);
   maxFractionDigits = input<number | undefined>(undefined);
 
-  inputId = input<string | undefined>(undefined);
-
   onInputChange(value: number): void {
     this.modelChange.emit(value);
     const ctrl = this.formControl();
