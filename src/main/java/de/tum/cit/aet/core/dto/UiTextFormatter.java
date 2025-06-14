@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.dto;
 
-import java.time.Instant;
-import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -25,48 +25,35 @@ public class UiTextFormatter {
     }
 
     /**
-     * Converts an {@link Instant} timestamp to a {@link LocalDate}
-     * using the system's default time zone.
-     *
-     * @param time the {@link Instant} to convert
-     * @return a {@link LocalDate} representing the same date in the system's time zone
-     */
-    public static LocalDate formatTimeToLocalDate(Instant time) {
-        if (time == null) {
-            return null;
-        }
-        return time.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-    }
-
-    /**
-     * Calculates a human-readable string representing how much time has passed since the given {@link Instant}.
+     * Calculates a human-readable string representing how much time has passed since the given {@link ZonedDateTime}.
      * - Today
      * - X days ago
      * - X weeks ago
      * - X months ago
      * - X years ago (in 0.5-year intervals)
      *
-     * @param instant The creation timestamp of the job.
+     * @param time The creation time of the job.
      * @return A string like "Today", "3 days ago", "2.5 years ago".
      */
-    public static String getRelativeTimeLabel(Instant instant) {
-        if (instant == null) return "";
+    public static String getRelativeTimeLabel(ZonedDateTime time) {
+        if (time == null) return "";
 
-        Instant now = Instant.now();
-        long diffDays = ChronoUnit.DAYS.between(instant, now);
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        long diffDays = ChronoUnit.DAYS.between(time, now);
 
         if (diffDays == 0) return "Today";
         if (diffDays == 1) return "1 day ago";
         if (diffDays < 7) return diffDays + " days ago";
 
-        long diffWeeks = ChronoUnit.WEEKS.between(instant, now);
+        long diffWeeks = ChronoUnit.WEEKS.between(time, now);
         if (diffWeeks == 1) return "1 week ago";
         if (diffWeeks < 4) return diffWeeks + " weeks ago";
 
-        long diffMonths = ChronoUnit.MONTHS.between(instant, now);
+        long diffMonths = ChronoUnit.MONTHS.between(time, now);
         if (diffMonths <= 1) return "1 month ago";
         if (diffMonths < 12) return diffMonths + " months ago";
 
+        // Years in intervals of 0.5
         double diffYears = Math.round((diffDays / 365.0) * 2) / 2.0;
         return diffYears <= 1 ? "1 year ago" : diffYears + " years ago";
     }

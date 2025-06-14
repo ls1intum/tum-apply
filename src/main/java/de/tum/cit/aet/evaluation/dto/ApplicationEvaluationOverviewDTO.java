@@ -1,7 +1,7 @@
 package de.tum.cit.aet.evaluation.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public record ApplicationEvaluationOverviewDTO(
@@ -11,5 +11,5 @@ public record ApplicationEvaluationOverviewDTO(
     ApplicationState state,
     String jobName,
     Integer rating,
-    Instant appliedAt
+    ZonedDateTime appliedAt
 ) {}

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.JobState;
 import jakarta.validation.constraints.NotNull;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -16,8 +16,8 @@ public record CreatedJobDTO(
     String state,
     String title,
     LocalDate startDate,
-    LocalDate createdAt,
-    LocalDate lastModifiedAt
+    ZonedDateTime createdAt,
+    ZonedDateTime lastModifiedAt
 ) {
     public CreatedJobDTO(
         @NotNull UUID jobId,
@@ -26,18 +26,9 @@ public record CreatedJobDTO(
         JobState state,
         String title,
         LocalDate startDate,
-        Instant createdAt,
-        Instant lastModifiedAt
+        ZonedDateTime createdAt,
+        ZonedDateTime lastModifiedAt
     ) {
-        this(
-            jobId,
-            avatar,
-            professorName,
-            UiTextFormatter.formatEnumValue(state),
-            title,
-            startDate,
-            UiTextFormatter.formatTimeToLocalDate(createdAt),
-            UiTextFormatter.formatTimeToLocalDate(lastModifiedAt)
-        );
+        this(jobId, avatar, professorName, UiTextFormatter.formatEnumValue(state), title, startDate, createdAt, lastModifiedAt);
     }
 }

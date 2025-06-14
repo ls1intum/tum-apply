@@ -2,7 +2,7 @@ package de.tum.cit.aet.application.domain.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +22,7 @@ public class ApplicationOverviewDTO {
         String jobTitle,
         String researchGroup,
         ApplicationState applicationState,
-        Instant createdAt
+        ZonedDateTime createdAt
     ) {
         this.applicationId = applicationId;
         this.jobTitle = jobTitle;
