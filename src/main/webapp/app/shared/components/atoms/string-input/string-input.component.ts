@@ -24,6 +24,7 @@ export class StringInputComponent {
   labelPosition = input<'top' | 'left'>('top');
   width = input<string>('100%');
   id = input<string | undefined>(undefined);
+  tooltipText = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
   // State tracking
