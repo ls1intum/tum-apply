@@ -45,6 +45,8 @@ const routes: Routes = [
   },
   {
     path: 'playground/editor',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
   },
 
