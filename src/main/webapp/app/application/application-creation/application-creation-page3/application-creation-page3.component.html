@@ -1,7 +1,15 @@
 @if (page3Form(); as form) {
   <form [formGroup]="form">
     <div class="flex flex-col w-1/2">
-      <label>Desired Start Date<span class="text-red-600">*</span></label>
+      <label
+        >Desired Start Date<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          style="color: var(--p-primary-color)"
+          [pTooltip]="'Choose the preferred date when you would like to start the position.'"
+          tooltipPosition="top"
+      /></label>
       <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
     </div>
     <p-divider layout="horizontal">Uploads</p-divider>
@@ -14,7 +22,15 @@
       </div>
     </div>
     <div class="form-row">
-      <label class="pb-4">What is your motivation to take this position?<span class="text-red-600">*</span></label>
+      <label class="pb-4"
+        >What is your motivation to take this position?<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          style="color: var(--p-primary-color)"
+          [pTooltip]="'Focus on how this position aligns with your career plans or research interests.'"
+          tooltipPosition="top"
+      /></label>
       <p-floatlabel>
         <textarea class="w-full" rows="5" pTextarea formControlName="motivation"></textarea>
         <label for="experiences">List professional or personal reasons</label>
@@ -22,7 +38,15 @@
       <label class="pl-1 textarea-sublabel">Keep it concise but informative ...</label>
     </div>
     <div class="form-row">
-      <label class="pb-4">What are your skills?<span class="text-red-600">*</span></label>
+      <label class="pb-4"
+        >What are your skills?<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          style="color: var(--p-primary-color)"
+          [pTooltip]="'Sharing your research background helps us see how your experience fits the role.'"
+          tooltipPosition="top"
+      /></label>
       <p-floatlabel>
         <textarea class="w-full" rows="5" pTextarea formControlName="skills"></textarea>
         <label for="experiences">Describe experiences and skills</label>
@@ -30,7 +54,15 @@
       <label class="pl-1 textarea-sublabel">Why are you a good fit for this program or lab?</label>
     </div>
     <div class="form-row">
-      <label class="pb-4">If you already worked in research topics, what are your experiences?<span class="text-red-600">*</span></label>
+      <label class="pb-4"
+        >If you already worked in research topics, what are your experiences?<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          style="color: var(--p-primary-color)"
+          [pTooltip]="'Highlight results or insights that shaped your research experience.'"
+          tooltipPosition="top"
+      /></label>
       <p-floatlabel>
         <textarea class="w-full" rows="5" pTextarea formControlName="experiences"></textarea>
         <label for="experiences">Discuss previous research projects, theses or publications</label>
