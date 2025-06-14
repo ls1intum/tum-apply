@@ -1,0 +1,17 @@
+<div
+  class="bar"
+  role="img"
+  [attr.aria-label]="ariaParams() | translate: { value: rating(), total: likertScale(), label: labelKey() | translate }"
+  [attr.title]="ariaParams() | translate: { value: rating(), total: likertScale(), label: labelKey() | translate }"
+>
+  @if (rating() !== null) {
+    <div
+      class="marker"
+      [ngStyle]="{
+        left: offsetPercent(),
+        width: markerWidthPercent(),
+        background: backgroundColor(),
+      }"
+    ></div>
+  }
+</div>

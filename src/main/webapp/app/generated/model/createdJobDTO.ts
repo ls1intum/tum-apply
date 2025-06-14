@@ -13,10 +13,20 @@ export interface CreatedJobDTO {
     jobId: string;
     avatar?: string;
     professorName?: string;
-    state?: string;
+    state?: CreatedJobDTO.StateEnum;
     title?: string;
     startDate?: string;
     createdAt?: string;
     lastModifiedAt?: string;
 }
+export namespace CreatedJobDTO {
+    export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
+    export const StateEnum = {
+        Draft: 'DRAFT' as StateEnum,
+        Published: 'PUBLISHED' as StateEnum,
+        Closed: 'CLOSED' as StateEnum,
+        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
+    };
+}
+
 
