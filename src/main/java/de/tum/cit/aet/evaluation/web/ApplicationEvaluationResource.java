@@ -40,15 +40,26 @@ public class ApplicationEvaluationResource {
         return ResponseEntity.ok(applicationEvaluationService.getAllApplications(researchGroup, offsetPageDTO, sortDto));
     }
 
-    @GetMapping("/application/details")
+    @GetMapping("/application-details")
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationDetails(
-        @RequestParam(required = false) UUID applicationId,
-        @RequestParam(required = false) Integer windowSize,
+        @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto
     ) {
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        return ResponseEntity.ok(null);
+    }
 
-        return ResponseEntity.ok(applicationEvaluationService.getAllApplicationDetails(applicationId, windowSize, researchGroup, sortDto));
+    @GetMapping("/application-details/window")
+    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationDetailsWindow(
+        @RequestParam UUID applicationId,
+        @RequestParam int windowSize,
+        @ParameterObject @ModelAttribute SortDTO sortDto
+    ) {
+        ResearchGroup researchGroup = new ResearchGroup();
+        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        return ResponseEntity.ok(
+            applicationEvaluationService.getApplicationDetailsWindow(applicationId, windowSize, researchGroup, sortDto)
+        );
     }
 }
