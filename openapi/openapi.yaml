@@ -1836,7 +1836,13 @@
             "type": "string"
           },
           "state": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
           },
           "title": {
             "type": "string"
