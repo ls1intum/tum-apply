@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
-import dayjs from 'dayjs';
+import dayjs from 'dayjs/esm';
 
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
