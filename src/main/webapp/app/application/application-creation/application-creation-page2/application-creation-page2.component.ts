@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
@@ -59,6 +59,11 @@ export default class ApplicationCreationPage2Component {
   masterGradingScaleLocal = masterGradingScale;
 
   data = model.required<ApplicationCreationPage2Data>();
+
+  applicationIdForDocuments = input<string | undefined>(undefined);
+  documentIdsBachelorTranscript = input<string[] | undefined>(undefined);
+  documentIdsMasterTranscript = input<string[] | undefined>(undefined);
+
   valid = output<boolean>();
   fb = inject(FormBuilder);
   page2Form = computed(() => {

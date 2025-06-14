@@ -79,6 +79,6 @@ describe('ApplicationCreationFormComponent create', () => {
 
   it('should set mode to "create" and extract jobId from route', () => {
     expect(component.mode).toBe('create');
-    expect(component.jobId).toBe('123');
+    expect(component.jobId()).toBe('123');
   });
 });
