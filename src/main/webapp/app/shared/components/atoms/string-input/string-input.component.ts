@@ -3,13 +3,14 @@ import { Component, computed, effect, input, output, signal } from '@angular/cor
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-string-input',
   templateUrl: './string-input.component.html',
-  styleUrl: './string-input.component.scss',
+  styleUrls: ['./string-input.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
 })
 export class StringInputComponent {
   control = input<AbstractControl | undefined>(undefined);
