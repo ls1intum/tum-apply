@@ -165,3 +165,15 @@
     }
   }
 }
+
+/* Styles for the My Positions page */
+.my-positions-container {
+  // Align the paginator and table contents
+  .p-datatable-tbody > tr > td:first-child,
+  .p-datatable-thead > tr > th:first-child {
+    padding-left: 0;
+  }
+  .p-datatable-tbody > tr > td:last-child {
+    padding-right: 0;
+  }
+}

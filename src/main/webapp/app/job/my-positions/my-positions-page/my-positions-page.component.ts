@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
+import { Router } from '@angular/router';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -57,6 +58,7 @@ export class MyPositionsPageComponent {
 
   private jobService = inject(JobResourceService);
   private accountService = inject(AccountService);
+  private router = inject(Router);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -65,6 +67,27 @@ export class MyPositionsPageComponent {
     this.page.set(page);
     this.pageSize.set(size);
     void this.loadJobs();
+  }
+
+  onCreateJob(): void {
+    this.router.navigate(['/job-creation']);
+  }
+
+  onDeleteJob(jobId: string): void {
+    // TO-DO: adjust confirmation
+    const confirmDelete = confirm('Do you really want to delete this job?');
+    if (confirmDelete) {
+      this.jobService.deleteJob(jobId).subscribe({
+        next() {
+          alert('Job successfully deleted');
+          // void this.loadJobs();
+        },
+        error(err) {
+          alert('Error deleting job');
+          console.error('Delete failed', err);
+        },
+      });
+    }
   }
 
   private async loadJobs(): Promise<void> {
