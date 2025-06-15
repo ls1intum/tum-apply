@@ -1,6 +1,6 @@
 package de.tum.cit.aet.evaluation.web;
 
-import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
@@ -25,20 +25,20 @@ public class ApplicationEvaluationResource {
     /**
      * {@code GET /applications} : Retrieve a paginated and optionally sorted list of applications for a research group.
      *
-     * @param pageDTO containing the number and size of applications per page (default is 25)
+     * @param offsetPageDTO containing the offset and limit of applications
      * @param sortDto containing the optional field and direction used for sorting the results
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing an
      * {@link ApplicationEvaluationListDTO} with application overviews and total count
      */
     @GetMapping("/applications")
     public ResponseEntity<ApplicationEvaluationListDTO> getApplications(
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto
     ) {
         //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
-        return ResponseEntity.ok(applicationEvaluationService.getAllApplications(researchGroup, pageDTO, sortDto));
+        return ResponseEntity.ok(applicationEvaluationService.getAllApplications(researchGroup, offsetPageDTO, sortDto));
     }
 }
