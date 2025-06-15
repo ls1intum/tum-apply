@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
 import { JobFormDTO } from '../../generated';
@@ -23,6 +24,7 @@ import { StringInputComponent } from '../../shared/components/atoms/string-input
   styleUrls: ['./job-creation-form.component.scss'],
   imports: [
     CommonModule,
+    TooltipModule,
     ReactiveFormsModule,
     FontAwesomeModule,
     DropdownComponent,

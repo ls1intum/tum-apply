@@ -46,6 +46,7 @@
               [model]="basicInfoForm.get('researchArea')?.value"
               (modelChange)="onSelectionChange(basicInfoForm, 'researchArea', $event)"
               [control]="basicInfoForm.get('researchArea') ?? undefined"
+              [tooltipText]="'Specify the main research area the doctoral position focuses on.'"
             />
           </div>
 
@@ -164,8 +165,12 @@
         <div class="form-field">
           <label for="description"
             >Job Description
-            <fa-icon [icon]="['fas', 'circle-info']" />
             <span class="required">*</span>
+            <fa-icon
+              [icon]="['fas', 'circle-info']"
+              pTooltip="Helps applicants to understand the research focus and goals of the position."
+              tooltipPosition="top"
+            />
           </label>
           <div class="input-with-icon">
             <textarea
@@ -186,8 +191,12 @@
         <div class="form-field">
           <label for="tasks"
             >Tasks
-            <fa-icon [icon]="['fas', 'circle-info']" />
             <span class="required">*</span>
+            <fa-icon
+              [icon]="['fas', 'circle-info']"
+              pTooltip="Gives applicants clearer picture of the position’s responsibilities and activities."
+              tooltipPosition="top"
+            />
           </label>
           <div class="input-with-icon">
             <textarea
@@ -208,8 +217,12 @@
         <div class="form-field">
           <label for="requirements"
             >Eligibility Criteria
-            <fa-icon [icon]="['fas', 'circle-info']" />
             <span class="required">*</span>
+            <fa-icon
+              [icon]="['fas', 'circle-info']"
+              pTooltip="Ensures applicants know what qualifications are expected."
+              tooltipPosition="top"
+            />
           </label>
           <div class="input-with-icon">
             <textarea
