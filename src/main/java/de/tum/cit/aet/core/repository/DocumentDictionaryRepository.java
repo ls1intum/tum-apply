@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DocumentDictionaryRepository extends TumApplyJpaRepository<DocumentDictionary, UUID> {
+public interface DocumentDictionaryRepository extends TumApplyJpaRepository<DocumentDictionary, UUID>, DocumentDictionaryEntityRepository {
     Set<DocumentDictionary> findByApplicantAndDocumentType(Applicant applicant, DocumentType documentType);
 
     Set<DocumentDictionary> findByApplicationAndDocumentType(Application application, DocumentType documentType);

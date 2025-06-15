@@ -1,9 +1,34 @@
-<button class="border border-neutral flex flex-col justify-center rounded-md p-2 w-full" [disabled]="true">
-  <p class="font-bold mt-1 mb-1">{{ uploadText() }}</p>
-  <div class="flex w-full justify-center">
-    <span class="flex border items-center justify-center rounded-full border-primary size-20">
-      <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
-    </span>
-  </div>
-  <p class="mt-1 mb-1 text-sm">Click or drag and drop files to here to upload.</p>
+<button
+  class="border border-neutral flex flex-col justify-center rounded-md p-2 w-full h-full"
+  (click)="triggerFileInput()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  [class]="{ 'drag-over': isDragOver(), 'background-disabled': disabled() }"
+  [disabled]="disabled()"
+>
+  <input type="file" (change)="onFileSelected($event)" accept="application/pdf" multiple hidden #fileInput />
+  @if (disabled()) {
+    <p class="font-bold mt-1 mb-1 text-color">{{ documentIds()?.length }} Uploaded Document(s) for {{ documentType() }}</p>
+  } @else {
+    <p class="font-bold mt-1 mb-1 text-color">{{ uploadText() }}</p>
+  }
+  @if (disabled()) {
+    <div class="flex w-full justify-center">
+      <span class="flex border items-center justify-center rounded-full border-success size-20">
+        <fa-icon [icon]="['fas', 'check']" class="background-success" size="xl" />
+      </span>
+    </div>
+  } @else {
+    <div class="flex w-full justify-center">
+      <span class="flex border items-center justify-center rounded-full border-primary size-20">
+        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
+      </span>
+    </div>
+    <p class="mt-1 text-sm text-color">Click or drag and drop files to here to upload.</p>
+    <p class="mt-1 mb-1 text-xs text-color">Max upload size: 1MB</p>
+  }
+  @if (isUploading()) {
+    <div>Upload Progress: {{ uploadProgress() }}%</div>
+  }
 </button>

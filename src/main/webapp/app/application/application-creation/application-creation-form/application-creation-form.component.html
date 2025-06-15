@@ -5,12 +5,26 @@
 </ng-template>
 <ng-template #panel2>
   <div class="panel">
-    <jhi-application-creation-page2 class="w-full" [(data)]="page2" (valid)="onPage2ValidityChanged($event)" />
+    <jhi-application-creation-page2
+      class="w-full"
+      [(data)]="page2"
+      (valid)="onPage2ValidityChanged($event)"
+      [applicationIdForDocuments]="applicationId()"
+      [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
+      [documentIdsMasterTranscript]="documentIds()?.masterDocumentDictionaryIds"
+    />
   </div>
 </ng-template>
 <ng-template #panel3>
   <div class="panel">
-    <jhi-application-creation-page3 class="w-full" [(data)]="page3" (valid)="onPage3ValidityChanged($event)" />
+    <jhi-application-creation-page3
+      class="w-full"
+      [(data)]="page3"
+      (valid)="onPage3ValidityChanged($event)"
+      [applicationIdForDocuments]="applicationId()"
+      [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
+      [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
+    />
   </div>
 </ng-template>
 
