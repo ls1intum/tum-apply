@@ -1853,11 +1853,11 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           },
           "lastModifiedAt": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         },
         "required": [
@@ -1942,10 +1942,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
