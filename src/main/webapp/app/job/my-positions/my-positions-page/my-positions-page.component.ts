@@ -80,7 +80,7 @@ export class MyPositionsPageComponent {
   }
 
   onCreateJob(): void {
-    this.router.navigate(['/job-creation']);
+    this.router.navigate(['/job/create']);
   }
 
   onEditJob(jobId: string): void {
@@ -90,7 +90,7 @@ export class MyPositionsPageComponent {
       // show an alert that the current job does not exist or there was an issue editing the job
       console.error('Unable to edit job with job id:', jobId);
     }
-    this.router.navigate(['/job-creation']);
+    this.router.navigate([`/job/edit/${jobId}`]);
   }
 
   onDeleteJob(jobId: string): void {
