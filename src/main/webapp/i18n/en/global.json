@@ -78,6 +78,18 @@
         }
       }
     },
+    "editor": {
+      "header": {
+        "heading": "Heading",
+        "subheading": "Subheading",
+        "normal": "Normal"
+      },
+      "align": {
+        "center": "center",
+        "right": "right",
+        "justify": "justify"
+      }
+    },
     "field": {
       "id": "ID"
     },
