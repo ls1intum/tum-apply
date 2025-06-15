@@ -1,7 +1,7 @@
 <p-multiselect
   [options]="options()"
   [(ngModel)]="selectedOptions"
-  (change)="onSelectionChange()"
+  (onChange)="onSelectionChange()"
   optionLabel="displayName"
   display="chip"
   [style]="{ width: width() }"

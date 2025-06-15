@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, model, output, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, input, model, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 
@@ -18,7 +18,7 @@ export interface FilterField {
   templateUrl: './filter-dialog.component.html',
   styleUrl: './filter-dialog.component.scss',
 })
-export class FilterDialogComponent {
+export class FilterDialogComponent implements OnInit {
   filterFields = input.required<FilterField[]>();
 
   draftFields = signal<FilterField[]>([]);
@@ -32,18 +32,24 @@ export class FilterDialogComponent {
     return (field: FilterField) => (all.find(f => f.field === field.field)?.selected?.length ?? 0) > 0;
   });
 
+  private _filterFields = signal<FilterField[]>([]);
+
   constructor() {
     // whenever the dialog opens, clone the incoming fields
     effect(() => {
       if (this.visible()) {
         this.draftFields.set(
-          this.filterFields().map(f => ({
+          this._filterFields().map(f => ({
             ...f,
             selected: f.selected ? [...f.selected] : [],
           })),
         );
       }
     });
+  }
+
+  ngOnInit(): void {
+    this._filterFields.set(this.filterFields());
   }
 
   resetField(field: FilterField): void {
@@ -67,6 +73,7 @@ export class FilterDialogComponent {
   }
 
   applyAndClose(): void {
+    this._filterFields.set(this.draftFields());
     const result = Object.fromEntries(this.draftFields().map(f => [f.field, f.selected ?? []]));
     this.applyFilters.emit(result);
     this.visible.set(false);

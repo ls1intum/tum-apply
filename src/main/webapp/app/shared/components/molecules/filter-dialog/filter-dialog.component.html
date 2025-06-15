@@ -3,7 +3,7 @@
     <div class="filter-row">
       <div class="label-reset">
         <span class="label">{{ filterField.displayName }}</span>
-        <jhi-button variant="text" label="Reset" (click)="resetField(filterField)" />
+        <jhi-button variant="text" label="Reset" (click)="resetField(filterField)" [disabled]="(filterField.selected?.length ?? 0) < 1" />
       </div>
       <jhi-filter-select
         [options]="filterField.options"
@@ -14,7 +14,7 @@
     <p-divider />
   }
   <div class="actions">
-    <jhi-button variant="text" label="Clear All" />
-    <jhi-button variant="text" label="Apply" />
+    <jhi-button variant="outlined" label="Clear All" />
+    <jhi-button variant="outlined" label="Apply" (click)="applyAndClose()" />
   </div>
 </p-dialog>
