@@ -18,7 +18,7 @@ export class EditorPlaygroundComponent {
   form = computed(() => {
     const currentData = this.motivation();
     return this.fb.group({
-      firstName: [currentData, Validators.required],
+      motivation: [currentData, Validators.required],
     });
   });
 
@@ -26,7 +26,7 @@ export class EditorPlaygroundComponent {
     effect(onCleanup => {
       const form = this.form();
       const valueSubscription = form.valueChanges.subscribe(value => {
-        this.motivation.set(value.firstName ?? '');
+        this.motivation.set(value.motivation ?? '');
         this.valid.emit(form.valid);
       });
 
