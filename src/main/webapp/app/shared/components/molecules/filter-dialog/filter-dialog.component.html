@@ -1,0 +1,20 @@
+<p-dialog header="Edit Profile" [modal]="true" [(visible)]="visible" [style]="{ width: '70%', 'max-width': '40rem' }">
+  @for (filterField of draftFields(); track $index) {
+    <div class="filter-row">
+      <div class="label-reset">
+        <span class="label">{{ filterField.displayName }}</span>
+        <jhi-button variant="text" label="Reset" (click)="resetField(filterField)" />
+      </div>
+      <jhi-filter-select
+        [options]="filterField.options"
+        [preSelected]="filterField.selected ?? null"
+        (selectionChange)="onSelectionChange(filterField, $event)"
+      />
+    </div>
+    <p-divider />
+  }
+  <div class="actions">
+    <jhi-button variant="text" label="Clear All" />
+    <jhi-button variant="text" label="Apply" />
+  </div>
+</p-dialog>

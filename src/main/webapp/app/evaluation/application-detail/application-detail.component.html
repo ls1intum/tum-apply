@@ -1,26 +1,5 @@
 <div>
-  <p>Likert 5</p>
-  <jhi-rating />
-  <jhi-rating [rating]="-2" />
-  <jhi-rating [rating]="-1" />
-  <jhi-rating [rating]="0" />
-  <jhi-rating [rating]="1" />
-  <jhi-rating [rating]="2" />
-</div>
-
-<div>
-  <p>Likert 7</p>
-  <jhi-rating />
-  <jhi-rating [likertScale]="7" [rating]="-3" />
-  <jhi-rating [likertScale]="7" [rating]="-2" />
-  <jhi-rating [likertScale]="7" [rating]="-1" />
-  <jhi-rating [likertScale]="7" [rating]="0" />
-  <jhi-rating [likertScale]="7" [rating]="1" />
-  <jhi-rating [likertScale]="7" [rating]="2" />
-  <jhi-rating [likertScale]="7" [rating]="3" />
-</div>
-
-<div>
-  <jhi-application-card [application]="testApplications[0]" />
-  <jhi-application-card [disabled]="true" [application]="testApplications[1]" />
+  <jhi-filter-select [options]="MOCK_FILTER_OPTIONS" [preSelected]="MOCK_PRESELECTED_FILTERS" [width]="'20%'" />
+  <jhi-button label="Open" (click)="visible.set(true)" />
+  <jhi-filter-dialog [(visible)]="visible" [filterFields]="filterFields" />
 </div>

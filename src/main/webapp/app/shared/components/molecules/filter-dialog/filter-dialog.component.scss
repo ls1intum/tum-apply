@@ -1,0 +1,27 @@
+.filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* space between label and dropdown */
+  margin-bottom: 0.75rem; /* space before the divider */
+
+  .label-reset {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .label {
+      font-weight: 600;
+      line-height: 1.25rem;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+
+  jhi-button {
+    width: 120px; /* gives both buttons the same footprint */
+  }
+}

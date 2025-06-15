@@ -1,0 +1,10 @@
+<p-multiselect
+  [options]="options()"
+  [(ngModel)]="selectedOptions"
+  (change)="onSelectionChange()"
+  optionLabel="displayName"
+  display="chip"
+  [style]="{ width: width() }"
+  [selectedItemsLabel]="'Custom text here'"
+  appendTo="body"
+/>

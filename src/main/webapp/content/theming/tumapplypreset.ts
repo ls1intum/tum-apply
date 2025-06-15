@@ -897,5 +897,23 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    multiselect: {
+      background: '{transparent}',
+      colorScheme: {
+        light: {
+          overlay: {
+            background: '{background.default}',
+          },
+        },
+        dark: {
+          overlay: {
+            background: '{background.default}',
+          },
+          input: {
+            background: '{background.default}',
+          },
+        },
+      },
+    },
   },
 });
