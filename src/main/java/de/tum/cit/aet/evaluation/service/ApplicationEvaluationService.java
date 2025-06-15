@@ -1,13 +1,12 @@
 package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import java.util.List;
@@ -39,21 +38,21 @@ public class ApplicationEvaluationService {
      * @param researchGroup the research group whose applications are to be retrieved
      * @param offsetPageDTO containing the offset and limit for pagination
      * @param sortDTO       containing the optional field and direction used for sorting the results
-     * @return an {@link ApplicationEvaluationListDTO} containing application overviews
+     * @return an {@link ApplicationEvaluationOverviewListDTO} containing application overviews
      * and the total number of matching records
      */
-    public ApplicationEvaluationListDTO getAllApplications(ResearchGroup researchGroup, OffsetPageDTO offsetPageDTO, SortDTO sortDTO) {
+    public ApplicationEvaluationOverviewListDTO getAllApplications(
+        ResearchGroup researchGroup,
+        OffsetPageDTO offsetPageDTO,
+        SortDTO sortDTO
+    ) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
 
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
-        List<ApplicationEvaluationOverviewDTO> applicationsPage = applicationEvaluationRepository.findApplications(
-            researchGroupId,
-            VIEWABLE_STATES,
-            pageable,
-            null
-        );
+        List<Application> applicationsPage = getApplications(researchGroupId, pageable, null);
         long totalRecords = applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, null);
-        return new ApplicationEvaluationListDTO(applicationsPage, totalRecords);
+
+        return ApplicationEvaluationOverviewListDTO.fromApplications(applicationsPage, totalRecords);
     }
 
     public ApplicationEvaluationDetailListDTO getApplicationDetailsWindow(
@@ -77,37 +76,26 @@ public class ApplicationEvaluationService {
         );
 
         int half = (int) Math.floor((double) windowSize / 2);
-        int start = Math.max((int) idx - half - 1, 0);
-        int end = Math.min((int) idx + half + 1, (int) totalRecords - 1);
+        int start = Math.max((int) idx - half, 0);
+        int end = Math.min((int) idx + half + 1, (int) totalRecords);
         int windowIndex = (int) idx - start;
 
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
-        //TODO change DTO
-        List<ApplicationForApplicantDTO> applicationDetails = getApplicationDetails(researchGroupId, pageable, null);
-        return new ApplicationEvaluationDetailListDTO(applicationDetails, totalRecords, (int) idx, windowIndex);
+        List<Application> applicationsPage = getApplications(researchGroupId, pageable, null);
+        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx, windowIndex);
     }
 
-    public ApplicationEvaluationDetailListDTO getApplicationDetails(
-        ResearchGroup researchGroup,
-        OffsetPageDTO offsetPageDTO,
-        SortDTO sortDTO
-    ) {
+    public ApplicationEvaluationDetailListDTO getApplications(ResearchGroup researchGroup, OffsetPageDTO offsetPageDTO, SortDTO sortDTO) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
 
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
 
-        //TODO change DTO
-        List<ApplicationForApplicantDTO> applicationsPage = getApplicationDetails(researchGroupId, pageable, null);
+        List<Application> applicationsPage = getApplications(researchGroupId, pageable, null);
         long totalRecords = applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, null);
-        return new ApplicationEvaluationDetailListDTO(applicationsPage, totalRecords, null, null);
+        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null);
     }
 
-    //TODO change DTO
-    private List<ApplicationForApplicantDTO> getApplicationDetails(
-        UUID researchGroupId,
-        Pageable pageable,
-        Map<String, List<?>> dynamicFilters
-    ) {
-        return applicationEvaluationRepository.findApplicationDetails(researchGroupId, VIEWABLE_STATES, pageable, dynamicFilters);
+    private List<Application> getApplications(UUID researchGroupId, Pageable pageable, Map<String, List<?>> dynamicFilters) {
+        return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable, dynamicFilters);
     }
 }

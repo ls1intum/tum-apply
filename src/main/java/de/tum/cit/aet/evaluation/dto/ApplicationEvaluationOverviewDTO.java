@@ -1,6 +1,9 @@
 package de.tum.cit.aet.evaluation.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
+import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -12,4 +15,19 @@ public record ApplicationEvaluationOverviewDTO(
     String jobName,
     Integer rating,
     Instant appliedAt
-) {}
+) {
+    public static ApplicationEvaluationOverviewDTO fromApplication(Application application) {
+        Applicant applicant = application.getApplicant();
+        Job job = application.getJob();
+
+        return new ApplicationEvaluationOverviewDTO(
+            application.getApplicationId(),
+            applicant.getAvatar(),
+            applicant.getFirstName() + " " + applicant.getLastName(),
+            application.getState(),
+            job.getTitle(),
+            application.getRating(),
+            application.getCreatedAt()
+        );
+    }
+}

@@ -1,8 +1,7 @@
 package de.tum.cit.aet.evaluation.repository.custom;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewDTO;
+import de.tum.cit.aet.application.domain.Application;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -11,14 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public interface ApplicationEvaluationRepositoryCustom {
-    List<ApplicationEvaluationOverviewDTO> findApplications(
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Pageable pageable,
-        Map<String, List<?>> dynamicFilters
-    );
-
-    List<ApplicationForApplicantDTO> findApplicationDetails(
+    List<Application> findApplications(
         UUID researchGroupId,
         Collection<ApplicationState> states,
         Pageable pageable,

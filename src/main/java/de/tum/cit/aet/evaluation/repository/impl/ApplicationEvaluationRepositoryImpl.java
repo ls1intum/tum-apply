@@ -1,14 +1,16 @@
 package de.tum.cit.aet.evaluation.repository.impl;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.Application_;
+import de.tum.cit.aet.core.util.CriteriaUtils;
 import de.tum.cit.aet.core.util.SqlQueryUtil;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.custom.ApplicationEvaluationRepositoryCustom;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.domain.Job_;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup_;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.*;
 import java.util.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,33 +32,45 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         Map.entry("state", "a.state")
     );
 
-    private <T> List<T> findApplicationsGeneric() {
-        return null;
-    }
-
     @Override
-    public List<ApplicationEvaluationOverviewDTO> findApplications(
+    public List<Application> findApplications(
         UUID researchGroupId,
         Collection<ApplicationState> states,
         Pageable pageable,
         Map<String, List<?>> dynamicFilters
     ) {
-        return null;
-    }
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Application> cq = cb.createQuery(Application.class);
 
-    @Override
-    public List<ApplicationForApplicantDTO> findApplicationDetails(
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Pageable pageable,
-        Map<String, List<?>> dynamicFilters
-    ) {
-        return null;
+        Root<Application> root = cq.from(Application.class);
+        Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
+
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters);
+
+        cq
+            .select(root)
+            .where(predicates.toArray(new Predicate[0]))
+            .orderBy(CriteriaUtils.buildSortOrders(cb, root, pageable.getSort(), Application_.APPLICATION_ID));
+
+        TypedQuery<Application> query = em.createQuery(cq);
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        return query.getResultList();
     }
 
     @Override
     public long countApplications(UUID researchGroupId, Collection<ApplicationState> states, Map<String, List<?>> dynamicFilters) {
-        return 0L;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+
+        Root<Application> root = cq.from(Application.class);
+        Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
+
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters);
+
+        cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
+
+        return em.createQuery(cq).getSingleResult();
     }
 
     @Override
@@ -104,5 +118,26 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         } catch (Exception e) {
             throw new EntityNotFoundException("Application not found");
         }
+    }
+
+    private List<Predicate> buildCommonPredicates(
+        CriteriaBuilder cb,
+        Root<Application> root,
+        Join<Application, Job> jobJoin,
+        UUID researchGroupId,
+        Collection<ApplicationState> states,
+        Map<String, List<?>> dynamicFilters
+    ) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        predicates.add(cb.equal(jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
+
+        if (states != null && !states.isEmpty()) {
+            predicates.add(root.get(Application_.STATE).in(states));
+        }
+
+        predicates.addAll(CriteriaUtils.buildDynamicFilters(cb, root, dynamicFilters));
+
+        return predicates;
     }
 }

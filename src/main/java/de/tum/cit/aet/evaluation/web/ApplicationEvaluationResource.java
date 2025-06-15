@@ -3,7 +3,7 @@ package de.tum.cit.aet.evaluation.web;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.Valid;
@@ -26,10 +26,10 @@ public class ApplicationEvaluationResource {
      * @param offsetPageDTO containing the offset and limit of applications
      * @param sortDto containing the optional field and direction used for sorting the results
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing an
-     * {@link ApplicationEvaluationListDTO} with application overviews and total count
+     * {@link ApplicationEvaluationOverviewListDTO} with application overviews and total count
      */
     @GetMapping("/applications")
-    public ResponseEntity<ApplicationEvaluationListDTO> getApplications(
+    public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplications(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto
     ) {
