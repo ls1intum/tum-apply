@@ -43,6 +43,13 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
   },
+  {
+    path: 'playground/docviewer',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
+  },
 
   // ======================================================================================
   // User Management
