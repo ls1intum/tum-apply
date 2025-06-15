@@ -43,7 +43,7 @@ export class SidebarComponent {
           buttons: [
             { icon: 'home', text: 'sidebar.manage.home', link: '/' },
             { icon: 'folder', text: 'sidebar.manage.mypositions', link: '/my-positions' },
-            { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job-creation' },
+            { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job/create' },
           ],
         },
         {
