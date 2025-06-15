@@ -1,0 +1,114 @@
+<div class="flex w-full gap-10">
+  <div class="flex flex-col items-center gap-2.5">
+    <div class="flex items-center gap-2.5 w-full">
+      <!-- Avatar -->
+      <div class="w-24 h-24 relative rounded-full overflow-hidden">
+        <img src="https://placehold.co/100x100" class="absolute top-0 left-0 w-full h-full object-cover" />
+      </div>
+
+      <!-- User Info and Score -->
+      <div class="flex flex-col justify-between items-center py-4 flex-1">
+        <!-- Name -->
+        <div class="w-full mb-2 ml-30 text-left font-bold">
+          {{ application().applicant?.user?.firstName }} {{ application().applicant?.user?.lastName }}
+        </div>
+
+        <!-- Score and Message -->
+        <div class="flex justify-start items-center gap-5 w-full">
+          <!-- Score Bar -->
+          <div class="relative bg-Background-Surface-alt rounded-[10px] outline p-2.5 flex-1 h-5 max-w-72 min-w-36">
+            <div class="absolute top-[2px] left-[184px] w-14 h-4 bg-Positive-Default rounded-[10px]"></div>
+          </div>
+
+          <!-- Message Icon -->
+          <div class="flex items-center gap-1 h-5 w-11">
+            <div class="text-center">4</div>
+            <fa-icon icon="message" class="w-5 h-5" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-container [ngTemplateOutlet]="applicantDetailsTemplate" />
+    <ng-container [ngTemplateOutlet]="educationInformationTemplate" />
+  </div>
+  <div class="self-stretch flex flex-col justify-start items-center h-full gap-2.5">
+    <ng-container
+      [ngTemplateOutlet]="text_card"
+      [ngTemplateOutletContext]="{ icon: 'rocket', name: 'Motivation', text: application().motivation }"
+    />
+    <ng-container
+      [ngTemplateOutlet]="text_card"
+      [ngTemplateOutletContext]="{ icon: 'brain', name: 'Skills', text: application().specialSkills }"
+    />
+    <ng-container
+      [ngTemplateOutlet]="text_card"
+      [ngTemplateOutletContext]="{ icon: 'flask', name: 'Research Experience', text: application().projects }"
+    />
+    <div class="self-stretch px-4 py-3 rounded-lg outline outline-stone-300 flex flex-col justify-center items-center gap-2">
+      <div class="self-stretch inline-flex justify-between items-center">
+        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
+          <fa-icon icon="question" />
+        </div>
+        <div class="flex-1 justify-start text-base">Custom Question Section 1</div>
+        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
+          <fa-icon icon="chevron-up" />
+        </div>
+      </div>
+      <div class="self-stretch justify-start">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
+        in culpa qui officia deserunt mollit anim id est laborum.
+      </div>
+    </div>
+    <div class="self-stretch px-4 py-3 rounded-lg outline outline-stone-300 flex flex-col justify-center items-center gap-2">
+      <div class="self-stretch inline-flex justify-between items-center">
+        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
+          <fa-icon icon="question" />
+        </div>
+        <div class="flex-1 justify-start text-base">Custom Question Section 2</div>
+        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
+          <fa-icon icon="chevron-up" />
+        </div>
+      </div>
+      <div class="self-stretch p-5 inline-flex justify-start items-start gap-5">
+        <div class="flex justify-start items-center gap-2">
+          <div class="w-5 h-5 relative rounded border-2 border-Border-Default"></div>
+          <div class="justify-start text-Primary-Default text-base">Checkbox</div>
+        </div>
+        <div class="flex justify-start items-center gap-2">
+          <div class="w-5 h-5 relative rounded border-2 border-Border-Default"></div>
+          <div class="justify-start text-Background-Disabled text-base">Checkbox</div>
+        </div>
+        <div class="flex justify-start items-center gap-2">
+          <div
+            class="w-5 h-5 bg-Primary-Default rounded outline outline-2 outline-offset-[-2px] outline-Primary-Default inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+          >
+            <div data-name="check" class="self-stretch flex-1 relative overflow-hidden">
+              <div class="w-3.5 h-2.5 left-[2.61px] top-[4.90px] absolute bg-Text-On-Primary"></div>
+            </div>
+          </div>
+          <div class="justify-start text-Primary-Default text-base">Checkbox</div>
+        </div>
+        <div class="flex justify-start items-center gap-2">
+          <div
+            class="w-5 h-5 bg-Border-Default rounded outline outline-2 outline-offset-[-2px] outline-Border-Default inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+          >
+            <div data-name="check" class="self-stretch flex-1 relative overflow-hidden">
+              <div class="w-3.5 h-2.5 left-[2.61px] top-[4.90px] absolute bg-Background-Disabled"></div>
+            </div>
+          </div>
+          <div class="justify-start text-Background-Disabled text-base">Checkbox</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex gap-10">
+    <div class="flex flex-col items-center gap-2.5">
+      <div class="w-96 h-45 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5"></div>
+      <div class="w-96 h-45 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5"></div>
+      <div class="w-96 h-45 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5"></div>
+    </div>
+  </div>
+  <!-- DOCUMENT SECTION -->
+</div>
