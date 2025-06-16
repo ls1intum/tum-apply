@@ -4,6 +4,15 @@ import { Observable, of } from 'rxjs';
 import { ApplicationResourceService } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCheck, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import {
+  MissingTranslationHandler,
+  TranslateCompiler,
+  TranslateLoader,
+  TranslateModule,
+  TranslateParser,
+  TranslateService,
+  TranslateStore,
+} from '@ngx-translate/core';
 
 import { UploadButtonComponent } from './upload-button.component';
 
@@ -30,8 +39,19 @@ describe('UploadButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UploadButtonComponent],
-      providers: [{ provide: ApplicationResourceService, useClass: MockApplicationResourceService }],
+      imports: [UploadButtonComponent, TranslateModule.forRoot()],
+      providers: [
+        TranslateStore,
+        TranslateLoader,
+        TranslateCompiler,
+        TranslateParser,
+        { provide: ApplicationResourceService, useClass: MockApplicationResourceService },
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        TranslateService,
+      ],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
