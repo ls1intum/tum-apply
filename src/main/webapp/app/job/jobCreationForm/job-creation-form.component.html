@@ -42,11 +42,11 @@
               [label]="'Research Area'"
               [placeholder]="'e.g. Machine Learning, Human-Computer Interaction'"
               [required]="true"
-              [icon]="'circle-info'"
+              icon="circle-info"
               [model]="basicInfoForm.get('researchArea')?.value"
               (modelChange)="onSelectionChange(basicInfoForm, 'researchArea', $event)"
               [control]="basicInfoForm.get('researchArea') ?? undefined"
-              [tooltipText]="'Specify the main research area the doctoral position focuses on.'"
+              tooltipText="Specify the main research area the doctoral position focuses on."
             />
           </div>
 
