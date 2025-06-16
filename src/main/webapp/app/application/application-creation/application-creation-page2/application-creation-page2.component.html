@@ -7,6 +7,8 @@
         [required]="true"
         [(model)]="data().bachelorDegreeName"
         [control]="page2Form().get('bachelorDegreeName') ?? undefined"
+        icon="circle-info"
+        tooltipText="Specify the study program of your Bachelor's Degree."
       />
     </div>
     <div class="w-1/2 pr-4">
@@ -15,6 +17,8 @@
         [required]="true"
         [(model)]="data().bachelorDegreeUniversity"
         [control]="page2Form().controls.bachelorDegreeUniversity"
+        icon="circle-info"
+        tooltipText="Enter the name of the University where you completed your Bachelor's Degree."
       />
     </div>
   </div>
@@ -27,6 +31,8 @@
         [required]="true"
         [items]="bachelorGradingScaleLocal"
         [(selected)]="data().bachelorGradingScale"
+        icon="circle-info"
+        tooltipText="Choose the Grading Scale used for your Bachelor's Degree."
       />
     </div>
     <div class="w-1/2 pr-4">
@@ -35,6 +41,8 @@
         [required]="true"
         [(model)]="data().bachelorGrade"
         [control]="page2Form().controls.bachelorGrade"
+        icon="circle-info"
+        tooltipText="Enter your final Bachelor's Grade according to your institution's grading system."
       />
     </div>
   </div>
@@ -58,6 +66,8 @@
         [required]="true"
         [(model)]="data().masterDegreeName"
         [control]="page2Form().controls.masterDegreeName"
+        icon="circle-info"
+        tooltipText="Specify the study program of your Master's Degree."
       />
     </div>
     <div class="w-1/2 pr-4">
@@ -66,6 +76,8 @@
         [required]="true"
         [(model)]="data().masterDegreeUniversity"
         [control]="page2Form().controls.masterDegreeUniversity"
+        icon="circle-info"
+        tooltipText="Enter the name of the University where you completed your Master's Degree."
       />
     </div>
   </div>
@@ -78,6 +90,8 @@
         [required]="true"
         [items]="masterGradingScaleLocal"
         [(selected)]="data().masterGradingScale"
+        icon="circle-info"
+        tooltipText="Choose the Grading Scale used for your Master's Degree."
       />
     </div>
     <div class="w-1/2 pr-4">
@@ -86,6 +100,8 @@
         [required]="true"
         [(model)]="data().masterGrade"
         [control]="page2Form().controls.masterGrade"
+        icon="circle-info"
+        tooltipText="Enter your final Master's Grade according to your institution's grading system."
       />
     </div>
   </div>

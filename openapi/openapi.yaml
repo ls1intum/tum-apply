@@ -1232,7 +1232,13 @@
             "type": "string"
           },
           "state": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
           },
           "title": {
             "type": "string"
@@ -1243,11 +1249,11 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           },
           "lastModifiedAt": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         },
         "required": [
@@ -1332,10 +1338,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
