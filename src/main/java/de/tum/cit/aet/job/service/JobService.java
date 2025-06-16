@@ -4,10 +4,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.job.dto.CreatedJobDTO;
-import de.tum.cit.aet.job.dto.JobCardDTO;
-import de.tum.cit.aet.job.dto.JobDetailDTO;
-import de.tum.cit.aet.job.dto.JobFormDTO;
+import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -52,22 +49,7 @@ public class JobService {
     @Transactional
     public void createJob(JobFormDTO dto) {
         Job job = new Job();
-        User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
-        job.setSupervisingProfessor(supervisingProfessor);
-        job.setResearchGroup(supervisingProfessor.getResearchGroup());
-        job.setTitle(dto.title());
-        job.setResearchArea(dto.researchArea());
-        job.setFieldOfStudies(dto.fieldOfStudies());
-        job.setLocation(dto.location());
-        job.setStartDate(dto.startDate());
-        job.setWorkload(dto.workload());
-        job.setContractDuration(dto.contractDuration());
-        job.setFundingType(dto.fundingType());
-        job.setDescription(dto.description());
-        job.setTasks(dto.tasks());
-        job.setRequirements(dto.requirements());
-        job.setState(dto.state());
-        jobRepository.save(job);
+        updateJobEntity(job, dto);
     }
 
     /**
@@ -77,12 +59,10 @@ public class JobService {
      * @param dto   the updated job details
      * @return the updated job card DTO
      */
-    public JobCardDTO updateJob(UUID jobId, JobDetailDTO dto) {
+    @Transactional
+    public void updateJob(UUID jobId, JobFormDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        //updateEntity(job, dto);
-        jobRepository.save(job);
-        //return toDto(job);
-        return null;
+        updateJobEntity(job, dto);
     }
 
     /**
@@ -109,10 +89,6 @@ public class JobService {
         return null;
     }
 
-    private void updateEntity(Job job, JobFormDTO dto) {
-        // TODO: implement field mappings
-    }
-
     /**
      * Returns a paginated list of jobs that are marked as published and available for applicants to apply to.
      *
@@ -134,5 +110,24 @@ public class JobService {
     public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO) {
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         return jobRepository.findAllJobsByProfessor(userId, pageable);
+    }
+
+    private void updateJobEntity(Job job, JobFormDTO dto) {
+        User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
+        job.setSupervisingProfessor(supervisingProfessor);
+        job.setResearchGroup(supervisingProfessor.getResearchGroup());
+        job.setTitle(dto.title());
+        job.setResearchArea(dto.researchArea());
+        job.setFieldOfStudies(dto.fieldOfStudies());
+        job.setLocation(dto.location());
+        job.setStartDate(dto.startDate());
+        job.setWorkload(dto.workload());
+        job.setContractDuration(dto.contractDuration());
+        job.setFundingType(dto.fundingType());
+        job.setDescription(dto.description());
+        job.setTasks(dto.tasks());
+        job.setRequirements(dto.requirements());
+        job.setState(dto.state());
+        jobRepository.save(job);
     }
 }

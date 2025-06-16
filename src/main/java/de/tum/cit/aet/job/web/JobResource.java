@@ -1,10 +1,7 @@
 package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
-import de.tum.cit.aet.job.dto.CreatedJobDTO;
-import de.tum.cit.aet.job.dto.JobCardDTO;
-import de.tum.cit.aet.job.dto.JobDetailDTO;
-import de.tum.cit.aet.job.dto.JobFormDTO;
+import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -76,16 +73,17 @@ public class JobResource {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    /**
-     * {@code PUT /api/jobs/jobform/{jobId}} : Update an existing job posting.
+    /*
+     * {@code PUT /api/jobs/update/{jobId}} : Update an existing job posting.
      *
      * @param jobId   the ID of the job to update.
      * @param jobForm the updated job posting data.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated job.
      */
-    @PutMapping("/jobform/{jobId}")
-    public ResponseEntity<JobCardDTO> updateJob(@PathVariable UUID jobId, @RequestBody JobDetailDTO jobForm) {
-        return ResponseEntity.ok(jobService.updateJob(jobId, jobForm));
+    @PutMapping("/update/{jobId}")
+    public ResponseEntity<Void> updateJob(@PathVariable UUID jobId, @RequestBody JobFormDTO jobForm) {
+        jobService.updateJob(jobId, jobForm);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
