@@ -24,7 +24,7 @@ class MockApplicationResourceService {
   }
 }
 
-describe('StringInputComponent', () => {
+describe('UploadButtonComponent', () => {
   let component: UploadButtonComponent;
   let fixture: ComponentFixture<UploadButtonComponent>;
 

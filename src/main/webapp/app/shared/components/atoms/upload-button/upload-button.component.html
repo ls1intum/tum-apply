@@ -9,9 +9,19 @@
 >
   <input type="file" (change)="onFileSelected($event)" accept="application/pdf" multiple hidden #fileInput />
   @if (disabled()) {
-    <p class="font-bold mt-1 mb-1 text-color">{{ documentIds()?.length }} Uploaded Document(s) for {{ documentType() }}</p>
+    @if (documentIds(); as documentIds) {
+      <p class="font-bold mt-1 mb-1 text-color">
+        {{ documentIds.length }}
+        @if (documentIds.length === 1) {
+          <span jhiTranslate="entity.upload.uploaded_document"></span>
+        } @else if (documentIds.length > 1) {
+          <span jhiTranslate="entity.upload.uploaded_documents"></span>
+        } @else {}
+        <span [jhiTranslate]="`entity.upload.document_type.${ documentType() }`"></span>
+      </p>
+    }
   } @else {
-    <p class="font-bold mt-1 mb-1 text-color">{{ uploadText() }}</p>
+    <p class="font-bold mt-1 mb-1 text-color" [jhiTranslate]="uploadKey()"></p>
   }
   @if (disabled()) {
     <div class="flex w-full justify-center">
@@ -25,10 +35,10 @@
         <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
       </span>
     </div>
-    <p class="mt-1 text-sm text-color">Click or drag and drop files to here to upload.</p>
-    <p class="mt-1 mb-1 text-xs text-color">Max upload size: 1MB</p>
+    <p class="mt-1 text-sm text-color" jhiTranslate="entity.upload.instruction"></p>
+    <p class="mt-1 mb-1 text-xs text-color"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
   }
   @if (isUploading()) {
-    <div>Upload Progress: {{ uploadProgress() }}%</div>
+    <div><span jhiTranslate="entity.upload.uploaded_progress"></span>{{ uploadProgress() }}%</div>
   }
 </button>

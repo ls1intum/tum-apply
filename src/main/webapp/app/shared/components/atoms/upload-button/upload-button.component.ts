@@ -18,6 +18,7 @@ import { HttpEventType, HttpUploadProgressEvent } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, filter, map, share } from 'rxjs/operators';
 import { of } from 'rxjs';
+import SharedModule from 'app/shared/shared.module';
 
 const DocumentType = {
   BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
@@ -31,7 +32,7 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, SharedModule],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
   standalone: true,
@@ -41,7 +42,7 @@ export class UploadButtonComponent {
 
   fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
-  uploadText = input<string>('Please upload');
+  uploadKey = input<string>('entity.upload.upload_instruction_standard');
   documentType = input.required<DocumentType>();
   applicationId = input.required<string>();
 

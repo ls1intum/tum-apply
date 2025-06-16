@@ -42,7 +42,7 @@
     <div class="form-row justify-center">
       <div class="w-1/2">
         <jhi-upload-button
-          uploadText="Please upload your Bachelor Certificate"
+          uploadKey="entity.upload.upload_instruction.BACHELOR_TRANSCRIPT"
           documentType="BACHELOR_TRANSCRIPT"
           [applicationId]="applicationId"
           [documentIds]="documentIdsBachelorTranscript()"
@@ -95,7 +95,7 @@
         <jhi-upload-button
           [applicationId]="applicationId"
           documentType="MASTER_TRANSCRIPT"
-          uploadText="Please upload your Master Certificate"
+          uploadKey="entity.upload.upload_instruction.MASTER_TRANSCRIPT"
           [documentIds]="documentIdsMasterTranscript()"
         />
       </div>
