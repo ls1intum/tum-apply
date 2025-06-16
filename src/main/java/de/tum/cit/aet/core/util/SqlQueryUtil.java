@@ -1,10 +1,8 @@
 package de.tum.cit.aet.core.util;
 
 import jakarta.persistence.Query;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.query.NativeQuery;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
@@ -33,7 +31,7 @@ public final class SqlQueryUtil {
         }
         int index = 0;
         for (var entry : dynamicFilters.entrySet()) {
-            var values = entry.getValue();
+            var values = entry.getValue().stream().map(String::valueOf).toList();
             if (values == null || values.isEmpty()) {
                 continue;
             }
@@ -91,11 +89,7 @@ public final class SqlQueryUtil {
     public static void bindParameters(Query q, Map<String, Object> params) {
         for (var e : params.entrySet()) {
             Object v = e.getValue();
-            if (v instanceof Collection<?>) {
-                q.unwrap(NativeQuery.class).setParameterList(e.getKey(), (Collection<?>) v);
-            } else {
-                q.setParameter(e.getKey(), v);
-            }
+            q.setParameter(e.getKey(), v);
         }
     }
 }

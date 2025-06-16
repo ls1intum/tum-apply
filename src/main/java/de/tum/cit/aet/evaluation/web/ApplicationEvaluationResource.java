@@ -1,5 +1,6 @@
 package de.tum.cit.aet.evaluation.web;
 
+import de.tum.cit.aet.core.dto.FilterDTO;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
@@ -20,46 +21,45 @@ public class ApplicationEvaluationResource {
 
     private final ApplicationEvaluationService applicationEvaluationService;
 
-    /**
-     * {@code GET /applications} : Retrieve a paginated and optionally sorted list of applications for a research group.
-     *
-     * @param offsetPageDTO containing the offset and limit of applications
-     * @param sortDto containing the optional field and direction used for sorting the results
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing an
-     * {@link ApplicationEvaluationOverviewListDTO} with application overviews and total count
-     */
     @GetMapping("/applications")
-    public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplications(
+    public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplicationsOverviews(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
-        @ParameterObject @ModelAttribute SortDTO sortDto
+        @ParameterObject @ModelAttribute SortDTO sortDto,
+        @ParameterObject @ModelAttribute FilterDTO filterDto
     ) {
         //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
-        return ResponseEntity.ok(applicationEvaluationService.getAllApplications(researchGroup, offsetPageDTO, sortDto));
+        return ResponseEntity.ok(
+            applicationEvaluationService.getAllApplicationsOverviews(researchGroup, offsetPageDTO, sortDto, filterDto)
+        );
     }
 
     @GetMapping("/application-details")
-    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationDetails(
+    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetails(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
-        @ParameterObject @ModelAttribute SortDTO sortDto
+        @ParameterObject @ModelAttribute SortDTO sortDto,
+        @ParameterObject @ModelAttribute FilterDTO filterDto
     ) {
+        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroup, offsetPageDTO, sortDto, filterDto));
     }
 
     @GetMapping("/application-details/window")
-    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationDetailsWindow(
+    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetailsWindow(
         @RequestParam UUID applicationId,
         @RequestParam int windowSize,
-        @ParameterObject @ModelAttribute SortDTO sortDto
+        @ParameterObject @ModelAttribute SortDTO sortDto,
+        @ParameterObject @ModelAttribute FilterDTO filterDto
     ) {
+        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
         return ResponseEntity.ok(
-            applicationEvaluationService.getApplicationDetailsWindow(applicationId, windowSize, researchGroup, sortDto)
+            applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroup, sortDto, filterDto)
         );
     }
 }

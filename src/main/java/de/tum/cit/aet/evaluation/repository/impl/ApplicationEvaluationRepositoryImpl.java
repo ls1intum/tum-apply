@@ -23,13 +23,15 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     private EntityManager em;
 
     //TODO add filter columns
-    private static final Map<String, String> FILTER_COLUMNS = Map.of();
+    private static final Map<String, String> FILTER_COLUMNS = Map.ofEntries(
+        Map.entry("state", "a.application_state"),
+        Map.entry("job.jobId", "j.job_id")
+    );
 
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
         Map.entry("rating", "a.rating"),
         Map.entry("createdAt", "a.created_at"),
-        Map.entry("applicant.lastName", "ap_last_name"),
-        Map.entry("state", "a.state")
+        Map.entry("applicant.lastName", "ap_last_name")
     );
 
     @Override
@@ -112,12 +114,25 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
 
         Query q = em.createNativeQuery(sql.toString());
         SqlQueryUtil.bindParameters(q, params);
-
+        logQuery(sql.toString(), params);
         try {
             return ((Number) q.getSingleResult()).longValue() - 1; // 0-based index
         } catch (Exception e) {
             throw new EntityNotFoundException("Application not found");
         }
+    }
+
+    private void logQuery(String sql, Map<String, Object> params) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Executing SQL query:\n").append(sql).append("\n");
+        sb.append("With parameters:\n");
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            Object value = entry.getValue();
+            String type = (value != null) ? value.getClass().getSimpleName() : "null";
+            sb.append("  :").append(entry.getKey()).append(" = ").append(value).append(" (").append(type).append(")").append("\n");
+        }
+        // Use your logger here
+        System.out.println(sb.toString());
     }
 
     private List<Predicate> buildCommonPredicates(
