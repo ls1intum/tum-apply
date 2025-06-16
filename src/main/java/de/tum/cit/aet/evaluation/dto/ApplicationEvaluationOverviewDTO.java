@@ -5,8 +5,8 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.validation.constraints.NotNull;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ApplicationEvaluationOverviewDTO(
@@ -19,7 +19,7 @@ public record ApplicationEvaluationOverviewDTO(
     String motivation,
     String jobName,
     Integer rating,
-    Instant appliedAt
+    LocalDateTime appliedAt
 ) {
     /**
      * Creates an {@link ApplicationEvaluationOverviewDTO} from the given {@link Application} entity.
