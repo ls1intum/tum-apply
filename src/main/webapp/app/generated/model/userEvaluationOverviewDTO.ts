@@ -9,9 +9,13 @@
  */
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface UserEvaluationOverviewDTO { 
+    email: string;
+    avatar?: string;
+    name: string;
+    gender?: string;
+    nationality?: string;
+    website?: string;
+    linkedinUrl?: string;
 }
 

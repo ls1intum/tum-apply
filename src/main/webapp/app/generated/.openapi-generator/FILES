@@ -2,7 +2,6 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
@@ -14,8 +13,11 @@ encoder.ts
 git_push.sh
 index.ts
 model/applicantDTO.ts
-model/applicationEvaluationListDTO.ts
+model/applicantEvaluationDetailDTO.ts
+model/applicationEvaluationDetailDTO.ts
+model/applicationEvaluationDetailListDTO.ts
 model/applicationEvaluationOverviewDTO.ts
+model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/createApplicationDTO.ts
@@ -24,7 +26,6 @@ model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
 model/jobDetailDTO.ts
 model/jobFormDTO.ts
-model/link.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
@@ -33,6 +34,7 @@ model/researchGroupShortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/userDTO.ts
+model/userEvaluationDetailDTO.ts
 model/userShortDTO.ts
 ng-package.json
 package.json

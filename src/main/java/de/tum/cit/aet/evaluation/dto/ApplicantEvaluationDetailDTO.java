@@ -4,8 +4,8 @@ import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.validation.constraints.NotNull;
 
-public record ApplicantEvaluationOverviewDTO(
-    @NotNull UserEvaluationOverviewDTO user,
+public record ApplicantEvaluationDetailDTO(
+    @NotNull UserEvaluationDetailDTO user,
     String bachelorDegreeName,
     GradingScale bachelorGradingScale,
     String bachelorGrade,
@@ -20,12 +20,12 @@ public record ApplicantEvaluationOverviewDTO(
      * @param applicant
      * @return the ApplicantEvaluationOverviewDTO
      */
-    public static ApplicantEvaluationOverviewDTO getFromEntity(Applicant applicant) {
+    public static ApplicantEvaluationDetailDTO getFromEntity(Applicant applicant) {
         if (applicant == null) {
             return null;
         }
-        return new ApplicantEvaluationOverviewDTO(
-            UserEvaluationOverviewDTO.getFromEntity(applicant),
+        return new ApplicantEvaluationDetailDTO(
+            UserEvaluationDetailDTO.getFromEntity(applicant),
             applicant.getBachelorDegreeName(),
             applicant.getBachelorGradingScale(),
             applicant.getBachelorGrade(),

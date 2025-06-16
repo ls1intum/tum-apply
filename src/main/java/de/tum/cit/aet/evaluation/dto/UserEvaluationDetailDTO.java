@@ -1,16 +1,15 @@
 package de.tum.cit.aet.evaluation.dto;
 
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.util.UUID;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO for {@link User} in the Evaluation Context
  */
-public record UserEvaluationOverviewDTO(
-    UUID userId,
-    String email,
+public record UserEvaluationDetailDTO(
+    @NotNull String email,
     String avatar,
-    String name,
+    @NotNull String name,
     String gender,
     String nationality,
     String website,
@@ -18,14 +17,13 @@ public record UserEvaluationOverviewDTO(
 ) {
     /**
      * @param user
-     * @return The UserEvaluationOverviewDTO from the user
+     * @return The userDTO from the user
      */
-    public static UserEvaluationOverviewDTO getFromEntity(User user) {
+    public static UserEvaluationDetailDTO getFromEntity(User user) {
         if (user == null) {
             return null;
         }
-        return new UserEvaluationOverviewDTO(
-            user.getUserId(),
+        return new UserEvaluationDetailDTO(
             user.getEmail(),
             user.getAvatar(),
             String.format("%s %s", user.getFirstName(), user.getLastName()),

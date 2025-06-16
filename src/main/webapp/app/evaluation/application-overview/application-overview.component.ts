@@ -83,7 +83,7 @@ export class ApplicationOverviewComponent {
   async loadPage(): Promise<void> {
     try {
       const res = await firstValueFrom(
-        this.evaluationService.getApplications(this.pageSize(), this.page(), this.sortBy(), this.sortDirection()),
+        this.evaluationService.getApplicationsOverviews(this.pageSize(), this.page(), this.sortBy(), this.sortDirection()),
       );
 
       setTimeout(() => {

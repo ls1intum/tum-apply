@@ -1,11 +1,24 @@
 package de.tum.cit.aet.evaluation.dto;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-//TODO define additional fields
-public record ApplicationEvaluationDetailDTO(UUID applicationId, String firstName, String lastName) {
+public record ApplicationEvaluationDetailDTO(
+    @NotNull UUID applicationId,
+    ApplicantEvaluationDetailDTO applicant,
+    @NotNull ApplicationState state,
+    LocalDate desiredDate,
+    String projects,
+    String specialSkills,
+    String motivation,
+    Integer rating,
+    LocalDateTime appliedAt
+) {
     /**
      * Creates an {@link ApplicationEvaluationDetailDTO} from the given {@link Application} entity.
      *
@@ -14,6 +27,17 @@ public record ApplicationEvaluationDetailDTO(UUID applicationId, String firstNam
      */
     public static ApplicationEvaluationDetailDTO fromApplication(Application application) {
         Applicant applicant = application.getApplicant();
-        return new ApplicationEvaluationDetailDTO(application.getApplicationId(), applicant.getFirstName(), applicant.getLastName());
+
+        return new ApplicationEvaluationDetailDTO(
+            application.getApplicationId(),
+            ApplicantEvaluationDetailDTO.getFromEntity(applicant),
+            application.getState(),
+            application.getDesiredStartDate(),
+            application.getProjects(),
+            application.getSpecialSkills(),
+            application.getMotivation(),
+            application.getRating(),
+            application.getCreatedAt()
+        );
     }
 }
