@@ -53,11 +53,10 @@ public class JobService {
     }
 
     /**
-     * Updates an existing job with new values.
+     * Updates an existing job with the provided data.
      *
      * @param jobId the ID of the job to update
-     * @param dto   the updated job details
-     * @return the updated job card DTO
+     * @param dto   the {@link JobFormDTO} containing updated job details
      */
     @Transactional
     public void updateJob(UUID jobId, JobFormDTO dto) {
@@ -78,15 +77,29 @@ public class JobService {
     }
 
     /**
-     * Returns full details of a job posting.
+     * Returns a jobDTO given the job id.
      *
      * @param jobId the ID of the job
      * @return the job card DTO with detailed info
      */
-    public JobCardDTO getJobDetails(UUID jobId) {
+    public JobDTO getJobById(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        //return toDto(job);
-        return null;
+        return new JobDTO(
+            job.getJobId(),
+            job.getTitle(),
+            job.getResearchArea(),
+            job.getFieldOfStudies(),
+            job.getSupervisingProfessor().getUserId(),
+            job.getLocation(),
+            job.getStartDate(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getState()
+        );
     }
 
     /**

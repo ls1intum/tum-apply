@@ -117,13 +117,13 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/{jobId}/details} : Get full details of a specific job.
+     * {@code GET /api/jobs/{jobId}} : Get all details of a specific job.
      *
      * @param jobId the ID of the job.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job details.
      */
-    @GetMapping("/{jobId}/details")
-    public ResponseEntity<JobCardDTO> getJobDetails(@PathVariable UUID jobId) {
-        return ResponseEntity.ok(jobService.getJobDetails(jobId));
+    @GetMapping("/{jobId}")
+    public ResponseEntity<JobDTO> getJobById(@PathVariable UUID jobId) {
+        return ResponseEntity.ok(jobService.getJobById(jobId));
     }
 }
