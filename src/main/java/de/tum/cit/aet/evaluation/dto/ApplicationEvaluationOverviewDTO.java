@@ -4,14 +4,19 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record ApplicationEvaluationOverviewDTO(
-    UUID applicationId,
-    String avatar,
-    String name,
-    ApplicationState state,
+    @NotNull UUID applicationId,
+    ApplicantEvaluationOverviewDTO applicant,
+    @NotNull ApplicationState applicationState,
+    LocalDate desiredDate,
+    String projects,
+    String specialSkills,
+    String motivation,
     String jobName,
     Integer rating,
     Instant appliedAt
@@ -29,9 +34,12 @@ public record ApplicationEvaluationOverviewDTO(
 
         return new ApplicationEvaluationOverviewDTO(
             application.getApplicationId(),
-            applicant.getAvatar(),
-            applicant.getFirstName() + " " + applicant.getLastName(),
+            ApplicantEvaluationOverviewDTO.getFromEntity(applicant),
             application.getState(),
+            application.getDesiredStartDate(),
+            application.getProjects(),
+            application.getSpecialSkills(),
+            application.getMotivation(),
             job.getTitle(),
             application.getRating(),
             application.getCreatedAt()
