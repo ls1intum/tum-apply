@@ -21,6 +21,15 @@ public class ApplicationEvaluationResource {
 
     private final ApplicationEvaluationService applicationEvaluationService;
 
+    /**
+     * REST endpoint to retrieve a paginated, sorted, and filtered list of application evaluation overviews
+     * for a research group.
+     *
+     * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination (offset and limit) information
+     * @param sortDto the {@link SortDTO} specifying sorting criteria
+     * @param filterDto the {@link FilterDTO} specifying dynamic filters to apply
+     * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationOverviewListDTO}
+     */
     @GetMapping("/applications")
     public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplicationsOverviews(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
@@ -36,6 +45,15 @@ public class ApplicationEvaluationResource {
         );
     }
 
+    /**
+     * REST endpoint to retrieve a paginated, sorted, and filtered list of application evaluation details
+     * for a research group.
+     *
+     * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination (offset and limit) information
+     * @param sortDto the {@link SortDTO} specifying sorting criteria
+     * @param filterDto the {@link FilterDTO} specifying dynamic filters to apply
+     * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
+     */
     @GetMapping("/application-details")
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetails(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
@@ -48,6 +66,16 @@ public class ApplicationEvaluationResource {
         return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroup, offsetPageDTO, sortDto, filterDto));
     }
 
+    /**
+     * REST endpoint to retrieve a window of applications centered around a specific application ID.
+     * Applies sorting and dynamic filtering based on request parameters.
+     *
+     * @param applicationId the ID of the application to center the window on
+     * @param windowSize the size of the window (must be a positive odd integer)
+     * @param sortDto the {@link SortDTO} specifying sorting criteria
+     * @param filterDto the {@link FilterDTO} specifying dynamic filters to apply
+     * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
+     */
     @GetMapping("/application-details/window")
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetailsWindow(
         @RequestParam UUID applicationId,

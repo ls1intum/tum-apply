@@ -16,6 +16,13 @@ public record ApplicationEvaluationOverviewDTO(
     Integer rating,
     Instant appliedAt
 ) {
+    /**
+     * Creates an {@link ApplicationEvaluationOverviewDTO} from the given {@link Application} entity.
+     * Combines application, applicant, and job details into a single overview DTO.
+     *
+     * @param application the {@link Application} entity to convert
+     * @return a new {@link ApplicationEvaluationOverviewDTO} populated with overview data
+     */
     public static ApplicationEvaluationOverviewDTO fromApplication(Application application) {
         Applicant applicant = application.getApplicant();
         Job job = application.getJob();

@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.util;
 import jakarta.persistence.Query;
 import java.util.List;
 import java.util.Map;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 
@@ -12,13 +11,14 @@ public final class SqlQueryUtil {
     private SqlQueryUtil() {}
 
     /**
-     * Adds dynamic <code>column IN (:paramX)</code> fragments to an existing SQL
-     * <code>WHERE</code> section. Every value list gets its own named parameter
-     * (<code>param0</code>, <code>param1</code>, …).
+     * Appends dynamic filter conditions to the given SQL query and binds corresponding parameters.
+     * For each dynamic filter, generates a SQL <code>IN</code> clause and parameter name,
+     * and updates the parameter map with the filter values.
      *
-     * @param sql            SQL StringBuilder positioned after the static WHERE
-     * @param dynamicFilters map «column → permitted values» coming from the UI
-     * @param params         parameter map that will be fed into a JPA Query
+     * @param sql the {@link StringBuilder} containing the SQL query to append to
+     * @param filterColumns a map of filter keys to SQL column names
+     * @param dynamicFilters a map of filter keys to lists of filter values
+     * @param params the map to which generated parameter names and their values will be added
      */
     public static void appendDynamicFilters(
         StringBuilder sql,
@@ -47,11 +47,15 @@ public final class SqlQueryUtil {
     }
 
     /**
-     * Builds a complete <code>ORDER BY ...</code> clause from a Spring
-     * {@link Pageable}. Only properties contained in {@code sortColumns} are
-     * accepted; everything else is silently ignored for safety. The clause is
-     * guaranteed to finish with {@code secondarySortColumn} so that the result
-     * order is deterministic even when the primary key(s) are equal.
+     * Builds an SQL <code>ORDER BY</code> clause from the given {@link Sort} object.
+     * Maps user-specified sort properties to SQL columns, applies a default sort if none are provided,
+     * and optionally appends a secondary sort column for deterministic ordering.
+     *
+     * @param sort the {@link Sort} object specifying the sorting criteria
+     * @param sortColumns a map of sort property names to SQL column names
+     * @param defaultSortColumn the SQL column to use if no user sort is provided
+     * @param secondarySortColumn an optional secondary SQL column to ensure deterministic ordering (may be {@code null})
+     * @return the generated SQL <code>ORDER BY</code> clause as a string
      */
     public static String buildOrderByClause(
         @NonNull Sort sort,
@@ -84,7 +88,11 @@ public final class SqlQueryUtil {
     }
 
     /**
-     * Binds named parameters (with collection handling) on a JPA native query.
+     * Binds the provided named parameters to the given {@link Query}.
+     * Iterates over the parameter map and sets each parameter on the query.
+     *
+     * @param q the {@link Query} to which parameters will be bound
+     * @param params a map of parameter names to their values
      */
     public static void bindParameters(Query q, Map<String, Object> params) {
         for (var e : params.entrySet()) {

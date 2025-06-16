@@ -78,8 +78,6 @@ public class SecurityConfiguration {
                 requests
                     // NOTE: Always have a look at {@link de.tum.cit.aet.artemis.core.security.filter.SpaWebFilter} to see which URLs are forwarded to the SPA
                     // Client related URLs and publicly accessible information (allowed for everyone).
-                    .requestMatchers("/api/**")
-                    .permitAll()
                     .requestMatchers("/", "/index.html", "/public/**")
                     .permitAll()
                     .requestMatchers("/*.js", "/*.css", "/*.map", "/*.json")

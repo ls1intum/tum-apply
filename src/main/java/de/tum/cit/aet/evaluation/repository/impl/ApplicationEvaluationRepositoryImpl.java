@@ -22,7 +22,6 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     @PersistenceContext
     private EntityManager em;
 
-    //TODO add filter columns
     private static final Map<String, String> FILTER_COLUMNS = Map.ofEntries(
         Map.entry("state", "a.application_state"),
         Map.entry("job.jobId", "j.job_id")
@@ -34,6 +33,10 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         Map.entry("applicant.lastName", "ap_last_name")
     );
 
+    /**
+     * Retrieves a paginated list of {@link Application} entities for a given research group,
+     * filtered by application states and optional dynamic filters, and ordered according to the provided pageable.
+     */
     @Override
     public List<Application> findApplications(
         UUID researchGroupId,
@@ -60,6 +63,10 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         return query.getResultList();
     }
 
+    /**
+     * Counts the number of applications for a given research group, filtered by application states
+     * and optional dynamic filters.
+     */
     @Override
     public long countApplications(UUID researchGroupId, Collection<ApplicationState> states, Map<String, List<?>> dynamicFilters) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -75,6 +82,10 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         return em.createQuery(cq).getSingleResult();
     }
 
+    /**
+     * Finds the index (0-based) of a specific application in a dynamically filtered and sorted list
+     * of applications for a given research group.
+     */
     @Override
     public long findIndexOfApplication(
         UUID applicationId,
@@ -114,7 +125,6 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
 
         Query q = em.createNativeQuery(sql.toString());
         SqlQueryUtil.bindParameters(q, params);
-        logQuery(sql.toString(), params);
         try {
             return ((Number) q.getSingleResult()).longValue() - 1; // 0-based index
         } catch (Exception e) {
@@ -122,19 +132,10 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         }
     }
 
-    private void logQuery(String sql, Map<String, Object> params) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Executing SQL query:\n").append(sql).append("\n");
-        sb.append("With parameters:\n");
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            Object value = entry.getValue();
-            String type = (value != null) ? value.getClass().getSimpleName() : "null";
-            sb.append("  :").append(entry.getKey()).append(" = ").append(value).append(" (").append(type).append(")").append("\n");
-        }
-        // Use your logger here
-        System.out.println(sb.toString());
-    }
-
+    /**
+     * Builds a list of common predicates for filtering applications based on research group,
+     * application states, and dynamic filters.
+     */
     private List<Predicate> buildCommonPredicates(
         CriteriaBuilder cb,
         Root<Application> root,
