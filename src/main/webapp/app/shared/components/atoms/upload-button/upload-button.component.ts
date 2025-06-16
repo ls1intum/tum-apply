@@ -77,7 +77,7 @@ export class UploadButtonComponent {
 
     let totalSize = 0;
     files.forEach(f => (totalSize += f.size));
-    if (totalSize > this.maxUploadSizeInMb * 1000 * 1000) {
+    if (totalSize > this.maxUploadSizeInMb * 1024 * 1024) {
       alert('The total size of the file(s) being uploaded is too large. Upload aborted.');
       return;
     }
