@@ -19,6 +19,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, filter, map, share } from 'rxjs/operators';
 import { of } from 'rxjs';
 import SharedModule from 'app/shared/shared.module';
+import { ButtonModule } from 'primeng/button';
+import { BadgeModule } from 'primeng/badge';
+import { CommonModule } from '@angular/common';
+import { ProgressBar } from 'primeng/progressbar';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
 
 const DocumentType = {
   BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
@@ -32,10 +39,11 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, SharedModule],
+  imports: [FileUpload, ButtonModule, BadgeModule, ProgressBar, ToastModule, FontAwesomeModule, SharedModule],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
   standalone: true,
+  providers: [MessageService],
 })
 export class UploadButtonComponent {
   readonly maxUploadSizeInMb = 1;
@@ -48,10 +56,13 @@ export class UploadButtonComponent {
 
   documentIds = model<string[] | undefined>();
 
-  selectedFile = signal<File[] | undefined>(undefined);
+  selectedFiles = signal<File[] | undefined>(undefined);
   uploadProgress = signal<number>(0);
   isUploading = signal<boolean>(false);
   isDragOver = signal(false);
+
+  totalSize = signal<number>(0);
+  totalSizePercent = signal<number>(0);
 
   valid = output<boolean>();
 
@@ -63,17 +74,16 @@ export class UploadButtonComponent {
   private applicationService = inject(ApplicationResourceService);
   private injector = inject(Injector);
 
-  onFileSelected(event: Event): void {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files.length > 0) {
-      const fileList: File[] = Array.from(fileInput.files);
-      this.selectedFile.set(fileList);
+  onFileSelected(event: FileSelectEvent): void {
+    const files = event.currentFiles;
+    if (files && files.length > 0) {
+      this.selectedFiles.set(files);
     }
     this.uploadFile();
   }
 
   uploadFile(): void {
-    const files = this.selectedFile();
+    const files = this.selectedFiles();
     if (!files) return;
 
     let totalSize = 0;
@@ -125,9 +135,34 @@ export class UploadButtonComponent {
     });
   }
 
+  onRemoveTemplatingFile(event: Event, file: File, removeFileCallback: (e: Event, i: number) => void, index: number) {
+    removeFileCallback(event, index);
+    this.totalSize.set(this.totalSize() - parseInt(this.formatSize(file.size)));
+    this.totalSizePercent.set(this.totalSize() / 10);
+  }
+
+  onClearTemplatingUpload(clear: VoidFunction) {
+    clear();
+    this.totalSize.set(0);
+    this.totalSizePercent.set(0);
+  }
+
+  uploadEvent(callback: VoidFunction) {
+    callback();
+  }
+
+  choose(event: Event, callback: VoidFunction) {
+    callback();
+  }
+
   triggerFileInput(): void {
     this.fileInputRef()?.nativeElement.click();
   }
+
+  // onTemplatedUpload() {
+  //   alert("File Uploaded");
+  //   // this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
+  // }
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();
@@ -148,9 +183,23 @@ export class UploadButtonComponent {
 
     if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
       const files: File[] = Array.from(event.dataTransfer.files);
-      this.selectedFile.set(files);
+      this.selectedFiles.set(files);
       this.uploadFile();
       event.dataTransfer.clearData();
     }
+  }
+
+  formatSize(bytes: number): string {
+    const k = 1024;
+    const dm = 3;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    if (bytes === 0) {
+      return `0 ${sizes[0]}`;
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+    return `${formattedSize} ${sizes[i]}`;
   }
 }

@@ -77,7 +77,7 @@ describe('UploadButtonComponent', () => {
 
     component.onFileSelected(event);
 
-    expect(component.selectedFile()).toEqual([fakeFile]);
+    expect(component.selectedFiles()).toEqual([fakeFile]);
     expect(component.uploadFile).toHaveBeenCalled();
   });
 
@@ -93,7 +93,7 @@ describe('UploadButtonComponent', () => {
 
   it('should alert if total file size exceeds 1MB and not proceed with upload', () => {
     const largeFile = new File([new ArrayBuffer(2 * 1024 * 1024)], 'large.pdf'); // 2MB
-    component.selectedFile.set([largeFile]);
+    component.selectedFiles.set([largeFile]);
 
     jest.spyOn(window, 'alert');
     const spy = jest.spyOn(component['applicationService'], 'uploadDocuments');
