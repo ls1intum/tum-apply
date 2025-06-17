@@ -21,7 +21,7 @@
     }
   ],
   "paths": {
-    "/api/jobs/jobform/{jobId}": {
+    "/api/jobs/update/{jobId}": {
       "put": {
         "tags": [
           "job-resource"
@@ -42,7 +42,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/JobDetailDTO"
+                "$ref": "#/components/schemas/JobFormDTO"
               }
             }
           },
@@ -50,14 +50,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobCardDTO"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -876,12 +869,12 @@
         }
       }
     },
-    "/api/jobs/{jobId}/details": {
+    "/api/jobs/{jobId}": {
       "get": {
         "tags": [
           "job-resource"
         ],
-        "operationId": "getJobDetails",
+        "operationId": "getJobById",
         "parameters": [
           {
             "name": "jobId",
@@ -899,10 +892,32 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JobCardDTO"
+                  "$ref": "#/components/schemas/JobDTO"
                 }
               }
             }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "deleteJob",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1284,54 +1299,25 @@
           }
         }
       }
-    },
-    "/api/jobs/{jobId}": {
-      "delete": {
-        "tags": [
-          "job-resource"
-        ],
-        "operationId": "deleteJob",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
-      "JobDetailDTO": {
+      "JobFormDTO": {
         "type": "object",
         "properties": {
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "supervisingProfessor": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "researchGroup": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "fieldOfStudies": {
+          "title": {
             "type": "string"
           },
           "researchArea": {
             "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "supervisingProfessor": {
+            "type": "string",
+            "format": "uuid"
           },
           "location": {
             "type": "string",
@@ -1344,6 +1330,10 @@
               "WEIHENSTEPHAN",
               "SINGAPORE"
             ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
           },
           "workload": {
             "type": "integer",
@@ -1365,9 +1355,6 @@
               "RESEARCH_GRANT"
             ]
           },
-          "title": {
-            "type": "string"
-          },
           "description": {
             "type": "string"
           },
@@ -1385,46 +1372,13 @@
               "CLOSED",
               "APPLICANT_FOUND"
             ]
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "JobCardDTO": {
-        "type": "object",
-        "properties": {
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "fieldOfStudies": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          },
-          "professorName": {
-            "type": "string"
-          },
-          "workload": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "relativeTime": {
-            "type": "string"
           }
         },
         "required": [
-          "jobId"
+          "fundingType",
+          "location",
+          "state",
+          "supervisingProfessor"
         ]
       },
       "ApplicantDTO": {
@@ -1660,82 +1614,39 @@
       "DocumentDTO": {
         "type": "object"
       },
-      "JobFormDTO": {
+      "JobCardDTO": {
         "type": "object",
         "properties": {
-          "title": {
-            "type": "string"
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
           },
-          "researchArea": {
+          "title": {
             "type": "string"
           },
           "fieldOfStudies": {
             "type": "string"
           },
-          "supervisingProfessor": {
-            "type": "string",
-            "format": "uuid"
-          },
           "location": {
-            "type": "string",
-            "enum": [
-              "GARCHING",
-              "GARCHING_HOCHBRUECK",
-              "HEILBRONN",
-              "MUNICH",
-              "STRAUBING",
-              "WEIHENSTEPHAN",
-              "SINGAPORE"
-            ]
+            "type": "string"
           },
-          "startDate": {
-            "type": "string",
-            "format": "date"
+          "professorName": {
+            "type": "string"
           },
           "workload": {
             "type": "integer",
             "format": "int32"
           },
-          "contractDuration": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fundingType": {
+          "startDate": {
             "type": "string",
-            "enum": [
-              "FULLY_FUNDED",
-              "PARTIALLY_FUNDED",
-              "SCHOLARSHIP",
-              "SELF_FUNDED",
-              "INDUSTRY_SPONSORED",
-              "GOVERNMENT_FUNDED",
-              "RESEARCH_GRANT"
-            ]
+            "format": "date"
           },
-          "description": {
+          "relativeTime": {
             "type": "string"
-          },
-          "tasks": {
-            "type": "string"
-          },
-          "requirements": {
-            "type": "string"
-          },
-          "state": {
-            "type": "string",
-            "enum": [
-              "DRAFT",
-              "PUBLISHED",
-              "CLOSED",
-              "APPLICANT_FOUND"
-            ]
           }
         },
         "required": [
-          "fundingType",
-          "location",
-          "state",
-          "supervisingProfessor"
+          "jobId"
         ]
       },
       "CreateApplicationDTO": {
@@ -1821,6 +1732,87 @@
             "$ref": "#/components/schemas/ResearchGroupShortDTO"
           }
         }
+      },
+      "JobDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "supervisingProfessor": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "jobId",
+          "state",
+          "supervisingProfessor"
+        ]
       },
       "CreatedJobDTO": {
         "type": "object",

@@ -22,7 +22,7 @@ model/createApplicationDTO.ts
 model/createdJobDTO.ts
 model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
-model/jobDetailDTO.ts
+model/jobDTO.ts
 model/jobFormDTO.ts
 model/link.ts
 model/models.ts
