@@ -1,6 +1,6 @@
 <header class="app-header">
   <div (click)="navigateToHome()" class="logo-section">
-    <img alt="TUM Logo" class="tum-logo" src="../../../../../content/images/tum-logo/tum-logo-blue.svg" />
+    <img alt="TUM Logo" class="tum-logo" src="content/images/tum-logo-blue.svg" />
     <span class="app-name">Apply</span>
   </div>
 
@@ -16,17 +16,16 @@
       }
     </div>
     <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
-    @if (user(); as userValue) {
-      @if (userValue.anonymous) {
-        <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
-        <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
-      } @else {
-        <div class="profile">
-          <fa-icon class="profile-icon" icon="user" />
-          <span class="font-medium">{{ user()?.name }}</span>
-        </div>
-        <jhi-button (click)="logout()" label="{{ 'header.logout' | translate }}" severity="primary" variant="outlined" />
-      }
+
+    @if (user() === undefined) {
+      <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
+      <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
+    } @else {
+      <div class="profile">
+        <fa-icon class="profile-icon" icon="user" />
+        <span class="font-medium">{{ user()?.name }}</span>
+      </div>
+      <jhi-button (click)="logout()" label="{{ 'header.logout' | translate }}" severity="primary" variant="outlined" />
     }
   </div>
 </header>

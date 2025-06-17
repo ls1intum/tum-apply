@@ -3,13 +3,14 @@ import { Component, computed, effect, input, output, signal } from '@angular/cor
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-string-input',
   templateUrl: './string-input.component.html',
-  styleUrl: './string-input.component.scss',
+  styleUrls: ['./string-input.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
 })
 export class StringInputComponent {
   control = input<AbstractControl | undefined>(undefined);
@@ -24,6 +25,7 @@ export class StringInputComponent {
   labelPosition = input<'top' | 'left'>('top');
   width = input<string>('100%');
   id = input<string | undefined>(undefined);
+  tooltipText = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
   // State tracking
