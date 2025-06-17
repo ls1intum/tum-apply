@@ -44,64 +44,6 @@
       [ngTemplateOutlet]="text_card"
       [ngTemplateOutletContext]="{ icon: 'flask', name: 'Research Experience', text: application().projects }"
     />
-    <div class="self-stretch px-4 py-3 rounded-lg outline outline-stone-300 flex flex-col justify-center items-center gap-2">
-      <div class="self-stretch inline-flex justify-between items-center">
-        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
-          <fa-icon icon="question" />
-        </div>
-        <div class="flex-1 justify-start text-base">Custom Question Section 1</div>
-        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
-          <fa-icon icon="chevron-up" />
-        </div>
-      </div>
-      <div class="self-stretch justify-start">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-        in culpa qui officia deserunt mollit anim id est laborum.
-      </div>
-    </div>
-    <div class="self-stretch px-4 py-3 rounded-lg outline outline-stone-300 flex flex-col justify-center items-center gap-2">
-      <div class="self-stretch inline-flex justify-between items-center">
-        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
-          <fa-icon icon="question" />
-        </div>
-        <div class="flex-1 justify-start text-base">Custom Question Section 2</div>
-        <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
-          <fa-icon icon="chevron-up" />
-        </div>
-      </div>
-      <div class="self-stretch p-5 inline-flex justify-start items-start gap-5">
-        <div class="flex justify-start items-center gap-2">
-          <div class="w-5 h-5 relative rounded border-2 border-Border-Default"></div>
-          <div class="justify-start text-Primary-Default text-base">Checkbox</div>
-        </div>
-        <div class="flex justify-start items-center gap-2">
-          <div class="w-5 h-5 relative rounded border-2 border-Border-Default"></div>
-          <div class="justify-start text-Background-Disabled text-base">Checkbox</div>
-        </div>
-        <div class="flex justify-start items-center gap-2">
-          <div
-            class="w-5 h-5 bg-Primary-Default rounded outline outline-2 outline-offset-[-2px] outline-Primary-Default inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
-          >
-            <div data-name="check" class="self-stretch flex-1 relative overflow-hidden">
-              <div class="w-3.5 h-2.5 left-[2.61px] top-[4.90px] absolute bg-Text-On-Primary"></div>
-            </div>
-          </div>
-          <div class="justify-start text-Primary-Default text-base">Checkbox</div>
-        </div>
-        <div class="flex justify-start items-center gap-2">
-          <div
-            class="w-5 h-5 bg-Border-Default rounded outline outline-2 outline-offset-[-2px] outline-Border-Default inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
-          >
-            <div data-name="check" class="self-stretch flex-1 relative overflow-hidden">
-              <div class="w-3.5 h-2.5 left-[2.61px] top-[4.90px] absolute bg-Background-Disabled"></div>
-            </div>
-          </div>
-          <div class="justify-start text-Background-Disabled text-base">Checkbox</div>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="flex gap-10">
     <div class="flex flex-col items-center gap-2.5">
@@ -110,5 +52,113 @@
       <div class="w-96 h-45 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5"></div>
     </div>
   </div>
-  <!-- DOCUMENT SECTION -->
 </div>
+
+<ng-template #applicantDetailsTemplate>
+  <div class="w-96 h-60 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5">
+    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ $implicit: 'Applicant Information' }" />
+    <div class="self-stretch flex-1 px-8 pb-6 flex flex-col justify-center items-center">
+      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Preferred Language', val: 'English' }" />
+      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Desired Start Date', val: 'Sept 2025' }" />
+      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Gender', val: 'Female' }" />
+      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Nationality', val: 'Albanian' }" />
+    </div>
+
+    <div class="w-full pb-4 inline-flex justify-around items-center">
+      <div class="flex-1 flex justify-center items-center gap-2.5">
+        <div>Website</div>
+        <fa-icon icon="link" class="w-6 h-6" />
+      </div>
+      <div class="flex-1 flex justify-center items-center gap-2.5">
+        <div>Linked In</div>
+        <fa-icon [icon]="['fab', 'linkedin']" class="w-6 h-6" />
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #text_card let-icon="icon" let-name="name" let-text="text">
+  <div class="self-stretch px-4 py-3 rounded-lg outline outline-stone-300 flex flex-col justify-center items-center gap-2">
+    <div class="self-stretch inline-flex justify-between items-center">
+      <fa-icon icon="{{ icon }}" class="w-6 h-6" />
+      <div class="flex-1 justify-start text-base">{{ name }}</div>
+    </div>
+    <div class="w-full justify-start">
+      {{ text }}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #card_row let-name let-val="val">
+  <div class="self-stretch flex-1 inline-flex justify-center items-center">
+    <div class="flex-1 self-stretch flex justify-center items-center">
+      <div class="flex-1 justify-start">{{ name }}</div>
+    </div>
+    <div class="flex-1 text-right justify-start">{{ val }}</div>
+  </div>
+</ng-template>
+
+<ng-template #card_row_with_icon let-name let-val="val">
+  <div class="flex items-center justify-between w-full gap-2.5">
+    <div class="flex-1 text-left">
+      {{ name }}
+    </div>
+    <div class="flex-1 flex items-center justify-end gap-2.5">
+      <div class="text-right flex-1">
+        {{ val }}
+      </div>
+      <div class="transform -rotate-90">
+        <fa-icon icon="arrow-right-arrow-left" class="w-6 h-6" />
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #card_header let-header>
+  <div class="self-stretch h-14 inline-flex justify-center items-center gap-2.5">
+    <div class="flex-1 self-stretch flex justify-center items-center gap-2.5">
+      <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
+        <fa-icon icon="building-columns" />
+      </div>
+      <div class="text-center justify-start font-bold">{{ header }}</div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Education Information Template -->
+<ng-template #educationInformationTemplate>
+  <div class="w-96 pb-6 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5">
+    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ $implicit: 'BSc Information' }" />
+    <div class="self-stretch flex-1 px-8 flex flex-col justify-center items-center">
+      <ng-container
+        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutletContext]="{ $implicit: 'Name', val: application().applicant?.bachelorDegreeName }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="card_row_with_icon"
+        [ngTemplateOutletContext]="{ $implicit: 'Grade', val: application().applicant?.bachelorGrade }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutletContext]="{ $implicit: 'University', val: application().applicant?.bachelorUniversity }"
+      />
+    </div>
+  </div>
+  <div class="w-96 pb-6 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5">
+    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ $implicit: 'MSc Information' }" />
+    <div class="self-stretch flex-1 px-8 flex flex-col justify-center items-center">
+      <ng-container
+        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutletContext]="{ $implicit: 'Name', val: application().applicant?.masterDegreeName }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="card_row_with_icon"
+        [ngTemplateOutletContext]="{ $implicit: 'Grade', val: application().applicant?.masterGrade }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutletContext]="{ $implicit: 'University', val: application().applicant?.masterUniversity }"
+      />
+    </div>
+  </div>
+</ng-template>
