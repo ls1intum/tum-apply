@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
 import { JobDTO, JobFormDTO } from '../../generated';
@@ -34,6 +35,7 @@ type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
   styleUrls: ['./job-creation-form.component.scss'],
   imports: [
     CommonModule,
+    TooltipModule,
     ReactiveFormsModule,
     FontAwesomeModule,
     DropdownComponent,
