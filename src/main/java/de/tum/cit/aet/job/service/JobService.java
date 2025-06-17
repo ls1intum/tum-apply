@@ -46,7 +46,6 @@ public class JobService {
      *
      * @param dto the job details used to create the job
      */
-    @Transactional
     public void createJob(JobFormDTO dto) {
         Job job = new Job();
         updateJobEntity(job, dto);
@@ -58,7 +57,6 @@ public class JobService {
      * @param jobId the ID of the job to update
      * @param dto   the {@link JobFormDTO} containing updated job details
      */
-    @Transactional
     public void updateJob(UUID jobId, JobFormDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         updateJobEntity(job, dto);
