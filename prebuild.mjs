@@ -13,7 +13,10 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, '.env.local') });
+// Load the most appropriate .env file
+const envFiles = ['.env.local', '.env', '.env.test', '.env.prod'];
+const selectedEnvFile = envFiles.find(f => fs.existsSync(path.resolve(__dirname, f)));
+dotenv.config({ path: selectedEnvFile ? path.resolve(__dirname, selectedEnvFile) : undefined });
 const languagesHash = await hashElement(path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n'), {
   algo: 'md5',
   encoding: 'hex',
