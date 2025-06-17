@@ -36,9 +36,10 @@ public class ApplicationEvaluationService {
     /**
      * Retrieves a paginated and optionally sorted list of applications for a given research group.
      *
-     * @param researchGroup the research group whose applications are to be retrieved
-     * @param offsetPageDTO containing the offset and limit for pagination
-     * @param sortDTO       containing the optional field and direction used for sorting the results
+     * @param researchGroup the {@link ResearchGroup} whose applications are to be fetched
+     * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination information (offset and limit)
+     * @param sortDTO the {@link SortDTO} specifying the sorting criteria
+     * @param filterDTO the {@link FilterDTO} specifying dynamic filters to apply
      * @return an {@link ApplicationEvaluationOverviewListDTO} containing application overviews
      * and the total number of matching records
      */
