@@ -409,8 +409,8 @@ export const TUMApplyPreset = definePreset(Lara, {
             info: {
               activeBackground: '{neutral.activeColor}',
               background: '{base.white}',
-              borderColor: '{neutral.color}',
-              color: '{neutral.color}',
+              borderColor: '{text.primary}',
+              color: '{text.primary}',
               hoverBackground: '{neutral.hoverColorOutlined}',
               hoverColor: '{neutral.inverseColor}',
               hoverBorderColor: '{base.black}',
@@ -475,7 +475,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             info: {
               activeBackground: '{neutral.activeColor}',
               background: '{base.white}',
-              color: '{neutral.color}',
+              color: '{text.primary}',
               hoverBackground: '{neutral.hoverColorOutlined}',
               hoverColor: '{neutral.inverseColor}',
             },

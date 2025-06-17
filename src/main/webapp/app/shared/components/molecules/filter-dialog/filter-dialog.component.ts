@@ -1,16 +1,10 @@
-import { Component, OnInit, ViewEncapsulation, computed, effect, input, model, output, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, input, model, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 
-import { FilterOption, FilterSelectComponent } from '../../atoms/filter-select/filter-select.component';
+import { FilterSelectComponent } from '../../atoms/filter-select/filter-select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
-
-export interface FilterField {
-  displayName: string;
-  field: string;
-  options: FilterOption[];
-  selected?: FilterOption[];
-}
+import { FilterField, FilterOption } from '../filter-sort-bar/filter-sort-bar.component';
 
 @Component({
   selector: 'jhi-filter-dialog',
@@ -19,12 +13,12 @@ export interface FilterField {
   styleUrl: './filter-dialog.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
-export class FilterDialogComponent implements OnInit {
+export class FilterDialogComponent {
   filterFields = input.required<FilterField[]>();
 
   draftFields = signal<FilterField[]>([]);
 
-  applyFilters = output<Record<string, FilterOption[]>>();
+  applyFilters = output<FilterField[]>();
 
   visible = model<boolean>(false);
 
@@ -33,6 +27,11 @@ export class FilterDialogComponent implements OnInit {
   private _filterFields = signal<FilterField[]>([]);
 
   constructor() {
+    // initilialize private fields
+    effect(() => {
+      this._filterFields.set(this.filterFields());
+    });
+
     // whenever the dialog opens, clone the incoming fields
     effect(() => {
       if (this.visible()) {
@@ -44,10 +43,6 @@ export class FilterDialogComponent implements OnInit {
         );
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._filterFields.set(this.filterFields());
   }
 
   resetField(field: FilterField): void {
@@ -72,8 +67,7 @@ export class FilterDialogComponent implements OnInit {
 
   applyAndClose(): void {
     this._filterFields.set(this.draftFields());
-    const result = Object.fromEntries(this.draftFields().map(f => [f.field, f.selected ?? []]));
-    this.applyFilters.emit(result);
+    this.applyFilters.emit(this._filterFields());
     this.visible.set(false);
   }
 

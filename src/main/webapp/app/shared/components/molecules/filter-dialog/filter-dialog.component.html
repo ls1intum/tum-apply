@@ -7,7 +7,7 @@
       </div>
       <jhi-filter-select
         [options]="filterField.options"
-        [preSelected]="filterField.selected ?? null"
+        [preSelected]="filterField.selected ?? undefined"
         (selectionChange)="onSelectionChange(filterField, $event)"
       />
     </div>

@@ -7,4 +7,18 @@
   [style]="{ width: width() }"
   [selectedItemsLabel]="selectedOptions?.length + ' selected'"
   appendTo="body"
-/>
+>
+  <ng-template let-item pTemplate="item">
+    @if (item.translationKey) {
+      {{ item.translationKey | translate }}
+    } @else {
+      {{ item.displayName }}
+    }
+  </ng-template>
+
+  <ng-template let-selectedItems pTemplate="selectedItems">
+    @for (item of selectedItems; track $index) {
+      <p-chip [label]="item.displayName" [removable]="true" (onRemove)="handleChipRemove($event, item)" />
+    }
+  </ng-template>
+</p-multiselect>

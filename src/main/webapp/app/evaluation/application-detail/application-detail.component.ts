@@ -1,8 +1,10 @@
 import { Component, model } from '@angular/core';
 
-import { FilterOption } from '../../shared/components/atoms/filter-select/filter-select.component';
-import { FilterField } from '../../shared/components/molecules/filter-dialog/filter-dialog.component';
-import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import {
+  FilterField,
+  FilterSortBarComponent,
+  SortOption,
+} from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 
 @Component({
   selector: 'jhi-application-detail',
@@ -11,21 +13,6 @@ import { FilterSortBarComponent } from '../../shared/components/molecules/filter
   styleUrl: './application-detail.component.scss',
 })
 export class ApplicationDetailComponent {
-  MOCK_FILTER_OPTIONS: FilterOption[] = [
-    { displayName: 'Status: Open', field: 'status_open' },
-    { displayName: 'Status: Closed', field: 'status_closed' },
-    { displayName: 'Priority: High', field: 'priority_high' },
-    { displayName: 'Priority: Low', field: 'priority_low' },
-    { displayName: 'Category: Bug', field: 'category_bug' },
-    { displayName: 'Category: Feature', field: 'category_feature' },
-  ];
-
-  // Example pre-selected filters
-  MOCK_PRESELECTED_FILTERS: FilterOption[] = [
-    { displayName: 'Status: Open', field: 'status_open' },
-    { displayName: 'Priority: High', field: 'priority_high' },
-  ];
-
   visible = model(false);
 
   filterFields: FilterField[] = [
@@ -33,34 +20,57 @@ export class ApplicationDetailComponent {
       displayName: 'Job',
       field: 'job',
       options: [
-        { displayName: 'Software Engineer', field: 'software_engineer' },
-        { displayName: 'Data Scientist', field: 'data_scientist' },
-        { displayName: 'Project Manager', field: 'project_manager' },
+        { displayName: 'Software Engineer', field: 'software_engineer', translationKey: 'softwareEngineerKey' },
+        { displayName: 'Data Scientist', field: 'data_scientist', translationKey: 'dataScientistKey' },
+        { displayName: 'Project Manager', field: 'project_manager', translationKey: 'projectManager' },
       ],
-      selected: [{ displayName: 'Project Manager', field: 'project_manager' }],
+      selected: [{ displayName: 'Project Manager', field: 'project_manager', translationKey: 'projectManager' }],
     },
     {
       displayName: 'Status',
       field: 'status',
       options: [
-        { displayName: 'Open', field: 'open' },
-        { displayName: 'In Progress', field: 'in_progress' },
-        { displayName: 'Closed', field: 'closed' },
+        { displayName: 'Open', field: 'open', translationKey: undefined },
+        { displayName: 'In Progress', field: 'in_progress', translationKey: undefined },
+        { displayName: 'Closed', field: 'closed', translationKey: undefined },
       ],
       selected: [
-        { displayName: 'Open', field: 'open' },
-        { displayName: 'In Progress', field: 'in_progress' },
+        { displayName: 'Open', field: 'open', translationKey: undefined },
+        { displayName: 'In Progress', field: 'in_progress', translationKey: undefined },
       ],
     },
     {
       displayName: 'Degree',
       field: 'degree',
       options: [
-        { displayName: 'Bachelor', field: 'bachelor' },
-        { displayName: 'Master', field: 'master' },
-        { displayName: 'PhD', field: 'phd' },
+        { displayName: 'Bachelor', field: 'bachelor', translationKey: undefined },
+        { displayName: 'Master', field: 'master', translationKey: undefined },
+        { displayName: 'PhD', field: 'phd', translationKey: undefined },
       ],
       selected: [],
+    },
+  ];
+
+  SORT_OPTIONS: SortOption[] = [
+    {
+      displayName: 'Rating (Worst to Best)',
+      field: 'rating',
+      direction: 'ASC',
+    },
+    {
+      displayName: 'Rating (Best to Worst)',
+      field: 'rating',
+      direction: 'DESC',
+    },
+    {
+      displayName: 'Applied at (Oldest to Newest)',
+      field: 'rating',
+      direction: 'ASC',
+    },
+    {
+      displayName: 'Applied at (Newest to Oldest)',
+      field: 'rating',
+      direction: 'DESC',
     },
   ];
 }
