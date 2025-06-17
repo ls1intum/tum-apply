@@ -6,6 +6,8 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
@@ -27,7 +29,17 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page3',
-  imports: [CommonModule, ReactiveFormsModule, FloatLabelModule, DividerModule, DatePickerComponent, TextareaModule, UploadButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FloatLabelModule,
+    DividerModule,
+    DatePickerComponent,
+    TextareaModule,
+    UploadButtonComponent,
+    FontAwesomeModule,
+    TooltipModule,
+  ],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
   standalone: true,
