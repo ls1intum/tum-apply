@@ -177,3 +177,10 @@
     padding-right: 0;
   }
 }
+
+/* Styles for the tooltip icon in the Dropdown component */
+.dropdown-wrapper {
+  .fa-circle-info {
+    color: var(--p-primary-color);
+  }
+}
