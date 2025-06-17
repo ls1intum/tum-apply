@@ -246,7 +246,7 @@ export default class ApplicationCreationFormComponent {
       } else {
         this.jobId = jobId;
       }
-      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId));
+      const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId));
 
       if (job.title !== undefined && job.title.trim().length > 0) {
         this.title.set(job.title);

@@ -1,15 +1,26 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
+import { firstValueFrom } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
-import { JobFormDTO } from '../../generated';
+import { JobDTO, JobFormDTO } from '../../generated';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
+import { AccountService } from '../../core/auth/account.service';
+
+const JobFormModes = {
+  CREATE: 'create',
+  EDIT: 'edit',
+} as const;
+
+type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
+
 /**
  * JobCreationFormComponent
  * ------------------------
@@ -34,7 +45,11 @@ import { StringInputComponent } from '../../shared/components/atoms/string-input
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
+  mode: JobFormMode = 'create';
+  jobId: string | undefined = undefined;
+  userId = signal<string>('');
   currentStep = 1;
+  isLoading = signal<boolean>(true);
 
   // Reactive form groups for each step of the wizard
   basicInfoForm: FormGroup = this.fb.group({});
@@ -54,11 +69,38 @@ export class JobCreationFormComponent {
     { name: 'Singapore Campus', value: JobFormDTO.LocationEnum.Singapore },
   ];
   fieldsOfStudies = [
-    { name: 'Mathematics', value: 'Mathematics' },
-    { name: 'Informatics', value: 'Informatics' },
-    { name: 'Physics', value: 'Physics' },
+    { name: 'Agricultural Engineering', value: 'Agricultural Engineering' },
+    { name: 'Aerospace Engineering', value: 'Aerospace Engineering' },
+    { name: 'Architecture', value: 'Architecture' },
+    { name: 'Art History', value: 'Art History' },
+    { name: 'Automotive Engineering', value: 'Automotive Engineering' },
+    { name: 'Bioengineering', value: 'Bioengineering' },
     { name: 'Chemistry', value: 'Chemistry' },
-    { name: 'Biology', value: 'Biology' },
+    { name: 'Computer Engineering', value: 'Computer Engineering' },
+    { name: 'Computer Science', value: 'Computer Science' },
+    { name: 'Economics', value: 'Economics' },
+    { name: 'Education Technology', value: 'Education Technology' },
+    { name: 'Electrical Engineering', value: 'Electrical Engineering' },
+    { name: 'Environmental Engineering', value: 'Environmental Engineering' },
+    { name: 'Financial Engineering', value: 'Financial Engineering' },
+    { name: 'Food Technology', value: 'Food Technology' },
+    { name: 'Geology', value: 'Geology' },
+    { name: 'Industrial Engineering', value: 'Industrial Engineering' },
+    { name: 'Information Systems', value: 'Information Systems' },
+    { name: 'Linguistics', value: 'Linguistics' },
+    { name: 'Marine Biology', value: 'Marine Biology' },
+    { name: 'Materials Science', value: 'Materials Science' },
+    { name: 'Mathematics', value: 'Mathematics' },
+    { name: 'Mechanical Engineering', value: 'Mechanical Engineering' },
+    { name: 'Medical Informatics', value: 'Medical Informatics' },
+    { name: 'Neuroscience', value: 'Neuroscience' },
+    { name: 'Philosophy', value: 'Philosophy' },
+    { name: 'Physics', value: 'Physics' },
+    { name: 'Psychology', value: 'Psychology' },
+    { name: 'Software Engineering', value: 'Software Engineering' },
+    { name: 'Sports Science', value: 'Sports Science' },
+    { name: 'Telecommunications', value: 'Telecommunications' },
+    { name: 'Urban Planning', value: 'Urban Planning' },
   ];
   workloadOptions = [
     { name: '100% (Full-time)', value: 100 },
@@ -84,9 +126,14 @@ export class JobCreationFormComponent {
   ];
 
   private jobResourceService = inject(JobResourceService);
+  private accountService = inject(AccountService);
+  private router = inject(Router);
 
-  constructor(private fb: FormBuilder) {
-    this.initForms();
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+  ) {
+    this.init(route);
   }
 
   // Button Group Data consisting of 'Next' and 'Save Draft' Buttons
@@ -154,31 +201,43 @@ export class JobCreationFormComponent {
    * Initializes all three form groups used in the form wizard.
    * Sets up validators, default values, and disabled controls.
    */
-  initForms(): void {
+  initForms(job?: JobDTO): void {
+    // Helper function to find dropdown options safely
+    const findOption = <T>(options: T[], value: any, valueField: keyof T): T | null => {
+      return job ? (options.find(opt => opt[valueField] === value) ?? null) : null;
+    };
+
+    // Initialize dropdown options
+    const locationOption = findOption(this.locations, job?.location, 'value');
+    const fieldOfStudiesOption = findOption(this.fieldsOfStudies, job?.fieldOfStudies, 'value');
+    const workloadOption = findOption(this.workloadOptions, job?.workload, 'value');
+    const contractDurationOption = findOption(this.contractDurations, job?.contractDuration, 'value');
+    const fundingTypeOption = findOption(this.fundingTypes, job?.fundingType, 'value');
+
     // Basic Information form
     this.basicInfoForm = this.fb.group({
-      title: ['', Validators.required],
-      researchArea: ['', Validators.required],
-      fieldOfStudies: ['', Validators.required],
+      title: [job?.title ?? '', Validators.required],
+      researchArea: [job?.researchArea ?? '', Validators.required],
+      fieldOfStudies: [fieldOfStudiesOption, Validators.required],
       supervisingProfessor: this.fb.control(
         {
-          value: 'Prof. Dr. Stephan Krusche',
+          value: this.accountService.loadedUser()?.name ?? '',
           disabled: true,
         },
         Validators.required,
       ),
-      location: ['', Validators.required],
-      startDate: ['', Validators.required],
-      workload: ['', Validators.required],
-      contractDuration: ['', Validators.required],
-      fundingType: ['', Validators.required],
+      location: [locationOption, Validators.required],
+      startDate: [job?.startDate ?? '', Validators.required],
+      workload: [workloadOption, Validators.required],
+      contractDuration: [contractDurationOption, Validators.required],
+      fundingType: [fundingTypeOption, Validators.required],
     });
 
     // Position Details form
     this.positionDetailsForm = this.fb.group({
-      description: ['', [Validators.required, Validators.maxLength(1000)]],
-      tasks: ['', [Validators.required, Validators.maxLength(1000)]],
-      requirements: ['', [Validators.required, Validators.maxLength(1000)]],
+      description: [job?.description ?? '', [Validators.required, Validators.maxLength(1000)]],
+      tasks: [job?.tasks ?? '', [Validators.required, Validators.maxLength(1000)]],
+      requirements: [job?.requirements ?? '', [Validators.required, Validators.maxLength(1000)]],
     });
 
     // Additional Information form
@@ -200,6 +259,43 @@ export class JobCreationFormComponent {
     }
   }
 
+  // Initialization
+  async init(route: ActivatedRoute): Promise<void> {
+    try {
+      this.userId.set(this.accountService.loadedUser()?.id ?? '');
+      if (this.userId() === '') {
+        console.error('User not authenticated');
+        this.router.navigate(['/login']);
+        return;
+      }
+
+      const segments = await firstValueFrom(route.url);
+      const firstSegment = segments[1]?.path;
+
+      if (firstSegment === JobFormModes.CREATE) {
+        this.mode = JobFormModes.CREATE;
+        this.initForms();
+      } else if (firstSegment === JobFormModes.EDIT) {
+        this.mode = JobFormModes.EDIT;
+        this.jobId = this.route.snapshot.paramMap.get('job_id') ?? undefined;
+
+        if (!this.jobId) {
+          console.error('Invalid job ID');
+          this.router.navigate(['/my-positions']);
+          return;
+        }
+
+        const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId));
+        this.initForms(job);
+      }
+    } catch (error) {
+      console.error('Initialization error:', error);
+      this.router.navigate(['/my-positions']);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   /**
    * Saves the current form state as a draft.
    * Sends a partial or full JobFormDTO to the server with "Draft" status.
@@ -209,7 +305,7 @@ export class JobCreationFormComponent {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
       fieldOfStudies: this.basicInfoForm.value.fieldOfStudies.value,
-      supervisingProfessor: '00000000-0000-0000-0000-000000000102',
+      supervisingProfessor: this.userId(),
       location: this.basicInfoForm.value.location.value,
       startDate: this.basicInfoForm.value.startDate,
       workload: this.basicInfoForm.value.workload.value,
@@ -220,12 +316,18 @@ export class JobCreationFormComponent {
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Draft,
     };
-    this.jobResourceService.createJob(jobFormDto).subscribe({
-      next() {},
-      error(err) {
-        console.error('Failed to create job draft:', err);
-      },
-    });
+
+    if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
+      this.jobResourceService.updateJob(this.jobId, jobFormDto).subscribe({
+        next: () => this.router.navigate(['/my-positions']),
+        error: err => console.error('Failed to update job:', err),
+      });
+    } else {
+      this.jobResourceService.createJob(jobFormDto).subscribe({
+        next: () => this.router.navigate(['/my-positions']),
+        error: err => console.error('Failed to create job:', err),
+      });
+    }
   }
 
   /**
@@ -236,7 +338,7 @@ export class JobCreationFormComponent {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
       fieldOfStudies: this.basicInfoForm.value.fieldOfStudies.value,
-      supervisingProfessor: '00000000-0000-0000-0000-000000000102',
+      supervisingProfessor: this.userId(),
       location: this.basicInfoForm.value.location.value,
       startDate: this.basicInfoForm.value.startDate,
       workload: this.basicInfoForm.value.workload.value,
@@ -247,12 +349,18 @@ export class JobCreationFormComponent {
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
-    this.jobResourceService.createJob(jobFormDto).subscribe({
-      next() {},
-      error(err) {
-        console.error('Failed to publish job:', err);
-      },
-    });
+
+    if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
+      this.jobResourceService.updateJob(this.jobId, jobFormDto).subscribe({
+        next: () => this.router.navigate(['/my-positions']),
+        error: err => console.error('Failed to update job:', err),
+      });
+    } else if (this.mode === JobFormModes.CREATE) {
+      this.jobResourceService.createJob(jobFormDto).subscribe({
+        next: () => this.router.navigate(['/my-positions']),
+        error: err => console.error('Failed to create job:', err),
+      });
+    }
   }
 
   /**
