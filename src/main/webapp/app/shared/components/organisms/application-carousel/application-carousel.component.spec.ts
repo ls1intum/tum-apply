@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { of } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -17,9 +17,9 @@ import { ApplicationCarouselComponent } from './application-carousel.component';
   template: '<ng-content />',
 })
 class StubApplicationCardComponent {
-  @Input() application!: ApplicationEvaluationOverviewDTO | null;
-  @Input() disabled = false;
-  @Input() placeholder = false;
+  application = input<ApplicationEvaluationOverviewDTO | null>(null);
+  disabled = input<boolean>(false);
+  placeholder = input<boolean>(false);
 }
 
 @Component({
@@ -28,7 +28,7 @@ class StubApplicationCardComponent {
   template: '<ng-content />',
 })
 class StubButtonComponent {
-  @Input() disabled = false;
+  disabled = input<boolean>(false);
 }
 
 class MockBreakpointObserver {
@@ -199,7 +199,7 @@ describe('ApplicationCarouselComponent', () => {
     const arr = component.visibleApps();
     expect(arr.length).toBe(component.cardsVisible());
 
-    expect(arr[0]).toBeNull();
+    expect(arr[0]).toBeUndefined();
     flush();
   }));
 });

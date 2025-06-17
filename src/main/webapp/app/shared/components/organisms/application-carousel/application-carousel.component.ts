@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, inject, input, signal } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
@@ -40,11 +40,11 @@ const WINDOW_SIZE = 7;
     'aria-label': 'Applications carousel',
   },
 })
-export class ApplicationCarouselComponent implements OnInit {
+export class ApplicationCarouselComponent {
   readonly evaluationService = inject(ApplicationEvaluationResourceService);
 
   // Inputs to customize carousel behavior
-  applicationId = input<string | null>(null);
+  applicationId = input<string | undefined>(undefined);
   sortBy = input<string>('createdAt');
   sortDirection = input<'ASC' | 'DESC'>('DESC');
 
@@ -58,16 +58,24 @@ export class ApplicationCarouselComponent implements OnInit {
   // Half of the window size — used for centering logic
   half = Math.floor(WINDOW_SIZE / 2); // Half the window size, used for centering
 
+  isStart = computed(() => {
+    return this.currentIndex() === 0;
+  });
+
+  isEnd = computed(() => {
+    return this.currentIndex() === this.totalCount() - 1 || this.totalCount() === 0;
+  });
+
   // Compute the list of applications to display (always fills visible slots with null)
   readonly visibleApps = computed(() => {
     const size = this.cardsVisible();
     const half = Math.floor(size / 2);
-    const result: (ApplicationEvaluationOverviewDTO | null)[] = [];
+    const result: (ApplicationEvaluationOverviewDTO | undefined)[] = [];
 
     for (let offset = -half; offset <= half; offset++) {
       const idx = this.windowIndex() + offset;
       if (idx < 0 || idx >= WINDOW_SIZE) {
-        result.push(null); // Fill with nulls if out of bounds
+        result.push(undefined); // Fill with nulls if out of bounds
       } else {
         result.push(this.applications()[idx]);
       }
@@ -95,10 +103,8 @@ export class ApplicationCarouselComponent implements OnInit {
         this.cardsVisible.set(VISIBLE_DESKTOP);
       }
     });
-  }
 
-  ngOnInit(): void {
-    if (this.applicationId() !== null) {
+    if (this.applicationId() !== undefined) {
       // TODO: Load window centered around given application
     } else {
       // Load initial batch of applications
@@ -157,17 +163,17 @@ export class ApplicationCarouselComponent implements OnInit {
    * Loads a page of applications from backend.
    * Also updates total count of applications.
    */
-  private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationOverviewDTO[] | null> {
+  private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationOverviewDTO[] | undefined> {
     try {
       const res = await firstValueFrom(this.evaluationService.getApplications(offset, limit, this.sortBy(), this.sortDirection()));
       // Update total count after async delay to ensure signal update stability
       setTimeout(() => {
         this.totalCount.set(res.totalRecords ?? 0);
       });
-      return res.applications ?? null;
+      return res.applications ?? undefined;
     } catch (error) {
       console.error('Failed to load applications:', error);
-      return null;
+      return undefined;
     }
   }
 

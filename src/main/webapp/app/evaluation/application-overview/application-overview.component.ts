@@ -1,8 +1,9 @@
-import { Component, OnInit, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
@@ -17,7 +18,7 @@ import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
   templateUrl: './application-overview.component.html',
   styleUrls: ['./application-overview.component.scss'],
 })
-export class ApplicationOverviewComponent implements OnInit {
+export class ApplicationOverviewComponent {
   pageData = signal<ApplicationEvaluationOverviewDTO[]>([]);
   pageSize = signal(10);
   page = signal(0);
@@ -70,25 +71,20 @@ export class ApplicationOverviewComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  ngOnInit(): void {
-    this.route.queryParamMap.subscribe(qp => {
+  private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+
+  constructor() {
+    effect(() => {
+      const qp = this.qpSignal();
       const rawPage = qp.get('page');
-      const pageNum = rawPage != null && !isNaN(+rawPage) ? Math.max(0, Number(rawPage)) : 0;
-      this.page.set(pageNum);
+      this.page.set(rawPage !== null && !isNaN(+rawPage) ? Math.max(0, +rawPage) : 0);
 
       const rawSize = qp.get('pageSize');
-      const sizeNum = rawSize != null && !isNaN(+rawSize) ? Math.max(1, Number(rawSize)) : 10;
-      this.pageSize.set(sizeNum);
-
-      const rawSortBy = qp.get('sortBy');
-      this.sortBy.set(rawSortBy ?? this.sortableFields[0].field);
+      this.pageSize.set(rawSize !== null && !isNaN(+rawSize) ? Math.max(1, +rawSize) : 10);
+      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].field);
 
       const rawSD = qp.get('sortDir');
-      let dir: 'ASC' | 'DESC' = 'DESC';
-      if (rawSD === 'ASC' || rawSD === 'DESC') {
-        dir = rawSD;
-      }
-      this.sortDirection.set(dir);
+      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
 
       void this.loadPage();
     });

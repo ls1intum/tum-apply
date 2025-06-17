@@ -1,6 +1,6 @@
 <div class="carousel">
   <!-- ◄ navigation -->
-  <jhi-button class="nav nav-left" aria-label="Previous" icon="chevron-left" (click)="prev()" [disabled]="currentIndex() === 0" />
+  <jhi-button class="nav nav-left" aria-label="Previous" icon="chevron-left" (click)="prev()" [disabled]="isStart()" />
 
   <!-- cards (1 or 3) -->
   <div class="cards">
@@ -18,11 +18,5 @@
   </div>
 
   <!-- ► navigation -->
-  <jhi-button
-    class="nav nav-right"
-    aria-label="Next"
-    icon="chevron-right"
-    (click)="next()"
-    [disabled]="currentIndex() === totalCount() - 1 || totalCount() === 0"
-  />
+  <jhi-button class="nav nav-right" aria-label="Next" icon="chevron-right" (click)="next()" [disabled]="isEnd()" />
 </div>
