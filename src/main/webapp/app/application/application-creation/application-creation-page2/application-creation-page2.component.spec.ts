@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
 import { ApplicantDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faChevronDown, faChevronUp, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp, faCloudArrowUp, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import ApplicationCreationPage2Component, { ApplicationCreationPage2Data } from './application-creation-page2.component';
 
@@ -33,6 +33,7 @@ describe('ApplicationCreationPage2Component', () => {
     library.addIcons(faChevronDown);
     library.addIcons(faChevronUp);
     library.addIcons(faCloudArrowUp);
+    library.addIcons(faInfoCircle);
     componentRef = fixture.componentRef;
     componentRef.setInput('data', mockData);
     fixture.detectChanges();
