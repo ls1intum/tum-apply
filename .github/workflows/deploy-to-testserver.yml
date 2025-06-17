@@ -28,22 +28,7 @@ env:
   RAW_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.inputs.branch_name }}
 
 jobs:
-  prepare-env:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Create final .env file for deployment
-        run: |
-          cp .env.test .env
-          echo "KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}" >> .env
-          echo "KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}" >> .env
-          echo "KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}" >> .env
-          echo "KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}" >> .env
-
   deploy:
-    needs: prepare-env
     uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
     with:
       environment: ${{ inputs.environment_name }}
