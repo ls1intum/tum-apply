@@ -319,12 +319,12 @@ export class JobCreationFormComponent {
 
     if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
       this.jobResourceService.updateJob(this.jobId, jobFormDto).subscribe({
-        next: () => this.router.navigate(['/my-positions']),
+        next: () => void this.router.navigate(['/my-positions']),
         error: err => console.error('Failed to update job:', err),
       });
     } else {
       this.jobResourceService.createJob(jobFormDto).subscribe({
-        next: () => this.router.navigate(['/my-positions']),
+        next: () => void this.router.navigate(['/my-positions']),
         error: err => console.error('Failed to create job:', err),
       });
     }
@@ -352,12 +352,12 @@ export class JobCreationFormComponent {
 
     if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
       this.jobResourceService.updateJob(this.jobId, jobFormDto).subscribe({
-        next: () => this.router.navigate(['/my-positions']),
+        next: () => void this.router.navigate(['/my-positions']),
         error: err => console.error('Failed to update job:', err),
       });
     } else if (this.mode === JobFormModes.CREATE) {
       this.jobResourceService.createJob(jobFormDto).subscribe({
-        next: () => this.router.navigate(['/my-positions']),
+        next: () => void this.router.navigate(['/my-positions']),
         error: err => console.error('Failed to create job:', err),
       });
     }

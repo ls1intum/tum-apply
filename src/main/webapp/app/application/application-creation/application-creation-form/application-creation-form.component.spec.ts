@@ -51,7 +51,7 @@ describe('ApplicationCreationFormComponent create', () => {
         {
           provide: JobResourceService,
           useValue: {
-            getJobDetails: jest.fn().mockReturnValue(of(new HttpResponse({ body: { title: 'Test title' } }))),
+            getJobById: jest.fn().mockReturnValue(of(new HttpResponse({ body: { title: 'Test title' } }))),
           },
         },
       ],
