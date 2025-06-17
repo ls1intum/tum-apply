@@ -16,6 +16,7 @@ public class CriteriaUtils {
      * @param cb   the CriteriaBuilder
      * @param root the root entity
      * @param sort the sort specification
+     * @param secondarySortColumn the column to use as a tiebreaker for deterministic ordering
      * @return list of JPA Order instances
      */
     public static List<Order> buildSortOrders(CriteriaBuilder cb, Root<?> root, Sort sort, String secondarySortColumn) {
