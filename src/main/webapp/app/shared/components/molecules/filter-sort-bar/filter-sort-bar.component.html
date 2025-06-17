@@ -1,0 +1,7 @@
+<div class="filter-sort-bar">
+  <div class="record-count"></div>
+  <div class="actions">
+    <jhi-button label="Filter" (click)="filterDialogVisible.set(true)" variant="outlined" [numberOfFavorites]="4" severity="info" />
+    <jhi-filter-dialog [(visible)]="filterDialogVisible" [filterFields]="filterFields()" />
+  </div>
+</div>

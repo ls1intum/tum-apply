@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, input, model, output, signal } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, computed, effect, input, model, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 
@@ -17,6 +17,7 @@ export interface FilterField {
   imports: [DialogModule, DividerModule, ButtonComponent, FilterSelectComponent],
   templateUrl: './filter-dialog.component.html',
   styleUrl: './filter-dialog.component.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class FilterDialogComponent implements OnInit {
   filterFields = input.required<FilterField[]>();
@@ -27,10 +28,7 @@ export class FilterDialogComponent implements OnInit {
 
   visible = model<boolean>(false);
 
-  canReset = computed(() => {
-    const all = this.draftFields();
-    return (field: FilterField) => (all.find(f => f.field === field.field)?.selected?.length ?? 0) > 0;
-  });
+  canResetAll = computed(() => this.draftFields().some(f => f.selected?.length));
 
   private _filterFields = signal<FilterField[]>([]);
 
@@ -77,5 +75,9 @@ export class FilterDialogComponent implements OnInit {
     const result = Object.fromEntries(this.draftFields().map(f => [f.field, f.selected ?? []]));
     this.applyFilters.emit(result);
     this.visible.set(false);
+  }
+
+  resetAll(): void {
+    this.draftFields.update(list => list.map(f => ({ ...f, selected: [] })));
   }
 }

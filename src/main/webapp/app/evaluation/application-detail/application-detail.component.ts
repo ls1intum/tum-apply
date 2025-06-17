@@ -1,12 +1,12 @@
 import { Component, model } from '@angular/core';
 
-import { FilterOption, FilterSelectComponent } from '../../shared/components/atoms/filter-select/filter-select.component';
-import { FilterDialogComponent, FilterField } from '../../shared/components/molecules/filter-dialog/filter-dialog.component';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
+import { FilterOption } from '../../shared/components/atoms/filter-select/filter-select.component';
+import { FilterField } from '../../shared/components/molecules/filter-dialog/filter-dialog.component';
+import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 
 @Component({
   selector: 'jhi-application-detail',
-  imports: [FilterSelectComponent, ButtonComponent, FilterDialogComponent],
+  imports: [FilterSortBarComponent],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
 })

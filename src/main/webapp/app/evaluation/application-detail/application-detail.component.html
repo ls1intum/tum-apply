@@ -1,5 +1,3 @@
 <div>
-  <jhi-filter-select [options]="MOCK_FILTER_OPTIONS" [preSelected]="MOCK_PRESELECTED_FILTERS" [width]="'20%'" />
-  <jhi-button label="Open" (click)="visible.set(true)" />
-  <jhi-filter-dialog [(visible)]="visible" [filterFields]="filterFields" />
+  <jhi-filter-sort-bar [totalRecords]="0" [filterFields]="filterFields" />
 </div>

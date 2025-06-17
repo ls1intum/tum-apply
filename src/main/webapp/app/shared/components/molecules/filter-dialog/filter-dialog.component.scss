@@ -1,8 +1,15 @@
+.filter-dialog {
+  width: 70%;
+  max-width: 40rem;
+  height: 70%;
+  max-height: 37rem;
+}
+
 .filter-row {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* space between label and dropdown */
-  margin-bottom: 0.75rem; /* space before the divider */
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 
   .label-reset {
     display: flex;
@@ -17,11 +24,7 @@
 }
 
 .actions {
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
-
-  jhi-button {
-    width: 120px; /* gives both buttons the same footprint */
-  }
 }

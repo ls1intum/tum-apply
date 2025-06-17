@@ -1,9 +1,9 @@
-<p-dialog header="Edit Profile" [modal]="true" [(visible)]="visible" [style]="{ width: '70%', 'max-width': '40rem' }">
-  @for (filterField of draftFields(); track $index) {
+<p-dialog header="Filter" [modal]="true" [(visible)]="visible" styleClass="filter-dialog">
+  @for (filterField of draftFields(); track i; let i = $index) {
     <div class="filter-row">
       <div class="label-reset">
         <span class="label">{{ filterField.displayName }}</span>
-        <jhi-button variant="text" label="Reset" (click)="resetField(filterField)" [disabled]="(filterField.selected?.length ?? 0) < 1" />
+        <jhi-button variant="text" label="Clear" (click)="resetField(filterField)" [disabled]="(filterField.selected?.length ?? 0) < 1" />
       </div>
       <jhi-filter-select
         [options]="filterField.options"
@@ -11,10 +11,14 @@
         (selectionChange)="onSelectionChange(filterField, $event)"
       />
     </div>
-    <p-divider />
+    @if (i !== draftFields().length - 1) {
+      <p-divider />
+    }
   }
-  <div class="actions">
-    <jhi-button variant="outlined" label="Clear All" />
-    <jhi-button variant="outlined" label="Apply" (click)="applyAndClose()" />
-  </div>
+  <ng-template #footer>
+    <div class="actions">
+      <jhi-button variant="outlined" label="Clear All" (click)="resetAll()" [disabled]="!canResetAll()" />
+      <jhi-button label="Apply" (click)="applyAndClose()" />
+    </div>
+  </ng-template>
 </p-dialog>
