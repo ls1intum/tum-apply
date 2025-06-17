@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ApplicationDetailDTO, ApplicationForApplicantDTO, CustomFieldAnswerDTO } from 'app/generated';
+import { ApplicationDetailDTO } from 'app/generated';
 
 @Component({
   selector: 'jhi-application-detail-card',
