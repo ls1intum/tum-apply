@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, inject, input, signal } from '@angular/core';
-import { BreakpointObserver } from '@angular/cdk/layout';
+import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
@@ -93,8 +94,11 @@ export class ApplicationCarouselComponent {
     const SMALL = '(max-width: 1024px)';
     const ULTRA_WIDE = '(min-width: 1920px)';
 
-    // Set card visibility count responsively based on screen size
-    this.bp.observe([SMALL, ULTRA_WIDE]).subscribe(result => {
+    const breakpoint = toSignal<BreakpointState | null>(this.bp.observe([SMALL, ULTRA_WIDE]), { initialValue: null });
+
+    effect(() => {
+      const result = breakpoint();
+      if (!result) return;
       if (result.breakpoints[SMALL]) {
         this.cardsVisible.set(1);
       } else if (result.breakpoints[ULTRA_WIDE]) {
@@ -166,10 +170,7 @@ export class ApplicationCarouselComponent {
   private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationOverviewDTO[] | undefined> {
     try {
       const res = await firstValueFrom(this.evaluationService.getApplications(offset, limit, this.sortBy(), this.sortDirection()));
-      // Update total count after async delay to ensure signal update stability
-      setTimeout(() => {
-        this.totalCount.set(res.totalRecords ?? 0);
-      });
+      this.totalCount.set(res.totalRecords ?? 0);
       return res.applications ?? undefined;
     } catch (error) {
       console.error('Failed to load applications:', error);
