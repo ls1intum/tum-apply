@@ -557,10 +557,10 @@ export const TUMApplyPreset = definePreset(Lara, {
               hoverBorderColor: '{warn.hoverColor}',
             },
             info: {
-              background: '{neutral.color}',
+              background: '{base.white}',
               color: '{neutral.inverseColor}',
               hoverBackground: '{neutral.color}',
-              hoverBorderColor: '{neutral.hoverColor}',
+              hoverBorderColor: '{base.black}',
               hoverColor: '{neutral.inverseColor}',
               activeBackground: '{neutral.activeColor}',
               borderColor: '{neutral.color}',
@@ -600,9 +600,9 @@ export const TUMApplyPreset = definePreset(Lara, {
             info: {
               activeBackground: '{neutral.activeColor}',
               background: '{base.black}',
-              borderColor: '{neutral.color}',
-              color: '{neutral.color}',
-              hoverBackground: '{neutral.hoverColorOutlined}',
+              borderColor: '{text.primary}',
+              color: '{text.primary}',
+              hoverBackground: '{neutral.500}',
               hoverColor: '{neutral.inverseColor}',
               hoverBorderColor: '{base.black}',
             },
@@ -666,8 +666,8 @@ export const TUMApplyPreset = definePreset(Lara, {
             info: {
               activeBackground: '{neutral.activeColor}',
               background: '{base.black}',
-              color: '{neutral.color}',
-              hoverBackground: '{neutral.hoverColorOutlined}',
+              color: '{base.white}',
+              hoverBackground: '{neutral.500}',
               hoverColor: '{neutral.inverseColor}',
             },
             warn: {
@@ -901,17 +901,62 @@ export const TUMApplyPreset = definePreset(Lara, {
       background: '{transparent}',
       colorScheme: {
         light: {
+          color: '{text.primary}',
           overlay: {
             background: '{background.default}',
+          },
+          option: {
+            color: '{text.primary}',
+            selected: {
+              color: '{text.primary}',
+              background: '{background.surface}',
+            },
+            focus: {
+              background: '{primary.color}',
+              color: '{base.white}',
+            },
           },
         },
         dark: {
+          color: '{text.primary}',
           overlay: {
             background: '{background.default}',
           },
-          input: {
-            background: '{background.default}',
+          option: {
+            color: '{text.primary}',
+            selected: {
+              color: '{text.primary}',
+              background: '{background.surface}',
+            },
+            focus: {
+              background: '{primary.color}',
+              color: '{base.white}',
+            },
           },
+        },
+      },
+    },
+    inputtext: {
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          background: '{transparent}',
+        },
+        dark: {
+          color: '{text.primary}',
+          background: '{transparent}',
+        },
+      },
+    },
+    dialog: {
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          background: '{background.default}',
+        },
+        dark: {
+          color: '{text.primary}',
+          background: '{background.default}',
         },
       },
     },
