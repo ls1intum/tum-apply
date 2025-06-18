@@ -5,7 +5,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faBriefcase, faCheck, faChevronLeft, faChevronRight, faCommentAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../../generated';
 
@@ -86,7 +86,7 @@ describe('ApplicationCarouselComponent', () => {
     component = fixture.componentInstance;
 
     library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faChevronRight, faChevronLeft);
+    library.addIcons(faChevronRight, faChevronLeft, faBriefcase, faCommentAlt, faCheck, faXmark);
 
     fixture.detectChanges();
   });
@@ -97,7 +97,6 @@ describe('ApplicationCarouselComponent', () => {
 
   it('loads the first page on init', fakeAsync(() => {
     tick();
-    flush();
     fixture.detectChanges();
     expect(mockService.getApplications).toHaveBeenCalledWith(0, component.half + 1, component.sortBy(), component.sortDirection());
     flush();
