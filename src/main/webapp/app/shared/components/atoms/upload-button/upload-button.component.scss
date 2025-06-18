@@ -2,10 +2,31 @@
   border: solid var(--p-primary-color) 0.1rem;
 }
 
+.border-success {
+  border: solid var(--p-success-color) 0.1rem;
+}
+
 .border-neutral {
   border: solid var(--p-background-disabled) 0.1rem;
 }
 
+.background-disabled {
+  background: var(--p-background-disabled);
+}
+
 .background-primary {
   color: var(--p-primary-color);
+}
+
+.background-success {
+  color: var(--p-success-color);
+}
+
+.text-color {
+  color: var(--p-text-primary);
+}
+
+.drag-over {
+  border-color: var(--p-primary-color);
+  background: var(--p-primary-hover-color-outlined);
 }
