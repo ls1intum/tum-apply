@@ -234,7 +234,7 @@ public class ApplicationResource {
                 applicationService.uploadCV(files.getFirst(), application, user);
                 break; // TODO only one file allowed
             default:
-                throw new NotImplementedException(String.format("The type %s is not yet implemented", documentType.name()));
+                throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
         }
 
         Set<UUID> documentIdsOfUploadedDocuments = applicationService.getDocumentIdsOfApplicationAndType(application, documentType);
