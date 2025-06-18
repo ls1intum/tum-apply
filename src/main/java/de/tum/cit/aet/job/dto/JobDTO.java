@@ -11,7 +11,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record JobDTO(
     @NotNull UUID jobId,
-    String title,
+    @NotNull String title,
     String researchArea,
     String fieldOfStudies,
     @NotNull UUID supervisingProfessor,
