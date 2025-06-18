@@ -370,23 +370,23 @@
         "operationId": "getApplications",
         "parameters": [
           {
-            "name": "pageSize",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "pageNumber",
+            "name": "offset",
             "in": "query",
             "required": false,
             "schema": {
               "type": "integer",
               "format": "int32",
               "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
             }
           },
           {
