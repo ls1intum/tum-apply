@@ -1,10 +1,9 @@
 package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
-import de.tum.cit.aet.job.dto.CreatedJobDTO;
-import de.tum.cit.aet.job.dto.JobCardDTO;
-import de.tum.cit.aet.job.dto.JobDetailDTO;
-import de.tum.cit.aet.job.dto.JobFormDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -32,33 +31,23 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/available} : Get all available (open) jobs.
-     *
-     * @param filter  Optional filter string for job search.
-     * @param sorting Optional sorting parameter for job results.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs.
-     */
-    /* TO-DO
-        @GetMapping("/available")
-    public ResponseEntity<List<JobCardDTO>> getAvailableJobs(
-        @RequestParam(required = false) String filter,
-        @RequestParam(required = false) String sorting
-    ) {
-        return ResponseEntity.ok(jobService.getAvailableJobs(filter, sorting));
-    }*/
-
-    /**
      * {@code GET /api/jobs/available} : Returns a paginated list of all available (published) job postings.
      *
      * <p>This endpoint returns job postings that are currently in the {@code PUBLISHED} state and
      * that applicants are able to submit an application for. Results are paginated based on the parameters provided in {@link PageDTO}.</p>
      *
      * @param pageDTO the pagination information including page number (zero-based) and page size
+     * @param title  comma-separated list of title filters for partial matching
+     * @param sortDTO sorting parameter containing field and direction
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link JobCardDTO}
      */
     @GetMapping("/available")
-    public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO);
+    public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @RequestParam(required = false) String title,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+    ) {
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, title, sortDTO);
         return ResponseEntity.ok(jobs);
     }
 
@@ -76,16 +65,17 @@ public class JobResource {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    /**
-     * {@code PUT /api/jobs/jobform/{jobId}} : Update an existing job posting.
+    /*
+     * {@code PUT /api/jobs/update/{jobId}} : Update an existing job posting.
      *
      * @param jobId   the ID of the job to update.
      * @param jobForm the updated job posting data.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated job.
      */
-    @PutMapping("/jobform/{jobId}")
-    public ResponseEntity<JobCardDTO> updateJob(@PathVariable UUID jobId, @RequestBody JobDetailDTO jobForm) {
-        return ResponseEntity.ok(jobService.updateJob(jobId, jobForm));
+    @PutMapping("/update/{jobId}")
+    public ResponseEntity<Void> updateJob(@PathVariable UUID jobId, @RequestBody JobFormDTO jobForm) {
+        jobService.updateJob(jobId, jobForm);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -108,24 +98,30 @@ public class JobResource {
      *
      * @param userId   the unique ID of the professor (user) whose job postings are being queried
      * @param pageDTO  the pagination information including page number and page size
+     * @param title  comma-separated list of title filters for partial matching
+     * @param state   job state filter (DRAFT, PUBLISHED, ARCHIVED, etc.)
+     * @param sortDTO sorting parameter containing field and direction
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link CreatedJobDTO}
      */
     @GetMapping("/professor/{userId}")
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
         @PathVariable UUID userId,
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) JobState state,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO));
+        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO, title, state, sortDTO));
     }
 
     /**
-     * {@code GET /api/jobs/{jobId}/details} : Get full details of a specific job.
+     * {@code GET /api/jobs/{jobId}} : Get all details of a specific job.
      *
      * @param jobId the ID of the job.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job details.
      */
-    @GetMapping("/{jobId}/details")
-    public ResponseEntity<JobCardDTO> getJobDetails(@PathVariable UUID jobId) {
-        return ResponseEntity.ok(jobService.getJobDetails(jobId));
+    @GetMapping("/{jobId}")
+    public ResponseEntity<JobDTO> getJobById(@PathVariable UUID jobId) {
+        return ResponseEntity.ok(jobService.getJobById(jobId));
     }
 }

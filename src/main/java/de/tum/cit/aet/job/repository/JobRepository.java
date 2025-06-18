@@ -31,9 +31,16 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             )
             FROM Job j
             WHERE j.supervisingProfessor.userId = :userId
+            AND (:title IS NULL OR j.title LIKE :title)
+            AND (:state IS NULL OR j.state = :state)
         """
     )
-    Page<CreatedJobDTO> findAllJobsByProfessor(@Param("userId") UUID userId, Pageable pageable);
+    Page<CreatedJobDTO> findAllJobsByProfessor(
+        @Param("userId") UUID userId,
+        @Param("title") String title,
+        @Param("state") JobState state,
+        Pageable pageable
+    );
 
     @Query(
         """
@@ -49,7 +56,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             )
             FROM Job j
             WHERE j.state = :state
+            AND (:title IS NULL OR j.title LIKE :title)
         """
     )
-    Page<JobCardDTO> findAllJobCardsByState(@Param("state") JobState state, Pageable pageable);
+    Page<JobCardDTO> findAllJobCardsByState(@Param("state") JobState state, @Param("title") String title, Pageable pageable);
 }
