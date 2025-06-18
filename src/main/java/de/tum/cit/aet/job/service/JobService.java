@@ -67,10 +67,11 @@ public class JobService {
      * @param jobId the ID of the job to delete
      */
     public void deleteJob(UUID jobId) {
-        if (!jobRepository.existsById(jobId)) {
-            throw new EntityNotFoundException("Job id " + jobId + " does not exist");
+        try {
+            jobRepository.deleteById(jobId);
+        } catch (Exception e) {
+            throw EntityNotFoundException.forId("Job", jobId);
         }
-        jobRepository.deleteById(jobId);
     }
 
     /**
