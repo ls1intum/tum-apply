@@ -60,6 +60,10 @@ export class UploadButtonComponent {
     return documentIds !== undefined && documentIds.length !== 0;
   });
 
+  documentIdLength = computed<number>(() => {
+    return this.documentIds()?.length ?? 0;
+  });
+
   private applicationService = inject(ApplicationResourceService);
   private injector = inject(Injector);
 

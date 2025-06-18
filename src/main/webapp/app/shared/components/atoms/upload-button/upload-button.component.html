@@ -9,12 +9,12 @@
 >
   <input type="file" (change)="onFileSelected($event)" accept="application/pdf" multiple hidden #fileInput />
   @if (disabled()) {
-    @if (documentIds(); as documentIds) {
+    @if (documentIds()) {
       <p class="font-bold mt-1 mb-1 text-color">
-        {{ documentIds.length }}
-        @if (documentIds.length === 1) {
+        {{ documentIdLength() }}
+        @if (documentIdLength() === 1) {
           <span jhiTranslate="entity.upload.uploaded_document"></span>
-        } @else if (documentIds.length > 1) {
+        } @else if (documentIdLength() > 1) {
           <span jhiTranslate="entity.upload.uploaded_documents"></span>
         } @else {}
         <span [jhiTranslate]="`entity.upload.document_type.${ documentType() }`"></span>
