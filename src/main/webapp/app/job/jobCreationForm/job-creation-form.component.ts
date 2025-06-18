@@ -302,66 +302,63 @@ export class JobCreationFormComponent {
    * Saves the current form state as a draft.
    * Sends a partial or full JobFormDTO to the server with "Draft" status.
    */
-  saveDraft(): void {
+  async saveDraft(): Promise<void> {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
-      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies.value,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies?.value ?? null,
       supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.value.location.value,
+      location: this.basicInfoForm.value.location?.value ?? null,
       startDate: this.basicInfoForm.value.startDate,
-      workload: this.basicInfoForm.value.workload.value,
-      contractDuration: this.basicInfoForm.value.contractDuration.value,
-      fundingType: this.basicInfoForm.value.fundingType.value,
+      workload: this.basicInfoForm.value.workload?.value ?? null,
+      contractDuration: this.basicInfoForm.value.contractDuration?.value ?? null,
+      fundingType: this.basicInfoForm.value.fundingType?.value ?? null,
       description: this.positionDetailsForm.value.description,
       tasks: this.positionDetailsForm.value.tasks,
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Draft,
     };
-
-    if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
-      this.jobResourceService.updateJob(this.jobId, jobFormDto).subscribe({
-        next: () => void this.router.navigate(['/my-positions']),
-        error: err => console.error('Failed to update job:', err),
-      });
-    } else {
-      this.jobResourceService.createJob(jobFormDto).subscribe({
-        next: () => void this.router.navigate(['/my-positions']),
-        error: err => console.error('Failed to create job:', err),
-      });
+    try {
+      if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
+        await firstValueFrom(this.jobResourceService.updateJob(this.jobId, jobFormDto));
+      } else {
+        await firstValueFrom(this.jobResourceService.createJob(jobFormDto));
+      }
+      void this.router.navigate(['/my-positions']);
+    } catch (error) {
+      console.error('Failed to save draft:', error);
     }
   }
 
   /**
    * Finalizes and submits the form by publishing the job post.
    */
-  publishJob(): void {
+  async publishJob(): Promise<void> {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
-      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies.value,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies?.value ?? null,
       supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.value.location.value,
+      location: this.basicInfoForm.value.location?.value ?? null,
       startDate: this.basicInfoForm.value.startDate,
-      workload: this.basicInfoForm.value.workload.value,
-      contractDuration: this.basicInfoForm.value.contractDuration.value,
-      fundingType: this.basicInfoForm.value.fundingType.value,
+      workload: this.basicInfoForm.value.workload?.value ?? null,
+      contractDuration: this.basicInfoForm.value.contractDuration?.value ?? null,
+      fundingType: this.basicInfoForm.value.fundingType?.value ?? null,
       description: this.positionDetailsForm.value.description,
       tasks: this.positionDetailsForm.value.tasks,
       requirements: this.positionDetailsForm.value.requirements,
       state: JobFormDTO.StateEnum.Published,
     };
 
-    if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
-      this.jobResourceService.updateJob(this.jobId, jobFormDto).subscribe({
-        next: () => void this.router.navigate(['/my-positions']),
-        error: err => console.error('Failed to update job:', err),
-      });
-    } else if (this.mode === JobFormModes.CREATE) {
-      this.jobResourceService.createJob(jobFormDto).subscribe({
-        next: () => void this.router.navigate(['/my-positions']),
-        error: err => console.error('Failed to create job:', err),
-      });
+    try {
+      if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
+        await firstValueFrom(this.jobResourceService.updateJob(this.jobId, jobFormDto));
+      } else {
+        await firstValueFrom(this.jobResourceService.createJob(jobFormDto));
+      }
+      void this.router.navigate(['/my-positions']);
+    } catch (error) {
+      console.error('Failed to publish job:', error);
     }
   }
 
