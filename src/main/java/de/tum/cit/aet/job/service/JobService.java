@@ -8,7 +8,6 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -46,9 +45,9 @@ public class JobService {
      *
      * @param dto the job details used to create the job
      */
-    public void createJob(JobFormDTO dto) {
+    public JobFormDTO createJob(JobFormDTO dto) {
         Job job = new Job();
-        updateJobEntity(job, dto);
+        return updateJobEntity(job, dto);
     }
 
     /**
@@ -57,9 +56,9 @@ public class JobService {
      * @param jobId the ID of the job to update
      * @param dto   the {@link JobFormDTO} containing updated job details
      */
-    public void updateJob(UUID jobId, JobFormDTO dto) {
+    public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        updateJobEntity(job, dto);
+        return updateJobEntity(job, dto);
     }
 
     /**
@@ -123,7 +122,7 @@ public class JobService {
         return jobRepository.findAllJobsByProfessor(userId, pageable);
     }
 
-    private void updateJobEntity(Job job, JobFormDTO dto) {
+    private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
         User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
@@ -139,6 +138,7 @@ public class JobService {
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
         job.setState(dto.state());
-        jobRepository.save(job);
+        Job createdJob = jobRepository.save(job);
+        return JobFormDTO.getFromEntity(createdJob);
     }
 }

@@ -66,11 +66,9 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)}.
      */
     @PostMapping("/create")
-    public ResponseEntity<Void> createJob(@RequestBody JobFormDTO jobForm) {
-        log.debug("REST request to create Job : {}", jobForm);
-        jobService.createJob(jobForm);
-        log.debug("REST request to create Job : {} succeeded", jobForm);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<JobFormDTO> createJob(@RequestBody JobFormDTO jobForm) {
+        JobFormDTO createdJob = jobService.createJob(jobForm);
+        return ResponseEntity.ok(createdJob);
     }
 
     /*
@@ -81,9 +79,9 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated job.
      */
     @PutMapping("/update/{jobId}")
-    public ResponseEntity<Void> updateJob(@PathVariable UUID jobId, @RequestBody JobFormDTO jobForm) {
-        jobService.updateJob(jobId, jobForm);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<JobFormDTO> updateJob(@PathVariable UUID jobId, @RequestBody JobFormDTO jobForm) {
+        JobFormDTO updatedJob = jobService.updateJob(jobId, jobForm);
+        return ResponseEntity.ok(updatedJob);
     }
 
     /**

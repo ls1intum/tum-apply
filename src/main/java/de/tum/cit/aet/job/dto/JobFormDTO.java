@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -23,4 +24,29 @@ public record JobFormDTO(
     String tasks,
     String requirements,
     @NotNull JobState state
-) {}
+) {
+    /**
+     * @param job The job entity to convert
+     * @return A JobFormDTO containing the data from the job entity.
+     */
+    public static JobFormDTO getFromEntity(Job job) {
+        if (job == null) {
+            return null;
+        }
+        return new JobFormDTO(
+            job.getTitle(),
+            job.getResearchArea(),
+            job.getFieldOfStudies(),
+            job.getSupervisingProfessor().getUserId(),
+            job.getLocation(),
+            job.getStartDate(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getState()
+        );
+    }
+}
