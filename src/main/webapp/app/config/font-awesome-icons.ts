@@ -109,6 +109,7 @@ export const fontAwesomeIcons = [
   faCheck,
   faChevronDown,
   faChevronLeft,
+  faChevronRight,
   faChevronUp,
   faChevronRight,
   faCircleHalfStroke,
