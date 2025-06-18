@@ -74,22 +74,31 @@ export class UploadButtonComponent {
 
   uploadFile(): void {
     const files = this.selectedFile();
-    if (!files) return;
+    if (!files) return; // Exit if no files are selected
 
+    // Calculate the total size of all selected files
     let totalSize = 0;
     files.forEach(f => (totalSize += f.size));
+
+    // Check if total size exceeds the maximum allowed size (in MB)
     if (totalSize > this.maxUploadSizeInMb * 1024 * 1024) {
       alert('The total size of the file(s) being uploaded is too large. Upload aborted.');
-      return;
+      return; // Abort the upload if size is too large
     }
 
+    // Set the uploading flag to true to indicate upload is in progress
     this.isUploading.set(true);
-    const upload$ = this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true).pipe(share());
 
+    // Call the application service to upload the documents and share the observable
+    const upload$ = this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true).pipe(share()); // share() allows multiple subscribers to share the same observable execution
+
+    // Use Angular's injection context to run reactive logic
     runInInjectionContext(this.injector, () => {
+      // Create a stream that filters upload progress events
       const progress$ = upload$.pipe(
         filter((event): event is HttpUploadProgressEvent => event.type === HttpEventType.UploadProgress),
         map(event => {
+          // If total size is available, compute and return upload percentage
           if (event.total) {
             return Math.round((event.loaded / event.total) * 100);
           }
@@ -97,29 +106,37 @@ export class UploadButtonComponent {
         }),
       );
 
+      // Convert the progress observable into a signal for reactive updates
       const uploadProgressSignal = toSignal(progress$, { initialValue: 0 });
 
+      // Watch the progress signal and update the component's uploadProgress state
       effect(() => {
         this.uploadProgress.set(uploadProgressSignal());
       });
 
+      // Create a stream that filters for the final HTTP response (upload complete)
       const response$ = upload$.pipe(
         filter(event => event.type === HttpEventType.Response),
-        map(event => event.body),
+        map(event => event.body), // Extract the response body (assumed to be document IDs)
         catchError(err => {
+          // Handle errors: set uploading to false, log the error, and alert the user
           this.isUploading.set(false);
           console.error('Upload failed:', err);
           alert('Upload failed. Please try again later');
-          return of(null);
+          return of(null); // Return a null observable to allow continued stream processing
         }),
       );
 
+      // Convert the response observable to a signal
       const uploadResponseSignal = toSignal(response$, { initialValue: null });
+
+      // Watch the response signal and update the state when the upload is complete
       effect(() => {
         const response = uploadResponseSignal();
         if (response) {
+          // Upload successful: update documentIds and mark uploading as false
           this.isUploading.set(false);
-          this.documentIds.set([...response]);
+          this.documentIds.set([...response]); // Store uploaded document IDs
         }
       });
     });
