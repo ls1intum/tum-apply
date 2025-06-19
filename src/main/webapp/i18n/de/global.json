@@ -120,9 +120,11 @@
       "patternLogin": "Dieses Feld darf nur Buchstaben, Ziffern und E-Mail-Adressen enthalten."
     },
     "filters": {
-      "set": "Folgende Filter sind gesetzt",
-      "clear": "Filter entfernen",
-      "clearAll": "Alle Filter entfernen"
+      "filter": "Filter",
+      "numberSelected": "{{selected}} ausgewählt",
+      "clear": "Entfernen",
+      "clearAll": "Alle entfernen",
+      "apply": "Anwenden"
     }
   },
   "error": {

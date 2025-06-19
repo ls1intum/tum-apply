@@ -17,8 +17,18 @@
   </ng-template>
 
   <ng-template let-selectedItems pTemplate="selectedItems">
-    @for (item of selectedItems; track $index) {
-      <p-chip [label]="item.displayName" [removable]="true" (onRemove)="handleChipRemove($event, item)" />
+    @if (selectedItems !== null) {
+      @if (selectedItems.length > 2) {
+        <span jhiTranslate="entity.filters.numberSelected" [translateValues]="{ selected: selectedItems.length }"></span>
+      } @else {
+        @for (item of selectedItems; track item.field) {
+          @if (item.translationKey) {
+            <p-chip [label]="item.translationKey | translate" [removable]="true" (onRemove)="handleChipRemove($event, item)" />
+          } @else {
+            <p-chip [label]="item.displayName" [removable]="true" (onRemove)="handleChipRemove($event, item)" />
+          }
+        }
+      }
     }
   </ng-template>
 </p-multiselect>

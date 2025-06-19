@@ -7,7 +7,7 @@ import { FilterDialogComponent } from '../filter-dialog/filter-dialog.component'
 import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
 
 export interface FilterField {
-  displayName: string;
+  translationKey: string;
   field: string;
   options: FilterOption[];
   selected?: FilterOption[];

@@ -6,13 +6,15 @@ import { firstValueFrom } from 'rxjs';
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
-import { Sort, SortBarComponent, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
+import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { filterFields, sortOptions } from '../filterSortOptions';
 
 @Component({
   selector: 'jhi-application-overview',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, DynamicTableComponent, SortBarComponent, TagComponent],
+  imports: [CommonModule, ButtonComponent, DynamicTableComponent, TagComponent, FilterSortBarComponent],
   templateUrl: './application-overview.component.html',
   styleUrl: './application-overview.component.scss',
 })
@@ -60,6 +62,9 @@ export class ApplicationOverviewComponent {
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
   });
+
+  protected readonly filterFields = filterFields;
+  protected readonly sortOptions = sortOptions;
 
   private readonly evaluationService = inject(ApplicationEvaluationResourceService);
 

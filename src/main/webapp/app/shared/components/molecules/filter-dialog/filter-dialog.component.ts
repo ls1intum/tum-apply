@@ -1,14 +1,16 @@
 import { Component, ViewEncapsulation, computed, effect, input, model, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { FilterSelectComponent } from '../../atoms/filter-select/filter-select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { FilterField, FilterOption } from '../filter-sort-bar/filter-sort-bar.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-filter-dialog',
-  imports: [DialogModule, DividerModule, ButtonComponent, FilterSelectComponent],
+  imports: [DialogModule, DividerModule, ButtonComponent, FilterSelectComponent, TranslateModule, TranslateDirective],
   templateUrl: './filter-dialog.component.html',
   styleUrl: './filter-dialog.component.scss',
   encapsulation: ViewEncapsulation.None,

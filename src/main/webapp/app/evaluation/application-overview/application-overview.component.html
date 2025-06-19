@@ -1,17 +1,15 @@
 <div class="body">
-  <jhi-sort-bar [totalRecords]="total()" [sortableFields]="sortableFields" (sortChange)="loadOnSortEmit($event)" />
+  <jhi-filter-sort-bar [totalRecords]="total()" [filterFields]="filterFields" [sortOptions]="sortOptions" />
 
-  <div class="table-wrapper">
-    <jhi-dynamic-table
-      [columns]="columns()"
-      [data]="pageData()"
-      [totalRecords]="total()"
-      [page]="page()"
-      [rows]="pageSize()"
-      [selectable]="true"
-      (lazyLoad)="loadOnTableEmit($event)"
-    />
-  </div>
+  <jhi-dynamic-table
+    [columns]="columns()"
+    [data]="pageData()"
+    [totalRecords]="total()"
+    [page]="page()"
+    [rows]="pageSize()"
+    [selectable]="true"
+    (lazyLoad)="loadOnTableEmit($event)"
+  />
 
   <ng-template #actionTemplate>
     <jhi-button label="View" severity="primary" />

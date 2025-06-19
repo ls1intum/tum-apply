@@ -5,10 +5,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ChipModule } from 'primeng/chip';
 
 import { FilterOption } from '../../molecules/filter-sort-bar/filter-sort-bar.component';
+import { TranslateDirective } from '../../../language';
 
 @Component({
   selector: 'jhi-filter-select',
-  imports: [ChipModule, FormsModule, MultiSelectModule, TranslateModule],
+  imports: [ChipModule, FormsModule, MultiSelectModule, TranslateModule, TranslateDirective],
   templateUrl: './filter-select.component.html',
   styleUrl: './filter-select.component.scss',
 })
