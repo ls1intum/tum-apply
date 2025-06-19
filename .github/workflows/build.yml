@@ -35,18 +35,9 @@ jobs:
     with:
       image-name: ghcr.io/ls1intum/tum-apply
       docker-file: Dockerfile
-    env:
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
-      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
-      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
-    secrets: inherit
+  build-args: |
+    KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}
+    KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}
+    KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}
+    KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+  secrets: inherit
