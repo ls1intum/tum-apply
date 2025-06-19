@@ -40,4 +40,4 @@ jobs:
         KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}
         KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}
         KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-  secrets: inherit
+    secrets: inherit
