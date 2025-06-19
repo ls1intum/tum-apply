@@ -41,9 +41,10 @@ public class JobService {
     }
 
     /**
-     * Creates a new job based on the form data.
+     * Creates a new job using the provided job form data.
      *
      * @param dto the job details used to create the job
+     * @return the created job as a {@link JobFormDTO}
      */
     public JobFormDTO createJob(JobFormDTO dto) {
         Job job = new Job();
@@ -51,10 +52,11 @@ public class JobService {
     }
 
     /**
-     * Updates an existing job with the provided data.
+     * Updates an existing job with the new form data.
      *
      * @param jobId the ID of the job to update
-     * @param dto   the {@link JobFormDTO} containing updated job details
+     * @param dto the {@link JobFormDTO} containing updated job details
+     * @return the updated job as a {@link JobFormDTO}
      */
     public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));

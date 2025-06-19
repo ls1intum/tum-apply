@@ -148,7 +148,7 @@ export class JobCreationFormComponent {
           icon: 'floppy-disk',
           severity: 'secondary',
           disabled: false,
-          onClick: () => this.saveDraft(),
+          onClick: () => void this.saveDraft(),
         },
         {
           label: 'Next',
@@ -170,14 +170,14 @@ export class JobCreationFormComponent {
           icon: 'floppy-disk',
           severity: 'secondary',
           disabled: false,
-          onClick: () => this.saveDraft(),
+          onClick: () => void this.saveDraft(),
         },
         {
           label: 'Publish Job',
           icon: undefined,
           severity: 'primary',
           disabled: this.basicInfoForm.invalid || this.positionDetailsForm.invalid,
-          onClick: () => this.publishJob(),
+          onClick: () => void this.publishJob(),
         },
       ],
     };
