@@ -3,8 +3,8 @@ services:
   mysql:
     image: mysql:9.2.0
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=tumapply
+      - MYSQL_ROOT_PASSWORD=root
     expose:
       - '3306'
     command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
@@ -41,11 +41,11 @@ services:
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
     environment:
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
-      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
-      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
-      - SPRING_LIQUIBASE_URL=${SPRING_LIQUIBASE_URL}
+      - SPRING_PROFILES_ACTIVE=dev, api-docs
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
+      - SPRING_LIQUIBASE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
       - KEYCLOAK_URL=${KEYCLOAK_URL}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
