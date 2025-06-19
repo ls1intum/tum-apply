@@ -1,5 +1,5 @@
-@if (application() !== null) {
-  <div class="card" [class.disabled]="disabled()">
+<div class="card" [class.disabled]="disabled()" [class.placeholder]="placeholder()">
+  @if (!placeholder()) {
     <!-- Header -->
     <div class="header">
       <p class="name">{{ application()?.name }}</p>
@@ -32,5 +32,5 @@
 
       <jhi-button [label]="'evaluation.reject' | translate" variant="outlined" severity="danger" icon="xmark" [disabled]="isDisabled()" />
     </div>
-  </div>
-}
+  }
+</div>
