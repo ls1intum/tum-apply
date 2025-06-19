@@ -32,7 +32,7 @@ ENV KEYCLOAK_URL=$KEYCLOAK_URL \
     KEYCLOAK_ENABLE_LOGGING=$KEYCLOAK_ENABLE_LOGGING
 
 # also copy this script which is required by postinstall lifecycle hook
-
+RUN echo "[DEBUG] Docker ENV: KEYCLOAK_URL=$KEYCLOAK_URL"
 RUN \
   # Mount global cache for Gradle (project cache in /opt/tum-apply/.gradle doesn't seem to be populated)
   --mount=type=cache,target=/root/.gradle/caches \

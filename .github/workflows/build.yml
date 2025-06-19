@@ -30,6 +30,12 @@ on:
       - created
 
 jobs:
+  debug-vars:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output non-sensitive ENV vars for debugging
+        run: |
+          echo "KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}"
   build:
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
     with:
