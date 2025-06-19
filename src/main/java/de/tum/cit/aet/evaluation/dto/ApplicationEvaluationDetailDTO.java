@@ -2,6 +2,7 @@ package de.tum.cit.aet.evaluation.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ public record ApplicationEvaluationDetailDTO(
     @NotNull UUID applicationId,
     ApplicantEvaluationDetailDTO applicant,
     @NotNull ApplicationState state,
+    String jobName,
     LocalDate desiredDate,
     String projects,
     String specialSkills,
@@ -27,11 +29,13 @@ public record ApplicationEvaluationDetailDTO(
      */
     public static ApplicationEvaluationDetailDTO fromApplication(Application application) {
         Applicant applicant = application.getApplicant();
+        Job job = application.getJob();
 
         return new ApplicationEvaluationDetailDTO(
             application.getApplicationId(),
             ApplicantEvaluationDetailDTO.getFromEntity(applicant),
             application.getState(),
+            job.getTitle(),
             application.getDesiredStartDate(),
             application.getProjects(),
             application.getSpecialSkills(),

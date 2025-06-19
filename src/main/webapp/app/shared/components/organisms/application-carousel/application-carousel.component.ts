@@ -6,7 +6,11 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../../generated';
+import {
+  ApplicationEvaluationDetailDTO,
+  ApplicationEvaluationDetailListDTO,
+  ApplicationEvaluationResourceService,
+} from '../../../../generated';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -53,7 +57,7 @@ export class ApplicationCarouselComponent {
   totalCount = signal(0); // Total number of applications
   currentIndex = signal(0); // Global index of currently selected application
   windowIndex = signal(0); // Local index in current application window
-  applications = signal<ApplicationEvaluationOverviewDTO[]>([]);
+  applications = signal<ApplicationEvaluationDetailDTO[]>([]);
   cardsVisible = signal(VISIBLE_DESKTOP); // Number of visible cards (responsive)
 
   // Half of the window size — used for centering logic
@@ -71,7 +75,7 @@ export class ApplicationCarouselComponent {
   readonly visibleApps = computed(() => {
     const size = this.cardsVisible();
     const half = Math.floor(size / 2);
-    const result: (ApplicationEvaluationOverviewDTO | undefined)[] = [];
+    const result: (ApplicationEvaluationDetailDTO | undefined)[] = [];
 
     for (let offset = -half; offset <= half; offset++) {
       const idx = this.windowIndex() + offset;
@@ -167,9 +171,11 @@ export class ApplicationCarouselComponent {
    * Loads a page of applications from backend.
    * Also updates total count of applications.
    */
-  private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationOverviewDTO[] | undefined> {
+  private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {
     try {
-      const res = await firstValueFrom(this.evaluationService.getApplicationsDetails(offset, limit, this.sortBy(), this.sortDirection()));
+      const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
+        this.evaluationService.getApplicationsDetails(offset, limit, this.sortBy(), this.sortDirection()),
+      );
       this.totalCount.set(res.totalRecords ?? 0);
       return res.applications ?? undefined;
     } catch (error) {

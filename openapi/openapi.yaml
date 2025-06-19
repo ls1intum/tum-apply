@@ -1522,6 +1522,9 @@
               "WITHDRAWN"
             ]
           },
+          "jobName": {
+            "type": "string"
+          },
           "desiredDate": {
             "type": "string",
             "format": "date"
