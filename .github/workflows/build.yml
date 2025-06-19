@@ -35,9 +35,9 @@ jobs:
     with:
       image-name: ghcr.io/ls1intum/tum-apply
       docker-file: Dockerfile
-  build-args: |
-    KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}
-    KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}
-    KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}
-    KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      build-args: |
+        KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}
+        KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}
+        KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}
+        KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}
   secrets: inherit
