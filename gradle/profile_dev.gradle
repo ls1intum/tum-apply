@@ -40,7 +40,6 @@ task webapp(type: NpmTask) {
             "KEYCLOAK_URL"              : System.getenv("KEYCLOAK_URL"),
             "KEYCLOAK_REALM"            : System.getenv("KEYCLOAK_REALM"),
             "KEYCLOAK_CLIENT_ID"        : System.getenv("KEYCLOAK_CLIENT_ID"),
-            "KEYCLOAK_ADMIN"            : System.getenv("KEYCLOAK_ADMIN"),
             "KEYCLOAK_ADMIN_PASSWORD"   : System.getenv("KEYCLOAK_ADMIN_PASSWORD"),
             "KEYCLOAK_ENABLE_LOGGING"   : System.getenv("KEYCLOAK_ENABLE_LOGGING"),
             "MYSQL_DATABASE"            : System.getenv("MYSQL_DATABASE"),
