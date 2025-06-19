@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -62,6 +62,8 @@ export class ApplicationCarouselComponent {
 
   // Half of the window size — used for centering logic
   half = Math.floor(WINDOW_SIZE / 2); // Half the window size, used for centering
+
+  currentApplication = output<ApplicationEvaluationDetailDTO>();
 
   isStart = computed(() => {
     return this.currentIndex() === 0;
@@ -142,6 +144,8 @@ export class ApplicationCarouselComponent {
     this.currentIndex.update(v => v + 1);
     this.windowIndex.update(v => v + 1);
 
+    this.emitApplication(this.applications()[this.windowIndex()]);
+
     if (this.currentIndex() + this.half < this.totalCount()) {
       // Load next item if within bounds
       void this.loadNext(this.currentIndex() + this.half);
@@ -157,6 +161,8 @@ export class ApplicationCarouselComponent {
 
     this.currentIndex.update(v => v - 1);
     this.windowIndex.update(v => v - 1);
+
+    this.emitApplication(this.applications()[this.windowIndex()]);
 
     if (this.currentIndex() - this.half >= 0) {
       // Load previous item if within bounds
@@ -225,6 +231,7 @@ export class ApplicationCarouselComponent {
     const data = await this.loadPage(0, this.half + 1);
     if (data) {
       this.applications.set(data);
+      this.emitApplication(data[0]);
     }
   }
 
@@ -247,5 +254,10 @@ export class ApplicationCarouselComponent {
       const diff = apps.length - windowIndex - 1 - this.half;
       this.applications.set(apps.slice(0, apps.length - diff));
     }
+  }
+
+  private emitApplication(app: ApplicationEvaluationDetailDTO): void {
+    console.warn('Emitting current application: ', app);
+    this.currentApplication.emit(app);
   }
 }
