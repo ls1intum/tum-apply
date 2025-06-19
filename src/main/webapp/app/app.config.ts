@@ -30,9 +30,13 @@ import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interc
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { KeycloakService } from './core/auth/keycloak.service';
 import { AccountService } from './core/auth/account.service';
+import { environment } from './environments/environment';
 
 export function initializeKeycloak(keycloakService: KeycloakService, accountService: AccountService) {
   return async () => {
+    console.warn('🔁 1 Initializing Keycloak...');
+    console.warn('🔁 1 Keycloak URL:', environment.keycloak.url);
+
     const success = await keycloakService.init();
     if (success) {
       await accountService.loadUser();
