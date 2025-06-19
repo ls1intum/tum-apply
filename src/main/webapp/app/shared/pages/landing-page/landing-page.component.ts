@@ -24,4 +24,8 @@ import { FaqSectionComponent } from './faq-section/faq-section.component';
 })
 export class LandingPageComponent {
   protected readonly environment = environment;
+
+  constructor() {
+    console.log(this.environment);
+  }
 }
