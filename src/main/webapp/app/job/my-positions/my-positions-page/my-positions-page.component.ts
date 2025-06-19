@@ -8,11 +8,12 @@ import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TagComponent } from '../../../shared/components/atoms/tag/tag.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
+import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
-  imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent],
+  imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent, SortBarComponent],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
 })
@@ -22,6 +23,17 @@ export class MyPositionsPageComponent {
   page = signal<number>(0);
   pageSize = signal<number>(10);
   userId = signal<string>('');
+
+  sortBy = signal<string>('createdAt');
+  sortDirection = signal<'ASC' | 'DESC'>('DESC');
+
+  readonly sortableFields: SortOption[] = [
+    { displayName: 'Job Title', field: 'title', type: 'TEXT' },
+    { displayName: 'Status', field: 'state', type: 'TEXT' },
+    { displayName: 'Start Date', field: 'startDate', type: 'NUMBER' },
+    { displayName: 'Created', field: 'createdAt', type: 'NUMBER' },
+    { displayName: 'Last Modified', field: 'lastModifiedAt', type: 'NUMBER' },
+  ];
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
@@ -67,13 +79,30 @@ export class MyPositionsPageComponent {
     void this.loadJobs();
   }
 
+  loadOnSortEmit(event: Sort): void {
+    this.page.set(0);
+    this.sortBy.set(event.field ?? this.sortableFields[0].field);
+    this.sortDirection.set(event.direction);
+    void this.loadJobs();
+  }
+
   private async loadJobs(): Promise<void> {
     try {
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
       if (this.userId() === '') {
         return;
       }
-      const pageData = await firstValueFrom(this.jobService.getJobsByProfessor(this.userId(), this.pageSize(), this.page()));
+      const pageData = await firstValueFrom(
+        this.jobService.getJobsByProfessor(
+          this.userId(),
+          this.pageSize(),
+          this.page(),
+          undefined, // Optional title filter
+          undefined, // Optional state filter
+          this.sortBy(),
+          this.sortDirection(),
+        ),
+      );
       this.jobs.set(pageData.content ?? []);
       this.totalRecords.set(pageData.totalElements ?? 0);
     } catch (error) {

@@ -2,6 +2,7 @@
   <h1>Manage your Doctorate Positions</h1>
 </div>
 <div class="body">
+  <jhi-sort-bar [totalRecords]="totalRecords()" [sortableFields]="sortableFields" (sortChange)="loadOnSortEmit($event)" />
   <div class="table-wrapper">
     <jhi-dynamic-table
       [columns]="columns()"
