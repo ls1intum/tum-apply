@@ -257,7 +257,6 @@ export class ApplicationCarouselComponent {
   }
 
   private emitApplication(app: ApplicationEvaluationDetailDTO): void {
-    console.warn('Emitting current application: ', app);
     this.currentApplication.emit(app);
   }
 }
