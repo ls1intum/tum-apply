@@ -13,10 +13,17 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// Load the most appropriate .env file
-const envFiles = ['.env.local', '.env', '.env.test', '.env.prod'];
-const selectedEnvFile = envFiles.find(f => fs.existsSync(path.resolve(__dirname, f)));
-dotenv.config({ path: selectedEnvFile ? path.resolve(__dirname, selectedEnvFile) : undefined });
+// Load .env file only if no env variables are set (e.g. in CI they come from Docker ENV)
+if (!process.env.KEYCLOAK_URL) {
+  const envFiles = ['.env.local', '.env', '.env.test', '.env.prod'];
+  const selectedEnvFile = envFiles.find(f => fs.existsSync(path.resolve(__dirname, f)));
+  if (selectedEnvFile) {
+    dotenv.config({ path: path.resolve(__dirname, selectedEnvFile) });
+    console.log(`[prebuild] Loaded environment from ${selectedEnvFile}`);
+  } else {
+    console.warn('[prebuild] No .env file found. Using existing process.env values.');
+  }
+}
 const languagesHash = await hashElement(path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n'), {
   algo: 'md5',
   encoding: 'hex',
