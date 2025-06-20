@@ -1,86 +1,85 @@
-<div class="flex w-full gap-10">
-  <div class="flex flex-col items-center gap-2.5">
-    <div class="flex items-center gap-2.5 w-full">
-      <!-- Avatar -->
-      <div class="w-24 h-24 relative rounded-full overflow-hidden">
-        <img src="https://placehold.co/100x100" class="absolute top-0 left-0 w-full h-full object-cover" />
+<!-- Main Container Layout -->
+<div class="main-container">
+  <!-- Left Section -->
+  <div class="left-section">
+    <!-- Top Section: Avatar, Name, and Score -->
+    <div class="top-section">
+      <!-- Applicant Avatar -->
+      <div class="avatar">
+        <img src="https://placehold.co/100x100" class="avatar-img" />
       </div>
 
-      <!-- User Info and Score -->
-      <div class="flex flex-col justify-between items-center py-4 flex-1">
-        <!-- Name -->
-        <div class="w-full mb-2 ml-30 text-left font-bold">
-          {{ application().applicant?.user?.firstName }} {{ application().applicant?.user?.lastName }}
-        </div>
-
-        <!-- Score and Message -->
-        <div class="flex justify-start items-center gap-5 w-full">
-          <!-- Score Bar -->
-          <div class="relative bg-Background-Surface-alt rounded-[10px] outline p-2.5 flex-1 h-5 max-w-72 min-w-36">
-            <div class="absolute top-[2px] left-[184px] w-14 h-4 bg-Positive-Default rounded-[10px]"></div>
-          </div>
-
-          <!-- Message Icon -->
-          <div class="flex items-center gap-1 h-5 w-11">
-            <div class="text-center">4</div>
-            <fa-icon icon="message" class="w-5 h-5" />
-          </div>
-        </div>
+      <!-- User Info and Optional Rating -->
+      <div class="user-info-container">
+        <!-- Applicant Name -->
+        <div class="section-title">{{ application().applicant?.user?.firstName }} {{ application().applicant?.user?.lastName }}</div>
+        <!-- Rating Section (if applicable) -->
+        <ng-content select="[slot-rating]" />
       </div>
     </div>
+    <!-- Injected Template: Applicant Details -->
     <ng-container [ngTemplateOutlet]="applicantDetailsTemplate" />
-    <ng-container [ngTemplateOutlet]="educationInformationTemplate" />
+
+    <!-- Injected Template: Education Information -->
+    <ng-container [ngTemplateOutlet]="educationInfoTemplate" />
   </div>
-  <div class="self-stretch flex flex-col justify-start items-center h-full gap-2.5">
+
+  <!-- Middle Column: Text Cards (Motivation, Skills, Research Experience) -->
+  <div class="middle-column">
     <ng-container
-      [ngTemplateOutlet]="text_card"
+      [ngTemplateOutlet]="textCardTemplate"
       [ngTemplateOutletContext]="{ icon: 'rocket', name: 'Motivation', text: application().motivation }"
     />
     <ng-container
-      [ngTemplateOutlet]="text_card"
+      [ngTemplateOutlet]="textCardTemplate"
       [ngTemplateOutletContext]="{ icon: 'brain', name: 'Skills', text: application().specialSkills }"
     />
     <ng-container
-      [ngTemplateOutlet]="text_card"
+      [ngTemplateOutlet]="textCardTemplate"
       [ngTemplateOutletContext]="{ icon: 'flask', name: 'Research Experience', text: application().projects }"
     />
+    <!-- Slot for custom questions -->
+    <ng-content select="[slot-custom-questions]" />
   </div>
+
+  <!-- Right Column: Slot for Additional Custom Content (e.g Documents, or Internal Comments) -->
   <div class="flex gap-10">
-    <div class="flex flex-col items-center gap-2.5">
-      <div class="w-96 h-45 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5"></div>
-      <div class="w-96 h-45 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5"></div>
-      <div class="w-96 h-45 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5"></div>
-    </div>
+    <ng-content select="[slot-vertical-right]" />
   </div>
 </div>
 
+<!-- Template: Applicant Details Card -->
 <ng-template #applicantDetailsTemplate>
-  <div class="w-96 h-60 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5">
-    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ $implicit: 'Applicant Information' }" />
-    <div class="self-stretch flex-1 px-8 pb-6 flex flex-col justify-center items-center">
-      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Preferred Language', val: 'English' }" />
-      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Desired Start Date', val: 'Sept 2025' }" />
-      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Gender', val: 'Female' }" />
-      <ng-container [ngTemplateOutlet]="card_row" [ngTemplateOutletContext]="{ $implicit: 'Nationality', val: 'Albanian' }" />
+  <div class="card h-60">
+    <!-- Card Header -->
+    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ header: 'Applicant Information', icon: 'circle-user' }" />
+    <!-- Applicant Information Rows -->
+    <div class="card-body">
+      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Preferred Language', val: 'English' }" />
+      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Desired Start Date', val: 'Sept 2025' }" />
+      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Gender', val: 'Female' }" />
+      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Nationality', val: 'Albanian' }" />
     </div>
 
-    <div class="w-full pb-4 inline-flex justify-around items-center">
-      <div class="flex-1 flex justify-center items-center gap-2.5">
+    <!-- Links: Website and LinkedIn -->
+    <div class="links-container">
+      <div class="link-item">
         <div>Website</div>
-        <fa-icon icon="link" class="w-6 h-6" />
+        <fa-icon icon="link" class="icon" />
       </div>
-      <div class="flex-1 flex justify-center items-center gap-2.5">
+      <div class="link-item">
         <div>Linked In</div>
-        <fa-icon [icon]="['fab', 'linkedin']" class="w-6 h-6" />
+        <fa-icon [icon]="['fab', 'linkedin']" class="icon" />
       </div>
     </div>
   </div>
 </ng-template>
 
-<ng-template #text_card let-icon="icon" let-name="name" let-text="text">
-  <div class="self-stretch px-4 py-3 rounded-lg outline outline-stone-300 flex flex-col justify-center items-center gap-2">
-    <div class="self-stretch inline-flex justify-between items-center">
-      <fa-icon icon="{{ icon }}" class="w-6 h-6" />
+<!-- Template: Generic Text Card for Motivation, Skills, etc. -->
+<ng-template #textCardTemplate let-icon="icon" let-name="name" let-text="text">
+  <div class="text-card">
+    <div class="card-row-icon">
+      <fa-icon icon="{{ icon }}" class="icon" />
       <div class="flex-1 justify-start text-base">{{ name }}</div>
     </div>
     <div class="w-full justify-start">
@@ -89,74 +88,72 @@
   </div>
 </ng-template>
 
-<ng-template #card_row let-name let-val="val">
-  <div class="self-stretch flex-1 inline-flex justify-center items-center">
-    <div class="flex-1 self-stretch flex justify-center items-center">
-      <div class="flex-1 justify-start">{{ name }}</div>
-    </div>
-    <div class="flex-1 text-right justify-start">{{ val }}</div>
+<ng-template #infoRow let-name let-val="val">
+  <div class="card-row">
+    <div class="flex-1 text-left">{{ name }}</div>
+    <div class="flex-1 text-right">{{ val }}</div>
   </div>
 </ng-template>
 
-<ng-template #card_row_with_icon let-name let-val="val">
-  <div class="flex items-center justify-between w-full gap-2.5">
-    <div class="flex-1 text-left">
+<!-- Template: Row with Icon (for grades etc.) -->
+<ng-template #infoRowWithIcon let-name let-val="val">
+  <div class="card-row-icon">
+    <div class="flex-1">
       {{ name }}
     </div>
     <div class="flex-1 flex items-center justify-end gap-2.5">
-      <div class="text-right flex-1">
+      <div class="text-right">
         {{ val }}
       </div>
       <div class="transform -rotate-90">
-        <fa-icon icon="arrow-right-arrow-left" class="w-6 h-6" />
+        <fa-icon icon="arrow-right-arrow-left" class="icon" />
       </div>
     </div>
   </div>
 </ng-template>
 
-<ng-template #card_header let-header>
-  <div class="self-stretch h-14 inline-flex justify-center items-center gap-2.5">
-    <div class="flex-1 self-stretch flex justify-center items-center gap-2.5">
-      <div class="w-6 h-6 inline-flex flex-col justify-center items-center gap-2.5">
-        <fa-icon icon="building-columns" />
-      </div>
-      <div class="text-center justify-start font-bold">{{ header }}</div>
-    </div>
+<!-- Template: Card Header -->
+<ng-template #card_header let-header="header" let-icon="icon">
+  <div class="h-14 flex self-stretch items-center justify-center gap-2.5 px-4">
+    <fa-icon [icon]="icon" class="icon" />
+    <div class="font-bold text-center">{{ header }}</div>
   </div>
 </ng-template>
 
 <!-- Education Information Template -->
-<ng-template #educationInformationTemplate>
-  <div class="w-96 pb-6 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5">
-    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ $implicit: 'BSc Information' }" />
-    <div class="self-stretch flex-1 px-8 flex flex-col justify-center items-center">
+<ng-template #educationInfoTemplate>
+  <!-- Bachelor's Information Card -->
+  <div class="card">
+    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ header: 'BSc Information', icon: 'building-columns' }" />
+    <div class="card-body">
       <ng-container
-        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutlet]="infoRow"
         [ngTemplateOutletContext]="{ $implicit: 'Name', val: application().applicant?.bachelorDegreeName }"
       />
       <ng-container
-        [ngTemplateOutlet]="card_row_with_icon"
+        [ngTemplateOutlet]="infoRowWithIcon"
         [ngTemplateOutletContext]="{ $implicit: 'Grade', val: application().applicant?.bachelorGrade }"
       />
       <ng-container
-        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutlet]="infoRow"
         [ngTemplateOutletContext]="{ $implicit: 'University', val: application().applicant?.bachelorUniversity }"
       />
     </div>
   </div>
-  <div class="w-96 pb-6 rounded-lg outline outline-stone-300 flex flex-col justify-start items-center gap-2.5">
-    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ $implicit: 'MSc Information' }" />
-    <div class="self-stretch flex-1 px-8 flex flex-col justify-center items-center">
+  <!-- Master's Information Card -->
+  <div class="card">
+    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ header: 'MSc Information', icon: 'building-columns' }" />
+    <div class="card-body">
       <ng-container
-        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutlet]="infoRow"
         [ngTemplateOutletContext]="{ $implicit: 'Name', val: application().applicant?.masterDegreeName }"
       />
       <ng-container
-        [ngTemplateOutlet]="card_row_with_icon"
+        [ngTemplateOutlet]="infoRowWithIcon"
         [ngTemplateOutletContext]="{ $implicit: 'Grade', val: application().applicant?.masterGrade }"
       />
       <ng-container
-        [ngTemplateOutlet]="card_row"
+        [ngTemplateOutlet]="infoRow"
         [ngTemplateOutletContext]="{ $implicit: 'University', val: application().applicant?.masterUniversity }"
       />
     </div>

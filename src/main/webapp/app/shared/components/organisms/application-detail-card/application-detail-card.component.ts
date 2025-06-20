@@ -10,6 +10,7 @@ import { ApplicationDetailDTO } from 'app/generated';
   styleUrl: './application-detail-card.component.scss',
 })
 export class ApplicationDetailCardComponent {
+  show_rating = input<boolean>(false);
   application = input<ApplicationDetailDTO>({
     applicationId: 'app-123456',
     applicant: {
