@@ -62,88 +62,6 @@
         }
       }
     },
-    "/api/applications": {
-      "put": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "updateApplication",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateApplicationDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "createApplication",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateApplicationDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/applications/withdraw/{applicationId}": {
-      "put": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "withdrawApplication",
-        "parameters": [
-          {
-            "name": "applicationId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/management/loggers/{name}": {
       "get": {
         "tags": [
@@ -1090,229 +1008,6 @@
           }
         }
       }
-    },
-    "/api/documents/{documentDictionaryId}": {
-      "get": {
-        "tags": [
-          "document-resource"
-        ],
-        "operationId": "downloadDocument",
-        "parameters": [
-          {
-            "name": "documentDictionaryId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/applications/{applicationId}": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getApplicationById",
-        "parameters": [
-          {
-            "name": "applicationId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "deleteApplication",
-        "parameters": [
-          {
-            "name": "applicationId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/applications/pages": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getApplicationPages",
-        "parameters": [
-          {
-            "name": "pageSize",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 25,
-              "minimum": 1
-            }
-          },
-          {
-            "name": "pageNumber",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0,
-              "minimum": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApplicationOverviewDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/applications/pages/length": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getApplicationPagesLength",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/applications/job/{jobId}": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getAllApplicationsOfJob",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                  },
-                  "uniqueItems": true
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/applications/applicant/{applicantId}": {
-      "get": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "getAllApplicationsOfApplicant",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                  },
-                  "uniqueItems": true
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -1396,58 +1091,16 @@
           "title"
         ]
       },
-      "ApplicantDTO": {
+      "Link": {
         "type": "object",
         "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserDTO"
-          },
-          "street": {
+          "href": {
             "type": "string"
           },
-          "postalCode": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          },
-          "country": {
-            "type": "string"
-          },
-          "bachelorDegreeName": {
-            "type": "string"
-          },
-          "bachelorGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "bachelorGrade": {
-            "type": "string"
-          },
-          "bachelorUniversity": {
-            "type": "string"
-          },
-          "masterDegreeName": {
-            "type": "string"
-          },
-          "masterGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "masterGrade": {
-            "type": "string"
-          },
-          "masterUniversity": {
-            "type": "string"
+          "templated": {
+            "type": "boolean"
           }
-        },
-        "required": [
-          "user"
-        ]
+        }
       },
       "ResearchGroupShortDTO": {
         "type": "object",
@@ -1458,262 +1111,6 @@
           },
           "name": {
             "type": "string"
-          }
-        }
-      },
-      "UpdateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantDTO"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicant",
-          "applicationId",
-          "applicationState"
-        ]
-      },
-      "UserDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          },
-          "selectedLanguage": {
-            "type": "string"
-          },
-          "researchGroupShortDTO": {
-            "$ref": "#/components/schemas/ResearchGroupShortDTO"
-          }
-        }
-      },
-      "ApplicationForApplicantDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantDTO"
-          },
-          "job": {
-            "$ref": "#/components/schemas/JobCardDTO"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          },
-          "customFields": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomFieldAnswerDTO"
-            },
-            "uniqueItems": true
-          }
-        },
-        "required": [
-          "applicationId",
-          "applicationState",
-          "job"
-        ]
-      },
-      "CustomFieldAnswerDTO": {
-        "type": "object",
-        "properties": {
-          "customFieldAnswerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "customField": {
-            "$ref": "#/components/schemas/CustomFieldDTO"
-          },
-          "answers": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DocumentDTO"
-            }
-          }
-        }
-      },
-      "CustomFieldDTO": {
-        "type": "object"
-      },
-      "DocumentDTO": {
-        "type": "object"
-      },
-      "JobCardDTO": {
-        "type": "object",
-        "properties": {
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "fieldOfStudies": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          },
-          "professorName": {
-            "type": "string"
-          },
-          "workload": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "relativeTime": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "jobId",
-          "title"
-        ]
-      },
-      "CreateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantDTO"
-          },
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicant",
-          "applicationState",
-          "jobId"
-        ]
-      },
-      "Link": {
-        "type": "object",
-        "properties": {
-          "href": {
-            "type": "string"
-          },
-          "templated": {
-            "type": "boolean"
           }
         }
       },
@@ -1960,6 +1357,42 @@
           }
         }
       },
+      "JobCardDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "professorName": {
+            "type": "string"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "relativeTime": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "title"
+        ]
+      },
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
@@ -2055,35 +1488,6 @@
           "appliedAt": {
             "type": "string",
             "format": "date-time"
-          }
-        }
-      },
-      "ApplicationOverviewDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "jobTitle": {
-            "type": "string"
-          },
-          "researchGroup": {
-            "type": "string"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "timeSinceCreation": {
-            "type": "string"
           }
         }
       }
