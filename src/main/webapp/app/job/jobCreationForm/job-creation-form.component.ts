@@ -47,8 +47,8 @@ type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
-  mode: JobFormMode = 'create';
-  jobId: string | undefined = undefined;
+  mode = signal<JobFormMode>('create');
+  jobId = signal<string>('');
   userId = signal<string>('');
   currentStep = 1;
   isLoading = signal<boolean>(true);
@@ -284,19 +284,19 @@ export class JobCreationFormComponent {
       const firstSegment = segments[1]?.path;
 
       if (firstSegment === JobFormModes.CREATE) {
-        this.mode = JobFormModes.CREATE;
+        this.mode.set(JobFormModes.CREATE);
         this.initForms();
       } else if (firstSegment === JobFormModes.EDIT) {
-        this.mode = JobFormModes.EDIT;
-        this.jobId = this.route.snapshot.paramMap.get('job_id') ?? undefined;
+        this.mode.set(JobFormModes.EDIT);
+        this.jobId.set(this.route.snapshot.paramMap.get('job_id') ?? '');
 
-        if (!this.jobId) {
+        if (this.jobId() === '') {
           console.error('Invalid job ID');
           this.router.navigate(['/my-positions']);
           return;
         }
 
-        const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId));
+        const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId()));
         this.initForms(job);
       }
     } catch (error) {
@@ -328,8 +328,8 @@ export class JobCreationFormComponent {
       state: JobFormDTO.StateEnum.Draft,
     };
     try {
-      if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
-        await firstValueFrom(this.jobResourceService.updateJob(this.jobId, jobFormDto));
+      if (this.jobId() !== '' && this.mode() === JobFormModes.EDIT) {
+        await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobFormDto));
       } else {
         await firstValueFrom(this.jobResourceService.createJob(jobFormDto));
       }
@@ -360,8 +360,8 @@ export class JobCreationFormComponent {
     };
 
     try {
-      if (this.jobId !== undefined && this.mode === JobFormModes.EDIT) {
-        await firstValueFrom(this.jobResourceService.updateJob(this.jobId, jobFormDto));
+      if (this.jobId() !== '' && this.mode() === JobFormModes.EDIT) {
+        await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobFormDto));
       } else {
         await firstValueFrom(this.jobResourceService.createJob(jobFormDto));
       }
