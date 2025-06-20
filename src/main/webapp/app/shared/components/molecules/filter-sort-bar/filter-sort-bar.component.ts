@@ -43,11 +43,9 @@ export class FilterSortBarComponent {
   filterChange = output<FilterField[]>();
   sortChange = output<SortOption>();
 
-  // Computes the total number of active filters across all filter fields
+  // Computes the total number of active filters
   activeFilters = computed(() => {
-    return this.filterFields()
-      .map(f => f.selected?.length ?? 0)
-      .reduce((sum, count) => sum + count, 0);
+    return this.filterFields().filter(f => (f.selected?.length ?? 0) > 0).length;
   });
 
   // Determines the selected sort option for the dropdown
