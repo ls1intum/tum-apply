@@ -30,7 +30,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
         Map.entry("rating", "a.rating"),
         Map.entry("createdAt", "a.created_at"),
-        Map.entry("applicant.lastName", "ap.last_name")
+        Map.entry("applicant.lastName", "u.last_name")
     );
 
     /**
@@ -107,6 +107,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
                 SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
                 FROM applications a
                 JOIN jobs j ON j.job_id = a.job_id
+                JOIN users u ON u.user_id = a.applicant_id
                 WHERE j.research_group_id = :groupId
                   AND a.application_state IN (:states)
             """.formatted(orderBy)
