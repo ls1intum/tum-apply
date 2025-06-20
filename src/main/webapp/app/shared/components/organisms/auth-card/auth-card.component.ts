@@ -17,6 +17,8 @@ import { AccountService } from '../../../../core/auth/account.service';
 })
 export class AuthCardComponent {
   mode = input<'login' | 'register'>('login');
+  redirectUri = input<string>('');
+
   authTabService = inject(AuthTabService);
   value: Signal<number> = this.authTabService.getSelectedTab();
   accountService = inject(AccountService);
@@ -55,6 +57,6 @@ export class AuthCardComponent {
   }
 
   onTUMSSOLogin(): void {
-    void this.accountService.signIn();
+    void this.accountService.signIn(this.redirectUri());
   }
 }
