@@ -1,10 +1,7 @@
 package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
-import de.tum.cit.aet.job.dto.CreatedJobDTO;
-import de.tum.cit.aet.job.dto.JobCardDTO;
-import de.tum.cit.aet.job.dto.JobDetailDTO;
-import de.tum.cit.aet.job.dto.JobFormDTO;
+import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -69,23 +66,22 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)}.
      */
     @PostMapping("/create")
-    public ResponseEntity<Void> createJob(@RequestBody JobFormDTO jobForm) {
-        log.debug("REST request to create Job : {}", jobForm);
-        jobService.createJob(jobForm);
-        log.debug("REST request to create Job : {} succeeded", jobForm);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<JobFormDTO> createJob(@RequestBody JobFormDTO jobForm) {
+        JobFormDTO createdJob = jobService.createJob(jobForm);
+        return ResponseEntity.ok(createdJob);
     }
 
-    /**
-     * {@code PUT /api/jobs/jobform/{jobId}} : Update an existing job posting.
+    /*
+     * {@code PUT /api/jobs/update/{jobId}} : Update an existing job posting.
      *
      * @param jobId   the ID of the job to update.
      * @param jobForm the updated job posting data.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated job.
      */
-    @PutMapping("/jobform/{jobId}")
-    public ResponseEntity<JobCardDTO> updateJob(@PathVariable UUID jobId, @RequestBody JobDetailDTO jobForm) {
-        return ResponseEntity.ok(jobService.updateJob(jobId, jobForm));
+    @PutMapping("/update/{jobId}")
+    public ResponseEntity<JobFormDTO> updateJob(@PathVariable UUID jobId, @RequestBody JobFormDTO jobForm) {
+        JobFormDTO updatedJob = jobService.updateJob(jobId, jobForm);
+        return ResponseEntity.ok(updatedJob);
     }
 
     /**
@@ -119,13 +115,13 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/{jobId}/details} : Get full details of a specific job.
+     * {@code GET /api/jobs/{jobId}} : Get all details of a specific job.
      *
      * @param jobId the ID of the job.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job details.
      */
-    @GetMapping("/{jobId}/details")
-    public ResponseEntity<JobCardDTO> getJobDetails(@PathVariable UUID jobId) {
-        return ResponseEntity.ok(jobService.getJobDetails(jobId));
+    @GetMapping("/{jobId}")
+    public ResponseEntity<JobDTO> getJobById(@PathVariable UUID jobId) {
+        return ResponseEntity.ok(jobService.getJobById(jobId));
     }
 }

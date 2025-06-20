@@ -2,7 +2,6 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
@@ -14,6 +13,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/applicantDTO.ts
+model/applicationDocumentIdsDTO.ts
 model/applicationEvaluationListDTO.ts
 model/applicationEvaluationOverviewDTO.ts
 model/applicationForApplicantDTO.ts
@@ -22,9 +22,8 @@ model/createApplicationDTO.ts
 model/createdJobDTO.ts
 model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
-model/jobDetailDTO.ts
+model/jobDTO.ts
 model/jobFormDTO.ts
-model/link.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
