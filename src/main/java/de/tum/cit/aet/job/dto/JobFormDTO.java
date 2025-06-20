@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -31,7 +32,7 @@ public record JobFormDTO(
      */
     public static JobFormDTO getFromEntity(Job job) {
         if (job == null) {
-            return null;
+            throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
         }
         return new JobFormDTO(
             job.getTitle(),
