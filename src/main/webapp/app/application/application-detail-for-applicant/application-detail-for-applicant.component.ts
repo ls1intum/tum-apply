@@ -20,7 +20,8 @@ export default class ApplicationDetailForApplicantComponent {
     this.init();
   }
 
-  async init(): Promise<void> {
+  /* TODO when connected to server : async init(): Promise<void>*/
+  init(): void {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
       alert('Error: this is no valid jobId');
