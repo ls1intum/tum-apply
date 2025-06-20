@@ -264,7 +264,13 @@ export class JobCreationFormComponent {
     }
   }
 
-  // Initialization
+  /**
+   * Initializes the form based on the current route.
+   * Determines whether the form is in create or edit mode,
+   * and loads job data if editing an existing position.
+   *
+   * @param route - The current ActivatedRoute instance used to inspect route segments
+   */
   async init(route: ActivatedRoute): Promise<void> {
     try {
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
