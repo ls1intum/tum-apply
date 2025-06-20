@@ -126,12 +126,17 @@ public class JobService {
     }
 
     /**
-     * Returns a paginated list of jobs that are marked as published and available for applicants to apply to.
+     * Returns a paginated list of all available (PUBLISHED) jobs.
+     * Supports filtering by multiple fields and dynamic sorting, including manual sort for professor name.
      *
-     * @param pageDTO contains the page number and size for pagination
-     * @param title  comma-separated list of title filters (partial matches)
-     * @param sortDTO sorting parameter
-     * @return a {@link Page} of {@link JobCardDTO} objects representing available jobs as cards
+     * @param pageDTO pagination configuration
+     * @param title optional filter for job title
+     * @param fieldOfStudies optional filter for field of studies
+     * @param location optional filter for campus location
+     * @param professorName optional filter for supervising professor's full name
+     * @param workload optional filter for workload value
+     * @param sortDTO sort configuration (by field and direction)
+     * @return a page of {@link JobCardDTO} matching the criteria
      */
     public Page<JobCardDTO> getAvailableJobs(
         PageDTO pageDTO,
@@ -173,14 +178,15 @@ public class JobService {
     }
 
     /**
-     * Returns a paginated list of jobs created by a specific professor.
+     * Returns a paginated list of jobs created by a given professor.
+     * Supports optional filtering and dynamic sorting.
      *
-     * @param userId the UUID of the professor (user)
-     * @param pageDTO contains the page number and size for pagination
-     * @param title comma-separated list of title filters (partial matches)
-     * @param state job state filter
-     * @param sortDTO sorting parameter
-     * @return a {@link Page} of {@link CreatedJobDTO} objects representing the professor's created jobs
+     * @param userId the professor's user ID
+     * @param pageDTO pagination configuration
+     * @param title optional filter for job title
+     * @param state optional filter for job state
+     * @param sortDTO sorting configuration
+     * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
     public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO, String title, JobState state, SortDTO sortDTO) {
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), sortDTO.toSpringSort(PROFESSOR_JOBS_SORTABLE_FIELDS));
