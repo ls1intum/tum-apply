@@ -67,4 +67,23 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should display the application job title in the header', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('h1')?.textContent).toContain('Application for DNS Testing and Molecular Structure Matrices');
+  });
+
+  it('should render the application detail card when application data is present', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const detailCard = compiled.querySelector('jhi-application-detail-card');
+    expect(detailCard).toBeTruthy();
+  });
+
+  it('should display "Application not found" when no application is available', () => {
+    component.application.set(undefined);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Application not found');
+  });
 });

@@ -82,4 +82,34 @@ describe('ApplicationDetailCardComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render the applicant full name', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Alice Smith');
+  });
+
+  it('should render motivation, skills, and research experience sections', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Motivation');
+    expect(compiled.textContent).toContain('Skills');
+    expect(compiled.textContent).toContain('Research Experience');
+
+    expect(compiled.textContent).toContain(mockData.motivation);
+    expect(compiled.textContent).toContain(mockData.specialSkills);
+    expect(compiled.textContent).toContain(mockData.projects);
+  });
+
+  it('should display both bachelor and master education information', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.textContent).toContain('BSc Information');
+    expect(compiled.textContent).toContain('Computer Science');
+    expect(compiled.textContent).toContain('1.3');
+    expect(compiled.textContent).toContain('Technical University of Berlin');
+
+    expect(compiled.textContent).toContain('MSc Information');
+    expect(compiled.textContent).toContain('Artificial Intelligence');
+    expect(compiled.textContent).toContain('1.1');
+    expect(compiled.textContent).toContain('Technical University of Munich');
+  });
 });
