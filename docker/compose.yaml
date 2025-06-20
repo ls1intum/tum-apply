@@ -39,16 +39,21 @@ services:
     networks:
       - shared-network
   tumapply:
-    image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        KEYCLOAK_URL: ${KEYCLOAK_URL}
+        KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+        KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+    env_file:
+      - .env
     environment:
       - SPRING_PROFILES_ACTIVE=dev, api-docs
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
       - SPRING_LIQUIBASE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
-      - KEYCLOAK_URL=${KEYCLOAK_URL}
-      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
-      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
     expose:
       - '8080'
     healthcheck:
