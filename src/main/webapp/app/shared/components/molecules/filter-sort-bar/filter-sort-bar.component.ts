@@ -1,4 +1,4 @@
-import { Component, computed, input, model, output, signal } from '@angular/core';
+import { Component, computed, effect, input, model, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -33,20 +33,24 @@ export interface SortOption {
 })
 export class FilterSortBarComponent {
   totalRecords = input<number>(0);
-  filterFields = model<FilterField[]>([]);
-  currentSortOption = model<SortOption | undefined>(undefined);
-
   sortOptions = input<SortOption[]>();
+  preSelectedSortOption = input<SortOption | undefined>();
+  filterFields = model<FilterField[]>([]);
+
+  currentSortOption = signal<SortOption | undefined>(undefined);
+  filterDialogVisible = signal<boolean>(false);
 
   filterChange = output<FilterField[]>();
   sortChange = output<SortOption>();
 
+  // Computes the total number of active filters across all filter fields
   activeFilters = computed(() => {
     return this.filterFields()
       .map(f => f.selected?.length ?? 0)
       .reduce((sum, count) => sum + count, 0);
   });
 
+  // Determines the selected sort option for the dropdown
   readonly selectedSortDropdownOption = computed<DropdownOption>(() => {
     let cur: SortOption | undefined;
 
@@ -63,6 +67,7 @@ export class FilterSortBarComponent {
     return { name: '', value: '' };
   });
 
+  // Generates dropdown options from sort options
   readonly sortDropdownOptions = computed<DropdownOption[]>(
     () =>
       this.sortOptions()?.map(opt => ({
@@ -71,7 +76,15 @@ export class FilterSortBarComponent {
       })) ?? [],
   );
 
-  filterDialogVisible = signal<boolean>(false);
+  constructor() {
+    // Effect to initialize currentSortOption if a pre-selected sort is provided
+    effect(() => {
+      const preSelectedSort = this.preSelectedSortOption();
+      if (preSelectedSort) {
+        this.currentSortOption.set(preSelectedSort);
+      }
+    });
+  }
 
   updateFilters(newFilters: FilterField[]): void {
     console.warn('Emitting Filters: ', newFilters);
@@ -80,6 +93,7 @@ export class FilterSortBarComponent {
   }
 
   updateSort(opt: DropdownOption): void {
+    // Decodes dropdown option and finds matching SortOption
     const match = this.sortOptions()?.find(so => {
       const sortOption = this.decodeSortValue(opt.value as string);
       return so.field === sortOption?.field && so.direction === sortOption.direction;
@@ -92,10 +106,12 @@ export class FilterSortBarComponent {
     }
   }
 
+  // Encodes SortOption into string for dropdown value
   encodeSortValue(option: SortOption): string {
     return option.field + '|' + option.direction;
   }
 
+  // Decodes dropdown string value back to SortOption
   decodeSortValue(value: string): SortOption | undefined {
     const parts = value.split('|');
 
