@@ -204,7 +204,10 @@ export class JobCreationFormComponent {
    * Sets up validators, default values, and disabled controls.
    */
   initForms(job?: JobDTO): void {
-    // Helper function to find dropdown options safely
+    /**
+     * Updates the specified form control with a selected dropdown option value.
+     * The value can be a string, number, or enum used in dropdown selections.
+     */
     const findOption = <T>(options: T[], value: any, valueField: keyof T): T | null => {
       return job ? (options.find(opt => opt[valueField] === value) ?? null) : null;
     };
