@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDownAZ, faArrowUpAZ, faChevronDown, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { of } from 'rxjs';
 import { JobResourceService, PageJobCardDTO } from 'app/generated';
 
@@ -27,7 +27,7 @@ describe('JobCardListComponent', () => {
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faGraduationCap);
+    library.addIcons(faGraduationCap, faArrowUpAZ, faArrowDownAZ, faChevronDown);
 
     fixture = TestBed.createComponent(JobCardListComponent);
     component = fixture.componentInstance;
@@ -39,7 +39,17 @@ describe('JobCardListComponent', () => {
   });
 
   it('should call loadJobs on init and populate jobs and totalRecords', () => {
-    expect(mockJobService.getAvailableJobs).toHaveBeenCalledWith(component.pageSize(), 0);
+    expect(mockJobService.getAvailableJobs).toHaveBeenCalledWith(
+      component.pageSize(),
+      0,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'startDate',
+      'DESC',
+    );
     expect(component.jobs().length).toBe(0);
     expect(component.totalRecords()).toBe(0);
   });
@@ -47,7 +57,7 @@ describe('JobCardListComponent', () => {
   it('should call loadJobs with correct page and size on lazy load', () => {
     const spy = jest.spyOn(mockJobService, 'getAvailableJobs');
     component.loadOnTableEmit({ first: 16, rows: 8 });
-    expect(spy).toHaveBeenCalledWith(8, 2);
+    expect(spy).toHaveBeenCalledWith(8, 2, undefined, undefined, undefined, undefined, undefined, 'startDate', 'DESC');
   });
 
   it('should display no jobs message when jobs array is empty', () => {

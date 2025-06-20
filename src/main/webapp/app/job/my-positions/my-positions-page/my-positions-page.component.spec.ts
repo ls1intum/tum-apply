@@ -3,6 +3,8 @@ import { of } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AccountService } from 'app/core/auth/account.service';
+import { faArrowDownAZ, faArrowUpAZ, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 import { JobResourceService } from '../../../generated';
 
@@ -55,6 +57,9 @@ describe('MyPositionsPageComponent', () => {
         { provide: AccountService, useClass: MockAccountService },
       ],
     }).compileComponents();
+
+    const library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faArrowUpAZ, faArrowDownAZ, faChevronDown);
 
     fixture = TestBed.createComponent(MyPositionsPageComponent);
     component = fixture.componentInstance;
