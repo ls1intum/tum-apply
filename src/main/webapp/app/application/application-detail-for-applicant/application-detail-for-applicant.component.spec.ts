@@ -34,7 +34,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
             url: of([{ path: 'application' }, { path: 'detail' }]),
             snapshot: {
               paramMap: {
-                get(_key: string) {
+                get() {
                   return '123';
                 },
               },
