@@ -1,0 +1,27 @@
+{
+  "myPositionsPage": {
+    "header": {
+      "title": "Manage your Doctorate Positions",
+      "createButton": "Create New Position"
+    },
+    "tableColumn": {
+      "supervisingProfessor": "Supervising Professor",
+      "job": "Job",
+      "status": "Status",
+      "startDate": "Start Date",
+      "created": "Created",
+      "lastModified": "Last Modified"
+    },
+    "actionButton": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "state": {
+      "draft": "Draft",
+      "published": "Published",
+      "closed": "Closed",
+      "applicantFound": "Applicant Found"
+    }
+  }
+}

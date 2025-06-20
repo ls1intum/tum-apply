@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
+import { Router } from '@angular/router';
+import { TranslateDirective } from 'app/shared/language';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -13,7 +16,7 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
-  imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent, SortBarComponent],
+  imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent, TranslateDirective, TranslateModule, SortBarComponent],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
 })
@@ -41,24 +44,31 @@ export class MyPositionsPageComponent {
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
+
     return [
       { field: 'avatar', header: '', width: '5rem' },
-      { field: 'professorName', header: 'Supervising Professor', width: '12rem' },
-      { field: 'title', header: 'Job', width: '26rem' },
-      { field: 'state', header: 'Status', width: '10rem', alignCenter: true, template: stateTpl },
-      { field: 'startDate', header: 'Start Date', type: 'date', width: '10rem' },
-      { field: 'createdAt', header: 'Created', type: 'date', width: '10rem' },
-      { field: 'lastModifiedAt', header: 'Last Modified', type: 'date', width: '10rem' },
+      { field: 'professorName', header: this.translate.instant('myPositionsPage.tableColumn.supervisingProfessor'), width: '12rem' },
+      { field: 'title', header: this.translate.instant('myPositionsPage.tableColumn.job'), width: '26rem' },
+      {
+        field: 'state',
+        header: this.translate.instant('myPositionsPage.tableColumn.status'),
+        width: '10rem',
+        alignCenter: true,
+        template: stateTpl,
+      },
+      { field: 'startDate', header: this.translate.instant('myPositionsPage.tableColumn.startDate'), type: 'date', width: '10rem' },
+      { field: 'createdAt', header: this.translate.instant('myPositionsPage.tableColumn.created'), type: 'date', width: '10rem' },
+      { field: 'lastModifiedAt', header: this.translate.instant('myPositionsPage.tableColumn.lastModified'), type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });
 
-  readonly stateTextMap = signal<Record<string, string>>({
-    DRAFT: 'Draft',
-    PUBLISHED: 'Published',
-    CLOSED: 'Closed',
-    APPLICANT_FOUND: 'Applicant Found',
-  });
+  readonly stateTextMap = computed<Record<string, string>>(() => ({
+    DRAFT: this.translate.instant('myPositionsPage.state.draft'),
+    PUBLISHED: this.translate.instant('myPositionsPage.state.published'),
+    CLOSED: this.translate.instant('myPositionsPage.state.closed'),
+    APPLICANT_FOUND: this.translate.instant('myPositionsPage.state.applicantFound'),
+  }));
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     DRAFT: 'info',
@@ -69,6 +79,8 @@ export class MyPositionsPageComponent {
 
   private jobService = inject(JobResourceService);
   private accountService = inject(AccountService);
+  private router = inject(Router);
+  private translate = inject(TranslateService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -84,6 +96,33 @@ export class MyPositionsPageComponent {
     this.sortBy.set(event.field ?? this.sortableFields[0].field);
     this.sortDirection.set(event.direction);
     void this.loadJobs();
+  }
+
+  onCreateJob(): void {
+    this.router.navigate(['/job/create']);
+  }
+
+  onEditJob(jobId: string): void {
+    if (!jobId) {
+      console.error('Unable to edit job with job id:', jobId);
+    }
+    this.router.navigate([`/job/edit/${jobId}`]);
+  }
+
+  async onDeleteJob(jobId: string): Promise<void> {
+    // TO-DO: adjust confirmation
+    const confirmDelete = confirm('Do you really want to delete this job?');
+    if (confirmDelete) {
+      try {
+        await firstValueFrom(this.jobService.deleteJob(jobId));
+        alert('Job successfully deleted');
+        await this.loadJobs();
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(`Error deleting job: ${error.message}`);
+        }
+      }
+    }
   }
 
   private async loadJobs(): Promise<void> {

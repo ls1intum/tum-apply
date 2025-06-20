@@ -40,7 +40,14 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
           }
         }
       }
@@ -145,7 +152,75 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/upload-documents/{applicationId}/{documentType}": {
+      "post": {
+        "tags": [
+          "application-resource"
+        ],
+        "summary": "Upload documents",
+        "operationId": "uploadDocuments",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BACHELOR_TRANSCRIPT",
+                "MASTER_TRANSCRIPT",
+                "REFERENCE",
+                "CV",
+                "CUSTOM"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipartUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
           }
         }
       }
@@ -678,6 +753,37 @@
         }
       }
     },
+    "/api/applications/getDocumentIds/{applicationId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getDocumentDictionaryIds",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDocumentIdsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications/applicant/{applicantId}": {
       "get": {
         "tags": [
@@ -791,7 +897,8 @@
           "fundingType",
           "location",
           "state",
-          "supervisingProfessor"
+          "supervisingProfessor",
+          "title"
         ]
       },
       "ApplicantDTO": {
@@ -1059,7 +1166,8 @@
           }
         },
         "required": [
-          "jobId"
+          "jobId",
+          "title"
         ]
       },
       "CreateApplicationDTO": {
@@ -1102,6 +1210,20 @@
           "applicationState",
           "jobId"
         ]
+      },
+      "MultipartUploadRequest": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "format": "binary",
+            "description": "List of documents to upload",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
       },
       "UserShortDTO": {
         "type": "object",
@@ -1213,7 +1335,8 @@
         "required": [
           "jobId",
           "state",
-          "supervisingProfessor"
+          "supervisingProfessor",
+          "title"
         ]
       },
       "CreatedJobDTO": {
@@ -1255,7 +1378,8 @@
           }
         },
         "required": [
-          "jobId"
+          "jobId",
+          "title"
         ]
       },
       "PageCreatedJobDTO": {
@@ -1275,13 +1399,6 @@
           "last": {
             "type": "boolean"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1299,6 +1416,13 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -1307,6 +1431,13 @@
       "PageableObject": {
         "type": "object",
         "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
           "unpaged": {
             "type": "boolean"
           },
@@ -1320,26 +1451,19 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "offset": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
           }
         }
       },
       "SortObject": {
         "type": "object",
         "properties": {
-          "unsorted": {
+          "empty": {
             "type": "boolean"
           },
           "sorted": {
             "type": "boolean"
           },
-          "empty": {
+          "unsorted": {
             "type": "boolean"
           }
         }
@@ -1361,13 +1485,6 @@
           "last": {
             "type": "boolean"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1384,6 +1501,13 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
           },
           "empty": {
             "type": "boolean"
@@ -1468,6 +1592,39 @@
           },
           "timeSinceCreation": {
             "type": "string"
+          }
+        }
+      },
+      "ApplicationDocumentIdsDTO": {
+        "type": "object",
+        "properties": {
+          "bachelorDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "masterDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "referenceDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "cvDocumentDictionaryId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       }

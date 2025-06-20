@@ -11,7 +11,7 @@
 
 export interface JobDTO { 
     jobId: string;
-    title?: string;
+    title: string;
     researchArea?: string;
     fieldOfStudies?: string;
     supervisingProfessor: string;

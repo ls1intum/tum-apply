@@ -13,7 +13,7 @@ public record CreatedJobDTO(
     String avatar,
     String professorName,
     JobState state,
-    String title,
+    @NotNull String title,
     LocalDate startDate,
     LocalDateTime createdAt,
     LocalDateTime lastModifiedAt

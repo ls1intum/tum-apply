@@ -1,4 +1,5 @@
 export * from './applicantDTO';
+export * from './applicationDocumentIdsDTO';
 export * from './applicationEvaluationListDTO';
 export * from './applicationEvaluationOverviewDTO';
 export * from './applicationForApplicantDTO';

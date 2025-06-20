@@ -14,7 +14,7 @@ export interface CreatedJobDTO {
     avatar?: string;
     professorName?: string;
     state?: CreatedJobDTO.StateEnum;
-    title?: string;
+    title: string;
     startDate?: string;
     createdAt?: string;
     lastModifiedAt?: string;

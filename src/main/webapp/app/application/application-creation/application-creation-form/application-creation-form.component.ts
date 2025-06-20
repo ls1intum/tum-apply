@@ -1,7 +1,13 @@
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule } from '@angular/common';
-import { ApplicationResourceService, CreateApplicationDTO, JobResourceService, UpdateApplicationDTO } from 'app/generated';
+import {
+  ApplicationDocumentIdsDTO,
+  ApplicationResourceService,
+  CreateApplicationDTO,
+  JobResourceService,
+  UpdateApplicationDTO,
+} from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -214,10 +220,11 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
+
   title = signal<string>('');
 
-  jobId = '';
-  applicationId?: string;
+  jobId = signal<string>('');
+  applicationId = signal<string | undefined>(undefined);
 
   mode: ApplicationFormMode = 'create';
 
@@ -226,6 +233,8 @@ export default class ApplicationCreationFormComponent {
   page3Valid = signal<boolean>(false);
 
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
+
+  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
 
   private applicationResourceService = inject(ApplicationResourceService);
   private jobResourceService = inject(JobResourceService);
@@ -244,11 +253,11 @@ export default class ApplicationCreationFormComponent {
       if (jobId === null) {
         alert('Error: this is no valid jobId');
       } else {
-        this.jobId = jobId;
+        this.jobId.set(jobId);
       }
-      const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId));
+      const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId()));
 
-      if (job.title !== undefined && job.title.trim().length > 0) {
+      if (job.title && job.title.trim().length > 0) {
         this.title.set(job.title);
       }
     } else if (firstSegment === ApplicationFormModes.EDIT) {
@@ -259,14 +268,20 @@ export default class ApplicationCreationFormComponent {
         return;
       }
       const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
-      this.jobId = application.job.jobId;
-      if (application.job.title !== undefined && application.job.title.trim().length > 0) {
+      this.jobId.set(application.job.jobId);
+      if (application.job.title && application.job.title.trim().length > 0) {
         this.title.set(application.job.title);
       }
-      this.applicationId = application.applicationId;
+      this.applicationId.set(application.applicationId);
       this.page1.set(getPage1FromApplication(application));
       this.page2.set(getPage2FromApplication(application));
       this.page3.set(getPage3FromApplication(application));
+
+      firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
+        .then(ids => {
+          this.documentIds.set(ids);
+        })
+        .catch(() => alert('Error: fetching the document ids for this application'));
     } else {
       alert('Error: this is no valid application page link');
     }
@@ -303,7 +318,7 @@ export default class ApplicationCreationFormComponent {
           bachelorUniversity: this.page2().bachelorDegreeUniversity,
           masterUniversity: this.page2().masterDegreeUniversity,
         },
-        jobId: this.jobId,
+        jobId: this.jobId(),
         applicationState: state,
         desiredDate: this.page3().desiredStartDate,
         motivation: this.page3().motivation,
@@ -322,12 +337,13 @@ export default class ApplicationCreationFormComponent {
         },
       });
     } else {
-      if (this.applicationId === undefined) {
+      const applicationId = this.applicationId();
+      if (applicationId === undefined) {
         alert('There is an error with the applicationId');
         return;
       }
       const updateApplication: UpdateApplicationDTO = {
-        applicationId: this.applicationId,
+        applicationId,
         applicant: {
           user: {
             birthday: this.page1().dateOfBirth,
@@ -381,9 +397,10 @@ export default class ApplicationCreationFormComponent {
       return;
     }
     const router = this.router;
-    if (this.applicationId !== undefined && this.applicationId.trim().length !== 0) {
+    const applicationId = this.applicationId();
+    if (applicationId !== undefined && applicationId.trim().length !== 0) {
       try {
-        await firstValueFrom(this.applicationResourceService.deleteApplication(this.applicationId));
+        await firstValueFrom(this.applicationResourceService.deleteApplication(applicationId));
         alert('Application sucessfully deleted');
         router.navigate(['/']);
       } catch (err) {

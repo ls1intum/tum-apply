@@ -19,7 +19,7 @@
     </div>
   </div>
   <!-- Step 1: Basic Information -->
-  @if (currentStep === 1) {
+  @if (currentStep === 1 && !isLoading()) {
     <div class="form-step">
       <form [formGroup]="basicInfoForm">
         <h2>Basic Information</h2>
