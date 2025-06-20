@@ -30,7 +30,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
         Map.entry("rating", "a.rating"),
         Map.entry("createdAt", "a.created_at"),
-        Map.entry("applicant.lastName", "ap_last_name")
+        Map.entry("applicant.lastName", "ap.last_name")
     );
 
     /**
