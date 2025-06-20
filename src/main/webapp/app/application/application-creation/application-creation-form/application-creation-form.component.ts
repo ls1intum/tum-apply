@@ -257,7 +257,7 @@ export default class ApplicationCreationFormComponent {
       }
       const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId()));
 
-      if (job.title !== undefined && job.title.trim().length > 0) {
+      if (job.title && job.title.trim().length > 0) {
         this.title.set(job.title);
       }
     } else if (firstSegment === ApplicationFormModes.EDIT) {
@@ -269,7 +269,7 @@ export default class ApplicationCreationFormComponent {
       }
       const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
       this.jobId.set(application.job.jobId);
-      if (application.job.title !== undefined && application.job.title.trim().length > 0) {
+      if (application.job.title && application.job.title.trim().length > 0) {
         this.title.set(application.job.title);
       }
       this.applicationId.set(application.applicationId);
