@@ -40,8 +40,6 @@ services:
       - shared-network
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
-    command: >
-      sh -c "echo '🌐 KEYCLOAK_URL is $KEYCLOAK_URL' && java -jar /app/tum-apply.war"
     environment:
       - SPRING_PROFILES_ACTIVE=dev, api-docs
       - SPRING_DATASOURCE_USERNAME=root
