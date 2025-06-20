@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AccountService } from 'app/core/auth/account.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { JobResourceService } from '../../../generated';
 
@@ -48,7 +49,7 @@ describe('MyPositionsPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MyPositionsPageComponent],
+      imports: [MyPositionsPageComponent, TranslateModule.forRoot()],
       providers: [
         provideHttpClientTesting(),
         { provide: JobResourceService, useClass: MockJobResourceService },
@@ -83,8 +84,12 @@ describe('MyPositionsPageComponent', () => {
   });
 
   it('should have correct state mappings', () => {
-    expect(component.stateTextMap().DRAFT).toBe('Draft');
-    expect(component.stateTextMap().PUBLISHED).toBe('Published');
+    expect(component.stateTextMap().DRAFT).toBe('myPositionsPage.state.draft');
+    expect(component.stateTextMap().PUBLISHED).toBe('myPositionsPage.state.published');
+    expect(component.stateTextMap().CLOSED).toBe('myPositionsPage.state.closed');
+    expect(component.stateTextMap().APPLICANT_FOUND).toBe('myPositionsPage.state.applicantFound');
+    expect(component.stateSeverityMap().DRAFT).toBe('info');
+    expect(component.stateSeverityMap().PUBLISHED).toBe('success');
     expect(component.stateSeverityMap().CLOSED).toBe('danger');
     expect(component.stateSeverityMap().APPLICANT_FOUND).toBe('warn');
   });
@@ -94,12 +99,12 @@ describe('MyPositionsPageComponent', () => {
     const headers = columns.map(col => col.header);
     const expectedHeaders = [
       '', // avatar column
-      'Supervising Professor',
-      'Job',
-      'Status',
-      'Start Date',
-      'Created',
-      'Last Modified',
+      'myPositionsPage.tableColumn.supervisingProfessor',
+      'myPositionsPage.tableColumn.job',
+      'myPositionsPage.tableColumn.status',
+      'myPositionsPage.tableColumn.startDate',
+      'myPositionsPage.tableColumn.created',
+      'myPositionsPage.tableColumn.lastModified',
       '', // actions column
     ];
     expect(headers).toEqual(expectedHeaders);
@@ -110,9 +115,9 @@ describe('MyPositionsPageComponent', () => {
     await fixture.whenStable();
     const element: HTMLElement = fixture.nativeElement;
 
-    const viewButtons = element.querySelectorAll('jhi-button[label="View"]');
-    const editButtons = element.querySelectorAll('jhi-button[label="Edit"]');
-    const deleteButtons = element.querySelectorAll('jhi-button[label="Delete"]');
+    const viewButtons = element.querySelectorAll('[data-testid="view"]');
+    const editButtons = element.querySelectorAll('[data-testid="edit"]');
+    const deleteButtons = element.querySelectorAll('[data-testid="delete"]');
 
     expect(viewButtons.length).toBe(mockJobs.length);
     expect(editButtons.length).toBe(mockJobs.length);

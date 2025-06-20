@@ -20,7 +20,7 @@ export interface ApplicationDetailDTO {
     projects?: string;
     specialSkills?: string;
     motivation?: string;
-    customFields?: Set<CustomFieldAnswerDTO>;
+    customFields?: Array<CustomFieldAnswerDTO>;
 }
 export namespace ApplicationDetailDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';

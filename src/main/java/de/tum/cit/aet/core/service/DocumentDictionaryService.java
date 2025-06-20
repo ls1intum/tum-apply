@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
@@ -121,5 +122,22 @@ public class DocumentDictionaryService {
      */
     public Set<DocumentDictionary> getDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
         return documentDictionaryRepository.findByCustomFieldAnswer(customFieldAnswer);
+    }
+
+    /**
+     * Retrieves a {@link ApplicationDocumentIdsDTO} containing categorized document IDs
+     * associated with the specified {@link Application}.
+     *
+     * @param application the {@link Application} entity whose related document IDs should be retrieved;
+     *                    must not be {@code null}
+     * @return an {@link ApplicationDocumentIdsDTO} populated with document IDs grouped by document type;
+     *         never {@code null}, but fields may be empty if no documents are associated
+     * @throws IllegalArgumentException if the {@code application} is {@code null}
+     */
+    public ApplicationDocumentIdsDTO getDocumentIdsDTO(Application application) {
+        if (application == null) {
+            throw new IllegalArgumentException("Application may not be null");
+        }
+        return documentDictionaryRepository.getApplicationDocumentIdsDTOByApplicationId(application.getApplicationId());
     }
 }

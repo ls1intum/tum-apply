@@ -1,16 +1,18 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record JobFormDTO(
-    String title,
+    @NotNull String title,
     String researchArea,
     String fieldOfStudies,
     @NotNull UUID supervisingProfessor,
@@ -23,4 +25,29 @@ public record JobFormDTO(
     String tasks,
     String requirements,
     @NotNull JobState state
-) {}
+) {
+    /**
+     * @param job The job entity to convert
+     * @return A JobFormDTO containing the data from the job entity.
+     */
+    public static JobFormDTO getFromEntity(Job job) {
+        if (job == null) {
+            throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
+        }
+        return new JobFormDTO(
+            job.getTitle(),
+            job.getResearchArea(),
+            job.getFieldOfStudies(),
+            job.getSupervisingProfessor().getUserId(),
+            job.getLocation(),
+            job.getStartDate(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getState()
+        );
+    }
+}
