@@ -28,7 +28,7 @@ export class JobCardListComponent {
     { displayName: 'Job Title', field: 'title', type: 'TEXT' },
     { displayName: 'Field of Studies', field: 'fieldOfStudies', type: 'TEXT' },
     { displayName: 'Location', field: 'location', type: 'TEXT' },
-    { displayName: 'Professor', field: 'professor', type: 'TEXT' },
+    { displayName: 'Professor', field: 'professorName', type: 'TEXT' },
     { displayName: 'Workload', field: 'workload', type: 'NUMBER' },
     { displayName: 'Start Date', field: 'startDate', type: 'NUMBER' },
   ];
@@ -54,7 +54,17 @@ export class JobCardListComponent {
   async loadJobs(): Promise<void> {
     try {
       const pageData = await firstValueFrom(
-        this.jobService.getAvailableJobs(this.pageSize(), this.page(), undefined, this.sortBy(), this.sortDirection()),
+        this.jobService.getAvailableJobs(
+          this.pageSize(),
+          this.page(),
+          undefined, // filtering by title
+          undefined, // filtering by fieldOfStudies
+          undefined, // filtering by location (Campus enum string)
+          undefined, // filtering by professorName
+          undefined, // filtering by workload
+          this.sortBy(),
+          this.sortDirection(),
+        ),
       );
       this.jobs.set(pageData.content ?? []);
       this.totalRecords.set(pageData.totalElements ?? 0);
