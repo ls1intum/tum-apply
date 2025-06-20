@@ -301,6 +301,30 @@
         }
       }
     },
+    "/api/evaluation/jobs": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getJobFilterOptions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobFilterOptionDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/evaluation/applications": {
       "get": {
         "tags": [
@@ -1405,6 +1429,18 @@
           },
           "empty": {
             "type": "boolean"
+          }
+        }
+      },
+      "JobFilterOptionDTO": {
+        "type": "object",
+        "properties": {
+          "jobName": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },

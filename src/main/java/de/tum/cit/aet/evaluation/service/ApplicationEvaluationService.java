@@ -8,7 +8,9 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
+import de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
+import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class ApplicationEvaluationService {
     private static final Set<String> SORTABLE_FIELDS = Set.of("rating", "createdAt", "applicant.lastName");
 
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
+    private final JobEvaluationRepository jobEvaluationRepository;
 
     /**
      * Retrieves a paginated and optionally sorted list of applications for a given research group.
@@ -149,5 +152,9 @@ public class ApplicationEvaluationService {
      */
     private long getTotalRecords(UUID researchGroupId, Map<String, List<?>> dynamicFilters) {
         return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters);
+    }
+
+    public Set<JobFilterOptionDTO> getJobFilterOptions(ResearchGroup researchGroup) {
+        return jobEvaluationRepository.findAllBYResearchGroup(researchGroup.getResearchGroupId());
     }
 }

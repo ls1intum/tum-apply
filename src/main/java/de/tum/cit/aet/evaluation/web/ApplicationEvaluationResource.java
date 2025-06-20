@@ -5,9 +5,11 @@ import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
+import de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.Valid;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -89,5 +91,13 @@ public class ApplicationEvaluationResource {
         return ResponseEntity.ok(
             applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroup, sortDto, filterDto)
         );
+    }
+
+    @GetMapping("/jobs")
+    public ResponseEntity<Set<JobFilterOptionDTO>> getJobFilterOptions() {
+        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
+        ResearchGroup researchGroup = new ResearchGroup();
+        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroup));
     }
 }

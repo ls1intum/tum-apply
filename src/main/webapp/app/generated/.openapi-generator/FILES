@@ -25,6 +25,7 @@ model/createdJobDTO.ts
 model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
 model/jobDetailDTO.ts
+model/jobFilterOptionDTO.ts
 model/jobFormDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts

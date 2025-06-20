@@ -11,6 +11,7 @@ export * from './createdJobDTO';
 export * from './customFieldAnswerDTO';
 export * from './jobCardDTO';
 export * from './jobDetailDTO';
+export * from './jobFilterOptionDTO';
 export * from './jobFormDTO';
 export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
