@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { SessionStorageService } from 'ngx-webstorage';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
+import { environment } from './app/environments/environment';
 import { DEBUG_INFO_ENABLED } from './app/app.constants';
 import AppComponent from './app/app.component';
 import { appConfig } from './app/app.config';
@@ -18,6 +19,11 @@ import { JhiLanguageHelper } from './app/config/language.helper';
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (!DEBUG_INFO_ENABLED) {
   enableProdMode();
+}
+
+console.warn('🔁 Debug: Keycloak URL from environment:', environment.keycloak.url);
+if (!environment.keycloak.url) {
+  console.error('🔁 Error: KEYCLOAK_URL is not defined in the environment configuration.');
 }
 
 bootstrapApplication(AppComponent, {
