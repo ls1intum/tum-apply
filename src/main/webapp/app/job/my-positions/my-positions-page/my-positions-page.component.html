@@ -1,28 +1,44 @@
-<div class="ml-2 mt-5 mb-8 p-2">
-  <h1>Manage your Doctorate Positions</h1>
-</div>
-<div class="body">
-  <div class="table-wrapper">
-    <jhi-dynamic-table
-      [columns]="columns()"
-      [data]="jobs()"
-      [totalRecords]="totalRecords()"
-      [page]="page()"
-      [rows]="pageSize()"
-      [selectable]="true"
-      (lazyLoad)="loadOnTableEmit($event)"
-    />
+<div class="header-container">
+  <div class="ml-2 mt-5 mb-8 p-2">
+    <h1 jhiTranslate="myPositionsPage.header.title"></h1>
   </div>
-
-  <ng-template #actionTemplate>
-    <div class="flex space-x-2">
-      <jhi-button label="View" severity="primary" />
-      <jhi-button label="Edit" severity="primary" variant="outlined" />
-      <jhi-button label="Delete" severity="danger" />
+  <jhi-button label="{{ 'myPositionsPage.header.createButton' | translate }}" severity="primary" (click)="onCreateJob()" />
+</div>
+<div class="my-positions-container">
+  <div class="body">
+    <div class="table-wrapper">
+      <jhi-dynamic-table
+        [columns]="columns()"
+        [data]="jobs()"
+        [totalRecords]="totalRecords()"
+        [page]="page()"
+        [rows]="pageSize()"
+        [selectable]="true"
+        (lazyLoad)="loadOnTableEmit($event)"
+      />
     </div>
-  </ng-template>
 
-  <ng-template #stateTemplate let-job>
-    <jhi-tag [text]="stateTextMap()[job.state] || 'Unknown'" [color]="stateSeverityMap()[job.state] || 'info'" />
-  </ng-template>
+    <ng-template #actionTemplate let-job>
+      <div class="flex space-x-2">
+        <jhi-button label="{{ 'myPositionsPage.actionButton.view' | translate }}" severity="primary" data-testid="view" />
+        <jhi-button
+          label="{{ 'myPositionsPage.actionButton.edit' | translate }}"
+          severity="primary"
+          variant="outlined"
+          (click)="onEditJob(job.jobId)"
+          data-testid="edit"
+        />
+        <jhi-button
+          label="{{ 'myPositionsPage.actionButton.delete' | translate }}"
+          severity="danger"
+          (click)="onDeleteJob(job.jobId)"
+          data-testid="delete"
+        />
+      </div>
+    </ng-template>
+
+    <ng-template #stateTemplate let-job>
+      <jhi-tag [text]="stateTextMap()[job.state] || 'Unknown'" [color]="stateSeverityMap()[job.state] || 'info'" />
+    </ng-template>
+  </div>
 </div>
