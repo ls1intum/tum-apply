@@ -1,0 +1,26 @@
+<div class="filter-sort-bar">
+  <span class="record-count">
+    {{ totalRecords() }}
+    {{ totalRecords() === 1 ? 'Application' : 'Applications' }} found
+  </span>
+  <div class="actions">
+    <jhi-button
+      [label]="'entity.filters.filter' | translate"
+      (click)="filterDialogVisible.set(true)"
+      variant="outlined"
+      [numberOfFavorites]="activeFilters()"
+      icon="filter"
+      severity="info"
+    />
+    <jhi-filter-dialog [(visible)]="filterDialogVisible" [filterFields]="filterFields()" (applyFilters)="updateFilters($event)" />
+
+    @if ((this.sortOptions() ?? []).length > 0) {
+      <jhi-dropdown
+        width="13rem"
+        [items]="sortDropdownOptions()"
+        [selected]="selectedSortDropdownOption()"
+        (selectedChange)="updateSort($event)"
+      />
+    }
+  </div>
+</div>

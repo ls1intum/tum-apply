@@ -1,0 +1,34 @@
+<p-multiselect
+  [options]="options()"
+  [(ngModel)]="selectedOptions"
+  (onChange)="onSelectionChange()"
+  optionLabel="displayName"
+  display="chip"
+  [style]="{ width: width() }"
+  [selectedItemsLabel]="selectedOptions.length + ' selected'"
+  appendTo="body"
+>
+  <ng-template let-item pTemplate="item">
+    @if (item.translationKey) {
+      {{ item.translationKey | translate }}
+    } @else {
+      {{ item.displayName }}
+    }
+  </ng-template>
+
+  <ng-template let-selectedItems pTemplate="selectedItems">
+    @if (selectedItems !== null) {
+      @if (selectedItems.length > 2) {
+        <span jhiTranslate="entity.filters.numberSelected" [translateValues]="{ selected: selectedItems.length }"></span>
+      } @else {
+        @for (item of selectedItems; track item.field) {
+          @if (item.translationKey) {
+            <p-chip [label]="item.translationKey | translate" [removable]="true" (onRemove)="handleChipRemove($event, item)" />
+          } @else {
+            <p-chip [label]="item.displayName" [removable]="true" (onRemove)="handleChipRemove($event, item)" />
+          }
+        }
+      }
+    }
+  </ng-template>
+</p-multiselect>
