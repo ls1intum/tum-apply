@@ -40,7 +40,7 @@ services:
       - shared-network
   tumapply:
     build:
-      context: .
+      context: ../
       dockerfile: Dockerfile
       args:
         KEYCLOAK_URL: ${KEYCLOAK_URL}
