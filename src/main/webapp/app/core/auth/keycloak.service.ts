@@ -25,6 +25,8 @@ export class KeycloakService {
    * Initializes the Keycloak client and determines login status.
    */
   async init(): Promise<boolean> {
+    console.warn('🔁 Initializing Keycloak...');
+    console.warn('🔁 Keycloak URL:', environment.keycloak.url);
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',

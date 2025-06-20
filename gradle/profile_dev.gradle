@@ -35,7 +35,13 @@ task webapp(type: NpmTask) {
     dependsOn npmInstall
 
     args = ["run", "webapp:build"]
-    environment = [APP_VERSION: project.version]
+    environment = [
+            "APP_VERSION"            : project.version,
+            "KEYCLOAK_URL"           : System.getenv("KEYCLOAK_URL") ?: "https://keycloak.aet.cit.tum.de",
+            "KEYCLOAK_REALM"         : System.getenv("KEYCLOAK_REALM") ?: "external_login",
+            "KEYCLOAK_CLIENT_ID"     : System.getenv("KEYCLOAK_CLIENT_ID") ?: "tumapply-client",
+            "KEYCLOAK_ENABLE_LOGGING": System.getenv("KEYCLOAK_ENABLE_LOGGING") ?: "true",
+    ]
 }
 
 processResources {

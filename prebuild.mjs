@@ -6,12 +6,24 @@
  * - MergeJsonWebpackPlugin
  */
 import fs from 'fs';
+import dotenv from 'dotenv';
 import path from 'path';
 import { hashElement } from 'folder-hash';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// Load .env.local file only if no env variables are set (e.g. in CI they come from Docker ENV)
+if (!process.env.KEYCLOAK_URL) {
+  const envFiles = ['.env.local.local', '.env.local', '.env.local.test', '.env.local.prod'];
+  const selectedEnvFile = envFiles.find(f => fs.existsSync(path.resolve(__dirname, f)));
+  if (selectedEnvFile) {
+    dotenv.config({ path: path.resolve(__dirname, selectedEnvFile) });
+    console.log(`[prebuild] Loaded environment from ${selectedEnvFile}`);
+  } else {
+    console.warn('[prebuild] No .env.local file found. Using existing process.env values.');
+  }
+}
 const languagesHash = await hashElement(path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n'), {
   algo: 'md5',
   encoding: 'hex',
@@ -47,14 +59,14 @@ function inferVersion() {
 const args = process.argv.slice(2);
 const developFlag = args.includes('--develop');
 const keycloakConfig = {
-  url: 'http://localhost:9080/',
-  realm: 'tumapply',
-  clientId: 'tumapply-client',
-  enableLogging: true,
+  url: process.env.KEYCLOAK_URL,
+  realm: process.env.KEYCLOAK_REALM,
+  clientId: process.env.KEYCLOAK_CLIENT_ID,
+  enableLogging: process.env.KEYCLOAK_ENABLE_LOGGING === 'true',
 };
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
-export const __VERSION__ = '${process.env.APP_VERSION || inferVersion()}';
+export const __VERSION__ = '${process.env.ENVIRONMENT || inferVersion()}';
 export const I18N_HASH = '${languagesHash.hash}';
 export const environment = {
   production: ${!developFlag},
@@ -66,6 +78,9 @@ export const environment = {
   },
 };
 `;
+console.warn(`[prebuild] Keycloak URL ${process.env.KEYCLOAK_URL}`);
+console.warn(`[prebuild] keycloak config ${keycloakConfig}`);
+
 fs.writeFileSync(path.resolve(__dirname, 'src', 'main', 'webapp', 'app', 'environments', 'environment.override.ts'), environmentConfig);
 
 // =====================

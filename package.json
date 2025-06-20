@@ -67,6 +67,7 @@
     "@primeuix/utils": "^0.5.3",
     "bootstrap": "5.3.3",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
     "keycloak-js": "^26.2.0",
     "ngx-webstorage": "19.0.1",
     "primeicons": "^7.0.0",

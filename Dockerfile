@@ -20,8 +20,19 @@ COPY gradle gradle/
 # copy npm related files and install node modules
 # (from https://stackoverflow.com/questions/63961934/how-to-use-docker-build-cache-when-version-bumping-a-react-app)
 COPY package.json package-lock.json ./
-# also copy this script which is required by postinstall lifecycle hook
 
+# add build args and envs for prebuild
+ARG KEYCLOAK_URL
+ARG KEYCLOAK_REALM
+ARG KEYCLOAK_CLIENT_ID
+ARG KEYCLOAK_ENABLE_LOGGING
+ENV KEYCLOAK_URL=$KEYCLOAK_URL \
+    KEYCLOAK_REALM=$KEYCLOAK_REALM \
+    KEYCLOAK_CLIENT_ID=$KEYCLOAK_CLIENT_ID \
+    KEYCLOAK_ENABLE_LOGGING=$KEYCLOAK_ENABLE_LOGGING
+
+# also copy this script which is required by postinstall lifecycle hook
+RUN echo "[DEBUG] Docker ENV: KEYCLOAK_URL=$KEYCLOAK_URL"
 RUN \
   # Mount global cache for Gradle (project cache in /opt/tum-apply/.gradle doesn't seem to be populated)
   --mount=type=cache,target=/root/.gradle/caches \

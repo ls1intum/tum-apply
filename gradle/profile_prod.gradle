@@ -1,6 +1,6 @@
 dependencies {
-  implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
-  testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+    implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
+    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
 }
 
 ext {
@@ -22,7 +22,13 @@ bootRun {
 tasks.register("webapp", NpmTask) {
     dependsOn npmInstall
     args = ["run", "webapp:prod"]
-    environment = [APP_VERSION: project.version]
+    environment = [
+            "APP_VERSION"            : project.version,
+            "KEYCLOAK_URL"           : System.getenv("KEYCLOAK_URL"),
+            "KEYCLOAK_REALM"         : System.getenv("KEYCLOAK_REALM"),
+            "KEYCLOAK_CLIENT_ID"     : System.getenv("KEYCLOAK_CLIENT_ID"),
+            "KEYCLOAK_ENABLE_LOGGING": System.getenv("KEYCLOAK_ENABLE_LOGGING"),
+    ]
 }
 
 processResources {
