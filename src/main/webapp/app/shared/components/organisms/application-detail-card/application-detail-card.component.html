@@ -63,14 +63,33 @@
 
     <!-- Links: Website and LinkedIn -->
     <div class="links-container">
-      <div class="link-item">
+      <a
+        class="link-item"
+        [class.disabled-link]="!application().applicant?.user?.website"
+        [href]="application().applicant?.user?.website"
+        [attr.aria-disabled]="!application().applicant?.user?.website"
+        [attr.tabindex]="!application().applicant?.user?.website ? -1 : null"
+        [attr.target]="application().applicant?.user?.website ? '_blank' : null"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <div>Website</div>
-        <fa-icon icon="link" class="icon" />
-      </div>
-      <div class="link-item">
-        <div>Linked In</div>
-        <fa-icon [icon]="['fab', 'linkedin']" class="icon" />
-      </div>
+        <fa-icon icon="link" class="icon" [class.disabled-icon]="!application().applicant?.user?.linkedinUrl" />
+      </a>
+
+      <a
+        class="link-item"
+        [class.disabled-link]="!application().applicant?.user?.linkedinUrl"
+        [href]="application().applicant?.user?.linkedinUrl"
+        [attr.aria-disabled]="!application().applicant?.user?.linkedinUrl"
+        [attr.tabindex]="!application().applicant?.user?.linkedinUrl ? -1 : null"
+        [attr.target]="application().applicant?.user?.linkedinUrl ? '_blank' : null"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div>LinkedIn</div>
+        <fa-icon [icon]="['fab', 'linkedin']" class="icon" [class.disabled-icon]="!application().applicant?.user?.linkedinUrl" />
+      </a>
     </div>
   </div>
 </ng-template>
@@ -79,7 +98,7 @@
 <ng-template #textCardTemplate let-icon="icon" let-name="name" let-text="text">
   <div class="text-card">
     <div class="card-row-icon">
-      <fa-icon icon="{{ icon }}" class="icon" />
+      <fa-icon [icon]="icon" class="icon" />
       <div class="flex-1 justify-start text-base">{{ name }}</div>
     </div>
     <div class="w-full justify-start">
