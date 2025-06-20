@@ -90,20 +90,19 @@ export class MyPositionsPageComponent {
     this.router.navigate([`/job/edit/${jobId}`]);
   }
 
-  onDeleteJob(jobId: string): void {
+  async onDeleteJob(jobId: string): Promise<void> {
     // TO-DO: adjust confirmation
     const confirmDelete = confirm('Do you really want to delete this job?');
     if (confirmDelete) {
-      this.jobService.deleteJob(jobId).subscribe({
-        next: () => {
-          alert('Job successfully deleted');
-          void this.loadJobs();
-        },
-        error(err) {
-          alert('Error deleting job');
-          console.error('Delete failed', err);
-        },
-      });
+      try {
+        await firstValueFrom(this.jobService.deleteJob(jobId));
+        alert('Job successfully deleted');
+        await this.loadJobs();
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(`Error deleting job: ${error.message}`);
+        }
+      }
     }
   }
 
