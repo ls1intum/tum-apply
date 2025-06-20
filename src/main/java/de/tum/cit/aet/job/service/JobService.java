@@ -3,21 +3,18 @@ package de.tum.cit.aet.job.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -128,14 +125,6 @@ public class JobService {
         jobRepository.save(job);
     }
 
-    /*
-    TODO: filter the following as well
-    String title,
-    String fieldOfStudies,
-    String location,
-    String professorName,
-    Integer workload,
-    */
     /**
      * Returns a paginated list of jobs that are marked as published and available for applicants to apply to.
      *
@@ -144,18 +133,52 @@ public class JobService {
      * @param sortDTO sorting parameter
      * @return a {@link Page} of {@link JobCardDTO} objects representing available jobs as cards
      */
-    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, String title, SortDTO sortDTO) {
-        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), sortDTO.toSpringSort(AVAILABLE_JOBS_SORTABLE_FIELDS));
-        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, title, pageable);
+    public Page<JobCardDTO> getAvailableJobs(
+        PageDTO pageDTO,
+        String title,
+        String fieldOfStudies,
+        Campus location,
+        String professorName,
+        Integer workload,
+        SortDTO sortDTO
+    ) {
+        Pageable pageable;
+        if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
+            // Use pageable without sort: Sorting will be handled manually in @Query
+            pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+            return jobRepository.findAllJobCardsByState(
+                JobState.PUBLISHED,
+                title,
+                fieldOfStudies,
+                location,
+                professorName,
+                workload,
+                sortDTO.sortBy(),
+                sortDTO.direction().name(),
+                pageable
+            );
+        } else {
+            // Sort dynamically via Pageable
+            pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), sortDTO.toSpringSort(AVAILABLE_JOBS_SORTABLE_FIELDS));
+            return jobRepository.findAllJobCardsByState(
+                JobState.PUBLISHED,
+                title,
+                fieldOfStudies,
+                location,
+                professorName,
+                workload,
+                pageable
+            );
+        }
     }
 
     /**
      * Returns a paginated list of jobs created by a specific professor.
      *
-     * @param userId  the UUID of the professor (user)
+     * @param userId the UUID of the professor (user)
      * @param pageDTO contains the page number and size for pagination
-     * @param title  comma-separated list of title filters (partial matches)
-     * @param state   job state filter
+     * @param title comma-separated list of title filters (partial matches)
+     * @param state job state filter
      * @param sortDTO sorting parameter
      * @return a {@link Page} of {@link CreatedJobDTO} objects representing the professor's created jobs
      */

@@ -2,6 +2,7 @@ package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
@@ -44,10 +45,14 @@ public class JobResource {
     @GetMapping("/available")
     public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String title, // filter by title
+        @RequestParam(required = false) String fieldOfStudies, // filter by field of Studies
+        @RequestParam(required = false) Campus location, // filter by location (Campus)
+        @RequestParam(required = false) String professorName, // filter by professor name
+        @RequestParam(required = false) Integer workload, // filter by workload
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, title, sortDTO);
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, title, fieldOfStudies, location, professorName, workload, sortDTO);
         return ResponseEntity.ok(jobs);
     }
 
@@ -68,7 +73,7 @@ public class JobResource {
     /*
      * {@code PUT /api/jobs/update/{jobId}} : Update an existing job posting.
      *
-     * @param jobId   the ID of the job to update.
+     * @param jobId the ID of the job to update.
      * @param jobForm the updated job posting data.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated job.
      */
@@ -107,8 +112,8 @@ public class JobResource {
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
         @PathVariable UUID userId,
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @RequestParam(required = false) String title,
-        @RequestParam(required = false) JobState state,
+        @RequestParam(required = false) String title, // filter by title
+        @RequestParam(required = false) JobState state, // filter by state
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
         return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO, title, state, sortDTO));
