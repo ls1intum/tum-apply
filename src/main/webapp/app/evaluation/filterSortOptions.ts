@@ -1,15 +1,16 @@
 import { FilterField, SortOption } from '../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 
+// TODO Jobs will be replaced by dynamically loaded jobs from the server
 export const filterFields: FilterField[] = [
   {
     translationKey: 'evaluation.filterOptions.job',
     field: 'job',
     options: [
-      { displayName: 'Software Engineer', field: 'software_engineer', translationKey: 'softwareEngineerKey' },
-      { displayName: 'Data Scientist', field: 'data_scientist', translationKey: 'dataScientistKey' },
-      { displayName: 'Project Manager', field: 'project_manager', translationKey: 'projectManager' },
+      { displayName: 'Software Engineer', field: 'software_engineer', translationKey: undefined },
+      { displayName: 'Data Scientist', field: 'data_scientist', translationKey: undefined },
+      { displayName: 'Project Manager', field: 'project_manager', translationKey: undefined },
     ],
-    selected: [{ displayName: 'Project Manager', field: 'project_manager', translationKey: 'projectManager' }],
+    selected: [{ displayName: 'Project Manager', field: 'project_manager', translationKey: undefined }],
   },
   {
     translationKey: 'evaluation.filterOptions.status',
@@ -40,12 +41,12 @@ export const sortOptions: SortOption[] = [
   },
   {
     displayName: 'Applied at (Oldest to Newest)',
-    field: 'rating',
+    field: 'createdAt',
     direction: 'ASC',
   },
   {
     displayName: 'Applied at (Newest to Oldest)',
-    field: 'rating',
+    field: 'createdAt',
     direction: 'DESC',
   },
 ];

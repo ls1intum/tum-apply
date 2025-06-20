@@ -34,9 +34,9 @@ export interface SortOption {
 export class FilterSortBarComponent {
   totalRecords = input<number>(0);
   filterFields = model<FilterField[]>([]);
-  sortOptions = input<SortOption[]>();
+  currentSortOption = model<SortOption | undefined>(undefined);
 
-  currentSortOption = signal<SortOption | undefined>(undefined);
+  sortOptions = input<SortOption[]>();
 
   filterChange = output<FilterField[]>();
   sortChange = output<SortOption>();
@@ -57,7 +57,7 @@ export class FilterSortBarComponent {
     }
 
     if (cur) {
-      return { name: cur.displayName, value: cur.field };
+      return { name: cur.displayName, value: this.encodeSortValue(cur) };
     }
     // fallback if no currentSortOption and no sortOptions
     return { name: '', value: '' };
@@ -67,25 +67,50 @@ export class FilterSortBarComponent {
     () =>
       this.sortOptions()?.map(opt => ({
         name: opt.displayName,
-        value: opt.field,
+        value: this.encodeSortValue(opt),
       })) ?? [],
   );
 
   filterDialogVisible = signal<boolean>(false);
 
   updateFilters(newFilters: FilterField[]): void {
-    console.warn('Update Filters: ', newFilters);
+    console.warn('Emitting Filters: ', newFilters);
     this.filterFields.set(newFilters);
     this.filterChange.emit(this.filterFields());
   }
 
   updateSort(opt: DropdownOption): void {
-    const match = this.sortOptions()?.find(so => so.field === opt.value);
-    console.warn('Update Sort ', match);
+    const match = this.sortOptions()?.find(so => {
+      const sortOption = this.decodeSortValue(opt.value as string);
+      return so.field === sortOption?.field && so.direction === sortOption.direction;
+    });
+    console.warn('Emitting Sort ', match);
 
     if (match !== undefined) {
       this.currentSortOption.set(match);
       this.sortChange.emit(match);
     }
   }
+
+  encodeSortValue(option: SortOption): string {
+    return option.field + '|' + option.direction;
+  }
+
+  decodeSortValue(value: string): SortOption | undefined {
+    const parts = value.split('|');
+
+    if (isDirection(parts[1])) {
+      return {
+        displayName: '',
+        field: parts[0],
+        direction: parts[1],
+      };
+    } else {
+      return undefined;
+    }
+  }
+}
+
+function isDirection(value: string): value is 'ASC' | 'DESC' {
+  return value === 'ASC' || value === 'DESC';
 }
