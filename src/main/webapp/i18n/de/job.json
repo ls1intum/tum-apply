@@ -1,0 +1,27 @@
+{
+  "myPositionsPage": {
+    "header": {
+      "title": "Verwalten Sie Ihre Doktorandenstellen",
+      "createButton": "Neue Stelle erstellen"
+    },
+    "tableColumn": {
+      "supervisingProfessor": "Betreuender Professor",
+      "job": "Stelle",
+      "status": "Status",
+      "startDate": "Startdatum",
+      "created": "Erstellt am",
+      "lastModified": "Zuletzt geändert"
+    },
+    "actionButton": {
+      "view": "Anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "state": {
+      "draft": "Entwurf",
+      "published": "Veröffentlicht",
+      "closed": "Geschlossen",
+      "applicantFound": "Bewerber gefunden"
+    }
+  }
+}

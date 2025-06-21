@@ -58,7 +58,7 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "funding_type", nullable = false)
     private FundingType fundingType;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "description")

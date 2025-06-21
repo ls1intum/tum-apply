@@ -126,6 +126,27 @@
       "clearAll": "Alle entfernen",
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
+    },
+    "upload": {
+      "upload_instruction_standard": "Bitte hochladen",
+      "upload_instruction": {
+        "BACHELOR_TRANSCRIPT": "Bitte laden Sie Ihr Bachelor-Zeugnis hoch",
+        "MASTER_TRANSCRIPT": "Bitte laden Sie Ihr Master-Zeugnis hoch",
+        "REFERENCE": "Bitte laden Sie Ihre Empfehlungsschreiben hoch",
+        "CV": "Bitte laden Sie Ihren Lebenslauf hoch"
+      },
+      "uploaded_document": "Hochgeladenes Dokument für ",
+      "uploaded_documents": "Hochgeladene Dokumente für ",
+      "instruction": "Klicken oder Dateien hierher ziehen, um sie hochzuladen.",
+      "max_size": "Maximale Upload-Größe:",
+      "upload_progress": "Upload-Fortschritt: ",
+      "document_type": {
+        "BACHELOR_TRANSCRIPT": "Bachelor-Zeugnis",
+        "MASTER_TRANSCRIPT": "Master-Zeugnis",
+        "REFERENCE": "Empfehlungsschreiben",
+        "CV": "Lebenslauf",
+        "CUSTOM": "Benutzerdefiniert"
+      }
     }
   },
   "error": {
