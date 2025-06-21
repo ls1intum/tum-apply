@@ -1,6 +1,9 @@
 package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
@@ -29,33 +32,24 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/available} : Get all available (open) jobs.
+     * {@code GET /api/jobs/available} : Returns a paginated list of all available (PUBLISHED) job postings.
      *
-     * @param filter  Optional filter string for job search.
-     * @param sorting Optional sorting parameter for job results.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of available jobs.
-     */
-    /* TO-DO
-        @GetMapping("/available")
-    public ResponseEntity<List<JobCardDTO>> getAvailableJobs(
-        @RequestParam(required = false) String filter,
-        @RequestParam(required = false) String sorting
-    ) {
-        return ResponseEntity.ok(jobService.getAvailableJobs(filter, sorting));
-    }*/
-
-    /**
-     * {@code GET /api/jobs/available} : Returns a paginated list of all available (published) job postings.
-     *
-     * <p>This endpoint returns job postings that are currently in the {@code PUBLISHED} state and
-     * that applicants are able to submit an application for. Results are paginated based on the parameters provided in {@link PageDTO}.</p>
+     * <p>Supports filtering by title, field of studies, campus location, professor name, and workload.
+     * Supports sorting using the {@link SortDTO} for fields such as title, workload, etc.
+     * Computed fields like professor name must be handled manually.</p>
      *
      * @param pageDTO the pagination information including page number (zero-based) and page size
+     * @param availableJobsFilterDTO DTO containing all optionally filterable fields
+     * @param sortDTO sorting parameter containing the field and direction
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link JobCardDTO}
      */
     @GetMapping("/available")
-    public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO);
+    public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+    ) {
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO);
         return ResponseEntity.ok(jobs);
     }
 
@@ -74,7 +68,7 @@ public class JobResource {
     /*
      * {@code PUT /api/jobs/update/{jobId}} : Update an existing job posting.
      *
-     * @param jobId   the ID of the job to update.
+     * @param jobId the ID of the job to update.
      * @param jobForm the updated job posting data.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated job.
      */
@@ -99,19 +93,22 @@ public class JobResource {
     /**
      * {@code GET /api/jobs/professor/{userId}} : Returns a paginated list of jobs created by a specific professor.
      *
-     * <p>This endpoint allows fetching all job postings associated with a given professor,
-     * identified by their user ID. Results are paginated using the {@link PageDTO} parameters.</p>
+     * <p>Supports optional filtering by title and job state. Sorting is supported using {@link SortDTO}.</p>
      *
-     * @param userId   the unique ID of the professor (user) whose job postings are being queried
-     * @param pageDTO  the pagination information including page number and page size
+     * @param userId the unique ID of the professor
+     * @param pageDTO pagination parameters including page number and size
+     * @param professorJobsFilterDTO DTO containing all optionally filterable fields
+     * @param sortDTO sorting parameter
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link CreatedJobDTO}
      */
     @GetMapping("/professor/{userId}")
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
         @PathVariable UUID userId,
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO));
+        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO, professorJobsFilterDTO, sortDTO));
     }
 
     /**
