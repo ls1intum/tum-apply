@@ -33,4 +33,32 @@ describe('DocumentViewerComponent', () => {
     fixture.componentRef.setInput('documentDictionaryId', 'test-id');
     expect(component).toBeTruthy();
   });
+
+  it('should call downloadDocument with the provided documentDictionaryId', () => {
+    const service = TestBed.inject(DocumentResourceService) as jest.Mocked<DocumentResourceService>;
+    const expectedId = 'example-id-999';
+    fixture.componentRef.setInput('documentDictionaryId', expectedId);
+    fixture.detectChanges();
+
+    expect(service.downloadDocument).toHaveBeenCalledWith(expectedId);
+  });
+
+  it('should show "Nothing to display" when pdfSrc is null', () => {
+    component.pdfSrc.set(null);
+    fixture.detectChanges();
+
+    const message = fixture.nativeElement.querySelector('p');
+    expect(message?.textContent).toContain('Nothing to display');
+  });
+
+  it('should not throw if downloadDocument fails', async () => {
+    const service = TestBed.inject(DocumentResourceService) as jest.Mocked<DocumentResourceService>;
+    service.downloadDocument.mockReturnValueOnce(of(null as any)); // simulate error case
+
+    fixture.componentRef.setInput('documentDictionaryId', 'error-case');
+    fixture.detectChanges();
+
+    await fixture.whenStable();
+    expect(component.pdfSrc()).toBe(null); // pdfSrc should remain null or be reset
+  });
 });
