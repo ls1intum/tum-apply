@@ -2,7 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ApplicationEvaluationOverviewDTO } from '../../../../generated';
+import { ApplicationEvaluationDetailDTO } from '../../../../generated';
 import { TagComponent } from '../../atoms/tag/tag.component';
 import { RatingComponent } from '../../atoms/rating/rating.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -16,7 +16,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 export class ApplicationCardComponent {
   disabled = input<boolean>(false);
   placeholder = input<boolean>(false);
-  application = input<ApplicationEvaluationOverviewDTO | undefined>(undefined);
+  application = input<ApplicationEvaluationDetailDTO | undefined>(undefined);
 
   readonly isDisabled = computed(
     () => this.disabled() || this.application()?.state === 'ACCEPTED' || this.application()?.state === 'REJECTED',

@@ -4,21 +4,16 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.Application_;
 import de.tum.cit.aet.core.util.CriteriaUtils;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewDTO;
+import de.tum.cit.aet.core.util.SqlQueryUtil;
 import de.tum.cit.aet.evaluation.repository.custom.ApplicationEvaluationRepositoryCustom;
+import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.domain.Job_;
-import de.tum.cit.aet.usermanagement.domain.Applicant_;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup_;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import java.util.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -27,93 +22,139 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     @PersistenceContext
     private EntityManager em;
 
+    private static final Map<String, String> FILTER_COLUMNS = Map.ofEntries(
+        Map.entry("state", "a.application_state"),
+        Map.entry("job.jobId", "j.job_id")
+    );
+
+    private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
+        Map.entry("rating", "a.rating"),
+        Map.entry("createdAt", "a.created_at"),
+        Map.entry("applicant.lastName", "u.last_name")
+    );
+
     /**
-     * Retrieves a paginated list of application evaluations as DTOs based on the provided
-     * research group ID, application states, and pagination settings.
-     *
-     * @param researchGroupId the ID of the research group to filter applications by
-     * @param states          the collection of {@link ApplicationState} to include
-     * @param pageable        the {@link Pageable} object containing pagination and sorting information
-     * @return a {@link Page} of {@link ApplicationEvaluationOverviewDTO} matching the given criteria
+     * Retrieves a paginated list of {@link Application} entities for a given research group,
+     * filtered by application states and optional dynamic filters, and ordered according to the provided pageable.
      */
     @Override
-    public Page<ApplicationEvaluationOverviewDTO> findApplications(
+    public List<Application> findApplications(
         UUID researchGroupId,
         Collection<ApplicationState> states,
-        Pageable pageable
+        Pageable pageable,
+        Map<String, List<?>> dynamicFilters
     ) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Application> cq = cb.createQuery(Application.class);
 
-        //Main Query
-        CriteriaQuery<ApplicationEvaluationOverviewDTO> query = cb.createQuery(ApplicationEvaluationOverviewDTO.class);
-        Root<Application> root = query.from(Application.class);
-        Join<?, ?> applicant = root.join(Application_.APPLICANT);
-        Join<?, ?> job = root.join(Application_.JOB);
-        Join<?, ?> researchGroup = job.join(Job_.RESEARCH_GROUP);
+        Root<Application> root = cq.from(Application.class);
+        Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
 
-        List<Predicate> predicates = buildPredicates(cb, root, researchGroup, researchGroupId, states);
-        query.where(predicates.toArray(new Predicate[0]));
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters);
 
-        query.select(
-            cb.construct(
-                ApplicationEvaluationOverviewDTO.class,
-                root.get(Application_.APPLICATION_ID),
-                applicant.get(Applicant_.AVATAR),
-                cb.concat(cb.concat(applicant.get(Applicant_.FIRST_NAME), " "), applicant.get(Applicant_.LAST_NAME)),
-                root.get(Application_.STATE),
-                job.get(Job_.TITLE),
-                root.get(Application_.RATING),
-                root.get(Application_.CREATED_AT)
-            )
-        );
+        cq
+            .select(root)
+            .where(predicates.toArray(new Predicate[0]))
+            .orderBy(CriteriaUtils.buildSortOrders(cb, root, pageable.getSort(), Application_.APPLICATION_ID));
 
-        if (pageable.getSort().isSorted()) {
-            query.orderBy(CriteriaUtils.buildSortOrders(cb, root, pageable.getSort()));
-        }
-
-        List<ApplicationEvaluationOverviewDTO> results = em
-            .createQuery(query)
-            .setFirstResult((int) pageable.getOffset())
-            .setMaxResults(pageable.getPageSize())
-            .getResultList();
-
-        //Count Query
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<Application> countRoot = countQuery.from(Application.class);
-        Join<?, ?> countJob = countRoot.join(Application_.JOB);
-        Join<?, ?> countRG = countJob.join(Job_.RESEARCH_GROUP);
-
-        List<Predicate> countPredicates = buildPredicates(cb, countRoot, countRG, researchGroupId, states);
-        countQuery.select(cb.count(countRoot)).where(countPredicates.toArray(new Predicate[0]));
-
-        Long total = em.createQuery(countQuery).getSingleResult();
-
-        return new PageImpl<>(results, pageable, total);
+        TypedQuery<Application> query = em.createQuery(cq);
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        return query.getResultList();
     }
 
     /**
-     * Builds a list of {@link Predicate} objects used to filter applications based on
-     * research group ID and application states.
-     *
-     * @param cb               the {@link CriteriaBuilder} to construct predicates
-     * @param root             the root of the {@link Application} entity
-     * @param researchGroupPath the path to the associated {@code ResearchGroup} entity
-     * @param researchGroupId  the ID of the research group to filter by
-     * @param states           the collection of application states to include
-     * @return a list of constructed predicates
+     * Counts the number of applications for a given research group, filtered by application states
+     * and optional dynamic filters.
      */
-    private List<Predicate> buildPredicates(
+    @Override
+    public long countApplications(UUID researchGroupId, Collection<ApplicationState> states, Map<String, List<?>> dynamicFilters) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+
+        Root<Application> root = cq.from(Application.class);
+        Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
+
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters);
+
+        cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
+
+        return em.createQuery(cq).getSingleResult();
+    }
+
+    /**
+     * Finds the index (0-based) of a specific application in a dynamically filtered and sorted list
+     * of applications for a given research group.
+     */
+    @Override
+    public long findIndexOfApplication(
+        UUID applicationId,
+        UUID researchGroupId,
+        Collection<ApplicationState> states,
+        Sort sort,
+        Map<String, List<?>> dynamicFilters
+    ) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("groupId", researchGroupId);
+        params.put("states", states.stream().map(ApplicationState::toString).toList());
+        params.put("applicationId", applicationId);
+
+        String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.created_at", "a.application_id");
+
+        StringBuilder sql = new StringBuilder(
+            """
+            WITH filtered_apps AS (
+                SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
+                FROM applications a
+                JOIN jobs j ON j.job_id = a.job_id
+                JOIN users u ON u.user_id = a.applicant_id
+                WHERE j.research_group_id = :groupId
+                  AND a.application_state IN (:states)
+            """.formatted(orderBy)
+        );
+
+        SqlQueryUtil.appendDynamicFilters(sql, FILTER_COLUMNS, dynamicFilters, params);
+
+        sql.append(
+            """
+                )
+                SELECT rn
+                FROM filtered_apps
+                WHERE application_id = :applicationId
+            """
+        );
+
+        Query q = em.createNativeQuery(sql.toString());
+        SqlQueryUtil.bindParameters(q, params);
+        try {
+            return ((Number) q.getSingleResult()).longValue() - 1; // 0-based index
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Application not found");
+        }
+    }
+
+    /**
+     * Builds a list of common predicates for filtering applications based on research group,
+     * application states, and dynamic filters.
+     */
+    private List<Predicate> buildCommonPredicates(
         CriteriaBuilder cb,
         Root<Application> root,
-        Path<?> researchGroupPath,
+        Join<Application, Job> jobJoin,
         UUID researchGroupId,
-        Collection<ApplicationState> states
+        Collection<ApplicationState> states,
+        Map<String, List<?>> dynamicFilters
     ) {
         List<Predicate> predicates = new ArrayList<>();
-        predicates.add(cb.equal(researchGroupPath.get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
+
+        predicates.add(cb.equal(jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
+
         if (states != null && !states.isEmpty()) {
             predicates.add(root.get(Application_.STATE).in(states));
         }
+
+        predicates.addAll(CriteriaUtils.buildDynamicFilters(cb, root, dynamicFilters));
+
         return predicates;
     }
 }

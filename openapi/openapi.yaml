@@ -396,7 +396,7 @@
         "tags": [
           "application-evaluation-resource"
         ],
-        "operationId": "getApplications",
+        "operationId": "getApplicationsOverviews",
         "parameters": [
           {
             "name": "offset",
@@ -445,7 +445,129 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationEvaluationListDTO"
+                  "$ref": "#/components/schemas/ApplicationEvaluationOverviewListDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/application-details": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getApplicationsDetails",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationEvaluationDetailListDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/application-details/window": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getApplicationsDetailsWindow",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "windowSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationEvaluationDetailListDTO"
                 }
               }
             }
@@ -1402,21 +1524,6 @@
           }
         }
       },
-      "ApplicationEvaluationListDTO": {
-        "type": "object",
-        "properties": {
-          "applications": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ApplicationEvaluationOverviewDTO"
-            }
-          },
-          "totalRecords": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ApplicationEvaluationOverviewDTO": {
         "type": "object",
         "properties": {
@@ -1453,6 +1560,166 @@
             "format": "date-time"
           }
         }
+      },
+      "ApplicationEvaluationOverviewListDTO": {
+        "type": "object",
+        "properties": {
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationEvaluationOverviewDTO"
+            }
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApplicantEvaluationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserEvaluationDetailDTO"
+          },
+          "bachelorDegreeName": {
+            "type": "string"
+          },
+          "bachelorGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "bachelorGrade": {
+            "type": "string"
+          },
+          "bachelorUniversity": {
+            "type": "string"
+          },
+          "masterDegreeName": {
+            "type": "string"
+          },
+          "masterGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "masterGrade": {
+            "type": "string"
+          },
+          "masterUniversity": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "ApplicationEvaluationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/ApplicantEvaluationDetailDTO"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "jobName": {
+            "type": "string"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appliedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "applicationId",
+          "state"
+        ]
+      },
+      "ApplicationEvaluationDetailListDTO": {
+        "type": "object",
+        "properties": {
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationEvaluationDetailDTO"
+            }
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "currentIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "windowIndex": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UserEvaluationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "name"
+        ]
       },
       "ApplicationOverviewDTO": {
         "type": "object",
