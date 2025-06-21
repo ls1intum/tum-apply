@@ -23,7 +23,6 @@ import org.hibernate.type.SqlTypes;
 public class User extends AbstractAuditingEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "user_id", nullable = false)
     private UUID userId;
