@@ -23,7 +23,7 @@ export class DocumentViewerComponent {
     });
   }
 
-  async initDocument() {
+  async initDocument(): Promise<void> {
     const pdfSrc = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId()));
     this.pdfSrc.set(pdfSrc);
   }
