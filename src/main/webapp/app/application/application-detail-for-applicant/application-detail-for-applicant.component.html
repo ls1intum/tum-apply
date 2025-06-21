@@ -1,0 +1,8 @@
+<div class="mx-4 my-4 text-primary">
+  @if (application(); as application) {
+    <h1 class="w-full text-center mb-8 font-bold text-4xl">Application for {{ application.jobTitle }}</h1>
+    <jhi-application-detail-card [application]="application" />
+  } @else {
+    <p class="text-center">Application not found</p>
+  }
+</div>

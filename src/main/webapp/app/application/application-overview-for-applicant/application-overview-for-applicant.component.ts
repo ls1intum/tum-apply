@@ -91,6 +91,10 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onViewApplication(applicationId: string): void {
+    this.router.navigate([`/application/detail/${applicationId}`]);
+  }
+
+  onUpdateApplication(applicationId: string): void {
     this.router.navigate([`/application/edit/${applicationId}`]);
   }
 
