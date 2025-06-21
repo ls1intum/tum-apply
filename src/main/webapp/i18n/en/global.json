@@ -120,9 +120,12 @@
       "patternLogin": "This field can only contain letters, digits and e-mail addresses."
     },
     "filters": {
-      "set": "Following filters are set",
-      "clear": "Clear filter",
-      "clearAll": "Clear all filters"
+      "filter": "Filter",
+      "numberSelected": "{{selected}} selected",
+      "clear": "Clear",
+      "clearAll": "Clear all",
+      "apply": "Apply",
+      "recordsFound": "{{count}} {{entity}} found"
     },
     "upload": {
       "upload_instruction_standard": "Please upload",

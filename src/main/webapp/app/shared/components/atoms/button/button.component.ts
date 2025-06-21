@@ -1,8 +1,9 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { Component, ViewEncapsulation, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonModule } from 'primeng/button';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 
 export type ButtonColor = 'primary' | 'secondary' | 'contrast' | 'success' | 'warn' | 'danger' | 'info';
 
@@ -23,7 +24,7 @@ export type Button = {
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
   standalone: true,
-  imports: [CommonModule, SharedModule, ButtonModule, FontAwesomeModule],
+  imports: [CommonModule, SharedModule, ButtonModule, FontAwesomeModule, OverlayBadgeModule, NgTemplateOutlet],
   encapsulation: ViewEncapsulation.None,
 })
 export class ButtonComponent {

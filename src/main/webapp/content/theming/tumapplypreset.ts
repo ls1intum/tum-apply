@@ -897,5 +897,68 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
+    multiselect: {
+      background: '{transparent}',
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          overlay: {
+            background: '{background.default}',
+          },
+          option: {
+            color: '{text.primary}',
+            selected: {
+              color: '{text.primary}',
+              background: '{background.surface}',
+            },
+            focus: {
+              background: '{primary.color}',
+              color: '{base.white}',
+            },
+          },
+        },
+        dark: {
+          color: '{text.primary}',
+          overlay: {
+            background: '{background.default}',
+          },
+          option: {
+            color: '{text.primary}',
+            selected: {
+              color: '{text.primary}',
+              background: '{background.surface}',
+            },
+            focus: {
+              background: '{primary.color}',
+              color: '{base.white}',
+            },
+          },
+        },
+      },
+    },
+    inputtext: {
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          background: '{transparent}',
+        },
+        dark: {
+          color: '{text.primary}',
+          background: '{transparent}',
+        },
+      },
+    },
+    dialog: {
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          background: '{background.default}',
+        },
+        dark: {
+          color: '{text.primary}',
+          background: '{background.default}',
+        },
+      },
+    },
   },
 });

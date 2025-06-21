@@ -56,9 +56,9 @@ describe('ButtonComponent', () => {
     fixture.componentRef.setInput('numberOfFavorites', 7);
     fixture.detectChanges();
 
-    const badge = fixture.nativeElement.querySelector('.jhi-button-badge-mini');
-    expect(badge).toBeTruthy();
-    expect(badge.textContent.trim()).toBe('7');
+    const badge: HTMLElement | null = fixture.nativeElement.querySelector('.button-overlay');
+    expect(badge).not.toBeNull();
+    expect(badge!.textContent!.trim()).toBe('7');
   });
 
   it('should render a rounded button when label is undefined', () => {

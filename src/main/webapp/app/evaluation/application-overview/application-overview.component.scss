@@ -1,12 +1,18 @@
 .body {
-  width: 80rem;
-  margin: auto;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  align-items: center;
+  gap: 2rem;
+  padding: 4rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.table-wrapper {
-  width: fit-content;
-  align-self: center;
+jhi-filter-sort-bar {
+  display: block;
+  width: 70%;
+  max-width: 80rem;
+  min-width: 50rem;
+  margin-inline: auto;
+  box-sizing: border-box;
 }
