@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ApplicantForApplicationDetailDTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationDetailDTO(
@@ -20,8 +20,7 @@ public record ApplicationDetailDTO(
     LocalDate desiredDate,
     String projects,
     String specialSkills,
-    String motivation,
-    Set<CustomFieldAnswerDTO> customFields
+    String motivation
 ) {
     /**
      * @param application
@@ -31,16 +30,18 @@ public record ApplicationDetailDTO(
         if (application == null) {
             throw new EntityNotFoundException("Application Entity should not be null");
         }
+        Applicant applicant = application.getApplicant();
+        Job job = application.getJob();
+
         return new ApplicationDetailDTO(
             application.getApplicationId(),
-            ApplicantForApplicationDetailDTO.getFromEntity(application.getApplicant()),
+            ApplicantForApplicationDetailDTO.getFromEntity(applicant),
             application.getState(),
-            application.getJob().getTitle(),
+            job.getTitle(),
             application.getDesiredStartDate(),
             application.getProjects(),
             application.getSpecialSkills(),
-            application.getMotivation(),
-            application.getCustomFieldAnswers().stream().map(CustomFieldAnswerDTO::getFromEntity).collect(Collectors.toSet())
+            application.getMotivation()
         );
     }
 }

@@ -1,17 +1,20 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ApplicationDetailDTO, ApplicationResourceService } from 'app/generated';
+import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
+import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [ApplicationDetailCardComponent],
+  imports: [ApplicationDetailCardComponent, DocumentViewerComponent],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
   applicationId = signal<string>('');
   application = signal<ApplicationDetailDTO | undefined>(undefined);
+  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
 
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
@@ -20,50 +23,55 @@ export default class ApplicationDetailForApplicantComponent {
     this.init();
   }
 
-  /* TODO when connected to server : async init(): Promise<void>*/
-  init(): void {
+  async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
       alert('Error: this is no valid jobId');
     } else {
       this.applicationId.set(applicationId);
     }
-    const application = {
-      applicationId: 'app-123456',
-      applicant: {
-        user: {
-          userId: 'user-789',
-          email: 'alice.smith@example.com',
-          avatar: 'https://example.com/avatar.jpg',
-          firstName: 'Alice',
-          lastName: 'Smith',
-          gender: 'female',
-          nationality: 'German',
-          birthday: '1998-04-12',
-          phoneNumber: '+49 151 23456789',
-          website: 'https://alicesmith.dev',
-          linkedinUrl: 'https://linkedin.com/in/alicesmith',
-        },
-        bachelorDegreeName: 'Computer Science',
-        bachelorGradingScale: 'ONE_TO_FOUR',
-        bachelorGrade: '1.3',
-        bachelorUniversity: 'Technical University of Berlin',
-        masterDegreeName: 'Artificial Intelligence',
-        masterGradingScale: 'ONE_TO_FOUR',
-        masterGrade: '1.1',
-        masterUniversity: 'Technical University of Munich',
-      },
-      applicationState: 'SENT',
-      desiredDate: '2025-10-01',
-      jobTitle: 'DNS Testing and Molecular Structure Matrices',
-      projects:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      specialSkills:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      motivation:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    } as ApplicationDetailDTO;
-    // TODO await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
+    // const application = {
+    //   applicationId: 'app-123456',
+    //   applicant: {
+    //     user: {
+    //       userId: 'user-789',
+    //       email: 'alice.smith@example.com',
+    //       avatar: 'https://example.com/avatar.jpg',
+    //       firstName: 'Alice',
+    //       lastName: 'Smith',
+    //       gender: 'female',
+    //       nationality: 'German',
+    //       birthday: '1998-04-12',
+    //       phoneNumber: '+49 151 23456789',
+    //       website: 'https://alicesmith.dev',
+    //       linkedinUrl: 'https://linkedin.com/in/alicesmith',
+    //     },
+    //     bachelorDegreeName: 'Computer Science',
+    //     bachelorGradingScale: 'ONE_TO_FOUR',
+    //     bachelorGrade: '1.3',
+    //     bachelorUniversity: 'Technical University of Berlin',
+    //     masterDegreeName: 'Artificial Intelligence',
+    //     masterGradingScale: 'ONE_TO_FOUR',
+    //     masterGrade: '1.1',
+    //     masterUniversity: 'Technical University of Munich',
+    //   },
+    //   applicationState: 'SENT',
+    //   desiredDate: '2025-10-01',
+    //   jobTitle: 'DNS Testing and Molecular Structure Matrices',
+    //   projects:
+    //     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    //   specialSkills:
+    //     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    //   motivation:
+    //     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    // } as ApplicationDetailDTO;
+    const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
     this.application.set(application);
+
+    firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
+      .then(ids => {
+        this.documentIds.set(ids);
+      })
+      .catch(() => alert('Error: fetching the document ids for this application'));
   }
 }

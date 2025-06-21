@@ -10,7 +10,7 @@
 
 
 export interface UserForApplicationDetailDTO { 
-    userId?: string;
+    userId: string;
     email?: string;
     avatar?: string;
     firstName?: string;

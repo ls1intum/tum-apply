@@ -111,7 +111,12 @@
       "skills": "Skills",
       "research_experience": "Research Experience",
       "bachelor_info": "Bachelor Degree Information",
-      "master_info": "Master Degree Information"
+      "master_info": "Master Degree Information",
+      "gender": "Gender",
+      "desired_start_date": "Desired Start Date",
+      "preferred_language": "Preferred Language",
+      "applicant_info": "Applicant Information",
+      "nationality": "Nationality"
     },
     "delete": {
       "title": "Confirm delete operation"

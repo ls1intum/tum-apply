@@ -52,13 +52,25 @@
 <ng-template #applicantDetailsTemplate>
   <div class="card h-60">
     <!-- Card Header -->
-    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ header: 'Applicant Information', icon: 'circle-user' }" />
+    <ng-container
+      [ngTemplateOutlet]="card_header"
+      [ngTemplateOutletContext]="{ header: 'entity.detail_card.applicant_info', icon: 'circle-user' }"
+    />
     <!-- Applicant Information Rows -->
     <div class="card-body">
-      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Preferred Language', val: 'English' }" />
-      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Desired Start Date', val: 'Sept 2025' }" />
-      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Gender', val: 'Female' }" />
-      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'Nationality', val: 'Albanian' }" />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.preferred_language', val: 'English' }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.desired_start_date', val: 'Sept 2025' }"
+      />
+      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.gender', val: 'Female' }" />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.nationality', val: 'Albanian' }"
+      />
     </div>
 
     <!-- Links: Website and LinkedIn -->
@@ -117,15 +129,13 @@
 <!-- Template: Row with Icon (for grades etc.) -->
 <ng-template #infoRowWithIcon let-name let-val="val">
   <div class="card-row-icon">
-    <div class="flex-1">
-      {{ name }}
-    </div>
+    <div class="flex-1" [jhiTranslate]="name"></div>
     <div class="flex-1 flex items-center justify-end gap-2.5">
       <div class="text-right">
         {{ val }}
       </div>
       <div class="transform -rotate-90">
-        <fa-icon icon="arrow-right-arrow-left" class="icon" />
+        <fa-icon icon="arrow-right-arrow-left" class="icon-disabled" />
       </div>
     </div>
   </div>

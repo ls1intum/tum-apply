@@ -181,10 +181,17 @@ public class ApplicationResource {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/detail/{applicationId}")
+    /**
+     * Retrieves the detail intormation for applicants for their application
+     *
+     * @param applicationId
+     * @return ApplicationDetailDTO of given ID
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @GetMapping("/{applicationId}/detail")
     public ResponseEntity<ApplicationDetailDTO> getApplicationForDetailPage(@PathVariable UUID applicationId) {
-        // TODO to be filled out later
-        return null;
+        ApplicationDetailDTO applicationDetailDTO = applicationService.getApplicationDetail(applicationId);
+        return ResponseEntity.ok(applicationDetailDTO);
     }
 
     /**

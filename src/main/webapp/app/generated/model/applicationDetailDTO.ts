@@ -8,7 +8,6 @@
  * Do not edit the class manually.
  */
 import { ApplicantForApplicationDetailDTO } from './applicantForApplicationDetailDTO';
-import { CustomFieldAnswerDTO } from './customFieldAnswerDTO';
 
 
 export interface ApplicationDetailDTO { 
@@ -20,7 +19,6 @@ export interface ApplicationDetailDTO {
     projects?: string;
     specialSkills?: string;
     motivation?: string;
-    customFields?: Array<CustomFieldAnswerDTO>;
 }
 export namespace ApplicationDetailDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN';
