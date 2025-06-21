@@ -6,6 +6,7 @@
 </div>
 <div class="my-positions-container">
   <div class="body">
+    <jhi-sort-bar [totalRecords]="totalRecords()" [sortableFields]="sortableFields" (sortChange)="loadOnSortEmit($event)" />
     <div class="table-wrapper">
       <jhi-dynamic-table
         [columns]="columns()"
@@ -27,6 +28,7 @@
           variant="outlined"
           (click)="onEditJob(job.jobId)"
           data-testid="edit"
+          [disabled]="job.state !== 'DRAFT'"
         />
         <jhi-button
           label="{{ 'myPositionsPage.actionButton.delete' | translate }}"

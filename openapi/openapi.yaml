@@ -333,6 +333,48 @@
               "format": "int32",
               "minimum": 0
             }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
           }
         ],
         "responses": {
@@ -374,6 +416,77 @@
               "type": "integer",
               "format": "int32",
               "minimum": 0
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldOfStudies",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GARCHING",
+                "GARCHING_HOCHBRUECK",
+                "HEILBRONN",
+                "MUNICH",
+                "STRAUBING",
+                "WEIHENSTEPHAN",
+                "SINGAPORE"
+              ]
+            }
+          },
+          {
+            "name": "professorName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workload",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -1451,6 +1564,10 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -1459,10 +1576,6 @@
           },
           "last": {
             "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "empty": {
             "type": "boolean"
@@ -1479,10 +1592,10 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "paged": {
+          "unpaged": {
             "type": "boolean"
           },
-          "unpaged": {
+          "paged": {
             "type": "boolean"
           },
           "pageNumber": {
@@ -1537,6 +1650,10 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -1545,10 +1662,6 @@
           },
           "last": {
             "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "empty": {
             "type": "boolean"
