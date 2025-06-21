@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faArrowDown19, faArrowUp19, faArrowDownAZ, faArrowUpAZ, faChevronDown, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { of } from 'rxjs';
 import { JobResourceService, PageJobCardDTO } from 'app/generated';
 
