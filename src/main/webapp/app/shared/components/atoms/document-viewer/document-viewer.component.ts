@@ -1,6 +1,7 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { DocumentResourceService } from 'app/generated';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-document-viewer',
@@ -10,21 +11,20 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
   standalone: true,
 })
 export class DocumentViewerComponent {
-  private documentService = inject(DocumentResourceService);
   documentDictionaryId = input.required<string>();
 
   pdfSrc = signal<Blob | null>(null);
 
+  private documentService = inject(DocumentResourceService);
+
   constructor() {
     effect(() => {
-      this.documentService.downloadDocument(this.documentDictionaryId()).subscribe(
-        blob => {
-          this.pdfSrc.set(blob);
-        },
-        error => {
-          console.error(error);
-        },
-      );
+      this.initDocument();
     });
+  }
+
+  async initDocument() {
+    const pdfSrc = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId()));
+    this.pdfSrc.set(pdfSrc);
   }
 }
