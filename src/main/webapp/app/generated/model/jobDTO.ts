@@ -9,22 +9,23 @@
  */
 
 
-export interface JobFormDTO { 
+export interface JobDTO { 
+    jobId: string;
     title: string;
     researchArea?: string;
     fieldOfStudies?: string;
     supervisingProfessor: string;
-    location: JobFormDTO.LocationEnum;
+    location?: JobDTO.LocationEnum;
     startDate?: string;
     workload?: number;
     contractDuration?: number;
-    fundingType: JobFormDTO.FundingTypeEnum;
+    fundingType?: JobDTO.FundingTypeEnum;
     description?: string;
     tasks?: string;
     requirements?: string;
-    state: JobFormDTO.StateEnum;
+    state: JobDTO.StateEnum;
 }
-export namespace JobFormDTO {
+export namespace JobDTO {
     export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
     export const LocationEnum = {
         Garching: 'GARCHING' as LocationEnum,

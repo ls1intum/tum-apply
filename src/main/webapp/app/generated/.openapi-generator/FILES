@@ -13,6 +13,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/applicantDTO.ts
+model/applicationDocumentIdsDTO.ts
 model/applicantEvaluationDetailDTO.ts
 model/applicationEvaluationDetailDTO.ts
 model/applicationEvaluationDetailListDTO.ts
@@ -24,7 +25,7 @@ model/createApplicationDTO.ts
 model/createdJobDTO.ts
 model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
-model/jobDetailDTO.ts
+model/jobDTO.ts
 model/jobFormDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
