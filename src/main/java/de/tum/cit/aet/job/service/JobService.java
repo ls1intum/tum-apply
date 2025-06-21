@@ -3,6 +3,7 @@ package de.tum.cit.aet.job.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
@@ -10,11 +11,8 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -23,19 +21,6 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
-
-    // Define sortable fields for getAvailableJobs()
-    private static final Set<String> AVAILABLE_JOBS_SORTABLE_FIELDS = Set.of(
-        "title",
-        "fieldOfStudies",
-        "location",
-        "professorName",
-        "workload",
-        "startDate"
-    );
-
-    // Define sortable fields for getJobsByProfessor()
-    private static final Set<String> PROFESSOR_JOBS_SORTABLE_FIELDS = Set.of("title", "state", "startDate", "createdAt", "lastModifiedAt");
 
     public JobService(JobRepository jobRepository, UserRepository userRepository) {
         this.jobRepository = jobRepository;
@@ -129,7 +114,7 @@ public class JobService {
         Pageable pageable;
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
-            pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+            pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
                 title,
@@ -143,7 +128,7 @@ public class JobService {
             );
         } else {
             // Sort dynamically via Pageable
-            pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), sortDTO.toSpringSort(AVAILABLE_JOBS_SORTABLE_FIELDS));
+            pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
                 title,
@@ -168,7 +153,7 @@ public class JobService {
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
     public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO, String title, JobState state, SortDTO sortDTO) {
-        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), sortDTO.toSpringSort(PROFESSOR_JOBS_SORTABLE_FIELDS));
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
         return jobRepository.findAllJobsByProfessor(userId, title, state, pageable);
     }
 

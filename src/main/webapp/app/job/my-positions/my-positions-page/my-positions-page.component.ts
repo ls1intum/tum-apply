@@ -27,15 +27,15 @@ export class MyPositionsPageComponent {
   pageSize = signal<number>(10);
   userId = signal<string>('');
 
-  sortBy = signal<string>('createdAt');
+  sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly sortableFields: SortOption[] = [
+    { displayName: 'Last Modified', field: 'lastModifiedAt', type: 'NUMBER' },
     { displayName: 'Job Title', field: 'title', type: 'TEXT' },
     { displayName: 'Status', field: 'state', type: 'TEXT' },
     { displayName: 'Start Date', field: 'startDate', type: 'NUMBER' },
     { displayName: 'Created', field: 'createdAt', type: 'NUMBER' },
-    { displayName: 'Last Modified', field: 'lastModifiedAt', type: 'NUMBER' },
   ];
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
