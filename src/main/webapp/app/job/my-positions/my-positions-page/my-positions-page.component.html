@@ -28,7 +28,7 @@
           variant="outlined"
           (click)="onEditJob(job.jobId)"
           data-testid="edit"
-          [disabled]="job.state != 'DRAFT'"
+          [disabled]="job.state !== 'DRAFT'"
         />
         <jhi-button
           label="{{ 'myPositionsPage.actionButton.delete' | translate }}"

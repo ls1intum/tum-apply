@@ -97,8 +97,7 @@ public class JobResource {
      *
      * @param userId the unique ID of the professor
      * @param pageDTO pagination parameters including page number and size
-     * @param title optional filter for job title (partial match)
-     * @param state optional filter for job state
+     * @param professorJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO sorting parameter
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link CreatedJobDTO}
      */
