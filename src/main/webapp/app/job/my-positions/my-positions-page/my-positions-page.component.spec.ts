@@ -4,7 +4,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { faArrowDownAZ, faArrowUpAZ, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 import { JobResourceService } from '../../../generated';
@@ -60,7 +60,7 @@ describe('MyPositionsPageComponent', () => {
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faArrowUpAZ, faArrowDownAZ, faChevronDown);
+    library.addIcons(faArrowUpAZ, faArrowDownAZ, faArrowUp19, faArrowDown19, faChevronDown);
 
     fixture = TestBed.createComponent(MyPositionsPageComponent);
     component = fixture.componentInstance;
