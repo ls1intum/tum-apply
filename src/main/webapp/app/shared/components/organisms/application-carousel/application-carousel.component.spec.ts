@@ -7,7 +7,11 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faBriefcase, faCheck, faChevronLeft, faChevronRight, faCommentAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../../generated';
+import {
+  ApplicationEvaluationDetailDTO,
+  ApplicationEvaluationOverviewDTO,
+  ApplicationEvaluationResourceService,
+} from '../../../../generated';
 
 import { ApplicationCarouselComponent } from './application-carousel.component';
 
@@ -17,7 +21,7 @@ import { ApplicationCarouselComponent } from './application-carousel.component';
   template: '<ng-content />',
 })
 class StubApplicationCardComponent {
-  application = input<ApplicationEvaluationOverviewDTO | null>(null);
+  application = input<ApplicationEvaluationDetailDTO | null>(null);
   disabled = input<boolean>(false);
   placeholder = input<boolean>(false);
 }
@@ -58,7 +62,7 @@ describe('ApplicationCarouselComponent', () => {
 
   beforeEach(async () => {
     mockService = {
-      getApplications: jest.fn((offset: number, limit: number) =>
+      getApplicationsDetails: jest.fn((offset: number, limit: number) =>
         of({
           totalRecords: allApps.length,
           applications: allApps.slice(offset, offset + limit),
@@ -98,7 +102,7 @@ describe('ApplicationCarouselComponent', () => {
   it('loads the first page on init', fakeAsync(() => {
     tick();
     fixture.detectChanges();
-    expect(mockService.getApplications).toHaveBeenCalledWith(0, component.half + 1, component.sortBy(), component.sortDirection());
+    expect(mockService.getApplicationsDetails).toHaveBeenCalledWith(0, component.half + 1, component.sortBy(), component.sortDirection());
     flush();
   }));
 
