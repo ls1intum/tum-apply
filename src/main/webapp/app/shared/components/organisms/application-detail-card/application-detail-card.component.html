@@ -109,7 +109,7 @@
 
 <ng-template #infoRow let-name let-val="val">
   <div class="card-row">
-    <div class="flex-1 text-left">{{ name }}</div>
+    <div class="flex-1 text-left" [jhiTranslate]="name"></div>
     <div class="flex-1 text-right">{{ val }}</div>
   </div>
 </ng-template>
@@ -135,7 +135,7 @@
 <ng-template #card_header let-header="header" let-icon="icon">
   <div class="h-14 flex self-stretch items-center justify-center gap-2.5 px-4">
     <fa-icon [icon]="icon" class="icon" />
-    <div class="font-bold text-center">{{ header }}</div>
+    <div class="font-bold text-center" [jhiTranslate]="header"></div>
   </div>
 </ng-template>
 
@@ -143,37 +143,43 @@
 <ng-template #educationInfoTemplate>
   <!-- Bachelor's Information Card -->
   <div class="card">
-    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ header: 'Bachelor Degree Information', icon: 'building-columns' }" />
+    <ng-container
+      [ngTemplateOutlet]="card_header"
+      [ngTemplateOutletContext]="{ header: 'entity.detail_card.bachelor_info', icon: 'building-columns' }"
+    />
     <div class="card-body">
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{ $implicit: 'Name', val: application().applicant?.bachelorDegreeName }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.name', val: application().applicant?.bachelorDegreeName }"
       />
       <ng-container
         [ngTemplateOutlet]="infoRowWithIcon"
-        [ngTemplateOutletContext]="{ $implicit: 'Grade', val: application().applicant?.bachelorGrade }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.grade', val: application().applicant?.bachelorGrade }"
       />
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{ $implicit: 'University', val: application().applicant?.bachelorUniversity }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.university', val: application().applicant?.bachelorUniversity }"
       />
     </div>
   </div>
   <!-- Master's Information Card -->
   <div class="card">
-    <ng-container [ngTemplateOutlet]="card_header" [ngTemplateOutletContext]="{ header: 'Master Degree Information', icon: 'building-columns' }" />
+    <ng-container
+      [ngTemplateOutlet]="card_header"
+      [ngTemplateOutletContext]="{ header: 'entity.detail_card.master_info', icon: 'building-columns' }"
+    />
     <div class="card-body">
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{ $implicit: 'Name', val: application().applicant?.masterDegreeName }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.name', val: application().applicant?.masterDegreeName }"
       />
       <ng-container
         [ngTemplateOutlet]="infoRowWithIcon"
-        [ngTemplateOutletContext]="{ $implicit: 'Grade', val: application().applicant?.masterGrade }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.grade', val: application().applicant?.masterGrade }"
       />
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{ $implicit: 'University', val: application().applicant?.masterUniversity }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.university', val: application().applicant?.masterUniversity }"
       />
     </div>
   </div>

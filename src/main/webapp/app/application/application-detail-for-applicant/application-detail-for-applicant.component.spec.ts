@@ -13,6 +13,8 @@ import {
   faRocket,
 } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { MissingTranslationHandler, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { missingTranslationHandler } from 'app/config/translation.config';
 
 import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 
@@ -47,6 +49,20 @@ describe('ApplicationDetailForApplicantComponent', () => {
         },
       ],
     }).compileComponents();
+
+    // beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        TranslateModule.forRoot({
+          missingTranslationHandler: {
+            provide: MissingTranslationHandler,
+            useFactory: missingTranslationHandler,
+          },
+        }),
+      ],
+    });
+    const translateService = TestBed.inject(TranslateService);
+    translateService.setDefaultLang('en');
 
     fixture = TestBed.createComponent(ApplicationDetailForApplicantComponent);
     component = fixture.componentInstance;

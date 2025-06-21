@@ -12,6 +12,8 @@ import {
 import { ApplicationDetailDTO } from 'app/generated';
 import { ComponentRef } from '@angular/core';
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { MissingTranslationHandler, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { missingTranslationHandler } from 'app/config/translation.config';
 
 import { ApplicationDetailCardComponent } from './application-detail-card.component';
 
@@ -59,7 +61,21 @@ describe('ApplicationDetailCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ApplicationDetailCardComponent],
+      providers: [],
     }).compileComponents();
+
+    TestBed.configureTestingModule({
+      imports: [
+        TranslateModule.forRoot({
+          missingTranslationHandler: {
+            provide: MissingTranslationHandler,
+            useFactory: missingTranslationHandler,
+          },
+        }),
+      ],
+    });
+    const translateService = TestBed.inject(TranslateService);
+    translateService.setDefaultLang('en');
 
     fixture = TestBed.createComponent(ApplicationDetailCardComponent);
     component = fixture.componentInstance;
@@ -102,12 +118,12 @@ describe('ApplicationDetailCardComponent', () => {
   it('should display both bachelor and master education information', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(compiled.textContent).toContain('BSc Information');
+    expect(compiled.textContent).toContain('entity.detail_card.bachelor_info');
     expect(compiled.textContent).toContain('Computer Science');
     expect(compiled.textContent).toContain('1.3');
     expect(compiled.textContent).toContain('Technical University of Berlin');
 
-    expect(compiled.textContent).toContain('MSc Information');
+    expect(compiled.textContent).toContain('entity.detail_card.master_info');
     expect(compiled.textContent).toContain('Artificial Intelligence');
     expect(compiled.textContent).toContain('1.1');
     expect(compiled.textContent).toContain('Technical University of Munich');
