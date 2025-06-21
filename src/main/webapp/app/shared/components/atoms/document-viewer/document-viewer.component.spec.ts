@@ -25,6 +25,7 @@ describe('DocumentViewerComponent', () => {
 
     fixture = TestBed.createComponent(DocumentViewerComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('documentDictionaryId', 'example-id-13143');
     fixture.detectChanges();
   });
 
