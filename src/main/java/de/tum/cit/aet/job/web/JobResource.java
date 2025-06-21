@@ -39,25 +39,17 @@ public class JobResource {
      * Computed fields like professor name must be handled manually.</p>
      *
      * @param pageDTO the pagination information including page number (zero-based) and page size
-     * @param title optional filter for job title (partial match)
-     * @param fieldOfStudies optional filter for field of studies (partial match)
-     * @param location optional filter for job campus location
-     * @param professorName optional filter for full professor name (partial match)
-     * @param workload optional filter for workload
+     * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO sorting parameter containing the field and direction
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link JobCardDTO}
      */
     @GetMapping("/available")
     public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @RequestParam(required = false) String title, // filter by title
-        @RequestParam(required = false) String fieldOfStudies, // filter by field of Studies
-        @RequestParam(required = false) Campus location, // filter by location (Campus)
-        @RequestParam(required = false) String professorName, // filter by professor name
-        @RequestParam(required = false) Integer workload, // filter by workload
+        @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, title, fieldOfStudies, location, professorName, workload, sortDTO);
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO);
         return ResponseEntity.ok(jobs);
     }
 
@@ -114,11 +106,10 @@ public class JobResource {
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
         @PathVariable UUID userId,
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @RequestParam(required = false) String title, // filter by title
-        @RequestParam(required = false) JobState state, // filter by state
+        @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO, title, state, sortDTO));
+        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO, professorJobsFilterDTO, sortDTO));
     }
 
     /**

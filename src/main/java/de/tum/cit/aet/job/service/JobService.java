@@ -4,7 +4,6 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.PageUtil;
-import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
@@ -94,34 +93,22 @@ public class JobService {
      * Supports filtering by multiple fields and dynamic sorting, including manual sort for professor name.
      *
      * @param pageDTO pagination configuration
-     * @param title optional filter for job title
-     * @param fieldOfStudies optional filter for field of studies
-     * @param location optional filter for campus location
-     * @param professorName optional filter for supervising professor's full name
-     * @param workload optional filter for workload value
+     * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO sort configuration (by field and direction)
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    public Page<JobCardDTO> getAvailableJobs(
-        PageDTO pageDTO,
-        String title,
-        String fieldOfStudies,
-        Campus location,
-        String professorName,
-        Integer workload,
-        SortDTO sortDTO
-    ) {
+    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
         Pageable pageable;
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                title,
-                fieldOfStudies,
-                location,
-                professorName,
-                workload,
+                availableJobsFilterDTO.title(), // optional filter for job title
+                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                availableJobsFilterDTO.location(), // optional filter for campus location
+                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
+                availableJobsFilterDTO.workload(), // optional filter for workload value
                 sortDTO.sortBy(),
                 sortDTO.direction().name(),
                 pageable
@@ -131,11 +118,11 @@ public class JobService {
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                title,
-                fieldOfStudies,
-                location,
-                professorName,
-                workload,
+                availableJobsFilterDTO.title(), // optional filter for job title
+                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                availableJobsFilterDTO.location(), // optional filter for campus location
+                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
+                availableJobsFilterDTO.workload(), // optional filter for workload value
                 pageable
             );
         }
@@ -152,9 +139,14 @@ public class JobService {
      * @param sortDTO sorting configuration
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
-    public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO, String title, JobState state, SortDTO sortDTO) {
+    public Page<CreatedJobDTO> getJobsByProfessor(
+        UUID userId,
+        PageDTO pageDTO,
+        ProfessorJobsFilterDTO professorJobsFilterDTO,
+        SortDTO sortDTO
+    ) {
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
-        return jobRepository.findAllJobsByProfessor(userId, title, state, pageable);
+        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.title(), professorJobsFilterDTO.state(), pageable);
     }
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
