@@ -1,7 +1,10 @@
 export * from './applicantDTO';
 export * from './applicationDocumentIdsDTO';
-export * from './applicationEvaluationListDTO';
+export * from './applicantEvaluationDetailDTO';
+export * from './applicationEvaluationDetailDTO';
+export * from './applicationEvaluationDetailListDTO';
 export * from './applicationEvaluationOverviewDTO';
+export * from './applicationEvaluationOverviewListDTO';
 export * from './applicationForApplicantDTO';
 export * from './applicationOverviewDTO';
 export * from './createApplicationDTO';
@@ -17,4 +20,5 @@ export * from './researchGroupShortDTO';
 export * from './sortObject';
 export * from './updateApplicationDTO';
 export * from './userDTO';
+export * from './userEvaluationDetailDTO';
 export * from './userShortDTO';

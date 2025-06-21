@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -6,7 +6,11 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../../../generated';
+import {
+  ApplicationEvaluationDetailDTO,
+  ApplicationEvaluationDetailListDTO,
+  ApplicationEvaluationResourceService,
+} from '../../../../generated';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -53,11 +57,13 @@ export class ApplicationCarouselComponent {
   totalCount = signal(0); // Total number of applications
   currentIndex = signal(0); // Global index of currently selected application
   windowIndex = signal(0); // Local index in current application window
-  applications = signal<ApplicationEvaluationOverviewDTO[]>([]);
+  applications = signal<ApplicationEvaluationDetailDTO[]>([]);
   cardsVisible = signal(VISIBLE_DESKTOP); // Number of visible cards (responsive)
 
   // Half of the window size — used for centering logic
   half = Math.floor(WINDOW_SIZE / 2); // Half the window size, used for centering
+
+  currentApplication = output<ApplicationEvaluationDetailDTO>();
 
   isStart = computed(() => {
     return this.currentIndex() === 0;
@@ -71,7 +77,7 @@ export class ApplicationCarouselComponent {
   readonly visibleApps = computed(() => {
     const size = this.cardsVisible();
     const half = Math.floor(size / 2);
-    const result: (ApplicationEvaluationOverviewDTO | undefined)[] = [];
+    const result: (ApplicationEvaluationDetailDTO | undefined)[] = [];
 
     for (let offset = -half; offset <= half; offset++) {
       const idx = this.windowIndex() + offset;
@@ -138,6 +144,8 @@ export class ApplicationCarouselComponent {
     this.currentIndex.update(v => v + 1);
     this.windowIndex.update(v => v + 1);
 
+    this.emitApplication(this.applications()[this.windowIndex()]);
+
     if (this.currentIndex() + this.half < this.totalCount()) {
       // Load next item if within bounds
       void this.loadNext(this.currentIndex() + this.half);
@@ -154,6 +162,8 @@ export class ApplicationCarouselComponent {
     this.currentIndex.update(v => v - 1);
     this.windowIndex.update(v => v - 1);
 
+    this.emitApplication(this.applications()[this.windowIndex()]);
+
     if (this.currentIndex() - this.half >= 0) {
       // Load previous item if within bounds
       void this.loadPrev(this.currentIndex() - this.half);
@@ -167,9 +177,11 @@ export class ApplicationCarouselComponent {
    * Loads a page of applications from backend.
    * Also updates total count of applications.
    */
-  private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationOverviewDTO[] | undefined> {
+  private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {
     try {
-      const res = await firstValueFrom(this.evaluationService.getApplications(offset, limit, this.sortBy(), this.sortDirection()));
+      const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
+        this.evaluationService.getApplicationsDetails(offset, limit, this.sortBy(), this.sortDirection()),
+      );
       this.totalCount.set(res.totalRecords ?? 0);
       return res.applications ?? undefined;
     } catch (error) {
@@ -219,6 +231,7 @@ export class ApplicationCarouselComponent {
     const data = await this.loadPage(0, this.half + 1);
     if (data) {
       this.applications.set(data);
+      this.emitApplication(data[0]);
     }
   }
 
@@ -241,5 +254,9 @@ export class ApplicationCarouselComponent {
       const diff = apps.length - windowIndex - 1 - this.half;
       this.applications.set(apps.slice(0, apps.length - diff));
     }
+  }
+
+  private emitApplication(app: ApplicationEvaluationDetailDTO): void {
+    this.currentApplication.emit(app);
   }
 }
