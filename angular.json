@@ -40,6 +40,11 @@
                 "glob": "silent-check-sso.html",
                 "input": "src/main/webapp/content",
                 "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                "output": "/assets/"
               }
             ],
             "styles": ["node_modules/primeicons/primeicons.css", "src/main/webapp/content/scss/global.scss"],
