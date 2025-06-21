@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.dto;
 
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +23,7 @@ public record ApplicantForApplicationDetailDTO(
      */
     public static ApplicantForApplicationDetailDTO getFromEntity(Applicant applicant) {
         if (applicant == null) {
-            return null;
+            throw new EntityNotFoundException("Applicant Entity should not be null");
         }
         return new ApplicantForApplicationDetailDTO(
             UserForApplicationDetailDTO.getFromEntity(applicant),

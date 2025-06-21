@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import de.tum.cit.aet.usermanagement.domain.User;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -8,7 +10,7 @@ import java.util.UUID;
  * DTO for {@link User}
  */
 public record UserForApplicationDetailDTO(
-    UUID userId,
+    @NotNull UUID userId,
     String email,
     String avatar,
     String firstName,
@@ -26,7 +28,7 @@ public record UserForApplicationDetailDTO(
      */
     public static UserForApplicationDetailDTO getFromEntity(User user) {
         if (user == null) {
-            return null;
+            throw new EntityNotFoundException("User Entity should not be null");
         }
         return new UserForApplicationDetailDTO(
             user.getUserId(),

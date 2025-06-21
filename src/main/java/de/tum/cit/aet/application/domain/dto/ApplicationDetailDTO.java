@@ -3,6 +3,7 @@ package de.tum.cit.aet.application.domain.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.usermanagement.dto.ApplicantForApplicationDetailDTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -28,7 +29,7 @@ public record ApplicationDetailDTO(
      */
     public static ApplicationDetailDTO getFromEntity(Application application) {
         if (application == null) {
-            return null;
+            throw new EntityNotFoundException("Application Entity should not be null");
         }
         return new ApplicationDetailDTO(
             application.getApplicationId(),

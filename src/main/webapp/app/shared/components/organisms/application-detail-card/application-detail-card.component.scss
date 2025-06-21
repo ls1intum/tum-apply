@@ -3,7 +3,7 @@
   width: 6rem;
   height: 6rem;
   position: relative;
-  border-radius: 9999px;
+  border-radius: 3rem;
   overflow: hidden;
 }
 
@@ -41,7 +41,7 @@
   width: 24rem;
   padding-bottom: 1.5rem;
   border-radius: 0.5rem;
-  outline: 1px solid var(--p-neutral-color);
+  outline: 0.0625rem solid var(--p-neutral-color);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -105,7 +105,7 @@
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   border-radius: 0.5rem;
-  outline: 1px solid var(--p-neutral-color);
+  outline: 0.0625rem solid var(--p-neutral-color);
   display: flex;
   flex-direction: column;
   justify-content: center;
