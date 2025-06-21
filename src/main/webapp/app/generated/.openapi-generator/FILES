@@ -17,8 +17,11 @@ model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
 model/applicationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts
-model/applicationEvaluationListDTO.ts
+model/applicantEvaluationDetailDTO.ts
+model/applicationEvaluationDetailDTO.ts
+model/applicationEvaluationDetailListDTO.ts
 model/applicationEvaluationOverviewDTO.ts
+model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/createApplicationDTO.ts
@@ -37,6 +40,7 @@ model/sortObject.ts
 model/updateApplicationDTO.ts
 model/userDTO.ts
 model/userForApplicationDetailDTO.ts
+model/userEvaluationDetailDTO.ts
 model/userShortDTO.ts
 ng-package.json
 package.json
