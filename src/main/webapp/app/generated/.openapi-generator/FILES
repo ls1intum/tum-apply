@@ -14,8 +14,11 @@ git_push.sh
 index.ts
 model/applicantDTO.ts
 model/applicationDocumentIdsDTO.ts
-model/applicationEvaluationListDTO.ts
+model/applicantEvaluationDetailDTO.ts
+model/applicationEvaluationDetailDTO.ts
+model/applicationEvaluationDetailListDTO.ts
 model/applicationEvaluationOverviewDTO.ts
+model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/createApplicationDTO.ts
@@ -32,6 +35,7 @@ model/researchGroupShortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/userDTO.ts
+model/userEvaluationDetailDTO.ts
 model/userShortDTO.ts
 ng-package.json
 package.json

@@ -2,7 +2,7 @@
   @if (!placeholder()) {
     <!-- Header -->
     <div class="header">
-      <p class="name">{{ application()?.name }}</p>
+      <p class="name">{{ application()?.applicant?.user?.name }}</p>
       <jhi-tag
         [text]="'evaluation.statusBadge.' + (application()?.state || '') | translate"
         [color]="stateSeverityMap[application()?.state!] || 'info'"
