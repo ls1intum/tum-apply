@@ -5,11 +5,7 @@ export const filterFields: FilterField[] = [
   {
     translationKey: 'evaluation.filterOptions.job',
     field: 'job',
-    options: [
-      { displayName: 'Software Engineer', field: 'software_engineer', translationKey: undefined },
-      { displayName: 'Data Scientist', field: 'data_scientist', translationKey: undefined },
-      { displayName: 'Project Manager', field: 'project_manager', translationKey: undefined },
-    ],
+    options: [],
     selected: [{ displayName: 'Project Manager', field: 'project_manager', translationKey: undefined }],
   },
   {

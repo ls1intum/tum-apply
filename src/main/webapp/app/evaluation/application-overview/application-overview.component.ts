@@ -10,8 +10,9 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
-import { filterFields, sortOptions } from '../filterSortOptions';
+import { FilterField, FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { sortOptions } from '../filterSortOptions';
+import { EvaluationService } from '../service/evaluation.service';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -69,10 +70,11 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
-  protected readonly filterFields = filterFields;
+  protected filterFields: FilterField[] = [];
   protected readonly sortOptions = sortOptions;
 
-  private readonly evaluationService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -93,6 +95,11 @@ export class ApplicationOverviewComponent {
 
       void this.loadPage();
     });
+    void this.initFilterFields();
+  }
+
+  async initFilterFields(): Promise<void> {
+    this.filterFields = await this.evaluationService.getFilterFields();
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -121,7 +128,7 @@ export class ApplicationOverviewComponent {
   async loadPage(): Promise<void> {
     try {
       const res = await firstValueFrom(
-        this.evaluationService.getApplicationsOverviews(
+        this.evaluationResourceService.getApplicationsOverviews(
           this.pageSize() * this.page(),
           this.pageSize(),
           this.sortBy(),
