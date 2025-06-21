@@ -134,8 +134,7 @@ public class JobService {
      *
      * @param userId the professor's user ID
      * @param pageDTO pagination configuration
-     * @param title optional filter for job title
-     * @param state optional filter for job state
+     * @param professorJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO sorting configuration
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
