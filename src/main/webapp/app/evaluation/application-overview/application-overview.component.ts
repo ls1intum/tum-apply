@@ -4,6 +4,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
@@ -16,7 +17,7 @@ import { filterFields, sortOptions } from '../filterSortOptions';
 @Component({
   selector: 'jhi-application-overview',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonComponent, DynamicTableComponent, TagComponent, FilterSortBarComponent],
+  imports: [CommonModule, RouterModule, ButtonComponent, DynamicTableComponent, TagComponent, FilterSortBarComponent, TranslateModule],
   templateUrl: './application-overview.component.html',
   styleUrls: ['./application-overview.component.scss'],
 })

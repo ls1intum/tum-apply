@@ -19,6 +19,9 @@
     "filterOptions": {
       "job": "Job",
       "status": "Status"
-    }
+    },
+
+    "application": "Application",
+    "applications": "Applications"
   }
 }

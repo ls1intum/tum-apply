@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { FilterDialogComponent } from '../filter-dialog/filter-dialog.component';
 import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 export interface FilterField {
   translationKey: string;
@@ -27,7 +28,7 @@ export interface SortOption {
 
 @Component({
   selector: 'jhi-filter-sort-bar',
-  imports: [ButtonComponent, FilterDialogComponent, DropdownComponent, FontAwesomeModule, TranslateModule],
+  imports: [ButtonComponent, FilterDialogComponent, DropdownComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
   templateUrl: './filter-sort-bar.component.html',
   styleUrl: './filter-sort-bar.component.scss',
 })
@@ -36,6 +37,11 @@ export class FilterSortBarComponent {
   sortOptions = input<SortOption[]>();
   preSelectedSortOption = input<SortOption | undefined>();
   filterFields = model<FilterField[]>([]);
+
+  // translation keys used for the total number of records found
+  // those fields should already be translated within the parent component
+  singleEntity = input.required<string>();
+  multipleEntities = input.required<string>();
 
   currentSortOption = signal<SortOption | undefined>(undefined);
   filterDialogVisible = signal<boolean>(false);

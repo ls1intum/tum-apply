@@ -124,7 +124,8 @@
       "numberSelected": "{{selected}} selected",
       "clear": "Clear",
       "clearAll": "Clear all",
-      "apply": "Apply"
+      "apply": "Apply",
+      "recordsFound": "{{count}} {{entity}} found"
     }
   },
   "error": {
