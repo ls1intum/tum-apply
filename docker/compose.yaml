@@ -39,15 +39,7 @@ services:
     networks:
       - shared-network
   tumapply:
-    build:
-      context: ../
-      dockerfile: Dockerfile
-      args:
-        KEYCLOAK_URL: ${KEYCLOAK_URL}
-        KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-        KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-    env_file:
-      - .env
+    image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
     environment:
       - SPRING_PROFILES_ACTIVE=dev, api-docs
       - SPRING_DATASOURCE_USERNAME=root
