@@ -93,6 +93,11 @@ public class ApplicationEvaluationResource {
         );
     }
 
+    /**
+     * Retrieves the available job filter options for the current research group.
+     *
+     * @return a {@link ResponseEntity} containing a set of {@link JobFilterOptionDTO}
+     */
     @GetMapping("/jobs")
     public ResponseEntity<Set<JobFilterOptionDTO>> getJobFilterOptions() {
         //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user

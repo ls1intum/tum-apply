@@ -139,6 +139,17 @@ public class ApplicationEvaluationService {
     }
 
     /**
+     * Retrieves all job filter options associated with the given research group.
+     *
+     * @param researchGroup the {@link ResearchGroup} for which to retrieve job filter options
+     * @return a set of {@link JobFilterOptionDTO} representing the available job filter options
+     *         for the specified research group
+     */
+    public Set<JobFilterOptionDTO> getJobFilterOptions(ResearchGroup researchGroup) {
+        return jobEvaluationRepository.findAllBYResearchGroup(researchGroup.getResearchGroupId());
+    }
+
+    /**
      * Helper method to retrieve a paginated list of applications in viewable states for the specified research group,
      * applying optional dynamic filters.
      *
@@ -161,9 +172,5 @@ public class ApplicationEvaluationService {
      */
     private long getTotalRecords(UUID researchGroupId, Map<String, List<?>> dynamicFilters) {
         return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters);
-    }
-
-    public Set<JobFilterOptionDTO> getJobFilterOptions(ResearchGroup researchGroup) {
-        return jobEvaluationRepository.findAllBYResearchGroup(researchGroup.getResearchGroupId());
     }
 }

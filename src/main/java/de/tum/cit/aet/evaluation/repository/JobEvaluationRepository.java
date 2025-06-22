@@ -8,6 +8,12 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
 
 public interface JobEvaluationRepository extends TumApplyJpaRepository<Job, UUID> {
+    /**
+     * Finds all job filter options for the specified research group.
+     *
+     * @param researchGroupId the unique identifier of the research group
+     * @return a set of {@link JobFilterOptionDTO} containing the title and ID of each matching job
+     */
     @Query(
         """
             SELECT new de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO(
