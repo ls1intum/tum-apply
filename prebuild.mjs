@@ -78,9 +78,6 @@ export const environment = {
   },
 };
 `;
-console.warn(`[prebuild] Keycloak URL ${process.env.KEYCLOAK_URL}`);
-console.warn(`[prebuild] keycloak config ${keycloakConfig}`);
-
 fs.writeFileSync(path.resolve(__dirname, 'src', 'main', 'webapp', 'app', 'environments', 'environment.override.ts'), environmentConfig);
 
 // =====================
