@@ -59,7 +59,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ghcr.io/ls1intum/tum-apply:latest
+          tags: ghcr.io/ls1intum/tum-apply
           build-args: |
             KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}
             KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}
