@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
@@ -126,6 +126,8 @@ export class JobCreationFormComponent {
     { name: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
     { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
   ];
+
+  readonly pageTitle = computed(() => (this.mode() === 'edit' ? 'Edit the Current Doctorate Position' : 'Create a new Doctorate Position'));
 
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
