@@ -28,8 +28,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,8 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @Service
 public class ApplicationService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationService.class);
 
     private final ApplicationRepository applicationRepository;
     private final DocumentService documentService;
@@ -360,13 +356,10 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
-        LOG.error("HERE");
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
-        LOG.error("HERE2");
         Application application = applicationRepository.getReferenceById(applicationId);
-        LOG.error("HERE3 " + application.getApplicationId());
 
         return ApplicationDetailDTO.getFromEntity(application);
     }
