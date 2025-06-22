@@ -51,7 +51,7 @@ describe('ApplicationCreationFormComponent create', () => {
         {
           provide: JobResourceService,
           useValue: {
-            getJobDetails: jest.fn().mockReturnValue(of(new HttpResponse({ body: { title: 'Test title' } }))),
+            getJobById: jest.fn().mockReturnValue(of(new HttpResponse({ body: { title: 'Test title' } }))),
           },
         },
       ],
@@ -79,6 +79,6 @@ describe('ApplicationCreationFormComponent create', () => {
 
   it('should set mode to "create" and extract jobId from route', () => {
     expect(component.mode).toBe('create');
-    expect(component.jobId).toBe('123');
+    expect(component.jobId()).toBe('123');
   });
 });

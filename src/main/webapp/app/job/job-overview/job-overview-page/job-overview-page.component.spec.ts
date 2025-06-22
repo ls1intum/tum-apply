@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { JobResourceService, PageJobCardDTO } from 'app/generated';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 
 import { JobCardListComponent } from '../job-card-list/job-card-list.component';
 
@@ -21,6 +23,9 @@ describe('JobOverviewPageComponent', () => {
       imports: [JobOverviewPageComponent, JobCardListComponent],
       providers: [{ provide: JobResourceService, useValue: jobServiceMock }, provideHttpClientTesting()],
     }).compileComponents();
+
+    const library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faGraduationCap, faArrowUpAZ, faArrowDownAZ, faArrowUp19, faArrowDown19, faChevronDown);
 
     fixture = TestBed.createComponent(JobOverviewPageComponent);
     component = fixture.componentInstance;

@@ -2,6 +2,8 @@ package de.tum.cit.aet.application.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
@@ -26,6 +28,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @Service
 public class ApplicationService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationService.class);
 
     private final ApplicationRepository applicationRepository;
     private final DocumentService documentService;
@@ -317,5 +323,51 @@ public class ApplicationService {
     protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Document> newDocuments) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
+    }
+
+    /**
+     * Retrieves the set of document IDs for the given application filtered by the specified document type.
+     *
+     * @param application the application whose documents are queried; must not be {@code null}
+     * @param type the document type to filter by; must not be {@code null}
+     * @return a set of document IDs matching the given application and document type; never {@code null}
+     */
+    public Set<UUID> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
+        return existingEntries.stream().map(e -> e.getDocument().getDocumentId()).collect(Collectors.toSet());
+    }
+
+    /**
+     * Retrieves the document IDs associated with the application identified by the given UUID.
+     *
+     * @param applicationId the UUID of the application; must not be {@code null}
+     * @return an {@link ApplicationDocumentIdsDTO} containing the categorized document IDs for the application
+     * @throws IllegalArgumentException if {@code applicationId} is {@code null}
+     */
+    public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
+        if (applicationId == null) {
+            throw new IllegalArgumentException("The applicationId may not be null.");
+        }
+        Application application = applicationRepository.getReferenceById(applicationId);
+        return documentDictionaryService.getDocumentIdsDTO(application);
+    }
+
+    /**
+     * Retrieves the ApplicationDetailDTO fitting to the application id
+     *
+     * @param applicationId
+     * @return ApplicationDetailDTO for application id
+     */
+    @Transactional
+    public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
+        LOG.error("HERE");
+        if (applicationId == null) {
+            throw new IllegalArgumentException("The applicationId may not be null.");
+        }
+        LOG.error("HERE2");
+        Application application = applicationRepository.getReferenceById(applicationId);
+        LOG.error("HERE3 " + application.getApplicationId());
+
+        return ApplicationDetailDTO.getFromEntity(application);
     }
 }
