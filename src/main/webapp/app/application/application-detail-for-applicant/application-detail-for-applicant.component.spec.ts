@@ -28,7 +28,7 @@ class MockApplicationResourceService {
   });
 }
 
-async function waitForComponentUpdate(fixture: ComponentFixture<ApplicationDetailForApplicantComponent>) {
+async function waitForComponentUpdate(fixture: ComponentFixture<ApplicationDetailForApplicantComponent>): Promise<void> {
   await fixture.whenStable();
   fixture.detectChanges();
 }
@@ -61,7 +61,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
       ],
     }).compileComponents();
 
-    // beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         TranslateModule.forRoot({
