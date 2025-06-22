@@ -124,6 +124,12 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./application/application-overview-for-applicant/application-overview-for-applicant.component'),
   },
+  {
+    path: 'application/detail/:application_id',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./application/application-detail-for-applicant/application-detail-for-applicant.component'),
+  },
 
   // ======================================================================================
   // Evaluation

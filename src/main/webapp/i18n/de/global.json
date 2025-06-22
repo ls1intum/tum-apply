@@ -103,6 +103,21 @@
       "field": "Feld",
       "value": "Wert"
     },
+    "detail_card": {
+      "name": "Name",
+      "grade": "Note",
+      "university": "Universität",
+      "motivation": "Motivation",
+      "skills": "Fähigkeiten",
+      "research_experience": "Forschungserfahrung",
+      "bachelor_info": "Informationen zum Bachelorabschluss",
+      "master_info": "Informationen zum Masterabschluss",
+      "gender": "Geschlecht",
+      "desired_start_date": "Gewünschtes Anfangsdatum",
+      "preferred_language": "Bevorzugte Sprache",
+      "applicant_info": "Bewerberinformationen",
+      "nationality": "Nationalität"
+    },
     "delete": {
       "title": "Löschen bestätigen"
     },
