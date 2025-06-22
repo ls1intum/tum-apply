@@ -87,6 +87,10 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/content/**", "/i18n/*.json", "/logo/*")
                     .permitAll()
+                    .requestMatchers("/media/**")
+                    .permitAll()
+                    .requestMatchers("/favicon.ico")
+                    .permitAll()
                     // Information and health endpoints do not need authentication
                     .requestMatchers("/management/info", "/management/health")
                     .permitAll()
