@@ -14,7 +14,7 @@ import { RatingComponent } from '../../shared/components/atoms/rating/rating.com
 export class ApplicationDetailComponent {
   application = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
 
-  onApplicationChange(event: ApplicationEvaluationDetailDTO) {
+  onApplicationChange(event: ApplicationEvaluationDetailDTO): void {
     this.application.set(event);
   }
 }
