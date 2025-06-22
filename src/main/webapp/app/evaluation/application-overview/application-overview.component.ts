@@ -7,13 +7,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { sortOptions } from '../filterSortOptions';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { FilterField } from '../../shared/filter';
+import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/applicationEvaluationOverviewDTO';
+import { ApplicationEvaluationResourceService } from 'app/generated/api/applicationEvaluationResource.service';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -163,8 +164,8 @@ export class ApplicationOverviewComponent {
           limit,
           sortBy,
           direction,
-          statusFilters.length ? statusFilters : undefined,
-          jobFilters.length ? jobFilters : undefined,
+          // TODO statusFilters.length ? statusFilters : undefined,
+          // jobFilters.length ? jobFilters : undefined,
         ),
       );
 

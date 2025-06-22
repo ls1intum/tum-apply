@@ -30,8 +30,8 @@ export class ApplicationCardComponent {
   readonly isDisabled = computed(
     () =>
       this.disabled() ||
-      this.application()?.applicationDetailDTO.applicationState === 'ACCEPTED' ||
-      this.application()?.applicationDetailDTO.applicationState === 'REJECTED',
+      this.applicationDetails()?.applicationState === 'ACCEPTED' ||
+      this.applicationDetails()?.applicationState === 'REJECTED',
   );
 
   readonly stateTextMap: Record<string, string> = {
