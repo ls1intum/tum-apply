@@ -1,0 +1,29 @@
+<p-dialog [header]="'entity.filters.filter' | translate" [modal]="true" [(visible)]="visible" styleClass="filter-dialog">
+  @for (filterField of draftFields(); track i; let i = $index) {
+    <div class="filter-row">
+      <div class="label-reset">
+        <span class="label" [jhiTranslate]="filterField.translationKey"></span>
+        <jhi-button
+          variant="text"
+          [label]="'entity.filters.clear' | translate"
+          (click)="resetField(filterField)"
+          [disabled]="isClearDisabled(filterField)()"
+        />
+      </div>
+      <jhi-filter-select
+        [options]="filterField.options"
+        [preSelected]="filterField.selected ?? undefined"
+        (selectionChange)="onSelectionChange(filterField, $event)"
+      />
+    </div>
+    @if (i !== draftFields().length - 1) {
+      <p-divider />
+    }
+  }
+  <ng-template #footer>
+    <div class="actions">
+      <jhi-button variant="outlined" [label]="'entity.filters.clearAll' | translate" (click)="resetAll()" [disabled]="!canResetAll()" />
+      <jhi-button [label]="'entity.filters.apply' | translate" (click)="applyAndClose()" />
+    </div>
+  </ng-template>
+</p-dialog>
