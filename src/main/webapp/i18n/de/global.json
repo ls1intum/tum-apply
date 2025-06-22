@@ -139,7 +139,8 @@
       "numberSelected": "{{selected}} ausgewählt",
       "clear": "Entfernen",
       "clearAll": "Alle entfernen",
-      "apply": "Anwenden"
+      "apply": "Anwenden",
+      "recordsFound": "{{count}} {{entity}} gefunden"
     },
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",

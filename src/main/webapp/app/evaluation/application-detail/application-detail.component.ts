@@ -2,6 +2,7 @@ import { Component, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
@@ -9,12 +10,14 @@ import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
 import { ApplicationEvaluationDetailDTO, ApplicationEvaluationDetailListDTO, ApplicationEvaluationResourceService } from '../../generated';
+import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
+import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
 
 const WINDOW_SIZE = 7;
 
 @Component({
   selector: 'jhi-application-detail',
-  imports: [ApplicationCarouselComponent, FilterSortBarComponent],
+  imports: [ApplicationCarouselComponent, FilterSortBarComponent, RatingComponent, ApplicationDetailCardComponent, TranslateModule],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
 })
@@ -160,6 +163,7 @@ export class ApplicationDetailComponent {
       this.applications.set(res.applications ?? []);
       this.windowIndex.set(res.windowIndex ?? 0);
       this.currentIndex.set(res.currentIndex ?? 0);
+      this.currentApplication.set(this.applications()[this.windowIndex()]);
     } catch (error) {
       console.error('Failed to load applications:', error);
       return undefined;

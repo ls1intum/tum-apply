@@ -17,6 +17,9 @@
     "filterOptions": {
       "job": "Stelle",
       "status": "Status"
-    }
+    },
+
+    "application": "Bewerbung",
+    "applications": "Bewerbungen"
   }
 }

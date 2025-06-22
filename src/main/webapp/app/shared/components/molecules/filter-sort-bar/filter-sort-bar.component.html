@@ -1,7 +1,9 @@
 <div class="filter-sort-bar">
-  <span class="record-count">
-    {{ totalRecords() }}
-    {{ totalRecords() === 1 ? 'Application' : 'Applications' }} found
+  <span
+    class="record-count"
+    jhiTranslate="entity.filters.recordsFound"
+    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+  >
   </span>
   <div class="actions">
     <jhi-button

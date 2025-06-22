@@ -139,7 +139,8 @@
       "numberSelected": "{{selected}} selected",
       "clear": "Clear",
       "clearAll": "Clear all",
-      "apply": "Apply"
+      "apply": "Apply",
+      "recordsFound": "{{count}} {{entity}} found"
     },
     "upload": {
       "upload_instruction_standard": "Please upload",

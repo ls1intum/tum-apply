@@ -4,11 +4,14 @@
     <jhi-application-detail-card [application]="application">
       <div class="flex flex-1 flex-col" slot-vertical-right>
         @if (this.documentIds()?.bachelorDocumentDictionaryIds; as bachelorDocDictId) {
-          <!-- @for (id of bachelorDocDictId; track $index) { -->
-          <div class="w-80 h-80 p-2">
-            <jhi-document-viewer [documentDictionaryId]="bachelorDocDictId[0]" />
+          <div class="flex flex-col border-neutral-rounded rounded p-4">
+            <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT">Bachelor Transcript</span>
+            <div class="w-80 h-80">
+              <!-- @for (id of bachelorDocDictId; track $index) { -->
+              <jhi-document-viewer [documentDictionaryId]="bachelorDocDictId[0]" />
+              <!-- } -->
+            </div>
           </div>
-          <!-- } -->
         }
         <!-- @if (this.documentIds()?.masterDocumentDictionaryIds; as masterDocDictId) {
           @for (id of masterDocDictId; track $index) {
