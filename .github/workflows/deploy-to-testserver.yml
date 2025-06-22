@@ -28,6 +28,12 @@ env:
   RAW_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.inputs.branch_name }}
 
 jobs:
+  test-output:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Output
+        run: echo "Deploy-to-testserver.yml executed successfully"
+
   deploy:
     uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
     with:
