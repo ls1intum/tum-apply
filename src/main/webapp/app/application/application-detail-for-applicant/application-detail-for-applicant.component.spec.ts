@@ -19,7 +19,18 @@ import { missingTranslationHandler } from 'app/config/translation.config';
 import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 
 class MockApplicationResourceService {
-  getApplicationForDetailPage = jest.fn().mockReturnValue(of({}));
+  getApplicationForDetailPage = jest.fn().mockReturnValue(of({ id: '123', jobTitle: 'DNS Testing and Molecular Structure Matrices' }));
+  getDocumentDictionaryIds = jest.fn().mockReturnValue({
+    bachelorDocumentDictionaryIds: ['doc1', 'doc2'],
+    masterDocumentDictionaryIds: [],
+    cvDocumentDictionaryId: 'cv1',
+    referenceDocumentDictionaryIds: [],
+  });
+}
+
+async function waitForComponentUpdate(fixture: ComponentFixture<ApplicationDetailForApplicantComponent>) {
+  await fixture.whenStable();
+  fixture.detectChanges();
 }
 
 describe('ApplicationDetailForApplicantComponent', () => {
@@ -77,7 +88,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
     library.addIcons(faRocket);
     library.addIcons(faFlask);
 
-    fixture.detectChanges();
+    await waitForComponentUpdate(fixture);
   });
 
   it('should create', () => {
