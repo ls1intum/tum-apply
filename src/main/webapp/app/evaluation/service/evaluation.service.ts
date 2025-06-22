@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { ApplicationEvaluationResourceService, JobFilterOptionDTO } from '../../generated';
 import { filterFields } from '../filterSortOptions';
 import { FilterField } from '../../shared/filter';
+import { JobFilterOptionDTO } from 'app/generated/model/jobFilterOptionDTO';
+import { ApplicationEvaluationResourceService } from 'app/generated/api/applicationEvaluationResource.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class EvaluationService {
 
   private readonly evaluationService = inject(ApplicationEvaluationResourceService);
 
-  async getJobFilterOptions(): Promise<Set<JobFilterOptionDTO>> {
+  async getJobFilterOptions(): Promise<JobFilterOptionDTO[]> {
     return await firstValueFrom(this.evaluationService.getJobFilterOptions());
   }
 
