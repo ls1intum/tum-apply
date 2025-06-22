@@ -14,7 +14,7 @@
     (next)="onNext()"
     (prev)="onPrev()"
   />
-  @if (this.application(); as application) {
+  @if (this.currentApplication(); as application) {
     <div class="w-full mt-8">
       <jhi-application-detail-card [application]="application.applicationDetailDTO">
         <div slot-rating>
