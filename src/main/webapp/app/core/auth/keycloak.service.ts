@@ -28,7 +28,8 @@ export class KeycloakService {
     console.warn('🔁 Initializing Keycloak...');
     console.warn('🔁 Keycloak URL:', environment.keycloak.url);
     const options: KeycloakInitOptions = {
-      onLoad: 'login-required',
+      onLoad: 'check-sso',
+      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       checkLoginIframe: false,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
