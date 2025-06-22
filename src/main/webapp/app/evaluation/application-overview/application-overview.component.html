@@ -5,6 +5,7 @@
     [filterFields]="filterFields"
     [sortOptions]="sortOptions"
     [preSelectedSortOption]="sortOptions[2]"
+    (filterChange)="loadOnFilterEmit($event)"
   />
 
   <jhi-dynamic-table

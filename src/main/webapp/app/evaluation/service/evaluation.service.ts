@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { ApplicationEvaluationResourceService, JobFilterOptionDTO } from '../../generated';
 import { filterFields } from '../filterSortOptions';
-import { FilterField } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { FilterField } from '../../shared/filter';
 
 @Injectable({
   providedIn: 'root',

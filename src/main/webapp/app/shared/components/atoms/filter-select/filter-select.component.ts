@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ChipModule } from 'primeng/chip';
 
-import { FilterOption } from '../../molecules/filter-sort-bar/filter-sort-bar.component';
 import { TranslateDirective } from '../../../language';
+import { FilterOption } from '../../../filter';
 
 @Component({
   selector: 'jhi-filter-select',

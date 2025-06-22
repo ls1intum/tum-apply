@@ -5,19 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { FilterDialogComponent } from '../filter-dialog/filter-dialog.component';
 import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
-
-export interface FilterField {
-  translationKey: string;
-  field: string;
-  options: FilterOption[];
-  selected?: FilterOption[];
-}
-
-export interface FilterOption {
-  displayName: string;
-  field: string;
-  translationKey: string | undefined;
-}
+import { FilterField } from '../../../filter';
 
 export interface SortOption {
   displayName: string;
@@ -45,7 +33,7 @@ export class FilterSortBarComponent {
 
   // Computes the total number of active filters
   activeFilters = computed(() => {
-    return this.filterFields().filter(f => (f.selected?.length ?? 0) > 0).length;
+    return this.filterFields().filter(f => f.selected.length > 0).length;
   });
 
   // Determines the selected sort option for the dropdown

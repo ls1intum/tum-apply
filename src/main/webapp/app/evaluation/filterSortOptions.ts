@@ -1,27 +1,20 @@
-import { FilterField, SortOption } from '../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { SortOption } from '../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { FilterField, FilterOption } from '../shared/filter';
 
 // TODO Jobs will be replaced by dynamically loaded jobs from the server
 export const filterFields: FilterField[] = [
-  {
-    translationKey: 'evaluation.filterOptions.job',
-    field: 'job',
-    options: [],
-    selected: [{ displayName: 'Project Manager', field: 'project_manager', translationKey: undefined }],
-  },
-  {
-    translationKey: 'evaluation.filterOptions.status',
-    field: 'status',
-    options: [
-      { displayName: '', field: 'IN_REVIEW', translationKey: 'evaluation.statusBadge.IN_REVIEW' },
-      { displayName: '', field: 'SENT', translationKey: 'evaluation.statusBadge.SENT' },
-      { displayName: '', field: 'ACCEPTED', translationKey: 'evaluation.statusBadge.ACCEPTED' },
-      { displayName: '', field: 'REJECTED', translationKey: 'evaluation.statusBadge.REJECTED' },
+  new FilterField('evaluation.filterOptions.job', 'job', [], []),
+  new FilterField(
+    'evaluation.filterOptions.status',
+    'status',
+    [
+      new FilterOption('', 'IN_REVIEW', 'evaluation.statusBadge.IN_REVIEW'),
+      new FilterOption('', 'SENT', 'evaluation.statusBadge.SENT'),
+      new FilterOption('', 'ACCEPTED', 'evaluation.statusBadge.ACCEPTED'),
+      new FilterOption('', 'REJECTED', 'evaluation.statusBadge.REJECTED'),
     ],
-    selected: [
-      { displayName: '', field: 'IN_REVIEW', translationKey: 'evaluation.statusBadge.IN_REVIEW' },
-      { displayName: '', field: 'SENT', translationKey: 'evaluation.statusBadge.SENT' },
-    ],
-  },
+    [],
+  ),
 ];
 
 export const sortOptions: SortOption[] = [

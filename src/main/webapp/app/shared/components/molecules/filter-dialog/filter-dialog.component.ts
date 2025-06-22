@@ -5,8 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { FilterSelectComponent } from '../../atoms/filter-select/filter-select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { FilterField, FilterOption } from '../filter-sort-bar/filter-sort-bar.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { FilterField, FilterOption } from '../../../filter';
 
 @Component({
   selector: 'jhi-filter-dialog',
@@ -25,7 +25,7 @@ export class FilterDialogComponent {
   visible = model<boolean>(false);
 
   // Determines if "reset all" should be enabled (any filter active)
-  canResetAll = computed(() => this.draftFields().some(f => f.selected?.length));
+  canResetAll = computed(() => this.draftFields().some(f => f.selected.length));
 
   private _filterFields = signal<FilterField[]>([]);
 
@@ -38,24 +38,19 @@ export class FilterDialogComponent {
     // Clone filters to draft when dialog opens to avoid mutating input directly
     effect(() => {
       if (this.visible()) {
-        this.draftFields.set(
-          this._filterFields().map(f => ({
-            ...f,
-            selected: f.selected ? [...f.selected] : [],
-          })),
-        );
+        this.draftFields.set(this._filterFields().map(f => new FilterField(f.translationKey, f.field, f.options, f.selected)));
       }
     });
   }
 
   // Clears selection for a single field
   resetField(field: FilterField): void {
-    this.draftFields.update(list => list.map(f => (f.field === field.field ? { ...f, selected: [] } : f)));
+    this.draftFields.update(list => list.map(f => (f.field === field.field ? f.resetSelection() : f)));
   }
 
   // Updates selection for a field
   onSelectionChange(field: FilterField, sel: FilterOption[]): void {
-    this.draftFields.update(list => list.map(f => (f.field === field.field ? { ...f, selected: sel } : f)));
+    this.draftFields.update(list => list.map(f => (f.field === field.field ? f.withSelection(sel) : f)));
   }
 
   // Commits draft filters and closes dialog
@@ -67,6 +62,6 @@ export class FilterDialogComponent {
 
   // Clears all selections
   resetAll(): void {
-    this.draftFields.update(list => list.map(f => ({ ...f, selected: [] })));
+    this.draftFields.update(list => list.map(f => f.resetSelection()));
   }
 }

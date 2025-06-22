@@ -10,9 +10,10 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { FilterField, FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
 import { EvaluationService } from '../service/evaluation.service';
+import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { FilterField } from '../../shared/filter';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -27,6 +28,7 @@ export class ApplicationOverviewComponent {
   page = signal(0);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
+  filters = signal<FilterField[]>([]);
   total = signal(0);
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -114,6 +116,14 @@ export class ApplicationOverviewComponent {
     void this.loadPage();
   }
 
+  loadOnFilterEmit(filters: FilterField[]): void {
+    this.page.set(0);
+    this.filters.set(filters);
+    this.updateUrlQueryParams();
+
+    void this.loadPage();
+  }
+
   loadOnSortEmit(event: Sort): void {
     this.page.set(0);
 
@@ -127,12 +137,34 @@ export class ApplicationOverviewComponent {
 
   async loadPage(): Promise<void> {
     try {
+      const offset = this.pageSize() * this.page();
+      const limit = this.pageSize();
+      const sortBy = this.sortBy();
+      const direction = this.sortDirection();
+
+      const statusFilters: string[] = [];
+      const jobFilters: string[] = [];
+      this.filters().forEach(f => {
+        const entry = f.getQueryParamEntry();
+        if (!entry) {
+          return;
+        }
+        const [key, value] = entry;
+        if (key === 'status') {
+          statusFilters.push(value);
+        } else if (key === 'job') {
+          jobFilters.push(value);
+        }
+      });
+
       const res = await firstValueFrom(
         this.evaluationResourceService.getApplicationsOverviews(
-          this.pageSize() * this.page(),
-          this.pageSize(),
-          this.sortBy(),
-          this.sortDirection(),
+          offset,
+          limit,
+          sortBy,
+          direction,
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
         ),
       );
 
@@ -140,17 +172,32 @@ export class ApplicationOverviewComponent {
         this.pageData.set(res.applications ?? []);
         this.total.set(res.totalRecords ?? 0);
       });
+
+      this.updateUrlQueryParams();
     } catch (error) {
       console.error('Failed to load applications:', error);
     }
   }
 
   private buildQueryParams(): Params {
-    return {
+    const baseParams: Params = {
       page: this.page(),
       pageSize: this.pageSize(),
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
+    };
+
+    const filterParams: Params = {};
+    this.filters().forEach(f => {
+      const entry = f.getQueryParamEntry();
+      if (entry) {
+        filterParams[entry[0]] = entry[1];
+      }
+    });
+
+    return {
+      ...baseParams,
+      ...filterParams,
     };
   }
 
