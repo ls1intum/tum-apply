@@ -1,5 +1,4 @@
 export * from './applicantDTO';
-export * from './applicantEvaluationDetailDTO';
 export * from './applicantForApplicationDetailDTO';
 export * from './applicationDetailDTO';
 export * from './applicationDocumentIdsDTO';
@@ -24,6 +23,5 @@ export * from './researchGroupShortDTO';
 export * from './sortObject';
 export * from './updateApplicationDTO';
 export * from './userDTO';
-export * from './userEvaluationDetailDTO';
 export * from './userForApplicationDetailDTO';
 export * from './userShortDTO';

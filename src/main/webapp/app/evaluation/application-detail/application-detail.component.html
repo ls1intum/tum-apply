@@ -1,3 +1,13 @@
 <div class="body">
-  <jhi-application-carousel />
+  <jhi-application-carousel (currentApplication)="onApplicationChange($event)" />
+  @if (this.application(); as application) {
+    <div class="w-full mt-8">
+      <jhi-application-detail-card [application]="application.applicationDetailDTO">
+        <div slot-rating>
+          <jhi-rating [rating]="application.rating ? application.rating : null" />
+          <!-- TODO null to undefined computed -->
+        </div>
+      </jhi-application-detail-card>
+    </div>
+  }
 </div>

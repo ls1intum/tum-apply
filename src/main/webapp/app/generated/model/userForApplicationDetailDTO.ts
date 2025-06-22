@@ -13,10 +13,10 @@ export interface UserForApplicationDetailDTO {
     userId: string;
     email?: string;
     avatar?: string;
-    firstName?: string;
-    lastName?: string;
+    name?: string;
     gender?: string;
     nationality?: string;
+    preferredLanguage?: string;
     birthday?: string;
     phoneNumber?: string;
     website?: string;
