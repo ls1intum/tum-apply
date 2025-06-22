@@ -31,29 +31,8 @@ on:
 
 jobs:
   build:
-    name: Build and Push
-    runs-on: ubuntu-latest
-    environment: test-server
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: ghcr.io/ls1intum/tum-apply
-          build-args: |
-            KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}
-            KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}
-            KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}
-            KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+    uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
+    with:
+      image-name: ghcr.io/ls1intum/tum-apply
+      docker-file: Dockerfile
+    secrets: inherit
