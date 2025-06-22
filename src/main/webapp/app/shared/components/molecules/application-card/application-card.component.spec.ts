@@ -11,13 +11,13 @@ import {
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBriefcase, faCheck, faCommentAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 
 import { TagComponent } from '../../atoms/tag/tag.component';
 import { RatingComponent } from '../../atoms/rating/rating.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 
 import { ApplicationCardComponent } from './application-card.component';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 
 describe('ApplicationCardComponent', () => {
   let component: ApplicationCardComponent;
