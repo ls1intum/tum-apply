@@ -1,21 +1,17 @@
 package de.tum.cit.aet.job.service;
 
 import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.job.dto.CreatedJobDTO;
-import de.tum.cit.aet.job.dto.JobCardDTO;
-import de.tum.cit.aet.job.dto.JobDetailDTO;
-import de.tum.cit.aet.job.dto.JobFormDTO;
+import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,33 +21,134 @@ public class JobService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
 
-    //private final UserRepository userRepository;
-
     public JobService(JobRepository jobRepository, UserRepository userRepository) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
     }
 
     /**
-     * Returns a list of open jobs (available for applications).
+     * Creates a new job using the provided job form data.
      *
-     * @param filter  optional filter criteria
-     * @param sorting optional sorting parameter
-     * @return list of available job cards
+     * @param dto the job details used to create the job
+     * @return the created job as a {@link JobFormDTO}
      */
-    public List<JobCardDTO> getAvailableJobs(String filter, String sorting) {
-        return null;
-        //return jobRepository.findAvailableJobsByState(State.OPEN);
+    public JobFormDTO createJob(JobFormDTO dto) {
+        Job job = new Job();
+        return updateJobEntity(job, dto);
     }
 
     /**
-     * Creates a new job based on the form data.
+     * Updates an existing job with the new form data.
      *
-     * @param dto the job details used to create the job
+     * @param jobId the ID of the job to update
+     * @param dto the {@link JobFormDTO} containing updated job details
+     * @return the updated job as a {@link JobFormDTO}
      */
-    @Transactional
-    public void createJob(JobFormDTO dto) {
-        Job job = new Job();
+    public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        return updateJobEntity(job, dto);
+    }
+
+    /**
+     * Deletes a job posting by ID.
+     *
+     * @param jobId the ID of the job to delete
+     */
+    public void deleteJob(UUID jobId) {
+        try {
+            jobRepository.deleteById(jobId);
+        } catch (Exception e) {
+            throw EntityNotFoundException.forId("Job", jobId);
+        }
+    }
+
+    /**
+     * Returns a jobDTO given the job id.
+     *
+     * @param jobId the ID of the job
+     * @return the job card DTO with detailed info
+     */
+    public JobDTO getJobById(UUID jobId) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        return new JobDTO(
+            job.getJobId(),
+            job.getTitle(),
+            job.getResearchArea(),
+            job.getFieldOfStudies(),
+            job.getSupervisingProfessor().getUserId(),
+            job.getLocation(),
+            job.getStartDate(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getState()
+        );
+    }
+
+    /**
+     * Returns a paginated list of all available (PUBLISHED) jobs.
+     * Supports filtering by multiple fields and dynamic sorting, including manual sort for professor name.
+     *
+     * @param pageDTO pagination configuration
+     * @param availableJobsFilterDTO DTO containing all optionally filterable fields
+     * @param sortDTO sort configuration (by field and direction)
+     * @return a page of {@link JobCardDTO} matching the criteria
+     */
+    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
+        Pageable pageable;
+        if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
+            // Use pageable without sort: Sorting will be handled manually in @Query
+            pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
+            return jobRepository.findAllJobCardsByState(
+                JobState.PUBLISHED,
+                availableJobsFilterDTO.title(), // optional filter for job title
+                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                availableJobsFilterDTO.location(), // optional filter for campus location
+                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
+                availableJobsFilterDTO.workload(), // optional filter for workload value
+                sortDTO.sortBy(),
+                sortDTO.direction().name(),
+                pageable
+            );
+        } else {
+            // Sort dynamically via Pageable
+            pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
+            return jobRepository.findAllJobCardsByState(
+                JobState.PUBLISHED,
+                availableJobsFilterDTO.title(), // optional filter for job title
+                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                availableJobsFilterDTO.location(), // optional filter for campus location
+                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
+                availableJobsFilterDTO.workload(), // optional filter for workload value
+                pageable
+            );
+        }
+    }
+
+    /**
+     * Returns a paginated list of jobs created by a given professor.
+     * Supports optional filtering and dynamic sorting.
+     *
+     * @param userId the professor's user ID
+     * @param pageDTO pagination configuration
+     * @param professorJobsFilterDTO DTO containing all optionally filterable fields
+     * @param sortDTO sorting configuration
+     * @return a page of {@link CreatedJobDTO} for the professor's jobs
+     */
+    public Page<CreatedJobDTO> getJobsByProfessor(
+        UUID userId,
+        PageDTO pageDTO,
+        ProfessorJobsFilterDTO professorJobsFilterDTO,
+        SortDTO sortDTO
+    ) {
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
+        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.title(), professorJobsFilterDTO.state(), pageable);
+    }
+
+    private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
         User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
@@ -67,69 +164,7 @@ public class JobService {
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
         job.setState(dto.state());
-        jobRepository.save(job);
-    }
-
-    /**
-     * Updates an existing job with new values.
-     *
-     * @param jobId the ID of the job to update
-     * @param dto   the updated job details
-     * @return the updated job card DTO
-     */
-    public JobCardDTO updateJob(UUID jobId, JobDetailDTO dto) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        //updateEntity(job, dto);
-        jobRepository.save(job);
-        //return toDto(job);
-        return null;
-    }
-
-    /**
-     * Deletes a job posting by ID.
-     *
-     * @param jobId the ID of the job to delete
-     */
-    public void deleteJob(UUID jobId) {
-        jobRepository.deleteById(jobId);
-    }
-
-    /**
-     * Returns full details of a job posting.
-     *
-     * @param jobId the ID of the job
-     * @return the job card DTO with detailed info
-     */
-    public JobCardDTO getJobDetails(UUID jobId) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        //return toDto(job);
-        return null;
-    }
-
-    private void updateEntity(Job job, JobFormDTO dto) {
-        // TODO: implement field mappings
-    }
-
-    /**
-     * Returns a paginated list of jobs that are marked as published and available for applicants to apply to.
-     *
-     * @param pageDTO contains the page number and size for pagination
-     * @return a {@link Page} of {@link JobCardDTO} objects representing available jobs as cards
-     */
-    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO) {
-        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
-        return jobRepository.findAllJobCardsByState(JobState.PUBLISHED, pageable);
-    }
-
-    /**
-     * Returns a paginated list of jobs created by a specific professor.
-     *
-     * @param userId  the UUID of the professor (user)
-     * @param pageDTO contains the page number and size for pagination
-     * @return a {@link Page} of {@link CreatedJobDTO} objects representing the professor's created jobs
-     */
-    public Page<CreatedJobDTO> getJobsByProfessor(UUID userId, PageDTO pageDTO) {
-        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
-        return jobRepository.findAllJobsByProfessor(userId, pageable);
+        Job createdJob = jobRepository.save(job);
+        return JobFormDTO.getFromEntity(createdJob);
     }
 }

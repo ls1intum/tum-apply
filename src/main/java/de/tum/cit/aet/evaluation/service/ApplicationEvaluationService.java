@@ -95,12 +95,21 @@ public class ApplicationEvaluationService {
             filterDTO.getFilters()
         );
 
+        // Calculate how many items to include before and after the target application
         int half = (int) Math.floor((double) windowSize / 2);
+
+        // Compute the start index for the window (ensure it's not negative)
         int start = Math.max((int) idx - half, 0);
+
+        // Compute the end index (exclusive), ensuring we don't exceed the total records
         int end = Math.min((int) idx + half + 1, (int) totalRecords);
+
+        // Determine the position of the target application within the returned window list
         int windowIndex = (int) idx - start;
 
+        // Create a Pageable with an offset (start index), limit (window size), and the sort criteria
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
+
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters());
         return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx, windowIndex);
     }

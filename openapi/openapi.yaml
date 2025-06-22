@@ -11,7 +11,7 @@
     }
   ],
   "paths": {
-    "/api/jobs/jobform/{jobId}": {
+    "/api/jobs/update/{jobId}": {
       "put": {
         "tags": [
           "job-resource"
@@ -32,7 +32,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/JobDetailDTO"
+                "$ref": "#/components/schemas/JobFormDTO"
               }
             }
           },
@@ -44,7 +44,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JobCardDTO"
+                  "$ref": "#/components/schemas/JobFormDTO"
                 }
               }
             }
@@ -152,7 +152,75 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/upload-documents/{applicationId}/{documentType}": {
+      "post": {
+        "tags": [
+          "application-resource"
+        ],
+        "summary": "Upload documents",
+        "operationId": "uploadDocuments",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BACHELOR_TRANSCRIPT",
+                "MASTER_TRANSCRIPT",
+                "REFERENCE",
+                "CV",
+                "CUSTOM"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipartUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
           }
         }
       }
@@ -177,12 +245,12 @@
         }
       }
     },
-    "/api/jobs/{jobId}/details": {
+    "/api/jobs/{jobId}": {
       "get": {
         "tags": [
           "job-resource"
         ],
-        "operationId": "getJobDetails",
+        "operationId": "getJobById",
         "parameters": [
           {
             "name": "jobId",
@@ -200,10 +268,32 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JobCardDTO"
+                  "$ref": "#/components/schemas/JobDTO"
                 }
               }
             }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "deleteJob",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -242,6 +332,48 @@
               "type": "integer",
               "format": "int32",
               "minimum": 0
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -284,6 +416,77 @@
               "type": "integer",
               "format": "int32",
               "minimum": 0
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldOfStudies",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GARCHING",
+                "GARCHING_HOCHBRUECK",
+                "HEILBRONN",
+                "MUNICH",
+                "STRAUBING",
+                "WEIHENSTEPHAN",
+                "SINGAPORE"
+              ]
+            }
+          },
+          {
+            "name": "professorName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workload",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -763,6 +966,37 @@
         }
       }
     },
+    "/api/applications/getDocumentIds/{applicationId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getDocumentDictionaryIds",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDocumentIdsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications/applicant/{applicantId}": {
       "get": {
         "tags": [
@@ -797,54 +1031,25 @@
           }
         }
       }
-    },
-    "/api/jobs/{jobId}": {
-      "delete": {
-        "tags": [
-          "job-resource"
-        ],
-        "operationId": "deleteJob",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
-      "JobDetailDTO": {
+      "JobFormDTO": {
         "type": "object",
         "properties": {
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "supervisingProfessor": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "researchGroup": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "fieldOfStudies": {
+          "title": {
             "type": "string"
           },
           "researchArea": {
             "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "supervisingProfessor": {
+            "type": "string",
+            "format": "uuid"
           },
           "location": {
             "type": "string",
@@ -857,6 +1062,10 @@
               "WEIHENSTEPHAN",
               "SINGAPORE"
             ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
           },
           "workload": {
             "type": "integer",
@@ -878,9 +1087,6 @@
               "RESEARCH_GRANT"
             ]
           },
-          "title": {
-            "type": "string"
-          },
           "description": {
             "type": "string"
           },
@@ -898,46 +1104,14 @@
               "CLOSED",
               "APPLICANT_FOUND"
             ]
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "JobCardDTO": {
-        "type": "object",
-        "properties": {
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "fieldOfStudies": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          },
-          "professorName": {
-            "type": "string"
-          },
-          "workload": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "relativeTime": {
-            "type": "string"
           }
         },
         "required": [
-          "jobId"
+          "fundingType",
+          "location",
+          "state",
+          "supervisingProfessor",
+          "title"
         ]
       },
       "ApplicantDTO": {
@@ -1173,9 +1347,147 @@
       "DocumentDTO": {
         "type": "object"
       },
-      "JobFormDTO": {
+      "JobCardDTO": {
         "type": "object",
         "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "professorName": {
+            "type": "string"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "relativeTime": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "title"
+        ]
+      },
+      "CreateApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "applicant": {
+            "$ref": "#/components/schemas/ApplicantDTO"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "applicant",
+          "applicationState",
+          "jobId"
+        ]
+      },
+      "MultipartUploadRequest": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "format": "binary",
+            "description": "List of documents to upload",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "templated": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UserShortDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "APPLICANT",
+                "PROFESSOR",
+                "ADMIN"
+              ]
+            }
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
+      },
+      "JobDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "title": {
             "type": "string"
           },
@@ -1245,84 +1557,11 @@
           }
         },
         "required": [
-          "fundingType",
-          "location",
+          "jobId",
           "state",
-          "supervisingProfessor"
+          "supervisingProfessor",
+          "title"
         ]
-      },
-      "CreateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantDTO"
-          },
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicant",
-          "applicationState",
-          "jobId"
-        ]
-      },
-      "UserShortDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "APPLICANT",
-                "PROFESSOR",
-                "ADMIN"
-              ]
-            }
-          },
-          "researchGroup": {
-            "$ref": "#/components/schemas/ResearchGroupShortDTO"
-          }
-        }
       },
       "CreatedJobDTO": {
         "type": "object",
@@ -1363,7 +1602,8 @@
           }
         },
         "required": [
-          "jobId"
+          "jobId",
+          "title"
         ]
       },
       "PageCreatedJobDTO": {
@@ -1733,6 +1973,39 @@
           },
           "timeSinceCreation": {
             "type": "string"
+          }
+        }
+      },
+      "ApplicationDocumentIdsDTO": {
+        "type": "object",
+        "properties": {
+          "bachelorDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "masterDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "referenceDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "cvDocumentDictionaryId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       }
