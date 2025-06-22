@@ -26,8 +26,7 @@ export class KeycloakService {
    */
   async init(): Promise<boolean> {
     const options: KeycloakInitOptions = {
-      onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+      onLoad: 'login-required',
       checkLoginIframe: false,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
