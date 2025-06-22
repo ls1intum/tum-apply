@@ -29,7 +29,6 @@ export class KeycloakService {
     console.warn('🔁 Keycloak URL:', environment.keycloak.url);
     const options: KeycloakInitOptions = {
       onLoad: 'login-required',
-      //silentCheckSsoRedirectUri: 'https://tumapply.aet.cit.tum.de' + '/assets/silent-check-sso.html',
       checkLoginIframe: false,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
