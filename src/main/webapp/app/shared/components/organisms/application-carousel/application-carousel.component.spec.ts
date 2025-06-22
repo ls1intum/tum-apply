@@ -7,13 +7,10 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faBriefcase, faCheck, faChevronLeft, faChevronRight, faCommentAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ApplicationEvaluationDetailDTO,
-  ApplicationEvaluationOverviewDTO,
-  ApplicationEvaluationResourceService,
-} from '../../../../generated';
-
 import { ApplicationCarouselComponent } from './application-carousel.component';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/applicationEvaluationOverviewDTO';
+import { ApplicationEvaluationResourceService } from 'app/generated/api/applicationEvaluationResource.service';
 
 @Component({
   selector: 'jhi-application-card',

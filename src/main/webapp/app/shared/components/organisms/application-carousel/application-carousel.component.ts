@@ -6,13 +6,12 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
-import {
-  ApplicationEvaluationDetailDTO,
-  ApplicationEvaluationDetailListDTO,
-  ApplicationEvaluationResourceService,
-} from '../../../../generated';
+
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { ApplicationEvaluationResourceService } from 'app/generated/api/applicationEvaluationResource.service';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicationEvaluationDetailListDTO';
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;
