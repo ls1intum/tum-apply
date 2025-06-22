@@ -2,12 +2,12 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.dto.FilterDTO;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
+import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
 import de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
@@ -42,7 +42,7 @@ public class ApplicationEvaluationService {
      * @param researchGroup the {@link ResearchGroup} whose applications are to be fetched
      * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination information (offset and limit)
      * @param sortDTO the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO the {@link FilterDTO} specifying dynamic filters to apply
+     * @param filterDTO the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return an {@link ApplicationEvaluationOverviewListDTO} containing application overviews
      * and the total number of matching records
      */
@@ -50,7 +50,7 @@ public class ApplicationEvaluationService {
         ResearchGroup researchGroup,
         OffsetPageDTO offsetPageDTO,
         SortDTO sortDTO,
-        FilterDTO filterDTO
+        EvaluationFilterDTO filterDTO
     ) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
 
@@ -69,7 +69,7 @@ public class ApplicationEvaluationService {
      * @param windowSize the desired size of the window (must be positive and odd)
      * @param researchGroup the {@link ResearchGroup} whose applications are to be fetched
      * @param sortDTO the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO the {@link FilterDTO} specifying dynamic filters to apply
+     * @param filterDTO the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications in the window,
      *         total record count, the index of the target application, and its position in the window
      * @throws IllegalArgumentException if the window size is not a positive odd integer
@@ -79,7 +79,7 @@ public class ApplicationEvaluationService {
         Integer windowSize,
         ResearchGroup researchGroup,
         SortDTO sortDTO,
-        FilterDTO filterDTO
+        EvaluationFilterDTO filterDTO
     ) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters());
@@ -111,14 +111,14 @@ public class ApplicationEvaluationService {
      * @param researchGroup the {@link ResearchGroup} whose applications are to be fetched
      * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination information (offset and limit)
      * @param sortDTO the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO the {@link FilterDTO} specifying dynamic filters to apply
+     * @param filterDTO the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications and total record count
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetails(
         ResearchGroup researchGroup,
         OffsetPageDTO offsetPageDTO,
         SortDTO sortDTO,
-        FilterDTO filterDTO
+        EvaluationFilterDTO filterDTO
     ) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
 
