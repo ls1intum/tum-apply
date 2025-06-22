@@ -1,6 +1,6 @@
 <div class="doctorate-form-container">
   <header>
-    <h1>Create a new Doctorate Position</h1>
+    <h1>{{ pageTitle() }}</h1>
   </header>
   <div class="stepper">
     <div (click)="currentStep = 1" [ngClass]="{ active: currentStep === 1, completed: currentStep > 1 }" class="step">
@@ -19,7 +19,7 @@
     </div>
   </div>
   <!-- Step 1: Basic Information -->
-  @if (currentStep === 1) {
+  @if (currentStep === 1 && !isLoading()) {
     <div class="form-step">
       <form [formGroup]="basicInfoForm">
         <h2>Basic Information</h2>

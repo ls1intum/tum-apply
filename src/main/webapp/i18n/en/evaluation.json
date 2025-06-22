@@ -14,6 +14,7 @@
       "ACCEPTED": "Approved",
       "REJECTED": "Rejected",
       "IN_REVIEW": "In Review"
-    }
+    },
+    "noApplicationsFound": "No applications found."
   }
 }

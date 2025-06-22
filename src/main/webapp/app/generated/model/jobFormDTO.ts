@@ -10,7 +10,7 @@
 
 
 export interface JobFormDTO { 
-    title?: string;
+    title: string;
     researchArea?: string;
     fieldOfStudies?: string;
     supervisingProfessor: string;
