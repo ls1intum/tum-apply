@@ -8,9 +8,7 @@ import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
-import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
-import { ApplicationEvaluationResourceService } from '../../generated/api/applicationEvaluationResource.service';
-import { ApplicationEvaluationDetailDTO } from '../../generated/model/applicationEvaluationDetailDTO';
+import { ApplicationEvaluationDetailDTO, ApplicationEvaluationDetailListDTO, ApplicationEvaluationResourceService } from '../../generated';
 
 const WINDOW_SIZE = 7;
 

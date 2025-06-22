@@ -4,6 +4,8 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/applicationEvaluationOverviewDTO';
+import { ApplicationEvaluationResourceService } from 'app/generated/api/applicationEvaluationResource.service';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
@@ -13,8 +15,6 @@ import { sortOptions } from '../filterSortOptions';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { FilterField } from '../../shared/filter';
-import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/applicationEvaluationOverviewDTO';
-import { ApplicationEvaluationResourceService } from 'app/generated/api/applicationEvaluationResource.service';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -173,8 +173,8 @@ export class ApplicationOverviewComponent {
           limit,
           sortBy,
           direction,
-          // TODO statusFilters.length ? statusFilters : undefined,
-          // jobFilters.length ? jobFilters : undefined,
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
         ),
       );
 

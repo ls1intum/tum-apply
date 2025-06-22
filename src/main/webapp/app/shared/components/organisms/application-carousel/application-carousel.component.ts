@@ -7,7 +7,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO'; // Constants defining the default visible slots and application window size
+import { ApplicationEvaluationDetailDTO } from '../../../../generated';
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;

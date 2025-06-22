@@ -4,8 +4,10 @@ import de.tum.cit.aet.core.dto.AbstractFilterDTO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 @Setter
 public class EvaluationFilterDTO implements AbstractFilterDTO {
 
