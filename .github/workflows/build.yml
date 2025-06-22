@@ -30,17 +30,9 @@ on:
       - created
 
 jobs:
-  debug-vars:
-    runs-on: ubuntu-latest
-    environment: test-server
-    steps:
-      - name: Output non-sensitive ENV vars for debugging
-        run: |
-          echo "KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}"
   build:
     name: Build and Push
     runs-on: ubuntu-latest
-    needs: debug-vars
     environment: test-server
     steps:
       - name: Checkout
