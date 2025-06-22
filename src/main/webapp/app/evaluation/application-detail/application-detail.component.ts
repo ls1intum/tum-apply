@@ -2,6 +2,7 @@ import { Component, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
@@ -16,7 +17,7 @@ const WINDOW_SIZE = 7;
 
 @Component({
   selector: 'jhi-application-detail',
-  imports: [ApplicationCarouselComponent, FilterSortBarComponent, RatingComponent, ApplicationDetailCardComponent],
+  imports: [ApplicationCarouselComponent, FilterSortBarComponent, RatingComponent, ApplicationDetailCardComponent, TranslateModule],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
 })

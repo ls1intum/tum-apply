@@ -4,6 +4,8 @@
     [filterFields]="filters()"
     [sortOptions]="sortOptions"
     (filterChange)="onFilterChange($event)"
+    [singleEntity]="'evaluation.application' | translate"
+    [multipleEntities]="'evaluation.applications' | translate"
   />
   <jhi-application-carousel
     [totalRecords]="totalRecords()"

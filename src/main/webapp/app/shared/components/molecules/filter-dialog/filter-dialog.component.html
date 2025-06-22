@@ -7,12 +7,12 @@
           variant="text"
           [label]="'entity.filters.clear' | translate"
           (click)="resetField(filterField)"
-          [disabled]="(filterField.selected?.length ?? 0) < 1"
+          [disabled]="isClearDisabled(filterField)()"
         />
       </div>
       <jhi-filter-select
         [options]="filterField.options"
-        [preSelected]="filterField.selected ?? undefined"
+        [preSelected]="filterField.selected"
         (selectionChange)="onSelectionChange(filterField, $event)"
       />
     </div>

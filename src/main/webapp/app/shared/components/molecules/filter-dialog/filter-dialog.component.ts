@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, computed, effect, input, model, output, signal } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, computed, effect, input, model, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
@@ -38,10 +38,11 @@ export class FilterDialogComponent {
     // Clone filters to draft when dialog opens to avoid mutating input directly
     effect(() => {
       if (this.visible()) {
-        this.draftFields.set(this._filterFields().map(f => new FilterField(f.translationKey, f.field, f.options, f.selected)));
+        this.draftFields.set(this._filterFields().map(f => f.clone()));
       }
     });
   }
+  readonly isClearDisabled = (filterField: FilterField): Signal<boolean> => computed((): boolean => filterField.selected.length < 1);
 
   // Clears selection for a single field
   resetField(field: FilterField): void {
