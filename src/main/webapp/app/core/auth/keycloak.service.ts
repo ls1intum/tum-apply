@@ -16,9 +16,9 @@ export class KeycloakService {
   profile: UserProfile | undefined;
 
   private readonly keycloak = new Keycloak({
-    url: environment.keycloak.url,
-    realm: environment.keycloak.realm,
-    clientId: environment.keycloak.clientId,
+    url: 'https://keycloak.aet.cit.tum.de/',
+    realm: 'external_login',
+    clientId: 'tumapply-client',
   });
 
   /**
@@ -29,7 +29,7 @@ export class KeycloakService {
     console.warn('🔁 Keycloak URL:', environment.keycloak.url);
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+      silentCheckSsoRedirectUri: 'https://tumapply.aet.cit.tum.de' + '/assets/silent-check-sso.html',
       checkLoginIframe: false,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
