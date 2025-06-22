@@ -5,10 +5,12 @@ import { firstValueFrom } from 'rxjs';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
-import { ApplicationEvaluationDetailDTO, ApplicationEvaluationDetailListDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
+import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
+import { ApplicationEvaluationResourceService } from '../../generated/api/applicationEvaluationResource.service';
+import { ApplicationEvaluationDetailDTO } from '../../generated/model/applicationEvaluationDetailDTO';
 
 const WINDOW_SIZE = 7;
 
@@ -239,7 +241,7 @@ export class ApplicationDetailComponent {
     const baseParams: Params = {
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
-      applicationId: this.currentApplication()?.applicationId,
+      applicationId: this.currentApplication()?.applicationDetailDTO.applicationId,
     };
 
     const filterParams: Params = {};

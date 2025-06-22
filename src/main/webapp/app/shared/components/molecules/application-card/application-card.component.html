@@ -2,10 +2,10 @@
   @if (!placeholder()) {
     <!-- Header -->
     <div class="header">
-      <p class="name">{{ application()?.applicant?.user?.name }}</p>
+      <p class="name">{{ applicationDetails()?.applicant?.user?.name }}</p>
       <jhi-tag
-        [text]="'evaluation.statusBadge.' + (application()?.state || '') | translate"
-        [color]="stateSeverityMap[application()?.state!] || 'info'"
+        [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
+        [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
       />
     </div>
 
@@ -13,7 +13,7 @@
     <div class="job">
       <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
       <span class="job-title">
-        {{ application()?.jobName }}
+        {{ applicationDetails()?.jobTitle }}
       </span>
     </div>
 

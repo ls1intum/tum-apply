@@ -322,6 +322,608 @@
         }
       }
     },
+    "/management": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator root web endpoint",
+        "operationId": "links",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/threaddump": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027threaddump\u0027",
+        "operationId": "threadDump",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain;charset\u003dUTF-8": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/prometheus": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027prometheus\u0027",
+        "operationId": "scrape",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CONTENT_TYPE_004",
+                "CONTENT_TYPE_OPENMETRICS_100"
+              ]
+            }
+          },
+          {
+            "name": "includedNames",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain;version\u003d0.0.4;charset\u003dutf-8": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/openmetrics-text;version\u003d1.0.0;charset\u003dutf-8": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/loggers": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027loggers\u0027",
+        "operationId": "loggers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/liquibase": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027liquibase\u0027",
+        "operationId": "liquibaseBeans",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/jhiopenapigroups": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027jhiopenapigroups\u0027",
+        "operationId": "allOpenApi",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/jhimetrics": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027jhimetrics\u0027",
+        "operationId": "allMetrics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/info": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027info\u0027",
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/health": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027health\u0027",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/env": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027env\u0027",
+        "operationId": "environment",
+        "parameters": [
+          {
+            "name": "pattern",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/env/{toMatch}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027env-toMatch\u0027",
+        "operationId": "environmentEntry",
+        "parameters": [
+          {
+            "name": "toMatch",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/management/configprops": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027configprops\u0027",
+        "operationId": "configurationProperties",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/configprops/{prefix}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027configprops-prefix\u0027",
+        "operationId": "configurationPropertiesWithPrefix",
+        "parameters": [
+          {
+            "name": "prefix",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/management/caches": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches\u0027",
+        "operationId": "caches",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches\u0027",
+        "operationId": "clearCaches",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/management/caches/{cache}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches-cache\u0027",
+        "operationId": "cache",
+        "parameters": [
+          {
+            "name": "cache",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cacheManager",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches-cache\u0027",
+        "operationId": "clearCache",
+        "parameters": [
+          {
+            "name": "cache",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cacheManager",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/api/users/me": {
       "get": {
         "tags": [
@@ -594,214 +1196,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageJobCardDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/evaluation/jobs": {
-      "get": {
-        "tags": [
-          "application-evaluation-resource"
-        ],
-        "operationId": "getJobFilterOptions",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/JobFilterOptionDTO"
-                  },
-                  "uniqueItems": true
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/evaluation/applications": {
-      "get": {
-        "tags": [
-          "application-evaluation-resource"
-        ],
-        "operationId": "getApplicationsOverviews",
-        "parameters": [
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "direction",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationEvaluationOverviewListDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/evaluation/application-details": {
-      "get": {
-        "tags": [
-          "application-evaluation-resource"
-        ],
-        "operationId": "getApplicationsDetails",
-        "parameters": [
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "direction",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationEvaluationDetailListDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/evaluation/application-details/window": {
-      "get": {
-        "tags": [
-          "application-evaluation-resource"
-        ],
-        "operationId": "getApplicationsDetailsWindow",
-        "parameters": [
-          {
-            "name": "applicationId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "windowSize",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "direction",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationEvaluationDetailListDTO"
                 }
               }
             }
@@ -1671,13 +2065,19 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1703,12 +2103,6 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "empty": {
             "type": "boolean"
           }
@@ -1724,6 +2118,9 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "paged": {
+            "type": "boolean"
+          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
@@ -1731,9 +2128,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "paged": {
-            "type": "boolean"
           },
           "unpaged": {
             "type": "boolean"
@@ -1757,13 +2151,19 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1789,225 +2189,10 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "empty": {
             "type": "boolean"
           }
         }
-      },
-      "JobFilterOptionDTO": {
-        "type": "object",
-        "properties": {
-          "jobName": {
-            "type": "string"
-          },
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
-      },
-      "ApplicationEvaluationOverviewDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "state": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "jobName": {
-            "type": "string"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "appliedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ApplicationEvaluationOverviewListDTO": {
-        "type": "object",
-        "properties": {
-          "applications": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ApplicationEvaluationOverviewDTO"
-            }
-          },
-          "totalRecords": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "ApplicantEvaluationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserEvaluationDetailDTO"
-          },
-          "bachelorDegreeName": {
-            "type": "string"
-          },
-          "bachelorGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "bachelorGrade": {
-            "type": "string"
-          },
-          "bachelorUniversity": {
-            "type": "string"
-          },
-          "masterDegreeName": {
-            "type": "string"
-          },
-          "masterGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "masterGrade": {
-            "type": "string"
-          },
-          "masterUniversity": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "user"
-        ]
-      },
-      "ApplicationEvaluationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantEvaluationDetailDTO"
-          },
-          "state": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "jobName": {
-            "type": "string"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "appliedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "applicationId",
-          "state"
-        ]
-      },
-      "ApplicationEvaluationDetailListDTO": {
-        "type": "object",
-        "properties": {
-          "applications": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ApplicationEvaluationDetailDTO"
-            }
-          },
-          "totalRecords": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "currentIndex": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "windowIndex": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "UserEvaluationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "email",
-          "name"
-        ]
       },
       "ApplicantForApplicationDetailDTO": {
         "type": "object",
@@ -2106,16 +2291,16 @@
           "avatar": {
             "type": "string"
           },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
+          "name": {
             "type": "string"
           },
           "gender": {
             "type": "string"
           },
           "nationality": {
+            "type": "string"
+          },
+          "preferredLanguage": {
             "type": "string"
           },
           "birthday": {

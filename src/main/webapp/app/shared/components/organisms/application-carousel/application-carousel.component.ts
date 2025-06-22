@@ -5,9 +5,9 @@ import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated';
 import { ButtonComponent } from '../../atoms/button/button.component';
-import TranslateDirective from '../../../language/translate.directive'; // Constants defining the default visible slots and application window size
+import TranslateDirective from '../../../language/translate.directive';
+import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO'; // Constants defining the default visible slots and application window size
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;

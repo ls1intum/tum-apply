@@ -15,19 +15,21 @@ import { faBriefcase, faCheck, faCommentAlt, faXmark } from '@fortawesome/free-s
 import { TagComponent } from '../../atoms/tag/tag.component';
 import { RatingComponent } from '../../atoms/rating/rating.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated';
 
 import { ApplicationCardComponent } from './application-card.component';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 
 describe('ApplicationCardComponent', () => {
   let component: ApplicationCardComponent;
   let fixture: ComponentFixture<ApplicationCardComponent>;
 
   const mockApplication: ApplicationEvaluationDetailDTO = {
-    applicationId: '123',
-    jobName: 'AI Researcher',
+    applicationDetailDTO: {
+      applicationId: '123',
+      applicationState: 'SENT',
+    },
+    jobTitle: 'AI Researcher',
     rating: 4,
-    state: 'SENT',
   } as ApplicationEvaluationDetailDTO;
 
   beforeEach(async () => {
