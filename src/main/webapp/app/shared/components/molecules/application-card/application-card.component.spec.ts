@@ -24,10 +24,12 @@ describe('ApplicationCardComponent', () => {
   let fixture: ComponentFixture<ApplicationCardComponent>;
 
   const mockApplication: ApplicationEvaluationDetailDTO = {
-    applicationId: '123',
-    jobName: 'AI Researcher',
+    applicationDetailDTO: {
+      applicationId: '123',
+      applicationState: 'SENT',
+    },
+    jobTitle: 'AI Researcher',
     rating: 4,
-    state: 'SENT',
   } as ApplicationEvaluationDetailDTO;
 
   beforeEach(async () => {
