@@ -354,12 +354,11 @@ public class ApplicationService {
      * @param applicationId
      * @return ApplicationDetailDTO for application id
      */
-    @Transactional
     public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
-        Application application = applicationRepository.getReferenceById(applicationId);
+        Application application = applicationRepository.findById(applicationId).orElseThrow();
 
         return ApplicationDetailDTO.getFromEntity(application);
     }
