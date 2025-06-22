@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -42,12 +42,33 @@ export class ApplicationDetailComponent {
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
   constructor() {
-    if (this.currentApplication()) {
-      // TODO: Load window centered around given application
+    void this.init();
+  }
+
+  async init(): Promise<void> {
+    effect(() => {
+      const qp = this.qpSignal();
+      this.sortBy.set(qp.get('sortBy') ?? this.sortOptions[0].field);
+      const rawSD = qp.get('sortDir');
+      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+    });
+    void this.initFilterFields();
+    await this.initFilterFields();
+
+    const id = this.qpSignal().get('applicationId');
+    if (id) {
+      void this.loadWindow(id);
     } else {
       // Load initial batch of applications
       void this.loadInitialPage();
     }
+  }
+
+  async initFilterFields(): Promise<void> {
+    const filters = await this.evaluationService.getFilterFields();
+    const params = this.qpSignal();
+    filters.forEach(filter => filter.withSelectionFromParam(params));
+    this.filters.set(filters);
   }
 
   // Navigate to next application
@@ -56,6 +77,8 @@ export class ApplicationDetailComponent {
 
     this.currentIndex.update(v => v + 1);
     this.windowIndex.update(v => v + 1);
+    const nextApp = this.applications()[this.windowIndex()];
+    this.currentApplication.set(nextApp);
 
     if (this.currentIndex() + this.half < this.totalRecords()) {
       // Load next item if within bounds
@@ -64,6 +87,7 @@ export class ApplicationDetailComponent {
       // Otherwise update the visible window
       this.updateApplications();
     }
+    this.updateUrlQueryParams();
   }
 
   // Navigate to previous application
@@ -72,6 +96,8 @@ export class ApplicationDetailComponent {
 
     this.currentIndex.update(v => v - 1);
     this.windowIndex.update(v => v - 1);
+    const prevApp = this.applications()[this.windowIndex()];
+    this.currentApplication.set(prevApp);
 
     if (this.currentIndex() - this.half >= 0) {
       // Load previous item if within bounds
@@ -80,6 +106,12 @@ export class ApplicationDetailComponent {
       // Otherwise update the visible window
       this.updateApplications();
     }
+    this.updateUrlQueryParams();
+  }
+
+  onFilterChange(filters: FilterField[]): void {
+    this.filters.set(filters);
+    void this.loadInitialPage();
   }
 
   /**
@@ -88,11 +120,46 @@ export class ApplicationDetailComponent {
    */
   private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {
     try {
+      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
+      const statusFilters = Array.from(filtersByKey['status'] ?? []);
+      const jobFilters = Array.from(filtersByKey['job'] ?? []);
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
-        this.evaluationResourceService.getApplicationsDetails(offset, limit, this.sortBy(), this.sortDirection()),
+        this.evaluationResourceService.getApplicationsDetails(
+          offset,
+          limit,
+          this.sortBy(),
+          this.sortDirection(),
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
+        ),
       );
       this.totalRecords.set(res.totalRecords ?? 0);
       return res.applications ?? undefined;
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+      return undefined;
+    }
+  }
+
+  private async loadWindow(applicationId: string): Promise<void> {
+    try {
+      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
+      const statusFilters = Array.from(filtersByKey['status'] ?? []);
+      const jobFilters = Array.from(filtersByKey['job'] ?? []);
+      const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
+        this.evaluationResourceService.getApplicationsDetailsWindow(
+          applicationId,
+          WINDOW_SIZE,
+          this.sortBy(),
+          this.sortDirection(),
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
+        ),
+      );
+      this.totalRecords.set(res.totalRecords ?? 0);
+      this.applications.set(res.applications ?? []);
+      this.windowIndex.set(res.windowIndex ?? 0);
+      this.currentIndex.set(res.currentIndex ?? 0);
     } catch (error) {
       console.error('Failed to load applications:', error);
       return undefined;
@@ -139,7 +206,11 @@ export class ApplicationDetailComponent {
   private async loadInitialPage(): Promise<void> {
     const data = await this.loadPage(0, this.half + 1);
     if (data) {
+      this.currentIndex.set(0);
+      this.windowIndex.set(0);
       this.applications.set(data);
+      this.currentApplication.set(data[0]);
+      this.updateUrlQueryParams();
     }
   }
 
@@ -168,6 +239,7 @@ export class ApplicationDetailComponent {
     const baseParams: Params = {
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
+      applicationId: this.currentApplication()?.applicationId,
     };
 
     const filterParams: Params = {};
@@ -186,7 +258,7 @@ export class ApplicationDetailComponent {
 
   private updateUrlQueryParams(): void {
     const qp: Params = this.buildQueryParams();
-    this.router.navigate([], {
+    void this.router.navigate([], {
       queryParams: qp,
       queryParamsHandling: 'merge',
       replaceUrl: true,

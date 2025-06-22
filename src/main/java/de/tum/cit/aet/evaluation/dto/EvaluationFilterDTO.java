@@ -4,7 +4,9 @@ import de.tum.cit.aet.core.dto.AbstractFilterDTO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Setter;
 
+@Setter
 public class EvaluationFilterDTO implements AbstractFilterDTO {
 
     private List<String> status;

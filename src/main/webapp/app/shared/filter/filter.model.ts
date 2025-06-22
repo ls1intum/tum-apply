@@ -1,3 +1,5 @@
+import { ParamMap } from '@angular/router';
+
 export interface IFilterField {
   translationKey: string;
   field: string;
@@ -24,6 +26,15 @@ export class FilterField implements IFilterField {
     this.selected = selected;
   }
 
+  clone(): FilterField {
+    return new FilterField(
+      this.translationKey,
+      this.field,
+      this.options.map(opt => opt.clone()),
+      this.selected.map(sel => sel.clone()),
+    );
+  }
+
   getQueryParamEntry(): [string, string] | null {
     if (this.selected.length === 0) {
       return null;
@@ -34,12 +45,20 @@ export class FilterField implements IFilterField {
   }
 
   /**
-   * Creates a new FilterField with selection set based on a param string (e.g. "IN_REVIEW,ACCEPTED")
+   * Creates a new FilterField with selection set based on a ParamMap
    */
-  withSelectionFromParam(param: string): FilterField {
-    const paramValues = param.split(',').map(v => decodeURIComponent(v.trim()));
+  withSelectionFromParam(paramMap: ParamMap): void {
+    const raw = paramMap.get(this.field);
+    if (!raw) {
+      return;
+    }
+
+    const paramValues = raw
+      .split(',')
+      .map(v => decodeURIComponent(v.trim()))
+      .filter(v => v.length > 0);
     const matched = this.options.filter(opt => paramValues.includes(opt.field));
-    return this.withSelection(matched);
+    this.selected = matched;
   }
 
   resetSelection(): FilterField {
@@ -63,5 +82,9 @@ export class FilterOption implements IFilterOption {
     this.displayName = displayName;
     this.field = field;
     this.translationKey = translationKey;
+  }
+
+  clone(): FilterOption {
+    return new FilterOption(this.displayName, this.field, this.translationKey);
   }
 }

@@ -72,7 +72,6 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
-  protected filterFields: FilterField[] = [];
   protected readonly sortOptions = sortOptions;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
@@ -101,7 +100,10 @@ export class ApplicationOverviewComponent {
   }
 
   async initFilterFields(): Promise<void> {
-    this.filterFields = await this.evaluationService.getFilterFields();
+    const filters = await this.evaluationService.getFilterFields();
+    const params = this.qpSignal();
+    filters.forEach(filter => filter.withSelectionFromParam(params));
+    this.filters.set(filters);
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -135,6 +137,24 @@ export class ApplicationOverviewComponent {
     void this.loadPage();
   }
 
+  navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
+    const queryParams: Record<string, any> = {
+      sortBy: this.sortBy(),
+      sortDirection: this.sortDirection(),
+      applicationId: application.applicationId,
+    };
+
+    this.filters().forEach(filter => {
+      if (filter.selected.length > 0) {
+        queryParams[filter.field] = filter.selected.map(opt => encodeURIComponent(opt.field)).join(',');
+      }
+    });
+
+    void this.router.navigate(['/evaluation/application'], {
+      queryParams,
+    });
+  }
+
   async loadPage(): Promise<void> {
     try {
       const offset = this.pageSize() * this.page();
@@ -142,20 +162,9 @@ export class ApplicationOverviewComponent {
       const sortBy = this.sortBy();
       const direction = this.sortDirection();
 
-      const statusFilters: string[] = [];
-      const jobFilters: string[] = [];
-      this.filters().forEach(f => {
-        const entry = f.getQueryParamEntry();
-        if (!entry) {
-          return;
-        }
-        const [key, value] = entry;
-        if (key === 'status') {
-          statusFilters.push(value);
-        } else if (key === 'job') {
-          jobFilters.push(value);
-        }
-      });
+      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
+      const statusFilters = Array.from(filtersByKey['status'] ?? []);
+      const jobFilters = Array.from(filtersByKey['job'] ?? []);
 
       const res = await firstValueFrom(
         this.evaluationResourceService.getApplicationsOverviews(
@@ -203,7 +212,7 @@ export class ApplicationOverviewComponent {
 
   private updateUrlQueryParams(): void {
     const qp: Params = this.buildQueryParams();
-    this.router.navigate([], {
+    void this.router.navigate([], {
       queryParams: qp,
       queryParamsHandling: 'merge',
       replaceUrl: true,

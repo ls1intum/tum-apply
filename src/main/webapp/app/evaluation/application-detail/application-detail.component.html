@@ -1,5 +1,10 @@
 <div class="body">
-  <jhi-filter-sort-bar [totalRecords]="totalRecords()" [filterFields]="filters()" [sortOptions]="sortOptions" />
+  <jhi-filter-sort-bar
+    [totalRecords]="totalRecords()"
+    [filterFields]="filters()"
+    [sortOptions]="sortOptions"
+    (filterChange)="onFilterChange($event)"
+  />
   <jhi-application-carousel
     [totalRecords]="totalRecords()"
     [applications]="applications()"
