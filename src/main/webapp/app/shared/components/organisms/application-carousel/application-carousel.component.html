@@ -1,10 +1,10 @@
 <div class="carousel">
   <!-- ◄ navigation -->
-  <jhi-button class="nav nav-left" aria-label="Previous" icon="chevron-left" (click)="prev()" [disabled]="isStart()" />
+  <jhi-button class="nav nav-left" aria-label="Previous" icon="chevron-left" (click)="loadPrev()" [disabled]="isStart()" />
 
   <!-- cards (1 or 3) -->
   <div class="cards">
-    @if (totalCount() === 0) {
+    @if (totalRecords() === 0) {
       <p jhiTranslate="evaluation.noApplicationsFound">No Applications found.</p>
     } @else {
       @for (app of visibleApps(); track i; let i = $index) {
@@ -18,5 +18,5 @@
   </div>
 
   <!-- ► navigation -->
-  <jhi-button class="nav nav-right" aria-label="Next" icon="chevron-right" (click)="next()" [disabled]="isEnd()" />
+  <jhi-button class="nav nav-right" aria-label="Next" icon="chevron-right" (click)="loadNext()" [disabled]="isEnd()" />
 </div>

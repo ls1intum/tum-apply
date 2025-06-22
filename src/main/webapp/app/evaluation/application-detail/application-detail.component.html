@@ -1,3 +1,12 @@
 <div class="body">
-  <jhi-application-carousel />
+  <jhi-filter-sort-bar [totalRecords]="totalRecords()" [filterFields]="filters()" [sortOptions]="sortOptions" />
+  <jhi-application-carousel
+    [totalRecords]="totalRecords()"
+    [applications]="applications()"
+    [currentIndex]="currentIndex()"
+    [windowIndex]="windowIndex()"
+    [windowSize]="WINDOW_SIZE"
+    (next)="onNext()"
+    (prev)="onPrev()"
+  />
 </div>
