@@ -84,6 +84,8 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/manifest.webapp", "/robots.txt")
                     .permitAll()
+                    .requestMatchers("/assets/silent-check-sso.html")
+                    .permitAll()
                     .requestMatchers("/content/**", "/i18n/*.json", "/logo/*")
                     .permitAll()
                     // Information and health endpoints do not need authentication
