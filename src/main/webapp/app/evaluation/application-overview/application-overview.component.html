@@ -3,8 +3,6 @@
   <jhi-filter-sort-bar
     [totalRecords]="total()"
     [filterFields]="filters()"
-    [sortOptions]="sortOptions"
-    [preSelectedSortOption]="sortOptions[2]"
     (filterChange)="loadOnFilterEmit($event)"
     [singleEntity]="'evaluation.application' | translate"
     [multipleEntities]="'evaluation.applications' | translate"
