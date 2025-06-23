@@ -59,8 +59,7 @@ public class SecurityConfiguration {
                     // Sets Content Security Policy (CSP) directives to prevent XSS attacks.
                     .contentSecurityPolicy(csp -> csp.policyDirectives("script-src 'self' 'unsafe-inline' 'unsafe-eval'"))
                     // Prevents the website from being framed, avoiding clickjacking attacks.
-                    .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
-                    // Sets Referrer Policy to limit the amount of referrer information sent with requests.
+                    .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable) // Sets Referrer Policy to limit the amount of referrer information sent with requests.
                     .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
                     // Disables HTTP Strict Transport Security as it is managed at the reverse proxy level (typically nginx).
                     .httpStrictTransportSecurity((HeadersConfigurer.HstsConfig::disable))
@@ -84,7 +83,13 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/manifest.webapp", "/robots.txt")
                     .permitAll()
+                    .requestMatchers("/assets/**")
+                    .permitAll()
                     .requestMatchers("/content/**", "/i18n/*.json", "/logo/*")
+                    .permitAll()
+                    .requestMatchers("/media/**")
+                    .permitAll()
+                    .requestMatchers("/favicon.ico")
                     .permitAll()
                     // Information and health endpoints do not need authentication
                     .requestMatchers("/management/info", "/management/health")

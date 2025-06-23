@@ -55,7 +55,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9080/realms/tumapply
+          issuer-uri: https://keycloak.aet.cit.tum.de/realms/external_login
 springdoc:
   api-docs:
     enabled: true
