@@ -14,7 +14,6 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
 })
-
 export class StringInputComponent extends BaseInputDirective<string> {
   onInputChange(value: string): void {
     this.modelChange.emit(value);
