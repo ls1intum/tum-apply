@@ -1,8 +1,10 @@
 package de.tum.cit.aet.evaluation.web;
 
-import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.FilterDTO;
+import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationListDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.Valid;
@@ -10,10 +12,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/evaluation")
@@ -23,22 +22,72 @@ public class ApplicationEvaluationResource {
     private final ApplicationEvaluationService applicationEvaluationService;
 
     /**
-     * {@code GET /applications} : Retrieve a paginated and optionally sorted list of applications for a research group.
+     * REST endpoint to retrieve a paginated, sorted, and filtered list of application evaluation overviews
+     * for a research group.
      *
-     * @param pageDTO containing the number and size of applications per page (default is 25)
-     * @param sortDto containing the optional field and direction used for sorting the results
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing an
-     * {@link ApplicationEvaluationListDTO} with application overviews and total count
+     * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination (offset and limit) information
+     * @param sortDto the {@link SortDTO} specifying sorting criteria
+     * @param filterDto the {@link FilterDTO} specifying dynamic filters to apply
+     * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationOverviewListDTO}
      */
     @GetMapping("/applications")
-    public ResponseEntity<ApplicationEvaluationListDTO> getApplications(
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @ParameterObject @ModelAttribute SortDTO sortDto
+    public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplicationsOverviews(
+        @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
+        @ParameterObject @ModelAttribute SortDTO sortDto,
+        @ParameterObject @ModelAttribute FilterDTO filterDto
     ) {
         //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
-        return ResponseEntity.ok(applicationEvaluationService.getAllApplications(researchGroup, pageDTO, sortDto));
+        return ResponseEntity.ok(
+            applicationEvaluationService.getAllApplicationsOverviews(researchGroup, offsetPageDTO, sortDto, filterDto)
+        );
+    }
+
+    /**
+     * REST endpoint to retrieve a paginated, sorted, and filtered list of application evaluation details
+     * for a research group.
+     *
+     * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination (offset and limit) information
+     * @param sortDto the {@link SortDTO} specifying sorting criteria
+     * @param filterDto the {@link FilterDTO} specifying dynamic filters to apply
+     * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
+     */
+    @GetMapping("/application-details")
+    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetails(
+        @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
+        @ParameterObject @ModelAttribute SortDTO sortDto,
+        @ParameterObject @ModelAttribute FilterDTO filterDto
+    ) {
+        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
+        ResearchGroup researchGroup = new ResearchGroup();
+        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroup, offsetPageDTO, sortDto, filterDto));
+    }
+
+    /**
+     * REST endpoint to retrieve a window of applications centered around a specific application ID.
+     * Applies sorting and dynamic filtering based on request parameters.
+     *
+     * @param applicationId the ID of the application to center the window on
+     * @param windowSize the size of the window (must be a positive odd integer)
+     * @param sortDto the {@link SortDTO} specifying sorting criteria
+     * @param filterDto the {@link FilterDTO} specifying dynamic filters to apply
+     * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
+     */
+    @GetMapping("/application-details/window")
+    public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetailsWindow(
+        @RequestParam UUID applicationId,
+        @RequestParam int windowSize,
+        @ParameterObject @ModelAttribute SortDTO sortDto,
+        @ParameterObject @ModelAttribute FilterDTO filterDto
+    ) {
+        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
+        ResearchGroup researchGroup = new ResearchGroup();
+        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        return ResponseEntity.ok(
+            applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroup, sortDto, filterDto)
+        );
     }
 }
