@@ -1,6 +1,6 @@
 <div class="doctorate-form-container">
   <header>
-    <h1>Create a new Doctorate Position</h1>
+    <h1>{{ pageTitle() }}</h1>
   </header>
   <div class="stepper">
     <div (click)="currentStep = 1" [ngClass]="{ active: currentStep === 1, completed: currentStep > 1 }" class="step">
@@ -19,7 +19,7 @@
     </div>
   </div>
   <!-- Step 1: Basic Information -->
-  @if (currentStep === 1) {
+  @if (currentStep === 1 && !isLoading()) {
     <div class="form-step">
       <form [formGroup]="basicInfoForm">
         <h2>Basic Information</h2>
@@ -42,10 +42,11 @@
               [label]="'Research Area'"
               [placeholder]="'e.g. Machine Learning, Human-Computer Interaction'"
               [required]="true"
-              [icon]="'circle-info'"
+              icon="circle-info"
               [model]="basicInfoForm.get('researchArea')?.value"
               (modelChange)="onSelectionChange(basicInfoForm, 'researchArea', $event)"
               [control]="basicInfoForm.get('researchArea') ?? undefined"
+              tooltipText="Specify the main Research Area the doctoral position focuses on."
             />
           </div>
 
@@ -164,8 +165,12 @@
         <div class="form-field">
           <label for="description"
             >Job Description
-            <fa-icon [icon]="['fas', 'circle-info']" />
             <span class="required">*</span>
+            <fa-icon
+              [icon]="['fas', 'circle-info']"
+              pTooltip="Help the applicant understand the research focus and goals of the position."
+              tooltipPosition="top"
+            />
           </label>
           <div class="input-with-icon">
             <textarea
@@ -186,8 +191,12 @@
         <div class="form-field">
           <label for="tasks"
             >Tasks
-            <fa-icon [icon]="['fas', 'circle-info']" />
             <span class="required">*</span>
+            <fa-icon
+              [icon]="['fas', 'circle-info']"
+              pTooltip="Provide a clear picture of the position’s responsibilities and activities."
+              tooltipPosition="top"
+            />
           </label>
           <div class="input-with-icon">
             <textarea
@@ -208,8 +217,12 @@
         <div class="form-field">
           <label for="requirements"
             >Eligibility Criteria
-            <fa-icon [icon]="['fas', 'circle-info']" />
             <span class="required">*</span>
+            <fa-icon
+              [icon]="['fas', 'circle-info']"
+              pTooltip="Ensure the applicant knows what qualifications are expected."
+              tooltipPosition="top"
+            />
           </label>
           <div class="input-with-icon">
             <textarea

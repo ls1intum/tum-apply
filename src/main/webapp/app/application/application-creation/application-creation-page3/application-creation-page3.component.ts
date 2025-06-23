@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
@@ -27,13 +29,34 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page3',
-  imports: [CommonModule, ReactiveFormsModule, FloatLabelModule, DividerModule, DatePickerComponent, TextareaModule, UploadButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FloatLabelModule,
+    DividerModule,
+    DatePickerComponent,
+    TextareaModule,
+    UploadButtonComponent,
+    FontAwesomeModule,
+    TooltipModule,
+  ],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
   standalone: true,
 })
 export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
+
+  applicationIdForDocuments = input<string | undefined>(undefined);
+  documentIdsCv = input<string | undefined>(undefined);
+  computedDocumentIdsCvSet = computed<string[] | undefined>(() => {
+    const documentIdsCv = this.documentIdsCv();
+    if (documentIdsCv) {
+      return [documentIdsCv];
+    }
+    return undefined;
+  });
+  documentIdsReferences = input<string[] | undefined>(undefined);
 
   valid = output<boolean>();
   fb = inject(FormBuilder);

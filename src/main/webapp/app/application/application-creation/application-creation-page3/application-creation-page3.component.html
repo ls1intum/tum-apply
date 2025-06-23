@@ -1,20 +1,46 @@
 @if (page3Form(); as form) {
   <form [formGroup]="form">
     <div class="flex flex-col w-1/2">
-      <label>Desired Start Date<span class="text-red-600">*</span></label>
+      <label
+        >Desired Start Date<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          pTooltip="Choose the preferred Date when you would like to start the position."
+          tooltipPosition="top"
+      /></label>
       <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
     </div>
     <p-divider layout="horizontal">Uploads</p-divider>
-    <div class="flex mb-4">
-      <div class="w-1/2 mr-1">
-        <jhi-upload-button uploadText="Please upload your CV" />
+    @if (applicationIdForDocuments(); as applicationId) {
+      <div class="flex mb-4">
+        <div class="w-1/2 mr-1">
+          <jhi-upload-button
+            uploadKey="entity.upload.upload_instruction.CV"
+            documentType="CV"
+            [applicationId]="applicationId"
+            [documentIds]="computedDocumentIdsCvSet()"
+          />
+        </div>
+        <div class="w-1/2 ml-1">
+          <jhi-upload-button
+            uploadKey="entity.upload.upload_instruction.REFERENCE"
+            documentType="REFERENCE"
+            [applicationId]="applicationId"
+            [documentIds]="documentIdsReferences()"
+          />
+        </div>
       </div>
-      <div class="w-1/2 ml-1">
-        <jhi-upload-button uploadText="Please upload your References" />
-      </div>
-    </div>
+    }
     <div class="form-row">
-      <label class="pb-4">What is your motivation to take this position?<span class="text-red-600">*</span></label>
+      <label class="pb-4"
+        >What is your motivation to take this position?<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          pTooltip="Explain how this position aligns with your career plans or research interests."
+          tooltipPosition="top"
+      /></label>
       <p-floatlabel>
         <textarea class="w-full" rows="5" pTextarea formControlName="motivation"></textarea>
         <label for="experiences">List professional or personal reasons</label>
@@ -22,7 +48,14 @@
       <label class="pl-1 textarea-sublabel">Keep it concise but informative ...</label>
     </div>
     <div class="form-row">
-      <label class="pb-4">What are your skills?<span class="text-red-600">*</span></label>
+      <label class="pb-4"
+        >What are your skills?<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          pTooltip="Share your research background in order to help us see how your experience fits the role."
+          tooltipPosition="top"
+      /></label>
       <p-floatlabel>
         <textarea class="w-full" rows="5" pTextarea formControlName="skills"></textarea>
         <label for="experiences">Describe experiences and skills</label>
@@ -30,7 +63,14 @@
       <label class="pl-1 textarea-sublabel">Why are you a good fit for this program or lab?</label>
     </div>
     <div class="form-row">
-      <label class="pb-4">If you already worked in research topics, what are your experiences?<span class="text-red-600">*</span></label>
+      <label class="pb-4"
+        >If you already worked in research topics, what are your experiences?<span class="text-red-600">*</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          pTooltip="Highlight results or insights that shaped your research experience."
+          tooltipPosition="top"
+      /></label>
       <p-floatlabel>
         <textarea class="w-full" rows="5" pTextarea formControlName="experiences"></textarea>
         <label for="experiences">Discuss previous research projects, theses or publications</label>

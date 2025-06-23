@@ -1,8 +1,8 @@
-@if (application() !== null) {
-  <div class="card" [class.disabled]="disabled()">
+<div class="card" [class.disabled]="disabled()" [class.placeholder]="placeholder()">
+  @if (!placeholder()) {
     <!-- Header -->
     <div class="header">
-      <p class="name">{{ application()?.name }}</p>
+      <p class="name">{{ application()?.applicant?.user?.name }}</p>
       <jhi-tag
         [text]="'evaluation.statusBadge.' + (application()?.state || '') | translate"
         [color]="stateSeverityMap[application()?.state!] || 'info'"
@@ -32,5 +32,5 @@
 
       <jhi-button [label]="'evaluation.reject' | translate" variant="outlined" severity="danger" icon="xmark" [disabled]="isDisabled()" />
     </div>
-  </div>
-}
+  }
+</div>

@@ -37,12 +37,12 @@
 
   <ng-template #actionTemplate let-row>
     <div class="flex space-x-2">
-      <jhi-button label="View" [disabled]="true" severity="primary" (click)="onViewApplication(row.applicationId)" />
+      <jhi-button label="View" severity="primary" (click)="onViewApplication(row.applicationId)" />
       @if (['SENT', 'IN_REVIEW', 'REJCETED'].includes(row.applicationState)) {
         <jhi-button label="Withdraw" severity="danger" variant="outlined" (click)="onWithdrawApplication(row.applicationId)" />
       }
       @if (['SAVED'].includes(row.applicationState)) {
-        <jhi-button label="Update" severity="primary" variant="outlined" (click)="onViewApplication(row.applicationId)" />
+        <jhi-button label="Update" severity="primary" variant="outlined" (click)="onUpdateApplication(row.applicationId)" />
       }
       @if (['SAVED'].includes(row.applicationState)) {
         <jhi-button label="Delete" severity="danger" (click)="onDeleteApplication(row.applicationId)" />

@@ -249,11 +249,6 @@
       </column>
       <column name="desired_start_date" type="DATE"/>
 
-      <column name="cv_file_id" type="CHAR(36)"/>
-      <column name="reference_file_id" type="CHAR(36)"/>
-      <column name="bachelor_certificate_id" type="CHAR(36)"/>
-      <column name="master_certificate_id" type="CHAR(36)"/>
-
       <column name="rating" type="INT"/>
       <column name="projects" type="LONGTEXT"/>
       <column name="special_skills" type="LONGTEXT"/>
