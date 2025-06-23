@@ -504,6 +504,30 @@
         }
       }
     },
+    "/api/evaluation/jobs": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getJobFilterOptions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobFilterOptionDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/evaluation/applications": {
       "get": {
         "tags": [
@@ -549,6 +573,28 @@
                 "ASC",
                 "DESC"
               ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -612,6 +658,28 @@
                 "DESC"
               ]
             }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         ],
         "responses": {
@@ -671,6 +739,28 @@
                 "ASC",
                 "DESC"
               ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -1668,6 +1758,18 @@
           }
         }
       },
+      "JobFilterOptionDTO": {
+        "type": "object",
+        "properties": {
+          "jobName": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
       "ApplicationEvaluationOverviewDTO": {
         "type": "object",
         "properties": {
@@ -1720,11 +1822,11 @@
           }
         }
       },
-      "ApplicantEvaluationDetailDTO": {
+      "ApplicantForApplicationDetailDTO": {
         "type": "object",
         "properties": {
           "user": {
-            "$ref": "#/components/schemas/UserEvaluationDetailDTO"
+            "$ref": "#/components/schemas/UserForApplicationDetailDTO"
           },
           "bachelorDegreeName": {
             "type": "string"
@@ -1761,7 +1863,7 @@
           "user"
         ]
       },
-      "ApplicationEvaluationDetailDTO": {
+      "ApplicationDetailDTO": {
         "type": "object",
         "properties": {
           "applicationId": {
@@ -1769,9 +1871,9 @@
             "format": "uuid"
           },
           "applicant": {
-            "$ref": "#/components/schemas/ApplicantEvaluationDetailDTO"
+            "$ref": "#/components/schemas/ApplicantForApplicationDetailDTO"
           },
-          "state": {
+          "applicationState": {
             "type": "string",
             "enum": [
               "SAVED",
@@ -1782,7 +1884,7 @@
               "WITHDRAWN"
             ]
           },
-          "jobName": {
+          "jobTitle": {
             "type": "string"
           },
           "desiredDate": {
@@ -1797,6 +1899,18 @@
           },
           "motivation": {
             "type": "string"
+          }
+        },
+        "required": [
+          "applicationId",
+          "applicationState"
+        ]
+      },
+      "ApplicationEvaluationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "applicationDetailDTO": {
+            "$ref": "#/components/schemas/ApplicationDetailDTO"
           },
           "rating": {
             "type": "integer",
@@ -1808,8 +1922,7 @@
           }
         },
         "required": [
-          "applicationId",
-          "state"
+          "applicationDetailDTO"
         ]
       },
       "ApplicationEvaluationDetailListDTO": {
@@ -1835,9 +1948,13 @@
           }
         }
       },
-      "UserEvaluationDetailDTO": {
+      "UserForApplicationDetailDTO": {
         "type": "object",
         "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "email": {
             "type": "string"
           },
@@ -1853,6 +1970,16 @@
           "nationality": {
             "type": "string"
           },
+          "preferredLanguage": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
           "website": {
             "type": "string"
           },
@@ -1861,8 +1988,7 @@
           }
         },
         "required": [
-          "email",
-          "name"
+          "userId"
         ]
       },
       "ApplicantForApplicationDetailDTO": {

@@ -13,9 +13,9 @@ encoder.ts
 git_push.sh
 index.ts
 model/applicantDTO.ts
-model/applicantEvaluationDetailDTO.ts
 model/applicantForApplicationDetailDTO.ts
 model/applicationDetailDTO.ts
+model/applicantEvaluationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts
 model/applicationEvaluationDetailDTO.ts
 model/applicationEvaluationDetailListDTO.ts
@@ -28,6 +28,7 @@ model/createdJobDTO.ts
 model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
+model/jobFilterOptionDTO.ts
 model/jobFormDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
@@ -37,7 +38,6 @@ model/researchGroupShortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/userDTO.ts
-model/userEvaluationDetailDTO.ts
 model/userForApplicationDetailDTO.ts
 model/userShortDTO.ts
 ng-package.json

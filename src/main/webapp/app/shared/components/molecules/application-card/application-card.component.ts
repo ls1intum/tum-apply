@@ -1,8 +1,9 @@
 import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 
-import { ApplicationEvaluationDetailDTO } from '../../../../generated';
 import { TagComponent } from '../../atoms/tag/tag.component';
 import { RatingComponent } from '../../atoms/rating/rating.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -18,8 +19,19 @@ export class ApplicationCardComponent {
   placeholder = input<boolean>(false);
   application = input<ApplicationEvaluationDetailDTO | undefined>(undefined);
 
+  readonly applicationDetails = computed<ApplicationDetailDTO | undefined>(() => {
+    const application = this.application();
+    if (application) {
+      return application.applicationDetailDTO;
+    }
+    return undefined;
+  });
+
   readonly isDisabled = computed(
-    () => this.disabled() || this.application()?.state === 'ACCEPTED' || this.application()?.state === 'REJECTED',
+    () =>
+      this.disabled() ||
+      this.applicationDetails()?.applicationState === 'ACCEPTED' ||
+      this.applicationDetails()?.applicationState === 'REJECTED',
   );
 
   readonly stateTextMap: Record<string, string> = {

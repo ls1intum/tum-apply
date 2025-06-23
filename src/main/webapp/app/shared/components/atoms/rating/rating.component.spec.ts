@@ -72,7 +72,7 @@ describe('RatingComponent', () => {
     expect(component.markerWidthPercent()).toBe('18%'); // 100/5=20 → 20−2=18
   });
 
-  it('should return empty offsetPercent when rating is null', () => {
+  it('should return empty offsetPercent when rating is undefined', () => {
     expect(component.offsetPercent()).toBe('');
   });
 
@@ -101,7 +101,7 @@ describe('RatingComponent', () => {
   });
 
   it('getAriaParams should return correct translation keys', () => {
-    fixture.componentRef.setInput('rating', null);
+    fixture.componentRef.setInput('rating', undefined);
     fixture.detectChanges();
     expect(component.ariaParams()).toBe('evaluation.noRating');
 
@@ -123,7 +123,7 @@ describe('RatingComponent', () => {
     fixture.detectChanges();
     expect(component.labelKey()).toBe('evaluation.positive');
 
-    fixture.componentRef.setInput('rating', null);
+    fixture.componentRef.setInput('rating', undefined);
     fixture.detectChanges();
     expect(component.labelKey()).toBe('');
   });
