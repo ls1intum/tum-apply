@@ -19,6 +19,8 @@ services:
       - shared-network
     volumes:
       - mysql_data:/var/lib/mysql
+    ports:
+      - '5432:5432'
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.1
     command: 'start-dev --import-realm'
