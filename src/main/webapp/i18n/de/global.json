@@ -115,6 +115,21 @@
       "field": "Feld",
       "value": "Wert"
     },
+    "detail_card": {
+      "name": "Name",
+      "grade": "Note",
+      "university": "Universität",
+      "motivation": "Motivation",
+      "skills": "Fähigkeiten",
+      "research_experience": "Forschungserfahrung",
+      "bachelor_info": "Informationen zum Bachelorabschluss",
+      "master_info": "Informationen zum Masterabschluss",
+      "gender": "Geschlecht",
+      "desired_start_date": "Gewünschtes Anfangsdatum",
+      "preferred_language": "Bevorzugte Sprache",
+      "applicant_info": "Bewerberinformationen",
+      "nationality": "Nationalität"
+    },
     "delete": {
       "title": "Löschen bestätigen"
     },
@@ -132,9 +147,33 @@
       "patternLogin": "Dieses Feld darf nur Buchstaben, Ziffern und E-Mail-Adressen enthalten."
     },
     "filters": {
-      "set": "Folgende Filter sind gesetzt",
-      "clear": "Filter entfernen",
-      "clearAll": "Alle Filter entfernen"
+      "filter": "Filter",
+      "numberSelected": "{{selected}} ausgewählt",
+      "clear": "Entfernen",
+      "clearAll": "Alle entfernen",
+      "apply": "Anwenden",
+      "recordsFound": "{{count}} {{entity}} gefunden"
+    },
+    "upload": {
+      "upload_instruction_standard": "Bitte hochladen",
+      "upload_instruction": {
+        "BACHELOR_TRANSCRIPT": "Bitte laden Sie Ihr Bachelor-Zeugnis hoch",
+        "MASTER_TRANSCRIPT": "Bitte laden Sie Ihr Master-Zeugnis hoch",
+        "REFERENCE": "Bitte laden Sie Ihre Empfehlungsschreiben hoch",
+        "CV": "Bitte laden Sie Ihren Lebenslauf hoch"
+      },
+      "uploaded_document": "Hochgeladenes Dokument für ",
+      "uploaded_documents": "Hochgeladene Dokumente für ",
+      "instruction": "Klicken oder Dateien hierher ziehen, um sie hochzuladen.",
+      "max_size": "Maximale Upload-Größe:",
+      "upload_progress": "Upload-Fortschritt: ",
+      "document_type": {
+        "BACHELOR_TRANSCRIPT": "Bachelor-Zeugnis",
+        "MASTER_TRANSCRIPT": "Master-Zeugnis",
+        "REFERENCE": "Empfehlungsschreiben",
+        "CV": "Lebenslauf",
+        "CUSTOM": "Benutzerdefiniert"
+      }
     }
   },
   "error": {

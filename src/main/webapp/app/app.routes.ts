@@ -49,6 +49,13 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
   },
+  {
+    path: 'playground/docviewer',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
+  },
 
   // ======================================================================================
   // User Management
@@ -78,7 +85,13 @@ const routes: Routes = [
   // Job
   // ======================================================================================
   {
-    path: 'job-creation',
+    path: 'job/create',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
+  },
+  {
+    path: 'job/edit/:job_id',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
@@ -116,6 +129,12 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./application/application-overview-for-applicant/application-overview-for-applicant.component'),
+  },
+  {
+    path: 'application/detail/:application_id',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./application/application-detail-for-applicant/application-detail-for-applicant.component'),
   },
 
   // ======================================================================================
