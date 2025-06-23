@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -15,6 +15,8 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
 })
 export class StringInputComponent extends BaseInputDirective<string> {
+  tooltipText = input<string | undefined>(undefined); // TODO - extend it to the numberinput and editor field as well
+
   onInputChange(value: string): void {
     this.modelChange.emit(value);
     const ctrl = this.formControl();
