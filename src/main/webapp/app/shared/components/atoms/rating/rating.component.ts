@@ -19,7 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './rating.component.scss',
 })
 export class RatingComponent {
-  rating = input<number | null>(null);
+  rating = input<number | undefined>(undefined);
   likertScale = input<number>(5); // Likert-5 scale as default
 
   readonly min = computed(() => -Math.floor(this.likertScale() / 2));
@@ -39,7 +39,7 @@ export class RatingComponent {
 
   // calculate offset of inner marker relative to the left end of the outer bar
   readonly offsetPercent = computed(() => {
-    if (this.rating() === null) {
+    if (this.rating() === undefined) {
       return '';
     }
     const norm = ((this.rating() ?? 0) - this.min()) / this.likertScale();
@@ -54,7 +54,7 @@ export class RatingComponent {
   // - positive values use a gradient from positiveStart to positiveEnd
   // - neutral uses a defined neutral color
   readonly backgroundColor = computed(() => {
-    if (this.rating() === null) {
+    if (this.rating() === undefined) {
       return 'transparent';
     }
 
@@ -76,13 +76,13 @@ export class RatingComponent {
 
   // Sets ARIA label translation key for accessibility
   readonly ariaParams = computed(() => {
-    return this.rating() === null ? 'evaluation.noRating' : 'evaluation.ratingToolTip';
+    return this.rating() === undefined ? 'evaluation.noRating' : 'evaluation.ratingToolTip';
   });
 
   // Determines the label key based on rating value (positive/neutral/negative)
   readonly labelKey = computed(() => {
     const value = this.rating();
-    if (value === null) return '';
+    if (value === undefined) return '';
 
     return value > 0 ? 'evaluation.positive' : value < 0 ? 'evaluation.negative' : 'evaluation.neutral';
   });

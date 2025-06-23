@@ -12,7 +12,7 @@
       <!-- User Info and Optional Rating -->
       <div class="user-info-container">
         <!-- Applicant Name -->
-        <div class="section-title">{{ application().applicant?.user?.firstName }} {{ application().applicant?.user?.lastName }}</div>
+        <div class="section-title">{{ application().applicant?.user?.name }}</div>
         <!-- Rating Section (if applicable) -->
         <ng-content select="[slot-rating]" />
       </div>
@@ -60,16 +60,22 @@
     <div class="card-body">
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.preferred_language', val: 'English' }"
+        [ngTemplateOutletContext]="{
+          $implicit: 'entity.detail_card.preferred_language',
+          val: application().applicant?.user?.preferredLanguage,
+        }"
       />
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.desired_start_date', val: 'Sept 2025' }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.desired_start_date', val: application().desiredDate }"
       />
-      <ng-container [ngTemplateOutlet]="infoRow" [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.gender', val: 'Female' }" />
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.nationality', val: 'Albanian' }"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.gender', val: application().applicant?.user?.gender }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.nationality', val: application().applicant?.user?.nationality }"
       />
     </div>
 
