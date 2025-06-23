@@ -1,6 +1,7 @@
 package de.tum.cit.aet.application.web;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
@@ -178,6 +179,19 @@ public class ApplicationResource {
         applicationService.uploadMasterTranscripts(files, application, user);
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Retrieves the detail intormation for applicants for their application
+     *
+     * @param applicationId
+     * @return ApplicationDetailDTO of given ID
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @GetMapping("/{applicationId}/detail")
+    public ResponseEntity<ApplicationDetailDTO> getApplicationForDetailPage(@PathVariable UUID applicationId) {
+        ApplicationDetailDTO applicationDetailDTO = applicationService.getApplicationDetail(applicationId);
+        return ResponseEntity.ok(applicationDetailDTO);
     }
 
     /**

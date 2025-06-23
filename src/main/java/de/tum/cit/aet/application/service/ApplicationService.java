@@ -2,6 +2,7 @@ package de.tum.cit.aet.application.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
@@ -345,5 +346,20 @@ public class ApplicationService {
         }
         Application application = applicationRepository.getReferenceById(applicationId);
         return documentDictionaryService.getDocumentIdsDTO(application);
+    }
+
+    /**
+     * Retrieves the ApplicationDetailDTO fitting to the application id
+     *
+     * @param applicationId
+     * @return ApplicationDetailDTO for application id
+     */
+    public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
+        if (applicationId == null) {
+            throw new IllegalArgumentException("The applicationId may not be null.");
+        }
+        Application application = applicationRepository.findById(applicationId).orElseThrow();
+
+        return ApplicationDetailDTO.getFromEntity(application);
     }
 }

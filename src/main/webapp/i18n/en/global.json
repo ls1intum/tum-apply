@@ -103,6 +103,21 @@
       "field": "Field",
       "value": "Value"
     },
+    "detail_card": {
+      "name": "Name",
+      "grade": "Grade",
+      "university": "University",
+      "motivation": "Motivation",
+      "skills": "Skills",
+      "research_experience": "Research Experience",
+      "bachelor_info": "Bachelor Degree Information",
+      "master_info": "Master Degree Information",
+      "gender": "Gender",
+      "desired_start_date": "Desired Start Date",
+      "preferred_language": "Preferred Language",
+      "applicant_info": "Applicant Information",
+      "nationality": "Nationality"
+    },
     "delete": {
       "title": "Confirm delete operation"
     },
@@ -120,9 +135,12 @@
       "patternLogin": "This field can only contain letters, digits and e-mail addresses."
     },
     "filters": {
-      "set": "Following filters are set",
-      "clear": "Clear filter",
-      "clearAll": "Clear all filters"
+      "filter": "Filter",
+      "numberSelected": "{{selected}} selected",
+      "clear": "Clear",
+      "clearAll": "Clear all",
+      "apply": "Apply",
+      "recordsFound": "{{count}} {{entity}} found"
     },
     "upload": {
       "upload_instruction_standard": "Please upload",
