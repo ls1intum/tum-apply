@@ -55,7 +55,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
+          issuer-uri: ${KEYCLOAK_URL}realms/${KEYCLOAK_REALM}
 springdoc:
   api-docs:
     enabled: true
