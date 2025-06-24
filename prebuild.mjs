@@ -22,7 +22,10 @@ if (!process.env.KEYCLOAK_URL) {
     dotenv.config({ path: path.resolve(__dirname, selectedEnvFile) });
     console.log(`[prebuild] Loaded environment from ${selectedEnvFile}`);
   } else {
-    console.warn('[prebuild] No .env.local file found. Using existing process.env values.');
+    console.error(
+      '[prebuild.mjs] No .env.local file found. Please add the file to the project root or set the environment variables manually.',
+    );
+    process.exit(1);
   }
 }
 
@@ -81,14 +84,6 @@ export const environment = {
 };
 `;
 fs.writeFileSync(path.resolve(__dirname, 'src', 'main', 'webapp', 'app', 'environments', 'environment.override.ts'), environmentConfig);
-
-const overridePath = path.resolve('src/main/webapp/app/environments/environment.override.ts');
-
-if (fs.existsSync(overridePath)) {
-  console.log('[prebuild] environment.override.ts already exists.');
-} else {
-  console.log('[prebuild] environment.override.ts does NOT exist.');
-}
 
 // =====================
 // i18n merging
