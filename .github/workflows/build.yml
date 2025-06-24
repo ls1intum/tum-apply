@@ -32,7 +32,7 @@ on:
 jobs:
   prepare-vars:
     runs-on: ubuntu-latest
-    environment: test-server
+    environment: production
     outputs:
       KEYCLOAK_URL: ${{ steps.set-vars.outputs.KEYCLOAK_URL }}
       KEYCLOAK_REALM: ${{ steps.set-vars.outputs.KEYCLOAK_REALM }}
