@@ -252,4 +252,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Compile TypeScript Files With Typechecking
+        env:
+          - KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
         run: npm run compile:ts
