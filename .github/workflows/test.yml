@@ -51,15 +51,6 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
-      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
-      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -151,15 +142,6 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
-      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
-      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -173,7 +155,7 @@ jobs:
       - name: Java Code Style
         run: ./gradlew spotlessCheck -Pprod
       - name: Java Documentation
-        run: ./gradlew checkstyleMain -x webapp  -Pprod
+        run: ./gradlew checkstyleMain -x webapp -Pprod
         if: success() || failure()
       - name: Java Architecture Tests
         run: ./gradlew test -DincludeTags='ArchitectureTest' -x webapp -Pprod
@@ -193,15 +175,6 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
-      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
-      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -241,15 +214,6 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
-      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
-      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -293,15 +257,6 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
-      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
-      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
