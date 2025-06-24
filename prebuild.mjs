@@ -82,6 +82,14 @@ export const environment = {
 `;
 fs.writeFileSync(path.resolve(__dirname, 'src', 'main', 'webapp', 'app', 'environments', 'environment.override.ts'), environmentConfig);
 
+const overridePath = path.resolve('src/main/webapp/app/environments/environment.override.ts');
+
+if (fs.existsSync(overridePath)) {
+  console.log('[prebuild] environment.override.ts already exists.');
+} else {
+  console.log('[prebuild] environment.override.ts does NOT exist.');
+}
+
 // =====================
 // i18n merging
 // =====================

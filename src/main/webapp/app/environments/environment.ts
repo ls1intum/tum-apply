@@ -8,7 +8,7 @@ export const I18N_HASH = '';
 export const environment = {
   production: false,
   keycloak: {
-    url: 'http://localhost:9080/',
+    url: 'https://keycloak.aet.cit.tum.de/',
     realm: 'tumapply',
     clientId: 'tumapply-client',
     enableLogging: true,
