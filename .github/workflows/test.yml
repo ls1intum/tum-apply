@@ -35,6 +35,8 @@ concurrency:
   group: test-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+environment: test-server
+
 # Keep in sync with codeql-analysis.yml and build.yml
 env:
   CI: true
@@ -252,6 +254,4 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Compile TypeScript Files With Typechecking
-        env:
-          - KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
         run: npm run compile:ts
