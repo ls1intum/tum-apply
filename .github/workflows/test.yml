@@ -35,31 +35,31 @@ concurrency:
   group: test-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-environment: test-server
-
 # Keep in sync with codeql-analysis.yml and build.yml
 env:
   CI: true
   node: 22
   java: 21
-  KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-  KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-  KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-  KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-  KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
-  KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-  MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
-  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-  SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
-  SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
-  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-  SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
-  SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
   # Run all tests for non-draft pull-requests or the default branch. Otherwise, only module-affected tests are run.
   RUN_ALL_TESTS: ${{ (github.event_name == 'pull_request' && github.event.pull_request.draft == false) || github.event.repository.default_branch == github.ref_name }}
 
 jobs:
   server-tests:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
+      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
+      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -145,6 +145,21 @@ jobs:
       #    cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
 
   server-style:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
+      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
+      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -172,6 +187,21 @@ jobs:
           reporter: java-junit
 
   client-tests:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
+      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
+      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -205,6 +235,21 @@ jobs:
           path: junit.xml
 
   client-tests-selected:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
+      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
+      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -242,6 +287,21 @@ jobs:
         if: success() || failure()
 
   client-compilation:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      KEYCLOAK_ADMIN: ${{ vars.KEYCLOAK_ADMIN }}
+      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+      MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_LIQUIBASE_URL: ${{ vars.SPRING_LIQUIBASE_URL }}
+      SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
