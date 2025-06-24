@@ -63,8 +63,6 @@ jobs:
           echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> "$GITHUB_OUTPUT"
           echo "SPRING_LIQUIBASE_URL=${{ vars.SPRING_LIQUIBASE_URL }}" >> "$GITHUB_OUTPUT"
           echo "SPRING_PROFILES_ACTIVE=${{ vars.SPRING_PROFILES_ACTIVE }}" >> "$GITHUB_OUTPUT"
-      - name: Print KEYCLOAK_URL
-        run: echo "KEYCLOAK_URL=$KEYCLOAK_URL"
   build:
     needs: prepare-vars
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
