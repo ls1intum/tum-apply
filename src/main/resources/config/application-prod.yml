@@ -48,7 +48,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://keycloak.aet.cit.tum.de/realms/external_login
+          issuer-uri: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: prod
