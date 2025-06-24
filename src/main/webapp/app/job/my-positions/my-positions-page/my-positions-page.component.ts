@@ -109,6 +109,10 @@ export class MyPositionsPageComponent {
     this.router.navigate([`/job/edit/${jobId}`]);
   }
 
+  onViewJob(): void {
+    this.router.navigate(['/job/detail']);
+  }
+
   async onDeleteJob(jobId: string): Promise<void> {
     // TO-DO: adjust confirmation
     const confirmDelete = confirm('Do you really want to delete this job?');

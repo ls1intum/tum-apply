@@ -1,0 +1,278 @@
+<!--<div class="job-detail">
+  <h1>{{ this.title() }}</h1>
+  <h2>Research Area: {{ this.researchArea() }}</h2>
+  <h2>Field of Studies: {{ this.fieldOfStudies() }}</h2>
+
+  <section>
+    <h3>Supervising Professor</h3>
+    <p>
+      {{ this.supervisingProfessor() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Research Group</h3>
+    <p>
+      {{ this.researchGroup() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Location</h3>
+    <p>
+      {{ this.location() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Workload</h3>
+    <p>
+      {{ this.workload() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Contract Duration</h3>
+    <p>
+      {{ this.contractDuration() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Funding Type</h3>
+    <p>
+      {{ this.fundingType() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Job Description</h3>
+    <p>
+      {{ this.description() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Tasks</h3>
+    <p>
+      {{ this.tasks() }}
+    </p>
+  </section>
+
+  <section>
+    <h3>Requirements</h3>
+    <p>
+      {{ this.requirements() }}
+    </p>
+  </section>
+
+  <section class="timeline">
+    <h3>Timeline</h3>
+    <p><i class="calendar-icon"></i> Application Deadline: April 30, 2025</p>
+    <p><i class="calendar-icon"></i> Start Date: October 1, 2025</p>
+  </section>
+
+  <section>
+    <p>Start date: {{ this.startDate() }}</p>
+    <p>Created at: {{ this.createdAt() }}</p>
+    <p>Last Modified at: {{ this.lastModifiedAt() }}</p>
+  </section>
+
+  <section>
+    <h3>About Us</h3>
+    <p>
+      The position is offered by the
+      <a href="#">Chair of Applied Software Engineering</a>, headed by
+      <a href="#">Prof. Dr. Stephan Krusche</a>. The chair is renowned for combining academic research with practical software development,
+      contributing to platforms like Artemis and CodeOcean, which are widely used across European universities.
+    </p>
+  </section>
+  <jhi-button label="Apply Now" severity="primary" (click)="onApply()" />
+</div>
+-->
+<div class="container">
+  <header class="page-header">
+    <!-- display job state if the logged-in user is a professor -->
+    <h1 class="job-title">Doctorate Position in Advanced Materials Science</h1>
+    <div class="job-meta">
+      <div class="meta-item">
+        <fa-icon [icon]="['fas', 'user-tie']" class="meta-icon" />
+        <span><strong>Supervisor:</strong> Dr. Sarah Chen</span>
+      </div>
+      <div class="meta-item">
+        <fa-icon [icon]="['fas', 'microscope']" class="meta-icon" />
+        <span><strong>Research Group:</strong> Advanced Materials Laboratory</span>
+      </div>
+      <div class="meta-item">
+        <fa-icon [icon]="['fas', 'location-dot']" class="meta-icon" />
+        <span><strong>Location:</strong> Munich, Germany</span>
+      </div>
+    </div>
+    <!--    <jhi-tag [text]="'Fully Funded Position'" [round]="true" />-->
+  </header>
+
+  <div class="content-grid">
+    <main class="job-overview">
+      <section class="detail-group">
+        <h2 class="section-title">Position Overview</h2>
+        <div class="detail-row">
+          <span class="detail-label">Field of Studies:</span>
+          <span class="detail-value">
+            <span class="detail-value">Materials Science</span>
+            <!--            <jhi-tag [text]="'Materials Science'" [round]="true" />-->
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Research Area:</span>
+          <span class="detail-value">Advanced Nanocomposite Materials for Energy Storage</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Workload:</span>
+          <span class="detail-value">Full-time (40 hours/week)</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Contract Duration:</span>
+          <span class="detail-value">3 years (with possibility of extension)</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Funding Type:</span>
+          <span class="detail-value">DFG Research Grant</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Start Date:</span>
+          <span class="detail-value">September 1, 2025</span>
+        </div>
+      </section>
+
+      <section class="detail-group">
+        <div class="detail-row">
+          <span class="detail-label">Created:</span>
+          <span class="detail-value">June 15, 2025</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Last Modified:</span>
+          <span class="detail-value">June 20, 2025</span>
+        </div>
+      </section>
+    </main>
+
+    <aside class="research-group">
+      <h2 class="section-title">Research Group</h2>
+
+      <h3>Advanced Materials Laboratory</h3>
+
+      <p class="description-text">
+        Our research group focuses on developing innovative materials for energy and environmental applications. We combine theoretical
+        modeling with experimental synthesis to create materials with tailored properties for specific applications. Our interdisciplinary
+        approach brings together expertise in chemistry, physics, and engineering.
+      </p>
+
+      <div class="contact-info">
+        <div class="contact-item">
+          <fa-icon [icon]="['fas', 'book']" class="contact-icon" />
+          <a href="mailto:s.chen@materials.tum.de" class="link">materials-lab.tum.de</a>
+        </div>
+        <div class="contact-item">
+          <fa-icon [icon]="['fas', 'book']" class="contact-icon" />
+          <a href="https://materials-lab.tum.de" class="link">materials-lab.tum.de</a>
+        </div>
+        <div class="contact-item">
+          <fa-icon class="contact-icon" [icon]="['fas', 'book']" />
+          <span>Technical University of Munich</span>
+        </div>
+        <div class="contact-item">
+          <fa-icon [icon]="['fas', 'book']" class="contact-icon" />
+          <div>
+            <div>Lichtenbergstraße 4</div>
+            <div>85748 Garching</div>
+            <div>Munich, Germany</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="descriptive-section">
+    <h2 class="section-title">Position Details</h2>
+
+    <div class="descriptive-grid">
+      <div class="description-column">
+        <div class="detail-group">
+          <h3>Project Description</h3>
+          <p class="details-text-section">
+            This exciting PhD position focuses on developing next-generation nanocomposite materials for advanced energy storage
+            applications. The successful candidate will work on synthesizing novel graphene-based composites with enhanced electrochemical
+            properties for use in high-performance batteries and supercapacitors. The project involves cutting-edge characterization
+            techniques including electron microscopy, X-ray spectroscopy, and electrochemical testing.
+          </p>
+          <p class="details-text-section">
+            The research will contribute to our understanding of structure-property relationships in nanocomposite materials and has direct
+            applications in sustainable energy technologies. You will be part of an international team working on breakthrough technologies
+            that could revolutionize energy storage systems.
+          </p>
+        </div>
+
+        <div class="detail-group">
+          <h3>Key Tasks & Responsibilities</h3>
+          <ul class="details-text-section">
+            <li>Design and synthesize novel nanocomposite materials using advanced chemical methods</li>
+            <li>Characterize materials using state-of-the-art analytical techniques (SEM, TEM, XPS, Raman)</li>
+            <li>Conduct electrochemical testing and performance evaluation of energy storage devices</li>
+            <li>Analyze experimental data and develop structure-property correlations</li>
+            <li>Present research findings at international conferences and publish in high-impact journals</li>
+            <li>Collaborate with industry partners and international research institutions</li>
+            <li>Mentor undergraduate students and assist in laboratory management</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="description-column">
+        <div class="detail-group">
+          <h3>Requirements</h3>
+          <ul class="details-text-section">
+            <li>Master's degree in Materials Science, Chemistry, Physics, or related field</li>
+            <li>Strong background in materials synthesis or electrochemistry</li>
+            <li>Experience with characterization techniques (microscopy, spectroscopy preferred)</li>
+            <li>Excellent analytical and problem-solving skills</li>
+            <li>Proficiency in English (written and spoken)</li>
+            <li>Strong motivation for independent research and teamwork</li>
+            <li>Programming skills (Python, MATLAB) are advantageous</li>
+            <li>Previous experience in nanomaterials research is a plus</li>
+          </ul>
+        </div>
+
+        <div class="detail-group">
+          <h3>What We Offer</h3>
+          <ul class="details-text-section">
+            <li>Competitive PhD stipend according to German standards (TV-L E13)</li>
+            <li>Access to world-class research facilities and equipment</li>
+            <li>Opportunity to work with leading international researchers</li>
+            <li>Conference travel funding and professional development support</li>
+            <li>Collaborative environment with interdisciplinary projects</li>
+            <li>Location in Munich - one of Germany's most vibrant cities</li>
+            <li>Potential for industrial collaborations and internships</li>
+            <li>Career guidance and mentorship throughout your PhD journey</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="data-privacy-section">
+    <h2 class="section-title">Data Protection Information</h2>
+    <p class="data-text-section">
+      When you apply for a position with the Technical University of Munich (TUM), you are submitting personal information. With regard to
+      personal information, please take note of the
+      <a href="https://portal.mytum.de/kompass/datenschutz/Bewerbung/" class="link"
+        >Datenschutzhinweise gemäß Art. 13 Datenschutz-Grundverordnung (DSGVO) zur Erhebung und Verarbeitung von personenbezogenen Daten im
+        Rahmen Ihrer Bewerbung. </a
+      >(data protection information on collecting and processing personal data contained in your application in accordance with Art. 13 of
+      the General Data Protection Regulation (GDPR)). By submitting your application, you confirm that you have acknowledged the above data
+      protection information of TUM.
+    </p>
+  </section>
+  <section class="action-buttons-section">
+    <!-- if professor is logged in, then it shows "Close Job" button ("Delete Job" button if the Job is a draft) "Edit Job" button -->
+    <!-- else display "Apply Now" button -->
+    <jhi-button class="apply-btn" label="Apply Now" severity="primary" (click)="alert('Application form would open here')" />
+  </section>
+</div>
