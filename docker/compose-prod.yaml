@@ -45,8 +45,13 @@ services:
     environment:
       - KEYCLOAK_URL
       - KEYCLOAK_REALM
-    expose:
-      - '8080'
+      - SPRING_PROFILES_ACTIVE=prod, api-docs
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
+      - SPRING_LIQUIBASE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
+      expose:
+        - '8080'
     healthcheck:
       test: wget -nv -t1 --spider http://localhost:8080/actuator/health || exit 1
       start_period: 100s
