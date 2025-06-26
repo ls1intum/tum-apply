@@ -43,6 +43,8 @@ services:
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
     environment:
+      - KEYCLOAK_URL
+      - KEYCLOAK_REALM
       - SPRING_PROFILES_ACTIVE=dev, api-docs
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root

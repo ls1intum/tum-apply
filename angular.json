@@ -55,6 +55,12 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/main/webapp/app/environments/environment.ts",
+                  "with": "src/main/webapp/app/environments/environment.override.ts"
+                }
+              ],
               "namedChunks": false,
               "extractLicenses": true,
               "serviceWorker": "ngsw-config.json",
