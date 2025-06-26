@@ -1,111 +1,19 @@
-<!--<div class="job-detail">
-  <h1>{{ this.title() }}</h1>
-  <h2>Research Area: {{ this.researchArea() }}</h2>
-  <h2>Field of Studies: {{ this.fieldOfStudies() }}</h2>
-
-  <section>
-    <h3>Supervising Professor</h3>
-    <p>
-      {{ this.supervisingProfessor() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Research Group</h3>
-    <p>
-      {{ this.researchGroup() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Location</h3>
-    <p>
-      {{ this.location() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Workload</h3>
-    <p>
-      {{ this.workload() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Contract Duration</h3>
-    <p>
-      {{ this.contractDuration() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Funding Type</h3>
-    <p>
-      {{ this.fundingType() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Job Description</h3>
-    <p>
-      {{ this.description() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Tasks</h3>
-    <p>
-      {{ this.tasks() }}
-    </p>
-  </section>
-
-  <section>
-    <h3>Requirements</h3>
-    <p>
-      {{ this.requirements() }}
-    </p>
-  </section>
-
-  <section class="timeline">
-    <h3>Timeline</h3>
-    <p><i class="calendar-icon"></i> Application Deadline: April 30, 2025</p>
-    <p><i class="calendar-icon"></i> Start Date: October 1, 2025</p>
-  </section>
-
-  <section>
-    <p>Start date: {{ this.startDate() }}</p>
-    <p>Created at: {{ this.createdAt() }}</p>
-    <p>Last Modified at: {{ this.lastModifiedAt() }}</p>
-  </section>
-
-  <section>
-    <h3>About Us</h3>
-    <p>
-      The position is offered by the
-      <a href="#">Chair of Applied Software Engineering</a>, headed by
-      <a href="#">Prof. Dr. Stephan Krusche</a>. The chair is renowned for combining academic research with practical software development,
-      contributing to platforms like Artemis and CodeOcean, which are widely used across European universities.
-    </p>
-  </section>
-  <jhi-button label="Apply Now" severity="primary" (click)="onApply()" />
-</div>
--->
 <div class="container">
   <header class="page-header">
     <!-- display job state if the logged-in user is a professor -->
-    <h1 class="job-title">Doctorate Position in Advanced Materials Science</h1>
+    <h1 class="job-title">{{ this.title() }}</h1>
     <div class="job-meta">
       <div class="meta-item">
         <fa-icon [icon]="['fas', 'user-tie']" class="meta-icon" />
-        <span><strong>Supervisor:</strong> Dr. Sarah Chen</span>
+        <span><strong>Supervisor:</strong> {{ this.supervisingProfessor() }}</span>
       </div>
       <div class="meta-item">
         <fa-icon [icon]="['fas', 'microscope']" class="meta-icon" />
-        <span><strong>Research Group:</strong> Advanced Materials Laboratory</span>
+        <span><strong>Research Group:</strong> {{ this.researchGroup() }}</span>
       </div>
       <div class="meta-item">
         <fa-icon [icon]="['fas', 'location-dot']" class="meta-icon" />
-        <span><strong>Location:</strong> Munich, Germany</span>
+        <span><strong>Location:</strong> {{ this.location() }}</span>
       </div>
     </div>
     <!--    <jhi-tag [text]="'Fully Funded Position'" [round]="true" />-->
@@ -229,16 +137,7 @@
       <div class="description-column">
         <div class="detail-group">
           <h3>Requirements</h3>
-          <ul class="details-text-section">
-            <li>Master's degree in Materials Science, Chemistry, Physics, or related field</li>
-            <li>Strong background in materials synthesis or electrochemistry</li>
-            <li>Experience with characterization techniques (microscopy, spectroscopy preferred)</li>
-            <li>Excellent analytical and problem-solving skills</li>
-            <li>Proficiency in English (written and spoken)</li>
-            <li>Strong motivation for independent research and teamwork</li>
-            <li>Programming skills (Python, MATLAB) are advantageous</li>
-            <li>Previous experience in nanomaterials research is a plus</li>
-          </ul>
+          <div class="details-text-section" [innerHTML]="this.requirements()"></div>
         </div>
 
         <div class="detail-group">

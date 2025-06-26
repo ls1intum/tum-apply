@@ -230,3 +230,12 @@ jhi-tag {
     gap: 0.5rem;
   }
 }
+
+ul,
+ol {
+  list-style: initial;
+}
+
+ol {
+  list-style-type: decimal;
+}
