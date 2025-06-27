@@ -4,25 +4,30 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
-import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
-import de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO;
+import de.tum.cit.aet.evaluation.domain.ApplicationReview;
+import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class ApplicationEvaluationService {
+
+    private final ApplicationEvaluationRepository applicationEvaluationRepository;
+    private final JobEvaluationRepository jobEvaluationRepository;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -31,10 +36,45 @@ public class ApplicationEvaluationService {
         ApplicationState.REJECTED
     );
 
+    private static final Set<ApplicationState> REVIEW_STATES = Set.of(ApplicationState.SENT, ApplicationState.IN_REVIEW);
+
     private static final Set<String> SORTABLE_FIELDS = Set.of("rating", "createdAt", "applicant.lastName");
 
-    private final ApplicationEvaluationRepository applicationEvaluationRepository;
-    private final JobEvaluationRepository jobEvaluationRepository;
+    public void acceptApplication(@NonNull UUID applicationId, @NonNull AcceptDTO acceptDTO, @NonNull User reviewingUser) {
+        Application application = applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> new EntityNotFoundException("Application not found"));
+
+        if (!canReviewApplication(application, reviewingUser)) {
+            throw new AccessDeniedException("Not allowed to review application");
+        }
+
+        if (!REVIEW_STATES.contains(application.getState())) {
+            throw new IllegalArgumentException("Application can not be reviewed");
+        }
+
+        application.setState(ApplicationState.ACCEPTED);
+
+        // create and set new ApplicationReview
+        ApplicationReview applicationReview = new ApplicationReview();
+        applicationReview.setReviewedBy(reviewingUser);
+        applicationReview.setReason(acceptDTO.message());
+
+        application.setApplicationReview(applicationReview);
+        applicationReview.setApplication(application);
+
+        applicationEvaluationRepository.save(application);
+
+        if (acceptDTO.closeJob()) {
+            //TODO integrate closeJob()
+        }
+        //TODO add notification
+
+    }
+
+    private boolean canReviewApplication(Application application, User reviewingUser) {
+        return application.getJob().getResearchGroup().getResearchGroupId() == reviewingUser.getResearchGroup().getResearchGroupId();
+    }
 
     /**
      * Retrieves a paginated and optionally sorted list of applications for a given research group.

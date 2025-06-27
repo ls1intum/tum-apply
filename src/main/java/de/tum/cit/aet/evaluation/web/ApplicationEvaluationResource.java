@@ -2,10 +2,7 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
-import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
-import de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO;
+import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.Valid;
@@ -22,6 +19,17 @@ import org.springframework.web.bind.annotation.*;
 public class ApplicationEvaluationResource {
 
     private final ApplicationEvaluationService applicationEvaluationService;
+
+    @PostMapping("/applications({applicationId}/accept")
+    public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
+        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, null);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/applications({applicationId}/reject")
+    public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
+        return ResponseEntity.noContent().build();
+    }
 
     /**
      * REST endpoint to retrieve a paginated, sorted, and filtered list of application evaluation overviews
