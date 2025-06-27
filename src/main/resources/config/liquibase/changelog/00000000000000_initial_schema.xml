@@ -455,6 +455,11 @@
       <column name="document_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
+  
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
     </createTable>
 
     <!-- Foreign Keys -->

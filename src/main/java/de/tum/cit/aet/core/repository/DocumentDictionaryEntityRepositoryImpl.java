@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.repository;
 
 import de.tum.cit.aet.application.domain.Application_;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
+import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.domain.DocumentDictionary_;
 import jakarta.persistence.EntityManager;
@@ -37,19 +38,23 @@ public class DocumentDictionaryEntityRepositoryImpl implements DocumentDictionar
         List<DocumentDictionary> results = entityManager.createQuery(query).getResultList();
 
         ApplicationDocumentIdsDTO dto = new ApplicationDocumentIdsDTO();
-        Set<UUID> bachelorIds = new HashSet<>();
-        Set<UUID> masterIds = new HashSet<>();
-        Set<UUID> referenceIds = new HashSet<>();
+        Set<DocumentInformationHolderDTO> bachelorIds = new HashSet<>();
+        Set<DocumentInformationHolderDTO> masterIds = new HashSet<>();
+        Set<DocumentInformationHolderDTO> referenceIds = new HashSet<>();
 
         for (DocumentDictionary dd : results) {
             if (dd.getDocument() == null) continue;
 
-            UUID docId = dd.getDocumentDictionaryId();
+            DocumentInformationHolderDTO documentInformationHolderDTO = new DocumentInformationHolderDTO();
+            documentInformationHolderDTO.setName(dd.getName());
+            documentInformationHolderDTO.setId(dd.getDocumentDictionaryId());
+            documentInformationHolderDTO.setSize(dd.getDocument().getSizeBytes());
+
             switch (dd.getDocumentType()) {
-                case BACHELOR_TRANSCRIPT -> bachelorIds.add(docId);
-                case MASTER_TRANSCRIPT -> masterIds.add(docId);
-                case REFERENCE -> referenceIds.add(docId);
-                case CV -> dto.setCvDocumentDictionaryId(docId);
+                case BACHELOR_TRANSCRIPT -> bachelorIds.add(documentInformationHolderDTO);
+                case MASTER_TRANSCRIPT -> masterIds.add(documentInformationHolderDTO);
+                case REFERENCE -> referenceIds.add(documentInformationHolderDTO);
+                case CV -> dto.setCvDocumentDictionaryId(documentInformationHolderDTO);
                 default -> {} // For the moment, skip CUSTOM or others
             }
         }

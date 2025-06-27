@@ -1,24 +1,11 @@
-import {
-  Component,
-  ElementRef,
-  Injector,
-  computed,
-  effect,
-  inject,
-  input,
-  model,
-  output,
-  runInInjectionContext,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ApplicationResourceService } from 'app/generated';
-import { HttpEventType, HttpUploadProgressEvent } from '@angular/common/http';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, filter, map, share } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
+import { HttpEventType } from '@angular/common/http';
 import SharedModule from 'app/shared/shared.module';
+
+import { FileUpload } from 'primeng/fileupload';
+import { ButtonComponent } from '../button/button.component';
 
 const DocumentType = {
   BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
@@ -32,7 +19,7 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, SharedModule],
+  imports: [FontAwesomeModule, SharedModule, FileUpload, ButtonComponent],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
   standalone: true,
@@ -40,138 +27,80 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 export class UploadButtonComponent {
   readonly maxUploadSizeInMb = 1;
 
-  fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
+  fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
   uploadKey = input<string>('entity.upload.upload_instruction_standard');
   documentType = input.required<DocumentType>();
   applicationId = input.required<string>();
-
-  documentIds = model<string[] | undefined>();
+  documentIds = model<DocumentInformationHolderDTO[] | undefined>();
+  valid = output<boolean>();
 
   selectedFile = signal<File[] | undefined>(undefined);
   uploadProgress = signal<number>(0);
   isUploading = signal<boolean>(false);
-  isDragOver = signal(false);
-
-  valid = output<boolean>();
-
-  disabled = computed<boolean>(() => {
-    const documentIds = this.documentIds();
-    return documentIds !== undefined && documentIds.length !== 0;
-  });
-
-  documentIdLength = computed<number>(() => {
-    return this.documentIds()?.length ?? 0;
-  });
 
   private applicationService = inject(ApplicationResourceService);
-  private injector = inject(Injector);
 
-  onFileSelected(event: Event): void {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files.length > 0) {
-      const fileList: File[] = Array.from(fileInput.files);
-      this.selectedFile.set(fileList);
-    }
-    this.uploadFile();
-  }
+  disabled = computed(() => this.documentIds()?.length ?? 0 > 0);
 
-  uploadFile(): void {
-    const files = this.selectedFile();
-    if (!files) return; // Exit if no files are selected
-
-    // Calculate the total size of all selected files
-    let totalSize = 0;
-    files.forEach(f => (totalSize += f.size));
-
-    // Check if total size exceeds the maximum allowed size (in MB)
+  onFileSelected(event: any) {
+    console.log('here');
+    const files: File[] = event.currentFiles;
+    this.selectedFile.set(files);
+    console.log(JSON.stringify(event));
+    // Optional: You can validate size here before allowing upload
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > this.maxUploadSizeInMb * 1024 * 1024) {
-      alert('The total size of the file(s) being uploaded is too large. Upload aborted.');
-      return; // Abort the upload if size is too large
+      alert('Files are too large');
+      this.selectedFile.set(undefined);
     }
+    this.fileUploadComponent()?.clear();
+  }
 
-    // Set the uploading flag to true to indicate upload is in progress
+  onUpload(event: any) {
+    console.log('here');
+    const files: File[] | undefined = this.selectedFile();
+    if (!files) return;
     this.isUploading.set(true);
-
-    // Call the application service to upload the documents and share the observable
-    const upload$ = this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true).pipe(share()); // share() allows multiple subscribers to share the same observable execution
-
-    // Use Angular's injection context to run reactive logic
-    runInInjectionContext(this.injector, () => {
-      // Create a stream that filters upload progress events
-      const progress$ = upload$.pipe(
-        filter((event): event is HttpUploadProgressEvent => event.type === HttpEventType.UploadProgress),
-        map(event => {
-          // If total size is available, compute and return upload percentage
-          if (event.total) {
-            return Math.round((event.loaded / event.total) * 100);
+    this.applicationService
+      .uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true)
+      // .pipe(share())
+      .subscribe({
+        next: event => {
+          if (event.type === HttpEventType.UploadProgress && event.total) {
+            const percentDone = Math.round((event.loaded / event.total) * 100);
+            this.uploadProgress.set(percentDone);
+          } else if (event.type === HttpEventType.Response) {
+            console.log(JSON.stringify(event.body));
+            const uploadedIds = event.body;
+            this.documentIds.set(uploadedIds ?? []);
+            this.selectedFile.set([]);
+            this.isUploading.set(false);
           }
-          return 0;
-        }),
-      );
-
-      // Convert the progress observable into a signal for reactive updates
-      const uploadProgressSignal = toSignal(progress$, { initialValue: 0 });
-
-      // Watch the progress signal and update the component's uploadProgress state
-      effect(() => {
-        this.uploadProgress.set(uploadProgressSignal());
-      });
-
-      // Create a stream that filters for the final HTTP response (upload complete)
-      const response$ = upload$.pipe(
-        filter(event => event.type === HttpEventType.Response),
-        map(event => event.body), // Extract the response body (assumed to be document IDs)
-        catchError(err => {
-          // Handle errors: set uploading to false, log the error, and alert the user
+        },
+        error: err => {
+          console.error('Upload failed', err);
+          alert('Upload failed');
           this.isUploading.set(false);
-          console.error('Upload failed:', err);
-          alert('Upload failed. Please try again later');
-          return of(null); // Return a null observable to allow continued stream processing
-        }),
-      );
-
-      // Convert the response observable to a signal
-      const uploadResponseSignal = toSignal(response$, { initialValue: null });
-
-      // Watch the response signal and update the state when the upload is complete
-      effect(() => {
-        const response = uploadResponseSignal();
-        if (response) {
-          // Upload successful: update documentIds and mark uploading as false
-          this.isUploading.set(false);
-          this.documentIds.set([...response]); // Store uploaded document IDs
-        }
+        },
       });
-    });
   }
 
-  triggerFileInput(): void {
-    this.fileInputRef()?.nativeElement.click();
+  deleteDictionary(documentInfi: DocumentInformationHolderDTO) {
+    // TODO delete
   }
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragOver.set(true);
+  onClear() {
+    this.selectedFile.set(undefined);
+    this.uploadProgress.set(0);
+    this.isUploading.set(false);
   }
 
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragOver.set(false);
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragOver.set(false);
-
-    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      const files: File[] = Array.from(event.dataTransfer.files);
-      this.selectedFile.set(files);
-      this.uploadFile();
-      event.dataTransfer.clearData();
-    }
+  formatSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 }

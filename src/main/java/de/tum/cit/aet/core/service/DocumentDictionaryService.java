@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,11 +34,11 @@ public class DocumentDictionaryService {
      */
     public void updateDocumentDictionaries(
         Set<DocumentDictionary> existingEntries,
-        Set<Document> newDocuments,
+        Set<Pair<Document, String>> newDocuments,
         DocumentType type,
         DocumentDictionaryOwnerSetter ownerSetter
     ) {
-        Set<UUID> newDocumentIds = newDocuments.stream().map(Document::getDocumentId).collect(Collectors.toSet());
+        Set<UUID> newDocumentIds = newDocuments.stream().map(f -> f.getFirst().getDocumentId()).collect(Collectors.toSet());
 
         Set<UUID> existingDocumentIds = existingEntries.stream().map(dd -> dd.getDocument().getDocumentId()).collect(Collectors.toSet());
 
@@ -49,11 +50,13 @@ public class DocumentDictionaryService {
         }
 
         // Add new entries
-        for (Document doc : newDocuments) {
-            if (!existingDocumentIds.contains(doc.getDocumentId())) {
+        for (Pair<Document, String> doc : newDocuments) {
+            Document document = doc.getFirst();
+            if (!existingDocumentIds.contains(document.getDocumentId())) {
                 DocumentDictionary newEntry = new DocumentDictionary();
                 ownerSetter.accept(newEntry); // Set owning entity (applicant/application)
-                newEntry.setDocument(doc);
+                newEntry.setDocument(document);
+                newEntry.setName(doc.getSecond());
                 newEntry.setDocumentType(type);
                 save(newEntry);
             }

@@ -15,7 +15,6 @@ index.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
 model/applicationDetailDTO.ts
-model/applicantEvaluationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts
 model/applicationEvaluationDetailDTO.ts
 model/applicationEvaluationDetailListDTO.ts
@@ -26,6 +25,7 @@ model/applicationOverviewDTO.ts
 model/createApplicationDTO.ts
 model/createdJobDTO.ts
 model/customFieldAnswerDTO.ts
+model/documentInformationHolderDTO.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
 model/jobFilterOptionDTO.ts

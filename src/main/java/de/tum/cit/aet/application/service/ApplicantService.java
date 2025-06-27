@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,43 +71,22 @@ public class ApplicantService {
      */
     public void uploadCV(MultipartFile cv, Applicant applicant, User user) {
         Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(applicant, DocumentType.CV, Set.of(document));
+        updateDocumentDictionaries(applicant, DocumentType.CV, Set.of(Pair.of(document, cv.getName())));
     }
 
     /**
-     * Uploads multiple reference documents and updates the dictionary mapping.
+     * Uploads multiple documents and updates the dictionary mapping.
      *
-     * @param references the uploaded reference files
-     * @param applicant the applicant the references belong to
+     * @param references the uploaded files
+     * @param applicant the applicant the belong to
      * @param user the user uploading the documents
      */
-    public void uploadReferences(List<MultipartFile> references, Applicant applicant, User user) {
-        Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(applicant, DocumentType.REFERENCE, documents);
-    }
-
-    /**
-     * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
-     *
-     * @param bachelorTranscripts the uploaded bachelor transcript files
-     * @param applicant the applicant the transcripts belong to
-     * @param user the user uploading the documents
-     */
-    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Applicant applicant, User user) {
-        Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT, documents);
-    }
-
-    /**
-     * Uploads multiple master transcript documents and updates the dictionary mapping.
-     *
-     * @param masterTranscripts the uploaded master transcript files
-     * @param applicant the applicant the transcripts belong to
-     * @param user the user uploading the documents
-     */
-    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Applicant applicant, User user) {
-        Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT, documents);
+    public void uploadTranscripts(List<MultipartFile> references, DocumentType type, Applicant applicant, User user) {
+        Set<Pair<Document, String>> documents = references
+            .stream()
+            .map(file -> Pair.of(documentService.upload(file, user), file.getName()))
+            .collect(Collectors.toSet());
+        updateDocumentDictionaries(applicant, type, documents);
     }
 
     /**
@@ -116,7 +96,7 @@ public class ApplicantService {
      * @param type           the type of documents being updated (e.g., CV, REFERENCE)
      * @param newDocuments   the set of newly uploaded documents to associate
      */
-    protected void updateDocumentDictionaries(Applicant applicant, DocumentType type, Set<Document> newDocuments) {
+    protected void updateDocumentDictionaries(Applicant applicant, DocumentType type, Set<Pair<Document, String>> newDocuments) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(applicant, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplicant(applicant));
     }

@@ -7,6 +7,7 @@ import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
+import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -270,43 +272,47 @@ public class ApplicationService {
      */
     public void uploadCV(MultipartFile cv, Application application, User user) {
         Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(application, DocumentType.CV, Set.of(document));
+        updateDocumentDictionaries(application, DocumentType.CV, Set.of(Pair.of(document, cv.getName())));
     }
 
-    /**
-     * Uploads multiple reference documents and updates the dictionary mapping.
-     *
-     * @param references the uploaded reference files
-     * @param application the application the references belong to
-     * @param user the user uploading the documents
-     */
-    public void uploadReferences(List<MultipartFile> references, Application application, User user) {
-        Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
-    }
+    // /**
+    //  * Uploads multiple reference documents and updates the dictionary mapping.
+    //  *
+    //  * @param references the uploaded reference files
+    //  * @param application the application the references belong to
+    //  * @param user the user uploading the documents
+    //  */
+    // public void uploadReferences(List<MultipartFile> references, Application application, User user) {
+    //     Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
+    //     updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
+    // }
+
+    // /**
+    //  * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
+    //  *
+    //  * @param bachelorTranscripts the uploaded bachelor transcript files
+    //  * @param application the application the transcripts belong to
+    //  * @param user the user uploading the documents
+    //  */
+    // public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
+    //     Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
+    //     updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
+    // }
 
     /**
-     * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
+     * Uploads multiple transcript documents and updates the dictionary mapping.
      *
-     * @param bachelorTranscripts the uploaded bachelor transcript files
+     * @param transcripts the uploaded transcript files
+     * @param type the type of the transcript
      * @param application the application the transcripts belong to
      * @param user the user uploading the documents
      */
-    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
-        Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
-    }
-
-    /**
-     * Uploads multiple master transcript documents and updates the dictionary mapping.
-     *
-     * @param masterTranscripts the uploaded master transcript files
-     * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
-     */
-    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
-        Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT, documents);
+    public void uploadTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application, User user) {
+        Set<Pair<Document, String>> documents = transcripts
+            .stream()
+            .map(file -> Pair.of(documentService.upload(file, user), file.getName()))
+            .collect(Collectors.toSet());
+        updateDocumentDictionaries(application, type, documents);
     }
 
     /**
@@ -316,7 +322,7 @@ public class ApplicationService {
      * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
      * @param newDocuments   the set of newly uploaded documents to associate
      */
-    protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Document> newDocuments) {
+    protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Pair<Document, String>> newDocuments) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
     }
@@ -328,9 +334,9 @@ public class ApplicationService {
      * @param type the document type to filter by; must not be {@code null}
      * @return a set of document IDs matching the given application and document type; never {@code null}
      */
-    public Set<UUID> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
+    public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
-        return existingEntries.stream().map(e -> e.getDocument().getDocumentId()).collect(Collectors.toSet());
+        return existingEntries.stream().map(e -> DocumentInformationHolderDTO.getFromDocumentDictionary(e)).collect(Collectors.toSet());
     }
 
     /**
