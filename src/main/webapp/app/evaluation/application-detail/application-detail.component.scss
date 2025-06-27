@@ -6,6 +6,12 @@
   padding: 4rem;
   width: 100%;
   box-sizing: border-box;
+
+  .review-actions {
+    display: inline-flex; // inline-flex makes the div only as wide as needed by its content
+    gap: 0.75rem; // adjust gap as needed (e.g. 0.5rem or 1rem for more/less spacing)
+    align-items: center; // vertically center the buttons if they differ in height
+  }
 }
 
 jhi-filter-sort-bar {
@@ -15,4 +21,8 @@ jhi-filter-sort-bar {
   min-width: 50rem;
   margin-inline: auto;
   box-sizing: border-box;
+}
+
+jhi-application-carousel {
+  width: 100%;
 }

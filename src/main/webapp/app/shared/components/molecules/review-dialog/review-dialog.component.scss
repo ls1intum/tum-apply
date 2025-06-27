@@ -1,0 +1,63 @@
+.review-dialog {
+  width: 70%;
+  max-width: 40rem;
+  padding: 1rem;
+
+  .p-dialog-header {
+    align-items: flex-start;
+  }
+
+  .p-dialog-content {
+    overflow: visible;
+  }
+
+  .info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .applicant-name {
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .job-name {
+      color: var(--p-text-disabled);
+      .icon {
+        color: var(--p-primary-color);
+      }
+    }
+  }
+
+  .review-checkboxes {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      label {
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  jhi-string-input,
+  jhi-dropdown {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  p-footer {
+    padding-top: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+}

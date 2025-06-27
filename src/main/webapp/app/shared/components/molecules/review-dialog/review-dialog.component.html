@@ -1,0 +1,77 @@
+<p-dialog [modal]="true" [(visible)]="visible" styleClass="review-dialog">
+  <ng-template #header class="custom-header">
+    <div class="info">
+      <span class="applicant-name">{{ applicantName() }}</span>
+      <div class="job-name">
+        <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+        <span>{{ jobName() }}</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-container [ngTemplateOutlet]="mode() === 'ACCEPT' ? acceptTemplate : rejectTemplate" />
+</p-dialog>
+
+<ng-template #acceptTemplate>
+  <div>
+    <jhi-string-input
+      label="Message"
+      labelPosition="top"
+      placeholder="Add your message..."
+      [error]="false"
+      [required]="notifyApplicant()"
+      [disabled]="!notifyApplicant()"
+      [model]="message() ?? ''"
+      (modelChange)="onMessageChange($event)"
+    />
+    <ul class="review-checkboxes">
+      <!--
+      <li>
+        <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
+        <label>Notify the applicant</label>
+      </li>
+      -->
+      <li>
+        <p-checkbox [(ngModel)]="closeJob" [binary]="true" />
+        <label>Close job and reject all open applications</label>
+      </li>
+    </ul>
+  </div>
+  <p-footer class="footer">
+    <jhi-button
+      [label]="'evaluation.accept' | translate"
+      variant="outlined"
+      severity="success"
+      [disabled]="!canAccept()"
+      (click)="accept.emit()"
+    />
+  </p-footer>
+</ng-template>
+
+<ng-template #rejectTemplate>
+  <jhi-dropdown
+    [items]="rejectReasons"
+    label="Reason"
+    [required]="true"
+    [selected]="selectedRejectReason()"
+    placeholder="Select a reason..."
+    (selectedChange)="onSelectChange($event)"
+  />
+  <ul class="review-checkboxes">
+    <!--
+    <li>
+      <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
+      <label>Notify the applicant</label>
+    </li>
+    -->
+  </ul>
+  <p-footer class="footer">
+    <jhi-button
+      [label]="'evaluation.reject' | translate"
+      variant="outlined"
+      severity="danger"
+      [disabled]="!canReject()"
+      (click)="reject.emit()"
+    />
+  </p-footer>
+</ng-template>

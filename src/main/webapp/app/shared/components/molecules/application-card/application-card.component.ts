@@ -5,12 +5,10 @@ import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationE
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 
 import { TagComponent } from '../../atoms/tag/tag.component';
-import { RatingComponent } from '../../atoms/rating/rating.component';
-import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, RatingComponent, ButtonComponent, TranslateModule],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule],
   templateUrl: './application-card.component.html',
   styleUrl: './application-card.component.scss',
 })
@@ -26,13 +24,6 @@ export class ApplicationCardComponent {
     }
     return undefined;
   });
-
-  readonly isDisabled = computed(
-    () =>
-      this.disabled() ||
-      this.applicationDetails()?.applicationState === 'ACCEPTED' ||
-      this.applicationDetails()?.applicationState === 'REJECTED',
-  );
 
   readonly stateTextMap: Record<string, string> = {
     SENT: 'evaluation.statusBadge.SENT',

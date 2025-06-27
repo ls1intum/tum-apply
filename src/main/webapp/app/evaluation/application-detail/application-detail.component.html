@@ -15,6 +15,34 @@
     (next)="onNext()"
     (prev)="onPrev()"
   />
+  <div class="review-actions">
+    <jhi-button
+      [label]="'evaluation.accept' | translate"
+      variant="outlined"
+      severity="success"
+      icon="check"
+      [disabled]="!canReview()"
+      (click)="openAcceptDialog()"
+    />
+    <jhi-button
+      [label]="'evaluation.reject' | translate"
+      variant="outlined"
+      severity="danger"
+      icon="xmark"
+      [disabled]="!canReview()"
+      (click)="openRejectDialog()"
+    />
+  </div>
+
+  <jhi-review-dialog
+    [applicantName]="currentApplication()?.applicationDetailDTO?.applicant?.user?.name"
+    [jobName]="currentApplication()?.applicationDetailDTO?.jobTitle"
+    [(visible)]="reviewDialogVisible"
+    [mode]="reviewDialogMode()"
+    (accept)="acceptApplication()"
+    (reject)="rejectApplication()"
+  />
+
   @if (this.currentApplication(); as application) {
     <div class="w-full mt-8">
       <jhi-application-detail-card [application]="application.applicationDetailDTO">

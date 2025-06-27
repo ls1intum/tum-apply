@@ -84,7 +84,7 @@ export class ApplicationCarouselComponent {
 
   constructor(private readonly bp: BreakpointObserver) {
     const SMALL = '(max-width: 1024px)';
-    const ULTRA_WIDE = '(min-width: 1920px)';
+    const ULTRA_WIDE = '(min-width: 2048px)';
 
     const breakpoint = toSignal<BreakpointState | null>(this.bp.observe([SMALL, ULTRA_WIDE]), { initialValue: null });
 
