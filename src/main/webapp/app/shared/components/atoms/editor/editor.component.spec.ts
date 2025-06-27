@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EditorModule } from 'primeng/editor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { EditorComponent } from './editor.component';
 
@@ -11,7 +12,7 @@ describe('EditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditorComponent, FormsModule, ReactiveFormsModule, EditorModule, FontAwesomeModule],
+      imports: [EditorComponent, FormsModule, ReactiveFormsModule, EditorModule, FontAwesomeModule, TranslateModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditorComponent);
@@ -81,6 +82,6 @@ describe('EditorComponent', () => {
 
     fixture.detectChanges();
 
-    expect(component.errorMessage()).toBe('This field is required');
+    expect(component.errorMessage()).toBe('global.input.error.required');
   });
 });
