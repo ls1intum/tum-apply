@@ -1,6 +1,6 @@
 import { AbstractControl, FormControl } from '@angular/forms';
-import { Directive, computed, effect, inject, input, output, signal } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Directive, Signal, computed, effect, inject, input, output, signal } from '@angular/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Directive()
@@ -35,6 +35,8 @@ export abstract class BaseInputDirective<T> {
   });
 
   errorMessage = computed<string | null>(() => {
+    this.langChange();
+
     const ctrl = this.formControl();
     const errors = ctrl.errors;
     if (!errors) return null;
@@ -50,6 +52,7 @@ export abstract class BaseInputDirective<T> {
   });
 
   private translate = inject(TranslateService);
+  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
 
   constructor() {
     effect(onCleanup => {
