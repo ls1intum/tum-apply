@@ -6,12 +6,6 @@
     color: var(--p-text-color);
   }
 
-  // Add styling for labels on the left of the field
-  &.label-left {
-    flex-direction: row;
-    align-items: center;
-  }
-
   // Add styling for labels on the top of the field
   &.label-top .custom-label {
     margin-bottom: 0.25rem;

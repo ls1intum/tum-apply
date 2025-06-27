@@ -14,17 +14,6 @@
     color: var(--p-text-color);
   }
 
-  // Add styling for labels on the left of the field
-  &.label-left {
-    flex-direction: row;
-    align-items: center;
-
-    .input-wrapper,
-    .custom-input {
-      flex: 1;
-    }
-  }
-
   // Add styling for labels on the top of the field
   &.label-top .custom-label {
     margin-bottom: 0.25rem;
@@ -40,7 +29,7 @@
   }
 
   .p-inputtext {
-    color: var(--text-primary);
+    color: var(--p-text-primary);
     border: 0.1rem solid var(--p-border-default);
     background: transparent;
   }

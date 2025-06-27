@@ -14,7 +14,6 @@ export abstract class BaseInputDirective<T> {
   label = input<string | undefined>(undefined);
   placeholder = input<string | undefined>(undefined);
   required = input<boolean>(false);
-  labelPosition = input<'top' | 'left'>('top');
   width = input<string>('100%');
   id = input<string | undefined>(undefined);
 

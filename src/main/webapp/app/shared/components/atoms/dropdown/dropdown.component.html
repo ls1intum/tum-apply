@@ -1,10 +1,8 @@
 <div
   [ngClass]="{
-    'label-top': labelPosition() === 'top',
-    'label-left': labelPosition() === 'left',
     disabled: disabled(),
   }"
-  class="dropdown-wrapper"
+  class="label-top dropdown-wrapper"
 >
   @if (label()) {
     <label class="custom-label"
