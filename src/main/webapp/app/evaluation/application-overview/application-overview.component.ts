@@ -11,8 +11,10 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { EvaluationService } from '../service/evaluation.service';
+import { FilterField } from '../../shared/filter';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
-import { filterFields, sortOptions } from '../filterSortOptions';
+import { sortOptions } from '../filterSortOptions';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -27,6 +29,7 @@ export class ApplicationOverviewComponent {
   page = signal(0);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
+  filters = signal<FilterField[]>([]);
   total = signal(0);
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -70,10 +73,10 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
-  protected readonly filterFields = filterFields;
   protected readonly sortOptions = sortOptions;
 
-  private readonly evaluationService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -94,6 +97,14 @@ export class ApplicationOverviewComponent {
 
       void this.loadPage();
     });
+    void this.initFilterFields();
+  }
+
+  async initFilterFields(): Promise<void> {
+    const filters = await this.evaluationService.getFilterFields();
+    const params = this.qpSignal();
+    filters.forEach(filter => filter.withSelectionFromParam(params));
+    this.filters.set(filters);
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -103,6 +114,14 @@ export class ApplicationOverviewComponent {
     this.page.set(newPage);
     this.pageSize.set(rows);
 
+    this.updateUrlQueryParams();
+
+    void this.loadPage();
+  }
+
+  loadOnFilterEmit(filters: FilterField[]): void {
+    this.page.set(0);
+    this.filters.set(filters);
     this.updateUrlQueryParams();
 
     void this.loadPage();
@@ -119,33 +138,82 @@ export class ApplicationOverviewComponent {
     void this.loadPage();
   }
 
+  navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
+    const queryParams: Record<string, any> = {
+      sortBy: this.sortBy(),
+      sortDirection: this.sortDirection(),
+      applicationId: application.applicationId,
+    };
+
+    this.filters().forEach(filter => {
+      if (filter.selected.length > 0) {
+        queryParams[filter.field] = filter.selected.map(opt => encodeURIComponent(opt.field)).join(',');
+      }
+    });
+
+    void this.router.navigate(['/evaluation/application'], {
+      queryParams,
+    });
+  }
+
   async loadPage(): Promise<void> {
     try {
+      const offset = this.pageSize() * this.page();
+      const limit = this.pageSize();
+      const sortBy = this.sortBy();
+      const direction = this.sortDirection();
+
+      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
+      const statusFilters = Array.from(filtersByKey['status'] ?? []);
+      const jobFilters = Array.from(filtersByKey['job'] ?? []);
+
       const res = await firstValueFrom(
-        this.evaluationService.getApplicationsOverviews(this.pageSize(), this.page(), this.sortBy(), this.sortDirection()),
+        this.evaluationResourceService.getApplicationsOverviews(
+          offset,
+          limit,
+          sortBy,
+          direction,
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
+        ),
       );
 
       setTimeout(() => {
         this.pageData.set(res.applications ?? []);
         this.total.set(res.totalRecords ?? 0);
       });
+
+      this.updateUrlQueryParams();
     } catch (error) {
       console.error('Failed to load applications:', error);
     }
   }
 
   private buildQueryParams(): Params {
-    return {
+    const baseParams: Params = {
       page: this.page(),
       pageSize: this.pageSize(),
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
     };
+
+    const filterParams: Params = {};
+    this.filters().forEach(f => {
+      const entry = f.getQueryParamEntry();
+      if (entry) {
+        filterParams[entry[0]] = entry[1];
+      }
+    });
+
+    return {
+      ...baseParams,
+      ...filterParams,
+    };
   }
 
   private updateUrlQueryParams(): void {
     const qp: Params = this.buildQueryParams();
-    this.router.navigate([], {
+    void this.router.navigate([], {
       queryParams: qp,
       queryParamsHandling: 'merge',
       replaceUrl: true,

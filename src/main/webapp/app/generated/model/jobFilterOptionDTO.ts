@@ -7,12 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ApplicationDetailDTO } from './applicationDetailDTO';
 
 
-export interface ApplicationEvaluationDetailDTO { 
-    applicationDetailDTO: ApplicationDetailDTO;
-    rating?: number;
-    appliedAt?: string;
+export interface JobFilterOptionDTO { 
+    jobName?: string;
+    jobId?: string;
 }
 

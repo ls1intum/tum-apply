@@ -19,6 +19,8 @@ services:
       - shared-network
     volumes:
       - mysql_data:/var/lib/mysql
+    ports:
+      - '5432:5432'
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.1
     command: 'start-dev --import-realm'
@@ -41,6 +43,8 @@ services:
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
     environment:
+      - KEYCLOAK_URL
+      - KEYCLOAK_REALM
       - SPRING_PROFILES_ACTIVE=dev, api-docs
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root

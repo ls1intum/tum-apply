@@ -152,7 +152,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9080/realms/tumapply
+          issuer-uri: ${KEYCLOAK_URL}realms/${KEYCLOAK_REALM}
   task:
     execution:
       thread-name-prefix: tum-apply-task-

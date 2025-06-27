@@ -10,6 +10,7 @@ jobs:
     name: Ensure Server Starts Successfully
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    environment: test-server
 
     steps:
       - name: Checkout code
@@ -22,8 +23,13 @@ jobs:
           java-version: '21'
 
       - name: Start Spring Boot and check log
+        env:
+          KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+          KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+          KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+          KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
         run: |
-          ./gradlew bootRun > boot.log 2>&1 & SERVER_PID=$!
+          ./gradlew -Pprod bootRun > boot.log 2>&1 & SERVER_PID=$!
 
           # Wait for a few seconds to let server start
           sleep 240

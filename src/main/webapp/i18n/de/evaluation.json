@@ -5,8 +5,10 @@
     "negative": "Negativ",
     "neutral": "Neutral",
     "noRating": "Keine Bewertung verfügbar",
+
     "accept": "Annehmen",
     "reject": "Ablehnen",
+
     "statusBadge": {
       "SENT": "Ungelesen",
       "ACCEPTED": "Angenommen",
