@@ -1,5 +1,7 @@
 import { AbstractControl, FormControl } from '@angular/forms';
-import { Directive, computed, effect, input, output, signal } from '@angular/core';
+import { Directive, computed, effect, inject, input, output, signal } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Directive()
 export abstract class BaseInputDirective<T> {
@@ -39,13 +41,15 @@ export abstract class BaseInputDirective<T> {
     const key = Object.keys(errors)[0];
     const val = errors[key];
     const defaults: Record<string, string> = {
-      required: 'This field is required',
-      minlength: `Minimum length is ${val?.requiredLength}`,
-      maxlength: `Maximum length is ${val?.requiredLength}`,
-      pattern: 'Invalid format',
+      required: this.translate.instant('global.input.error.required'),
+      minlength: this.translate.instant('global.input.error.minLength', { min: val?.requiredLength }),
+      maxlength: this.translate.instant('global.input.error.maxLength', { max: val?.requiredLength }),
+      pattern: this.translate.instant('global.input.error.pattern'),
     };
     return defaults[key] ?? `Invalid: ${key}`;
   });
+
+  private translate = inject(TranslateService);
 
   constructor() {
     effect(onCleanup => {

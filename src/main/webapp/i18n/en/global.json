@@ -78,6 +78,14 @@
         }
       }
     },
+    "input": {
+      "error": {
+        "required": "This field is required.",
+        "minLength": "This field is required to be at least {{ min }} characters.",
+        "maxLength": "This field cannot be longer than {{ max }} characters.",
+        "pattern": "Invalid format."
+      }
+    },
     "editor": {
       "header": {
         "heading": "Heading",
