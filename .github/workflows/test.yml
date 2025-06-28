@@ -45,6 +45,12 @@ env:
 
 jobs:
   server-tests:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -78,18 +84,18 @@ jobs:
             TEST_MODULE_TAGS=$(echo "-DincludeModules=${CHANGED_MODULES[*]}")
 
             echo "Executing tests for modules: $CHANGED_MODULES"
-            ./gradlew --console=plain test jacocoTestReport -x webapp jacocoTestCoverageVerification "$TEST_MODULE_TAGS" | tee tests.log
+            ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification "$TEST_MODULE_TAGS" | tee tests.log
             exit 0
           fi
 
           echo "Executing all tests"
-          ./gradlew --console=plain test jacocoTestReport -x webapp jacocoTestCoverageVerification | tee tests.log
+          ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
       - name: Java Tests (All)
         # Non-draft pull-request or default branch
         if: ${{ env.RUN_ALL_TESTS }}
         run: |
           set -o pipefail
-          ./gradlew --console=plain test jacocoTestReport -x webapp jacocoTestCoverageVerification | tee tests.log
+          ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
       - name: Upload JUnit Test Results
         if: success() || failure()
         uses: actions/upload-artifact@v4
@@ -130,6 +136,12 @@ jobs:
       #    cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
 
   server-style:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -141,12 +153,12 @@ jobs:
           java-version: '${{ env.java }}'
           cache: 'gradle'
       - name: Java Code Style
-        run: ./gradlew spotlessCheck
+        run: ./gradlew spotlessCheck -Pprod
       - name: Java Documentation
-        run: ./gradlew checkstyleMain -x webapp
+        run: ./gradlew checkstyleMain -x webapp -Pprod
         if: success() || failure()
       - name: Java Architecture Tests
-        run: ./gradlew test -DincludeTags='ArchitectureTest' -x webapp
+        run: ./gradlew test -DincludeTags='ArchitectureTest' -x webapp -Pprod
         if: success() || failure()
       - name: Test Report
         uses: dorny/test-reporter@v2
@@ -157,6 +169,12 @@ jobs:
           reporter: java-junit
 
   client-tests:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -190,6 +208,12 @@ jobs:
           path: junit.xml
 
   client-tests-selected:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -227,6 +251,12 @@ jobs:
         if: success() || failure()
 
   client-compilation:
+    environment: test-server
+    env:
+      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

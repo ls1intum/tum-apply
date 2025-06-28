@@ -29,7 +29,7 @@ jobs:
           KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
           KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
         run: |
-          ./gradlew bootRun > boot.log 2>&1 & SERVER_PID=$!
+          ./gradlew -Pprod bootRun > boot.log 2>&1 & SERVER_PID=$!
 
           # Wait for a few seconds to let server start
           sleep 240
