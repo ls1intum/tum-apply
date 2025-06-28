@@ -13,9 +13,9 @@ public class CriteriaUtils {
     /**
      * Converts a Spring Data {@link Sort} into a list of JPA {@link Order} objects.
      *
-     * @param cb   the CriteriaBuilder
-     * @param root the root entity
-     * @param sort the sort specification
+     * @param cb                  the CriteriaBuilder
+     * @param root                the root entity
+     * @param sort                the sort specification
      * @param secondarySortColumn the column to use as a tiebreaker for deterministic ordering
      * @return list of JPA Order instances
      */
@@ -43,7 +43,9 @@ public class CriteriaUtils {
      */
     public static List<Predicate> buildDynamicFilters(CriteriaBuilder cb, Root<?> root, Map<String, List<?>> dynamicFilters) {
         List<Predicate> predicates = new ArrayList<>();
-        if (dynamicFilters == null || dynamicFilters.isEmpty()) return predicates;
+        if (dynamicFilters == null || dynamicFilters.isEmpty()) {
+            return predicates;
+        }
 
         for (Map.Entry<String, List<?>> entry : dynamicFilters.entrySet()) {
             String property = entry.getKey();
