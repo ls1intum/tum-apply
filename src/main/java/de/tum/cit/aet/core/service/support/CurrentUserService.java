@@ -22,6 +22,12 @@ public class CurrentUserService {
 
     private CurrentUser currentUser;
 
+    /**
+     * Lazily loads and returns the current user including their research group roles.
+     *
+     * @return the current authenticated user
+     * @throws AccessDeniedException if the user cannot be found in the database
+     */
     public CurrentUser getCurrentUser() {
         if (currentUser == null) {
             UUID userId = SecurityUtils.getCurrentUserId();
@@ -42,22 +48,48 @@ public class CurrentUserService {
         return currentUser;
     }
 
+    /**
+     * Returns the ID of the current authenticated user.
+     *
+     * @return UUID of the user
+     */
     public UUID getUserId() {
         return getCurrentUser().userId();
     }
 
+    /**
+     * Checks if the current user has admin privileges.
+     *
+     * @return true if the user is an admin, false otherwise
+     */
     public boolean isAdmin() {
         return getCurrentUser().isAdmin();
     }
 
+    /**
+     * Checks if the current user has a professor role.
+     *
+     * @return true if the user is a professor, false otherwise
+     */
     public boolean isProfessor() {
         return getCurrentUser().isProfessor();
     }
 
+    /**
+     * Returns the research group ID if the current user is a professor.
+     *
+     * @return an Optional containing the research group ID if user is a professor, or empty otherwise
+     */
     public Optional<UUID> getResearchGroupIdIfProfessor() {
         return getCurrentUser().getResearchGroupIdIfProfessor();
     }
 
+    /**
+     * Checks whether the current user is either an admin or professor of the specified research group.
+     *
+     * @param researchGroupId the ID of the research group
+     * @return true if the user has access to the group, false otherwise
+     */
     public boolean isAdminOrProfessorOf(UUID researchGroupId) {
         return isAdmin() || getResearchGroupIdIfProfessor().map(id -> id.equals(researchGroupId)).orElse(false);
     }

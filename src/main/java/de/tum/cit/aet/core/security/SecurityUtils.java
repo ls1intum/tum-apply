@@ -43,6 +43,12 @@ public final class SecurityUtils {
         return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority);
     }
 
+    /**
+     * Returns the current authenticated user's ID as a UUID.
+     *
+     * @return the UUID of the current user
+     * @throws AccessDeniedException if the authentication token is invalid or user ID cannot be extracted
+     */
     public static UUID getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken jwtToken) {
