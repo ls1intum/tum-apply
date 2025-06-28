@@ -25,15 +25,6 @@ class SecurityUtilsUnitTest {
     }
 
     @Test
-    void testGetCurrentUserLogin() {
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));
-        SecurityContextHolder.setContext(securityContext);
-        var login = SecurityUtils.getCurrentUserLogin();
-        assertThat(login).contains("admin");
-    }
-
-    @Test
     void testIsAuthenticated() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         Collection<GrantedAuthority> authorities = new ArrayList<>();
@@ -61,8 +52,8 @@ class SecurityUtilsUnitTest {
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("user", "user", authorities));
         SecurityContextHolder.setContext(securityContext);
 
-        assertThat(SecurityUtils.hasCurrentUserThisAuthority("ROLE_APPLICANT")).isTrue();
-        assertThat(SecurityUtils.hasCurrentUserThisAuthority("ROLE_ADMIN")).isFalse();
+        assertThat(SecurityUtils.hasCurrentUserAnyOfAuthorities("ROLE_APPLICANT")).isTrue();
+        assertThat(SecurityUtils.hasCurrentUserAnyOfAuthorities("ROLE_ADMIN")).isFalse();
     }
 
     @Test
@@ -75,17 +66,5 @@ class SecurityUtilsUnitTest {
 
         assertThat(SecurityUtils.hasCurrentUserAnyOfAuthorities("ROLE_APPLICANT", "ROLE_ADMIN")).isTrue();
         assertThat(SecurityUtils.hasCurrentUserAnyOfAuthorities("ROLE_ADMIN")).isFalse();
-    }
-
-    @Test
-    void testHasCurrentUserNoneOfAuthorities() {
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_APPLICANT"));
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("user", "user", authorities));
-        SecurityContextHolder.setContext(securityContext);
-
-        assertThat(SecurityUtils.hasCurrentUserNoneOfAuthorities("ROLE_APPLICANT", "ROLE_ADMIN")).isFalse();
-        assertThat(SecurityUtils.hasCurrentUserNoneOfAuthorities("ROLE_ADMIN")).isTrue();
     }
 }

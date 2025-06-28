@@ -1,7 +1,10 @@
 package de.tum.cit.aet.core.security;
 
-import de.tum.cit.aet.core.config.Constants;
+import de.tum.cit.aet.core.service.support.CurrentUserService;
+import jakarta.annotation.Nonnull;
 import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
 
@@ -9,10 +12,17 @@ import org.springframework.stereotype.Component;
  * Implementation of {@link AuditorAware} based on Spring Security.
  */
 @Component
-public class SpringSecurityAuditorAware implements AuditorAware<String> {
+public class SpringSecurityAuditorAware implements AuditorAware<UUID> {
+
+    private final ObjectFactory<CurrentUserService> currentUserServiceFactory;
+
+    public SpringSecurityAuditorAware(ObjectFactory<CurrentUserService> currentUserServiceFactory) {
+        this.currentUserServiceFactory = currentUserServiceFactory;
+    }
 
     @Override
-    public Optional<String> getCurrentAuditor() {
-        return Optional.of(SecurityUtils.getCurrentUserLogin().orElse(Constants.SYSTEM));
+    @Nonnull
+    public Optional<UUID> getCurrentAuditor() {
+        return Optional.ofNullable(currentUserServiceFactory.getObject().getUserId());
     }
 }
