@@ -1,11 +1,4 @@
-<div
-  [class.active]="isCalendarOpen"
-  [ngClass]="{
-    'label-top': labelPosition() === 'top',
-    'label-left': labelPosition() === 'left',
-  }"
-  class="datepicker-container"
->
+<div [class.active]="isCalendarOpen" class="label-top datepicker-container">
   <label class="custom-label"
     >{{ label() }}
     @if (required()) {

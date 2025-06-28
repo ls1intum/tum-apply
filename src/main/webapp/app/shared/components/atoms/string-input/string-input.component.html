@@ -1,11 +1,5 @@
 <div class="input-container">
-  <div
-    [ngClass]="{
-      'label-top': labelPosition() === 'top',
-      'label-left': labelPosition() === 'left',
-    }"
-    class="label-input-wrapper"
-  >
+  <div class="label-top label-input-wrapper">
     @if (label()) {
       <label class="custom-label" [for]="id()">
         {{ label() }}
@@ -45,7 +39,7 @@
     </div>
     <div class="error-text">
       @if (inputState() === 'invalid' && !isFocused()) {
-        <!-- {{ errorMessage() }} -->
+        {{ errorMessage() }}
       }
     </div>
   </div>
