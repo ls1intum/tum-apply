@@ -23,5 +23,38 @@
       "closed": "Geschlossen",
       "applicantFound": "Bewerber gefunden"
     }
+  },
+  "jobDetailPage": {
+    "header": {
+      "supervisor": "Betreuer/in: ",
+      "researchGroup": "Forschungsgruppe: ",
+      "location": "Standort: "
+    },
+    "positionOverview": {
+      "positionOverview": "Stellenübersicht",
+      "fieldOfStudies": "Studienrichtung:",
+      "researchArea": "Forschungsbereich:",
+      "workload": "Arbeitsaufwand:",
+      "hoursPerWeek": "{{workload}} Stunden/Woche",
+      "contractDuration": "Vertragslaufzeit:",
+      "years": "{{years}} Jahre",
+      "fundingType": "Finanzierungsart:",
+      "startDate": "Startdatum:",
+      "created": "Erstellt am:",
+      "lastModified": "Zuletzt geändert:"
+    },
+    "researchGroupDetails": {
+      "researchGroup": "Forschungsgruppe"
+    },
+    "positionDetails": {
+      "positionDetails": "Stellendetails",
+      "description": "Projektbeschreibung",
+      "tasks": "Aufgaben & Verantwortlichkeiten",
+      "requirements": "Anforderungen"
+    },
+    "dataPrivacy": {
+      "dataProtectionInformation": "Hinweis zum Datenschutz:",
+      "dataProtectionText": "Im Rahmen Ihrer Bewerbung um eine Stelle an der Technischen Universität München (TUM) übermitteln Sie personenbezogene Daten. Beachten Sie bitte hierzu unsere <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\">Datenschutzhinweise gemäß Art. 13 Datenschutz-Grundverordnung (DSGVO) zur Erhebung und Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung. </a> Durch die Übermittlung Ihrer Bewerbung bestätigen Sie, dass Sie die Datenschutzhinweise der TUM zur Kenntnis genommen haben."
+    }
   }
 }

@@ -79,7 +79,7 @@ const routes: Routes = [
   // Job
   // ======================================================================================
   {
-    path: 'job/detail',
+    path: 'job/detail/:job_id',
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./job/job-detail/job-detail.component').then(m => m.JobDetailComponent),
   },

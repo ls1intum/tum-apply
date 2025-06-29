@@ -1,13 +1,15 @@
 import { Component, inject, input } from '@angular/core';
-import { JobDTO } from '../../generated';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import dayjs from 'dayjs/esm';
+import { TranslateModule } from '@ngx-translate/core';
+
+import TranslateDirective from '../../shared/language/translate.directive';
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TagComponent],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
@@ -17,13 +19,23 @@ export class JobDetailComponent {
   researchGroup = input<string>('Applied Education Technologies');
   title = input<string>('Doctorate Position in Advanced Materials Science');
   fieldOfStudies = input<string>('Computer Science');
-  researchArea = input<string>('Molecular AI');
-  location = input<JobDTO.LocationEnum>(JobDTO.LocationEnum.Garching);
-  workload = input<number>(100);
+  researchArea = input<string>('Advanced Nanocomposite Materials for Energy Storage');
+  location = input<string>('Garching');
+  workload = input<number>(30);
   contractDuration = input<number>(3);
-  fundingType = input<JobDTO.FundingTypeEnum>(JobDTO.FundingTypeEnum.FullyFunded);
-  description = input<string>('Test description');
-  tasks = input<string>('Test tasks');
+  fundingType = input<string>('Fully Funded');
+  description = input<string>(`
+    <p>This exciting PhD position focuses on developing next-generation nanocomposite materials for advanced energy storage applications. The successful candidate will work on synthesizing novel graphene-based composites with enhanced electrochemical properties for use in high-performance batteries and supercapacitors. The project involves cutting-edge characterization techniques including electron microscopy, X-ray spectroscopy, and electrochemical testing. The research will contribute to our understanding of structure-property relationships in nanocomposite materials and has direct applications in sustainable energy technologies. You will be part of an international team working on breakthrough technologies that could revolutionize energy storage systems.</p>`);
+  tasks = input<string>(`
+  <ol>
+    <li>Design and synthesize novel nanocomposite materials using advanced chemical methods</li>
+    <li>Characterize materials using state-of-the-art analytical techniques (SEM, TEM, XPS, Raman)</li>
+    <li>Conduct electrochemical testing and performance evaluation of energy storage devices</li>
+    <li>Analyze experimental data and develop structure-property correlations</li>
+    <li>Present research findings at international conferences and publish in high-impact journals</li>
+    <li>Collaborate with industry partners and international research institutions</li>
+    <li>Mentor undergraduate students and assist in laboratory management</li>
+  </ol>`);
   requirements = input<string>(`
   <p><strong>Minimum Qualifications:</strong></p>
   <ol>
@@ -55,16 +67,19 @@ export class JobDetailComponent {
     <a href="https://www.tum.de/en/studies/doctorate/" target="_blank" rel="noopener">TUM Doctoral Programs page</a>.
   </p>
 `);
-  startDate = input<Date>(new Date('2024-01-01'));
-  createdAt = input<Date>(new Date('2024-01-01'));
-  lastModifiedAt = input<Date>(new Date('2024-01-01'));
-  researchGroupDescription = input<string>('Test research group description');
-  researchGroupEmail = input<string>('https://www.example.com/research-group');
-  reseachGroupWebsite = input<string>('https://www.example.com/research-group');
-  researchGroupStreet = input<string>('Example Street 1');
-  researchGroupPostalCode = input<string>('12345');
-  researchGroupCity = input<string>('Example City');
+  startDate = input<string>(dayjs(new Date('2024-01-01')).format('DD.MM.YYYY'));
+  createdAt = input<string>(dayjs(new Date('2024-01-01')).format('DD.MM.YYYY'));
+  lastModifiedAt = input<string>(dayjs(new Date('2026-01-11')).format('DD.MM.YYYY'));
+
   // display research group info
+  researchGroupDescription = input<string>(
+    `Our research group focuses on developing innovative materials for energy and environmental applications. We combine theoretical modeling with experimental synthesis to create materials with tailored properties for specific applications. Our interdisciplinary approach brings together expertise in chemistry, physics, and engineering.<ol><li>test</li><li>test2</li> </ol>`,
+  );
+  researchGroupEmail = input<string>('data@tum.de');
+  researchGroupWebsite = input<string>('https://db.in.tum.de/');
+  researchGroupStreet = input<string>('Lichtenbergstraße 4');
+  researchGroupPostalCode = input<string>('85748');
+  researchGroupCity = input<string>('Garching b. München');
 
   private router = inject(Router);
 

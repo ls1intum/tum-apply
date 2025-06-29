@@ -25,7 +25,7 @@
           label="{{ 'myPositionsPage.actionButton.view' | translate }}"
           severity="primary"
           data-testid="view"
-          (click)="onViewJob()"
+          (click)="onViewJob(job.jobId)"
         />
         <jhi-button
           label="{{ 'myPositionsPage.actionButton.edit' | translate }}"
