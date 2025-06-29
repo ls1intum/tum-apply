@@ -25,6 +25,7 @@ import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -310,7 +311,7 @@ public class ApplicationService {
     public void uploadTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application, User user) {
         Set<Pair<Document, String>> documents = transcripts
             .stream()
-            .map(file -> Pair.of(documentService.upload(file, user), file.getName()))
+            .map(file -> Pair.of(documentService.upload(file, user), Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf")))
             .collect(Collectors.toSet());
         updateDocumentDictionaries(application, type, documents);
     }

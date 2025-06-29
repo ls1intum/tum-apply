@@ -4,7 +4,6 @@
   accept="application/pdf"
   mode="advanced"
   [maxFileSize]="maxUploadSizeInMb * 1024 * 1024"
-  (uploadHandler)="onUpload($event)"
   (onClear)="onClear()"
   [disabled]="disabled()"
   (onSelect)="onFileSelected($event)"
@@ -15,52 +14,75 @@
       <jhi-button
         variant="outlined"
         icon="upload"
-        (click)="uploadCallback()"
+        (click)="onUpload()"
         label="Upload"
-        [disabled]="(selectedFile() ?? []).length === 0"
+        [disabled]="(selectedFiles() ?? []).length === 0"
       ></jhi-button>
-      <jhi-button variant="outlined" icon="times" (click)="clearCallback()" label="Clear"></jhi-button>
+      <jhi-button variant="outlined" icon="times" (click)="deleteAll()" label="Clear"></jhi-button>
     </div>
   </ng-template>
   <ng-template #empty>
     <div>Drag and drop files to here to upload.</div>
   </ng-template>
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
-    @if (files?.length > 0) {
-      <div class="mt-0">
-        @for (file of files; track $index) {
-          <div class="flex items-center justify-between border p-2 rounded mb-2">
-            <div class="flex flex-col font-bold">
-              <span class="font-small" contenteditable>{{ file.name }}</span>
-              <small class="text-muted">{{ formatSize(file.size) }}</small>
-            </div>
-            <jhi-button
-              icon="times"
-              severity="danger"
-              variant="outlined"
-              class="p-button-rounded p-button-text p-button-danger"
-              (click)="removeFileCallback($event, $index)"
-              aria-label="Remove file"
-            >
-            </jhi-button>
-          </div>
-        }
-      </div>
-    }
-    @if (documentIds(); as documentIds) {
-      <div class="mt-0">
-        @for (info of documentIds; track $index) {
-          <div class="flex items-center justify-between border p-2 rounded mb-2">
-            <div class="flex flex-col font-bold">
-              <span class="font-small" contenteditable>{{ info.name }}</span>
-              <small class="text-muted">{{ formatSize(info.size) }}</small>
-            </div>
-            <jhi-button icon="trash-alt" severity="danger" variant="outlined" (click)="deleteDictionary(info)" aria-label="Remove file">
-            </jhi-button>
-          </div>
-        }
-      </div>
-    }
+    <div class="mt-0 w-full">
+      <table class="table-fixed border-collapse w-full slim-table">
+        <tbody>
+          @if (selectedFiles(); as selectedFiles) {
+            @for (file of selectedFiles; track $index) {
+              <tr class="border border-gray-400 leading-0 border-x-0">
+                <td>
+                  <fa-icon icon="cloud-arrow-up" class="icon-color-warning" />
+                </td>
+                <td>
+                  <div class="font-small text-wrap" contenteditable>{{ file.name }}</div>
+                </td>
+                <td>
+                  <small class="text-muted">{{ formatSize(file.size) }}</small>
+                </td>
+                <td>
+                  <jhi-button
+                    icon="times"
+                    severity="danger"
+                    variant="outlined"
+                    (click)="removeFileCallback($event, $index)"
+                    aria-label="Remove file"
+                  >
+                  </jhi-button>
+                </td>
+              </tr>
+            }
+          }
+          @if (documentIds(); as documentIds) {
+            <!-- <div class="mt-0"> -->
+            @for (info of documentIds; track $index) {
+              <tr class="border border-gray-400 leading-0 border-x-0">
+                <td>
+                  <fa-icon icon="file-circle-check" class="icon-color-success" />
+                </td>
+                <td>
+                  <span class="font-small" contenteditable>{{ info.name }}</span>
+                </td>
+                <td>
+                  <small class="text-muted">{{ formatSize(info.size) }}</small>
+                </td>
+                <td class="border-r-0">
+                  <jhi-button
+                    icon="trash-alt"
+                    severity="danger"
+                    variant="outlined"
+                    (click)="deleteDictionary(info)"
+                    aria-label="Remove file"
+                  >
+                  </jhi-button>
+                </td>
+              </tr>
+            }
+            <!-- </div> -->
+          }
+        </tbody>
+      </table>
+    </div>
   </ng-template>
   <ng-template #file></ng-template>
 </p-fileupload>

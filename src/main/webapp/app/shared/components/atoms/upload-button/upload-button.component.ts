@@ -35,7 +35,7 @@ export class UploadButtonComponent {
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
 
-  selectedFile = signal<File[] | undefined>(undefined);
+  selectedFiles = signal<File[] | undefined>(undefined);
   uploadProgress = signal<number>(0);
   isUploading = signal<boolean>(false);
 
@@ -44,56 +44,58 @@ export class UploadButtonComponent {
   disabled = computed(() => this.documentIds()?.length ?? 0 > 0);
 
   onFileSelected(event: any) {
-    console.log('here');
     const files: File[] = event.currentFiles;
-    this.selectedFile.set(files);
-    console.log(JSON.stringify(event));
-    // Optional: You can validate size here before allowing upload
+    const selectedFile = this.selectedFiles();
+    if (selectedFile === undefined) {
+      this.selectedFiles.set(files);
+    } else {
+      this.selectedFiles.set([...selectedFile, ...files]);
+    }
     const totalSize = files.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > this.maxUploadSizeInMb * 1024 * 1024) {
       alert('Files are too large');
-      this.selectedFile.set(undefined);
+      this.selectedFiles.set(undefined);
     }
     this.fileUploadComponent()?.clear();
   }
 
-  onUpload(event: any) {
-    console.log('here');
-    const files: File[] | undefined = this.selectedFile();
+  onUpload() {
+    const files: File[] | undefined = this.selectedFiles();
     if (!files) return;
     this.isUploading.set(true);
-    this.applicationService
-      .uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true)
-      // .pipe(share())
-      .subscribe({
-        next: event => {
-          if (event.type === HttpEventType.UploadProgress && event.total) {
-            const percentDone = Math.round((event.loaded / event.total) * 100);
-            this.uploadProgress.set(percentDone);
-          } else if (event.type === HttpEventType.Response) {
-            console.log(JSON.stringify(event.body));
-            const uploadedIds = event.body;
-            this.documentIds.set(uploadedIds ?? []);
-            this.selectedFile.set([]);
-            this.isUploading.set(false);
-          }
-        },
-        error: err => {
-          console.error('Upload failed', err);
-          alert('Upload failed');
+    this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true).subscribe({
+      next: event => {
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          const percentDone = Math.round((event.loaded / event.total) * 100);
+          this.uploadProgress.set(percentDone);
+        } else if (event.type === HttpEventType.Response) {
+          console.log(JSON.stringify(event.body));
+          const uploadedIds = event.body;
+          this.documentIds.set(uploadedIds ?? []);
+          this.selectedFiles.set([]);
           this.isUploading.set(false);
-        },
-      });
+        }
+      },
+      error: err => {
+        console.error('Upload failed', err);
+        alert('Upload failed');
+        this.isUploading.set(false);
+      },
+    });
   }
 
-  deleteDictionary(documentInfi: DocumentInformationHolderDTO) {
+  deleteDictionary(documentInfo: DocumentInformationHolderDTO) {
     // TODO delete
   }
 
   onClear() {
-    this.selectedFile.set(undefined);
+    // this.selectedFile.set(undefined);
     this.uploadProgress.set(0);
     this.isUploading.set(false);
+  }
+
+  deleteAll() {
+    // TODO
   }
 
   formatSize(bytes: number): string {
