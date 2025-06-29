@@ -310,3 +310,24 @@
     color: var(--p-primary-color);
   }
 }
+
+/* Styling for links */
+.link {
+  color: var(--p-primary-color);
+
+  &:hover {
+    color: var(--p-primary-color-hover);
+    text-decoration: underline;
+  }
+}
+
+/* Styles for overriding list styles in Job Detail Page */
+.description-text ol,
+.description-text ul {
+  margin-left: 2rem;
+  list-style: initial;
+}
+
+.description-text ol {
+  list-style-type: decimal;
+}

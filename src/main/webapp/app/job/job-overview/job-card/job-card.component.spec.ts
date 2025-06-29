@@ -2,26 +2,41 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendar, faClock, faFlaskVial, faGraduationCap, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { Router, provideRouter } from '@angular/router';
+import { Component } from '@angular/core';
 
 import { JobCardComponent } from './job-card.component';
+
+@Component({ template: '' })
+class DummyComponent {}
 
 describe('JobCardComponent', () => {
   let component: JobCardComponent;
   let fixture: ComponentFixture<JobCardComponent>;
   let library: FaIconLibrary;
+  let router: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [JobCardComponent],
+      providers: [
+        provideRouter([
+          { path: 'job/detail/:id', component: DummyComponent },
+          { path: 'application/create/:id', component: DummyComponent },
+        ]),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(JobCardComponent);
     component = fixture.componentInstance;
 
+    router = TestBed.inject(Router);
+
     library = TestBed.inject(FaIconLibrary);
     library.addIcons(faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial);
 
     fixture.componentRef.setInput('jobTitle', 'Test Job');
+    fixture.componentRef.setInput('jobId', '123');
     fixture.componentRef.setInput('fieldOfStudies', 'Computer Science');
     fixture.componentRef.setInput('location', 'Munich');
     fixture.componentRef.setInput('professor', 'Prof. John Doe');
@@ -63,5 +78,13 @@ describe('JobCardComponent', () => {
     const button = fixture.debugElement.query(By.css('.apply-button')).nativeElement;
     button.click();
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should navigate to job detail page when "View" button is clicked', () => {
+    const navigateSpy = jest.spyOn(router, 'navigate');
+    const button = fixture.debugElement.query(By.css('.view-button')).nativeElement;
+    button.click();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/job/detail/123']);
   });
 });
