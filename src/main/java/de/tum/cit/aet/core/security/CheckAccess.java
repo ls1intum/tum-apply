@@ -6,4 +6,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CheckAccess {
+    AccessTarget type() default AccessTarget.RESEARCH_GROUP_ID;
 }
