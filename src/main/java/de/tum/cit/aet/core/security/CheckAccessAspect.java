@@ -1,6 +1,6 @@
 package de.tum.cit.aet.core.security;
 
-import de.tum.cit.aet.core.service.support.CurrentUserService;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import java.util.UUID;
@@ -28,16 +28,36 @@ public class CheckAccessAspect {
     /**
      * Intercepts methods annotated with {@link CheckAccess} and checks access based on the method arguments.
      *
-     * @param joinPoint the intercepted join point
+     * @param joinPoint   the intercepted join point
+     * @param checkAccess the CheckAccess annotation instance
      * @return the result of the method execution if access is granted
      * @throws Throwable if access is denied or the method throws an exception
      */
-    @Around("@annotation(CheckAccess)")
-    public Object checkAccess(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(checkAccess)")
+    public Object checkAccess(ProceedingJoinPoint joinPoint, CheckAccess checkAccess) throws Throwable {
         for (Object arg : joinPoint.getArgs()) {
-            UUID researchGroupId = extractGroupId(arg);
-            if (researchGroupId != null && !hasAccess(researchGroupId)) {
-                throw new AccessDeniedException("Access denied to research group " + researchGroupId);
+            switch (checkAccess.type()) {
+                case RESEARCH_GROUP_ID -> {
+                    UUID researchGroupId = extractGroupId(arg);
+                    if (researchGroupId != null && !hasAccess(researchGroupId)) {
+                        throw new AccessDeniedException("Access denied to research group " + researchGroupId);
+                    }
+                }
+                case USER_ID -> {
+                    if (arg instanceof UUID userId && !currentUserService.isCurrentUserOrAdmin(userId)) {
+                        throw new AccessDeniedException("Access denied for user ID " + userId);
+                    }
+                }
+                case PROFESSOR_ID -> {
+                    if (arg instanceof UUID professorId) {
+                        if (
+                            !(currentUserService.isAdmin() ||
+                                (currentUserService.isCurrentUser(professorId) && currentUserService.isProfessor()))
+                        ) {
+                            throw new AccessDeniedException("Access denied: Not professor or admin for user ID " + professorId);
+                        }
+                    }
+                }
             }
         }
         return joinPoint.proceed();
