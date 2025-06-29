@@ -1,5 +1,7 @@
-package de.tum.cit.aet.core.service.support;
+package de.tum.cit.aet.core.service;
 
+import de.tum.cit.aet.core.domain.CurrentUser;
+import de.tum.cit.aet.core.domain.ResearchGroupRole;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.security.SecurityUtils;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -58,6 +60,25 @@ public class CurrentUserService {
     }
 
     /**
+     * Returns the research group ID if the current user is a professor.
+     *
+     * @return an Optional containing the research group ID if user is a professor, or empty otherwise
+     */
+    public Optional<UUID> getResearchGroupIdIfProfessor() {
+        return getCurrentUser().getResearchGroupIdIfProfessor();
+    }
+
+    /**
+     * Checks whether the given userId matches the current user.
+     *
+     * @param userId the user ID to check
+     * @return true if the current user is the given user
+     */
+    public boolean isCurrentUser(UUID userId) {
+        return getUserId().equals(userId);
+    }
+
+    /**
      * Checks if the current user has admin privileges.
      *
      * @return true if the user is an admin, false otherwise
@@ -76,15 +97,6 @@ public class CurrentUserService {
     }
 
     /**
-     * Returns the research group ID if the current user is a professor.
-     *
-     * @return an Optional containing the research group ID if user is a professor, or empty otherwise
-     */
-    public Optional<UUID> getResearchGroupIdIfProfessor() {
-        return getCurrentUser().getResearchGroupIdIfProfessor();
-    }
-
-    /**
      * Checks whether the current user is either an admin or professor of the specified research group.
      *
      * @param researchGroupId the ID of the research group
@@ -92,5 +104,15 @@ public class CurrentUserService {
      */
     public boolean isAdminOrProfessorOf(UUID researchGroupId) {
         return isAdmin() || getResearchGroupIdIfProfessor().map(id -> id.equals(researchGroupId)).orElse(false);
+    }
+
+    /**
+     * Checks whether the given userId matches the current user or the current user is an admin.
+     *
+     * @param userId the user ID to check
+     * @return true if the current user is the given user or is an admin
+     */
+    public boolean isCurrentUserOrAdmin(UUID userId) {
+        return isAdmin() || getUserId().equals(userId);
     }
 }
