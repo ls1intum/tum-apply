@@ -38,10 +38,9 @@ export class UploadButtonComponent {
   selectedFiles = signal<File[] | undefined>(undefined);
   uploadProgress = signal<number>(0);
   isUploading = signal<boolean>(false);
+  disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
 
   private applicationService = inject(ApplicationResourceService);
-
-  disabled = computed(() => this.documentIds()?.length ?? 0 > 0);
 
   onFileSelected(event: any) {
     const files: File[] = event.currentFiles;
@@ -59,7 +58,7 @@ export class UploadButtonComponent {
     this.fileUploadComponent()?.clear();
   }
 
-  onUpload() {
+  onUpload(): void {
     const files: File[] | undefined = this.selectedFiles();
     if (!files) return;
     this.isUploading.set(true);
@@ -84,17 +83,17 @@ export class UploadButtonComponent {
     });
   }
 
-  deleteDictionary(documentInfo: DocumentInformationHolderDTO) {
+  deleteDictionary(documentInfo: DocumentInformationHolderDTO): void {
     // TODO delete
   }
 
-  onClear() {
+  onClear(): void {
     // this.selectedFile.set(undefined);
     this.uploadProgress.set(0);
     this.isUploading.set(false);
   }
 
-  deleteAll() {
+  deleteAll(): void {
     // TODO
   }
 
@@ -103,6 +102,6 @@ export class UploadButtonComponent {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)).toString() + ' ' + sizes[i];
   }
 }
