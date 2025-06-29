@@ -43,7 +43,9 @@ public class DocumentDictionaryEntityRepositoryImpl implements DocumentDictionar
         Set<DocumentInformationHolderDTO> referenceIds = new HashSet<>();
 
         for (DocumentDictionary dd : results) {
-            if (dd.getDocument() == null) continue;
+            if (dd.getDocument() == null) {
+                continue;
+            }
 
             DocumentInformationHolderDTO documentInformationHolderDTO = new DocumentInformationHolderDTO();
             documentInformationHolderDTO.setName(dd.getName());

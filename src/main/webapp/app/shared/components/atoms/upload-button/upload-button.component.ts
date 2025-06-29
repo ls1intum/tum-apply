@@ -3,8 +3,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import { HttpEventType } from '@angular/common/http';
 import SharedModule from 'app/shared/shared.module';
-
 import { FileUpload } from 'primeng/fileupload';
+
 import { ButtonComponent } from '../button/button.component';
 
 const DocumentType = {
