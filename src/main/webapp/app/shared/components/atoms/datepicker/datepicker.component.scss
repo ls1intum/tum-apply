@@ -2,10 +2,8 @@
   display: flex;
   flex-direction: column;
 
-  // Add styling for labels on the left of the field
-  &.label-left {
-    flex-direction: row;
-    align-items: center;
+  .custom-label {
+    color: var(--p-text-color);
   }
 
   // Add styling for labels on the top of the field
@@ -18,6 +16,7 @@
 
     .p-inputtext {
       border: 0.1rem solid var(--p-border-default);
+      background: transparent;
 
       &:disabled {
         background-color: var(--p-background-disabled);
@@ -32,7 +31,7 @@
 
     .p-datepicker-dropdown {
       background-color: var(--p-primary-color);
-      color: var(--p-text-on-primary);
+      color: var(--p-background-default);
       border: 0.1rem;
 
       &:disabled {
