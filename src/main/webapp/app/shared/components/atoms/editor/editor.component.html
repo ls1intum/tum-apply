@@ -1,0 +1,70 @@
+<div class="input-container">
+  <div class="label-top label-input-wrapper">
+    @if (label()) {
+      <label class="custom-label" [for]="id()">
+        {{ label() }}
+        @if (icon()) {
+          <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+        }
+        @if (required()) {
+          <span class="required">*</span>
+        }
+      </label>
+    }
+
+    <div class="input-wrapper" [class.error]="inputState() === 'invalid'">
+      <p-editor
+        [id]="id()"
+        type="text"
+        [placeholder]="placeholder() ?? ''"
+        [readonly]="disabled()"
+        [ngModel]="model()"
+        (onTextChange)="onInputChange($event)"
+        (blur)="onBlur()"
+        (focus)="onFocus()"
+        [required]="required()"
+        [style]="{ width: width() }"
+        autocomplete="off"
+        pInputText
+        class="custom-input"
+      >
+        <ng-template #header>
+          <span class="ql-formats">
+            <select class="ql-header">
+              <option value="1" jhiTranslate="editor.header.heading" aria-label="heading"></option>
+              <option value="2" jhiTranslate="editor.header.subheading" aria-label="subheading"></option>
+              <option selected jhiTranslate="editor.header.normal" aria-label="normal"></option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button type="button" class="ql-bold" aria-label="Bold"></button>
+            <button type="button" class="ql-italic" aria-label="Italic"></button>
+            <button type="button" class="ql-underline" aria-label="Underline"></button>
+          </span>
+          <span class="ql-formats">
+            <select class="ql-color" aria-label="color"></select>
+            <select class="ql-background" aria-label="background"></select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" value="ordered" aria-label="Ordered List" type="button"></button>
+            <button class="ql-list" value="bullet" aria-label="Unordered List" type="button"></button>
+            <select class="ql-align">
+              <option selected></option>
+              <option value="center" jhiTranslate="editor.align.center" aria-label="Align center"></option>
+              <option value="right" jhiTranslate="editor.align.right" aria-label="Align right"></option>
+              <option value="justify" jhiTranslate="editor.align.justify" aria-label="Align justify"></option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-link" aria-label="Insert Link" type="button"></button>
+          </span>
+        </ng-template>
+      </p-editor>
+    </div>
+    <div class="error-text">
+      @if (inputState() === 'invalid' && !isFocused()) {
+        {{ errorMessage() }}
+      }
+    </div>
+  </div>
+</div>

@@ -11,6 +11,7 @@ import {
   faChevronUp,
   faEnvelope,
 } from '@fortawesome/free-solid-svg-icons';
+import { TranslateModule } from '@ngx-translate/core';
 
 import ApplicationCreationPage1Component, { ApplicationCreationPage1Data, dropdownLanguage } from './application-creation-page1.component';
 
@@ -38,7 +39,7 @@ describe('ApplicationCreationPage1Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationCreationPage1Component],
+      imports: [ApplicationCreationPage1Component, TranslateModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationCreationPage1Component);

@@ -3,6 +3,7 @@ import { ComponentRef } from '@angular/core';
 import { ApplicantDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faChevronDown, faChevronUp, faCloudArrowUp, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { TranslateModule } from '@ngx-translate/core';
 
 import ApplicationCreationPage2Component, { ApplicationCreationPage2Data } from './application-creation-page2.component';
 
@@ -24,7 +25,7 @@ describe('ApplicationCreationPage2Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationCreationPage2Component],
+      imports: [ApplicationCreationPage2Component, TranslateModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationCreationPage2Component);

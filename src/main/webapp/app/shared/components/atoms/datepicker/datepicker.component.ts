@@ -20,7 +20,6 @@ export class DatePickerComponent {
   required = input<boolean>(false);
   disabled = input<boolean>(false);
   placeholder = input<string>('Select a date...');
-  labelPosition = input<'top' | 'left'>('top');
 
   /**
    * Input date value in ISO format: 'YYYY-MM-DD'
