@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ApplicantDTO, ApplicationForApplicantDTO } from 'app/generated';
+import { ApplicantDTO, ApplicationForApplicantDTO, DocumentInformationHolderDTO } from 'app/generated';
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
@@ -61,8 +61,8 @@ export default class ApplicationCreationPage2Component {
   data = model.required<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
-  documentIdsBachelorTranscript = input<string[] | undefined>(undefined);
-  documentIdsMasterTranscript = input<string[] | undefined>(undefined);
+  documentIdsBachelorTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
+  documentIdsMasterTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   valid = output<boolean>();
   fb = inject(FormBuilder);

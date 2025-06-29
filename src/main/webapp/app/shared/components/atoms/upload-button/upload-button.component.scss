@@ -30,3 +30,32 @@
   border-color: var(--p-primary-color);
   background: var(--p-primary-hover-color-outlined);
 }
+
+.slim-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed; /* Enables wrapping */
+}
+
+.slim-table th,
+.slim-table td {
+  border-right: 1px solid #ccc;
+  padding: 0px 5px;
+  font-size: 14px;
+  vertical-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.2;
+}
+
+.slim-table td {
+  white-space: normal;
+}
+
+.icon-color-success {
+  color: var(--p-success-color);
+}
+
+.icon-color-warning {
+  color: var(--p-warn-color);
+}

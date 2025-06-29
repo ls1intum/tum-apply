@@ -214,8 +214,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "format": "uuid"
+                    "$ref": "#/components/schemas/DocumentInformationHolderDTO"
                   },
                   "uniqueItems": true
                 }
@@ -1469,6 +1468,26 @@
           }
         }
       },
+      "DocumentInformationHolderDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "size"
+        ]
+      },
       "UserShortDTO": {
         "type": "object",
         "properties": {
@@ -1629,13 +1648,19 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1661,12 +1686,6 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "empty": {
             "type": "boolean"
           }
@@ -1682,12 +1701,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "paged": {
-            "type": "boolean"
-          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
@@ -1695,6 +1708,12 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -1704,10 +1723,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -1715,13 +1734,19 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1746,12 +1771,6 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
@@ -1991,133 +2010,6 @@
           "userId"
         ]
       },
-      "ApplicantForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserForApplicationDetailDTO"
-          },
-          "bachelorDegreeName": {
-            "type": "string"
-          },
-          "bachelorGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "bachelorGrade": {
-            "type": "string"
-          },
-          "bachelorUniversity": {
-            "type": "string"
-          },
-          "masterDegreeName": {
-            "type": "string"
-          },
-          "masterGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "masterGrade": {
-            "type": "string"
-          },
-          "masterUniversity": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "user"
-        ]
-      },
-      "ApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantForApplicationDetailDTO"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "jobTitle": {
-            "type": "string"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicationId",
-          "applicationState"
-        ]
-      },
-      "UserForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "userId"
-        ]
-      },
       "ApplicationOverviewDTO": {
         "type": "object",
         "properties": {
@@ -2153,30 +2045,26 @@
           "bachelorDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "masterDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "referenceDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "cvDocumentDictionaryId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/DocumentInformationHolderDTO"
           }
         }
       }
