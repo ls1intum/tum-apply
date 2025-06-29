@@ -113,7 +113,7 @@ export class MyPositionsPageComponent {
     if (!jobId) {
       console.error('Unable to view job with job id:', jobId);
     }
-    this.router.navigate(['/job/detail/${jobId}']);
+    this.router.navigate([`/job/detail/${jobId}`]);
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
