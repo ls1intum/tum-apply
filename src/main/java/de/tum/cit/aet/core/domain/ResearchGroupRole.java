@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.service.support;
+package de.tum.cit.aet.core.domain;
 
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import jakarta.annotation.Nullable;

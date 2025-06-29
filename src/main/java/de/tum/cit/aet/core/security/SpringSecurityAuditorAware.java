@@ -1,6 +1,6 @@
 package de.tum.cit.aet.core.security;
 
-import de.tum.cit.aet.core.service.support.CurrentUserService;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import jakarta.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
