@@ -86,6 +86,4 @@ export class JobDetailComponent {
   onApply(): void {
     this.router.navigate([`/application/create/${this.jobId()}`]);
   }
-
-  protected readonly alert = alert;
 }
