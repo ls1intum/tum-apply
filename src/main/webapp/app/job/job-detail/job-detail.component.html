@@ -5,15 +5,15 @@
     <div class="job-meta">
       <div class="meta-item">
         <fa-icon [icon]="['fas', 'user-tie']" class="meta-icon" />
-        <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong>{{ this.supervisingProfessor() }}</span>
+        <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong>{{ supervisingProfessor() }}</span>
       </div>
       <div class="meta-item">
         <fa-icon [icon]="['fas', 'microscope']" class="meta-icon" />
-        <span><strong jhiTranslate="jobDetailPage.header.researchGroup"></strong>{{ this.researchGroup() }}</span>
+        <span><strong jhiTranslate="jobDetailPage.header.researchGroup"></strong>{{ researchGroup() }}</span>
       </div>
       <div class="meta-item">
         <fa-icon [icon]="['fas', 'location-dot']" class="meta-icon" />
-        <span><strong jhiTranslate="jobDetailPage.header.location"></strong>{{ this.location() }}</span>
+        <span><strong jhiTranslate="jobDetailPage.header.location"></strong>{{ location() }}</span>
       </div>
     </div>
   </header>
@@ -25,19 +25,19 @@
         <div class="detail-row">
           <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.fieldOfStudies"></span>
           <span class="detail-value">
-            <span class="detail-value">{{ this.fieldOfStudies() }}</span>
+            <span class="detail-value">{{ fieldOfStudies() }}</span>
           </span>
         </div>
         <div class="detail-row">
           <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.researchArea"></span>
-          <span class="detail-value">{{ this.researchArea() }}</span>
+          <span class="detail-value">{{ researchArea() }}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.workload"></span>
           <span
             class="detail-value"
             jhiTranslate="jobDetailPage.positionOverview.hoursPerWeek"
-            [translateValues]="{ workload: this.workload() }"
+            [translateValues]="{ workload: workload() }"
           ></span>
         </div>
         <div class="detail-row">
@@ -45,27 +45,27 @@
           <span
             class="detail-value"
             jhiTranslate="jobDetailPage.positionOverview.years"
-            [translateValues]="{ years: this.contractDuration() }"
+            [translateValues]="{ years: contractDuration() }"
           ></span>
         </div>
         <div class="detail-row">
           <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.fundingType"></span>
-          <span class="detail-value">{{ this.fundingType() }}</span>
+          <span class="detail-value">{{ fundingType() }}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.startDate"></span>
-          <span class="detail-value">{{ this.startDate() }}</span>
+          <span class="detail-value">{{ startDate() }}</span>
         </div>
       </section>
 
       <section class="detail-group">
         <div class="detail-row">
           <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.created"></span>
-          <span class="detail-value">{{ this.createdAt() }}</span>
+          <span class="detail-value">{{ createdAt() }}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.lastModified"></span>
-          <span class="detail-value">{{ this.lastModifiedAt() }}</span>
+          <span class="detail-value">{{ lastModifiedAt() }}</span>
         </div>
       </section>
     </main>
@@ -73,25 +73,25 @@
     <aside class="research-group">
       <h2 class="section-title" jhiTranslate="jobDetailPage.researchGroupDetails.researchGroup"></h2>
 
-      <h3>{{ this.researchGroup() }}</h3>
+      <h3>{{ researchGroup() }}</h3>
 
-      <p class="description-text" [innerHTML]="this.researchGroupDescription()"></p>
+      <p class="description-text" [innerHTML]="researchGroupDescription()"></p>
 
       <div class="contact-info">
         <div class="contact-item">
           <fa-icon [icon]="['fas', 'envelope']" class="contact-icon" />
-          <a [href]="'mailto:' + this.researchGroupEmail()" class="link">{{ this.researchGroupEmail() }}</a>
+          <a [href]="'mailto:' + researchGroupEmail()" class="link">{{ researchGroupEmail() }}</a>
         </div>
         <div class="contact-item">
           <fa-icon [icon]="['fas', 'globe']" class="contact-icon" />
-          <a [href]="this.researchGroupWebsite()" class="link">{{ this.researchGroupWebsite() }}</a>
+          <a [href]="researchGroupWebsite()" class="link">{{ researchGroupWebsite() }}</a>
         </div>
         <div class="contact-item">
           <fa-icon [icon]="['fas', 'location-dot']" class="contact-icon" />
           <div>
-            <div>{{ this.researchGroupStreet() }}</div>
-            <div>{{ this.researchGroupPostalCode() }}</div>
-            <div>{{ this.researchGroupCity() }}</div>
+            <div>{{ researchGroupStreet() }}</div>
+            <div>{{ researchGroupPostalCode() }}</div>
+            <div>{{ researchGroupCity() }}</div>
           </div>
         </div>
       </div>
@@ -105,19 +105,19 @@
       <div class="description-column">
         <div class="detail-group">
           <h3 jhiTranslate="jobDetailPage.positionDetails.description"></h3>
-          <div class="description-text" [innerHTML]="this.description()"></div>
+          <div class="description-text" [innerHTML]="description()"></div>
         </div>
 
         <div class="detail-group">
           <h3 jhiTranslate="jobDetailPage.positionDetails.tasks"></h3>
-          <div class="description-text" [innerHTML]="this.tasks()"></div>
+          <div class="description-text" [innerHTML]="tasks()"></div>
         </div>
       </div>
 
       <div class="description-column">
         <div class="detail-group">
           <h3 jhiTranslate="jobDetailPage.positionDetails.requirements"></h3>
-          <div class="description-text" [innerHTML]="this.requirements()"></div>
+          <div class="description-text" [innerHTML]="requirements()"></div>
         </div>
       </div>
     </div>
