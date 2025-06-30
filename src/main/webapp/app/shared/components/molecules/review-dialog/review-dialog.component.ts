@@ -6,9 +6,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { EditorComponent } from '../../atoms/editor/editor.component';
 
 @Component({
   selector: 'jhi-review-dialog',
@@ -18,11 +18,11 @@ import { ButtonComponent } from '../../atoms/button/button.component';
     FormsModule,
     FontAwesomeModule,
     ReactiveFormsModule,
-    StringInputComponent,
     TranslateModule,
     DropdownComponent,
     NgTemplateOutlet,
     ButtonComponent,
+    EditorComponent,
   ],
   templateUrl: './review-dialog.component.html',
   styleUrl: './review-dialog.component.scss',

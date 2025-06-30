@@ -14,16 +14,7 @@
 
 <ng-template #acceptTemplate>
   <div>
-    <jhi-string-input
-      label="Message"
-      labelPosition="top"
-      placeholder="Add your message..."
-      [error]="false"
-      [required]="notifyApplicant()"
-      [disabled]="!notifyApplicant()"
-      [model]="message() ?? ''"
-      (modelChange)="onMessageChange($event)"
-    />
+    <jhi-editor [model]="" />
     <ul class="review-checkboxes">
       <!--
       <li>
