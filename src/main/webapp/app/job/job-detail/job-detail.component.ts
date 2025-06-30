@@ -19,30 +19,32 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 export class JobDetailComponent {
   userId = signal<string>('');
   jobId = signal<string>('');
-  supervisingProfessor = signal<string>('Prof. Stephan Krusche');
-  researchGroup = signal<string>('Applied Education Technologies');
-  title = signal<string>('Doctorate Position in Advanced Materials Science');
-  fieldOfStudies = signal<string>('Computer Science');
-  researchArea = signal<string>('Advanced Nanocomposite Materials for Energy Storage');
-  location = signal<string>('Garching');
-  workload = signal<number>(30);
-  contractDuration = signal<number>(3);
-  fundingType = signal<string>('Fully Funded');
+  supervisingProfessor = signal<string>('');
+  researchGroup = signal<string>('');
+  title = signal<string>('');
+  fieldOfStudies = signal<string>('');
+  researchArea = signal<string>('');
+  location = signal<string>('');
+  workload = signal<number>(0);
+  contractDuration = signal<number>(0);
+  fundingType = signal<string>('');
   description = signal<string>('');
   tasks = signal<string>('');
   requirements = signal<string>('');
-  startDate = signal<string>(dayjs(new Date('2024-01-01')).format('DD.MM.YYYY'));
-  createdAt = signal<string>(dayjs(new Date('2024-01-01')).format('DD.MM.YYYY'));
-  lastModifiedAt = signal<string>(dayjs(new Date('2026-01-11')).format('DD.MM.YYYY'));
+  startDate = signal<string>('');
+  createdAt = signal<string>('');
+  lastModifiedAt = signal<string>('');
 
   // display research group info
   researchGroupDescription = signal<string>('');
-  researchGroupEmail = signal<string>('data@tum.de');
-  researchGroupWebsite = signal<string>('https://db.in.tum.de/');
-  researchGroupStreet = signal<string>('Lichtenbergstraße 4');
-  researchGroupPostalCode = signal<string>('85748');
-  researchGroupCity = signal<string>('Garching b. München');
+  researchGroupEmail = signal<string>('');
+  researchGroupWebsite = signal<string>('');
+  researchGroupStreet = signal<string>('');
+  researchGroupPostalCode = signal<string>('');
+  researchGroupCity = signal<string>('');
   belongsToResearchGroup = signal<boolean>(false);
+
+  dataLoaded = signal<boolean>(false);
 
   readonly NO_DATA = 'Not Available';
 
@@ -77,6 +79,7 @@ export class JobDetailComponent {
 
       const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId(), this.userId()));
       this.loadJobDetails(job);
+      this.dataLoaded.set(true);
     } catch (error) {
       console.error('Initialization error:', error);
       this.router.navigate(['/']);

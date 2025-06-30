@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -18,10 +19,10 @@ public record JobDetailDTO(
     @NotNull String title,
     String fieldOfStudies,
     String researchArea,
-    Campus location,
+    String location,
     Integer workload,
     Integer contractDuration,
-    FundingType fundingType,
+    String fundingType,
     String description,
     String tasks,
     String requirements,
@@ -32,4 +33,46 @@ public record JobDetailDTO(
     Boolean belongsToResearchGroup
     // TODO: Adjust this to a List of CustomFields
     // CustomField customFields
-) {}
+) {
+    public JobDetailDTO(
+        @NotNull UUID jobId,
+        String supervisingProfessorName,
+        ResearchGroup researchGroup,
+        @NotNull String title,
+        String fieldOfStudies,
+        String researchArea,
+        Campus location,
+        Integer workload,
+        Integer contractDuration,
+        FundingType fundingType,
+        String description,
+        String tasks,
+        String requirements,
+        LocalDate startDate,
+        LocalDateTime createdAt,
+        LocalDateTime lastModifiedAt,
+        JobState state,
+        Boolean belongsToResearchGroup
+    ) {
+        this(
+            jobId,
+            supervisingProfessorName,
+            researchGroup,
+            title,
+            fieldOfStudies,
+            researchArea,
+            UiTextFormatter.formatEnumValue(location),
+            workload,
+            contractDuration,
+            UiTextFormatter.formatEnumValue(fundingType),
+            description,
+            tasks,
+            requirements,
+            startDate,
+            createdAt,
+            lastModifiedAt,
+            state,
+            belongsToResearchGroup
+        );
+    }
+}
