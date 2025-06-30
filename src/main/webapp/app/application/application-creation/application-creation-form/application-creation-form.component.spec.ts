@@ -14,6 +14,7 @@ import {
   faEnvelope,
 } from '@fortawesome/free-solid-svg-icons';
 import { HttpResponse } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
 
@@ -28,7 +29,7 @@ describe('ApplicationCreationFormComponent create', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationCreationFormComponent],
+      imports: [ApplicationCreationFormComponent, TranslateModule.forRoot()],
       providers: [
         {
           provide: ActivatedRoute,

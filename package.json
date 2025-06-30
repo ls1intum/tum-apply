@@ -23,7 +23,7 @@
     "prettier:format": "prettier --write \"{,src/**/,webpack/,.blueprint/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java,html,css,scss}\"",
     "serve": "npm run start --",
     "services:up": "docker compose -f src/main/docker/services.yml up --wait",
-    "start": "ng serve --hmr",
+    "start": "npm run prebuild -- --develop && ng serve --hmr",
     "pretest": "npm run lint",
     "test": "ng test --coverage --log-heap-usage -w=4",
     "test-diff": "npm run prebuild && ng test --log-heap-usage -w=4 --pass-with-no-tests --changed-since=origin/main --coverage",
@@ -73,6 +73,7 @@
     "ngx-webstorage": "19.0.1",
     "primeicons": "^7.0.0",
     "primeng": "^19.1.2",
+    "quill": "^2.0.3",
     "rxjs": "7.8.2",
     "tslib": "2.8.1"
   },

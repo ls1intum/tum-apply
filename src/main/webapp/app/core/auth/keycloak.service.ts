@@ -16,9 +16,9 @@ export class KeycloakService {
   profile: UserProfile | undefined;
 
   private readonly keycloak = new Keycloak({
-    url: 'https://keycloak.aet.cit.tum.de/',
-    realm: 'external_login',
-    clientId: 'tumapply-client',
+    url: environment.keycloak.url,
+    realm: environment.keycloak.realm,
+    clientId: environment.keycloak.clientId,
   });
 
   /**
