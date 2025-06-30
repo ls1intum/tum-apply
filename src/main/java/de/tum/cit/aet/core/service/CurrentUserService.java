@@ -130,6 +130,29 @@ public class CurrentUserService {
     }
 
     /**
+     * Asserts that the current user has access to the given entity.
+     * Throws AccessDeniedException if access is denied.
+     *
+     * @param entity the entity to check
+     */
+    public void assertAccessTo(Object entity) {
+        boolean hasAccess =
+            switch (entity) {
+                case Application app -> hasAccessTo(app);
+                case ApplicationReview review -> hasAccessTo(review);
+                case CustomFieldAnswer answer -> hasAccessTo(answer);
+                case ResearchGroup group -> hasAccessTo(group);
+                case Job job -> hasAccessTo(job);
+                case InternalComment comment -> hasAccessTo(comment);
+                default -> false;
+            };
+
+        if (!hasAccess) {
+            throw new AccessDeniedException("Access denied to entity: " + entity.getClass().getSimpleName());
+        }
+    }
+
+    /**
      * Checks if the current user has access to the given application.
      * The user must either be the applicant or an admin.
      *
