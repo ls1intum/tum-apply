@@ -164,6 +164,74 @@
         }
       }
     },
+    "/api/evaluation/applications({applicationId}/reject": {
+      "post": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "rejectApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications({applicationId}/accept": {
+      "post": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "acceptApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications/upload-documents/{applicationId}/{documentType}": {
       "post": {
         "tags": [
@@ -1414,6 +1482,42 @@
           "title"
         ]
       },
+      "RejectDTO": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "JOB_FILLED",
+              "JOB_OUTDATED",
+              "FAILED_REQUIREMENTS",
+              "OTHER_REASON"
+            ]
+          },
+          "notifyApplicant": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "AcceptDTO": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 0
+          },
+          "notifyApplicant": {
+            "type": "boolean"
+          },
+          "closeJob": {
+            "type": "boolean"
+          }
+        }
+      },
       "CreateApplicationDTO": {
         "type": "object",
         "properties": {
@@ -1912,6 +2016,9 @@
           "applicationDetailDTO": {
             "$ref": "#/components/schemas/ApplicationDetailDTO"
           },
+          "professor": {
+            "$ref": "#/components/schemas/ProfessorDTO"
+          },
           "rating": {
             "type": "integer",
             "format": "int32"
@@ -1948,6 +2055,23 @@
           }
         }
       },
+      "ProfessorDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "researchGroupName": {
+            "type": "string"
+          }
+        }
+      },
       "UserForApplicationDetailDTO": {
         "type": "object",
         "properties": {
@@ -1971,133 +2095,6 @@
             "type": "string"
           },
           "preferredLanguage": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "userId"
-        ]
-      },
-      "ApplicantForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserForApplicationDetailDTO"
-          },
-          "bachelorDegreeName": {
-            "type": "string"
-          },
-          "bachelorGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "bachelorGrade": {
-            "type": "string"
-          },
-          "bachelorUniversity": {
-            "type": "string"
-          },
-          "masterDegreeName": {
-            "type": "string"
-          },
-          "masterGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "masterGrade": {
-            "type": "string"
-          },
-          "masterUniversity": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "user"
-        ]
-      },
-      "ApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantForApplicationDetailDTO"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "jobTitle": {
-            "type": "string"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicationId",
-          "applicationState"
-        ]
-      },
-      "UserForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
             "type": "string"
           },
           "birthday": {

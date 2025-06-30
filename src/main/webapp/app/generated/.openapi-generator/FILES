@@ -12,10 +12,10 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/acceptDTO.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
 model/applicationDetailDTO.ts
-model/applicantEvaluationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts
 model/applicationEvaluationDetailDTO.ts
 model/applicationEvaluationDetailListDTO.ts
@@ -34,6 +34,8 @@ model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageableObject.ts
+model/professorDTO.ts
+model/rejectDTO.ts
 model/researchGroupShortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
