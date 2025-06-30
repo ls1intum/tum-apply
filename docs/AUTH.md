@@ -134,6 +134,11 @@ Use `@PreAuthorize("hasRole('ROLE')")` to restrict access to users with specific
 🔹 Best used in **Controller methods** to block unauthorized roles early.  
 🔹 Checks only **roles**, not ownership of specific data.
 
+**When and how to use:**  
+Use `@PreAuthorize` when you want to restrict access based purely on the user's role membership, such as allowing only
+admins or professors to access certain endpoints. This is a declarative, compile-time check that is easy to apply on
+controller methods to prevent unauthorized access before any business logic is executed.
+
 ```java
 
 @PreAuthorize("hasRole('ADMIN')")
@@ -152,6 +157,18 @@ Use `currentUserService.hasAccessTo(object)` to check **if the current user can 
 🔹 Best used inside **Service methods**  
 🔹 Checks based on ownership or Research Group relationship  
 🔹 Avoids duplicate database calls – you already have the resource
+
+**When and how to use:**  
+Use `hasAccessTo(...)` when you have already loaded the resource object and want to verify if the current user has
+permission to access it based on ownership or affiliation. This method enables fine-grained runtime access control
+beyond simple role checks.
+
+You can also use `currentUserService.assertAccessTo(object)` to throw an `AccessDeniedException` if access is denied.
+This avoids repetitive checks and makes your code cleaner:
+
+```java
+currentUserService.assertAccessTo(job);
+```
 
 ```java
 Job job = jobService.getJob(jobId);
@@ -184,6 +201,13 @@ methods.
 🔹 Best used for **POST/PUT/DELETE** methods where the parameter (e.g. `researchGroupId`) is directly passed  
 🔹 Uses AOP (`CheckAccessAspect`) to extract IDs and validate permission
 
+**When and how to use:**  
+Use `@CheckAccess` when your controller methods receive IDs or objects with a getResearchGroupId method as parameters
+and you want to enforce access control automatically before executing the method. This reduces boilerplate and
+centralizes access logic for parameter-based authorization.
+
+You can customize the type of access being checked using the `target` parameter:
+
 ```java
 
 @CheckAccess
@@ -192,8 +216,6 @@ public ResponseEntity<JobDTO> createJob(@PathVariable UUID researchGroupId, @Req
     ...
 }
 ```
-
-You can also specify what type of access should be checked:
 
 ```java
 
@@ -221,6 +243,10 @@ public ResponseEntity<?> getJobsForProfessor(@PathVariable UUID professorId) {
 | Service logic with full object          | ❌ No               | ✅ Yes                 | ❌ No                    |
 
 All approaches work together – use them **in combination** for best clarity and security.
+
+Important: Use `@PreAuthorize` to restrict access based on roles (e.g., "is this user a professor?"). Use
+`hasAccessTo(...)` or `@CheckAccess` to restrict access based on ownership or affiliation with a resource (e.g., does
+this user belong to the research group that owns this application?).
 
 ---
 
@@ -281,6 +307,7 @@ The `GET /api/users/me` endpoint allows the client to fetch details of the curre
 - `CustomJwtAuthenticationConverter.java` – maps JWT to authorities
 - `SecurityConfiguration.java` – configures access restrictions
 - `UserRepository.java` – uses `@EntityGraph` to preload roles
+- `CurrentUserService.java`
 
 ---
 
@@ -291,3 +318,12 @@ The `GET /api/users/me` endpoint allows the client to fetch details of the curre
   ```bash
   docker compose down -v && docker compose up
   ```
+
+---
+
+## 🔄 Summary of Access Handling
+
+- Use `@PreAuthorize(...)` on controller methods to restrict by role
+- Use `@CheckAccess` on controller methods when IDs like `researchGroupId` or `professorId` are directly passed
+- Use `currentUserService.hasAccessTo(...)` in service logic when you already have the full object
+- Use `currentUserService.assertAccessTo(...)` if you want to throw an exception when access is denied
