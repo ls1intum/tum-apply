@@ -89,7 +89,7 @@ export class JobDetailComponent {
   loadJobDetails(job: JobDetailDTO): void {
     this.supervisingProfessor.set(job.supervisingProfessorName ?? this.NO_DATA);
     this.researchGroup.set(job.researchGroup?.name ?? this.NO_DATA);
-    this.title.set(job.title ?? this.NO_DATA);
+    this.title.set(job.title);
     this.fieldOfStudies.set(job.fieldOfStudies ?? this.NO_DATA);
     this.researchArea.set(job.researchArea ?? this.NO_DATA);
     this.location.set(job.location ?? this.NO_DATA);
