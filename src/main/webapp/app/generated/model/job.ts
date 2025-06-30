@@ -8,29 +8,33 @@
  * Do not edit the class manually.
  */
 import { ResearchGroup } from './researchGroup';
+import { User } from './user';
+import { CustomField } from './customField';
+import { Application } from './application';
 
 
-export interface JobDetailDTO { 
-    jobId: string;
-    supervisingProfessorName?: string;
+export interface Job { 
+    createdAt?: string;
+    lastModifiedAt?: string;
+    jobId?: string;
+    supervisingProfessor?: User;
     researchGroup?: ResearchGroup;
-    title: string;
     fieldOfStudies?: string;
     researchArea?: string;
-    location?: JobDetailDTO.LocationEnum;
+    location?: Job.LocationEnum;
     workload?: number;
     contractDuration?: number;
-    fundingType?: JobDetailDTO.FundingTypeEnum;
+    fundingType?: Job.FundingTypeEnum;
+    title?: string;
     description?: string;
     tasks?: string;
     requirements?: string;
+    state?: Job.StateEnum;
     startDate?: string;
-    createdAt?: string;
-    lastModifiedAt?: string;
-    state?: JobDetailDTO.StateEnum;
-    belongsToResearchGroup?: boolean;
+    customFields?: Array<CustomField>;
+    applications?: Array<Application>;
 }
-export namespace JobDetailDTO {
+export namespace Job {
     export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
     export const LocationEnum = {
         Garching: 'GARCHING' as LocationEnum,

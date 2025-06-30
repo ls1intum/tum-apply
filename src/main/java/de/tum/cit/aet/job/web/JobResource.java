@@ -2,8 +2,6 @@ package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
@@ -12,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -112,7 +109,7 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/{jobId}} : Get all details of a specific job.
+     * {@code GET /api/jobs/{jobId}} : Get general details of a specific job.
      *
      * @param jobId the ID of the job.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job details.
@@ -120,5 +117,17 @@ public class JobResource {
     @GetMapping("/{jobId}")
     public ResponseEntity<JobDTO> getJobById(@PathVariable UUID jobId) {
         return ResponseEntity.ok(jobService.getJobById(jobId));
+    }
+
+    /**
+     * {@code GET /api/jobs/{jobId}} : Get all details of a specific job which are relevant to the Job Detail Page.
+     *
+     * @param jobId the ID of the job.
+     * @param userId the ID of the current user.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job details.
+     */
+    @GetMapping("/detail/{jobId}/{userId}")
+    public ResponseEntity<JobDetailDTO> getJobDetails(@PathVariable UUID jobId, @PathVariable UUID userId) {
+        return ResponseEntity.ok(jobService.getJobDetails(jobId, userId));
     }
 }

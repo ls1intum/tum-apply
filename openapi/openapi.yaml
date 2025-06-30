@@ -10,6 +10,16 @@
       "description": "Generated server url"
     }
   ],
+  "tags": [
+    {
+      "name": "Actuator",
+      "description": "Monitor and interact",
+      "externalDocs": {
+        "description": "Spring Boot Actuator Web API Documentation",
+        "url": "https://docs.spring.io/spring-boot/docs/current/actuator-api/html/"
+      }
+    }
+  ],
   "paths": {
     "/api/jobs/update/{jobId}": {
       "put": {
@@ -134,6 +144,93 @@
         }
       }
     },
+    "/management/loggers/{name}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027loggers-name\u0027",
+        "operationId": "loggerLevels",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027loggers-name\u0027",
+        "operationId": "configureLogLevel",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL",
+                  "OFF"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/api/jobs/create": {
       "post": {
         "tags": [
@@ -221,6 +318,608 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/management": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator root web endpoint",
+        "operationId": "links",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/threaddump": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027threaddump\u0027",
+        "operationId": "threadDump",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain;charset\u003dUTF-8": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/prometheus": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027prometheus\u0027",
+        "operationId": "scrape",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CONTENT_TYPE_004",
+                "CONTENT_TYPE_OPENMETRICS_100"
+              ]
+            }
+          },
+          {
+            "name": "includedNames",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain;version\u003d0.0.4;charset\u003dutf-8": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/openmetrics-text;version\u003d1.0.0;charset\u003dutf-8": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/loggers": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027loggers\u0027",
+        "operationId": "loggers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/liquibase": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027liquibase\u0027",
+        "operationId": "liquibaseBeans",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/jhiopenapigroups": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027jhiopenapigroups\u0027",
+        "operationId": "allOpenApi",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/jhimetrics": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027jhimetrics\u0027",
+        "operationId": "allMetrics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/info": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027info\u0027",
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/health": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027health\u0027",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/env": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027env\u0027",
+        "operationId": "environment",
+        "parameters": [
+          {
+            "name": "pattern",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/env/{toMatch}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027env-toMatch\u0027",
+        "operationId": "environmentEntry",
+        "parameters": [
+          {
+            "name": "toMatch",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/management/configprops": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027configprops\u0027",
+        "operationId": "configurationProperties",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/configprops/{prefix}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027configprops-prefix\u0027",
+        "operationId": "configurationPropertiesWithPrefix",
+        "parameters": [
+          {
+            "name": "prefix",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/management/caches": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches\u0027",
+        "operationId": "caches",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches\u0027",
+        "operationId": "clearCaches",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/management/caches/{cache}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches-cache\u0027",
+        "operationId": "cache",
+        "parameters": [
+          {
+            "name": "cache",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cacheManager",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches-cache\u0027",
+        "operationId": "clearCache",
+        "parameters": [
+          {
+            "name": "cache",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cacheManager",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -384,6 +1083,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageCreatedJobDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/detail/{jobId}/{userId}": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getJobDetails",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetailDTO"
                 }
               }
             }
@@ -1469,6 +2208,17 @@
           }
         }
       },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "templated": {
+            "type": "boolean"
+          }
+        }
+      },
       "UserShortDTO": {
         "type": "object",
         "properties": {
@@ -1637,6 +2387,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1660,12 +2416,6 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
@@ -1704,11 +2454,642 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
-            "type": "boolean"
-          },
           "unsorted": {
             "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Applicant": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "researchGroupRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          },
+          "submittedApplications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            },
+            "uniqueItems": true
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "bachelorDegreeName": {
+            "type": "string"
+          },
+          "bachelorGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "bachelorGrade": {
+            "type": "string"
+          },
+          "bachelorUniversity": {
+            "type": "string"
+          },
+          "masterDegreeName": {
+            "type": "string"
+          },
+          "masterGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "masterGrade": {
+            "type": "string"
+          },
+          "masterUniversity": {
+            "type": "string"
+          }
+        }
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationReview": {
+            "$ref": "#/components/schemas/ApplicationReview"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/Applicant"
+          },
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "desiredStartDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customFieldAnswers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswer"
+            },
+            "uniqueItems": true
+          },
+          "internalComments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalComment"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "ApplicationReview": {
+        "type": "object",
+        "properties": {
+          "applicationReviewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "reviewedBy": {
+            "$ref": "#/components/schemas/User"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "customFieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "question": {
+            "type": "string"
+          },
+          "customFieldType": {
+            "type": "string",
+            "enum": [
+              "FREE_TEXT",
+              "SINGLE_CHOICE",
+              "MULTIPLE_CHOICE",
+              "FILE_UPLOAD"
+            ]
+          },
+          "answerOptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customFieldAnswers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswer"
+            },
+            "uniqueItems": true
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CustomFieldAnswer": {
+        "type": "object",
+        "properties": {
+          "customFieldAnswerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customField": {
+            "$ref": "#/components/schemas/CustomField"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InternalComment": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "internalCommentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/User"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supervisingProfessor": {
+            "$ref": "#/components/schemas/User"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "JobDetailDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supervisingProfessorName": {
+            "type": "string"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "title": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          },
+          "belongsToResearchGroup": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "jobId",
+          "title"
+        ]
+      },
+      "ResearchGroup": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "head": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "userRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "postedJobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            },
+            "uniqueItems": true
+          },
+          "researchGroupRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "UserResearchGroupRole": {
+        "type": "object",
+        "properties": {
+          "userResearchGroupRoleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "APPLICANT",
+              "PROFESSOR",
+              "ADMIN"
+            ]
           }
         }
       },
@@ -1722,6 +3103,12 @@
           "totalPages": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1746,12 +3133,6 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
@@ -1971,133 +3352,6 @@
             "type": "string"
           },
           "preferredLanguage": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "userId"
-        ]
-      },
-      "ApplicantForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserForApplicationDetailDTO"
-          },
-          "bachelorDegreeName": {
-            "type": "string"
-          },
-          "bachelorGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "bachelorGrade": {
-            "type": "string"
-          },
-          "bachelorUniversity": {
-            "type": "string"
-          },
-          "masterDegreeName": {
-            "type": "string"
-          },
-          "masterGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "masterGrade": {
-            "type": "string"
-          },
-          "masterUniversity": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "user"
-        ]
-      },
-      "ApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantForApplicationDetailDTO"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "jobTitle": {
-            "type": "string"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicationId",
-          "applicationState"
-        ]
-      },
-      "UserForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
             "type": "string"
           },
           "birthday": {

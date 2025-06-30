@@ -66,7 +66,7 @@ public class JobService {
      * Returns a jobDTO given the job id.
      *
      * @param jobId the ID of the job
-     * @return the job card DTO with detailed info
+     * @return the job DTO with generaL job information
      */
     public JobDTO getJobById(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
@@ -85,6 +85,47 @@ public class JobService {
             job.getTasks(),
             job.getRequirements(),
             job.getState()
+        );
+    }
+
+    /**
+     * Returns a jobDetailDTO given the job id.
+     *
+     * @param jobId the ID of the job
+     * @param userId the ID of the current user
+     * @return the job detail DTO with detailed job information
+     */
+    public JobDetailDTO getJobDetails(UUID jobId, UUID userId) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
+        // Check if the user is part of the research group
+        boolean belongsToResearchGroup = false;
+        if (job.getResearchGroup() != null && userId != null) {
+            UUID user = userRepository.findByIdElseThrow(userId).getResearchGroup().getResearchGroupId();
+            if (job.getResearchGroup().getResearchGroupId().equals(user)) {
+                belongsToResearchGroup = true;
+            }
+        }
+
+        return new JobDetailDTO(
+            job.getJobId(),
+            job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
+            job.getSupervisingProfessor().getResearchGroup(),
+            job.getTitle(),
+            job.getFieldOfStudies(),
+            job.getResearchArea(),
+            job.getLocation(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getStartDate(),
+            job.getCreatedAt(),
+            job.getLastModifiedAt(),
+            job.getState(),
+            belongsToResearchGroup
         );
     }
 
