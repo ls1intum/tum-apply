@@ -50,7 +50,9 @@ public class CriteriaUtils {
         for (Map.Entry<String, List<?>> entry : dynamicFilters.entrySet()) {
             String property = entry.getKey();
             List<?> values = entry.getValue();
-            if (values == null || values.isEmpty()) continue;
+            if (values == null || values.isEmpty()) {
+                continue;
+            }
 
             Path<Object> path = resolvePath(root, property);
             predicates.add(path.in(values));
