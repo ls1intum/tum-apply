@@ -1,13 +1,7 @@
-import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, model, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import { CommonModule } from '@angular/common';
-import {
-  ApplicationDocumentIdsDTO,
-  ApplicationResourceService,
-  CreateApplicationDTO,
-  JobResourceService,
-  UpdateApplicationDTO,
-} from 'app/generated';
+import { CommonModule, Location } from '@angular/common';
+import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -26,6 +20,7 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
+import { AccountService } from 'app/core/auth/account.service';
 
 const ApplicationFormModes = {
   CREATE: 'create',
@@ -87,7 +82,7 @@ export default class ApplicationCreationFormComponent {
 
   stepData = computed<StepData[]>(() => {
     const sendData = (state: 'SAVED' | 'SENT'): void => {
-      this.sendCreateApplicationData(state);
+      this.sendCreateApplicationData(state, true);
     };
 
     const deleteApplication = (): void => {
@@ -114,6 +109,15 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
+          {
+            severity: 'secondary',
+            icon: 'save',
+            onClick() {},
+            disabled: true,
+            label: this.savingState(),
+            changePanel: false,
+            variant: 'text',
+          },
           {
             severity: 'danger',
             onClick() {
@@ -150,6 +154,15 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
+          {
+            severity: 'secondary',
+            icon: 'save',
+            onClick() {},
+            disabled: true,
+            label: this.savingState(),
+            changePanel: false,
+            variant: 'text',
+          },
           {
             severity: 'danger',
             onClick() {
@@ -189,12 +202,11 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'secondary',
             icon: 'save',
-            onClick() {
-              sendData('SAVED');
-            },
-            disabled: false,
-            label: 'Save Draft',
+            onClick() {},
+            disabled: true,
+            label: this.savingState(),
             changePanel: false,
+            variant: 'text',
           },
           {
             severity: 'danger',
@@ -224,7 +236,14 @@ export default class ApplicationCreationFormComponent {
   title = signal<string>('');
 
   jobId = signal<string>('');
+  applicantId = signal<string>('');
   applicationId = signal<string | undefined>(undefined);
+
+  applicationState = signal<'SAVED' | 'SENT'>('SAVED');
+
+  savingState = signal<'Saved' | 'Saving...'>('Saved');
+
+  changedPage1 = model<boolean>(false);
 
   mode: ApplicationFormMode = 'create';
 
@@ -232,21 +251,47 @@ export default class ApplicationCreationFormComponent {
   page2Valid = signal<boolean>(false);
   page3Valid = signal<boolean>(false);
 
+  savingTick = signal<number>(0);
+
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
 
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
 
   private applicationResourceService = inject(ApplicationResourceService);
-  private jobResourceService = inject(JobResourceService);
+  private accountService = inject(AccountService);
   private router = inject(Router);
+
+  private location = inject(Location);
 
   constructor(private route: ActivatedRoute) {
     this.init(route);
+
+    effect(() => {
+      this.savingTick(); // to trigger the saving effect
+      this.performAutomaticSave();
+    });
+
+    effect(() => {
+      this.changedPage1();
+      this.savingState.set('Saving...');
+      this.changedPage1.set(false);
+    });
+
+    effect(() => {
+      const intervalId = setInterval(() => {
+        this.savingTick.update(v => v + 1); // Reactively trigger
+      }, 20000);
+
+      // Cleanup
+      return () => clearInterval(intervalId);
+    });
   }
 
   async init(route: ActivatedRoute): Promise<void> {
+    this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
     const segments = await firstValueFrom(route.url);
     const firstSegment = segments[1]?.path;
+    let application;
     if (firstSegment === ApplicationFormModes.CREATE) {
       this.mode = ApplicationFormModes.CREATE;
       const jobId = this.route.snapshot.paramMap.get('job_id');
@@ -255,11 +300,7 @@ export default class ApplicationCreationFormComponent {
       } else {
         this.jobId.set(jobId);
       }
-      const job = await firstValueFrom(this.jobResourceService.getJobById(this.jobId()));
-
-      if (job.title && job.title.trim().length > 0) {
-        this.title.set(job.title);
-      }
+      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId(), this.applicantId()));
     } else if (firstSegment === ApplicationFormModes.EDIT) {
       this.mode = ApplicationFormModes.EDIT;
       const applicationId = this.route.snapshot.paramMap.get('application_id');
@@ -267,128 +308,90 @@ export default class ApplicationCreationFormComponent {
         alert('Error: this is no valid applicationId');
         return;
       }
-      const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
-      this.jobId.set(application.job.jobId);
-      if (application.job.title && application.job.title.trim().length > 0) {
-        this.title.set(application.job.title);
-      }
-      this.applicationId.set(application.applicationId);
-      this.page1.set(getPage1FromApplication(application));
-      this.page2.set(getPage2FromApplication(application));
-      this.page3.set(getPage3FromApplication(application));
-
-      firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
-        .then(ids => {
-          this.documentIds.set(ids);
-        })
-        .catch(() => alert('Error: fetching the document ids for this application'));
+      application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
     } else {
       alert('Error: this is no valid application page link');
+      return;
+    }
+    this.jobId.set(application.job.jobId);
+    if (application.job.title && application.job.title.trim().length > 0) {
+      this.title.set(application.job.title);
+    }
+    this.applicationId.set(application.applicationId);
+    this.page1.set(getPage1FromApplication(application));
+    this.page2.set(getPage2FromApplication(application));
+    this.page3.set(getPage3FromApplication(application));
+
+    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(application.applicationId))
+      .then(ids => {
+        this.documentIds.set(ids);
+      })
+      .catch(() => alert('Error: fetching the document ids for this application'));
+    this.location.replaceState(`${segments[0]}/${ApplicationFormModes.EDIT}/${this.applicationId}`);
+  }
+
+  performAutomaticSave(): void {
+    if (this.savingState() === 'Saving...') {
+      this.sendCreateApplicationData(this.applicationState(), false);
+      this.savingState.set('Saved');
     }
   }
 
-  sendCreateApplicationData(state: 'SAVED' | 'SENT'): void {
+  sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): void {
     const router = this.router;
-    if (this.mode === ApplicationFormModes.CREATE) {
-      const createApplication: CreateApplicationDTO = {
-        applicant: {
-          user: {
-            birthday: this.page1().dateOfBirth,
-            firstName: this.page1().firstName,
-            lastName: this.page1().lastName,
-            email: this.page1().email,
-            gender: this.page1().gender?.value as string,
-            linkedinUrl: this.page1().linkedIn,
-            nationality: this.page1().nationality?.value as string,
-            phoneNumber: this.page1().phoneNumber,
-            website: this.page1().website,
-            selectedLanguage: this.page1().language?.value as string,
-            userId: '00000000-0000-0000-0000-000000000104',
-          },
-          bachelorDegreeName: this.page2().bachelorDegreeName,
-          masterDegreeName: this.page2().masterDegreeName,
-          bachelorGrade: this.page2().bachelorGrade,
-          masterGrade: this.page2().masterGrade,
-          bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
-          masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
-          city: this.page1().city,
-          country: this.page1().country,
-          postalCode: this.page1().postcode,
-          street: this.page1().street,
-          bachelorUniversity: this.page2().bachelorDegreeUniversity,
-          masterUniversity: this.page2().masterDegreeUniversity,
+    const applicationId = this.applicationId();
+    if (applicationId === undefined) {
+      alert('There is an error with the applicationId');
+      return;
+    }
+    const updateApplication: UpdateApplicationDTO = {
+      applicationId,
+      applicant: {
+        user: {
+          birthday: this.page1().dateOfBirth,
+          firstName: this.page1().firstName,
+          lastName: this.page1().lastName,
+          email: this.page1().email,
+          gender: this.page1().gender?.value as string,
+          linkedinUrl: this.page1().linkedIn,
+          nationality: this.page1().nationality?.value as string,
+          phoneNumber: this.page1().phoneNumber,
+          website: this.page1().website,
+          selectedLanguage: this.page1().language?.value as string,
+          userId: this.applicantId(),
         },
-        jobId: this.jobId(),
-        applicationState: state,
-        desiredDate: this.page3().desiredStartDate,
-        motivation: this.page3().motivation,
-        specialSkills: this.page3().skills,
-        projects: this.page3().experiences,
-        // answers: new Set(),
-      };
-      this.applicationResourceService.createApplication(createApplication).subscribe({
-        next() {
-          alert('Successfully sent application');
-          router.navigate(['/']);
-        },
-        error(err) {
-          alert('Failed to publish application:' + (err as HttpErrorResponse).statusText);
-          console.error('Failed to publish application:', err);
-        },
-      });
-    } else {
-      const applicationId = this.applicationId();
-      if (applicationId === undefined) {
-        alert('There is an error with the applicationId');
-        return;
-      }
-      const updateApplication: UpdateApplicationDTO = {
-        applicationId,
-        applicant: {
-          user: {
-            birthday: this.page1().dateOfBirth,
-            firstName: this.page1().firstName,
-            lastName: this.page1().lastName,
-            email: this.page1().email,
-            gender: this.page1().gender?.value as string,
-            linkedinUrl: this.page1().linkedIn,
-            nationality: this.page1().nationality?.value as string,
-            phoneNumber: this.page1().phoneNumber,
-            website: this.page1().website,
-            selectedLanguage: this.page1().language?.value as string,
-            userId: '00000000-0000-0000-0000-000000000103',
-          },
-          bachelorDegreeName: this.page2().bachelorDegreeName,
-          masterDegreeName: this.page2().masterDegreeName,
-          bachelorGrade: this.page2().bachelorGrade,
-          masterGrade: this.page2().masterGrade,
-          bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
-          masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
-          city: this.page1().city,
-          country: this.page1().country,
-          postalCode: this.page1().postcode,
-          street: this.page1().street,
-          bachelorUniversity: this.page2().bachelorDegreeUniversity,
-          masterUniversity: this.page2().masterDegreeUniversity,
-        },
-        applicationState: state,
-        desiredDate: this.page3().desiredStartDate,
-        motivation: this.page3().motivation,
-        specialSkills: this.page3().skills,
-        projects: this.page3().experiences,
-        // answers: new Set(),
-      };
-      this.applicationResourceService.updateApplication(updateApplication).subscribe({
-        next() {
+        bachelorDegreeName: this.page2().bachelorDegreeName,
+        masterDegreeName: this.page2().masterDegreeName,
+        bachelorGrade: this.page2().bachelorGrade,
+        masterGrade: this.page2().masterGrade,
+        bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
+        masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
+        city: this.page1().city,
+        country: this.page1().country,
+        postalCode: this.page1().postcode,
+        street: this.page1().street,
+        bachelorUniversity: this.page2().bachelorDegreeUniversity,
+        masterUniversity: this.page2().masterDegreeUniversity,
+      },
+      applicationState: state,
+      desiredDate: this.page3().desiredStartDate,
+      motivation: this.page3().motivation,
+      specialSkills: this.page3().skills,
+      projects: this.page3().experiences,
+      // answers: new Set(),
+    };
+    this.applicationResourceService.updateApplication(updateApplication).subscribe({
+      next() {
+        if (rerouteToOtherPage) {
           alert('Successfully saved application');
           router.navigate(['/']);
-        },
-        error(err) {
-          alert('Failed to save application:' + (err as HttpErrorResponse).statusText);
-          console.error('Failed to save application:', err);
-        },
-      });
-    }
+        }
+      },
+      error(err) {
+        alert('Failed to save application:' + (err as HttpErrorResponse).statusText);
+        console.error('Failed to save application:', err);
+      },
+    });
   }
 
   async deleteApplication(): Promise<void> {
@@ -415,6 +418,10 @@ export default class ApplicationCreationFormComponent {
 
   onPage1ValidityChanged(isValid: boolean): void {
     this.page1Valid.set(isValid);
+  }
+
+  onPage1ValueChanged(): void {
+    this.changedPage1.set(true);
   }
 
   onPage2ValidityChanged(isValid: boolean): void {

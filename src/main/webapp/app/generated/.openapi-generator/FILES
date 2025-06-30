@@ -2,6 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
@@ -15,7 +16,6 @@ index.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
 model/applicationDetailDTO.ts
-model/applicantEvaluationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts
 model/applicationEvaluationDetailDTO.ts
 model/applicationEvaluationDetailListDTO.ts
@@ -23,13 +23,13 @@ model/applicationEvaluationOverviewDTO.ts
 model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
-model/createApplicationDTO.ts
 model/createdJobDTO.ts
 model/customFieldAnswerDTO.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
 model/jobFilterOptionDTO.ts
 model/jobFormDTO.ts
+model/link.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts

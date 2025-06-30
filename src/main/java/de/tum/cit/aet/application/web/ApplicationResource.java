@@ -5,7 +5,6 @@ import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
-import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -50,11 +49,11 @@ public class ApplicationResource {
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
      *         the createApplicationDTO is invalid
      */
-    @PostMapping
-    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
+    @GetMapping("/create/{jobId}/applicant/{applicantId}")
+    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@PathVariable UUID jobId, @PathVariable UUID applicantId) {
         // TODO check authorization
 
-        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(createApplicationDTO);
+        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(jobId, applicantId);
         return ResponseEntity.ok(applicationForApplicantDTO);
     }
 
