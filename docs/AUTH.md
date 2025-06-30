@@ -123,19 +123,106 @@ Roles are not assigned via Keycloak – they are provisioned in the server datab
 
 ### 🔧 Authorization in Code
 
-You can restrict controller access with annotations:
+TUMApply uses a **layered authorization strategy**, combining annotations and runtime access checks:
+
+---
+
+#### ✅ Role Checks with `@PreAuthorize`
+
+Use `@PreAuthorize("hasRole('ROLE')")` to restrict access to users with specific roles.
+
+🔹 Best used in **Controller methods** to block unauthorized roles early.  
+🔹 Checks only **roles**, not ownership of specific data.
 
 ```java
+
 @PreAuthorize("hasRole('ADMIN')")
-public ResponseEntity<?> adminEndpoint() {}
-
+@GetMapping("/api/admin/config")
+public ResponseEntity<?> getAdminConfig() {
+    ...
+}
 ```
 
-Or check them programmatically:
+---
+
+#### 🔍 Access Checks with `currentUserService.hasAccessTo(...)`
+
+Use `currentUserService.hasAccessTo(object)` to check **if the current user can access a specific resource**.
+
+🔹 Best used inside **Service methods**  
+🔹 Checks based on ownership or Research Group relationship  
+🔹 Avoids duplicate database calls – you already have the resource
 
 ```java
-SecurityUtils.hasCurrentUserAnyOfAuthorities("ADMIN","PROFESSOR");
+Job job = jobService.getJob(jobId);
+if(!currentUserService.
+
+hasAccessTo(job)){
+        throw new
+
+AccessDeniedException("Access to this job is not allowed.");
+}
 ```
+
+✅ This supports:
+
+- `Job`
+- `Application`
+- `CustomFieldAnswer`
+- `ApplicationReview`
+- `InternalComment`
+- `CustomField`
+- `ResearchGroup`
+
+---
+
+#### 🧩 `@CheckAccess` for Request Parameters
+
+Use `@CheckAccess` to automatically check access **based on method parameters** – especially useful in controller
+methods.
+
+🔹 Best used for **POST/PUT/DELETE** methods where the parameter (e.g. `researchGroupId`) is directly passed  
+🔹 Uses AOP (`CheckAccessAspect`) to extract IDs and validate permission
+
+```java
+
+@CheckAccess
+@PostMapping("/api/research-groups/{researchGroupId}/jobs")
+public ResponseEntity<JobDTO> createJob(@PathVariable UUID researchGroupId, @RequestBody JobDTO jobDTO) {
+    ...
+}
+```
+
+You can also specify what type of access should be checked:
+
+```java
+
+@CheckAccess(target = AccessTarget.PROFESSOR_ID)
+public ResponseEntity<?> getJobsForProfessor(@PathVariable UUID professorId) {
+    ...
+}
+```
+
+📌 `@CheckAccess` supports these targets:
+
+- `RESEARCH_GROUP_ID` (default)
+- `USER_ID`
+- `PROFESSOR_ID`
+
+---
+
+### 🧠 When to Use What?
+
+| Use case                                | Use `@PreAuthorize` | Use `hasAccessTo(...)` | Use `@CheckAccess`       |
+| --------------------------------------- | ------------------- | ---------------------- | ------------------------ |
+| Block roles like APPLICANT early        | ✅ Yes              | ❌ No                  | ❌ No                    |
+| Check if user owns a Job or Application | ❌ No               | ✅ Yes                 | ✅ If param ID is passed |
+| POST with researchGroupId in path       | ❌ No               | ❌ No                  | ✅ Yes                   |
+| Service logic with full object          | ❌ No               | ✅ Yes                 | ❌ No                    |
+
+All approaches work together – use them **in combination** for best clarity and security.
+
+---
 
 ### 🔍 How to Check Roles on the Client
 
