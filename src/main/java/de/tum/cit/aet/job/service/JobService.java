@@ -100,10 +100,10 @@ public class JobService {
 
         // Check if the user is part of the research group
         boolean belongsToResearchGroup = false;
-        if (job.getResearchGroup() != null && userId != null) {
-            UUID user = userRepository.findByIdElseThrow(userId).getResearchGroup().getResearchGroupId();
-            if (job.getResearchGroup().getResearchGroupId().equals(user)) {
-                belongsToResearchGroup = true;
+        if (userRepository.findByIdElseThrow(userId) != null) {
+            User user = userRepository.findByIdElseThrow(userId);
+            if (user.getResearchGroup() != null && job.getResearchGroup() != null) {
+                belongsToResearchGroup = user.getResearchGroup().getResearchGroupId().equals(job.getResearchGroup().getResearchGroupId());
             }
         }
 
