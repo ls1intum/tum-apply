@@ -35,8 +35,7 @@
   </div>
 
   <jhi-review-dialog
-    [applicantName]="currentApplication()?.applicationDetailDTO?.applicant?.user?.name"
-    [jobName]="currentApplication()?.applicationDetailDTO?.jobTitle"
+    [application]="currentApplication()"
     [(visible)]="reviewDialogVisible"
     [mode]="reviewDialogMode()"
     (accept)="acceptApplication()"

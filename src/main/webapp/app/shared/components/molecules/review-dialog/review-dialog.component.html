@@ -1,10 +1,15 @@
-<p-dialog [modal]="true" [(visible)]="visible" styleClass="review-dialog">
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [styleClass]="'review-dialog ' + (mode() === 'REJECT' ? 'mode-reject' : 'mode-accept')"
+  [contentStyleClass]="mode() === 'REJECT' ? 'no-overflow' : undefined"
+>
   <ng-template #header class="custom-header">
     <div class="info">
-      <span class="applicant-name">{{ applicantName() }}</span>
+      <span class="applicant-name">{{ application()?.applicationDetailDTO?.applicant?.user?.name ?? '' }}</span>
       <div class="job-name">
         <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-        <span>{{ jobName() }}</span>
+        <span>{{ application()?.applicationDetailDTO?.jobTitle ?? '' }}</span>
       </div>
     </div>
   </ng-template>
@@ -14,9 +19,9 @@
 
 <ng-template #acceptTemplate>
   <div>
-    <jhi-editor [model]="" />
+    <jhi-editor [model]="editorModel()" (modelChange)="editorModel.set($event)" />
     <ul class="review-checkboxes">
-      <!--
+      <!-- Will be added together with notifications
       <li>
         <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
         <label>Notify the applicant</label>
@@ -29,13 +34,7 @@
     </ul>
   </div>
   <p-footer class="footer">
-    <jhi-button
-      [label]="'evaluation.accept' | translate"
-      variant="outlined"
-      severity="success"
-      [disabled]="!canAccept()"
-      (click)="accept.emit()"
-    />
+    <jhi-button [label]="'evaluation.accept' | translate" severity="success" [disabled]="!canAccept()" (click)="onAccept()" />
   </p-footer>
 </ng-template>
 
@@ -49,7 +48,7 @@
     (selectedChange)="onSelectChange($event)"
   />
   <ul class="review-checkboxes">
-    <!--
+    <!-- Will be added together with notifications
     <li>
       <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
       <label>Notify the applicant</label>
@@ -57,12 +56,6 @@
     -->
   </ul>
   <p-footer class="footer">
-    <jhi-button
-      [label]="'evaluation.reject' | translate"
-      variant="outlined"
-      severity="danger"
-      [disabled]="!canReject()"
-      (click)="reject.emit()"
-    />
+    <jhi-button [label]="'evaluation.reject' | translate" severity="danger" [disabled]="!canReject()" (click)="reject.emit()" />
   </p-footer>
 </ng-template>
