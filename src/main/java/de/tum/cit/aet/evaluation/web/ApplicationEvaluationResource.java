@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
@@ -20,15 +21,47 @@ public class ApplicationEvaluationResource {
 
     private final ApplicationEvaluationService applicationEvaluationService;
 
+    /**
+     * Accepts an application with the given ID.
+     *
+     * @param applicationId the ID of the application to accept
+     * @param acceptDTO     the acceptance details
+     * @return HTTP 204 No Content response
+     */
     @PostMapping("/applications({applicationId}/accept")
     public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
-        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, null);
+        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, getDummyCurrentUser());
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Rejects an application with the given ID.
+     *
+     * @param applicationId the ID of the application to reject
+     * @param rejectDTO     the rejection details
+     * @return HTTP 204 No Content response
+     */
     @PostMapping("/applications({applicationId}/reject")
     public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
+        applicationEvaluationService.rejectApplication(applicationId, rejectDTO, getDummyCurrentUser());
         return ResponseEntity.noContent().build();
+    }
+
+    //TODO remove
+    /**
+     * Returns a dummy user for testing purposes.
+     *
+     * @return a dummy {@link User} object
+     */
+    private User getDummyCurrentUser() {
+        User user = new User();
+        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000102"));
+
+        ResearchGroup researchGroup = new ResearchGroup();
+        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        user.setResearchGroup(researchGroup);
+
+        return user;
     }
 
     /**
