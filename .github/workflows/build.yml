@@ -2,7 +2,6 @@ name: Build and Push Docker Image
 # The name of this workflow (Build) should be in sync with the test-e2e.yml workflow's workflow_run listener.
 
 on:
-  workflow_dispatch:
   pull_request:
     paths-ignore:
       - 'README.md'
