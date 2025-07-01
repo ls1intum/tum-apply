@@ -38,8 +38,8 @@
     [application]="currentApplication()"
     [(visible)]="reviewDialogVisible"
     [mode]="reviewDialogMode()"
-    (accept)="acceptApplication()"
-    (reject)="rejectApplication()"
+    (accept)="acceptApplication($event)"
+    (reject)="rejectApplication($event)"
   />
 
   @if (this.currentApplication(); as application) {

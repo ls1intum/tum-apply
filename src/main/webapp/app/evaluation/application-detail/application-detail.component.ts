@@ -10,10 +10,12 @@ import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
 import {
+  AcceptDTO,
   ApplicationEvaluationDetailDTO,
   ApplicationEvaluationDetailListDTO,
   ApplicationEvaluationResourceService,
   ApplicationForApplicantDTO,
+  RejectDTO,
 } from '../../generated';
 import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
 import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
@@ -157,16 +159,26 @@ export class ApplicationDetailComponent {
     this.reviewDialogVisible.set(true);
   }
 
-  acceptApplication(): void {
-    this.updateCurrentApplicationState('ACCEPTED');
-    // TODO add service call
-    this.reviewDialogVisible.set(false);
+  async acceptApplication(acceptDTO: AcceptDTO): Promise<void> {
+    const application = this.currentApplication();
+
+    if (application) {
+      console.log('Accepting application: ', application);
+      this.updateCurrentApplicationState('ACCEPTED');
+      this.reviewDialogVisible.set(false);
+      await firstValueFrom(this.evaluationResourceService.acceptApplication(application.applicationDetailDTO.applicationId, acceptDTO));
+    }
   }
 
-  rejectApplication(): void {
-    this.updateCurrentApplicationState('REJECTED');
-    // TODO add service call
-    this.reviewDialogVisible.set(false);
+  async rejectApplication(rejectDTO: RejectDTO): Promise<void> {
+    const application = this.currentApplication();
+
+    if (application) {
+      console.log('Rejecting application: ', application);
+      this.updateCurrentApplicationState('REJECTED');
+      this.reviewDialogVisible.set(false);
+      await firstValueFrom(this.evaluationResourceService.rejectApplication(application.applicationDetailDTO.applicationId, rejectDTO));
+    }
   }
 
   updateCurrentApplicationState(newState: ApplicationStateEnum): void {

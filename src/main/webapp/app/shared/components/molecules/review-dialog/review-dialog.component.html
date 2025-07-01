@@ -19,7 +19,13 @@
 
 <ng-template #acceptTemplate>
   <div>
-    <jhi-editor [model]="editorModel()" (modelChange)="editorModel.set($event)" />
+    <jhi-editor
+      [label]="'evaluation.message' | translate"
+      [placeholder]="'evaluation.writeMessage' | translate"
+      [model]="editorModel()"
+      (modelChange)="editorModel.set($event)"
+      [required]="true"
+    />
     <ul class="review-checkboxes">
       <!-- Will be added together with notifications
       <li>
@@ -29,7 +35,7 @@
       -->
       <li>
         <p-checkbox [(ngModel)]="closeJob" [binary]="true" />
-        <label>Close job and reject all open applications</label>
+        <label jhiTranslate="evaluation.closeJobAndRejectAll"></label>
       </li>
     </ul>
   </div>
@@ -41,10 +47,10 @@
 <ng-template #rejectTemplate>
   <jhi-dropdown
     [items]="rejectReasons"
-    label="Reason"
+    [label]="'evaluation.reason' | translate"
     [required]="true"
     [selected]="selectedRejectReason()"
-    placeholder="Select a reason..."
+    [placeholder]="'evaluation.selectReason' | translate"
     (selectedChange)="onSelectChange($event)"
   />
   <ul class="review-checkboxes">
@@ -56,6 +62,6 @@
     -->
   </ul>
   <p-footer class="footer">
-    <jhi-button [label]="'evaluation.reject' | translate" severity="danger" [disabled]="!canReject()" (click)="reject.emit()" />
+    <jhi-button [label]="'evaluation.reject' | translate" severity="danger" [disabled]="!canReject()" (click)="onReject()" />
   </p-footer>
 </ng-template>

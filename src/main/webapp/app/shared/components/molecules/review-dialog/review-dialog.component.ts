@@ -9,7 +9,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { EditorComponent } from '../../atoms/editor/editor.component';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated';
+import { AcceptDTO, ApplicationEvaluationDetailDTO, RejectDTO } from '../../../../generated';
+import TranslateDirective from '../../../language/translate.directive';
+
+import ReasonEnum = RejectDTO.ReasonEnum;
 
 @Component({
   selector: 'jhi-review-dialog',
@@ -24,6 +27,7 @@ import { ApplicationEvaluationDetailDTO } from '../../../../generated';
     NgTemplateOutlet,
     ButtonComponent,
     EditorComponent,
+    TranslateDirective,
   ],
   templateUrl: './review-dialog.component.html',
   styleUrl: './review-dialog.component.scss',
@@ -44,8 +48,8 @@ export class ReviewDialogComponent {
 
   selectedRejectReason = signal<DropdownOption | undefined>(undefined);
 
-  accept = output();
-  reject = output();
+  accept = output<AcceptDTO>();
+  reject = output<RejectDTO>();
 
   canAccept = computed(() => {
     return (this.notifyApplicant() && this.editorModel().length > 7) || !this.notifyApplicant();
@@ -66,6 +70,7 @@ export class ReviewDialogComponent {
         PROFESSOR_FIRST_NAME: application.professor?.firstName,
         PROFESSOR_LAST_NAME: application.professor?.lastName,
         RESEARCH_GROUP_NAME: application.professor?.researchGroupName,
+        RESEARCH_GROUP_WEBSITE: application.professor?.researchGroupWebsite,
       };
     }
     return undefined;
@@ -110,6 +115,26 @@ export class ReviewDialogComponent {
   }
 
   onAccept(): void {
-    console.warn(this.editorModel());
+    this.accept.emit({
+      message: this.editorModel(),
+      notifyApplicant: this.notifyApplicant(),
+      closeJob: this.closeJob(),
+    });
+  }
+
+  onReject(): void {
+    const reason = this.selectedRejectReason();
+    if (!reason) {
+      return;
+    }
+
+    this.reject.emit({
+      reason: this.getRejectReason(reason),
+      notifyApplicant: this.notifyApplicant(),
+    });
+  }
+
+  getRejectReason(option: DropdownOption): ReasonEnum {
+    return option.value as ReasonEnum;
   }
 }
