@@ -163,7 +163,6 @@ export class ApplicationDetailComponent {
     const application = this.currentApplication();
 
     if (application) {
-      console.log('Accepting application: ', application);
       this.updateCurrentApplicationState('ACCEPTED');
       this.reviewDialogVisible.set(false);
       await firstValueFrom(this.evaluationResourceService.acceptApplication(application.applicationDetailDTO.applicationId, acceptDTO));
@@ -174,7 +173,6 @@ export class ApplicationDetailComponent {
     const application = this.currentApplication();
 
     if (application) {
-      console.log('Rejecting application: ', application);
       this.updateCurrentApplicationState('REJECTED');
       this.reviewDialogVisible.set(false);
       await firstValueFrom(this.evaluationResourceService.rejectApplication(application.applicationDetailDTO.applicationId, rejectDTO));
