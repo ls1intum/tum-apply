@@ -14,5 +14,6 @@ export interface ProfessorDTO {
     lastName?: string;
     email?: string;
     researchGroupName?: string;
+    researchGroupWebsite?: string;
 }
 

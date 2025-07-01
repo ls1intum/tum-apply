@@ -2069,6 +2069,9 @@
           },
           "researchGroupName": {
             "type": "string"
+          },
+          "researchGroupWebsite": {
+            "type": "string"
           }
         }
       },
