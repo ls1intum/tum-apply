@@ -52,6 +52,7 @@ export class ReviewDialogComponent {
   reject = output<RejectDTO>();
 
   canAccept = computed(() => {
+    // 7 chars are an empty HTML tag (e.g. '<p></p>)
     return (this.notifyApplicant() && this.editorModel().length > 7) || !this.notifyApplicant();
   });
 
@@ -76,6 +77,7 @@ export class ReviewDialogComponent {
     return undefined;
   });
 
+  // TODO adapt to translation keys when dropdown is adjusted
   rejectReasons: DropdownOption[] = [
     {
       name: 'Job already filled',
@@ -96,6 +98,7 @@ export class ReviewDialogComponent {
   ];
 
   constructor() {
+    // Reset state each time the dialog opens
     effect(() => {
       if (this.visible()) {
         this.resetDialogState();

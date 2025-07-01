@@ -8,9 +8,9 @@
   box-sizing: border-box;
 
   .review-actions {
-    display: inline-flex; // inline-flex makes the div only as wide as needed by its content
-    gap: 0.75rem; // adjust gap as needed (e.g. 0.5rem or 1rem for more/less spacing)
-    align-items: center; // vertically center the buttons if they differ in height
+    display: inline-flex;
+    gap: 0.75rem;
+    align-items: center;
   }
 }
 

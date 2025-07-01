@@ -4,6 +4,7 @@
   [styleClass]="'review-dialog ' + (mode() === 'REJECT' ? 'mode-reject' : 'mode-accept')"
   [contentStyleClass]="mode() === 'REJECT' ? 'no-overflow' : undefined"
 >
+  <!-- ───────── Header (applicant + job title) ───────── -->
   <ng-template #header class="custom-header">
     <div class="info">
       <span class="applicant-name">{{ application()?.applicationDetailDTO?.applicant?.user?.name ?? '' }}</span>
@@ -14,9 +15,11 @@
     </div>
   </ng-template>
 
+  <!-- Swap between ACCEPT and REJECT content -->
   <ng-container [ngTemplateOutlet]="mode() === 'ACCEPT' ? acceptTemplate : rejectTemplate" />
 </p-dialog>
 
+<!-- ───────── Template rendered in ACCEPT mode ───────── -->
 <ng-template #acceptTemplate>
   <div>
     <jhi-editor
@@ -44,6 +47,7 @@
   </p-footer>
 </ng-template>
 
+<!-- ───────── Template rendered in REJECT mode ───────── -->
 <ng-template #rejectTemplate>
   <jhi-dropdown
     [items]="rejectReasons"
