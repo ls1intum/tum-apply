@@ -102,7 +102,7 @@ export class ReviewDialogComponent {
     effect(() => {
       if (this.visible()) {
         this.resetDialogState();
-        this.editorModel.set(this.translate.instant('evaluation.defaultRejectMessage', this.translationMetaData()));
+        this.editorModel.set(this.translate.instant('evaluation.defaultAcceptMessage', this.translationMetaData()));
       }
     });
   }
