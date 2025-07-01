@@ -18,6 +18,11 @@ on:
         description: 'Username that triggered deployment (not required, shown if triggered via GitHub UI, logged if triggered via GitHub app)'
         required: false
         type: string
+      image-tag:
+        description: 'Image tag to deploy (default: pr-<number> if PR exists, latest for default branch)'
+        required: true
+        type: string
+        default: 'pr-237'
 
 concurrency: ${{ github.event.inputs.environment_name }}
 
