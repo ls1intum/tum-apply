@@ -46,7 +46,8 @@ public class ApplicationService {
      * Creates a new job application for the given applicant and job.
      * If an application already exists for the applicant and job, an exception is thrown.
      *
-     * @param createApplicationDTO DTO containing application and applicant data
+     * @param jobId the id of the job
+     * @param applicantId the id of the applicant
      * @return the created ApplicationForApplicantDTO
      * @throws OperationNotAllowedException if the applicant has already applied for the job
      */
