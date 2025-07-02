@@ -242,14 +242,12 @@ export default class ApplicationCreationFormComponent {
   constructor(private route: ActivatedRoute) {
     this.init(route);
 
-    if (typeof jest === 'undefined') {
-      effect(() => {
-        const intervalId = setInterval(() => {
-          this.performAutomaticSave();
-        }, 20000);
-        return () => clearInterval(intervalId);
-      });
-    }
+    effect(() => {
+      const intervalId = setInterval(() => {
+        this.performAutomaticSave();
+      }, 20000);
+      return () => clearInterval(intervalId);
+    });
   }
 
   async init(route: ActivatedRoute): Promise<void> {
