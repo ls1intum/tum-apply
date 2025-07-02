@@ -290,7 +290,7 @@ export default class ApplicationCreationFormComponent {
         this.documentIds.set(ids);
       })
       .catch(() => alert('Error: fetching the document ids for this application'));
-    this.location.replaceState(`${segments[0]}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
+    this.location.replaceState(`${segments[0].path}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
   }
 
   performAutomaticSave(): void {
