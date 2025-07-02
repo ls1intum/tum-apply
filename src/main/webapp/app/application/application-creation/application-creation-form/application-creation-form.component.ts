@@ -296,10 +296,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   performAutomaticSave(): void {
-    console.log('In performSave');
-    console.log('Savingstate ' + this.savingState());
     if (this.savingState() === 'Saving...') {
-      console.log('sending application data');
       this.sendCreateApplicationData(this.applicationState(), false);
       this.savingState.set('Saved');
     }
@@ -312,7 +309,6 @@ export default class ApplicationCreationFormComponent {
       alert('There is an error with the applicationId');
       return;
     }
-    console.log('>>' + this.page2().bachelorDegreeName);
     const updateApplication: UpdateApplicationDTO = {
       applicationId,
       applicant: {
@@ -349,7 +345,6 @@ export default class ApplicationCreationFormComponent {
       projects: this.page3().experiences,
       // answers: new Set(),
     };
-    console.log(JSON.stringify(updateApplication));
     this.applicationResourceService.updateApplication(updateApplication).subscribe({
       next() {
         if (rerouteToOtherPage) {
@@ -392,7 +387,6 @@ export default class ApplicationCreationFormComponent {
 
   onValueChanged(): void {
     this.savingState.set('Saving...');
-    console.log('> ' + JSON.stringify(this.page2()));
   }
 
   onPage2ValidityChanged(isValid: boolean): void {
