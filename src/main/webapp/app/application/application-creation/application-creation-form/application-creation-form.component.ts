@@ -1,10 +1,12 @@
-import { Component, TemplateRef, computed, effect, inject, model, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
 import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AccountService } from 'app/core/auth/account.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -20,8 +22,6 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
-import { AccountService } from 'app/core/auth/account.service';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 const ApplicationFormModes = {
   CREATE: 'create',
