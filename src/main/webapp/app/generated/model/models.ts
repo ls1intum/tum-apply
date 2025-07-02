@@ -14,7 +14,6 @@ export * from './jobCardDTO';
 export * from './jobDTO';
 export * from './jobFilterOptionDTO';
 export * from './jobFormDTO';
-export * from './link';
 export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
 export * from './pageableObject';

@@ -1,11 +1,6 @@
 <ng-template #panel1>
   <div class="panel">
-    <jhi-application-creation-page1
-      class="w-full"
-      [(data)]="page1"
-      (valid)="onPage1ValidityChanged($event)"
-      (changed)="onPage1ValueChanged()"
-    />
+    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
   </div>
 </ng-template>
 <ng-template #panel2>
@@ -14,6 +9,7 @@
       class="w-full"
       [(data)]="page2"
       (valid)="onPage2ValidityChanged($event)"
+      (changed)="onValueChanged()"
       [applicationIdForDocuments]="applicationId()"
       [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
       [documentIdsMasterTranscript]="documentIds()?.masterDocumentDictionaryIds"
@@ -25,11 +21,23 @@
     <jhi-application-creation-page3
       class="w-full"
       [(data)]="page3"
+      (changed)="onValueChanged()"
       (valid)="onPage3ValidityChanged($event)"
       [applicationIdForDocuments]="applicationId()"
       [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
       [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
     />
+  </div>
+</ng-template>
+
+<ng-template #saving_state_panel>
+  <div
+    [className]="`flex flex-wrap justify-around content-center gap-1 ${this.savingState() === 'Saved'? 'saved_color' : 'unsaved_color'}`"
+  >
+    <fa-icon icon="save" />
+    <span class="font-bold">
+      {{ this.savingState() }}
+    </span>
   </div>
 </ng-template>
 

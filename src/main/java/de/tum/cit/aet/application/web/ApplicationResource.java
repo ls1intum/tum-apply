@@ -142,9 +142,8 @@ public class ApplicationResource {
         return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
     }
 
-    @GetMapping("/pages/length")
-    public ResponseEntity<Long> getApplicationPagesLength() {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+    @GetMapping("/pages/length/{applicantId}")
+    public ResponseEntity<Long> getApplicationPagesLength(@PathVariable UUID applicantId) {
         // purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
     }

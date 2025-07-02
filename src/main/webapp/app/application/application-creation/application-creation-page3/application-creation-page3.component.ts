@@ -59,6 +59,8 @@ export default class ApplicationCreationPage3Component {
   documentIdsReferences = input<string[] | undefined>(undefined);
 
   valid = output<boolean>();
+  changed = output<boolean>();
+
   fb = inject(FormBuilder);
   page3Form = computed(() => {
     const currentData = this.data();
@@ -80,6 +82,7 @@ export default class ApplicationCreationPage3Component {
         });
 
         this.valid.emit(form.valid);
+        this.changed.emit(true);
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {

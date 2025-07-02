@@ -21,6 +21,7 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import { AccountService } from 'app/core/auth/account.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 const ApplicationFormModes = {
   CREATE: 'create',
@@ -37,6 +38,7 @@ type ApplicationFormMode = (typeof ApplicationFormModes)[keyof typeof Applicatio
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
+    FontAwesomeModule,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -79,6 +81,7 @@ export default class ApplicationCreationFormComponent {
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
+  savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
 
   stepData = computed<StepData[]>(() => {
     const sendData = (state: 'SAVED' | 'SENT'): void => {
@@ -93,6 +96,7 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const statusPanel = this.savedStatusPanel();
     if (panel1) {
       steps.push({
         name: 'Personal Information',
@@ -109,15 +113,6 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
-          {
-            severity: 'secondary',
-            icon: 'save',
-            onClick() {},
-            disabled: true,
-            label: this.savingState(),
-            changePanel: false,
-            variant: 'text',
-          },
           {
             severity: 'danger',
             onClick() {
@@ -136,6 +131,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
+        status: statusPanel,
       });
     }
     if (panel2) {
@@ -154,15 +150,6 @@ export default class ApplicationCreationFormComponent {
           },
         ],
         buttonGroupNext: [
-          {
-            severity: 'secondary',
-            icon: 'save',
-            onClick() {},
-            disabled: true,
-            label: this.savingState(),
-            changePanel: false,
-            variant: 'text',
-          },
           {
             severity: 'danger',
             onClick() {
@@ -200,15 +187,6 @@ export default class ApplicationCreationFormComponent {
         ],
         buttonGroupNext: [
           {
-            severity: 'secondary',
-            icon: 'save',
-            onClick() {},
-            disabled: true,
-            label: this.savingState(),
-            changePanel: false,
-            variant: 'text',
-          },
-          {
             severity: 'danger',
             onClick() {
               deleteApplication();
@@ -243,8 +221,6 @@ export default class ApplicationCreationFormComponent {
 
   savingState = signal<'Saved' | 'Saving...'>('Saved');
 
-  changedPage1 = model<boolean>(false);
-
   mode: ApplicationFormMode = 'create';
 
   page1Valid = signal<boolean>(false);
@@ -267,19 +243,8 @@ export default class ApplicationCreationFormComponent {
     this.init(route);
 
     effect(() => {
-      this.savingTick(); // to trigger the saving effect
-      this.performAutomaticSave();
-    });
-
-    effect(() => {
-      this.changedPage1();
-      this.savingState.set('Saving...');
-      this.changedPage1.set(false);
-    });
-
-    effect(() => {
       const intervalId = setInterval(() => {
-        this.savingTick.update(v => v + 1); // Reactively trigger
+        this.performAutomaticSave();
       }, 20000);
 
       // Cleanup
@@ -327,11 +292,14 @@ export default class ApplicationCreationFormComponent {
         this.documentIds.set(ids);
       })
       .catch(() => alert('Error: fetching the document ids for this application'));
-    this.location.replaceState(`${segments[0]}/${ApplicationFormModes.EDIT}/${this.applicationId}`);
+    this.location.replaceState(`${segments[0]}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
   }
 
   performAutomaticSave(): void {
+    console.log('In performSave');
+    console.log('Savingstate ' + this.savingState());
     if (this.savingState() === 'Saving...') {
+      console.log('sending application data');
       this.sendCreateApplicationData(this.applicationState(), false);
       this.savingState.set('Saved');
     }
@@ -344,6 +312,7 @@ export default class ApplicationCreationFormComponent {
       alert('There is an error with the applicationId');
       return;
     }
+    console.log('>>' + this.page2().bachelorDegreeName);
     const updateApplication: UpdateApplicationDTO = {
       applicationId,
       applicant: {
@@ -380,6 +349,7 @@ export default class ApplicationCreationFormComponent {
       projects: this.page3().experiences,
       // answers: new Set(),
     };
+    console.log(JSON.stringify(updateApplication));
     this.applicationResourceService.updateApplication(updateApplication).subscribe({
       next() {
         if (rerouteToOtherPage) {
@@ -420,8 +390,9 @@ export default class ApplicationCreationFormComponent {
     this.page1Valid.set(isValid);
   }
 
-  onPage1ValueChanged(): void {
-    this.changedPage1.set(true);
+  onValueChanged(): void {
+    this.savingState.set('Saving...');
+    console.log('> ' + JSON.stringify(this.page2()));
   }
 
   onPage2ValidityChanged(isValid: boolean): void {

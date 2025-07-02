@@ -132,7 +132,7 @@ public class ApplicationService {
         );
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
-        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
+        Applicant applicant = applicantRepository.getReferenceById(applicantDTO.user().userId());
         applicant.setFirstName(applicantDTO.user().firstName());
         applicant.setLastName(applicantDTO.user().lastName());
         applicant.setGender(applicantDTO.user().gender());
