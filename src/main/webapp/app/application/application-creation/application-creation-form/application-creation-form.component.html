@@ -31,9 +31,7 @@
 </ng-template>
 
 <ng-template #saving_state_panel>
-  <div
-    [className]="`flex flex-wrap justify-around content-center gap-1 ${this.savingState() === 'Saved'? 'saved_color' : 'unsaved_color'}`"
-  >
+  <div [className]="savingBadgeCalculatedClass()">
     <fa-icon icon="save" />
     <span class="font-bold">
       {{ this.savingState() }}

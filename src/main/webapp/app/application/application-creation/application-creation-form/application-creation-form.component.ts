@@ -30,6 +30,20 @@ const ApplicationFormModes = {
 
 type ApplicationFormMode = (typeof ApplicationFormModes)[keyof typeof ApplicationFormModes];
 
+const ApplicationStates = {
+  SAVED: 'SAVED',
+  SENT: 'SENT',
+} as const;
+
+type ApplicationState = (typeof ApplicationStates)[keyof typeof ApplicationStates];
+
+const SavingStates = {
+  Saved: 'Saved',
+  Saving: 'Saving...',
+} as const;
+
+type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
+
 @Component({
   selector: 'jhi-application-creation-form',
   imports: [
@@ -84,7 +98,7 @@ export default class ApplicationCreationFormComponent {
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
 
   stepData = computed<StepData[]>(() => {
-    const sendData = (state: 'SAVED' | 'SENT'): void => {
+    const sendData = (state: ApplicationState): void => {
       this.sendCreateApplicationData(state, true);
     };
 
@@ -96,6 +110,8 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const router = this.router;
+    const performAutomaticSave = this.performAutomaticSave;
     const statusPanel = this.savedStatusPanel();
     if (panel1) {
       steps.push({
@@ -106,7 +122,10 @@ export default class ApplicationCreationFormComponent {
             variant: 'outlined',
             severity: 'info',
             icon: 'caret-left',
-            onClick() {},
+            onClick() {
+              performAutomaticSave();
+              router.navigate(['/']);
+            },
             disabled: false,
             label: 'Cancel',
             changePanel: false,
@@ -168,6 +187,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
+        status: statusPanel,
       });
     }
     if (panel3) {
@@ -206,6 +226,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
+        status: statusPanel,
       });
     }
     return steps;
@@ -217,9 +238,9 @@ export default class ApplicationCreationFormComponent {
   applicantId = signal<string>('');
   applicationId = signal<string | undefined>(undefined);
 
-  applicationState = signal<'SAVED' | 'SENT'>('SAVED');
+  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
 
-  savingState = signal<'Saved' | 'Saving...'>('Saved');
+  savingState = signal<SavingState>(SavingStates.Saved);
 
   mode: ApplicationFormMode = 'create';
 
@@ -245,10 +266,14 @@ export default class ApplicationCreationFormComponent {
     effect(() => {
       const intervalId = setInterval(() => {
         this.performAutomaticSave();
-      }, 20000);
+      }, 10000);
       return () => clearInterval(intervalId);
     });
   }
+
+  savingBadgeCalculatedClass = () => {
+    return `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.Saved ? 'saved_color' : 'unsaved_color'}`;
+  };
 
   async init(route: ActivatedRoute): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
@@ -294,13 +319,13 @@ export default class ApplicationCreationFormComponent {
   }
 
   performAutomaticSave(): void {
-    if (this.savingState() === 'Saving...') {
+    if (this.savingState() === SavingStates.Saving) {
       this.sendCreateApplicationData(this.applicationState(), false);
-      this.savingState.set('Saved');
+      this.savingState.set(SavingStates.Saved);
     }
   }
 
-  sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): void {
+  sendCreateApplicationData(state: ApplicationState, rerouteToOtherPage: boolean): void {
     const router = this.router;
     const applicationId = this.applicationId();
     if (applicationId === undefined) {
@@ -384,7 +409,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   onValueChanged(): void {
-    this.savingState.set('Saving...');
+    this.savingState.set(SavingStates.Saving);
   }
 
   onPage2ValidityChanged(isValid: boolean): void {
