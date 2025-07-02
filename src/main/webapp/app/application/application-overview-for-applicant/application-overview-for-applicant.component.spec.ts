@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
+import { AccountService } from 'app/core/auth/account.service';
 
 class MockApplicationResourceService {
   deleteApplication = jest.fn().mockReturnValue(of(undefined));
@@ -76,6 +77,12 @@ describe('ApplicationOverviewForApplicantComponent', () => {
         {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
+        },
+        {
+          provide: AccountService,
+          useValue: {
+            loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
+          },
         },
       ],
     }).compileComponents();

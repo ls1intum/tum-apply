@@ -17,6 +17,7 @@ import { HttpResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
+import { AccountService } from 'app/core/auth/account.service';
 
 class MockApplicationResourceService {
   getApplicationById = jest.fn().mockReturnValue(of({}));
@@ -53,6 +54,12 @@ describe('ApplicationCreationFormComponent create', () => {
           provide: JobResourceService,
           useValue: {
             getJobById: jest.fn().mockReturnValue(of(new HttpResponse({ body: { title: 'Test title' } }))),
+          },
+        },
+        {
+          provide: AccountService,
+          useValue: {
+            loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
           },
         },
       ],
