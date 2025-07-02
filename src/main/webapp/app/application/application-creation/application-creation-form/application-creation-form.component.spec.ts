@@ -15,9 +15,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { HttpResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
+import { AccountService } from 'app/core/auth/account.service';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
-import { AccountService } from 'app/core/auth/account.service';
 
 class MockApplicationResourceService {
   getApplicationById = jest.fn().mockReturnValue(of({}));
