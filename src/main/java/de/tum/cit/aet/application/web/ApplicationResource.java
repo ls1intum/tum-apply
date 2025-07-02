@@ -45,7 +45,9 @@ public class ApplicationResource {
     }
 
     /**
-     * @param createApplicationDTO The data necessary to create an Application
+     *
+     * @param jobId The UUID of the Job
+     * @param applicantId Temporarily the id of the applicant (to be removed with serverside user handling)
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
      *         the createApplicationDTO is invalid
      */
