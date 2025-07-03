@@ -271,9 +271,10 @@ export default class ApplicationCreationFormComponent {
     });
   }
 
-  savingBadgeCalculatedClass = () => {
-    return `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.Saved ? 'saved_color' : 'unsaved_color'}`;
-  };
+  savingBadgeCalculatedClass = computed<string>(
+    () =>
+      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.Saved ? 'saved_color' : 'unsaved_color'}`,
+  );
 
   async init(route: ActivatedRoute): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
