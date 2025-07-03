@@ -4,6 +4,7 @@ import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/ge
 import { HttpEventType } from '@angular/common/http';
 import SharedModule from 'app/shared/shared.module';
 import { FileUpload } from 'primeng/fileupload';
+import { firstValueFrom } from 'rxjs';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -68,7 +69,6 @@ export class UploadButtonComponent {
           const percentDone = Math.round((event.loaded / event.total) * 100);
           this.uploadProgress.set(percentDone);
         } else if (event.type === HttpEventType.Response) {
-          console.log(JSON.stringify(event.body));
           const uploadedIds = event.body;
           this.documentIds.set(uploadedIds ?? []);
           this.selectedFiles.set([]);
@@ -83,18 +83,30 @@ export class UploadButtonComponent {
     });
   }
 
-  deleteDictionary(documentInfo: DocumentInformationHolderDTO): void {
-    // TODO delete
+  async deleteDictionary(documentInfo: DocumentInformationHolderDTO): Promise<void> {
+    const documentId = documentInfo.id;
+    try {
+      await firstValueFrom(this.applicationService.deleteDocumentFromApplication(documentId));
+      const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
+      this.documentIds.set(updatedList);
+    } catch (err) {
+      console.error('Failed to delete document', err);
+      alert('Failed to delete document');
+    }
   }
 
   onClear(): void {
-    // this.selectedFile.set(undefined);
     this.uploadProgress.set(0);
     this.isUploading.set(false);
   }
 
-  deleteAll(): void {
-    // TODO
+  async deleteAll(): Promise<void> {
+    try {
+      await firstValueFrom(this.applicationService.deleteDocumentBatchByTypeFromApplication(this.applicationId(), this.documentType()));
+    } catch (err) {
+      console.error('Failed to delete documents', err);
+      alert('Failed to delete documents');
+    }
   }
 
   formatSize(bytes: number): string {

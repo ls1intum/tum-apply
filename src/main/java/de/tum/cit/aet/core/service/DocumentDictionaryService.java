@@ -45,7 +45,7 @@ public class DocumentDictionaryService {
         // Delete outdated entries
         for (DocumentDictionary dd : existingEntries) {
             if (!newDocumentIds.contains(dd.getDocument().getDocumentId())) {
-                delete(dd);
+                deleteById(dd.getDocumentDictionaryId());
             }
         }
 
@@ -89,10 +89,23 @@ public class DocumentDictionaryService {
     /**
      * Deletes a DocumentDictionary entry from the database.
      *
-     * @param documentDictionary the document dictionary entry to delete
+     * @param documentDictionaryId the id of the document dictionary entry to delete
      */
-    public void delete(DocumentDictionary documentDictionary) {
-        documentDictionaryRepository.delete(documentDictionary);
+    public void deleteById(UUID documentDictionaryDictionaryId) {
+        if (!documentDictionaryRepository.existsById(documentDictionaryDictionaryId)) {
+            throw new EntityNotFoundException("DocumentDictionaryId does not exist");
+        }
+        documentDictionaryRepository.deleteById(documentDictionaryDictionaryId);
+    }
+
+    /**
+     * Deletes a DocumentDictionary entry from the database.
+     *
+     * @param documentDictionaryId the id of the document dictionary entry to delete
+     */
+    public void deleteByApplicationAndType(Application application, DocumentType documentType) {
+        Set<DocumentDictionary> documentDictionaries = getDocumentDictionaries(application, documentType);
+        this.documentDictionaryRepository.deleteAll(documentDictionaries);
     }
 
     /**

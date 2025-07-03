@@ -96,6 +96,35 @@ public class ApplicationResource {
     }
 
     /**
+     *
+     * @param documentDictionaryId id of the documentDictionary that will be deleted
+     * @return 204 No Content when deletion is successful
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @DeleteMapping("/delete-document/{documentDictionaryId}")
+    public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
+        // simulate current user (replace with actual auth in production)
+        applicationService.deleteDocument(documentDictionaryId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     *
+     * @param applicationId id of the application
+     * @param documentType document type, of which the documents will be deleted
+     * @return 204 no content when deletion is successful
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @DeleteMapping("/batch-delete-document/{applicationId}/{documentType}")
+    public ResponseEntity<Void> deleteDocumentBatchByTypeFromApplication(
+        @PathVariable UUID applicationId,
+        @PathVariable DocumentType documentType
+    ) {
+        applicationService.deleteDocumentTypeOfDocuments(applicationId, documentType);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * @param applicantId the UUID of the applicant
      * @return Set of ApplicationForApplicantDTOm where the applicant has the
      *         applicantId as UUID

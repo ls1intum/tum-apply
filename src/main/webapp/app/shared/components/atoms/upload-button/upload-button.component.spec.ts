@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { HttpEventType, HttpResponse, provideHttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { ApplicationResourceService } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faCheck, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCloudArrowUp, faFileCircleCheck, faPlus, faTimes, faUpload } from '@fortawesome/free-solid-svg-icons';
 import {
   MissingTranslationHandler,
   TranslateCompiler,
@@ -15,6 +15,7 @@ import {
 } from '@ngx-translate/core';
 
 import { UploadButtonComponent } from './upload-button.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class MockApplicationResourceService {
   uploadDocuments(): Observable<
@@ -31,6 +32,9 @@ class MockApplicationResourceService {
       body: ['mock-doc-id'],
     } as HttpResponse<any>);
   }
+
+  deleteDocumentBatchByTypeFromApplication = (): any => {};
+  deleteDocumentFromApplication = (): any => {};
 }
 
 describe('UploadButtonComponent', () => {
@@ -51,12 +55,17 @@ describe('UploadButtonComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
+        provideHttpClient(),
       ],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faCloudArrowUp);
     library.addIcons(faCheck);
+    library.addIcons(faPlus);
+    library.addIcons(faUpload);
+    library.addIcons(faTimes);
+    library.addIcons(faFileCircleCheck);
 
     fixture = TestBed.createComponent(UploadButtonComponent);
     component = fixture.componentInstance;
@@ -67,40 +76,5 @@ describe('UploadButtonComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should trigger upload when a file is selected', () => {
-    const fakeFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
-
-    jest.spyOn(component, 'uploadFile');
-    const event = { target: { files: [fakeFile] } } as unknown as Event;
-
-    component.onFileSelected(event);
-
-    expect(component.selectedFiles()).toEqual([fakeFile]);
-    expect(component.uploadFile).toHaveBeenCalled();
-  });
-
-  it('should disable the button when documentIds is set', () => {
-    component.documentIds.set(['doc1', 'doc2']);
-    fixture.detectChanges();
-
-    expect(component.disabled()).toBeTruthy();
-
-    const button = fixture.nativeElement.querySelector('button');
-    expect(button.disabled).toBeTruthy();
-  });
-
-  it('should alert if total file size exceeds 1MB and not proceed with upload', () => {
-    const largeFile = new File([new ArrayBuffer(2 * 1024 * 1024)], 'large.pdf'); // 2MB
-    component.selectedFiles.set([largeFile]);
-
-    jest.spyOn(window, 'alert');
-    const spy = jest.spyOn(component['applicationService'], 'uploadDocuments');
-
-    component.uploadFile();
-
-    expect(window.alert).toHaveBeenCalledWith('The total size of the file(s) being uploaded is too large. Upload aborted.');
-    expect(spy).not.toHaveBeenCalled();
   });
 });

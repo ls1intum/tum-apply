@@ -47,11 +47,13 @@ public class ApplicationService {
 
     /**
      * Creates a new job application for the given applicant and job.
-     * If an application already exists for the applicant and job, an exception is thrown.
+     * If an application already exists for the applicant and job, an exception is
+     * thrown.
      *
      * @param createApplicationDTO DTO containing application and applicant data
      * @return the created ApplicationForApplicantDTO
-     * @throws OperationNotAllowedException if the applicant has already applied for the job
+     * @throws OperationNotAllowedException if the applicant has already applied for
+     *                                      the job
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(CreateApplicationDTO createApplicationDTO) {
@@ -216,6 +218,10 @@ public class ApplicationService {
         applicationRepository.deleteById(applicationId);
     }
 
+    public void deleteDocument(UUID documentId) {
+        documentDictionaryService.deleteById(documentId);
+    }
+
     public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
         return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
     }
@@ -267,46 +273,22 @@ public class ApplicationService {
     /**
      * Uploads a single CV document and updates the dictionary mapping.
      *
-     * @param cv the uploaded CV file
+     * @param cv          the uploaded CV file
      * @param application the application the CV belongs to
-     * @param user the user uploading the document
+     * @param user        the user uploading the document
      */
     public void uploadCV(MultipartFile cv, Application application, User user) {
         Document document = documentService.upload(cv, user);
         updateDocumentDictionaries(application, DocumentType.CV, Set.of(Pair.of(document, cv.getName())));
     }
 
-    // /**
-    //  * Uploads multiple reference documents and updates the dictionary mapping.
-    //  *
-    //  * @param references the uploaded reference files
-    //  * @param application the application the references belong to
-    //  * @param user the user uploading the documents
-    //  */
-    // public void uploadReferences(List<MultipartFile> references, Application application, User user) {
-    //     Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-    //     updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
-    // }
-
-    // /**
-    //  * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
-    //  *
-    //  * @param bachelorTranscripts the uploaded bachelor transcript files
-    //  * @param application the application the transcripts belong to
-    //  * @param user the user uploading the documents
-    //  */
-    // public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
-    //     Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-    //     updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
-    // }
-
     /**
      * Uploads multiple transcript documents and updates the dictionary mapping.
      *
      * @param transcripts the uploaded transcript files
-     * @param type the type of the transcript
+     * @param type        the type of the transcript
      * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
+     * @param user        the user uploading the documents
      */
     public void uploadTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application, User user) {
         Set<Pair<Document, String>> documents = transcripts
@@ -317,11 +299,13 @@ public class ApplicationService {
     }
 
     /**
-     * Updates the document dictionary entries for a given application and document type.
+     * Updates the document dictionary entries for a given application and document
+     * type.
      *
-     * @param application    the application to associate the documents with
-     * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
-     * @param newDocuments   the set of newly uploaded documents to associate
+     * @param application  the application to associate the documents with
+     * @param type         the type of documents being updated (e.g.,
+     *                     BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
+     * @param newDocuments the set of newly uploaded documents to associate
      */
     protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Pair<Document, String>> newDocuments) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
@@ -329,11 +313,14 @@ public class ApplicationService {
     }
 
     /**
-     * Retrieves the set of document IDs for the given application filtered by the specified document type.
+     * Retrieves the set of document IDs for the given application filtered by the
+     * specified document type.
      *
-     * @param application the application whose documents are queried; must not be {@code null}
-     * @param type the document type to filter by; must not be {@code null}
-     * @return a set of document IDs matching the given application and document type; never {@code null}
+     * @param application the application whose documents are queried; must not be
+     *                    {@code null}
+     * @param type        the document type to filter by; must not be {@code null}
+     * @return a set of document IDs matching the given application and document
+     *         type; never {@code null}
      */
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
@@ -341,10 +328,12 @@ public class ApplicationService {
     }
 
     /**
-     * Retrieves the document IDs associated with the application identified by the given UUID.
+     * Retrieves the document IDs associated with the application identified by the
+     * given UUID.
      *
      * @param applicationId the UUID of the application; must not be {@code null}
-     * @return an {@link ApplicationDocumentIdsDTO} containing the categorized document IDs for the application
+     * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
+     *         document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
@@ -368,5 +357,13 @@ public class ApplicationService {
         Application application = applicationRepository.findById(applicationId).orElseThrow();
 
         return ApplicationDetailDTO.getFromEntity(application);
+    }
+
+    public void deleteDocumentTypeOfDocuments(UUID applicationId, DocumentType documentType) {
+        Optional<Application> application = this.applicationRepository.findById(applicationId);
+        if (application.isEmpty()) {
+            throw new EntityNotFoundException("Application does not exist");
+        }
+        this.documentDictionaryService.deleteByApplicationAndType(application.get(), documentType);
     }
 }
