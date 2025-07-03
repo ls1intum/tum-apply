@@ -43,7 +43,7 @@ export class UploadButtonComponent {
 
   private applicationService = inject(ApplicationResourceService);
 
-  onFileSelected(event: any) {
+  onFileSelected(event: any): void {
     const files: File[] = event.currentFiles;
     const selectedFile = this.selectedFiles();
     if (selectedFile === undefined) {
