@@ -92,6 +92,11 @@ export default class ApplicationCreationFormComponent {
     experiences: '',
   });
 
+  savingBadgeCalculatedClass = computed<string>(
+    () =>
+      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.Saved ? 'saved_color' : 'unsaved_color'}`,
+  );
+
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
@@ -270,11 +275,6 @@ export default class ApplicationCreationFormComponent {
       return () => clearInterval(intervalId);
     });
   }
-
-  savingBadgeCalculatedClass = computed<string>(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.Saved ? 'saved_color' : 'unsaved_color'}`,
-  );
 
   async init(route: ActivatedRoute): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
