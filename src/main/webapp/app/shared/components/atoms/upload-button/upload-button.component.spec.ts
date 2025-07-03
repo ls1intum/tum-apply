@@ -15,7 +15,6 @@ import {
 } from '@ngx-translate/core';
 
 import { UploadButtonComponent } from './upload-button.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class MockApplicationResourceService {
   uploadDocuments(): Observable<
