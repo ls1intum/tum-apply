@@ -25,12 +25,17 @@ public class DocumentDictionaryService {
 
     /**
      * Synchronizes the document dictionary entries with a new set of documents.
-     * The owning entity (e.g., Applicant, Application) is set dynamically using the provided {@code ownerSetter}.
+     * The owning entity (e.g., Applicant, Application) is set dynamically using the
+     * provided {@code ownerSetter}.
      *
-     * @param existingEntries the current document dictionary entries associated with an entity
+     * @param existingEntries the current document dictionary entries associated
+     *                        with an entity
      * @param newDocuments    the newly uploaded documents to be associated
-     * @param type            the type of documents being updated (e.g., CV, REFERENCE)
-     * @param ownerSetter     a functional interface used to set the owning entity (e.g., via {@code setApplicant()} or {@code setApplication()})
+     * @param type            the type of documents being updated (e.g., CV,
+     *                        REFERENCE)
+     * @param ownerSetter     a functional interface used to set the owning entity
+     *                        (e.g., via {@code setApplicant()} or
+     *                        {@code setApplication()})
      */
     public void updateDocumentDictionaries(
         Set<DocumentDictionary> existingEntries,
@@ -68,7 +73,8 @@ public class DocumentDictionaryService {
      *
      * @param id the UUID of the DocumentDictionary to retrieve
      * @return the {@link DocumentDictionary} entity associated with the given ID
-     * @throws EntityNotFoundException if no DocumentDictionary is found for the provided ID
+     * @throws EntityNotFoundException if no DocumentDictionary is found for the
+     *                                 provided ID
      */
     public DocumentDictionary findDocumentDictionaryById(UUID id) {
         return documentDictionaryRepository
@@ -99,9 +105,11 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Deletes a DocumentDictionary entry from the database.
+     * Deletes all document dictionary entries associated with the given application
+     * and document type.
      *
-     * @param documentDictionaryId the id of the document dictionary entry to delete
+     * @param application  the application associated with the documents
+     * @param documentType the type of documents to delete
      */
     public void deleteByApplicationAndType(Application application, DocumentType documentType) {
         Set<DocumentDictionary> documentDictionaries = getDocumentDictionaries(application, documentType);
@@ -109,10 +117,12 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Retrieves all DocumentDictionary entries for a given applicant and document type.
+     * Retrieves all DocumentDictionary entries for a given applicant and document
+     * type.
      *
-     * @param applicant the applicant whose documents to retrieve
-     * @param documentType the type of document to filter by (e.g., BACHELOR_TRANSCRIPT)
+     * @param applicant    the applicant whose documents to retrieve
+     * @param documentType the type of document to filter by (e.g.,
+     *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
     public Set<DocumentDictionary> getDocumentDictionaries(Applicant applicant, DocumentType documentType) {
@@ -120,10 +130,12 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Retrieves all DocumentDictionary entries for a given application and document type.
+     * Retrieves all DocumentDictionary entries for a given application and document
+     * type.
      *
-     * @param application the application whose documents to retrieve
-     * @param documentType the type of document to filter by (e.g., BACHELOR_TRANSCRIPT)
+     * @param application  the application whose documents to retrieve
+     * @param documentType the type of document to filter by (e.g.,
+     *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
     public Set<DocumentDictionary> getDocumentDictionaries(Application application, DocumentType documentType) {
@@ -141,13 +153,17 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Retrieves a {@link ApplicationDocumentIdsDTO} containing categorized document IDs
+     * Retrieves a {@link ApplicationDocumentIdsDTO} containing categorized document
+     * IDs
      * associated with the specified {@link Application}.
      *
-     * @param application the {@link Application} entity whose related document IDs should be retrieved;
+     * @param application the {@link Application} entity whose related document IDs
+     *                    should be retrieved;
      *                    must not be {@code null}
-     * @return an {@link ApplicationDocumentIdsDTO} populated with document IDs grouped by document type;
-     *         never {@code null}, but fields may be empty if no documents are associated
+     * @return an {@link ApplicationDocumentIdsDTO} populated with document IDs
+     *         grouped by document type;
+     *         never {@code null}, but fields may be empty if no documents are
+     *         associated
      * @throws IllegalArgumentException if the {@code application} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentIdsDTO(Application application) {

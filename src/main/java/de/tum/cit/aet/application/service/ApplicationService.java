@@ -218,14 +218,33 @@ public class ApplicationService {
         applicationRepository.deleteById(applicationId);
     }
 
-    public void deleteDocument(UUID documentId) {
-        documentDictionaryService.deleteById(documentId);
+    /**
+     * Deletes a document from the document dictionary by its ID.
+     *
+     * @param documentDictionaryId the ID of the document to be deleted
+     */
+    public void deleteDocument(UUID documentDictionaryId) {
+        documentDictionaryService.deleteById(documentDictionaryId);
     }
 
+    /**
+     * Retrieves a paginated list of application overviews for a specific applicant.
+     *
+     * @param applicantId the ID of the applicant
+     * @param pageSize    the number of applications per page
+     * @param pageNumber  the page number to retrieve
+     * @return a list of application overview DTOs
+     */
     public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
         return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
     }
 
+    /**
+     * Returns the total number of applications submitted by a specific applicant.
+     *
+     * @param applicantId the ID of the applicant
+     * @return the total number of applications
+     */
     public long getNumberOfTotalApplications(UUID applicantId) {
         return this.applicationRepository.countByApplicant_UserId(applicantId);
     }

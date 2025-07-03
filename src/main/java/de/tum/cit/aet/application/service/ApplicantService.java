@@ -78,6 +78,7 @@ public class ApplicantService {
      * Uploads multiple documents and updates the dictionary mapping.
      *
      * @param references the uploaded files
+     * @param type the type of the document
      * @param applicant the applicant the belong to
      * @param user the user uploading the documents
      */
