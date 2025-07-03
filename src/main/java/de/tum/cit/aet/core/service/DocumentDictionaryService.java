@@ -97,11 +97,11 @@ public class DocumentDictionaryService {
      *
      * @param documentDictionaryId the id of the document dictionary entry to delete
      */
-    public void deleteById(UUID documentDictionaryDictionaryId) {
-        if (!documentDictionaryRepository.existsById(documentDictionaryDictionaryId)) {
+    public void deleteById(UUID documentDictionaryId) {
+        if (!documentDictionaryRepository.existsById(documentDictionaryId)) {
             throw new EntityNotFoundException("DocumentDictionaryId does not exist");
         }
-        documentDictionaryRepository.deleteById(documentDictionaryDictionaryId);
+        documentDictionaryRepository.deleteById(documentDictionaryId);
     }
 
     /**

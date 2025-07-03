@@ -22,6 +22,13 @@ public class DocumentInformationHolderDTO {
 
     private String name;
 
+    /**
+     * Creates a {@link DocumentInformationHolderDTO} from a given
+     * {@link DocumentDictionary}.
+     *
+     * @param dictionary the document dictionary entity to convert
+     * @return a DTO containing document information
+     */
     public static DocumentInformationHolderDTO getFromDocumentDictionary(DocumentDictionary dictionary) {
         return new DocumentInformationHolderDTO(
             dictionary.getDocumentDictionaryId(),

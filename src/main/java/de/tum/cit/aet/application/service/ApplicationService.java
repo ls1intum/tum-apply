@@ -378,6 +378,14 @@ public class ApplicationService {
         return ApplicationDetailDTO.getFromEntity(application);
     }
 
+    /**
+     * Deletes all documents of a specific type associated with the given
+     * application.
+     *
+     * @param applicationId the ID of the application
+     * @param documentType  the type of documents to delete
+     * @throws EntityNotFoundException if the application does not exist
+     */
     public void deleteDocumentTypeOfDocuments(UUID applicationId, DocumentType documentType) {
         Optional<Application> application = this.applicationRepository.findById(applicationId);
         if (application.isEmpty()) {
