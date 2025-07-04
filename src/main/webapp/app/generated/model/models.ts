@@ -11,6 +11,7 @@ export * from './applicationOverviewDTO';
 export * from './createApplicationDTO';
 export * from './createdJobDTO';
 export * from './customFieldAnswerDTO';
+export * from './documentInformationHolderDTO';
 export * from './jobCardDTO';
 export * from './jobDTO';
 export * from './jobFilterOptionDTO';

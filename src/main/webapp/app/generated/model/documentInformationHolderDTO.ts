@@ -9,9 +9,9 @@
  */
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface DocumentInformationHolderDTO { 
+    id: string;
+    size: number;
+    name?: string;
 }
 

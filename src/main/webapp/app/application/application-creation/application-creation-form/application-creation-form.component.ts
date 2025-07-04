@@ -98,6 +98,7 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const updateDocumentInformation = this.updateDocumentInformation;
     if (panel1) {
       steps.push({
         name: 'Personal Information',
@@ -143,7 +144,9 @@ export default class ApplicationCreationFormComponent {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
-            onClick() {},
+            onClick() {
+              updateDocumentInformation();
+            },
             disabled: false,
             label: 'Prev',
             changePanel: true,
@@ -162,7 +165,9 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'primary',
             icon: 'arrow-right',
-            onClick() {},
+            onClick() {
+              updateDocumentInformation();
+            },
             disabled: false,
             label: 'Next',
             changePanel: true,
@@ -179,7 +184,9 @@ export default class ApplicationCreationFormComponent {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
-            onClick() {},
+            onClick() {
+              updateDocumentInformation();
+            },
             disabled: false,
             label: 'Prev',
             changePanel: true,
@@ -224,7 +231,7 @@ export default class ApplicationCreationFormComponent {
   title = signal<string>('');
 
   jobId = signal<string>('');
-  applicationId = signal<string | undefined>(undefined);
+  applicationId = signal<string>('');
 
   mode: ApplicationFormMode = 'create';
 
@@ -277,11 +284,7 @@ export default class ApplicationCreationFormComponent {
       this.page2.set(getPage2FromApplication(application));
       this.page3.set(getPage3FromApplication(application));
 
-      firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
-        .then(ids => {
-          this.documentIds.set(ids);
-        })
-        .catch(() => alert('Error: fetching the document ids for this application'));
+      this.updateDocumentInformation();
     } else {
       alert('Error: this is no valid application page link');
     }
@@ -411,6 +414,14 @@ export default class ApplicationCreationFormComponent {
       alert('There was an error because of an invalid applicationId');
       this.router.navigate(['/']);
     }
+  }
+
+  updateDocumentInformation() {
+    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
+      .then(ids => {
+        this.documentIds.set(ids);
+      })
+      .catch(() => alert('Error: fetching the document ids for this application'));
   }
 
   onPage1ValidityChanged(isValid: boolean): void {
