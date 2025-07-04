@@ -52,62 +52,26 @@ public class JobService {
         return updateJobEntity(job, dto);
     }
 
+    /**
+     * Changes the state of a job to the specified target state.
+     * If the job is being closed or if explicitly requested, all pending applications
+     * (i.e., in 'SENT' or 'IN_REVIEW' state) for the job will be automatically rejected.
+     *
+     * @param jobId the ID of the job whose state is to be changed
+     * @param targetState the new {@link JobState} to apply to the job
+     * @param shouldRejectRemainingApplications flag indicating whether remaining pending applications should be rejected
+     * @return the updated job as a {@link JobFormDTO}
+     */
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
         job.setState(targetState);
+
         if (targetState == JobState.CLOSED || shouldRejectRemainingApplications) {
             applicationRepository.rejectPendingApplicationsForJob(jobId);
         }
 
         return JobFormDTO.getFromEntity(jobRepository.save(job));
-        // Code using .stream()
-        //     Set<Application> applications = job.getApplications();
-
-        //     job.setState(targetState);
-
-        //     if (targetState == JobState.CLOSED || shouldRejectRemainingApplications) {
-        //         applications.stream()
-        //             .filter(app -> app.getState() == ApplicationState.SENT ||
-        //                           app.getState() == ApplicationState.IN_REVIEW)
-        //             .forEach(app -> app.setState(ApplicationState.REJECTED));
-        //     }
-
-        //     return JobFormDTO.getFromEntity(jobRepository.save(job));
-
-        // If the new state is APPLICANT_FOUND
-        // if (targetState == JobState.APPLICANT_FOUND) {
-        // job.setState(JobState.APPLICANT_FOUND);
-
-        // // If the professor wants to reject remaining applications, then reject all
-        // applications that are SENT or IN_REVIEW
-        // if (shouldRejectRemainingApplications && job.getApplications() != null) {
-        // job.getApplications().stream()
-        // .filter(app -> app.getState() == ApplicationState.SENT || app.getState() ==
-        // ApplicationState.IN_REVIEW)
-        // .forEach(app -> app.setState(ApplicationState.REJECTED));
-        // }
-
-        // Job savedJob = jobRepository.save(job);
-        // return JobFormDTO.getFromEntity(savedJob);
-        // }
-
-        // // If the new state is CLOSED
-        // if (targetState == JobState.CLOSED) {
-        // // Set to CLOSED and reject all applications that have not been reviewed yet
-        // job.setState(JobState.CLOSED);
-        // if (job.getApplications() != null) {
-        // job.getApplications().stream()
-        // .filter(app -> app.getState() == ApplicationState.SENT || app.getState() ==
-        // ApplicationState.IN_REVIEW)
-        // .forEach(app -> app.setState(ApplicationState.REJECTED)); }
-        // Job savedJob = jobRepository.save(job);
-        // return JobFormDTO.getFromEntity(savedJob);
-        // }
-
-        // Default behavior: just change the state
-        // job.setState(targetState);
-        // Job savedJob = jobRepository.save(job);
-        // return JobFormDTO.getFromEntity(savedJob);
     }
 
     /**

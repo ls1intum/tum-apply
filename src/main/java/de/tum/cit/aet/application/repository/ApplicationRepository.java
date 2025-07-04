@@ -279,8 +279,21 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Query("UPDATE Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
     void withdrawApplicationById(UUID applicationId);
 
+    /**
+     * Rejects all pending applications (those in 'SENT' or 'IN_REVIEW' state) for the specified job.
+     * This method is used when a job is closed or an applicant has been found,
+     * and all other applications need to be marked as rejected.
+     *
+     * @param jobId the UUID of the job for which all pending applications should be rejected
+     */
     @Transactional
     @Modifying
-    @Query("UPDATE Application a SET a.state = 'REJECTED' " + "WHERE a.job.jobId = :jobId " + "AND a.state IN ('SENT', 'IN_REVIEW')")
+    @Query(
+        """
+            UPDATE Application a SET a.state = 'REJECTED'
+            WHERE a.job.jobId = :jobId
+            AND a.state IN ('SENT', 'IN_REVIEW')
+        """
+    )
     void rejectPendingApplicationsForJob(@Param("jobId") UUID jobId);
 }

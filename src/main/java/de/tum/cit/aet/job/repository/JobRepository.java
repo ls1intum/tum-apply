@@ -6,11 +6,9 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -151,11 +149,4 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         @Param("workload") Integer workload,
         Pageable pageable
     );
-    /*
-    @Modifying
-    @Query("UPDATE Application a SET a.state = 'REJECTED' " +
-            "WHERE a.job.jobId = :jobId " +
-            "AND a.state IN ('SENT', 'IN_REVIEW')")
-    void rejectPendingApplications(@Param("jobId") UUID jobId);
-     */
 }
