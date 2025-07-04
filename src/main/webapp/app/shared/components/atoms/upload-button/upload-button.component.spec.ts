@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpEventType, HttpResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { ApplicationResourceService } from 'app/generated';
+import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCheck, faCloudArrowUp, faFileCircleCheck, faPlus, faTimes, faUpload } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -17,23 +17,13 @@ import {
 import { UploadButtonComponent } from './upload-button.component';
 
 class MockApplicationResourceService {
-  uploadDocuments(): Observable<
-    | HttpResponse<any>
-    | {
-        type: HttpEventType;
-        loaded: number;
-        total: number;
-      }
-  > {
-    // Simulate an observable HTTP stream of events
-    return of({ type: HttpEventType.UploadProgress, loaded: 50, total: 100 }, {
-      type: HttpEventType.Response,
-      body: ['mock-doc-id'],
-    } as HttpResponse<any>);
+  uploadDocuments(): Observable<DocumentInformationHolderDTO[]> {
+    return of([{ id: 'mock-doc-id', name: 'test.pdf', size: 12345 }]);
   }
 
-  deleteDocumentBatchByTypeFromApplication = (): any => {};
-  deleteDocumentFromApplication = (): any => {};
+  deleteDocumentBatchByTypeFromApplication = () => of({});
+  deleteDocumentFromApplication = () => of({});
+  renameDocument = () => of({});
 }
 
 describe('UploadButtonComponent', () => {
@@ -75,5 +65,46 @@ describe('UploadButtonComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should upload files and update documentIds', async () => {
+    const mockFiles = [new File(['dummy'], 'test.pdf', { type: 'application/pdf' })];
+    component.selectedFiles.set(mockFiles);
+
+    // Call onUpload and subscribe to changes
+    await component.onUpload();
+
+    // Wait for observable to complete
+    expect(component.documentIds()).toEqual([{ id: 'mock-doc-id', name: 'test.pdf', size: 12345 }]);
+    expect(component.selectedFiles()).toEqual([]);
+    expect(component.isUploading()).toBe(false);
+  });
+
+  it('should rename a document and update it in documentIds', async () => {
+    const doc = { id: '123', name: 'Old Name', size: 1024 };
+    component.documentIds.set([doc]);
+
+    const service = TestBed.inject(ApplicationResourceService);
+    const spy = jest.spyOn(service, 'renameDocument').mockReturnValue(of({} as any));
+
+    const updatedDoc = { ...doc, name: 'New Name' };
+    const fakeEvent = { target: { value: 'New Name' } } as unknown as FocusEvent;
+
+    await component.renameDocument(updatedDoc, fakeEvent);
+
+    expect(spy).toHaveBeenCalledWith('123', 'New Name');
+    expect(component.documentIds()).toEqual([{ id: '123', name: 'New Name', size: 1024 }]);
+  });
+
+  it('should delete a document and update documentIds list', async () => {
+    const doc = { id: 'abc', name: 'doc1', size: 500 };
+    component.documentIds.set([doc]);
+
+    const spy = jest.spyOn(TestBed.inject(ApplicationResourceService), 'deleteDocumentFromApplication').mockReturnValue(of({} as any));
+
+    await component.deleteDictionary(doc);
+
+    expect(spy).toHaveBeenCalledWith('abc');
+    expect(component.documentIds()).toEqual([]);
   });
 });
