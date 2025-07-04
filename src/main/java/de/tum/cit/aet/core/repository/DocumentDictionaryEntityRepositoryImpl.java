@@ -42,7 +42,9 @@ public class DocumentDictionaryEntityRepositoryImpl implements DocumentDictionar
         Set<UUID> referenceIds = new HashSet<>();
 
         for (DocumentDictionary dd : results) {
-            if (dd.getDocument() == null) continue;
+            if (dd.getDocument() == null) {
+                continue;
+            }
 
             UUID docId = dd.getDocumentDictionaryId();
             switch (dd.getDocumentType()) {
