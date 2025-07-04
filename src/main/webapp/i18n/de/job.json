@@ -15,7 +15,8 @@
     "actionButton": {
       "view": "Anzeigen",
       "edit": "Bearbeiten",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "close": "Schließen"
     },
     "state": {
       "draft": "Entwurf",

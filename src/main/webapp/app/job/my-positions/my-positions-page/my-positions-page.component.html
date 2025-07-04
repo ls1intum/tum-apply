@@ -35,12 +35,23 @@
           data-testid="edit"
           [disabled]="job.state !== 'DRAFT'"
         />
-        <jhi-button
-          label="{{ 'myPositionsPage.actionButton.delete' | translate }}"
-          severity="danger"
-          (click)="onDeleteJob(job.jobId)"
-          data-testid="delete"
-        />
+        @if (job.state === 'DRAFT') {
+          <jhi-button
+            [label]="'myPositionsPage.actionButton.delete' | translate"
+            severity="danger"
+            (click)="onDeleteJob(job.jobId)"
+            data-testid="delete"
+          />
+        }
+        @if (job.state !== 'DRAFT') {
+          <jhi-button
+            [label]="'myPositionsPage.actionButton.close' | translate"
+            severity="danger"
+            variant="outlined"
+            (click)="onCloseJob(job.jobId)"
+            data-testid="delete"
+          />
+        }
       </div>
     </ng-template>
 

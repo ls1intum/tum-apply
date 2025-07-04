@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Spring Data JPA repository for the {@link Application} entity.
@@ -278,6 +279,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Query("UPDATE Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
     void withdrawApplicationById(UUID applicationId);
 
+    @Transactional
     @Modifying
     @Query("UPDATE Application a SET a.state = 'REJECTED' " + "WHERE a.job.jobId = :jobId " + "AND a.state IN ('SENT', 'IN_REVIEW')")
     void rejectPendingApplicationsForJob(@Param("jobId") UUID jobId);

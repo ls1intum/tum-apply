@@ -132,6 +132,22 @@ export class MyPositionsPageComponent {
     }
   }
 
+  async onCloseJob(jobId: string): Promise<void> {
+    // TO-DO: adjust confirmation
+    const confirmClose = confirm('Do you really want to close this job?');
+    if (confirmClose) {
+      try {
+        await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
+        alert('Job successfully closed');
+        await this.loadJobs();
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(`Error closing job: ${error.message}`);
+        }
+      }
+    }
+  }
+
   private async loadJobs(): Promise<void> {
     try {
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
