@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -20,10 +21,12 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
+    private final ApplicationRepository applicationRepository;
 
-    public JobService(JobRepository jobRepository, UserRepository userRepository) {
+    public JobService(JobRepository jobRepository, UserRepository userRepository, ApplicationRepository applicationRepository) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     /**
@@ -47,6 +50,64 @@ public class JobService {
     public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         return updateJobEntity(job, dto);
+    }
+
+    public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        job.setState(targetState);
+        if (targetState == JobState.CLOSED || shouldRejectRemainingApplications) {
+            applicationRepository.rejectPendingApplicationsForJob(jobId);
+        }
+
+        return JobFormDTO.getFromEntity(jobRepository.save(job));
+        // Code using .stream()
+        //     Set<Application> applications = job.getApplications();
+
+        //     job.setState(targetState);
+
+        //     if (targetState == JobState.CLOSED || shouldRejectRemainingApplications) {
+        //         applications.stream()
+        //             .filter(app -> app.getState() == ApplicationState.SENT ||
+        //                           app.getState() == ApplicationState.IN_REVIEW)
+        //             .forEach(app -> app.setState(ApplicationState.REJECTED));
+        //     }
+
+        //     return JobFormDTO.getFromEntity(jobRepository.save(job));
+
+        // If the new state is APPLICANT_FOUND
+        // if (targetState == JobState.APPLICANT_FOUND) {
+        // job.setState(JobState.APPLICANT_FOUND);
+
+        // // If the professor wants to reject remaining applications, then reject all
+        // applications that are SENT or IN_REVIEW
+        // if (shouldRejectRemainingApplications && job.getApplications() != null) {
+        // job.getApplications().stream()
+        // .filter(app -> app.getState() == ApplicationState.SENT || app.getState() ==
+        // ApplicationState.IN_REVIEW)
+        // .forEach(app -> app.setState(ApplicationState.REJECTED));
+        // }
+
+        // Job savedJob = jobRepository.save(job);
+        // return JobFormDTO.getFromEntity(savedJob);
+        // }
+
+        // // If the new state is CLOSED
+        // if (targetState == JobState.CLOSED) {
+        // // Set to CLOSED and reject all applications that have not been reviewed yet
+        // job.setState(JobState.CLOSED);
+        // if (job.getApplications() != null) {
+        // job.getApplications().stream()
+        // .filter(app -> app.getState() == ApplicationState.SENT || app.getState() ==
+        // ApplicationState.IN_REVIEW)
+        // .forEach(app -> app.setState(ApplicationState.REJECTED)); }
+        // Job savedJob = jobRepository.save(job);
+        // return JobFormDTO.getFromEntity(savedJob);
+        // }
+
+        // Default behavior: just change the state
+        // job.setState(targetState);
+        // Job savedJob = jobRepository.save(job);
+        // return JobFormDTO.getFromEntity(savedJob);
     }
 
     /**

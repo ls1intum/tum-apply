@@ -277,4 +277,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
 
     @Query("UPDATE Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
     void withdrawApplicationById(UUID applicationId);
+
+    @Modifying
+    @Query("UPDATE Application a SET a.state = 'REJECTED' " + "WHERE a.job.jobId = :jobId " + "AND a.state IN ('SENT', 'IN_REVIEW')")
+    void rejectPendingApplicationsForJob(@Param("jobId") UUID jobId);
 }
