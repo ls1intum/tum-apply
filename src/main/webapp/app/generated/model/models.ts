@@ -1,3 +1,4 @@
+export * from './acceptDTO';
 export * from './applicantDTO';
 export * from './applicantForApplicationDetailDTO';
 export * from './applicationDetailDTO';
@@ -18,6 +19,8 @@ export * from './jobFormDTO';
 export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
 export * from './pageableObject';
+export * from './professorDTO';
+export * from './rejectDTO';
 export * from './researchGroupShortDTO';
 export * from './sortObject';
 export * from './updateApplicationDTO';

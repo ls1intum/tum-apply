@@ -26,12 +26,11 @@ public record ApplicationDetailDTO(
      * @param application
      * @return
      */
-    public static ApplicationDetailDTO getFromEntity(Application application) {
+    public static ApplicationDetailDTO getFromEntity(Application application, Job job) {
         if (application == null) {
             throw new EntityNotFoundException("Application Entity should not be null");
         }
         Applicant applicant = application.getApplicant();
-        Job job = application.getJob();
 
         return new ApplicationDetailDTO(
             application.getApplicationId(),
