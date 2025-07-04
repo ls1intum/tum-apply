@@ -15,6 +15,16 @@
   }
 
   .rights-section {
+    display: flex;
     gap: 0.3rem;
+  }
+
+  .footer-links {
+    display: flex;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
