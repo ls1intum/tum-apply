@@ -29,7 +29,7 @@
                   <fa-icon icon="cloud-arrow-up" class="icon-color-warning" />
                 </td>
                 <td>
-                  <div class="font-small text-wrap" contenteditable>{{ file.name }}</div>
+                  <div class="font-small text-wrap" contenteditable="true">{{ file.name }}</div>
                 </td>
                 <td>
                   <small class="text-muted">{{ formatSize(file.size) }}</small>
@@ -54,7 +54,7 @@
                   <fa-icon icon="file-circle-check" class="icon-color-success" />
                 </td>
                 <td>
-                  <span class="font-small" contenteditable>{{ info.name }}</span>
+                  <span class="font-small" contenteditable contenteditable (blur)="renameDocument(info, $event)">{{ info.name }}</span>
                 </td>
                 <td>
                   <small class="text-muted">{{ formatSize(info.size) }}</small>

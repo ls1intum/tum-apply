@@ -111,7 +111,7 @@ public class ApplicationResource {
     /**
      *
      * @param applicationId id of the application
-     * @param documentType document type, of which the documents will be deleted
+     * @param documentType  document type, of which the documents will be deleted
      * @return 204 no content when deletion is successful
      */
     @PreAuthorize("hasRole('APPLICANT')")
@@ -122,6 +122,21 @@ public class ApplicationResource {
     ) {
         applicationService.deleteDocumentTypeOfDocuments(applicationId, documentType);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Renames a document associated with an application.
+     *
+     * @param documentDictionaryId the UUID of the document to rename
+     * @param newName              the new name to assign to the document
+     * @return {@code 200 OK} if the rename operation was successful
+     *
+     */
+    @PutMapping("/rename-document/{documentDictionaryId}")
+    @PreAuthorize("hasRole('APPLICANT')")
+    public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
+        applicationService.renameDocument(documentDictionaryId, newName);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -199,11 +214,13 @@ public class ApplicationResource {
      * Only users with {@code ROLE_APPLICANT} are allowed.
      * </p>
      *
-     * <p>Unsupported types throw {@link NotImplementedException}.</p>
+     * <p>
+     * Unsupported types throw {@link NotImplementedException}.
+     * </p>
      *
      * @param applicationId UUID of the target application
-     * @param documentType type of document to upload
-     * @param files uploaded multipart files
+     * @param documentType  type of document to upload
+     * @param files         uploaded multipart files
      * @return 200 OK if successful
      * @throws NotImplementedException if the document type is still unsupported
      */

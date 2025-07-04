@@ -109,6 +109,28 @@ export class UploadButtonComponent {
     }
   }
 
+  renameDocument(documentInfo: DocumentInformationHolderDTO, event: FocusEvent): void {
+    const target = event.target as HTMLElement;
+    const newName = target.innerText.trim();
+    console.log(newName);
+    if (!newName || newName === documentInfo.name) {
+      return; // nothing changed
+    }
+
+    const documentId = documentInfo.id;
+    this.applicationService.renameDocument(documentId, newName).subscribe({
+      next: () => {
+        const updatedDocs = this.documentIds()?.map(doc => (doc.id === documentId ? { ...doc, name: newName } : doc)) ?? [];
+        this.documentIds.set(updatedDocs);
+      },
+      error(err) {
+        console.error('Failed to rename document', err);
+        alert('Failed to rename document');
+        target.innerText = documentInfo.name ?? '';
+      },
+    });
+  }
+
   formatSize(bytes: number): string {
     if (bytes === 0) return '0 B';
     const k = 1024;

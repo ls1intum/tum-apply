@@ -172,4 +172,19 @@ public class DocumentDictionaryService {
         }
         return documentDictionaryRepository.getApplicationDocumentIdsDTOByApplicationId(application.getApplicationId());
     }
+
+    /**
+     * Updates the name of the document with the given ID.
+     *
+     * @param documentId the ID of the document to rename
+     * @param newName    the new name to set for the document
+     */
+    public void renameDocument(UUID documentId, String newName) {
+        documentDictionaryRepository
+            .findById(documentId)
+            .ifPresent(document -> {
+                document.setName(newName);
+                documentDictionaryRepository.save(document);
+            });
+    }
 }
