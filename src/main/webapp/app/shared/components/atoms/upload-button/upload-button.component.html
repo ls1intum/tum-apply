@@ -8,14 +8,27 @@
   (onSelect)="onFileSelected($event)"
 >
   <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
-    <div class="flex flex-wrap gap-2.5">
-      <jhi-button variant="outlined" icon="plus" (click)="chooseCallback()" label="Add" />
-      <jhi-button variant="outlined" icon="upload" (click)="onUpload()" label="Upload" [disabled]="(selectedFiles() ?? []).length === 0" />
-      <jhi-button variant="outlined" icon="times" (click)="deleteAll()" label="Clear" />
+    <div class="flex flex-wrap gap-2.5 w-full">
+      <span [jhiTranslate]="uploadKey()" class="w-full"></span>
+      <jhi-button variant="outlined" icon="plus" (click)="chooseCallback()" [label]="'entity.upload.add' | translate" />
+      <jhi-button
+        variant="outlined"
+        icon="upload"
+        (click)="onUpload()"
+        [label]="'entity.upload.upload' | translate"
+        [disabled]="(selectedFiles() ?? []).length === 0"
+      />
+      <jhi-button variant="outlined" icon="times" (click)="deleteAll()" [label]="'entity.upload.clear' | translate" />
     </div>
   </ng-template>
   <ng-template #empty>
-    <div>Drag and drop files to here to upload.</div>
+    <div class="flex justify-center gap-0.5">
+      <span class="flex border items-center justify-center rounded-full border-primary size-20">
+        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
+      </span>
+    </div>
+    <p class="mt-0 text-sm text-color text-center" jhiTranslate="entity.upload.instruction"></p>
+    <p class="mt-0 mb-0 text-xs text-color text-center"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
   </ng-template>
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
     <div class="mt-0 w-full">
@@ -33,16 +46,21 @@
             @for (file of selectedFiles; track $index) {
               <tr class="border border-gray-400 leading-0 border-x-0">
                 <td>
-                  <fa-icon icon="cloud-arrow-up" class="icon-color-warning" />
-                </td>
-                <td>
                   <span class="w-full h-full inline-flex justify-center">
-                    <input [(value)]="file.name" class="editable-input" />
-                    <!-- (blur)="renameDocument(info, $event)" -->
-                    <!-- <div class="font-small text-wrap" contenteditable="true">{{ file.name }}</div> -->
+                    <fa-icon
+                      icon="cloud-arrow-up"
+                      class="icon-color-warning"
+                      [pTooltip]="'entity.upload.tooltip.to_upload' | translate"
+                      tooltipPosition="top"
+                    />
                   </span>
                 </td>
                 <td>
+                  <span class="w-full h-full inline-flex justify-center">
+                    <input [(ngModel)]="file.name" class="editable-input" />
+                  </span>
+                </td>
+                <td class="text-center">
                   <small class="text-muted">{{ formatSize(file.size) }}</small>
                 </td>
                 <td>
@@ -62,13 +80,18 @@
               <tr class="border border-gray-400 leading-0 border-x-0">
                 <td>
                   <span class="w-full h-full inline-flex justify-center">
-                    <fa-icon icon="file-circle-check" class="icon-color-success" />
+                    <fa-icon
+                      icon="file-circle-check"
+                      class="icon-color-success"
+                      [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate"
+                      tooltipPosition="top"
+                    />
                   </span>
                 </td>
                 <td>
                   <input [(ngModel)]="info.name" (blur)="renameDocument(info, $event)" class="editable-input" />
                 </td>
-                <td>
+                <td class="text-center">
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
                 <td class="border-r-0">

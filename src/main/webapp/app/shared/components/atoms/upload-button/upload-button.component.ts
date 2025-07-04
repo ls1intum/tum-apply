@@ -6,6 +6,9 @@ import SharedModule from 'app/shared/shared.module';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { TooltipModule } from 'primeng/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateDirective } from 'app/shared/language';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -21,7 +24,7 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, FormsModule, SharedModule, FileUpload, ButtonComponent],
+  imports: [FontAwesomeModule, FormsModule, SharedModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
   standalone: true,
