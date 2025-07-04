@@ -27,4 +27,11 @@
       text-decoration: underline;
     }
   }
+
+  .legal-section {
+    display: flex;
+    margin-left: auto;
+    padding-right: 1rem;
+    gap: 0.3rem;
+  }
 }

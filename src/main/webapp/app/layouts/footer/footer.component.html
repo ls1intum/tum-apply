@@ -2,11 +2,18 @@
   <div class="logo-section">
     <span class="app-name">{{ 'footer.tumApply' | translate }}</span>
   </div>
+
   <div class="rights-section">
     <span class="copyright">{{ 'footer.copyRight' | translate }}</span>
     <a href="https://aet.cit.tum.de/" target="_blank" rel="noopener noreferrer" class="footer-links">
       {{ 'footer.tumAet' | translate }}
     </a>
     <span class="copyright">{{ 'footer.rights' | translate }}</span>
+  </div>
+
+  <div class="legal-section">
+    <p (click)="navigateToImprint()" class="footer-links">{{ 'footer.imprint' | translate }}</p>
+    <span class="divider">|</span>
+    <p (click)="navigateToPrivacy()" class="footer-links">{{ 'footer.privacy' | translate }}</p>
   </div>
 </div>

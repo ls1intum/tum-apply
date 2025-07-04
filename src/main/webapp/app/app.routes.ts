@@ -163,6 +163,24 @@ const routes: Routes = [
   // Error Handling
   // ======================================================================================
   ...errorRoute,
+
+  // ======================================================================================
+  // Footer
+  // ======================================================================================
+  {
+    path: 'imprint',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/pages/imprint-page/imprint-page.component').then(m => m.ImprintPageComponent),
+    title: 'imprint',
+  },
+  {
+    path: 'privacy',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/pages/privacy-page/privacy-page.component').then(m => m.PrivacyPageComponent),
+    title: 'privacy',
+  },
 ];
 
 export default routes;
