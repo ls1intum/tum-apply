@@ -86,7 +86,7 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/create/${this.configuration.encodeParam({name: "jobId", value: jobId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/applicant/${this.configuration.encodeParam({name: "applicantId", value: applicantId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<ApplicationForApplicantDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<ApplicationForApplicantDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

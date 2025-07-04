@@ -51,7 +51,7 @@ public class ApplicationResource {
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
      *         the createApplicationDTO is invalid
      */
-    @GetMapping("/create/{jobId}/applicant/{applicantId}")
+    @PostMapping("/create/{jobId}/applicant/{applicantId}")
     public ResponseEntity<ApplicationForApplicantDTO> createApplication(@PathVariable UUID jobId, @PathVariable UUID applicantId) {
         // TODO check authorization
 
