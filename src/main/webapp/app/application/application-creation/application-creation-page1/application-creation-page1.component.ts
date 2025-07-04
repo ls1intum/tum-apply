@@ -119,6 +119,7 @@ export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
   valid = output<boolean>();
+  changed = output<boolean>();
 
   dropdownGenderLocal = dropdownGender;
   dropdownLanguageLocal = dropdownLanguage;
@@ -148,7 +149,7 @@ export default class ApplicationCreationPage1Component {
           ...this.data(),
           ...normalizedValue,
         });
-
+        this.changed.emit(true);
         this.valid.emit(form.valid);
       });
 

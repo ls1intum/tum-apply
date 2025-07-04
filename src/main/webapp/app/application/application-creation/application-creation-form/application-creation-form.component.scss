@@ -8,3 +8,11 @@ h1 {
   height: 100%;
   display: flex;
 }
+
+.saved_color {
+  color: var(--p-success-color);
+}
+
+.unsaved_color {
+  color: var(--p-warn-color);
+}

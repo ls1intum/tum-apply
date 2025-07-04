@@ -18,6 +18,7 @@ export type StepData = {
   panelTemplate: TemplateRef<any>;
   buttonGroupPrev: StepButton[];
   buttonGroupNext: StepButton[];
+  status?: TemplateRef<HTMLDivElement>;
 };
 
 @Component({
@@ -34,6 +35,8 @@ export class ProgressStepperComponent {
   buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev, 'prev', this.currentStep()),
   );
+
+  statusDiv: Signal<TemplateRef<HTMLDivElement> | undefined> = computed(() => this.steps()[this.currentStep() - 1].status);
 
   buttonGroupNext: Signal<ButtonGroupData> = computed(() =>
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext, 'next', this.currentStep()),

@@ -5,7 +5,6 @@ import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
-import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -46,15 +45,17 @@ public class ApplicationResource {
     }
 
     /**
-     * @param createApplicationDTO The data necessary to create an Application
+     *
+     * @param jobId The UUID of the Job
+     * @param applicantId Temporarily the id of the applicant (to be removed with serverside user handling)
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
      *         the createApplicationDTO is invalid
      */
-    @PostMapping
-    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
+    @PostMapping("/create/{jobId}/applicant/{applicantId}")
+    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@PathVariable UUID jobId, @PathVariable UUID applicantId) {
         // TODO check authorization
 
-        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(createApplicationDTO);
+        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(jobId, applicantId);
         return ResponseEntity.ok(applicationForApplicantDTO);
     }
 
@@ -143,9 +144,8 @@ public class ApplicationResource {
         return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
     }
 
-    @GetMapping("/pages/length")
-    public ResponseEntity<Long> getApplicationPagesLength() {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+    @GetMapping("/pages/length/{applicantId}")
+    public ResponseEntity<Long> getApplicationPagesLength(@PathVariable UUID applicantId) {
         // purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
     }

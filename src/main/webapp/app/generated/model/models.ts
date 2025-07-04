@@ -8,7 +8,6 @@ export * from './applicationEvaluationOverviewDTO';
 export * from './applicationEvaluationOverviewListDTO';
 export * from './applicationForApplicantDTO';
 export * from './applicationOverviewDTO';
-export * from './createApplicationDTO';
 export * from './createdJobDTO';
 export * from './customFieldAnswerDTO';
 export * from './jobCardDTO';
