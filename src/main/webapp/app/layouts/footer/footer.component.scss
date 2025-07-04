@@ -1,9 +1,9 @@
 .footer {
   display: flex;
   background-color: var(--background-default);
+  color: var(--p-text-primary);
   padding: 1rem 0;
   font-size: 0.9rem;
-  gap: 1rem;
   align-items: center;
 
   .logo-section {
@@ -11,5 +11,10 @@
     color: var(--p-primary-color);
     font-weight: 700;
     padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .rights-section {
+    gap: 0.3rem;
   }
 }
