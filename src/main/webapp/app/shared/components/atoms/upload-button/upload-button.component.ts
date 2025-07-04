@@ -1,7 +1,6 @@
 import { Component, computed, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
-import { HttpEventType } from '@angular/common/http';
 import SharedModule from 'app/shared/shared.module';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
@@ -41,7 +40,6 @@ export class UploadButtonComponent {
   valid = output<boolean>();
 
   selectedFiles = signal<File[] | undefined>(undefined);
-  uploadProgress = signal<number>(0);
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
 
@@ -63,28 +61,23 @@ export class UploadButtonComponent {
     this.fileUploadComponent()?.clear();
   }
 
-  onUpload(): void {
+  async onUpload(): Promise<void> {
     const files: File[] | undefined = this.selectedFiles();
     if (!files) return;
+
     this.isUploading.set(true);
-    this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files, 'events', true).subscribe({
-      next: event => {
-        if (event.type === HttpEventType.UploadProgress && event.total) {
-          const percentDone = Math.round((event.loaded / event.total) * 100);
-          this.uploadProgress.set(percentDone);
-        } else if (event.type === HttpEventType.Response) {
-          const uploadedIds = event.body;
-          this.documentIds.set(uploadedIds ?? []);
-          this.selectedFiles.set([]);
-          this.isUploading.set(false);
-        }
-      },
-      error: err => {
-        console.error('Upload failed', err);
-        alert('Upload failed');
-        this.isUploading.set(false);
-      },
-    });
+    try {
+      const uploadedIds: DocumentInformationHolderDTO[] = await firstValueFrom(
+        this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files),
+      );
+      this.documentIds.set(uploadedIds ?? []);
+      this.selectedFiles.set([]);
+    } catch (err) {
+      console.error('Upload failed', err);
+      alert('Upload failed');
+    } finally {
+      this.isUploading.set(false);
+    }
   }
 
   async deleteDictionary(documentInfo: DocumentInformationHolderDTO): Promise<void> {
@@ -100,7 +93,6 @@ export class UploadButtonComponent {
   }
 
   onClear(): void {
-    this.uploadProgress.set(0);
     this.isUploading.set(false);
   }
 
