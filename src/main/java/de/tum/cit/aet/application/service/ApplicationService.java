@@ -23,7 +23,6 @@ import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -56,17 +55,11 @@ public class ApplicationService {
         if (applicationRepository.existsByApplicantUserIdAndJobJobId(jobId, applicantId)) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        Optional<Applicant> applicantOptional = applicantRepository.findById(applicantId);
-        if (applicantOptional.isEmpty()) {
-            throw new IllegalArgumentException("The applicantId is not valid.");
-        }
-        Applicant applicant = applicantOptional.get();
+        Applicant applicant = applicantRepository
+            .findById(applicantId)
+            .orElseThrow(() -> new EntityNotFoundException("No applicant found for given Id"));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("No job found for given Id"));
 
-        Optional<Job> jobOptional = jobRepository.findById(jobId);
-        if (jobOptional.isEmpty()) {
-            throw new IllegalArgumentException("The jobId is not valid.");
-        }
-        Job job = jobOptional.get();
         Application application = new Application(
             null,
             null, // no applicationReview yet
@@ -337,7 +330,9 @@ public class ApplicationService {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
-        Application application = applicationRepository.findById(applicationId).orElseThrow();
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
         return ApplicationDetailDTO.getFromEntity(application);
     }
