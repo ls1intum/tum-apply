@@ -52,6 +52,59 @@
         }
       }
     },
+    "/api/jobs/changeState/{jobId}": {
+      "put": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "changeJobState",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "jobState",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "shouldRejectRemainingApplications",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications": {
       "put": {
         "tags": [
@@ -1637,6 +1690,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1661,12 +1720,6 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "empty": {
             "type": "boolean"
           }
@@ -1682,9 +1735,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "paged": {
             "type": "boolean"
           },
@@ -1695,6 +1745,9 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -1723,6 +1776,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1746,12 +1805,6 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
@@ -1971,133 +2024,6 @@
             "type": "string"
           },
           "preferredLanguage": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "userId"
-        ]
-      },
-      "ApplicantForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserForApplicationDetailDTO"
-          },
-          "bachelorDegreeName": {
-            "type": "string"
-          },
-          "bachelorGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "bachelorGrade": {
-            "type": "string"
-          },
-          "bachelorUniversity": {
-            "type": "string"
-          },
-          "masterDegreeName": {
-            "type": "string"
-          },
-          "masterGradingScale": {
-            "type": "string",
-            "enum": [
-              "ONE_TO_FOUR"
-            ]
-          },
-          "masterGrade": {
-            "type": "string"
-          },
-          "masterUniversity": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "user"
-        ]
-      },
-      "ApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "applicationId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantForApplicationDetailDTO"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN"
-            ]
-          },
-          "jobTitle": {
-            "type": "string"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicationId",
-          "applicationState"
-        ]
-      },
-      "UserForApplicationDetailDTO": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
             "type": "string"
           },
           "birthday": {

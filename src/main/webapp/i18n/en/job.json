@@ -15,7 +15,8 @@
     "actionButton": {
       "view": "View",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "close": "Close"
     },
     "state": {
       "draft": "Draft",

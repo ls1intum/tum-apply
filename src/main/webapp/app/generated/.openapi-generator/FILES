@@ -15,7 +15,6 @@ index.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
 model/applicationDetailDTO.ts
-model/applicantEvaluationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts
 model/applicationEvaluationDetailDTO.ts
 model/applicationEvaluationDetailListDTO.ts
