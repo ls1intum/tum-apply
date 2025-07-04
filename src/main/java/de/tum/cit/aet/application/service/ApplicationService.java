@@ -309,7 +309,7 @@ public class ApplicationService {
      * @param application the application the transcripts belong to
      * @param user        the user uploading the documents
      */
-    public void uploadTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application, User user) {
+    public void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application, User user) {
         Set<Pair<Document, String>> documents = transcripts
             .stream()
             .map(file -> Pair.of(documentService.upload(file, user), Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf")))

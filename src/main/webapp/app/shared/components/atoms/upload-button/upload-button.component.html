@@ -5,12 +5,11 @@
   mode="advanced"
   [maxFileSize]="maxUploadSizeInMb * 1024 * 1024"
   (onClear)="onClear()"
-  [disabled]="disabled()"
   (onSelect)="onFileSelected($event)"
 >
   <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
     <div class="flex flex-wrap gap-2.5">
-      <jhi-button variant="outlined" icon="plus" (click)="chooseCallback()" label="Select" />
+      <jhi-button variant="outlined" icon="plus" (click)="chooseCallback()" label="Add" />
       <jhi-button variant="outlined" icon="upload" (click)="onUpload()" label="Upload" [disabled]="(selectedFiles() ?? []).length === 0" />
       <jhi-button variant="outlined" icon="times" (click)="deleteAll()" label="Clear" />
     </div>
@@ -21,6 +20,14 @@
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
     <div class="mt-0 w-full">
       <table class="table-fixed border-collapse w-full slim-table">
+        <thead>
+          <tr>
+            <th class="w-1/10"></th>
+            <th></th>
+            <th class="w-3/20"></th>
+            <th class="w-1/10"></th>
+          </tr>
+        </thead>
         <tbody>
           @if (selectedFiles(); as selectedFiles) {
             @for (file of selectedFiles; track $index) {
@@ -29,7 +36,11 @@
                   <fa-icon icon="cloud-arrow-up" class="icon-color-warning" />
                 </td>
                 <td>
-                  <div class="font-small text-wrap" contenteditable="true">{{ file.name }}</div>
+                  <span class="w-full h-full inline-flex justify-center">
+                    <input [(value)]="file.name" class="editable-input" />
+                    <!-- (blur)="renameDocument(info, $event)" -->
+                    <!-- <div class="font-small text-wrap" contenteditable="true">{{ file.name }}</div> -->
+                  </span>
                 </td>
                 <td>
                   <small class="text-muted">{{ formatSize(file.size) }}</small>
@@ -38,7 +49,7 @@
                   <jhi-button
                     icon="times"
                     severity="danger"
-                    variant="outlined"
+                    variant="text"
                     (click)="removeFileCallback($event, $index)"
                     aria-label="Remove file"
                   />
@@ -47,30 +58,24 @@
             }
           }
           @if (documentIds(); as documentIds) {
-            <!-- <div class="mt-0"> -->
             @for (info of documentIds; track $index) {
               <tr class="border border-gray-400 leading-0 border-x-0">
                 <td>
-                  <fa-icon icon="file-circle-check" class="icon-color-success" />
+                  <span class="w-full h-full inline-flex justify-center">
+                    <fa-icon icon="file-circle-check" class="icon-color-success" />
+                  </span>
                 </td>
                 <td>
-                  <span class="font-small" contenteditable contenteditable (blur)="renameDocument(info, $event)">{{ info.name }}</span>
+                  <input [(ngModel)]="info.name" (blur)="renameDocument(info, $event)" class="editable-input" />
                 </td>
                 <td>
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
                 <td class="border-r-0">
-                  <jhi-button
-                    icon="trash-alt"
-                    severity="danger"
-                    variant="outlined"
-                    (click)="deleteDictionary(info)"
-                    aria-label="Remove file"
-                  />
+                  <jhi-button icon="trash-alt" severity="danger" variant="text" (click)="deleteDictionary(info)" aria-label="Remove file" />
                 </td>
               </tr>
             }
-            <!-- </div> -->
           }
         </tbody>
       </table>

@@ -253,7 +253,7 @@ public class ApplicationResource {
             case BACHELOR_TRANSCRIPT:
             case MASTER_TRANSCRIPT:
             case REFERENCE:
-                applicationService.uploadTranscripts(files, documentType, application, user);
+                applicationService.uploadAdditionalTranscripts(files, documentType, application, user);
                 break;
             case CV:
                 applicationService.uploadCV(files.getFirst(), application, user);
