@@ -14,8 +14,8 @@ import { firstValueFrom } from 'rxjs';
 export class DocumentViewerComponent {
   documentDictionaryId = input.required<string>();
 
-  pdfSrc = signal<Blob | null>(null);
-  sanitizedBlobUrl?: SafeResourceUrl;
+  pdfSrc = signal<Blob | undefined>(undefined);
+  sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
   private documentService = inject(DocumentResourceService);
 
@@ -26,10 +26,19 @@ export class DocumentViewerComponent {
   }
 
   async initDocument(): Promise<void> {
-    const response = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId()));
-    const pdfBlob = new Blob([response], { type: 'application/pdf' });
-    this.pdfSrc.set(pdfBlob);
-    const blobUrl = URL.createObjectURL(pdfBlob);
-    this.sanitizedBlobUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl + '#toolbar=0&navpanes=0');
+    try {
+      const response = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId()));
+      if (!response) {
+        this.pdfSrc.set(undefined);
+        return;
+      }
+      const pdfBlob = new Blob([response], { type: 'application/pdf' });
+      this.pdfSrc.set(pdfBlob);
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      this.sanitizedBlobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl + '#toolbar=0&navpanes=0'));
+    } catch (error) {
+      console.error('Document download failed:', error);
+      this.pdfSrc.set(undefined);
+    }
   }
 }

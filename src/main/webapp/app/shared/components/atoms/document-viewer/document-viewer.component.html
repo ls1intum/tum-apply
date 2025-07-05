@@ -1,5 +1,5 @@
 @if (pdfSrc(); as pdfSrc) {
-  <iframe [src]="sanitizedBlobUrl" class="w-full h-full"></iframe>
+  <iframe [src]="sanitizedBlobUrl()" class="w-full h-full"></iframe>
 } @else {
   <p>Nothing to display</p>
 }
