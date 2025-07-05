@@ -13,7 +13,6 @@ import { firstValueFrom } from 'rxjs';
 export class DocumentViewerComponent {
   documentDictionaryId = input.required<string>();
 
-  pdfSrc = signal<Blob | undefined>(undefined);
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
   private documentService = inject(DocumentResourceService);
@@ -28,12 +27,11 @@ export class DocumentViewerComponent {
     try {
       const response = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId()));
       const pdfBlob = new Blob([response], { type: 'application/pdf' });
-      this.pdfSrc.set(pdfBlob);
       const blobUrl = URL.createObjectURL(pdfBlob);
       this.sanitizedBlobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl + '#toolbar=0&navpanes=0'));
     } catch (error) {
       console.error('Document download failed:', error);
-      this.pdfSrc.set(undefined);
+      this.sanitizedBlobUrl.set(undefined);
     }
   }
 }

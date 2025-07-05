@@ -50,7 +50,7 @@ describe('DocumentViewerComponent', () => {
   });
 
   it('should show "Nothing to display" when pdfSrc is undefined', () => {
-    component.pdfSrc.set(undefined);
+    component.sanitizedBlobUrl.set(undefined);
     fixture.detectChanges();
 
     const message = fixture.nativeElement.querySelector('p');
@@ -75,6 +75,6 @@ describe('DocumentViewerComponent', () => {
     fixture.detectChanges();
 
     await fixture.whenStable();
-    expect(component.pdfSrc()).toBe(undefined); // expected fallback behavior
+    expect(component.sanitizedBlobUrl()).toBe(undefined); // expected fallback behavior
   });
 });
