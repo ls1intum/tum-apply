@@ -1,0 +1,37 @@
+.imprint-page {
+  color: var(--p-text-primary);
+  padding-left: 1.5rem;
+  padding-right: 25rem;
+  padding-top: 3rem;
+  padding-bottom: 1.5rem;
+
+  .headline {
+    font-size: 2.3rem;
+    font-weight: 700;
+  }
+
+  .subheadline {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+
+  .text {
+    display: block;
+    font-size: 1rem;
+  }
+
+  .text + .text {
+    margin-top: 0.2rem;
+  }
+
+  .textbloc {
+    display: block;
+    font-size: 1rem;
+  }
+
+  .textbloc + .textbloc {
+    margin-top: 0.8rem;
+  }
+}
