@@ -126,8 +126,8 @@ public class JobResource {
      * @param userId the ID of the current user.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job details.
      */
-    @GetMapping("/detail/{jobId}/{userId}")
-    public ResponseEntity<JobDetailDTO> getJobDetails(@PathVariable UUID jobId, @PathVariable UUID userId) {
-        return ResponseEntity.ok(jobService.getJobDetails(jobId, userId));
+    @GetMapping("/detail/{jobId}")
+    public ResponseEntity<JobDetailDTO> getJobDetails(@PathVariable UUID jobId) {
+        return ResponseEntity.ok(jobService.getJobDetails(jobId));
     }
 }

@@ -77,7 +77,7 @@ export class JobDetailComponent {
         return;
       }
 
-      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId(), this.userId()));
+      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId()));
       this.loadJobDetails(job);
       this.dataLoaded.set(true);
     } catch (error) {

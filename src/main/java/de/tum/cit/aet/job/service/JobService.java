@@ -3,6 +3,7 @@ package de.tum.cit.aet.job.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
@@ -20,10 +21,12 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
-    public JobService(JobRepository jobRepository, UserRepository userRepository) {
+    public JobService(JobRepository jobRepository, UserRepository userRepository, CurrentUserService currentUserService) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
+        this.currentUserService = currentUserService;
     }
 
     /**
@@ -92,12 +95,12 @@ public class JobService {
      * Returns a jobDetailDTO given the job id.
      *
      * @param jobId the ID of the job
-     * @param userId the ID of the current user
      * @return the job detail DTO with detailed job information
      */
-    public JobDetailDTO getJobDetails(UUID jobId, UUID userId) {
+    public JobDetailDTO getJobDetails(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
+        UUID userId = currentUserService.getUserId();
         // Check if the user is part of the research group
         boolean belongsToResearchGroup = false;
         if (userRepository.findByIdElseThrow(userId) != null) {
