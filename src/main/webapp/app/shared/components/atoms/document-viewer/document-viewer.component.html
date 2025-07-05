@@ -1,18 +1,5 @@
 @if (pdfSrc(); as pdfSrc) {
-  <ngx-extended-pdf-viewer
-    [src]="pdfSrc"
-    useBrowserLocale="true"
-    height="100%"
-    [showSidebarButton]="true"
-    [showFindButton]="true"
-    [showOpenFileButton]="false"
-    [showBookModeButton]="false"
-    [showDrawEditor]="false"
-    [showTextEditor]="false"
-    [showHighlightEditor]="false"
-    [showStampEditor]="false"
-    [contentEditable]="false"
-  />
+  <iframe [src]="sanitizedBlobUrl" class="w-full h-full"></iframe>
 } @else {
   <p>Nothing to display</p>
 }
