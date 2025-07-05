@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ImprintPageComponent } from './imprint-page.component';
 
@@ -8,7 +9,7 @@ describe('ImprintPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ImprintPageComponent],
+      imports: [TranslateModule.forRoot(), ImprintPageComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ImprintPageComponent);

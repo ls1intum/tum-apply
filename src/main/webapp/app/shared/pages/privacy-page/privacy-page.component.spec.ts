@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { PrivacyPageComponent } from './privacy-page.component';
 
@@ -8,7 +9,7 @@ describe('PrivacyPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PrivacyPageComponent],
+      imports: [TranslateModule.forRoot(), PrivacyPageComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PrivacyPageComponent);
