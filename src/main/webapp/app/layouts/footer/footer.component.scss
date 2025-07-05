@@ -1,6 +1,37 @@
 .footer {
+  display: flex;
   background-color: var(--background-default);
-  padding: 1rem 0;
-  text-align: start;
   color: var(--p-text-primary);
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  align-items: center;
+
+  .logo-section {
+    text-align: start;
+    color: var(--p-primary-color);
+    font-weight: 700;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .rights-section {
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .footer-links {
+    display: flex;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .legal-section {
+    display: flex;
+    margin-left: auto;
+    padding-right: 1rem;
+    gap: 0.3rem;
+  }
 }
