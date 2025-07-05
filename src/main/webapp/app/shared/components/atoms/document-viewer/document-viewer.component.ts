@@ -25,7 +25,7 @@ export class DocumentViewerComponent {
     });
   }
 
-  async initDocument() {
+  async initDocument(): Promise<void> {
     const response = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId()));
     const pdfBlob = new Blob([response], { type: 'application/pdf' });
     this.pdfSrc.set(pdfBlob);
