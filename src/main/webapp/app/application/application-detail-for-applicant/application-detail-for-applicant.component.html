@@ -2,30 +2,53 @@
   @if (application(); as application) {
     <h1 class="w-full text-center mb-8 font-bold text-4xl">Application for {{ application.jobTitle }}</h1>
     <jhi-application-detail-card [application]="application">
-      <div class="flex flex-1 flex-col" slot-vertical-right>
-        @if (this.documentIds()?.bachelorDocumentDictionaryIds; as bachelorDocDictId) {
-          <div class="flex flex-col border-neutral-rounded rounded p-4">
-            <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT">Bachelor Transcript</span>
-            <div class="w-80 h-80">
-              <!-- @for (id of bachelorDocDictId; track $index) { -->
-              <jhi-document-viewer [documentDictionaryId]="bachelorDocDictId[0]" />
-              <!-- } -->
+      <div class="w-full h-full" slot-vertical-right>
+        <div class="flex flex-1 flex-col overflow-y-auto">
+          @if (this.documentIds()?.bachelorDocumentDictionaryIds; as bachelorDocDictId) {
+            <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
+              <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT">Bachelor Transcript</span>
+              <div class="w-80">
+                @for (id of bachelorDocDictId; track $index) {
+                  <div class="border-neutral-rounded rounded mb-1 w-full h-80">
+                    <jhi-document-viewer [documentDictionaryId]="bachelorDocDictId[0]" />
+                  </div>
+                }
+              </div>
             </div>
-          </div>
-        }
-        <!-- @if (this.documentIds()?.masterDocumentDictionaryIds; as masterDocDictId) {
-          @for (id of masterDocDictId; track $index) {
-            <jhi-document-viewer [documentDictionaryId]="id" />
           }
-        }
-        @if (this.documentIds()?.cvDocumentDictionaryId; as cvDocDictId) {
-          <jhi-document-viewer [documentDictionaryId]="cvDocDictId" />
-        }
-        @if (this.documentIds()?.referenceDocumentDictionaryIds; as referenceDocumentDictionaryIds) {
-          @for (id of referenceDocumentDictionaryIds; track $index) {
-            <jhi-document-viewer [documentDictionaryId]="id" />
+          @if (this.documentIds()?.masterDocumentDictionaryIds; as masterDocDictId) {
+            <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
+              <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT">Master Transcript</span>
+              <div class="w-80">
+                @for (id of masterDocDictId; track $index) {
+                  <div class="border-neutral-rounded rounded mb-1 w-full h-80">
+                    <jhi-document-viewer [documentDictionaryId]="id" />
+                  </div>
+                }
+              </div>
+            </div>
           }
-        } -->
+          @if (this.documentIds()?.cvDocumentDictionaryId; as cvDocDictId) {
+            <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
+              <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.CV">CV</span>
+              <div class="w-80 h-80">
+                <jhi-document-viewer [documentDictionaryId]="cvDocDictId" />
+              </div>
+            </div>
+          }
+          @if (this.documentIds()?.referenceDocumentDictionaryIds; as referenceDocumentDictionaryIds) {
+            <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
+              <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.REFERENCES">References</span>
+              <div class="w-80">
+                @for (id of referenceDocumentDictionaryIds; track $index) {
+                  <div class="border-neutral-rounded rounded mb-1 w-full h-80">
+                    <jhi-document-viewer [documentDictionaryId]="id" />
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </jhi-application-detail-card>
   } @else {
