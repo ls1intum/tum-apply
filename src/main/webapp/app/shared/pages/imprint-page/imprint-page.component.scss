@@ -1,10 +1,8 @@
 .imprint-page {
   color: var(--p-text-primary);
-  padding-left: 1.5rem;
-  padding-right: 25rem;
-  padding-top: 3rem;
-  padding-bottom: 1.5rem;
-
+  padding: 3rem 5rem 1.5rem 1.5rem;
+  max-width: 1200px;
+  margin-right: auto;
   .headline {
     font-size: 2.3rem;
     font-weight: 700;
