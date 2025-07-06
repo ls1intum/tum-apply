@@ -35,4 +35,8 @@ export class ApplicationStepsSectionComponent {
       description: 'landingPage.applicationSteps.steps.4.description',
     },
   ];
+
+  redirectTo(url: string): void {
+    window.open(url, '_blank');
+  }
 }
