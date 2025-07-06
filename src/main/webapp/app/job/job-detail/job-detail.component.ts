@@ -7,6 +7,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Location } from '@angular/common';
 
 import { JobDetailDTO, JobResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -62,6 +63,7 @@ export class JobDetailComponent {
   private router = inject(Router);
   private translate = inject(TranslateService);
   private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
+  private location = inject(Location);
 
   constructor(private route: ActivatedRoute) {
     this.init();
@@ -80,7 +82,7 @@ export class JobDetailComponent {
       this.jobId.set(this.route.snapshot.paramMap.get('job_id') ?? '');
       if (this.jobId() === '') {
         console.error('Invalid job ID');
-        this.router.navigate(['/']);
+        this.location.back();
         return;
       }
 
@@ -93,7 +95,7 @@ export class JobDetailComponent {
       } else if (error instanceof Error) {
         alert(`Error loading job details: ${error.message}`);
       }
-      this.router.navigate(['/']);
+      this.location.back();
     }
   }
 
