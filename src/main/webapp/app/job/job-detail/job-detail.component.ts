@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { JobDetailDTO, JobResourceService } from '../../generated';
@@ -64,11 +65,7 @@ export class JobDetailComponent {
     try {
       // Get logged-in user
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
-      if (this.userId() === '') {
-        console.error('User not authenticated');
-        this.router.navigate(['/login']);
-        return;
-      }
+
       // Get current job from route parameters
       this.jobId.set(this.route.snapshot.paramMap.get('job_id') ?? '');
       if (this.jobId() === '') {
@@ -81,7 +78,11 @@ export class JobDetailComponent {
       this.loadJobDetails(job);
       this.dataLoaded.set(true);
     } catch (error) {
-      console.error('Initialization error:', error);
+      if (error instanceof HttpErrorResponse) {
+        alert(`Error loading job details: ${error.status} ${error.statusText}`);
+      } else if (error instanceof Error) {
+        alert(`Error loading job details: ${error.message}`);
+      }
       this.router.navigate(['/']);
     }
   }
