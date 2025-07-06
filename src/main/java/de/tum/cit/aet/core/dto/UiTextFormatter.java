@@ -36,22 +36,38 @@ public class UiTextFormatter {
      * @return A string like "Today", "3 days ago", "2.5 years ago".
      */
     public static String getRelativeTimeLabel(LocalDateTime time) {
-        if (time == null) return "";
+        if (time == null) {
+            return "";
+        }
 
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         long diffDays = ChronoUnit.DAYS.between(time, now);
 
-        if (diffDays == 0) return "Today";
-        if (diffDays == 1) return "1 day ago";
-        if (diffDays < 7) return diffDays + " days ago";
+        if (diffDays == 0) {
+            return "Today";
+        }
+        if (diffDays == 1) {
+            return "1 day ago";
+        }
+        if (diffDays < 7) {
+            return diffDays + " days ago";
+        }
 
         long diffWeeks = ChronoUnit.WEEKS.between(time, now);
-        if (diffWeeks == 1) return "1 week ago";
-        if (diffWeeks < 4) return diffWeeks + " weeks ago";
+        if (diffWeeks == 1) {
+            return "1 week ago";
+        }
+        if (diffWeeks < 4) {
+            return diffWeeks + " weeks ago";
+        }
 
         long diffMonths = ChronoUnit.MONTHS.between(time, now);
-        if (diffMonths <= 1) return "1 month ago";
-        if (diffMonths < 12) return diffMonths + " months ago";
+        if (diffMonths <= 1) {
+            return "1 month ago";
+        }
+        if (diffMonths < 12) {
+            return diffMonths + " months ago";
+        }
 
         // Years in intervals of 0.5
         double diffYears = Math.round((diffDays / 365.0) * 2) / 2.0;
