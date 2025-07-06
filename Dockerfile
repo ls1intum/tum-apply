@@ -46,6 +46,7 @@ RUN \
 
 # so far just using the .dockerignore to define what isn't necessary here
 COPY . .
+COPY client/src/assets/images/ server/src/main/resources/static/content/images/
 
 RUN \
   # Mount global cache for Gradle (project cache in /opt/tum-apply/.gradle doesn't seem to be populated)
