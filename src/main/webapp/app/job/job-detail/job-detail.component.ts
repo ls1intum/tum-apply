@@ -113,7 +113,7 @@ export class JobDetailComponent {
       description: job.description ?? '',
       tasks: job.tasks ?? '',
       requirements: job.requirements ?? '',
-      startDate: dayjs(job.startDate).format('DD.MM.YYYY') ?? '',
+      startDate: dayjs(job.startDate).format('DD.MM.YYYY'),
       createdAt: dayjs(job.createdAt).format('DD.MM.YYYY'),
       lastModifiedAt: dayjs(job.lastModifiedAt).format('DD.MM.YYYY'),
 
