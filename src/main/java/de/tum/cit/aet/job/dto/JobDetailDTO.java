@@ -14,8 +14,8 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record JobDetailDTO(
     @NotNull UUID jobId,
-    String supervisingProfessorName,
-    ResearchGroup researchGroup,
+    @NotNull String supervisingProfessorName,
+    @NotNull ResearchGroup researchGroup,
     @NotNull String title,
     String fieldOfStudies,
     String researchArea,
@@ -27,8 +27,8 @@ public record JobDetailDTO(
     String tasks,
     String requirements,
     LocalDate startDate,
-    LocalDateTime createdAt,
-    LocalDateTime lastModifiedAt,
+    @NotNull LocalDateTime createdAt,
+    @NotNull LocalDateTime lastModifiedAt,
     JobState state,
     Boolean belongsToResearchGroup
     // TODO: Adjust this to a List of CustomFields
@@ -36,8 +36,8 @@ public record JobDetailDTO(
 ) {
     public JobDetailDTO(
         @NotNull UUID jobId,
-        String supervisingProfessorName,
-        ResearchGroup researchGroup,
+        @NotNull String supervisingProfessorName,
+        @NotNull ResearchGroup researchGroup,
         @NotNull String title,
         String fieldOfStudies,
         String researchArea,
@@ -49,8 +49,8 @@ public record JobDetailDTO(
         String tasks,
         String requirements,
         LocalDate startDate,
-        LocalDateTime createdAt,
-        LocalDateTime lastModifiedAt,
+        @NotNull LocalDateTime createdAt,
+        @NotNull LocalDateTime lastModifiedAt,
         JobState state,
         Boolean belongsToResearchGroup
     ) {

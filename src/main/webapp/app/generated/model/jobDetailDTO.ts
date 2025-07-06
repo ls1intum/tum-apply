@@ -12,8 +12,8 @@ import { ResearchGroup } from './researchGroup';
 
 export interface JobDetailDTO { 
     jobId: string;
-    supervisingProfessorName?: string;
-    researchGroup?: ResearchGroup;
+    supervisingProfessorName: string;
+    researchGroup: ResearchGroup;
     title: string;
     fieldOfStudies?: string;
     researchArea?: string;
@@ -25,8 +25,8 @@ export interface JobDetailDTO {
     tasks?: string;
     requirements?: string;
     startDate?: string;
-    createdAt?: string;
-    lastModifiedAt?: string;
+    createdAt: string;
+    lastModifiedAt: string;
     state?: JobDetailDTO.StateEnum;
     belongsToResearchGroup?: boolean;
 }
