@@ -176,18 +176,13 @@ public class JobService {
      * Returns a paginated list of jobs created by a given professor.
      * Supports optional filtering and dynamic sorting.
      *
-     * @param userId the professor's user ID
      * @param pageDTO pagination configuration
      * @param professorJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO sorting configuration
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
-    public Page<CreatedJobDTO> getJobsByProfessor(
-        UUID userId,
-        PageDTO pageDTO,
-        ProfessorJobsFilterDTO professorJobsFilterDTO,
-        SortDTO sortDTO
-    ) {
+    public Page<CreatedJobDTO> getJobsByProfessor(PageDTO pageDTO, ProfessorJobsFilterDTO professorJobsFilterDTO, SortDTO sortDTO) {
+        UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
         return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.title(), professorJobsFilterDTO.state(), pageable);
     }

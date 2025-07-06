@@ -92,20 +92,18 @@ public class JobResource {
      *
      * <p>Supports optional filtering by title and job state. Sorting is supported using {@link SortDTO}.</p>
      *
-     * @param userId the unique ID of the professor
      * @param pageDTO pagination parameters including page number and size
      * @param professorJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO sorting parameter
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link CreatedJobDTO}
      */
-    @GetMapping("/professor/{userId}")
+    @GetMapping("/professor")
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
-        @PathVariable UUID userId,
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(userId, pageDTO, professorJobsFilterDTO, sortDTO));
+        return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO));
     }
 
     /**
@@ -120,10 +118,9 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/{jobId}} : Get all details of a specific job which are relevant to the Job Detail Page.
+     * {@code GET /api/jobs/detail/{jobId}} : Get all details of a specific job which are relevant to the Job Detail Page.
      *
      * @param jobId the ID of the job.
-     * @param userId the ID of the current user.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job details.
      */
     @GetMapping("/detail/{jobId}")
