@@ -3,6 +3,7 @@
   [(visible)]="visible"
   [styleClass]="'review-dialog ' + (mode() === 'REJECT' ? 'mode-reject' : 'mode-accept')"
   [contentStyleClass]="mode() === 'REJECT' ? 'no-overflow' : undefined"
+  [closable]="false"
 >
   <!-- ───────── Header (applicant + job title) ───────── -->
   <ng-template #header class="custom-header">
@@ -43,6 +44,7 @@
     </ul>
   </div>
   <p-footer class="footer">
+    <jhi-button [label]="'evaluation.cancel' | translate" variant="text" (click)="this.visible.set(false)" />
     <jhi-button [label]="'evaluation.accept' | translate" severity="success" [disabled]="!canAccept()" (click)="onAccept()" />
   </p-footer>
 </ng-template>
@@ -66,6 +68,7 @@
     -->
   </ul>
   <p-footer class="footer">
+    <jhi-button [label]="'evaluation.cancel' | translate" variant="text" (click)="this.visible.set(false)" />
     <jhi-button [label]="'evaluation.reject' | translate" severity="danger" [disabled]="!canReject()" (click)="onReject()" />
   </p-footer>
 </ng-template>

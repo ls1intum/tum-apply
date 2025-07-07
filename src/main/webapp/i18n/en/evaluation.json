@@ -9,6 +9,8 @@
     "accept": "Accept",
     "reject": "Reject",
 
+    "cancel": "Cancel",
+
     "statusBadge": {
       "SENT": "Unopened",
       "ACCEPTED": "Approved",

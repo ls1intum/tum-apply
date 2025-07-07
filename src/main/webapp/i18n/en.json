@@ -63,6 +63,7 @@
     "noRating": "No rating available",
     "accept": "Accept",
     "reject": "Reject",
+    "cancel": "Cancel",
     "statusBadge": { "SENT": "Unopened", "ACCEPTED": "Approved", "REJECTED": "Rejected", "IN_REVIEW": "In Review" },
     "noApplicationsFound": "No applications found.",
     "filterOptions": { "job": "Job", "status": "Status" },

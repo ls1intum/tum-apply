@@ -9,6 +9,8 @@
     "accept": "Annehmen",
     "reject": "Ablehnen",
 
+    "cancel": "Abbrechen",
+
     "statusBadge": {
       "SENT": "Ungelesen",
       "ACCEPTED": "Angenommen",
