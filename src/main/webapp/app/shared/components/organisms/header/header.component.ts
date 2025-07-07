@@ -1,4 +1,4 @@
-import { Component, WritableSignal, inject } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -9,7 +9,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fromEventPattern, map } from 'rxjs';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { ViewEncapsulation } from '@angular/core';
+
 @Component({
   selector: 'jhi-header',
   standalone: true,
