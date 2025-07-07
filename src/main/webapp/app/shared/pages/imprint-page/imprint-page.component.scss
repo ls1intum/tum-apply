@@ -20,19 +20,10 @@
     text-align: justify;
     display: block;
     font-size: 1rem;
-  }
-
-  .text + .text {
     margin-top: 0.2rem;
   }
 
-  .textbloc {
-    text-align: justify;
-    display: block;
-    font-size: 1rem;
-  }
-
-  .textbloc + .textbloc {
+  .text.bloc {
     margin-top: 0.8rem;
   }
 }
