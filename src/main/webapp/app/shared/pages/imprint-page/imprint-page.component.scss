@@ -20,14 +20,14 @@
     text-align: justify;
     display: block;
     font-size: 1rem;
-    margin-top: 0.2rem;
+    white-space: pre-line;
   }
 
   .text.bloc {
-    margin-top: 0.8rem;
+    line-height: 2rem;
   }
 
-  .external-link {
+  ::ng-deep .external-link {
     color: var(--p-primary-color);
     text-decoration: none;
     cursor: pointer;
