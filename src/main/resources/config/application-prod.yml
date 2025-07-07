@@ -112,4 +112,7 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+# Application specific properties:
+aet:
+  email:
+    enabled: true

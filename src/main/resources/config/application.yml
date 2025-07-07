@@ -170,6 +170,13 @@ spring:
     ansi:
       console-available: true
 
+  freemarker:
+    enabled: true
+    template-loader-path: classpath:/templates/
+    suffix: .ftl
+    charset: UTF-8
+    cache: false # disable for development
+
 server:
   servlet:
     session:
@@ -232,6 +239,8 @@ jhipster:
 
 # Application specific properties:
 aet:
+  email:
+    enabled: false
   storage:
     root: storage/docs
     max-size-bytes: 26214400
