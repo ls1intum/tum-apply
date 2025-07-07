@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 
 import TranslateDirective from '../../language/translate.directive';
 
@@ -8,5 +8,6 @@ import TranslateDirective from '../../language/translate.directive';
   imports: [TranslateDirective],
   templateUrl: './privacy-page.component.html',
   styleUrl: './privacy-page.component.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class PrivacyPageComponent {}
