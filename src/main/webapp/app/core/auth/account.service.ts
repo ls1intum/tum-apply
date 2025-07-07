@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { UserResourceService } from 'app/generated/api/userResource.service';
 
-import { UserShortDTO } from '../../generated';
+import { ResearchGroupShortDTO, UserShortDTO } from '../../generated';
 
 import { KeycloakService } from './keycloak.service';
 
@@ -10,6 +10,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  researchGroup: ResearchGroupShortDTO | null;
   bearer: string;
   authorities?: string[];
 }
@@ -25,6 +26,41 @@ export class AccountService {
   });
   keycloakService = inject(KeycloakService);
   userResourceService = inject(UserResourceService);
+
+  /**
+   * Returns the full name of the signed-in user, or undefined if no user is loaded.
+   */
+  get userId(): string | undefined {
+    return this.loadedUser()?.id;
+  }
+
+  /**
+   * Returns the email address of the signed-in user, or undefined if no user is loaded.
+   */
+  get userEmail(): string | undefined {
+    return this.loadedUser()?.email;
+  }
+
+  /**
+   * Returns the full name of the signed-in user, or undefined if no user is loaded.
+   */
+  get userName(): string | undefined {
+    return this.loadedUser()?.name;
+  }
+
+  /**
+   * Returns the research group of the signed-in user, or null if none is assigned or user is not loaded.
+   */
+  get userResearchGroup(): ResearchGroupShortDTO | null | undefined {
+    return this.loadedUser()?.researchGroup;
+  }
+
+  /**
+   * Returns the roles/authorities of the signed-in user, or undefined if not available.
+   */
+  get userAuthorities(): string[] | undefined {
+    return this.loadedUser()?.authorities;
+  }
 
   async signIn(redirectUri?: string): Promise<void> {
     await this.keycloakService.login(redirectUri);
@@ -50,6 +86,7 @@ export class AccountService {
           id: userShortDTO.userId,
           email: userShortDTO.email ?? '',
           name: `${userShortDTO.firstName} ${userShortDTO.lastName}`.trim() || 'User',
+          researchGroup: userShortDTO.researchGroup ?? null,
           bearer: token,
           authorities: userShortDTO.roles,
         };
