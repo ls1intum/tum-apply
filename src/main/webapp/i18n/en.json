@@ -646,17 +646,7 @@
     "text": "The Research Group for Applied Education Technologies (referred to as AET in the following paragraphs) from the Technical University of Munich takes the protection of private data seriously. We process the automatically collected personal data obtained when you visit our website, in compliance with the applicable data protection regulations, in particular the Bavarian Data Protection (BayDSG), the Telemedia Act (TMG) and the General Data Protection Regulation (GDPR). Below, we inform you about the type, scope and purpose of the collection and use of personal data.",
     "logging": {
       "headline": "Logging",
-      "text1": "The web servers of the AET are operated by the AET itself, based in Boltzmannstr. 3, 85748 Garching b. Munich. Every time our website is accessed, the web server temporarily processes the following information in log files:",
-      "bp1": "IP address of the requesting computer",
-      "bp2": "Date and time of access",
-      "bp3": "Name, URL and transferred data volume of the accessed file",
-      "bp4": "Access status (requested file transferred, not found etc.)",
-      "bp5": "Identification data of the browser and operating system used (if transmitted by the requesting web browser)",
-      "bp6": "Website from which access was made (if transmitted by the requesting web browser)",
-      "text2": "The processing of the data in this log file takes place as follows:",
-      "bp7": "The log entries are continuously updated automatically evaluated in order to be able to detect attacks on the web server and react accordingly.",
-      "bp8": "In individual cases, i.e. in the case of reported disruptions, errors and security incidents, a manual analysis is carried out.",
-      "bp9": "The IP addresses contained in the log entries are not merged with other databases by AET, so that no conclusions can be drawn about individual persons."
+      "text": "The web servers of the AET are operated by the AET itself, based in Boltzmannstr. 3, 85748 Garching b. Munich. Every time our website is accessed, the web server temporarily processes the following information in log files:<ul class='bullet-list'><li>IP address of the requesting computer</li><li>Date and time of access</li><li>Name, URL and transferred data volume of the accessed file</li><li>Access status (requested file transferred, not found etc.)</li><li>Identification data of the browser and operating system used (if transmitted by the requesting web browser)</li><li>Website from which access was made (if transmitted by the requesting web browser)</li></ul>The processing of the data in this log file takes place as follows:<ul class='bullet-list'><li>The log entries are continuously updated automatically evaluated in order to be able to detect attacks on the web server and react accordingly.</li><li>In individual cases, i.e. in the case of reported disruptions, errors and security incidents, a manual analysis is carried out.</li><li>The IP addresses contained in the log entries are not merged with other databases by AET, so that no conclusions can be drawn about individual persons.</li></ul>"
     },
     "personalData": {
       "headline": "Use and transfer of personal data",
@@ -668,8 +658,7 @@
     },
     "complaint": {
       "headline": "Right to file a complaint with the responsible supervisory authority",
-      "text": "You have the right to lodge a complaint with the responsible supervisory authority in the event of a breach of data protection law. The responsible supervisory authority with regard to data protection issues is the Federal Commissioner for Data Protection and Freedom of Information of the state where our company is based. The following link provides a list of data protection authorities and their contact details: ",
-      "link": "https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
+      "text": "You have the right to lodge a complaint with the responsible supervisory authority in the event of a breach of data protection law. The responsible supervisory authority with regard to data protection issues is the Federal Commissioner for Data Protection and Freedom of Information of the state where our company is based. The following link provides a list of data protection authorities and their contact details: <a href='https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html' target='_blank' rel='noopener noreferrer' class='external-link'>https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>"
     },
     "dataPortability": {
       "headline": "Right to data portability",
@@ -677,9 +666,7 @@
     },
     "dataRight": {
       "headline": "Right to information, correction, blocking, and deletion",
-      "text1": "You have at any time within the framework of the applicable legal provisions the right to request information about your stored personal data, the origin of the data, its recipient and the purpose of the data processing, and if necessary, a right to correction, blocking or deletion of this data. You can contact us at any time via ",
-      "email": "ls1.admin@in.tum.de",
-      "text2": " regarding this and other questions on the subject of personal data."
+      "text": "You have at any time within the framework of the applicable legal provisions the right to request information about your stored personal data, the origin of the data, its recipient and the purpose of the data processing, and if necessary, a right to correction, blocking or deletion of this data. You can contact us at any time via <a href='mailto:ls1.admin@in.tum.de' class='external-link'>ls1.admin@in.tum.de</a> regarding this and other questions on the subject of personal data."
     },
     "sslTls": {
       "headline": "SSL/TLS encryption",

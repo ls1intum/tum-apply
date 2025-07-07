@@ -36,7 +36,7 @@
     font-size: 1rem;
   }
 
-  .bullet-list {
+  ::ng-deep .bullet-list {
     list-style-type: disc;
     padding-left: 1rem;
     margin: 1rem 0;
@@ -46,7 +46,7 @@
     }
   }
 
-  .external-link {
+  ::ng-deep .external-link {
     color: var(--p-primary-color);
     text-decoration: none;
     cursor: pointer;
