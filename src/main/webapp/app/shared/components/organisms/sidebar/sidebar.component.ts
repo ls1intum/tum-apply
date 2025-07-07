@@ -22,8 +22,8 @@ export class SidebarComponent {
    * This allows for more flexible matching of active links.
    */
   private readonly customGroups: Partial<Record<string, string[]>> = {
-    '/application/overview': ['/application/detail'],
-    '/job-overview': ['/job/detail'],
+    '/application/overview': ['/application/detail', '/application/edit'],
+    '/job-overview': ['/job/detail', '/application/create'],
     '/my-positions': ['/job/detail', '/job/edit'],
   };
 
