@@ -35,7 +35,7 @@ export class JobCardComponent {
   private router = inject(Router);
 
   onViewDetails(): void {
-    alert('View Details clicked!');
+    this.router.navigate([`/job/detail/${this.jobId()}`]);
   }
 
   onApply(): void {
