@@ -57,8 +57,8 @@ public class ApplicationService {
         }
         Applicant applicant = applicantRepository
             .findById(applicantId)
-            .orElseThrow(() -> new EntityNotFoundException("No applicant found for given Id"));
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("No job found for given Id"));
+            .orElseThrow(() -> EntityNotFoundException.forId("Applicant", applicantId));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         Application application = new Application(
             null,
@@ -332,7 +332,7 @@ public class ApplicationService {
         }
         Application application = applicationRepository
             .findById(applicationId)
-            .orElseThrow(() -> new EntityNotFoundException("Application not found"));
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
 
         return ApplicationDetailDTO.getFromEntity(application);
     }
