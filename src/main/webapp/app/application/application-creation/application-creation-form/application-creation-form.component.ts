@@ -2,7 +2,7 @@ import { Component, TemplateRef, computed, effect, inject, signal, viewChild } f
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
 import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
@@ -115,7 +115,7 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
-    const router = this.router;
+    const location = this.location;
     const performAutomaticSave = this.performAutomaticSave;
     const statusPanel = this.savedStatusPanel();
     if (panel1) {
@@ -129,7 +129,7 @@ export default class ApplicationCreationFormComponent {
             icon: 'caret-left',
             onClick() {
               performAutomaticSave();
-              router.navigate(['/']);
+              location.back();
             },
             disabled: false,
             label: 'Cancel',
@@ -261,7 +261,6 @@ export default class ApplicationCreationFormComponent {
 
   private applicationResourceService = inject(ApplicationResourceService);
   private accountService = inject(AccountService);
-  private router = inject(Router);
 
   private location = inject(Location);
 
@@ -327,7 +326,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   sendCreateApplicationData(state: ApplicationState, rerouteToOtherPage: boolean): void {
-    const router = this.router;
+    const location = this.location;
     const applicationId = this.applicationId();
     if (applicationId === undefined) {
       alert('There is an error with the applicationId');
@@ -373,7 +372,7 @@ export default class ApplicationCreationFormComponent {
       next() {
         if (rerouteToOtherPage) {
           alert('Successfully saved application');
-          router.navigate(['/']);
+          location.back();
         }
       },
       error(err) {
@@ -388,20 +387,19 @@ export default class ApplicationCreationFormComponent {
     if (!confirmResult) {
       return;
     }
-    const router = this.router;
     const applicationId = this.applicationId();
     if (applicationId !== undefined && applicationId.trim().length !== 0) {
       try {
         await firstValueFrom(this.applicationResourceService.deleteApplication(applicationId));
         alert('Application sucessfully deleted');
-        router.navigate(['/']);
+        this.location.back();
       } catch (err) {
         alert('Error deleting this application' + (err as HttpErrorResponse).statusText);
         console.error('Failed to delete this application');
       }
     } else {
       alert('There was an error because of an invalid applicationId');
-      this.router.navigate(['/']);
+      this.location.back();
     }
   }
 
