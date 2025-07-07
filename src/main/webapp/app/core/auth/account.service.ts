@@ -10,7 +10,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  researchGroup: ResearchGroupShortDTO | null;
+  researchGroup?: ResearchGroupShortDTO;
   bearer: string;
   authorities?: string[];
 }
@@ -51,7 +51,7 @@ export class AccountService {
   /**
    * Returns the research group of the signed-in user, or null if none is assigned or user is not loaded.
    */
-  get userResearchGroup(): ResearchGroupShortDTO | null | undefined {
+  get userResearchGroup(): ResearchGroupShortDTO | undefined {
     return this.loadedUser()?.researchGroup;
   }
 
@@ -86,7 +86,7 @@ export class AccountService {
           id: userShortDTO.userId,
           email: userShortDTO.email ?? '',
           name: `${userShortDTO.firstName} ${userShortDTO.lastName}`.trim() || 'User',
-          researchGroup: userShortDTO.researchGroup ?? null,
+          researchGroup: userShortDTO.researchGroup ?? undefined,
           bearer: token,
           authorities: userShortDTO.roles,
         };
