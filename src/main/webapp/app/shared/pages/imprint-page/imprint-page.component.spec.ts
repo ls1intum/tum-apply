@@ -2,8 +2,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 
-import TranslateDirective from '../../language/translate.directive';
-
 import { ImprintPageComponent } from './imprint-page.component';
 
 class FakeLoaderEn implements TranslateLoader {
@@ -92,7 +90,6 @@ describe('ImprintPageComponent EN', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
-        TranslateDirective,
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoaderEn },
         }),
@@ -162,7 +159,6 @@ describe('ImprintPageComponent DE', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
-        TranslateDirective,
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoaderDe },
         }),
