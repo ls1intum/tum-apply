@@ -39,7 +39,9 @@ public class EmailService {
     }
 
     public void send(Email email) {
+        String subject = templateService.renderSubject(email.getTemplate(), email.getLanguage(), email.getContent());
         String body;
+
         if (!StringUtils.isEmpty(email.getHtmlBody())) {
             body = templateService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
         } else {
@@ -51,7 +53,7 @@ public class EmailService {
             log.info("To: {}", email.getTo());
             log.info("CC: {}", email.getCc());
             log.info("BCC: {}", email.getBcc());
-            log.info("Subject: {}", email.getSubject());
+            log.info("Subject: {}", subject);
             log.info("Body:\n{}", body);
             return;
         }
@@ -75,7 +77,7 @@ public class EmailService {
                 helper.setBcc(email.getBcc().toArray(new String[0]));
             }
 
-            helper.setSubject(email.getSubject());
+            helper.setSubject(subject);
             helper.setText(body, true); // HTML enabled
 
             if (email.getDocuments() != null) {
@@ -89,7 +91,7 @@ public class EmailService {
 
             mailSender.send(message);
         } catch (MessagingException | IOException e) {
-            throw new MailingException(String.format("Failed to send email %s to %s", email.getSubject(), email.getTo()));
+            throw new MailingException(String.format("Failed to send email %s to %s", subject, email.getTo()));
         }
     }
 }

@@ -24,9 +24,6 @@ public class Email {
     @Singular("bcc")
     private Set<String> bcc;
 
-    @NonNull
-    private String subject;
-
     private String template;
 
     @Builder.Default
