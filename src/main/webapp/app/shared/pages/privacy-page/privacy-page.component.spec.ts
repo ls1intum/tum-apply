@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PrivacyPageComponent } from './privacy-page.component';
-
 import TranslateDirective from '../../language/translate.directive';
+
+import { PrivacyPageComponent } from './privacy-page.component';
 
 describe('PrivacyPageComponent', () => {
   let component: PrivacyPageComponent;

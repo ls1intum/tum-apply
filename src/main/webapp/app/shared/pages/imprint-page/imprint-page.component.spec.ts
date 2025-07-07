@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ImprintPageComponent } from './imprint-page.component';
-
 import TranslateDirective from '../../language/translate.directive';
+
+import { ImprintPageComponent } from './imprint-page.component';
 
 describe('ImprintPageComponent', () => {
   let component: ImprintPageComponent;
