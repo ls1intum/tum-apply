@@ -67,7 +67,13 @@
     "noApplicationsFound": "Keine Bewerbungen gefunden.",
     "filterOptions": { "job": "Stelle", "status": "Status" },
     "application": "Bewerbung",
-    "applications": "Bewerbungen"
+    "applications": "Bewerbungen",
+    "message": "Nachricht",
+    "writeMessage": "Schreibe eine Nachricht...",
+    "reason": "Grund",
+    "selectReason": "Wähle einen Grund...",
+    "closeJobAndRejectAll": "Stelle schließen und alle anderen Bewerbungen ablehnen",
+    "defaultAcceptMessage": "<p>Sehr geehrte*r {{APPLICANT_FIRST_NAME}},</p><br /><p>ich freue mich, Ihnen mitteilen zu können, dass Sie für die Position <b>{{JOB_NAME}}</b> in unserer Forschungsgruppe angenommen wurden. Ihr fachlicher Hintergrund, Ihre Motivation und Ihr Potenzial zur Mitgestaltung unserer akademischen und anwendungsorientierten Forschung haben uns überzeugt.</p><br /><p>In dieser Rolle übernehmen Sie die Verantwortung für Ihr Forschungsprojekt – einschließlich der inhaltlichen Ausrichtung, der Veröffentlichung Ihrer Ergebnisse und der aktiven Mitarbeit an laufenden Teamaktivitäten. Die Position erfordert ein hohes Maß an Engagement, Eigenständigkeit und Kommunikationsfähigkeit.</p><br /><p>Wir sind überzeugt von Ihrem Potenzial und freuen uns auf die Impulse, die Sie in unsere Gruppe und die wissenschaftliche Gemeinschaft einbringen werden.</p><br /><p><b>Bitte bestätigen Sie die Annahme dieses Angebots so bald wie möglich und kontaktieren Sie mich unter <a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a>, um die nächsten Schritte zu besprechen.</b></p><br /><br /><p>Mit freundlichen Grüßen,<br /><br />{{PROFESSOR_FIRST_NAME}}<br /><br />{{PROFESSOR_FIRST_NAME}} {{PROFESSOR_LAST_NAME}}<br />{{RESEARCH_GROUP_NAME}}<br />Technische Universität München<br /><a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a><br /><a href=\"{{RESEARCH_GROUP_WEBSITE}}\" target=\"_blank\">{{RESEARCH_GROUP_WEBSITE}}</a></p><br />"
   },
   "global": {
     "title": "TUMApply",
