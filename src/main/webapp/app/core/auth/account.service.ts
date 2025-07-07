@@ -28,7 +28,7 @@ export class AccountService {
   userResourceService = inject(UserResourceService);
 
   /**
-   * Returns the full name of the signed-in user, or undefined if no user is loaded.
+   * Returns the id of the signed-in user, or undefined if no user is loaded.
    */
   get userId(): string | undefined {
     return this.loadedUser()?.id;
@@ -49,7 +49,7 @@ export class AccountService {
   }
 
   /**
-   * Returns the research group of the signed-in user, or null if none is assigned or user is not loaded.
+   * Returns the research group of the signed-in user, or undefined if none is assigned or user is not loaded.
    */
   get userResearchGroup(): ResearchGroupShortDTO | undefined {
     return this.loadedUser()?.researchGroup;
