@@ -318,7 +318,8 @@
       "headline": "Publisher",
       "name": "Technical University of Munich",
       "postal": "Postal address: Arcisstrasse 21, 80333 Munich",
-      "telephone": "Telephone: +49-(0)89-289-01",
+      "telText": "Telephone: ",
+      "telNumber": "+49-(0)89-289-01",
       "fax": "Fax: +49-(0)89-289-22000",
       "emailText": "Email: ",
       "email": "poststelle(at)tum.de"

@@ -318,7 +318,8 @@
       "headline": "Herausgeber",
       "name": "Technische Universität München",
       "postal": "Postanschrift: Arcisstraße 21, 80333 München",
-      "telephone": "Telefon: +49-(0)89-289-01",
+      "telText": "Telephone: ",
+      "telNumber": "+49-(0)89-289-01",
       "fax": "Telefax: +49-(0)89-289-22000",
       "emailText": "Email: ",
       "email": "poststelle(at)tum.de"
