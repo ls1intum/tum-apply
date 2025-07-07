@@ -1,9 +1,7 @@
 {
   "footer": {
     "tumApply": "TUMApply",
-    "copyRight": "© 2025",
-    "tumAet": "TUM AET Team.",
-    "rights": "All rights reserved.",
+    "rightsText": "© 2025 <a href=\"https://aet.cit.tum.de/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"footer-links\">TUM AET Team.</a> All rights reserved.",
     "imprint": "Imprint",
     "privacy": "Privacy"
   }

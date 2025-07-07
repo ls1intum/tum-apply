@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -9,6 +9,7 @@ import TranslateDirective from '../../shared/language/translate.directive';
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
   imports: [TranslateDirective],
+  encapsulation: ViewEncapsulation.None,
 })
 export default class FooterComponent {
   constructor(private router: Router) {}
