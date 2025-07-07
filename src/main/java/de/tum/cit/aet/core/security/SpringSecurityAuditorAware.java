@@ -1,11 +1,12 @@
 package de.tum.cit.aet.core.security;
 
-import de.tum.cit.aet.core.service.CurrentUserService;
 import jakarta.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,15 +15,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringSecurityAuditorAware implements AuditorAware<UUID> {
 
-    private final ObjectFactory<CurrentUserService> currentUserServiceFactory;
-
-    public SpringSecurityAuditorAware(ObjectFactory<CurrentUserService> currentUserServiceFactory) {
-        this.currentUserServiceFactory = currentUserServiceFactory;
-    }
-
     @Override
     @Nonnull
     public Optional<UUID> getCurrentAuditor() {
-        return Optional.ofNullable(currentUserServiceFactory.getObject().getUserId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication instanceof JwtAuthenticationToken jwt)) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(UUID.fromString(jwt.getToken().getSubject()));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 }
