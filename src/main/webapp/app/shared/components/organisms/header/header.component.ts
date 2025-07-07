@@ -9,13 +9,14 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fromEventPattern, map } from 'rxjs';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-
+import { ViewEncapsulation } from '@angular/core';
 @Component({
   selector: 'jhi-header',
   standalone: true,
   imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
   bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
