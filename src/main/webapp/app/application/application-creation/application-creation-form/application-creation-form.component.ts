@@ -38,7 +38,7 @@ const ApplicationStates = {
 type ApplicationState = (typeof ApplicationStates)[keyof typeof ApplicationStates];
 
 const SavingStates = {
-  Saved: 'Saved',
+  Saved: 'Changes saved',
   Saving: 'Saving...',
 } as const;
 
