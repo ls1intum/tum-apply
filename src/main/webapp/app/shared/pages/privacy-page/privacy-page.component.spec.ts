@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
 
 import TranslateDirective from '../../language/translate.directive';
+
 import { PrivacyPageComponent } from './privacy-page.component';
 
 class FakeLoaderEn implements TranslateLoader {
-  getTranslation(lang: string) {
+  getTranslation(): Observable<Record<string, any>> {
     return of({
       privacy: {
         headline: 'Privacy',
@@ -49,7 +50,7 @@ class FakeLoaderEn implements TranslateLoader {
 }
 
 class FakeLoaderDe implements TranslateLoader {
-  getTranslation(lang: string) {
+  getTranslation(): Observable<Record<string, any>> {
     return of({
       privacy: {
         headline: 'Datenschutz',
@@ -91,7 +92,7 @@ class FakeLoaderDe implements TranslateLoader {
   }
 }
 
-function expectTextToContain(el: Element | null, expected: string) {
+function expectTextToContain(el: Element | null, expected: string): void {
   const normalizedText = el?.textContent?.replace(/\s+/g, ' ').toLowerCase();
   expect(normalizedText).toContain(expected.toLowerCase());
 }

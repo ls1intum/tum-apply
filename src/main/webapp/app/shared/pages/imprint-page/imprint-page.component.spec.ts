@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
 
 import TranslateDirective from '../../language/translate.directive';
+
 import { ImprintPageComponent } from './imprint-page.component';
 
 class FakeLoaderEn implements TranslateLoader {
-  getTranslation(lang: string) {
+  getTranslation(): Observable<Record<string, any>> {
     return of({
       imprint: {
         headline: 'Imprint',
@@ -45,7 +46,7 @@ class FakeLoaderEn implements TranslateLoader {
 }
 
 class FakeLoaderDe implements TranslateLoader {
-  getTranslation(lang: string) {
+  getTranslation(): Observable<Record<string, any>> {
     return of({
       imprint: {
         headline: 'Impressum',
