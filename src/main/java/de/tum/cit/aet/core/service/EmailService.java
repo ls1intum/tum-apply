@@ -39,26 +39,71 @@ public class EmailService {
         this.documentService = documentService;
     }
 
+    /**
+     * Sends an email using the provided configuration.
+     *
+     * @param email the email object containing recipients, template, content, etc.
+     */
     public void send(Email email) {
-        String subject = templateService.renderSubject(email.getTemplate(), email.getLanguage(), email.getContent());
-        String body;
-
-        if (!StringUtils.isEmpty(email.getHtmlBody())) {
-            body = templateService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
-        } else {
-            body = templateService.renderTemplate(email.getTemplate(), email.getLanguage(), email.getContent());
-        }
+        String subject = renderSubject(email);
+        String body = renderBody(email);
 
         if (!emailEnabled) {
-            log.info(">>>>Sending Simulated Email<<<<");
-            log.info("To: {}", email.getTo());
-            log.info("CC: {}", email.getCc());
-            log.info("BCC: {}", email.getBcc());
-            log.info("Subject: {}", subject);
-            log.info("Parsed Body: {}", Jsoup.parse(body).text());
+            simulateEmail(email, subject, body);
             return;
         }
 
+        sendEmail(email, subject, body);
+    }
+
+    /**
+     * Renders the subject of the email using a localized template.
+     *
+     * @param email the email to process
+     * @return rendered subject line
+     */
+    private String renderSubject(Email email) {
+        return templateService.renderSubject(email.getTemplate(), email.getLanguage(), email.getContent());
+    }
+
+    /**
+     * Renders the HTML body of the email based on raw content or template.
+     *
+     * @param email the email to process
+     * @return rendered HTML body
+     */
+    private String renderBody(Email email) {
+        if (StringUtils.isNotEmpty(email.getHtmlBody())) {
+            return templateService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
+        }
+        return templateService.renderTemplate(email.getTemplate(), email.getLanguage(), email.getContent());
+    }
+
+    /**
+     * Logs the email contents instead of sending them.
+     * Used when email sending is disabled in configuration.
+     *
+     * @param email   the email object
+     * @param subject the rendered subject
+     * @param body    the rendered HTML body
+     */
+    private void simulateEmail(Email email, String subject, String body) {
+        log.info(">>>>Sending Simulated Email<<<<");
+        log.info("To: {}", email.getTo());
+        log.info("CC: {}", email.getCc());
+        log.info("BCC: {}", email.getBcc());
+        log.info("Subject: {}", subject);
+        log.info("Parsed Body: {}", Jsoup.parse(body).text());
+    }
+
+    /**
+     * Sends the email using JavaMailSender with optional attachments.
+     *
+     * @param email   the email object
+     * @param subject the rendered subject
+     * @param body    the rendered HTML body
+     */
+    private void sendEmail(Email email, String subject, String body) {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
             if (mailSender == null) {
@@ -70,29 +115,40 @@ public class EmailService {
 
             helper.setTo(email.getTo().toArray(new String[0]));
 
-            if (email.getCc() != null && !email.getCc().isEmpty()) {
+            if (!email.getCc().isEmpty()) {
                 helper.setCc(email.getCc().toArray(new String[0]));
             }
-
-            if (email.getBcc() != null && !email.getBcc().isEmpty()) {
+            if (!email.getBcc().isEmpty()) {
                 helper.setBcc(email.getBcc().toArray(new String[0]));
             }
 
             helper.setSubject(subject);
-            helper.setText(body, true); // HTML enabled
+            helper.setText(body, true);
 
-            if (email.getDocuments() != null) {
-                int count = 1;
-                for (Document doc : email.getDocuments()) {
-                    Resource content = documentService.download(doc);
-                    InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
-                    helper.addAttachment("document_" + count, attachment);
-                }
-            }
-
+            attachDocuments(email, helper);
             mailSender.send(message);
         } catch (MessagingException | IOException e) {
             throw new MailingException(String.format("Failed to send email %s to %s", subject, email.getTo()));
+        }
+    }
+
+    /**
+     * Attaches documents to the email.
+     *
+     * @param email  the email containing document references
+     * @param helper the message helper used for attachment
+     * @throws IOException         if document content cannot be read
+     * @throws MessagingException if attachment fails
+     */
+    private void attachDocuments(Email email, MimeMessageHelper helper) throws IOException, MessagingException {
+        if (email.getDocuments() == null) return;
+
+        int count = 1;
+        for (Document doc : email.getDocuments()) {
+            Resource content = documentService.download(doc);
+            InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
+            helper.addAttachment("document_" + count, attachment);
+            count++;
         }
     }
 }
