@@ -56,8 +56,8 @@ public class JobService {
 
     /**
      * Changes the state of a job to the specified target state.
-     * If the job is being closed or if explicitly requested, all pending applications
-     * (i.e., in 'SENT' or 'IN_REVIEW' state) for the job will be automatically rejected.
+     * If the job is being closed or if explicitly requested, all pending application states
+     * (i.e., in 'SAVED', 'SENT' or 'IN_REVIEW' state) for the job will be automatically updated.
      *
      * @param jobId the ID of the job whose state is to be changed
      * @param targetState the new {@link JobState} to apply to the job
@@ -70,15 +70,17 @@ public class JobService {
         job.setState(targetState);
 
         if (targetState == JobState.CLOSED) {
-            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
-            // send emails saying that the job has been closed
-            // don't send emails to draft (SAVED) applications
+            // send emails stating that the job has been closed, to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+
+            // update the state of all submitted and unsubmitted applications to 'JOB_CLOSED'
+            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
         } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
-            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
-            // send rejection emails to applicants
-            // don't send emails to draft (SAVED) applications
+            // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+
+            // update the state of all submitted applications to 'REJECTED', all unsubmitted applications to 'JOB_CLOSED'
+            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
         }
 
         return JobFormDTO.getFromEntity(jobRepository.save(job));

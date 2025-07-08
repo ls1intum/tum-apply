@@ -280,6 +280,13 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Query("UPDATE Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
     void withdrawApplicationById(UUID applicationId);
 
+    /**
+     * Finds all applicants for a specific job that are in the 'SENT' or 'IN_REVIEW' state.
+     * This is used to notify applicants about the job status update.
+     *
+     * @param jobId the ID of the job for which to find applicants
+     * @return a set of {@link ApplicationShortDTO} containing all important applicant details
+     */
     @Query(
         """
             SELECT new de.tum.cit.aet.application.domain.dto.ApplicationShortDTO(
@@ -297,6 +304,17 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     )
     Set<ApplicationShortDTO> findApplicantsToNotify(@Param("jobId") UUID jobId);
 
+    /**
+     * Updates the state of all applications for a specific job based on the target job state.
+     * <ul>
+     *   <li>SAVED → JOB_CLOSED</li>
+     *   <li>SENT/IN_REVIEW → JOB_CLOSED if targetState is 'CLOSED'</li>
+     *   <li>SENT/IN_REVIEW → REJECTED if targetState is 'APPLICANT_FOUND'</li>
+     * </ul>
+     *
+     * @param jobId the job ID
+     * @param targetState the state of the job used to determine how application states are updated
+     */
     @Transactional
     @Modifying
     @Query(
