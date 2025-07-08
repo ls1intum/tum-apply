@@ -3,6 +3,7 @@ package de.tum.cit.aet.job.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
@@ -20,10 +21,12 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
-    public JobService(JobRepository jobRepository, UserRepository userRepository) {
+    public JobService(JobRepository jobRepository, UserRepository userRepository, CurrentUserService currentUserService) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
+        this.currentUserService = currentUserService;
     }
 
     /**
@@ -66,7 +69,7 @@ public class JobService {
      * Returns a jobDTO given the job id.
      *
      * @param jobId the ID of the job
-     * @return the job card DTO with detailed info
+     * @return the job DTO with generaL job information
      */
     public JobDTO getJobById(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
@@ -84,6 +87,36 @@ public class JobService {
             job.getDescription(),
             job.getTasks(),
             job.getRequirements(),
+            job.getState()
+        );
+    }
+
+    /**
+     * Returns a jobDetailDTO given the job id.
+     *
+     * @param jobId the ID of the job
+     * @return the job detail DTO with detailed job information
+     */
+    public JobDetailDTO getJobDetails(UUID jobId) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
+        return new JobDetailDTO(
+            job.getJobId(),
+            job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
+            job.getSupervisingProfessor().getResearchGroup(),
+            job.getTitle(),
+            job.getFieldOfStudies(),
+            job.getResearchArea(),
+            job.getLocation(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getStartDate(),
+            job.getCreatedAt(),
+            job.getLastModifiedAt(),
             job.getState()
         );
     }
@@ -132,18 +165,13 @@ public class JobService {
      * Returns a paginated list of jobs created by a given professor.
      * Supports optional filtering and dynamic sorting.
      *
-     * @param userId the professor's user ID
      * @param pageDTO pagination configuration
      * @param professorJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO sorting configuration
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
-    public Page<CreatedJobDTO> getJobsByProfessor(
-        UUID userId,
-        PageDTO pageDTO,
-        ProfessorJobsFilterDTO professorJobsFilterDTO,
-        SortDTO sortDTO
-    ) {
+    public Page<CreatedJobDTO> getJobsByProfessor(PageDTO pageDTO, ProfessorJobsFilterDTO professorJobsFilterDTO, SortDTO sortDTO) {
+        UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
         return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.title(), professorJobsFilterDTO.state(), pageable);
     }
