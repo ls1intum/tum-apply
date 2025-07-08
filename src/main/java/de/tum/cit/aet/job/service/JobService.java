@@ -80,12 +80,16 @@ public class JobService {
         if (targetState == JobState.CLOSED) {
             // send emails stating that the job has been closed, to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+            String jobTitle = job.getTitle();
+            String researchGroupName = job.getResearchGroup().getName();
 
             // update the state of all submitted and unsubmitted applications to 'JOB_CLOSED'
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
         } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
             // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+            String jobTitle = job.getTitle();
+            String researchGroupName = job.getResearchGroup().getName();
 
             // update the state of all submitted applications to 'REJECTED', all unsubmitted applications to 'JOB_CLOSED'
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
