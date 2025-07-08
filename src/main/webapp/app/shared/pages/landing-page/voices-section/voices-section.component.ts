@@ -18,31 +18,31 @@ export class VoicesSectionComponent {
       name: 'landingPage.voices.testimonials.1.name',
       field: 'landingPage.voices.testimonials.1.field',
       quote: 'landingPage.voices.testimonials.1.quote',
-      imageSrc: '/content/images/landing-page/voices-section/aline-vogt.webp',
+      imageSrc: '/content/images/landing-page/voices-section/aline-vogt.png',
     },
     {
       name: 'landingPage.voices.testimonials.2.name',
       field: 'landingPage.voices.testimonials.2.field',
       quote: 'landingPage.voices.testimonials.2.quote',
-      imageSrc: '/content/images/landing-page/voices-section/lukas-mueller.webp',
+      imageSrc: '/content/images/landing-page/voices-section/lukas-mueller.png',
     },
     {
       name: 'landingPage.voices.testimonials.3.name',
       field: 'landingPage.voices.testimonials.3.field',
       quote: 'landingPage.voices.testimonials.3.quote',
-      imageSrc: '/content/images/landing-page/voices-section/sofia-klein.webp',
+      imageSrc: '/content/images/landing-page/voices-section/sofia-klein.png',
     },
     {
       name: 'landingPage.voices.testimonials.4.name',
       field: 'landingPage.voices.testimonials.4.field',
       quote: 'landingPage.voices.testimonials.4.quote',
-      imageSrc: '/content/images/landing-page/voices-section/max-richter.webp',
+      imageSrc: '/content/images/landing-page/voices-section/max-richter.png',
     },
     {
       name: 'landingPage.voices.testimonials.5.name',
       field: 'landingPage.voices.testimonials.5.field',
       quote: 'landingPage.voices.testimonials.5.quote',
-      imageSrc: '/content/images/landing-page/voices-section/emily-wagner.webp',
+      imageSrc: '/content/images/landing-page/voices-section/emily-wagner.png',
     },
   ];
 }
