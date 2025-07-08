@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -11,6 +12,7 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,8 +69,16 @@ public class JobService {
 
         job.setState(targetState);
 
-        if (targetState == JobState.CLOSED || shouldRejectRemainingApplications) {
-            applicationRepository.rejectPendingApplicationsForJob(jobId);
+        if (targetState == JobState.CLOSED) {
+            applicationRepository.updateApplicationsForJob(jobId, targetState);
+            // send emails saying that the job has been closed
+            // don't send emails to draft (SAVED) applications
+            Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+        } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
+            applicationRepository.updateApplicationsForJob(jobId, targetState);
+            // send rejection emails to applicants
+            // don't send emails to draft (SAVED) applications
+            Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
         }
 
         return JobFormDTO.getFromEntity(jobRepository.save(job));

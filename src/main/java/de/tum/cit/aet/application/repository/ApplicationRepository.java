@@ -2,7 +2,9 @@ package de.tum.cit.aet.application.repository;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import de.tum.cit.aet.job.constants.JobState;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -279,21 +281,37 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Query("UPDATE Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
     void withdrawApplicationById(UUID applicationId);
 
-    /**
-     * Rejects all pending applications (those in 'SENT' or 'IN_REVIEW' state) for the specified job.
-     * This method is used when a job is closed or an applicant has been found,
-     * and all other applications need to be marked as rejected.
-     *
-     * @param jobId the UUID of the job for which all pending applications should be rejected
-     */
-    @Transactional
-    @Modifying
     @Query(
         """
-            UPDATE Application a SET a.state = 'REJECTED'
+            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationShortDTO(
+                a.applicationId,
+                ap.email,
+                ap.firstName,
+                ap.lastName,
+                a.state
+            )
+            FROM Application a
+            JOIN a.applicant ap
             WHERE a.job.jobId = :jobId
             AND a.state IN ('SENT', 'IN_REVIEW')
         """
     )
-    void rejectPendingApplicationsForJob(@Param("jobId") UUID jobId);
+    Set<ApplicationShortDTO> findApplicantsToNotify(@Param("jobId") UUID jobId);
+
+    @Transactional
+    @Modifying
+    @Query(
+        """
+           UPDATE Application a
+           SET a.state =
+                CASE
+                    WHEN a.state = 'SAVED' THEN 'JOB_CLOSED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
+                    ELSE a.state
+                END
+            WHERE a.job.jobId = :jobId
+        """
+    )
+    void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") JobState targetState);
 }
