@@ -63,12 +63,26 @@ export class KeycloakService {
   }
 
   /**
+   * Triggers the Keycloak login flow for a specific provider (idpHint) with PKCE (S256).
+   */
+  async loginWithProvider(provider: string, redirectUri?: string): Promise<void> {
+    try {
+      await this.keycloak.login({
+        redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
+        idpHint: provider,
+      });
+    } catch (err) {
+      console.error(`Login with provider ${provider} failed:`, err);
+    }
+  }
+
+  /**
    * Triggers the Keycloak logout and redirect.
    */
-  async logout(): Promise<void> {
+  async logout(redirectUri?: string): Promise<void> {
     try {
       await this.keycloak.logout({
-        redirectUri: window.location.origin + '/',
+        redirectUri: redirectUri ?? window.location.origin + '/',
       });
     } catch (err) {
       console.error('Logout failed:', err);

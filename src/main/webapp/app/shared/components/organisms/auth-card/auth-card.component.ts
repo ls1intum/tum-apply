@@ -7,6 +7,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { AccountService } from '../../../../core/auth/account.service';
+import { KeycloakService } from '../../../../core/auth/keycloak.service';
 
 @Component({
   selector: 'jhi-auth-card',
@@ -17,11 +18,12 @@ import { AccountService } from '../../../../core/auth/account.service';
 })
 export class AuthCardComponent {
   mode = input<'login' | 'register'>('login');
-  redirectUri = input<string>('');
+  redirectUri = input<string>('/');
 
   authTabService = inject(AuthTabService);
   value: Signal<number> = this.authTabService.getSelectedTab();
   accountService = inject(AccountService);
+  keycloakService = inject(KeycloakService);
 
   onTabChange(newValue: string | number): void {
     this.authTabService.setSelectedTab(Number(newValue));
@@ -35,8 +37,8 @@ export class AuthCardComponent {
           label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
           icon: 'microsoft',
           severity: 'secondary',
-          disabled: true,
-          onClick() {},
+          disabled: false,
+          onClick: () => this.onMicrosoftLogin(),
         },
         {
           label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
@@ -58,5 +60,9 @@ export class AuthCardComponent {
 
   onTUMSSOLogin(): void {
     void this.accountService.signIn(this.redirectUri());
+  }
+
+  onMicrosoftLogin(): void {
+    this.keycloakService.loginWithProvider('microsoft', this.redirectUri());
   }
 }
