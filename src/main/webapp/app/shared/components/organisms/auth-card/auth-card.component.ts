@@ -2,17 +2,29 @@ import { Component, Signal, inject, input } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { DividerModule } from 'primeng/divider';
+import { ButtonModule } from 'primeng/button';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { AccountService } from '../../../../core/auth/account.service';
 import { KeycloakService } from '../../../../core/auth/keycloak.service';
+import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [ButtonComponent, ButtonGroupComponent, CommonModule, TabsModule, RouterModule],
+  imports: [
+    ButtonComponent,
+    ButtonModule,
+    ButtonGroupComponent,
+    CredentialsGroupComponent,
+    CommonModule,
+    DividerModule,
+    TabsModule,
+    RouterModule,
+  ],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
 })

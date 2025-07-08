@@ -11,12 +11,24 @@
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel [value]="0" class="login-panel">
+        <div class="card">
+          <div class="flex flex-col md:flex-row">
+            <div class="w-full md:w-5/12 flex flex-col items-center justify-center gap-3 py-5">
+              <jhi-credentials-group />
+            </div>
+            <div class="w-full md:w-0.25rem">
+              <p-divider layout="vertical">OR</p-divider>
+            </div>
+            <div class="w-full md:w-5/12 flex items-center justify-center py-5">
+              <jhi-button-group [data]="studentButtons()" class="login-providers" />
+            </div>
+          </div>
+        </div>
         @if (mode() === 'register') {
           <p class="login-description">
             {{ 'Create an account with one of these providers to start your application journey.' }}
           </p>
         }
-        <jhi-button-group [data]="studentButtons()" class="login-providers" />
       </p-tabpanel>
       <p-tabpanel [value]="1" class="login-panel">
         <p class="login-description">
