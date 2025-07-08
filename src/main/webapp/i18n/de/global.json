@@ -175,7 +175,7 @@
       "add": "Hinzufügen",
       "clear": "Alles löschen",
       "upload": "Hochladen",
-      "instruction": "'Hinzufügen' klicken oder Dateien hierher ziehen, um sie hochzuladen.",
+      "instruction": "Hier klicken oder Dateien hinziehen ziehen, um sie hochzuladen.",
       "max_size": "Maximale Upload-Größe:",
       "upload_progress": "Upload-Fortschritt: ",
       "document_type": {

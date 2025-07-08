@@ -167,12 +167,12 @@ public class DocumentDictionaryService {
     /**
      * Updates the name of the document with the given ID.
      *
-     * @param documentId the ID of the document to rename
+     * @param documentDictionaryId the ID of the document to rename
      * @param newName    the new name to set for the document
      */
-    public void renameDocument(UUID documentId, String newName) {
+    public void renameDocument(UUID documentDictionaryId, String newName) {
         documentDictionaryRepository
-            .findById(documentId)
+            .findById(documentDictionaryId)
             .ifPresent(document -> {
                 document.setName(newName);
                 documentDictionaryRepository.save(document);

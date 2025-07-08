@@ -171,11 +171,11 @@
         "CV": "Please upload your CV"
       },
       "add": "Add",
-      "clear": "Clear",
+      "clear": "Delete all",
       "upload": "Upload",
       "uploaded_document": "Uploaded Document for ",
       "uploaded_documents": "Uploaded Documents for ",
-      "instruction": "Click Add or drag and drop files to here to upload.",
+      "instruction": "Click or drag and drop files to here to upload.",
       "max_size": "Max upload size:",
       "upload_progress": "Upload Progress: ",
       "document_type": {

@@ -6,29 +6,32 @@
   [maxFileSize]="maxUploadSizeInMb * 1024 * 1024"
   (onClear)="onClear()"
   (onSelect)="onFileSelected($event)"
+  #fileupload_component
 >
   <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
-    <div class="flex flex-wrap gap-2.5 w-full">
-      <span [jhiTranslate]="uploadKey()" class="w-full"></span>
-      <jhi-button variant="outlined" icon="plus" (click)="chooseCallback()" [label]="'entity.upload.add' | translate" />
-      <jhi-button
-        variant="outlined"
-        icon="upload"
-        (click)="onUpload()"
-        [label]="'entity.upload.upload' | translate"
-        [disabled]="(selectedFiles() ?? []).length === 0"
-      />
-      <jhi-button variant="outlined" icon="times" (click)="deleteAll()" [label]="'entity.upload.clear' | translate" />
-    </div>
   </ng-template>
   <ng-template #empty>
-    <div class="flex justify-center gap-0.5">
-      <span class="flex border items-center justify-center rounded-full border-primary size-20">
-        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
-      </span>
+    <div class="flex justify-center flex-col gap-0.5" (click)="fileupload_component.choose()">
+      <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full">
+        <div [jhiTranslate]="uploadKey()" class="text-center flex items-center"></div>
+        @if (selectedFiles() || documentIds()) {
+          <jhi-button
+            variant="outlined"
+            icon="trash-alt"
+            (click)="deleteAll()"
+            severity="danger"
+            [label]="'entity.upload.clear' | translate"
+          />
+        }
+      </div>
+      <div class="flex w-full justify-center">
+        <span class="flex border items-center justify-center rounded-full border-primary size-20">
+          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
+        </span>
+      </div>
+      <p class="mt-0 text-sm text-color text-center" jhiTranslate="entity.upload.instruction"></p>
+      <p class="mt-0 mb-0 text-xs text-color text-center"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
     </div>
-    <p class="mt-0 text-sm text-color text-center" jhiTranslate="entity.upload.instruction"></p>
-    <p class="mt-0 mb-0 text-xs text-color text-center"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
   </ng-template>
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
     <div class="mt-0 w-full">
@@ -44,7 +47,7 @@
         <tbody>
           @if (selectedFiles(); as selectedFiles) {
             @for (file of selectedFiles; track $index) {
-              <tr class="border border-gray-400 leading-0 border-x-0">
+              <tr class="border border-color leading-0 border-x-0">
                 <td>
                   <span class="w-full h-full inline-flex justify-center">
                     <fa-icon
@@ -77,7 +80,7 @@
           }
           @if (documentIds(); as documentIds) {
             @for (info of documentIds; track $index) {
-              <tr class="border border-gray-400 leading-0 border-x-0">
+              <tr class="border border-color leading-0 border-x-0">
                 <td>
                   <span class="w-full h-full inline-flex justify-center">
                     <fa-icon

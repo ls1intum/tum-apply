@@ -59,6 +59,7 @@ export class UploadButtonComponent {
       this.selectedFiles.set(undefined);
     }
     this.fileUploadComponent()?.clear();
+    this.onUpload();
   }
 
   async onUpload(): Promise<void> {
@@ -99,6 +100,7 @@ export class UploadButtonComponent {
   async deleteAll(): Promise<void> {
     try {
       await firstValueFrom(this.applicationService.deleteDocumentBatchByTypeFromApplication(this.applicationId(), this.documentType()));
+      this.selectedFiles.set([]);
     } catch (err) {
       console.error('Failed to delete documents', err);
       alert('Failed to delete documents');
