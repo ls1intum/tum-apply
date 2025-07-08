@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/debug")
+@RequestMapping("/api/debug")
 public class DebugResource {
 
     @Value("${TEST_SECRET:NOT SET}")
     private String testSecret;
 
-    @GetMapping("/secret")
+    @GetMapping(value = "/secret", produces = "text/plain")
     public String printSecret() {
         return "TEST_SECRET is: " + testSecret;
     }
