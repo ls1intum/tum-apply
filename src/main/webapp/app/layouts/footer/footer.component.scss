@@ -36,3 +36,16 @@
     gap: 0.3rem;
   }
 }
+
+@media (max-width: 600px) {
+  .footer {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .logo-section,
+  .rights-section,
+  .legal-section {
+    padding: 0 0.5rem;
+  }
+}
