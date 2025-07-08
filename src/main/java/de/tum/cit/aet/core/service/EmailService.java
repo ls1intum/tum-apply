@@ -1,11 +1,14 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.notification.Email;
+import de.tum.cit.aet.core.repository.DocumentRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -25,6 +28,7 @@ public class EmailService {
     private final TemplateService templateService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final DocumentService documentService;
+    private final DocumentRepository documentRepository;
 
     @Value("${aet.email.enabled:false}")
     private boolean emailEnabled;
@@ -32,11 +36,13 @@ public class EmailService {
     public EmailService(
         TemplateService templateService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
-        DocumentService documentService
+        DocumentService documentService,
+        DocumentRepository documentRepository
     ) {
         this.templateService = templateService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
+        this.documentRepository = documentRepository;
     }
 
     /**
@@ -141,11 +147,14 @@ public class EmailService {
      * @throws MessagingException if attachment fails
      */
     private void attachDocuments(Email email, MimeMessageHelper helper) throws IOException, MessagingException {
-        if (email.getDocuments() == null) return;
+        if (email.getDocumentIds() == null) return;
 
         int count = 1;
-        for (Document doc : email.getDocuments()) {
-            Resource content = documentService.download(doc);
+        for (UUID documentId : email.getDocumentIds()) {
+            Document document = documentRepository
+                .findById(documentId)
+                .orElseThrow(() -> EntityNotFoundException.forId("document", documentId));
+            Resource content = documentService.download(document);
             InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
             helper.addAttachment("document_" + count, attachment);
             count++;

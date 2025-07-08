@@ -1,10 +1,10 @@
 package de.tum.cit.aet.core.notification;
 
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.domain.Document;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -34,5 +34,5 @@ public class Email {
     @Builder.Default
     private Language language = Language.ENGLISH;
 
-    private Set<Document> documents;
+    private Set<UUID> documentIds;
 }
