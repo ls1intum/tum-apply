@@ -18,15 +18,22 @@
       "created": "Authority erstellt mit ID {{ param }}",
       "updated": "Authority aktualisiert mit ID {{ param }}",
       "deleted": "Authority gelöscht mit ID {{ param }}",
-      "delete": { "question": "Soll Authority {{ id }} wirklich dauerhaft gelöscht werden?" },
-      "detail": { "title": "Authority" },
+      "delete": {
+        "question": "Soll Authority {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Authority"
+      },
       "name": "Name"
     }
   },
   "configuration": {
     "title": "Konfiguration",
     "filter": "Filter (nach Präfix)",
-    "table": { "prefix": "Präfix", "properties": "Eigenschaften" }
+    "table": {
+      "prefix": "Präfix",
+      "properties": "Eigenschaften"
+    }
   },
   "error": {
     "title": "Fehlerseite!",
@@ -63,11 +70,25 @@
     "noRating": "Keine Bewertung verfügbar",
     "accept": "Annehmen",
     "reject": "Ablehnen",
-    "statusBadge": { "SENT": "Ungelesen", "ACCEPTED": "Angenommen", "REJECTED": "Abgelehnt", "IN_REVIEW": "In Bearbeitung" },
+    "statusBadge": {
+      "SENT": "Ungelesen",
+      "ACCEPTED": "Angenommen",
+      "REJECTED": "Abgelehnt",
+      "IN_REVIEW": "In Bearbeitung"
+    },
     "noApplicationsFound": "Keine Bewerbungen gefunden.",
-    "filterOptions": { "job": "Stelle", "status": "Status" },
+    "filterOptions": {
+      "job": "Stelle",
+      "status": "Status"
+    },
     "application": "Bewerbung",
     "applications": "Bewerbungen"
+  },
+  "footer": {
+    "tumApply": "TUMApply",
+    "rightsText": "© 2025 <a href=\"https://aet.cit.tum.de/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"footer-links\">TUM AET Team.</a> Alle Rechte vorbehalten.",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz"
   },
   "global": {
     "title": "TUMApply",
@@ -75,7 +96,10 @@
     "menu": {
       "home": "Startseite",
       "colorTheme": "Farbschema ändern",
-      "entities": { "main": "Entitäten", "adminAuthority": "Authority" },
+      "entities": {
+        "main": "Entitäten",
+        "adminAuthority": "Authority"
+      },
       "account": {
         "main": "Zugang",
         "settings": "Einstellungen",
@@ -117,9 +141,14 @@
           "link": "anmelden",
           "suffix": " möchten, versuchen Sie es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
         },
-        "register": { "noaccount": "Sie haben noch keinen Zugang?", "link": "Registrieren Sie sich" }
+        "register": {
+          "noaccount": "Sie haben noch keinen Zugang?",
+          "link": "Registrieren Sie sich"
+        }
       },
-      "error": { "dontmatch": "Das bestätigte Passwort entspricht nicht dem neuen Passwort!" },
+      "error": {
+        "dontmatch": "Das bestätigte Passwort entspricht nicht dem neuen Passwort!"
+      },
       "validate": {
         "newpassword": {
           "required": "Ein neues Passwort wird benötigt.",
@@ -149,11 +178,23 @@
       }
     },
     "editor": {
-      "header": { "heading": "Heading", "subheading": "Subheading", "normal": "Normal" },
-      "align": { "center": "center", "right": "right", "justify": "justify" }
+      "header": {
+        "heading": "Heading",
+        "subheading": "Subheading",
+        "normal": "Normal"
+      },
+      "align": {
+        "center": "center",
+        "right": "right",
+        "justify": "justify"
+      }
     },
-    "field": { "id": "ID" },
-    "ribbon": { "dev": "Entwicklung" },
+    "field": {
+      "id": "ID"
+    },
+    "ribbon": {
+      "dev": "Entwicklung"
+    },
     "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
   },
   "entity": {
@@ -169,7 +210,10 @@
       "view": "Details",
       "show": "Zeige {{otherEntity}}"
     },
-    "detail": { "field": "Feld", "value": "Wert" },
+    "detail": {
+      "field": "Feld",
+      "value": "Wert"
+    },
     "detail_card": {
       "name": "Name",
       "grade": "Note",
@@ -185,7 +229,9 @@
       "applicant_info": "Bewerberinformationen",
       "nationality": "Nationalität"
     },
-    "delete": { "title": "Löschen bestätigen" },
+    "delete": {
+      "title": "Löschen bestätigen"
+    },
     "validation": {
       "required": "Dieses Feld wird benötigt.",
       "minlength": "Dieses Feld muss mind. {{min}} Zeichen lang sein.",
@@ -229,13 +275,22 @@
       }
     }
   },
-  "footer": "Dies ist Ihre Fußzeile",
-  "header": { "login": "Anmelden", "register": "Registrieren", "logout": "Abmelden" },
+  "header": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden"
+  },
   "health": {
     "title": "Gesundheit Ihrer Anwendung",
     "refresh.button": "Aktualisieren",
     "stacktrace": "Stacktrace",
-    "details": { "details": "Details", "properties": "Properties", "name": "Name", "value": "Wert", "error": "Error" },
+    "details": {
+      "details": "Details",
+      "properties": "Properties",
+      "name": "Name",
+      "value": "Wert",
+      "error": "Error"
+    },
     "indicator": {
       "diskSpace": "Festplattenspeicher",
       "mail": "Email",
@@ -244,11 +299,53 @@
       "ping": "Application",
       "db": "Datenbank"
     },
-    "table": { "service": "Dienst Name", "status": "Status" },
-    "status": { "UNKNOWN": "UNKNOWN", "UP": "UP", "OUT_OF_SERVICE": "OUT_OF_SERVICE", "DOWN": "DOWN" }
+    "table": {
+      "service": "Dienst Name",
+      "status": "Status"
+    },
+    "status": {
+      "UNKNOWN": "UNKNOWN",
+      "UP": "UP",
+      "OUT_OF_SERVICE": "OUT_OF_SERVICE",
+      "DOWN": "DOWN"
+    }
+  },
+  "imprint": {
+    "headline": "Impressum",
+    "publisher": {
+      "headline": "Herausgeber",
+      "contact": "Technische Universität München<br>Postanschrift: Arcisstraße 21, 80333 München<br>Telephone: <a href='tel:+498928901' class='external-link'>+49-(0)89-289-01</a><br>Telefax: +49-(0)89-289-22000<br>Email: <a href='mailto:poststelle@tum.de' class='external-link'>poststelle@tum.de</a>"
+    },
+    "authorized": {
+      "headline": "Vertretungsberechtigt",
+      "text": "Die Technische Universität München wird gesetzlich vertreten durch den Präsidenten Prof. Dr. Thomas F. Hofmann."
+    },
+    "vat": {
+      "headline": "Umsatzsteueridentifikationsnummer",
+      "text": "DE811193231 (gemäß § 27a Umsatzsteuergesetz)"
+    },
+    "responsibility": {
+      "headline": "Verantwortlich für den Inhalt",
+      "text": "Prof. Dr. Stephan Krusche<br>Boltzmannstrasse 3<br>85748 Garching"
+    },
+    "tou": {
+      "headline": "Nutzungsbedingungen",
+      "text": "Texte, Bilder, Grafiken sowie die Gestaltung dieser Internetseiten können dem Urheberrecht unterliegen. Folgende sind nach § 5 des Urheberrechtsgesetz (UrhG) nicht urheberrechtlich geschützt.<br><br>Gesetze, Verordnungen, amtliche Erlasse und Bekanntmachungen sowie Entscheidungen und amtlich verfasste Leitsätze zu Entscheidungen und andere amtliche Werke, die im amtlichen Interesse zur allgemeinen Kenntnisnahme veröffentlicht worden sind, mit der Einschränkung, dass die Bestimmungen über Änderungsverbot und Quellenangabe in § 62 Abs. 1 bis 3 und § 63 Abs. 1 und 2 UrhG entsprechend anzuwenden sind.<br><br>Als Privatperson dürfen Sie urheberrechtlich geschütztes Material zum privaten und sonstigen eigenen Gebrauch im Rahmen des § 53 UrhG verwenden. Eine Vervielfältigung oder Verwendung urheberrechtlich geschützten Materials dieser Seiten oder Teilen davon in anderen elektronischen oder gedruckten Publikationen und deren Veröffentlichung ist nur mit unserer Einwilligung gestattet. Diese Einwilligung erteilen auf Anfrage die für den Inhalt Verantwortlichen. Der Nachdruck und die Auswertung von Pressemitteilungen und Reden sind mit Quellenangabe allgemein gestattet. Weiterhin können Texte, Bilder, Grafiken und sonstige Dateien ganz oder teilweise dem Urheberrecht Dritter unterliegen. Auch über das Bestehen möglicher Rechte Dritter geben Ihnen die für den Inhalt Verantwortlichen nähere Auskünfte."
+    },
+    "liability": {
+      "headline": "Haftungsausschluss",
+      "text": "Alle auf dieser Internetseite bereitgestellten Informationen haben wir nach bestem Wissen und Gewissen erarbeitet und geprüft. Eine Gewähr für die jederzeitige Aktualität, Richtigkeit, Vollständigkeit und Verfügbarkeit der bereit gestellten Informationen können wir allerdings nicht übernehmen. Ein Vertragsverhältnis mit den Nutzern des Internetangebots kommt nicht zustande.<br><br>Wir haften nicht für Schäden, die durch die Nutzung dieses Internetangebots entstehen. Dieser Haftungsausschluss gilt nicht, soweit die Vorschriften des § 839 BGB (Haftung bei Amtspflichtverletzung) einschlägig sind. Für etwaige Schäden, die beim Aufrufen oder Herunterladen von Daten durch Schadsoftware oder der Installation oder Nutzung von Software verursacht werden, übernehmen wir keine Haftung.<br><br>Falls im Einzelfall erforderlich: Der Haftungsausschluss gilt nicht für Informationen, die in den Anwendungsbereich der Europäischen Dienstleistungsrichtlinie (Richtlinie 2006/123/EG – DLRL) fallen. Für diese Informationen wird die Richtigkeit und Aktualität gewährleistet."
+    },
+    "links": {
+      "headline": "Links",
+      "text": "Von unseren eigenen Inhalten sind Querverweise („Links“) auf die Webseiten anderer Anbieter zu unterscheiden. Durch diese Links ermöglichen wir lediglich den Zugang zur Nutzung fremder Inhalte nach § 7 Digitale Dienste Gesetz. Bei der erstmaligen Verknüpfung mit diesen Internetangeboten haben wir diese fremden Inhalte daraufhin überprüft, ob durch sie eine mögliche zivilrechtliche oder strafrechtliche Verantwortlichkeit ausgelöst wird. Wir können diese fremden Inhalte aber nicht ständig auf Veränderungen überprüfen und daher auch keine Verantwortung dafür übernehmen. Für illegale, fehlerhafte oder unvollständige Inhalte und insbesondere für Schäden, die aus der Nutzung oder Nichtnutzung von Informationen Dritter entstehen, haftet allein der jeweilige Anbieter der Seite."
+    }
   },
   "myPositionsPage": {
-    "header": { "title": "Verwalten Sie Ihre Doktorandenstellen", "createButton": "Neue Stelle erstellen" },
+    "header": {
+      "title": "Verwalten Sie Ihre Doktorandenstellen",
+      "createButton": "Neue Stelle erstellen"
+    },
     "tableColumn": {
       "supervisingProfessor": "Betreuender Professor",
       "job": "Stelle",
@@ -257,11 +354,24 @@
       "created": "Erstellt am",
       "lastModified": "Zuletzt geändert"
     },
-    "actionButton": { "view": "Anzeigen", "edit": "Bearbeiten", "delete": "Löschen" },
-    "state": { "draft": "Entwurf", "published": "Veröffentlicht", "closed": "Geschlossen", "applicantFound": "Bewerber gefunden" }
+    "actionButton": {
+      "view": "Anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "state": {
+      "draft": "Entwurf",
+      "published": "Veröffentlicht",
+      "closed": "Geschlossen",
+      "applicantFound": "Bewerber gefunden"
+    }
   },
   "jobDetailPage": {
-    "header": { "supervisor": "Betreuer/in: ", "researchGroup": "Forschungsgruppe: ", "location": "Standort: " },
+    "header": {
+      "supervisor": "Betreuer/in: ",
+      "researchGroup": "Forschungsgruppe: ",
+      "location": "Standort: "
+    },
     "positionOverview": {
       "positionOverview": "Stellenübersicht",
       "fieldOfStudies": "Studienrichtung:",
@@ -275,7 +385,9 @@
       "created": "Erstellt am:",
       "lastModified": "Zuletzt geändert:"
     },
-    "researchGroupDetails": { "researchGroup": "Forschungsgruppe" },
+    "researchGroupDetails": {
+      "researchGroup": "Forschungsgruppe"
+    },
     "positionDetails": {
       "positionDetails": "Stellendetails",
       "description": "Projektbeschreibung",
@@ -336,11 +448,31 @@
     "voices": {
       "headline": "Stimmen aus der Community",
       "testimonials": {
-        "1": { "name": "Aline Vogt", "field": "Mathematik", "quote": "Die TUM bietet einzigartige Forschungsmöglichkeiten." },
-        "2": { "name": "Lukas Müller", "field": "Informatik", "quote": "Ich schätze die Unterstützung und das Netzwerk an der TUM." },
-        "3": { "name": "Dr. Sofia Klein", "field": "Biomedizinische Technik", "quote": "Die Vielfalt an der TUM ist inspirierend." },
-        "4": { "name": "Max Richter", "field": "Chemie", "quote": "Die TUM ist führend in Innovation und Forschung." },
-        "5": { "name": "Emily Wagner", "field": "Computer Vision", "quote": "Ich fühle mich hier willkommen und gut unterstützt." }
+        "1": {
+          "name": "Aline Vogt",
+          "field": "Mathematik",
+          "quote": "Die TUM bietet einzigartige Forschungsmöglichkeiten."
+        },
+        "2": {
+          "name": "Lukas Müller",
+          "field": "Informatik",
+          "quote": "Ich schätze die Unterstützung und das Netzwerk an der TUM."
+        },
+        "3": {
+          "name": "Dr. Sofia Klein",
+          "field": "Biomedizinische Technik",
+          "quote": "Die Vielfalt an der TUM ist inspirierend."
+        },
+        "4": {
+          "name": "Max Richter",
+          "field": "Chemie",
+          "quote": "Die TUM ist führend in Innovation und Forschung."
+        },
+        "5": {
+          "name": "Emily Wagner",
+          "field": "Computer Vision",
+          "quote": "Ich fühle mich hier willkommen und gut unterstützt."
+        }
       }
     },
     "faq": {
@@ -368,7 +500,10 @@
   },
   "login": {
     "header": "Melde dich bei TUMApply an",
-    "tabs": { "student": "Student / Bewerber", "professor": "Professor / Betreuer" },
+    "tabs": {
+      "student": "Student / Bewerber",
+      "professor": "Professor / Betreuer"
+    },
     "buttons": {
       "microsoft": "Anmelden mit Microsoft",
       "apple": "Anmelden mit Apple",
@@ -389,7 +524,10 @@
     "title": "Protokolle",
     "nbloggers": "Es existieren {{ total }} Logger.",
     "filter": "Filter",
-    "table": { "name": "Name", "level": "Stufe" }
+    "table": {
+      "name": "Name",
+      "level": "Stufe"
+    }
   },
   "metrics": {
     "title": "Anwendungs-Metriken",
@@ -397,7 +535,12 @@
     "updating": "Aktualisierung...",
     "jvm": {
       "title": "JVM Metriken",
-      "memory": { "title": "Hauptspeicher", "total": "Gesamter Hauptspeicher", "heap": "Heap Speicher", "nonheap": "Non-Heap Speicher" },
+      "memory": {
+        "title": "Hauptspeicher",
+        "total": "Gesamter Hauptspeicher",
+        "heap": "Heap Speicher",
+        "nonheap": "Non-Heap Speicher"
+      },
       "threads": {
         "title": "Threads",
         "all": "Alle",
@@ -429,8 +572,18 @@
         "title": "HTTP Anfragen (Ereignisse pro Sekunde)",
         "active": "Aktive Anfragen:",
         "total": "Alle Anfragen:",
-        "table": { "code": "Codierung", "count": "Anzahl", "mean": "Durchschnittswert", "average": "Mittelwert", "max": "Max" },
-        "code": { "ok": "Ok", "notfound": "Nicht gefunden", "servererror": "Server Fehler" }
+        "table": {
+          "code": "Codierung",
+          "count": "Anzahl",
+          "mean": "Durchschnittswert",
+          "average": "Mittelwert",
+          "max": "Max"
+        },
+        "code": {
+          "ok": "Ok",
+          "notfound": "Nicht gefunden",
+          "servererror": "Server Fehler"
+        }
       }
     },
     "servicesstats": {
@@ -478,15 +631,56 @@
   },
   "password": {
     "title": "Passwort für [<strong>{{username}}</strong>]",
-    "form": { "button": "Speichern" },
+    "form": {
+      "button": "Speichern"
+    },
     "messages": {
       "error": "<strong>Es ist ein Fehler aufgetreten!</strong> Das Passwort konnte nicht geändert werden.",
       "success": "<strong>Passwort wurde geändert!</strong>"
     }
   },
+  "privacy": {
+    "headline": "Datenschutz",
+    "text": "Die Forschungsgruppe für Angewandte Softwaretechnik (im Folgenden ATE) der Technischen Universität München nimmt den Schutz von personenbezogenen Daten sehr ernst. Wir verarbeiten personenbezogene Daten, die beim Besuch unserer Webseiten erhoben werden, unter Beachtung der geltenden datenschutzrechtlichen Bestimmungen, insbesondere dem Bayrischen Datenschutz (BayDSG), dem Telemediengesetz (TMG) und der Datenschutz Grundverordnung (DSGVO). Nachfolgend informieren wir Sie über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten.",
+    "logging": {
+      "headline": "Protokollierung",
+      "text": "Die Webserver der ATE werden durch die ATE selbst betrieben, mit Sitz in der Boltzmannstr. 3, 85748 Garching b. München. Bei jedem Zugriff auf Seiten unserer Webpräsenzen verarbeiten die Webserver folgende Informationen temporär in Logdateien:<ul class='bullet-list'><li>IP-Adresse des anfragenden Rechners</li><li>Datum und Uhrzeit des Zugriffs</li><li>Name, URL und übertragene Datenmenge der abgerufenen Datei</li><li>Zugriffsstatus (angeforderte Datei übertragen, nicht gefunden etc.)</li><li>Erkennungsdaten des verwendeten Browser- und Betriebssystems (sofern vom anfragenden Webbrowser übermittelt)</li><li>Webseite, von der aus der Zugriff erfolgte (sofern vom anfragenden Webbrowser übermittelt)</li></ul>Die Verarbeitung der Daten in dieser Logdatei geschieht wie folgt:<ul class='bullet-list'><li>Die Logeinträge werden kontinuierlich automatisch ausgewertet, um Angriffe auf die Webserver erkennen und entsprechend reagieren zu können.</li><li>In Einzelfällen, d.h. bei gemeldeten Störungen, Fehlern und Sicherheitsvorfällen, erfolgt eine manuelle Analyse.</li><li>Die in den Logeinträgen enthaltenen IP-Adressen werden von ATE nicht mit anderen Datenbeständen zusammengeführt, so dass kein Rückschluss auf einzelne Personen möglich ist.</li></ul>"
+    },
+    "personalData": {
+      "headline": "Nutzung und Weitergabe personenbezogener Daten",
+      "text": "Die Nutzung unserer Webseite ist ohne Angabe personenbezogener Daten möglich. Alle Dienstleistungen, die die Erhebung personenbezogener Daten erfordern (z.B. Anmeldungen zu Veranstaltungen, Kontaktformulare), werden extern angeboten. Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails, vor."
+    },
+    "dataProcessing": {
+      "headline": "Widerruf Ihrer Einwilligung zur Datenverarbeitung",
+      "text": "Nur mit Ihrer ausdrücklichen Einwilligung sind einige Vorgänge der Datenverarbeitung möglich. Ein Widerruf Ihrer bereits erteilten Einwilligung ist jederzeit möglich. Für den Widerruf genügt eine formlose Mitteilung per E-Mail. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt."
+    },
+    "complaint": {
+      "headline": "Recht auf Beschwerde bei der zuständigen Aufsichtsbehörde",
+      "text": "Als Betroffener steht Ihnen im Falle eines datenschutzrechtlichen Verstoßes ein Beschwerderecht bei der zuständigen Aufsichtsbehörde zu. Zuständige Aufsichtsbehörde bezüglich datenschutzrechtlicher Fragen ist der Landesdatenschutzbeauftragte des Bundeslandes, in dem sich der Sitz unseres Unternehmens befindet. Der folgende Link stellt eine Liste der Datenschutzbeauftragten sowie deren Kontaktdaten bereit: <a href='https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html' target='_blank' rel='noopener noreferrer' class='external-link'>https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>"
+    },
+    "dataPortability": {
+      "headline": "Recht auf Datenübertragbarkeit",
+      "text": "Ihnen steht das Recht zu, Daten, die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines Vertrags automatisiert verarbeiten, an sich oder an Dritte aushändigen zu lassen. Die Bereitstellung erfolgt in einem maschinenlesbaren Format. Sofern Sie die direkte Übertragung der Daten an einen anderen Verantwortlichen verlangen, erfolgt dies nur, soweit es technisch machbar ist."
+    },
+    "dataRight": {
+      "headline": "Recht auf Auskunft, Berichtigung, Sperrung, Löschung",
+      "text": "Sie haben jederzeit im Rahmen der geltenden gesetzlichen Bestimmungen das Recht auf unentgeltliche Auskunft über Ihre gespeicherten personenbezogenen Daten, Herkunft der Daten, deren Empfänger und den Zweck der Datenverarbeitung und ggf. ein Recht auf Berichtigung, Sperrung oder Löschung dieser Daten. Diesbezüglich und auch zu weiteren Fragen zum Thema personenbezogene Daten können Sie sich jederzeit über <a href='mailto:ls1.admin@in.tum.de' class='external-link'>ls1.admin@in.tum.de</a> an uns wenden."
+    },
+    "sslTls": {
+      "headline": "SSL- bzw. TLS-Verschlüsselung",
+      "text": "Aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte, die Sie an uns als Seitenbetreiber senden, nutzt unsere Website eine SSL-bzw. TLS-Verschlüsselung. Damit sind Daten, die Sie über diese Website übermitteln, für Dritte nicht mitlesbar. Sie erkennen eine verschlüsselte Verbindung an der „https://“ Adresszeile Ihres Browsers und am Schloss-Symbol in der Browserzeile."
+    },
+    "emailSec": {
+      "headline": "E-Mail-Sicherheit",
+      "text": "Wenn Sie uns eine E-Mail schicken, so wird Ihre E-Mail-Adresse nur für die Korrespondenz mit Ihnen verwendet. Bitte beachten Sie, dass die Datenübertragung im Internet Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich."
+    }
+  },
   "register": {
     "header": "Erstellen Sie Ihr TUMApply-Konto",
-    "tabs": { "student": "Student / Bewerber", "professor": "Professor / Betreuer" },
+    "tabs": {
+      "student": "Student / Bewerber",
+      "professor": "Professor / Betreuer"
+    },
     "buttons": {
       "microsoft": "Registrieren mit Microsoft",
       "apple": "Registrieren mit Apple",
@@ -507,7 +701,9 @@
   "reset": {
     "request": {
       "title": "Passwort zurücksetzen",
-      "form": { "button": "Passwort zurücksetzen" },
+      "form": {
+        "button": "Passwort zurücksetzen"
+      },
       "messages": {
         "info": "Geben Sie die Email Adresse ein, welche Sie bei der Registrierung verwendet haben.",
         "success": "Eine Email mit weiteren Instruktionen für das Zurücksetzen des Passworts wurde gesendet."
@@ -515,7 +711,9 @@
     },
     "finish": {
       "title": "Passwort zurücksetzen",
-      "form": { "button": "Neues Passwort setzen" },
+      "form": {
+        "button": "Neues Passwort setzen"
+      },
       "messages": {
         "info": "Wählen Sie ein neues Passwort",
         "success": "<strong>Ihr Passwort wurde zurückgesetzt.</strong> Bitte ",
@@ -526,7 +724,12 @@
   },
   "sessions": {
     "title": "Aktive Sitzungen für [<strong>{{username}}</strong>]",
-    "table": { "ipaddress": "IP Adresse", "useragent": "User Agent", "date": "Datum", "button": "Schließen" },
+    "table": {
+      "ipaddress": "IP Adresse",
+      "useragent": "User Agent",
+      "date": "Datum",
+      "button": "Schließen"
+    },
     "messages": {
       "success": "<strong>Sitzung wurde geschlossen!</strong>",
       "error": "<strong>Es ist ein Fehler aufgetreten!</strong> Die Sitzung konnte nicht geschlossen werden."
@@ -563,7 +766,12 @@
     }
   },
   "sidebar": {
-    "dashboard": { "dashboard": "Dashboard", "home": "Startseite", "findpositions": "Positionen finden", "analytics": "Analysen" },
+    "dashboard": {
+      "dashboard": "Dashboard",
+      "home": "Startseite",
+      "findpositions": "Positionen finden",
+      "analytics": "Analysen"
+    },
     "applications": {
       "applications": "Bewerbungen",
       "myapplications": "Meine Bewerbungen",
@@ -571,10 +779,30 @@
       "applicationoverview": "Bewerbungsübersicht",
       "reviewapplications": "Bewerbungen prüfen"
     },
-    "manage": { "manage": "Verwalten", "home": "Startseite", "mypositions": "Meine Positionen", "createposition": "Position erstellen" },
-    "researchgroup": { "researchgroup": "Forschungsgruppe", "yourgroup": "Ihre Gruppe", "yourmembers": "Ihre Mitglieder" },
-    "content": { "content": "Inhalt", "allpositions": "Alle Positionen", "researchgroups": "Forschungsgruppen" },
-    "users": { "users": "Benutzer", "manageusers": "Benutzer verwalten", "file": "Bewerbungen" },
-    "system": { "system": "System", "systemsettings": "Systemeinstellungen" }
+    "manage": {
+      "manage": "Verwalten",
+      "home": "Startseite",
+      "mypositions": "Meine Positionen",
+      "createposition": "Position erstellen"
+    },
+    "researchgroup": {
+      "researchgroup": "Forschungsgruppe",
+      "yourgroup": "Ihre Gruppe",
+      "yourmembers": "Ihre Mitglieder"
+    },
+    "content": {
+      "content": "Inhalt",
+      "allpositions": "Alle Positionen",
+      "researchgroups": "Forschungsgruppen"
+    },
+    "users": {
+      "users": "Benutzer",
+      "manageusers": "Benutzer verwalten",
+      "file": "Bewerbungen"
+    },
+    "system": {
+      "system": "System",
+      "systemsettings": "Systemeinstellungen"
+    }
   }
 }
