@@ -83,5 +83,4 @@ jobs:
         SPRING_DATASOURCE_PASSWORD=${{ needs.prepare-vars.outputs.SPRING_DATASOURCE_PASSWORD }}
         SPRING_LIQUIBASE_URL=${{ needs.prepare-vars.outputs.SPRING_LIQUIBASE_URL }}
         SPRING_PROFILES_ACTIVE=${{ needs.prepare-vars.outputs.SPRING_PROFILES_ACTIVE }}
-    secrets:
-      TEST_SECRET: ${{ secrets.TEST_SECRET }}
+    secrets: inherit
