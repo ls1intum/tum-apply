@@ -19,7 +19,7 @@
     cursor: pointer;
 
     .tum-logo {
-      height: 2.25rem;
+      height: 1.8rem;
     }
   }
 
@@ -67,6 +67,14 @@
         border-radius: 50%;
         background: var(--p-primary-color);
         color: var(--p-text-on-primary);
+      }
+    }
+
+    .fixed-width-button {
+      display: inline-flex;
+      .p-button {
+        min-width: 8rem;
+        justify-content: center;
       }
     }
   }

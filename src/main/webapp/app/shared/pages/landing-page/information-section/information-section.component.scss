@@ -22,3 +22,40 @@
     text-align: start;
   }
 }
+@media (max-width: 1024px) {
+  .information-section {
+    padding: 2rem 2rem;
+    gap: 2rem;
+    align-items: center;
+
+    .title {
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .tiles-container {
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+      gap: 1.75rem;
+      width: 100%;
+    }
+  }
+}
+@media (max-width: 768px) {
+  .information-section {
+    padding: 1.5rem;
+    gap: 2rem;
+    align-items: center;
+    min-width: 0;
+
+    .title {
+      font-size: 1.75rem;
+      text-align: center;
+    }
+
+    .tiles-container {
+      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+    }
+  }
+}

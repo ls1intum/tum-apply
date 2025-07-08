@@ -22,9 +22,49 @@
 
     .steps {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       padding: 0 5rem;
       gap: 2.5rem;
+    }
+  }
+}
+@media (max-width: 1024px) {
+  .application-steps-section {
+    padding: 4rem 4rem;
+    gap: 4rem;
+
+    .title {
+      font-size: 2rem;
+    }
+
+    .application-steps {
+      .steps {
+        padding: 0 2rem;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .application-steps-section {
+    padding: 3rem 1rem;
+    gap: 3rem;
+
+    .title {
+      font-size: 1.75rem;
+    }
+
+    .application-steps {
+      gap: 2rem;
+
+      .steps {
+        flex-direction: column;
+        padding: 0;
+        gap: 2rem;
+        width: 100%;
+      }
     }
   }
 }
