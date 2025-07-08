@@ -52,10 +52,10 @@ class FakeLoaderDe implements TranslateLoader {
     return of({
       privacy: {
         headline: 'Datenschutz',
-        text: 'Die Forschungsgruppe für Angewandte Softwaretechnik',
+        text: 'Die Forschungsgruppe für Angewandte Bildungstechnologien',
         logging: {
           headline: 'Protokollierung',
-          text: 'Die Webserver der ATE',
+          text: 'Die Webserver der AET',
         },
         personalData: {
           headline: 'Nutzung und Weitergabe personenbezogener Daten',
@@ -218,8 +218,8 @@ describe('PrivacyPageComponent DE', () => {
   it('should display all translated texts (DE)', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const texts = [
-      { selector: '[jhiTranslate="privacy.text"]', expected: 'angewandte softwaretechnik' },
-      { selector: '[jhiTranslate="privacy.logging.text"]', expected: 'webserver der ate' },
+      { selector: '[jhiTranslate="privacy.text"]', expected: 'angewandte bildungstechnologien' },
+      { selector: '[jhiTranslate="privacy.logging.text"]', expected: 'webserver der aet' },
       { selector: '[jhiTranslate="privacy.personalData.text"]', expected: 'ohne angabe personenbezogener daten' },
       { selector: '[jhiTranslate="privacy.dataProcessing.text"]', expected: 'ausdrücklichen einwilligung' },
       { selector: '[jhiTranslate="privacy.complaint.text"]', expected: 'beschwerderecht' },
