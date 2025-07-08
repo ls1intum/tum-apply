@@ -50,13 +50,6 @@ export class HeaderComponent {
     });
   }
 
-  navigateToRegister(): void {
-    const currentUrl = this.router.url;
-    void this.router.navigate(['/register'], {
-      queryParams: { redirect: currentUrl },
-    });
-  }
-
   logout(): void {
     void this.accountService.signOut();
   }
