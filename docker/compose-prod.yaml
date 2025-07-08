@@ -42,10 +42,11 @@ services:
       - shared-network
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
+    env_file:
+      - .env
     environment:
       - KEYCLOAK_URL
       - KEYCLOAK_REALM
-      - TEST_SECRET=${TEST_SECRET}
       - SPRING_PROFILES_ACTIVE=prod, api-docs
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root

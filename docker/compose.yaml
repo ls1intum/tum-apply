@@ -42,6 +42,8 @@ services:
       - shared-network
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
+    env_file:
+      - .env
     environment:
       - KEYCLOAK_URL
       - KEYCLOAK_REALM
