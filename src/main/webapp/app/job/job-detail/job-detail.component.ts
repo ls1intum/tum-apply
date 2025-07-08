@@ -102,7 +102,7 @@ export class JobDetailComponent {
   loadJobDetails(job: JobDetailDTO): void {
     const loadedJob: JobDetails = {
       supervisingProfessor: job.supervisingProfessorName ?? '',
-      researchGroup: job.researchGroup?.name ?? '',
+      researchGroup: job.researchGroup.name ?? '',
       title: job.title,
       fieldOfStudies: job.fieldOfStudies ?? '',
       researchArea: job.researchArea ?? '',
@@ -117,13 +117,13 @@ export class JobDetailComponent {
       createdAt: dayjs(job.createdAt).format('DD.MM.YYYY'),
       lastModifiedAt: dayjs(job.lastModifiedAt).format('DD.MM.YYYY'),
 
-      researchGroupDescription: job.researchGroup?.description ?? '',
-      researchGroupEmail: job.researchGroup?.email ?? '',
-      researchGroupWebsite: job.researchGroup?.website ?? '',
-      researchGroupStreet: job.researchGroup?.street ?? '',
-      researchGroupPostalCode: job.researchGroup?.postalCode ?? '',
-      researchGroupCity: job.researchGroup?.city ?? '',
-      belongsToResearchGroup: job.belongsToResearchGroup ?? false,
+      researchGroupDescription: job.researchGroup.description ?? '',
+      researchGroupEmail: job.researchGroup.email ?? '',
+      researchGroupWebsite: job.researchGroup.website ?? '',
+      researchGroupStreet: job.researchGroup.street ?? '',
+      researchGroupPostalCode: job.researchGroup.postalCode ?? '',
+      researchGroupCity: job.researchGroup.city ?? '',
+      belongsToResearchGroup: job.researchGroup.researchGroupId === this.accountService.loadedUser()?.researchGroup?.researchGroupId,
     };
 
     this.jobDetails.set(loadedJob);

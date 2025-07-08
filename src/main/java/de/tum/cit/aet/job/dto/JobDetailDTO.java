@@ -29,8 +29,7 @@ public record JobDetailDTO(
     LocalDate startDate,
     @NotNull LocalDateTime createdAt,
     @NotNull LocalDateTime lastModifiedAt,
-    JobState state,
-    Boolean belongsToResearchGroup
+    JobState state
     // TODO: Adjust this to a List of CustomFields
     // CustomField customFields
 ) {
@@ -51,8 +50,7 @@ public record JobDetailDTO(
         LocalDate startDate,
         @NotNull LocalDateTime createdAt,
         @NotNull LocalDateTime lastModifiedAt,
-        JobState state,
-        Boolean belongsToResearchGroup
+        JobState state
     ) {
         this(
             jobId,
@@ -71,8 +69,7 @@ public record JobDetailDTO(
             startDate,
             createdAt,
             lastModifiedAt,
-            state,
-            belongsToResearchGroup
+            state
         );
     }
 }

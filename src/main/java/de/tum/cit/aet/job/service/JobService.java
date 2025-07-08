@@ -100,16 +100,6 @@ public class JobService {
     public JobDetailDTO getJobDetails(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
-        UUID userId = currentUserService.getUserId();
-        // Check if the user is part of the research group
-        boolean belongsToResearchGroup = false;
-        if (userRepository.findByIdElseThrow(userId) != null) {
-            User user = userRepository.findByIdElseThrow(userId);
-            if (user.getResearchGroup() != null && job.getResearchGroup() != null) {
-                belongsToResearchGroup = user.getResearchGroup().getResearchGroupId().equals(job.getResearchGroup().getResearchGroupId());
-            }
-        }
-
         return new JobDetailDTO(
             job.getJobId(),
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
@@ -127,8 +117,7 @@ public class JobService {
             job.getStartDate(),
             job.getCreatedAt(),
             job.getLastModifiedAt(),
-            job.getState(),
-            belongsToResearchGroup
+            job.getState()
         );
     }
 
