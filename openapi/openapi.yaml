@@ -310,22 +310,13 @@
         }
       }
     },
-    "/api/jobs/professor/{userId}": {
+    "/api/jobs/professor": {
       "get": {
         "tags": [
           "job-resource"
         ],
         "operationId": "getJobsByProfessor",
         "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
           {
             "name": "pageSize",
             "in": "query",
@@ -396,6 +387,37 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageCreatedJobDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/detail/{jobId}": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getJobDetails",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetailDTO"
                 }
               }
             }
@@ -1611,13 +1633,19 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1636,18 +1664,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -1664,6 +1686,9 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "paged": {
+            "type": "boolean"
+          },
           "unpaged": {
             "type": "boolean"
           },
@@ -1674,9 +1699,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "paged": {
-            "type": "boolean"
           }
         }
       },
@@ -1686,24 +1708,644 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
-            "type": "boolean"
-          },
           "sorted": {
             "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Applicant": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "researchGroupRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          },
+          "submittedApplications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            },
+            "uniqueItems": true
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "bachelorDegreeName": {
+            "type": "string"
+          },
+          "bachelorGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "bachelorGrade": {
+            "type": "string"
+          },
+          "bachelorUniversity": {
+            "type": "string"
+          },
+          "masterDegreeName": {
+            "type": "string"
+          },
+          "masterGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "masterGrade": {
+            "type": "string"
+          },
+          "masterUniversity": {
+            "type": "string"
+          }
+        }
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationReview": {
+            "$ref": "#/components/schemas/ApplicationReview"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/Applicant"
+          },
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "desiredStartDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customFieldAnswers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswer"
+            },
+            "uniqueItems": true
+          },
+          "internalComments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalComment"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "ApplicationReview": {
+        "type": "object",
+        "properties": {
+          "applicationReviewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "reviewedBy": {
+            "$ref": "#/components/schemas/User"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "customFieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "question": {
+            "type": "string"
+          },
+          "customFieldType": {
+            "type": "string",
+            "enum": [
+              "FREE_TEXT",
+              "SINGLE_CHOICE",
+              "MULTIPLE_CHOICE",
+              "FILE_UPLOAD"
+            ]
+          },
+          "answerOptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customFieldAnswers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswer"
+            },
+            "uniqueItems": true
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CustomFieldAnswer": {
+        "type": "object",
+        "properties": {
+          "customFieldAnswerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customField": {
+            "$ref": "#/components/schemas/CustomField"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InternalComment": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "internalCommentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/User"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supervisingProfessor": {
+            "$ref": "#/components/schemas/User"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "JobDetailDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supervisingProfessorName": {
+            "type": "string"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "title": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "createdAt",
+          "jobId",
+          "lastModifiedAt",
+          "researchGroup",
+          "supervisingProfessorName",
+          "title"
+        ]
+      },
+      "ResearchGroup": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "head": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "userRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "postedJobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            },
+            "uniqueItems": true
+          },
+          "researchGroupRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "UserResearchGroupRole": {
+        "type": "object",
+        "properties": {
+          "userResearchGroupRoleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "APPLICANT",
+              "PROFESSOR",
+              "ADMIN"
+            ]
           }
         }
       },
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1722,18 +2364,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"

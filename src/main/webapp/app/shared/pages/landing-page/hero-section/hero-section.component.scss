@@ -61,3 +61,45 @@
   background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-3.webp');
   background-position: 50% 60%;
 }
+@media (max-width: 1024px) {
+  .hero-container {
+    height: 26rem;
+    background-position: center center;
+  }
+
+  .hero-content {
+    gap: 2rem;
+
+    .title {
+      font-size: 2.5rem;
+      -webkit-line-clamp: 2;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-container {
+    height: 22rem;
+    background-position: center center;
+  }
+
+  .hero-content {
+    gap: 1.5rem;
+    padding: 0 1rem;
+
+    .title {
+      font-size: 2rem;
+      -webkit-line-clamp: 2;
+      text-overflow: ellipsis;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      text-align: center;
+    }
+  }
+}
