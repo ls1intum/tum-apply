@@ -41,7 +41,7 @@ export class InformationSectionComponent {
     {
       imageSrc: '/content/images/landing-page/information-section/diversity.png',
       text: 'landingPage.informationSection.tiles.6',
-      link: 'https://www.tum.de/en/about-tum/goals-and-values/diversity',
+      link: 'https://www.zv.tum.de/en/diversity/homepage/',
     },
   ];
 }

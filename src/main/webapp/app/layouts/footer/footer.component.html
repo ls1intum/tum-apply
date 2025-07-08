@@ -1,3 +1,15 @@
 <div class="footer">
-  <p jhiTranslate="footer">This is your footer</p>
+  <div class="logo-section">
+    <span class="app-name" jhiTranslate="footer.tumApply"></span>
+  </div>
+
+  <div class="rights-section">
+    <span class="copyright" jhiTranslate="footer.rightsText"></span>
+  </div>
+
+  <div class="legal-section">
+    <p (click)="navigateToImprint()" class="footer-links" jhiTranslate="footer.imprint"></p>
+    <span class="divider">|</span>
+    <p (click)="navigateToPrivacy()" class="footer-links" jhiTranslate="footer.privacy"></p>
+  </div>
 </div>
