@@ -1,15 +1,20 @@
 <#import "../base/layout.ftl" as layout>
 
-<@layout.emailLayout>
+<@layout.emailLayout language=language>
+    <p>Sehr geehrter Herr Professor / Sehr geehrte Frau Professorin ${professorLastName!},</p>
 
-  <p>Sehr geehrte*r ${applicantFirstName!},</p>
+    <p>für die Position <strong>${jobTitle!}</strong> in Ihrer Forschungsgruppe wurde eine neue Bewerbung eingereicht.</p>
 
-  <p>vielen Dank für Ihre Bewerbung auf die Position <strong>${jobTitle!}</strong> in unserer Forschungsgruppe <strong>${researchGroupName!}</strong>.</p>
+    <p>Die Bewerbung stammt von <strong>${applicantFirstName!} ${applicantLastName!}</strong>.</p>
 
-  <p>Wir bestätigen den Erhalt Ihrer Unterlagen. Ihre Bewerbung wird nun sorgfältig geprüft. Bitte beachten Sie, dass dies einige Tage in Anspruch nehmen kann.</p>
+    <p>Sie können die Bewerbung über den folgenden Button einsehen:</p>
 
-  <p>Sobald sich der Status Ihrer Bewerbung ändert, werden wir Sie umgehend informieren.</p>
+    <p style="margin: 20px 0;">
+        <a href="URL/evaluation/application?sortBy=createdAt&sortDir=DESC&applicationId=${applicationId!}"
+           style="display: inline-block; padding: 10px 18px; background-color: #0056b3; color: #ffffff; text-decoration: none; border-radius: 5px;">
+            Bewerbung anzeigen
+        </a>
+    </p>
 
-  <p>Mit freundlichen Grüßen,<br/>Ihr ${researchGroupName!} Team</p>
-
+    <p>Mit freundlichen Grüßen<br/>Ihr TUMApply Team</p>
 </@layout.emailLayout>

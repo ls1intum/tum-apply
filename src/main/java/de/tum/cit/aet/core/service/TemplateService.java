@@ -27,7 +27,7 @@ public class TemplateService {
         try (StringWriter writer = new StringWriter()) {
             Template template = freemarkerConfig.getTemplate(templatePath);
             template.process(content, writer);
-            return "TUMApply – " + writer.toString().trim(); // Optional prefix
+            return "TUMApply – " + writer.toString().trim();
         } catch (IOException e) {
             // Subject template not found
             return "TUMApply";
@@ -38,7 +38,6 @@ public class TemplateService {
 
     /**
      * Renders the specified template for a given language.
-     * It expects templates in subfolders named by language code, e.g., 'en/', 'de/'.
      */
     public String renderTemplate(@NonNull String templateName, @NonNull Language language, @NonNull Map<String, Object> content) {
         Map<String, Object> dataModel = new HashMap<>(content);

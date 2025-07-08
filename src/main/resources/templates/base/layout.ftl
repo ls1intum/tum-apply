@@ -19,11 +19,14 @@
       </#if>
     </div>
     <div style="font-size: 12px; color: #777777; text-align: center; padding-top: 20px;">
+
       <#if language == "de">
-        <#include "../de/footer.ftl">
+        <#import "../de/footer.ftl" as f>
       <#else>
-        <#include "../en/footer.ftl">
+        <#import "../en/footer.ftl" as f>
       </#if>
+      <@f.footer />
+
     </div>
   </div>
   </body>

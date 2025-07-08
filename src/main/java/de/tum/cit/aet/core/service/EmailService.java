@@ -8,6 +8,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -54,7 +55,7 @@ public class EmailService {
             log.info("CC: {}", email.getCc());
             log.info("BCC: {}", email.getBcc());
             log.info("Subject: {}", subject);
-            log.info("Body:\n{}", body);
+            log.info("Parsed Body: {}", Jsoup.parse(body).text());
             return;
         }
 

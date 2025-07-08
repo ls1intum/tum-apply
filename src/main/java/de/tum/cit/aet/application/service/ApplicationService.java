@@ -2,30 +2,25 @@ package de.tum.cit.aet.application.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
-import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
-import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
+import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
+import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,6 +36,7 @@ public class ApplicationService {
     private final DocumentDictionaryService documentDictionaryService;
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
+    private final EmailService emailService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -196,6 +192,29 @@ public class ApplicationService {
         if (application == null) {
             return;
         }
+        Applicant applicant = application.getApplicant();
+        Job job = application.getJob();
+
+        Email email = Email.builder()
+            .to(applicant.getEmail())
+            .template("application_withdrawn")
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .content(
+                Map.of(
+                    "applicantFirstName",
+                    applicant.getFirstName(),
+                    "applicantLastName",
+                    applicant.getLastName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "researchGroupName",
+                    job.getResearchGroup().getName()
+                )
+            )
+            .build();
+
+        emailService.send(email);
+
         application.setState(ApplicationState.WITHDRAWN);
         applicationRepository.save(application);
     }
@@ -264,9 +283,9 @@ public class ApplicationService {
     /**
      * Uploads a single CV document and updates the dictionary mapping.
      *
-     * @param cv the uploaded CV file
+     * @param cv          the uploaded CV file
      * @param application the application the CV belongs to
-     * @param user the user uploading the document
+     * @param user        the user uploading the document
      */
     public void uploadCV(MultipartFile cv, Application application, User user) {
         Document document = documentService.upload(cv, user);
@@ -276,9 +295,9 @@ public class ApplicationService {
     /**
      * Uploads multiple reference documents and updates the dictionary mapping.
      *
-     * @param references the uploaded reference files
+     * @param references  the uploaded reference files
      * @param application the application the references belong to
-     * @param user the user uploading the documents
+     * @param user        the user uploading the documents
      */
     public void uploadReferences(List<MultipartFile> references, Application application, User user) {
         Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
@@ -289,8 +308,8 @@ public class ApplicationService {
      * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
      *
      * @param bachelorTranscripts the uploaded bachelor transcript files
-     * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
+     * @param application         the application the transcripts belong to
+     * @param user                the user uploading the documents
      */
     public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
         Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
@@ -301,8 +320,8 @@ public class ApplicationService {
      * Uploads multiple master transcript documents and updates the dictionary mapping.
      *
      * @param masterTranscripts the uploaded master transcript files
-     * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
+     * @param application       the application the transcripts belong to
+     * @param user              the user uploading the documents
      */
     public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
         Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
@@ -312,9 +331,9 @@ public class ApplicationService {
     /**
      * Updates the document dictionary entries for a given application and document type.
      *
-     * @param application    the application to associate the documents with
-     * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
-     * @param newDocuments   the set of newly uploaded documents to associate
+     * @param application  the application to associate the documents with
+     * @param type         the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
+     * @param newDocuments the set of newly uploaded documents to associate
      */
     protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Document> newDocuments) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
@@ -325,7 +344,7 @@ public class ApplicationService {
      * Retrieves the set of document IDs for the given application filtered by the specified document type.
      *
      * @param application the application whose documents are queried; must not be {@code null}
-     * @param type the document type to filter by; must not be {@code null}
+     * @param type        the document type to filter by; must not be {@code null}
      * @return a set of document IDs matching the given application and document type; never {@code null}
      */
     public Set<UUID> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {

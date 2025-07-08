@@ -1,15 +1,22 @@
 <#import "../base/layout.ftl" as layout>
 
-<@layout.emailLayout>
+<@layout.emailLayout language=language>
+    <p>Dear Professor ${professorLastName!},</p>
 
-  <p>Dear ${applicantFirstName!},</p>
+    <p>A new application has been submitted for the position <strong>${jobTitle!}</strong> in your research group.</p>
 
-  <p>Thank you for your application for the position <strong>${jobTitle!}</strong> at our research group <strong>${researchGroupName!}</strong>.</p>
+    <p>The applicant is <strong>${applicantFirstName!} ${applicantLastName!}</strong>.</p>
 
-  <p>We confirm that your application has been received and will now be reviewed carefully. Please note that this process may take a few days.</p>
+    <p>You can review the application by clicking the button below:</p>
 
-  <p>We will notify you as soon as the status of your application changes.</p>
+    <p style="margin: 20px 0;">
+        <a href="URL/evaluation/application?sortBy=createdAt&sortDir=DESC&applicationId=${applicationId!}"
+           style="display: inline-block; padding: 10px 18px; background-color: #0056b3; color: #ffffff; text-decoration: none; border-radius: 5px;">
+            View Application
+        </a>
+    </p>
 
-  <p>Best regards,<br/>The ${researchGroupName!} Team</p>
-
+    <p>Best regards,<br/>Your TUMApply Team</p>
 </@layout.emailLayout>
+
+
