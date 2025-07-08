@@ -18,8 +18,14 @@
     <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
 
     @if (user() === undefined) {
-      <jhi-button (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
-      <jhi-button (click)="navigateToRegister()" label="{{ 'header.register' | translate }}" severity="primary" variant="outlined" />
+      <jhi-button class="fixed-width-button" (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
+      <jhi-button
+        class="fixed-width-button"
+        (click)="navigateToRegister()"
+        label="{{ 'header.register' | translate }}"
+        severity="primary"
+        variant="outlined"
+      />
     } @else {
       <div class="profile">
         <fa-icon class="profile-icon" icon="user" />
