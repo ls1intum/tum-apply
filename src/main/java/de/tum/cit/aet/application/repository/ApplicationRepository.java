@@ -4,7 +4,6 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
-import de.tum.cit.aet.job.constants.JobState;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -313,5 +312,5 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             WHERE a.job.jobId = :jobId
         """
     )
-    void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") JobState targetState);
+    void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
 }

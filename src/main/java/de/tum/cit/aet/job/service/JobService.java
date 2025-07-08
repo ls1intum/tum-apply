@@ -70,12 +70,12 @@ public class JobService {
         job.setState(targetState);
 
         if (targetState == JobState.CLOSED) {
-            applicationRepository.updateApplicationsForJob(jobId, targetState);
+            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
             // send emails saying that the job has been closed
             // don't send emails to draft (SAVED) applications
             Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
         } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
-            applicationRepository.updateApplicationsForJob(jobId, targetState);
+            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
             // send rejection emails to applicants
             // don't send emails to draft (SAVED) applications
             Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
