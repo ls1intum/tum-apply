@@ -270,7 +270,7 @@ export default class ApplicationCreationFormComponent {
     effect(() => {
       const intervalId = setInterval(() => {
         this.performAutomaticSave();
-      }, 10000);
+      }, 3000);
       return () => clearInterval(intervalId);
     });
   }
