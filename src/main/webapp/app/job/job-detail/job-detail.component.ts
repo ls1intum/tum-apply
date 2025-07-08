@@ -101,7 +101,7 @@ export class JobDetailComponent {
 
   loadJobDetails(job: JobDetailDTO): void {
     const loadedJob: JobDetails = {
-      supervisingProfessor: job.supervisingProfessorName ?? '',
+      supervisingProfessor: job.supervisingProfessorName,
       researchGroup: job.researchGroup.name ?? '',
       title: job.title,
       fieldOfStudies: job.fieldOfStudies ?? '',
