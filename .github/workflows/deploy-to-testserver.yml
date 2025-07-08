@@ -36,4 +36,7 @@ jobs:
       main-image-name: ls1intum/tum-apply
       image-tag: ${{ inputs.image-tag }}
       deployment-base-path: '/opt/tum-apply'
-    secrets: inherit
+    secrets:
+      TEST_SECRET: ${{ secrets.TEST_SECRET }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
