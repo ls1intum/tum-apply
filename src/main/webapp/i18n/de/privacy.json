@@ -1,0 +1,38 @@
+{
+  "privacy": {
+    "headline": "Datenschutz",
+    "text": "Die Forschungsgruppe für Angewandte Softwaretechnik (im Folgenden ATE) der Technischen Universität München nimmt den Schutz von personenbezogenen Daten sehr ernst. Wir verarbeiten personenbezogene Daten, die beim Besuch unserer Webseiten erhoben werden, unter Beachtung der geltenden datenschutzrechtlichen Bestimmungen, insbesondere dem Bayrischen Datenschutz (BayDSG), dem Telemediengesetz (TMG) und der Datenschutz Grundverordnung (DSGVO). Nachfolgend informieren wir Sie über Art, Umfang und Zweck der Erhebung und Verwendung personenbezogener Daten.",
+    "logging": {
+      "headline": "Protokollierung",
+      "text": "Die Webserver der ATE werden durch die ATE selbst betrieben, mit Sitz in der Boltzmannstr. 3, 85748 Garching b. München. Bei jedem Zugriff auf Seiten unserer Webpräsenzen verarbeiten die Webserver folgende Informationen temporär in Logdateien:<ul class='bullet-list'><li>IP-Adresse des anfragenden Rechners</li><li>Datum und Uhrzeit des Zugriffs</li><li>Name, URL und übertragene Datenmenge der abgerufenen Datei</li><li>Zugriffsstatus (angeforderte Datei übertragen, nicht gefunden etc.)</li><li>Erkennungsdaten des verwendeten Browser- und Betriebssystems (sofern vom anfragenden Webbrowser übermittelt)</li><li>Webseite, von der aus der Zugriff erfolgte (sofern vom anfragenden Webbrowser übermittelt)</li></ul>Die Verarbeitung der Daten in dieser Logdatei geschieht wie folgt:<ul class='bullet-list'><li>Die Logeinträge werden kontinuierlich automatisch ausgewertet, um Angriffe auf die Webserver erkennen und entsprechend reagieren zu können.</li><li>In Einzelfällen, d.h. bei gemeldeten Störungen, Fehlern und Sicherheitsvorfällen, erfolgt eine manuelle Analyse.</li><li>Die in den Logeinträgen enthaltenen IP-Adressen werden von ATE nicht mit anderen Datenbeständen zusammengeführt, so dass kein Rückschluss auf einzelne Personen möglich ist.</li></ul>"
+    },
+    "personalData": {
+      "headline": "Nutzung und Weitergabe personenbezogener Daten",
+      "text": "Die Nutzung unserer Webseite ist ohne Angabe personenbezogener Daten möglich. Alle Dienstleistungen, die die Erhebung personenbezogener Daten erfordern (z.B. Anmeldungen zu Veranstaltungen, Kontaktformulare), werden extern angeboten. Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails, vor."
+    },
+    "dataProcessing": {
+      "headline": "Widerruf Ihrer Einwilligung zur Datenverarbeitung",
+      "text": "Nur mit Ihrer ausdrücklichen Einwilligung sind einige Vorgänge der Datenverarbeitung möglich. Ein Widerruf Ihrer bereits erteilten Einwilligung ist jederzeit möglich. Für den Widerruf genügt eine formlose Mitteilung per E-Mail. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt."
+    },
+    "complaint": {
+      "headline": "Recht auf Beschwerde bei der zuständigen Aufsichtsbehörde",
+      "text": "Als Betroffener steht Ihnen im Falle eines datenschutzrechtlichen Verstoßes ein Beschwerderecht bei der zuständigen Aufsichtsbehörde zu. Zuständige Aufsichtsbehörde bezüglich datenschutzrechtlicher Fragen ist der Landesdatenschutzbeauftragte des Bundeslandes, in dem sich der Sitz unseres Unternehmens befindet. Der folgende Link stellt eine Liste der Datenschutzbeauftragten sowie deren Kontaktdaten bereit: <a href='https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html' target='_blank' rel='noopener noreferrer' class='external-link'>https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>"
+    },
+    "dataPortability": {
+      "headline": "Recht auf Datenübertragbarkeit",
+      "text": "Ihnen steht das Recht zu, Daten, die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines Vertrags automatisiert verarbeiten, an sich oder an Dritte aushändigen zu lassen. Die Bereitstellung erfolgt in einem maschinenlesbaren Format. Sofern Sie die direkte Übertragung der Daten an einen anderen Verantwortlichen verlangen, erfolgt dies nur, soweit es technisch machbar ist."
+    },
+    "dataRight": {
+      "headline": "Recht auf Auskunft, Berichtigung, Sperrung, Löschung",
+      "text": "Sie haben jederzeit im Rahmen der geltenden gesetzlichen Bestimmungen das Recht auf unentgeltliche Auskunft über Ihre gespeicherten personenbezogenen Daten, Herkunft der Daten, deren Empfänger und den Zweck der Datenverarbeitung und ggf. ein Recht auf Berichtigung, Sperrung oder Löschung dieser Daten. Diesbezüglich und auch zu weiteren Fragen zum Thema personenbezogene Daten können Sie sich jederzeit über <a href='mailto:ls1.admin@in.tum.de' class='external-link'>ls1.admin@in.tum.de</a> an uns wenden."
+    },
+    "sslTls": {
+      "headline": "SSL- bzw. TLS-Verschlüsselung",
+      "text": "Aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte, die Sie an uns als Seitenbetreiber senden, nutzt unsere Website eine SSL-bzw. TLS-Verschlüsselung. Damit sind Daten, die Sie über diese Website übermitteln, für Dritte nicht mitlesbar. Sie erkennen eine verschlüsselte Verbindung an der „https://“ Adresszeile Ihres Browsers und am Schloss-Symbol in der Browserzeile."
+    },
+    "emailSec": {
+      "headline": "E-Mail-Sicherheit",
+      "text": "Wenn Sie uns eine E-Mail schicken, so wird Ihre E-Mail-Adresse nur für die Korrespondenz mit Ihnen verwendet. Bitte beachten Sie, dass die Datenübertragung im Internet Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich."
+    }
+  }
+}

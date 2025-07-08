@@ -156,7 +156,6 @@ export class MyPositionsPageComponent {
       }
       const pageData = await firstValueFrom(
         this.jobService.getJobsByProfessor(
-          this.userId(),
           this.pageSize(),
           this.page(),
           undefined, // Optional title filter
