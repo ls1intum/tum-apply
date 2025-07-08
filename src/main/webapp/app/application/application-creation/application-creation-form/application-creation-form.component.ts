@@ -341,7 +341,7 @@ export default class ApplicationCreationFormComponent {
       });
     } else {
       const applicationId = this.applicationId();
-      if (applicationId === undefined) {
+      if (applicationId === '') {
         alert('There is an error with the applicationId');
         return;
       }
@@ -401,7 +401,7 @@ export default class ApplicationCreationFormComponent {
     }
     const router = this.router;
     const applicationId = this.applicationId();
-    if (applicationId !== undefined && applicationId.trim().length !== 0) {
+    if (applicationId.trim().length !== 0) {
       try {
         await firstValueFrom(this.applicationResourceService.deleteApplication(applicationId));
         alert('Application sucessfully deleted');
@@ -416,7 +416,7 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  updateDocumentInformation() {
+  updateDocumentInformation(): void {
     firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);

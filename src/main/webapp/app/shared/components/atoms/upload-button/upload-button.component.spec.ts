@@ -21,9 +21,9 @@ class MockApplicationResourceService {
     return of([{ id: 'mock-doc-id', name: 'test.pdf', size: 12345 }]);
   }
 
-  deleteDocumentBatchByTypeFromApplication = () => of({});
-  deleteDocumentFromApplication = () => of({});
-  renameDocument = () => of({});
+  deleteDocumentBatchByTypeFromApplication = (): any => of({});
+  deleteDocumentFromApplication = (): any => of({});
+  renameDocument = (): any => of({});
 }
 
 describe('UploadButtonComponent', () => {
@@ -88,9 +88,8 @@ describe('UploadButtonComponent', () => {
     const spy = jest.spyOn(service, 'renameDocument').mockReturnValue(of({} as any));
 
     const updatedDoc = { ...doc, name: 'New Name' };
-    const fakeEvent = { target: { value: 'New Name' } } as unknown as FocusEvent;
 
-    await component.renameDocument(updatedDoc, fakeEvent);
+    component.renameDocument(updatedDoc);
 
     expect(spy).toHaveBeenCalledWith('123', 'New Name');
     expect(component.documentIds()).toEqual([{ id: '123', name: 'New Name', size: 1024 }]);

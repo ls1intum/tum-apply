@@ -71,7 +71,7 @@ export class UploadButtonComponent {
       const uploadedIds: DocumentInformationHolderDTO[] = await firstValueFrom(
         this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files),
       );
-      this.documentIds.set(uploadedIds ?? []);
+      this.documentIds.set(uploadedIds);
       this.selectedFiles.set([]);
     } catch (err) {
       console.error('Upload failed', err);
@@ -107,7 +107,7 @@ export class UploadButtonComponent {
     }
   }
 
-  renameDocument(documentInfo: DocumentInformationHolderDTO, event: FocusEvent): void {
+  renameDocument(documentInfo: DocumentInformationHolderDTO): void {
     const newName = documentInfo.name ?? '';
     if (!newName) {
       return;
@@ -119,7 +119,7 @@ export class UploadButtonComponent {
         const updatedDocs = this.documentIds()?.map(doc => (doc.id === documentId ? { ...doc, name: newName } : doc)) ?? [];
         this.documentIds.set(updatedDocs);
       })
-      .catch(err => {
+      .catch((err: unknown) => {
         console.error('Failed to rename document', err);
         alert('Failed to rename document');
       });
