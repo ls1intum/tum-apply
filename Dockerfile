@@ -31,6 +31,8 @@ ENV KEYCLOAK_URL=$KEYCLOAK_URL \
     KEYCLOAK_CLIENT_ID=$KEYCLOAK_CLIENT_ID \
     KEYCLOAK_ENABLE_LOGGING=$KEYCLOAK_ENABLE_LOGGING
 
+RUN echo "TEST_SECRET is: $TEST_SECRET"
+
 # also copy this script which is required by postinstall lifecycle hook
 RUN \
   # Mount global cache for Gradle (project cache in /opt/tum-apply/.gradle doesn't seem to be populated)
