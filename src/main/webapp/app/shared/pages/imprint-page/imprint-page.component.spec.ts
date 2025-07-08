@@ -12,7 +12,7 @@ class FakeLoaderEn implements TranslateLoader {
         publisher: {
           headline: 'Publisher',
           contact:
-            "Technical University of Munich<br>Postal address: Arcisstrasse 21, 80333 Munich<br>Telephone: <a href='tel:+498928901' class='external-link'>+49-(0)89-289-01</a><br>Fax: +49-(0)89-289-22000<br>Email: <a href='mailto:poststelle@tum.de' class='external-link'>poststelle(at)tum.de</a>",
+            "Technical University of Munich<br>Postal address: Arcisstrasse 21, 80333 Munich<br>Telephone: <a href='tel:+498928901' class='external-link'>+49-(0)89-289-01</a><br>Fax: +49-(0)89-289-22000<br>Email: <a href='mailto:poststelle@tum.de' class='external-link'>poststelle@tum.de</a>",
         },
         authorized: {
           headline: 'Authorized to represent',
@@ -51,7 +51,7 @@ class FakeLoaderDe implements TranslateLoader {
         publisher: {
           headline: 'Herausgeber',
           contact:
-            "Technische Universität München<br>Postanschrift: Arcisstraße 21, 80333 München<br>Telephone: <a href='tel:+498928901' class='external-link'>+49-(0)89-289-01</a><br>Telefax: +49-(0)89-289-22000<br>Email: <a href='mailto:poststelle@tum.de' class='external-link'>poststelle(at)tum.de</a>",
+            "Technische Universität München<br>Postanschrift: Arcisstraße 21, 80333 München<br>Telephone: <a href='tel:+498928901' class='external-link'>+49-(0)89-289-01</a><br>Telefax: +49-(0)89-289-22000<br>Email: <a href='mailto:poststelle@tum.de' class='external-link'>poststelle@tum.de</a>",
         },
         authorized: {
           headline: 'Vertretungsberechtigt',
