@@ -18,15 +18,22 @@
       "created": "A new Authority is created with identifier {{ param }}",
       "updated": "A Authority is updated with identifier {{ param }}",
       "deleted": "A Authority is deleted with identifier {{ param }}",
-      "delete": { "question": "Are you sure you want to delete Authority {{ id }}?" },
-      "detail": { "title": "Authority" },
+      "delete": {
+        "question": "Are you sure you want to delete Authority {{ id }}?"
+      },
+      "detail": {
+        "title": "Authority"
+      },
       "name": "Name"
     }
   },
   "configuration": {
     "title": "Configuration",
     "filter": "Filter (by prefix)",
-    "table": { "prefix": "Prefix", "properties": "Properties" }
+    "table": {
+      "prefix": "Prefix",
+      "properties": "Properties"
+    }
   },
   "error": {
     "title": "Error page!",
@@ -64,9 +71,17 @@
     "accept": "Accept",
     "reject": "Reject",
     "cancel": "Cancel",
-    "statusBadge": { "SENT": "Unopened", "ACCEPTED": "Approved", "REJECTED": "Rejected", "IN_REVIEW": "In Review" },
+    "statusBadge": {
+      "SENT": "Unopened",
+      "ACCEPTED": "Approved",
+      "REJECTED": "Rejected",
+      "IN_REVIEW": "In Review"
+    },
     "noApplicationsFound": "No applications found.",
-    "filterOptions": { "job": "Job", "status": "Status" },
+    "filterOptions": {
+      "job": "Job",
+      "status": "Status"
+    },
     "application": "Application",
     "applications": "Applications",
     "message": "Message",
@@ -76,13 +91,22 @@
     "closeJobAndRejectAll": "Close job and reject all other applications",
     "defaultAcceptMessage": "<p>Dear {{APPLICANT_FIRST_NAME}},</p><br /><p>I am pleased to inform you that you have been accepted for the <b>{{JOB_NAME}}</b> position at our research group. We were impressed by your background, motivation, and potential for contributing to our academic and applied research efforts.</p><br /><p>As a candidate, you will take responsibility for managing your research project, including defining your research direction, publishing your results, and contributing to ongoing team activities. This position requires a high level of commitment, independence, and communication.</p><br /><p>We are confident in your ability to succeed in this role and look forward to seeing your impact on the group and the broader academic community.</p><br /><p><b>Please confirm acceptance of this offer as soon as possible and contact me at <a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a> to discuss the next steps.</b></p><br /><br /><p>Best regards,<br /><br />{{PROFESSOR_FIRST_NAME}}<br /><br />{{PROFESSOR_FIRST_NAME}} {{PROFESSOR_LAST_NAME}}<br />{{RESEARCH_GROUP_NAME}}<br />Technical University of Munich<br /><a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a><br /><a href=\"{{RESEARCH_GROUP_WEBSITE}}\" target=\"_blank\">{{RESEARCH_GROUP_WEBSITE}}</a></p><br />"
   },
+  "footer": {
+    "tumApply": "TUMApply",
+    "rightsText": "© 2025 <a href=\"https://aet.cit.tum.de/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"footer-links\">TUM AET Team.</a> All rights reserved.",
+    "imprint": "Imprint",
+    "privacy": "Privacy"
+  },
   "global": {
     "title": "TUMApply",
     "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
     "menu": {
       "home": "Home",
       "colorTheme": "Change Color Theme",
-      "entities": { "main": "Entities", "adminAuthority": "Authority" },
+      "entities": {
+        "main": "Entities",
+        "adminAuthority": "Authority"
+      },
       "account": {
         "main": "Account",
         "settings": "Settings",
@@ -124,9 +148,14 @@
           "link": "sign in",
           "suffix": ", you can try the default accounts:<br/>- Administrator (login=\"admin\" and password=\"admin\") <br/>- User (login=\"user\" and password=\"user\")."
         },
-        "register": { "noaccount": "You don't have an account yet?", "link": "Register a new account" }
+        "register": {
+          "noaccount": "You don't have an account yet?",
+          "link": "Register a new account"
+        }
       },
-      "error": { "dontmatch": "The password and its confirmation do not match!" },
+      "error": {
+        "dontmatch": "The password and its confirmation do not match!"
+      },
       "validate": {
         "newpassword": {
           "required": "Your password is required.",
@@ -156,11 +185,23 @@
       }
     },
     "editor": {
-      "header": { "heading": "Heading", "subheading": "Subheading", "normal": "Normal" },
-      "align": { "center": "center", "right": "right", "justify": "justify" }
+      "header": {
+        "heading": "Heading",
+        "subheading": "Subheading",
+        "normal": "Normal"
+      },
+      "align": {
+        "center": "center",
+        "right": "right",
+        "justify": "justify"
+      }
     },
-    "field": { "id": "ID" },
-    "ribbon": { "dev": "Development" },
+    "field": {
+      "id": "ID"
+    },
+    "ribbon": {
+      "dev": "Development"
+    },
     "item-count": "Showing {{first}} - {{second}} of {{total}} items."
   },
   "entity": {
@@ -176,7 +217,10 @@
       "view": "View",
       "show": "Show {{otherEntity}}"
     },
-    "detail": { "field": "Field", "value": "Value" },
+    "detail": {
+      "field": "Field",
+      "value": "Value"
+    },
     "detail_card": {
       "name": "Name",
       "grade": "Grade",
@@ -192,7 +236,9 @@
       "applicant_info": "Applicant Information",
       "nationality": "Nationality"
     },
-    "delete": { "title": "Confirm delete operation" },
+    "delete": {
+      "title": "Confirm delete operation"
+    },
     "validation": {
       "required": "This field is required.",
       "minlength": "This field is required to be at least {{ min }} characters.",
@@ -236,13 +282,22 @@
       }
     }
   },
-  "footer": "This is your footer",
-  "header": { "login": "Login", "register": "Register", "logout": "Logout" },
+  "header": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
   "health": {
     "title": "Health Checks",
     "refresh.button": "Refresh",
     "stacktrace": "Stacktrace",
-    "details": { "details": "Details", "properties": "Properties", "name": "Name", "value": "Value", "error": "Error" },
+    "details": {
+      "details": "Details",
+      "properties": "Properties",
+      "name": "Name",
+      "value": "Value",
+      "error": "Error"
+    },
     "indicator": {
       "diskSpace": "Disk space",
       "mail": "Email",
@@ -251,11 +306,53 @@
       "ping": "Application",
       "db": "Database"
     },
-    "table": { "service": "Service name", "status": "Status" },
-    "status": { "UNKNOWN": "UNKNOWN", "UP": "UP", "OUT_OF_SERVICE": "OUT_OF_SERVICE", "DOWN": "DOWN" }
+    "table": {
+      "service": "Service name",
+      "status": "Status"
+    },
+    "status": {
+      "UNKNOWN": "UNKNOWN",
+      "UP": "UP",
+      "OUT_OF_SERVICE": "OUT_OF_SERVICE",
+      "DOWN": "DOWN"
+    }
+  },
+  "imprint": {
+    "headline": "Imprint",
+    "publisher": {
+      "headline": "Publisher",
+      "contact": "Technical University of Munich<br>Postal address: Arcisstrasse 21, 80333 Munich<br>Telephone: <a href='tel:+498928901' class='external-link'>+49-(0)89-289-01</a><br>Fax: +49-(0)89-289-22000<br>Email: <a href='mailto:poststelle@tum.de' class='external-link'>poststelle@tum.de</a>"
+    },
+    "authorized": {
+      "headline": "Authorized to represent",
+      "text": "The Technical University of Munich is legally represented by the President Prof. Dr. Thomas F. Hofmann."
+    },
+    "vat": {
+      "headline": "VAT identification number",
+      "text": "DE811193231 (in accordance with § 27a of the German VAT tax act - UStG)"
+    },
+    "responsibility": {
+      "headline": "Responsible for content",
+      "text": "Prof. Dr. Stephan Krusche<br>Boltzmannstrasse 3<br>85748 Garching"
+    },
+    "tou": {
+      "headline": "Terms of use",
+      "text": "Texts, images, graphics as well as the design of these Internet pages may be subject to copyright. The following are not protected by copyright according to §5 of copyright law (UrhG).<br><br>Laws, ordinances, official decrees and announcements as well as decisions and officially written guidelines for decisions and other official works that have been published in the official interest for general knowledge, with the restriction that the provisions on prohibition of modification and indication of source in Section 62 (1) to (3) and Section 63 (1) and (2) UrhG apply accordingly.<br><br>As a private individual, you may use copyrighted material for private and other personal use within the scope of Section 53 UrhG. Any duplication or use of objects such as images, diagrams, sounds or texts in other electronic or printed publications is not permitted without our agreement. This consent will be granted upon request by the person responsible for the content. The reprinting and evaluation of press releases and speeches are generally permitted with reference to the source. Furthermore, texts, images, graphics and other files may be subject in whole or in part to the copyright of third parties. The persons responsible for the content will also provide more detailed information on the existence of possible third-party rights."
+    },
+    "liability": {
+      "headline": "Liability disclaimer",
+      "text": "The information provided on this website has been collected and verified to the best of our knowledge and belief. However, there will be no warranty that the information provided is up-to-date, correct, complete, and available. There is no contractual relationship with users of this website.<br><br>We accept no liability for any loss or damage caused by using this website. The exclusion of liability does not apply where the provisions of the German Civil Code (BGB) on liability in case of breach of official duty are applicable (§ 839 of the BGB). We accept no liability for any loss or damage caused by malware when accessing or downloading data or the installation or use of software from this website.<br><br>Where necessary in individual cases: the exclusion of liability does not apply to information governed by the Directive 2006/123/EC of the European Parliament and of the Council. This information is guaranteed to be accurate and up to date."
+    },
+    "links": {
+      "headline": "Links",
+      "text": "Our own content is to be distinguished from cross-references (“links”) to websites of other providers. These links only provide access for using third-party content in accordance with § 8 of the German telemedia act (TMG). Prior to providing links to other websites, we review third-party content for potential civil or criminal liability. However, a continuous review of third-party content for changes is not possible, and therefore we cannot accept any responsibility. For illegal, incorrect, or incomplete content, including any damage arising from the use or non-use of third-party information, liability rests solely with the provider of the website."
+    }
   },
   "myPositionsPage": {
-    "header": { "title": "Manage your Doctorate Positions", "createButton": "Create New Position" },
+    "header": {
+      "title": "Manage your Doctorate Positions",
+      "createButton": "Create New Position"
+    },
     "tableColumn": {
       "supervisingProfessor": "Supervising Professor",
       "job": "Job",
@@ -264,11 +361,24 @@
       "created": "Created",
       "lastModified": "Last Modified"
     },
-    "actionButton": { "view": "View", "edit": "Edit", "delete": "Delete" },
-    "state": { "draft": "Draft", "published": "Published", "closed": "Closed", "applicantFound": "Applicant Found" }
+    "actionButton": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "state": {
+      "draft": "Draft",
+      "published": "Published",
+      "closed": "Closed",
+      "applicantFound": "Applicant Found"
+    }
   },
   "jobDetailPage": {
-    "header": { "supervisor": "Supervisor: ", "researchGroup": "Research Group: ", "location": "Location: " },
+    "header": {
+      "supervisor": "Supervisor: ",
+      "researchGroup": "Research Group: ",
+      "location": "Location: "
+    },
     "positionOverview": {
       "positionOverview": "Position Overview",
       "fieldOfStudies": "Field of Studies:",
@@ -282,7 +392,9 @@
       "created": "Created:",
       "lastModified": "Last Modified:"
     },
-    "researchGroupDetails": { "researchGroup": "Research Group" },
+    "researchGroupDetails": {
+      "researchGroup": "Research Group"
+    },
     "positionDetails": {
       "positionDetails": "Position Details",
       "description": "Project Description",
@@ -318,7 +430,10 @@
           "title": "2. Check Details",
           "description": "Read the job description, check eligibility, and see which documents are required."
         },
-        "3": { "title": "3. Submit Application", "description": "Create an account, upload your documents, and submit your application." },
+        "3": {
+          "title": "3. Submit Application",
+          "description": "Create an account, upload your documents, and submit your application."
+        },
         "4": {
           "title": "4. Track Status",
           "description": "Stay updated. Get notified via mail when your application is reviewed, new job postings available or saved postings deleted."
@@ -328,16 +443,43 @@
     },
     "informationSection": {
       "headline": "Why choose the Technical University of Munich?",
-      "tiles": { "1": "Excellence", "2": "Events", "3": "Women of TUM", "4": "Internationality", "5": "Funding", "6": "Diversity" }
+      "tiles": {
+        "1": "Excellence",
+        "2": "Events",
+        "3": "Women of TUM",
+        "4": "Internationality",
+        "5": "Funding",
+        "6": "Diversity"
+      }
     },
     "voices": {
       "headline": "Voices from the Community",
       "testimonials": {
-        "1": { "name": "Aline Vogt", "field": "Mathematics", "quote": "TUM offers a unique opportunity for research." },
-        "2": { "name": "Lukas Müller", "field": "Informatics", "quote": "I appreciate the support and network at TUM." },
-        "3": { "name": "Dr. Sofia Klein", "field": "Biomedical Engineering", "quote": "The diversity at TUM is inspiring." },
-        "4": { "name": "Max Richter", "field": "Chemistry", "quote": "TUM is a leader in innovation and research." },
-        "5": { "name": "Emily Wagner", "field": "Computer Vision", "quote": "I feel welcomed and supported here." }
+        "1": {
+          "name": "Aline Vogt",
+          "field": "Mathematics",
+          "quote": "TUM offers a unique opportunity for research."
+        },
+        "2": {
+          "name": "Lukas Müller",
+          "field": "Informatics",
+          "quote": "I appreciate the support and network at TUM."
+        },
+        "3": {
+          "name": "Dr. Sofia Klein",
+          "field": "Biomedical Engineering",
+          "quote": "The diversity at TUM is inspiring."
+        },
+        "4": {
+          "name": "Max Richter",
+          "field": "Chemistry",
+          "quote": "TUM is a leader in innovation and research."
+        },
+        "5": {
+          "name": "Emily Wagner",
+          "field": "Computer Vision",
+          "quote": "I feel welcomed and supported here."
+        }
       }
     },
     "faq": {
@@ -365,7 +507,10 @@
   },
   "login": {
     "header": "Sign in to TUMApply",
-    "tabs": { "student": "Student / Applicant", "professor": "Professor / Supervisor" },
+    "tabs": {
+      "student": "Student / Applicant",
+      "professor": "Professor / Supervisor"
+    },
     "buttons": {
       "microsoft": "Sign in with Microsoft",
       "apple": "Sign in with Apple",
@@ -376,13 +521,20 @@
       "professor": "TUM Single Sign-On is required for professors and supervisors.",
       "accountmissing": "Don't have a TUMApply account yet? <a href=\"/register\">Register here</a>."
     },
-    "messages": { "error": { "authentication": "<strong>Login failed!</strong> Please check your credentials and try again." } }
+    "messages": {
+      "error": {
+        "authentication": "<strong>Login failed!</strong> Please check your credentials and try again."
+      }
+    }
   },
   "logs": {
     "title": "Logs",
     "nbloggers": "There are {{ total }} loggers.",
     "filter": "Filter",
-    "table": { "name": "Name", "level": "Level" }
+    "table": {
+      "name": "Name",
+      "level": "Level"
+    }
   },
   "metrics": {
     "title": "Application Metrics",
@@ -390,7 +542,12 @@
     "updating": "Updating...",
     "jvm": {
       "title": "JVM Metrics",
-      "memory": { "title": "Memory", "total": "Total Memory", "heap": "Heap Memory", "nonheap": "Non-Heap Memory" },
+      "memory": {
+        "title": "Memory",
+        "total": "Total Memory",
+        "heap": "Heap Memory",
+        "nonheap": "Non-Heap Memory"
+      },
       "threads": {
         "title": "Threads",
         "all": "All",
@@ -422,8 +579,18 @@
         "title": "HTTP requests (time in millisecond)",
         "active": "Active requests:",
         "total": "Total requests:",
-        "table": { "code": "Code", "count": "Count", "mean": "Mean", "average": "Average", "max": "Max" },
-        "code": { "ok": "Ok", "notfound": "Not found", "servererror": "Server Error" }
+        "table": {
+          "code": "Code",
+          "count": "Count",
+          "mean": "Mean",
+          "average": "Average",
+          "max": "Max"
+        },
+        "code": {
+          "ok": "Ok",
+          "notfound": "Not found",
+          "servererror": "Server Error"
+        }
       }
     },
     "servicesstats": {
@@ -471,15 +638,56 @@
   },
   "password": {
     "title": "Password for [<strong>{{username}}</strong>]",
-    "form": { "button": "Save" },
+    "form": {
+      "button": "Save"
+    },
     "messages": {
       "error": "<strong>An error has occurred!</strong> The password could not be changed.",
       "success": "<strong>Password changed!</strong>"
     }
   },
+  "privacy": {
+    "headline": "Privacy",
+    "text": "The Research Group for Applied Education Technologies (referred to as AET in the following paragraphs) from the Technical University of Munich takes the protection of private data seriously. We process the automatically collected personal data obtained when you visit our website, in compliance with the applicable data protection regulations, in particular the Bavarian Data Protection (BayDSG), the Telemedia Act (TMG) and the General Data Protection Regulation (GDPR). Below, we inform you about the type, scope and purpose of the collection and use of personal data.",
+    "logging": {
+      "headline": "Logging",
+      "text": "The web servers of the AET are operated by the AET itself, based in Boltzmannstr. 3, 85748 Garching b. Munich. Every time our website is accessed, the web server temporarily processes the following information in log files:<ul class='bullet-list'><li>IP address of the requesting computer</li><li>Date and time of access</li><li>Name, URL and transferred data volume of the accessed file</li><li>Access status (requested file transferred, not found etc.)</li><li>Identification data of the browser and operating system used (if transmitted by the requesting web browser)</li><li>Website from which access was made (if transmitted by the requesting web browser)</li></ul>The processing of the data in this log file takes place as follows:<ul class='bullet-list'><li>The log entries are continuously updated automatically evaluated in order to be able to detect attacks on the web server and react accordingly.</li><li>In individual cases, i.e. in the case of reported disruptions, errors and security incidents, a manual analysis is carried out.</li><li>The IP addresses contained in the log entries are not merged with other databases by AET, so that no conclusions can be drawn about individual persons.</li></ul>"
+    },
+    "personalData": {
+      "headline": "Use and transfer of personal data",
+      "text": "Our website can be used without providing personal data. All services that might require any form of personal data (e.g. registration for events, contact forms) are offered on external sites, linked here. The use of contact data published as part of the imprint obligation by third parties to send unsolicited advertising and information material is hereby prohibited. The operators of the pages reserve the right to take legal action in the event of the unsolicited sending of advertising information, such as spam mails."
+    },
+    "dataProcessing": {
+      "headline": "Revocation of your consent to data processing",
+      "text": "Some data processing operations require your express consent possible. You can revoke your consent that you have already given at any time. A message by e-mail is sufficient for the revocation. The lawfulness of the data processing that took place up until the revocation remains unaffected by the revocation."
+    },
+    "complaint": {
+      "headline": "Right to file a complaint with the responsible supervisory authority",
+      "text": "You have the right to lodge a complaint with the responsible supervisory authority in the event of a breach of data protection law. The responsible supervisory authority with regard to data protection issues is the Federal Commissioner for Data Protection and Freedom of Information of the state where our company is based. The following link provides a list of data protection authorities and their contact details: <a href='https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html' target='_blank' rel='noopener noreferrer' class='external-link'>https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>"
+    },
+    "dataPortability": {
+      "headline": "Right to data portability",
+      "text": "You have the right to request the data that we process automatically on the basis of your consent or in fulfillment of a contract to be handed over to you or a third party. The data is provided in a machine-readable format. If you request the direct transfer of the data to another person responsible, this will only be done if it is technically feasible."
+    },
+    "dataRight": {
+      "headline": "Right to information, correction, blocking, and deletion",
+      "text": "You have at any time within the framework of the applicable legal provisions the right to request information about your stored personal data, the origin of the data, its recipient and the purpose of the data processing, and if necessary, a right to correction, blocking or deletion of this data. You can contact us at any time via <a href='mailto:ls1.admin@in.tum.de' class='external-link'>ls1.admin@in.tum.de</a> regarding this and other questions on the subject of personal data."
+    },
+    "sslTls": {
+      "headline": "SSL/TLS encryption",
+      "text": "For security reasons and to protect the transmission of confidential content that you send to us send as a site operator, our website uses an SSL/TLS encryption. This means that data that you transmit via this website cannot be read by third parties. You can recognize an encrypted connection by the “https://” address line in your browser and by the lock symbol in the browser line."
+    },
+    "emailSec": {
+      "headline": "E-mail security",
+      "text": "If you e-mail us, your e-mail address will only be used for correspondence with you. Please note that data transmission on the Internet can have security gaps. Complete protection of data from access by third parties is not possible."
+    }
+  },
   "register": {
     "header": "Create your TUMApply Account",
-    "tabs": { "student": "Student / Applicant", "professor": "Professor / Supervisor" },
+    "tabs": {
+      "student": "Student / Applicant",
+      "professor": "Professor / Supervisor"
+    },
     "buttons": {
       "microsoft": "Register with Microsoft",
       "apple": "Register with Apple",
@@ -491,12 +699,18 @@
       "professorcreate": "As a TUM professor or supervisor, you can simply use your TUM login credentials.",
       "accountmissing": "Already have a TUMApply account? <a href=\"/register\">Sign in here</a>."
     },
-    "messages": { "error": { "authentication": "<strong>Login failed!</strong> Please check your information and try again." } }
+    "messages": {
+      "error": {
+        "authentication": "<strong>Login failed!</strong> Please check your information and try again."
+      }
+    }
   },
   "reset": {
     "request": {
       "title": "Reset your password",
-      "form": { "button": "Reset password" },
+      "form": {
+        "button": "Reset password"
+      },
       "messages": {
         "info": "Enter the email address you used to register",
         "success": "Check your email for details on how to reset your password."
@@ -504,7 +718,9 @@
     },
     "finish": {
       "title": "Reset password",
-      "form": { "button": "Validate new password" },
+      "form": {
+        "button": "Validate new password"
+      },
       "messages": {
         "info": "Choose a new password",
         "success": "<strong>Your password has been reset.</strong> Please ",
@@ -515,7 +731,12 @@
   },
   "sessions": {
     "title": "Active sessions for [<strong>{{username}}</strong>]",
-    "table": { "ipaddress": "IP address", "useragent": "User Agent", "date": "Date", "button": "Invalidate" },
+    "table": {
+      "ipaddress": "IP address",
+      "useragent": "User Agent",
+      "date": "Date",
+      "button": "Invalidate"
+    },
     "messages": {
       "success": "<strong>Session invalidated!</strong>",
       "error": "<strong>An error has occurred!</strong> The session could not be invalidated."
@@ -552,7 +773,12 @@
     }
   },
   "sidebar": {
-    "dashboard": { "dashboard": "Dashboard", "home": "Home", "findpositions": "Find Positions", "analytics": "Analytics" },
+    "dashboard": {
+      "dashboard": "Dashboard",
+      "home": "Home",
+      "findpositions": "Find Positions",
+      "analytics": "Analytics"
+    },
     "applications": {
       "applications": "Applications",
       "myapplications": "My Applications",
@@ -560,10 +786,30 @@
       "applicationoverview": "Application Overview",
       "reviewapplications": "Review Applications"
     },
-    "manage": { "manage": "Manage", "home": "Home", "mypositions": "My Positions", "createposition": "Create Position" },
-    "researchgroup": { "researchgroup": "Research Group", "yourgroup": "Your Group", "yourmembers": "Your Members" },
-    "content": { "content": "Content", "allpositions": "All Positions", "researchgroups": "Research Groups" },
-    "users": { "users": "Users", "manageusers": "Manage Users", "file": "Applications" },
-    "system": { "system": "System", "systemsettings": "System Settings" }
+    "manage": {
+      "manage": "Manage",
+      "home": "Home",
+      "mypositions": "My Positions",
+      "createposition": "Create Position"
+    },
+    "researchgroup": {
+      "researchgroup": "Research Group",
+      "yourgroup": "Your Group",
+      "yourmembers": "Your Members"
+    },
+    "content": {
+      "content": "Content",
+      "allpositions": "All Positions",
+      "researchgroups": "Research Groups"
+    },
+    "users": {
+      "users": "Users",
+      "manageusers": "Manage Users",
+      "file": "Applications"
+    },
+    "system": {
+      "system": "System",
+      "systemsettings": "System Settings"
+    }
   }
 }
