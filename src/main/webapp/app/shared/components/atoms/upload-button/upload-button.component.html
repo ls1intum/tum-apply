@@ -8,8 +8,7 @@
   (onSelect)="onFileSelected($event)"
   #fileupload_component
 >
-  <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
-  </ng-template>
+  <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback" />
   <ng-template #empty>
     <div class="flex justify-center flex-col gap-0.5" (click)="fileupload_component.choose()">
       <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full">
