@@ -1,5 +1,7 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
+import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -11,6 +13,7 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +25,17 @@ public class JobService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
+    private final ApplicationRepository applicationRepository;
 
-    public JobService(JobRepository jobRepository, UserRepository userRepository, CurrentUserService currentUserService) {
+    public JobService(
+        JobRepository jobRepository,
+        UserRepository userRepository,
+        ApplicationRepository applicationRepository,
+        CurrentUserService currentUserService
+    ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
+        this.applicationRepository = applicationRepository;
         this.currentUserService = currentUserService;
     }
 
@@ -50,6 +60,42 @@ public class JobService {
     public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         return updateJobEntity(job, dto);
+    }
+
+    /**
+     * Changes the state of a job to the specified target state.
+     * If the job is being closed or if explicitly requested, all pending application states
+     * (i.e., in 'SAVED', 'SENT' or 'IN_REVIEW' state) for the job will be automatically updated.
+     *
+     * @param jobId the ID of the job whose state is to be changed
+     * @param targetState the new {@link JobState} to apply to the job
+     * @param shouldRejectRemainingApplications flag indicating whether remaining pending applications should be rejected
+     * @return the updated job as a {@link JobFormDTO}
+     */
+    public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
+        job.setState(targetState);
+
+        if (targetState == JobState.CLOSED) {
+            // send emails stating that the job has been closed, to all applicants whose application was 'SENT' or 'IN_REVIEW'
+            Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+            String jobTitle = job.getTitle();
+            String researchGroupName = job.getResearchGroup().getName();
+
+            // update the state of all submitted and unsubmitted applications to 'JOB_CLOSED'
+            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
+        } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
+            // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
+            Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+            String jobTitle = job.getTitle();
+            String researchGroupName = job.getResearchGroup().getName();
+
+            // update the state of all submitted applications to 'REJECTED', all unsubmitted applications to 'JOB_CLOSED'
+            applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
+        }
+
+        return JobFormDTO.getFromEntity(jobRepository.save(job));
     }
 
     /**

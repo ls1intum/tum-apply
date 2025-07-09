@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Carousel } from 'primeng/carousel';
 import { TranslateModule } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 import { ButtonComponent } from '../../../components/atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
@@ -18,7 +19,10 @@ export class HeroSectionComponent {
     { image: 'landing-page-hero-section-2', backgroundClass: 'hero-background-landing-page-hero-section-2' },
     { image: 'landing-page-hero-section-3', backgroundClass: 'hero-background-landing-page-hero-section-3' },
   ];
-  openExternalLink(): void {
-    window.open('https://portal.mytum.de/jobs/wissenschaftler', '_blank');
+
+  constructor(private router: Router) {}
+
+  navigateToJobOverview(): void {
+    this.router.navigate(['/job-overview']);
   }
 }

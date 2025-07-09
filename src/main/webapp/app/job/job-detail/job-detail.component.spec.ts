@@ -55,7 +55,6 @@ describe('JobDetailComponent', () => {
         description: '<p>Job Description</p>',
         tasks: '<ol><li>Task A</li><li>Task B</li></ol>',
         requirements: '<ul><li>Requirement A</li></ul>',
-        belongsToResearchGroup: true,
       } as JobDetailDTO),
     ),
   };

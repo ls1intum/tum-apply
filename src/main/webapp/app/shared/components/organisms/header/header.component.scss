@@ -8,6 +8,8 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  overflow-x: auto; // Ermöglicht horizontales Scrollen
+  white-space: nowrap; // Verhindert Umbruch von Inhalten
 
   .logo-section {
     display: flex;
@@ -17,6 +19,7 @@
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
+    flex-shrink: 0; // Verhindert Schrumpfen des Elements
 
     .tum-logo {
       height: 1.8rem;
@@ -27,6 +30,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    flex-shrink: 0; // Verhindert Schrumpfen des Elements
 
     .language-switch {
       display: flex;

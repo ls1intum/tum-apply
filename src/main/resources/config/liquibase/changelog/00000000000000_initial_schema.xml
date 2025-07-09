@@ -244,7 +244,7 @@
       </column>
 
       <column name="application_state"
-              type="ENUM('SAVED','SENT','ACCEPTED','IN_REVIEW','REJECTED','WITHDRAWN')">
+              type="ENUM('SAVED','SENT','ACCEPTED','IN_REVIEW','REJECTED','WITHDRAWN', 'JOB_CLOSED')">
         <constraints nullable="false"/>
       </column>
       <column name="desired_start_date" type="DATE"/>
