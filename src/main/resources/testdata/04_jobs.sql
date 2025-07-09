@@ -10,6 +10,7 @@
 DELETE FROM jobs
 WHERE job_id LIKE '00000000-0000-0000-0000-00000002%';
 
+-- Insert example jobs
 REPLACE INTO jobs (job_id,
                    professor_id,
                    research_group_id,
@@ -115,7 +116,6 @@ VALUES
  '<ul><li>CS or Math MSc</li><li>Logic background</li></ul>',
  'APPLICANT_FOUND', '2025-10-01', '2025-01-25 14:00:00', '2025-03-01 10:30:00'),
 
--- Continue this pattern for all 10 research groups...
 -- Research Group 4 (5 jobs)
 ('00000000-0000-0000-0000-000000020016', '11111111-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000004', 'Mathematics', 'Theoretical Computer Science', 'GARCHING', 30, 2, 'SCHOLARSHIP', 'Research Assistant in Algorithms',
  '<p>Study complexity and optimization problems in computer science theory.</p>',

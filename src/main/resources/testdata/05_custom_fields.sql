@@ -22,7 +22,6 @@ REPLACE INTO custom_fields (custom_field_id,
                              answer_options,
                              sequence)
 VALUES
--- For Job 00000000-0000-0000-0000-000000020001 (Deep Learning)
 ('00000000-0000-0000-0000-000000020001',
  '00000000-0000-0000-0000-000000020001',
  'Which programming languages do you know?',
@@ -39,7 +38,6 @@ VALUES
  NULL,
  2),
 
--- For Job 00000000-0000-0000-0000-000000020002 (Algorithms)
 ('00000000-0000-0000-0000-000000020003',
  '00000000-0000-0000-0000-000000020002',
  'Select your preferred work location',
@@ -48,7 +46,6 @@ VALUES
  '["Munich", "Garching", "Remote"]',
  3),
 
--- For Job 00000000-0000-0000-0000-000000020004 (Radar Systems)
 ('00000000-0000-0000-0000-000000020004',
  '00000000-0000-0000-0000-000000020004',
  'How many years of experience do you have in AI?',
