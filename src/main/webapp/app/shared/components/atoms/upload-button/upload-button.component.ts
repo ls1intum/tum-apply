@@ -45,7 +45,7 @@ export class UploadButtonComponent {
 
   private applicationService = inject(ApplicationResourceService);
 
-  onFileSelected(event: any): void {
+  async onFileSelected(event: any): Promise<void> {
     const files: File[] = event.currentFiles;
     const selectedFile = this.selectedFiles();
     if (selectedFile === undefined) {
@@ -59,7 +59,7 @@ export class UploadButtonComponent {
       this.selectedFiles.set(undefined);
     }
     this.fileUploadComponent()?.clear();
-    this.onUpload();
+    await this.onUpload();
   }
 
   async onUpload(): Promise<void> {
