@@ -85,9 +85,10 @@
     .fixed-width-button {
       display: inline-flex;
       .p-button {
-        min-width: 8rem;
+        min-width: 6.3rem;
         justify-content: center;
-        padding: 0.4rem 1.25rem;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.9rem;
       }
     }
   }
