@@ -12,6 +12,8 @@ import { Location } from '@angular/common';
 import { JobDetailDTO, JobResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
+import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
+import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 
 export interface JobDetails {
   supervisingProfessor: string;
@@ -36,12 +38,14 @@ export interface JobDetails {
   researchGroupStreet: string;
   researchGroupPostalCode: string;
   researchGroupCity: string;
+
+  jobState: string | undefined;
   belongsToResearchGroup: boolean;
 }
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
@@ -65,12 +69,128 @@ export class JobDetailComponent {
   private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   private location = inject(Location);
 
+  readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
+    const job = this.jobDetails();
+    if (!job) return null;
+
+    // Case 1: Not a research group member → show Apply button
+    if (!job.belongsToResearchGroup) {
+      return {
+        direction: 'horizontal',
+        buttons: [
+          {
+            //label: this.translate.instant('jobDetailPage.actions.apply'),
+            label: 'Apply',
+            severity: 'primary',
+            onClick: () => this.onApply(),
+            disabled: false,
+          },
+        ],
+      };
+    }
+    // Case 2: DRAFT → show Edit + Delete buttons
+    if (job.jobState === 'DRAFT') {
+      return {
+        direction: 'horizontal',
+        buttons: [
+          {
+            label: this.translate.instant('myPositionsPage.actionButton.edit'),
+            severity: 'primary',
+            variant: 'outlined',
+            onClick: () => this.onEditJob(),
+            disabled: false,
+          },
+          {
+            label: this.translate.instant('myPositionsPage.actionButton.delete'),
+            severity: 'danger',
+            onClick: () => this.onDeleteJob(),
+            disabled: false,
+          },
+        ],
+      };
+    }
+    // Case 3: PUBLISHED → show Edit + Close buttons
+    if (job.jobState === 'PUBLISHED') {
+      return {
+        direction: 'horizontal',
+        buttons: [
+          {
+            label: this.translate.instant('myPositionsPage.actionButton.close'),
+            severity: 'danger',
+            variant: 'outlined',
+            onClick: () => this.onCloseJob(),
+            disabled: false,
+          },
+        ],
+      };
+    }
+    // Else → no buttons
+    return null;
+  });
+
+  readonly stateTextMap = computed<Record<string, string>>(() => ({
+    DRAFT: this.translate.instant('myPositionsPage.state.draft'),
+    PUBLISHED: this.translate.instant('myPositionsPage.state.published'),
+    CLOSED: this.translate.instant('myPositionsPage.state.closed'),
+    APPLICANT_FOUND: this.translate.instant('myPositionsPage.state.applicantFound'),
+  }));
+
+  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
+    DRAFT: 'info',
+    PUBLISHED: 'success',
+    CLOSED: 'danger',
+    APPLICANT_FOUND: 'warn',
+  });
+
   constructor(private route: ActivatedRoute) {
     this.init();
   }
 
+  onBack(): void {
+    this.location.back();
+  }
+
   onApply(): void {
     this.router.navigate([`/application/create/${this.jobId()}`]);
+  }
+
+  onEditJob(): void {
+    if (!this.jobId()) {
+      console.error('Unable to edit job with job id:', this.jobId());
+    }
+    this.router.navigate([`/job/edit/${this.jobId()}`]);
+  }
+
+  async onCloseJob(): Promise<void> {
+    // TO-DO: adjust confirmation
+    const confirmClose = confirm('Do you really want to close this job?');
+    if (confirmClose) {
+      try {
+        await firstValueFrom(this.jobResourceService.changeJobState(this.jobId(), 'CLOSED'));
+        alert('Job successfully closed');
+        this.location.back();
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(`Error closing job: ${error.message}`);
+        }
+      }
+    }
+  }
+
+  async onDeleteJob(): Promise<void> {
+    // TO-DO: adjust confirmation
+    const confirmDelete = confirm('Do you really want to delete this job?');
+    if (confirmDelete) {
+      try {
+        await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
+        alert('Job successfully deleted');
+        this.location.back();
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(`Error deleting job: ${error.message}`);
+        }
+      }
+    }
   }
 
   async init(): Promise<void> {
@@ -123,6 +243,8 @@ export class JobDetailComponent {
       researchGroupStreet: job.researchGroup.street ?? '',
       researchGroupPostalCode: job.researchGroup.postalCode ?? '',
       researchGroupCity: job.researchGroup.city ?? '',
+
+      jobState: job.state,
       belongsToResearchGroup: job.researchGroup.researchGroupId === this.accountService.loadedUser()?.researchGroup?.researchGroupId,
     };
 

@@ -6,6 +6,7 @@ import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
+import { Location } from '@angular/common';
 
 import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
 import { JobDTO, JobFormDTO } from '../../generated';
@@ -132,6 +133,7 @@ export class JobCreationFormComponent {
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
+  private location = inject(Location);
 
   constructor(
     private fb: FormBuilder,
@@ -264,6 +266,10 @@ export class JobCreationFormComponent {
     if (this.currentStep > 1) {
       this.currentStep--;
     }
+  }
+
+  onCancel(): void {
+    this.location.back();
   }
 
   /**
