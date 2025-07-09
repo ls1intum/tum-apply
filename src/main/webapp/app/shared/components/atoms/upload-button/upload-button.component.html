@@ -8,21 +8,13 @@
   (onSelect)="onFileSelected($event)"
   #fileupload_component
 >
-  <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback" />
+  <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
+    <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full" (click)="fileupload_component.choose()">
+      <div [jhiTranslate]="uploadKey()" class="text-center flex items-center"></div>
+    </div>
+  </ng-template>
   <ng-template #empty>
     <div class="flex justify-center flex-col gap-0.5" (click)="fileupload_component.choose()">
-      <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full">
-        <div [jhiTranslate]="uploadKey()" class="text-center flex items-center"></div>
-        @if (selectedFiles() || documentIds()) {
-          <jhi-button
-            variant="outlined"
-            icon="trash-alt"
-            (click)="deleteAll()"
-            severity="danger"
-            [label]="'entity.upload.clear' | translate"
-          />
-        }
-      </div>
       <div class="flex w-full justify-center">
         <span class="flex border items-center justify-center rounded-full border-primary size-20">
           <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
@@ -91,7 +83,7 @@
                   </span>
                 </td>
                 <td>
-                  <input [(ngModel)]="info.name" (blur)="renameDocument(info, $event)" class="editable-input" />
+                  <input [(ngModel)]="info.name" (blur)="renameDocument(info)" class="editable-input" />
                 </td>
                 <td class="text-center">
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
