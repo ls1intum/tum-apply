@@ -4,7 +4,7 @@
       <div class="hero-content">
         <h1 class="title" jhiTranslate="landingPage.hero.headline"></h1>
         <p class="subtitle" jhiTranslate="landingPage.hero.subline"></p>
-        <jhi-button label="{{ 'landingPage.hero.button' | translate }}" severity="primary" (click)="openExternalLink()" />
+        <jhi-button (click)="navigateToJobOverview()" label="{{ 'landingPage.hero.button' | translate }}" severity="primary" />
       </div>
     </div>
   </ng-template>

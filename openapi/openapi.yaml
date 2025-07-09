@@ -52,6 +52,59 @@
         }
       }
     },
+    "/api/jobs/changeState/{jobId}": {
+      "put": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "changeJobState",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "jobState",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "shouldRejectRemainingApplications",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications": {
       "put": {
         "tags": [
@@ -1348,7 +1401,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "projects": {
@@ -1434,7 +1488,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "desiredDate": {
@@ -1552,7 +1607,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "projects": {
@@ -1773,6 +1829,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1789,12 +1851,6 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -1990,7 +2046,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "desiredStartDate": {
@@ -2473,6 +2530,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -2489,12 +2552,6 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -2541,7 +2598,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "jobName": {
@@ -2631,7 +2689,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "jobTitle": {
@@ -2762,7 +2821,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "timeSinceCreation": {

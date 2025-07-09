@@ -16,7 +16,8 @@ public enum ApplicationState {
     ACCEPTED("ACCEPTED", EnumSet.of(UserRole.PROFESSOR)),
     IN_REVIEW("IN_REVIEW", EnumSet.of(UserRole.PROFESSOR)),
     REJECTED("REJECTED", EnumSet.of(UserRole.PROFESSOR)),
-    WITHDRAWN("WITHDRAWN", EnumSet.of(UserRole.APPLICANT));
+    WITHDRAWN("WITHDRAWN", EnumSet.of(UserRole.APPLICANT)),
+    JOB_CLOSED("JOB_CLOSED", EnumSet.of(UserRole.PROFESSOR));
 
     private final String value;
     private final Set<UserRole> UserRoles;
