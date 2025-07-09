@@ -1,11 +1,43 @@
-import { Component, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Signal, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
-import { TranslateModule } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AccountService } from 'app/core/auth/account.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Location } from '@angular/common';
 
+import { JobDetailDTO, JobResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
+
+export interface JobDetails {
+  supervisingProfessor: string;
+  researchGroup: string;
+  title: string;
+  fieldOfStudies: string;
+  researchArea: string;
+  location: string;
+  workload: string;
+  contractDuration: string;
+  fundingType: string;
+  description: string;
+  tasks: string;
+  requirements: string;
+  startDate: string;
+  createdAt: string;
+  lastModifiedAt: string;
+
+  researchGroupDescription: string;
+  researchGroupEmail: string;
+  researchGroupWebsite: string;
+  researchGroupStreet: string;
+  researchGroupPostalCode: string;
+  researchGroupCity: string;
+  belongsToResearchGroup: boolean;
+}
 
 @Component({
   selector: 'jhi-job-detail',
@@ -14,76 +46,86 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
   styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
-  jobId = input<string>('');
-  supervisingProfessor = input<string>('Prof. Stephan Krusche');
-  researchGroup = input<string>('Applied Education Technologies');
-  title = input<string>('Doctorate Position in Advanced Materials Science');
-  fieldOfStudies = input<string>('Computer Science');
-  researchArea = input<string>('Advanced Nanocomposite Materials for Energy Storage');
-  location = input<string>('Garching');
-  workload = input<number>(30);
-  contractDuration = input<number>(3);
-  fundingType = input<string>('Fully Funded');
-  description = input<string>(`
-    <p>This exciting PhD position focuses on developing next-generation nanocomposite materials for advanced energy storage applications. The successful candidate will work on synthesizing novel graphene-based composites with enhanced electrochemical properties for use in high-performance batteries and supercapacitors. The project involves cutting-edge characterization techniques including electron microscopy, X-ray spectroscopy, and electrochemical testing. The research will contribute to our understanding of structure-property relationships in nanocomposite materials and has direct applications in sustainable energy technologies. You will be part of an international team working on breakthrough technologies that could revolutionize energy storage systems.</p>`);
-  tasks = input<string>(`
-  <ol>
-    <li>Design and synthesize novel nanocomposite materials using advanced chemical methods</li>
-    <li>Characterize materials using state-of-the-art analytical techniques (SEM, TEM, XPS, Raman)</li>
-    <li>Conduct electrochemical testing and performance evaluation of energy storage devices</li>
-    <li>Analyze experimental data and develop structure-property correlations</li>
-    <li>Present research findings at international conferences and publish in high-impact journals</li>
-    <li>Collaborate with industry partners and international research institutions</li>
-    <li>Mentor undergraduate students and assist in laboratory management</li>
-  </ol>`);
-  requirements = input<string>(`
-  <p><strong>Minimum Qualifications:</strong></p>
-  <ol>
-    <li>Master’s degree in <em>Materials Science</em>, <em>Chemistry</em>, <em>Physics</em>, or a related discipline.</li>
-    <li>Strong foundation in <u>nanomaterial synthesis</u> and <u>electrochemical testing</u>.</li>
-    <li>Excellent academic track record with proven research aptitude.</li>
-  </ol>
+  userId = signal<string>('');
+  jobId = signal<string>('');
 
-  <p><strong>Technical Skills:</strong></p>
-  <ul>
-    <li>Experience with characterization techniques such as:
-      <ul>
-        <li>Scanning Electron Microscopy (SEM)</li>
-        <li>X-ray Photoelectron Spectroscopy (XPS)</li>
-        <li>Raman Spectroscopy</li>
-      </ul>
-    </li>
-    <li>Basic programming experience in <code>Python</code> or <code>MATLAB</code> is a plus.</li>
-  </ul>
+  jobDetails = signal<JobDetails | null>(null);
 
-  <p><strong>Language & Soft Skills:</strong></p>
-  <ul>
-    <li>Excellent written and spoken English skills (B2 level or higher).</li>
-    <li>Ability to work independently as well as in a collaborative team environment.</li>
-  </ul>
+  dataLoaded = signal<boolean>(false);
 
-  <p>
-    For additional eligibility details, please visit the
-    <a href="https://www.tum.de/en/studies/doctorate/" target="_blank" rel="noopener">TUM Doctoral Programs page</a>.
-  </p>
-`);
-  startDate = input<string>(dayjs(new Date('2024-01-01')).format('DD.MM.YYYY'));
-  createdAt = input<string>(dayjs(new Date('2024-01-01')).format('DD.MM.YYYY'));
-  lastModifiedAt = input<string>(dayjs(new Date('2026-01-11')).format('DD.MM.YYYY'));
+  noData = computed<string>(() => {
+    this.langChange();
+    return this.translate.instant('jobDetailPage.noData');
+  });
 
-  // display research group info
-  researchGroupDescription = input<string>(
-    `Our research group focuses on developing innovative materials for energy and environmental applications. We combine theoretical modeling with experimental synthesis to create materials with tailored properties for specific applications. Our interdisciplinary approach brings together expertise in chemistry, physics, and engineering.<ol><li>test</li><li>test2</li> </ol>`,
-  );
-  researchGroupEmail = input<string>('data@tum.de');
-  researchGroupWebsite = input<string>('https://db.in.tum.de/');
-  researchGroupStreet = input<string>('Lichtenbergstraße 4');
-  researchGroupPostalCode = input<string>('85748');
-  researchGroupCity = input<string>('Garching b. München');
-
+  private jobResourceService = inject(JobResourceService);
+  private accountService = inject(AccountService);
   private router = inject(Router);
+  private translate = inject(TranslateService);
+  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
+  private location = inject(Location);
+
+  constructor(private route: ActivatedRoute) {
+    this.init();
+  }
 
   onApply(): void {
     this.router.navigate([`/application/create/${this.jobId()}`]);
+  }
+
+  async init(): Promise<void> {
+    try {
+      // Get logged-in user
+      this.userId.set(this.accountService.loadedUser()?.id ?? '');
+
+      // Get current job from route parameters
+      this.jobId.set(this.route.snapshot.paramMap.get('job_id') ?? '');
+      if (this.jobId() === '') {
+        console.error('Invalid job ID');
+        this.location.back();
+        return;
+      }
+
+      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId()));
+      this.loadJobDetails(job);
+      this.dataLoaded.set(true);
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        alert(`Error loading job details: ${error.status} ${error.statusText}`);
+      } else if (error instanceof Error) {
+        alert(`Error loading job details: ${error.message}`);
+      }
+      this.location.back();
+    }
+  }
+
+  loadJobDetails(job: JobDetailDTO): void {
+    const loadedJob: JobDetails = {
+      supervisingProfessor: job.supervisingProfessorName,
+      researchGroup: job.researchGroup.name ?? '',
+      title: job.title,
+      fieldOfStudies: job.fieldOfStudies ?? '',
+      researchArea: job.researchArea ?? '',
+      location: job.location ?? '',
+      workload: job.workload?.toString() ?? '',
+      contractDuration: job.contractDuration?.toString() ?? '',
+      fundingType: job.fundingType ?? '',
+      description: job.description ?? '',
+      tasks: job.tasks ?? '',
+      requirements: job.requirements ?? '',
+      startDate: dayjs(job.startDate).format('DD.MM.YYYY'),
+      createdAt: dayjs(job.createdAt).format('DD.MM.YYYY'),
+      lastModifiedAt: dayjs(job.lastModifiedAt).format('DD.MM.YYYY'),
+
+      researchGroupDescription: job.researchGroup.description ?? '',
+      researchGroupEmail: job.researchGroup.email ?? '',
+      researchGroupWebsite: job.researchGroup.website ?? '',
+      researchGroupStreet: job.researchGroup.street ?? '',
+      researchGroupPostalCode: job.researchGroup.postalCode ?? '',
+      researchGroupCity: job.researchGroup.city ?? '',
+      belongsToResearchGroup: job.researchGroup.researchGroupId === this.accountService.loadedUser()?.researchGroup?.researchGroupId,
+    };
+
+    this.jobDetails.set(loadedJob);
   }
 }

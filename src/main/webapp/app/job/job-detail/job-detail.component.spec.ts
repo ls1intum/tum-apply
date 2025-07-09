@@ -1,9 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faEnvelope, faGlobe, faLocationDot, faMicroscope, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import { of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+
+import { JobDetailDTO, JobResourceService } from '../../generated';
+import { AccountService } from '../../core/auth/account.service';
 
 import { JobDetailComponent } from './job-detail.component';
 
@@ -12,10 +18,61 @@ describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
   let router: Router;
 
+  const mockActivatedRoute = {
+    snapshot: {
+      paramMap: {
+        get(key: string) {
+          if (key === 'job_id') return '123';
+          return null;
+        },
+      },
+    },
+  };
+
+  const mockJobService = {
+    getJobDetails: jest.fn().mockReturnValue(
+      of({
+        title: 'Test Title',
+        supervisingProfessorName: 'Prof. John Doe',
+        researchGroup: {
+          name: 'AI Lab',
+          description: 'AI Group Desc',
+          email: 'ai@tum.de',
+          website: 'https://ai.tum.de',
+          street: 'Main Street 1',
+          postalCode: '12345',
+          city: 'Munich',
+        },
+        fieldOfStudies: 'Computer Science',
+        researchArea: 'Deep Learning',
+        location: 'Munich',
+        workload: 20,
+        contractDuration: 2,
+        fundingType: 'Fully Funded',
+        startDate: '2025-10-01',
+        createdAt: '2024-09-01',
+        lastModifiedAt: '2024-12-01',
+        description: '<p>Job Description</p>',
+        tasks: '<ol><li>Task A</li><li>Task B</li></ol>',
+        requirements: '<ul><li>Requirement A</li></ul>',
+      } as JobDetailDTO),
+    ),
+  };
+
+  const mockAccountService = {
+    loadedUser: jest.fn().mockReturnValue({ id: '222' }),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [JobDetailComponent, TranslateModule.forRoot()],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        provideHttpClientTesting(),
+        { provide: JobResourceService, useValue: mockJobService },
+        { provide: AccountService, useValue: mockAccountService },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(JobDetailComponent);
@@ -25,29 +82,6 @@ describe('JobDetailComponent', () => {
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faUserTie, faMicroscope, faLocationDot, faEnvelope, faGlobe);
 
-    fixture.componentRef.setInput('title', 'Test Title');
-    fixture.componentRef.setInput('jobId', '123');
-    fixture.componentRef.setInput('supervisingProfessor', 'Prof. John Doe');
-    fixture.componentRef.setInput('researchGroup', 'AI Lab');
-    fixture.componentRef.setInput('fieldOfStudies', 'Computer Science');
-    fixture.componentRef.setInput('researchArea', 'Deep Learning');
-    fixture.componentRef.setInput('location', 'Munich');
-    fixture.componentRef.setInput('workload', 20);
-    fixture.componentRef.setInput('contractDuration', 2);
-    fixture.componentRef.setInput('fundingType', 'Fully Funded');
-    fixture.componentRef.setInput('startDate', '01.10.2025');
-    fixture.componentRef.setInput('createdAt', '01.09.2024');
-    fixture.componentRef.setInput('lastModifiedAt', '01.12.2024');
-    fixture.componentRef.setInput('description', '<p>Job Description</p>');
-    fixture.componentRef.setInput('tasks', '<ol><li>Task A</li><li>Task B</li></ol>');
-    fixture.componentRef.setInput('requirements', '<ul><li>Requirement A</li></ul>');
-    fixture.componentRef.setInput('researchGroupDescription', 'AI Group Desc');
-    fixture.componentRef.setInput('researchGroupEmail', 'ai@tum.de');
-    fixture.componentRef.setInput('researchGroupWebsite', 'https://ai.tum.de');
-    fixture.componentRef.setInput('researchGroupStreet', 'Main Street 1');
-    fixture.componentRef.setInput('researchGroupPostalCode', '12345');
-    fixture.componentRef.setInput('researchGroupCity', 'Munich');
-
     fixture.detectChanges();
   });
 
@@ -55,7 +89,10 @@ describe('JobDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render all key values correctly in the template', () => {
+  it('should render all key values correctly in the template', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.textContent).toContain('Test Title');
@@ -80,13 +117,19 @@ describe('JobDetailComponent', () => {
     expect(compiled.textContent).toContain('Munich');
   });
 
-  it('should render mailto link for research group email', () => {
+  it('should render mailto link for research group email', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     const emailLink: HTMLAnchorElement = fixture.nativeElement.querySelector('a[href^="mailto:"]');
     expect(emailLink.href).toContain('mailto:ai@tum.de');
     expect(emailLink.textContent).toContain('ai@tum.de');
   });
 
-  it('should render research group website link', () => {
+  it('should render research group website link', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     const websiteLink: HTMLAnchorElement = fixture.nativeElement.querySelector('a[href="https://ai.tum.de"]');
     expect(websiteLink).toBeTruthy();
     expect(websiteLink.textContent).toContain('https://ai.tum.de');
