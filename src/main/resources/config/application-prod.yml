@@ -126,4 +126,4 @@ jhipster:
 # Application specific properties:
 aet:
   email:
-    enabled: true
+    enabled:
