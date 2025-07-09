@@ -24,105 +24,297 @@ REPLACE INTO jobs (job_id,
                    tasks,
                    requirements,
                    state,
-                   start_date)
+                   start_date,
+                   created_at,
+                   last_modified_at)
 VALUES
--- Job 1
-('00000000-0000-0000-0000-000000020001','11111111-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','Data Science','Deep Learning','MUNICH',40,3,'FULLY_FUNDED','Researcher in Deep Learning','Join our cutting-edge research in neural networks.','Develop new architectures, test models, publish results.','Master in CS, strong Python/ML skills.','PUBLISHED','2025-09-01'),
--- Job 2
-('00000000-0000-0000-0000-000000020002','11111111-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','Mathematics','Theoretical Computer Science','GARCHING',30,2,'SCHOLARSHIP','Research Assistant in Algorithms','Study complexity and optimization problems.','Collaborate on theory papers, develop proofs.','Bachelor or Master in Mathematics/CS.','APPLICANT_FOUND','2025-10-01'),
--- Job 3 (draft)
-('00000000-0000-0000-0000-000000020003','11111111-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005',NULL,NULL,'SINGAPORE',NULL,NULL,'RESEARCH_GRANT','Quantum Research Intern',NULL,NULL,NULL,'DRAFT',NULL),
--- Job 4
-('00000000-0000-0000-0000-000000020004','11111111-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000006','Electrical Engineering','Signal Processing','HEILBRONN',35,3,'INDUSTRY_SPONSORED','Research on Next-Gen Radar Systems','Develop low-power radar signal processing pipelines.','Simulations, algorithm design, testing.','Master in EE, experience in MATLAB or Python.','PUBLISHED','2025-10-01'),
--- Job 5 (closed)
-('00000000-0000-0000-0000-000000020005','11111111-0000-0000-0000-000000000008','00000000-0000-0000-0000-000000000007','Biology','Genetics','WEIHENSTEPHAN',20,2,'SCHOLARSHIP','Genetics Research Intern','Assist in wet-lab DNA sequencing.','Run PCR, log data, assist postdocs.','BSc or MSc Biology.','CLOSED','2025-07-01'),
--- Job 6
-('00000000-0000-0000-0000-000000020006','11111111-0000-0000-0000-000000000009','00000000-0000-0000-0000-000000000008','Mechanical Engineering','Fluid Mechanics','STRAUBING',30,4,'FULLY_FUNDED','Research Assistant in Fluid Dynamics','Model turbulent flows in pipe systems.','Simulate, compare models, write papers.','Master in MechE or Physics.','PUBLISHED','2025-09-15'),
--- Job 7
-('00000000-0000-0000-0000-000000020007','11111111-0000-0000-0000-000000000010','00000000-0000-0000-0000-000000000009','Architecture','Sustainable Urbanism','MUNICH',40,3,'GOVERNMENT_FUNDED','Urban Sustainability Research Assistant','Analyze city growth and emissions.','Data analysis, case studies, planning tools.','Master in Architecture, Urban Planning, or Geo Info Systems.','PUBLISHED','2025-08-01'),
--- Job 8 (draft)
-('00000000-0000-0000-0000-000000020008','11111111-0000-0000-0000-000000000010','00000000-0000-0000-0000-000000000009',NULL,NULL,'GARCHING',NULL,NULL,'SELF_FUNDED','Assistant in Built Environment',NULL,NULL,NULL,'DRAFT',NULL),
--- Job 9
-('00000000-0000-0000-0000-000000020009','11111111-0000-0000-0000-000000000012','00000000-0000-0000-0000-000000000010','Agricultural Science','Precision Irrigation','STRAUBING',30,3,'RESEARCH_GRANT','Irrigation Modeling Research','Optimize water use in crops via data models.','Remote sensing, GIS mapping, modeling.','MSc in AgriSci, EnvEng or CS with agri experience.','PUBLISHED','2025-10-01'),
--- Job 10
-('00000000-0000-0000-0000-000000020010','00000000-0000-0000-0000-000000000102','00000000-0000-0000-0000-000000000001','Informatics','Gamified Learning','GARCHING',20,1,'SCHOLARSHIP','Gamification in Education Intern', '<p><strong>Join our interdisciplinary team</strong> working on next-gen gamified learning tools in higher education. This role supports research in human-computer interaction (HCI), behavioral science, and UX design.</p><p>You will contribute to designing playful, motivating, and effective learning experiences for university students.</p>', '<ul><li>Design and prototype interactive game elements</li><li>Conduct user surveys and usability testing</li><li>Analyze engagement data to inform design choices</li></ul>', '<ul><li>Enrolled in B.Sc. program in HCI, Psychology, Computer Science, or related field</li><li>Interest in gamification and digital education</li><li>Basic knowledge of user research and design tools (e.g., Figma, Qualtrics)</li></ul>','PUBLISHED','2025-10-01'),
--- Job 11
-('00000000-0000-0000-0000-000000020011','11111111-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','Computer Vision','Medical Imaging','GARCHING',40,3,'INDUSTRY_SPONSORED','Medical Image Analysis Research','Work on diagnostic AI tools using imaging data.','Deep learning, annotation, publication.','MSc in CS, experience with PyTorch.','PUBLISHED','2025-09-15'),
--- Job 12
-('00000000-0000-0000-0000-000000020012','11111111-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','Mathematics','Cryptography','MUNICH',30,2,'GOVERNMENT_FUNDED','Research Assistant in Quantum-Safe Cryptography','Research post-quantum algorithms.','Formal proofs, protocol design.','MSc in Math, CS, or related.','PUBLISHED','2025-10-01'),
--- Job 13
-('00000000-0000-0000-0000-000000020013','11111111-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005','Physics','Plasma Physics','GARCHING_HOCHBRUECK',40,4,'RESEARCH_GRANT','Fusion Research Support','Support modeling and diagnostics for fusion reactors.','Simulations, lab support.','MSc in Physics, coding skills.','PUBLISHED','2025-08-15'),
--- Job 14
-('00000000-0000-0000-0000-000000020014','11111111-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000006','EE','Analog Circuits','MUNICH',30,3,'INDUSTRY_SPONSORED','Circuit Design Internship','Analog layout and testing.','Hands-on circuit experience.','Bachelor in EE.','CLOSED','2025-07-01'),
--- Job 15
-('00000000-0000-0000-0000-000000020015','11111111-0000-0000-0000-000000000008','00000000-0000-0000-0000-000000000007','Biotechnology','Bioinformatics','WEIHENSTEPHAN',25,2,'FULLY_FUNDED','Genome Data Mining Researcher','Analyze large-scale genomic datasets.','BioPython, statistics, publications.','Bioinformatics or related MSc.','PUBLISHED','2025-09-01'),
--- Job 16
-('00000000-0000-0000-0000-000000020016','11111111-0000-0000-0000-000000000009','00000000-0000-0000-0000-000000000008','Mechanical Engineering','Thermodynamics','STRAUBING',20,2,'SCHOLARSHIP','Heat Engine Design Intern','Simulation of alternative energy systems.','Modeling, data analysis.','BSc/MSc MechE.','PUBLISHED','2025-10-01'),
--- Job 17
-('00000000-0000-0000-0000-000000020017','11111111-0000-0000-0000-000000000010','00000000-0000-0000-0000-000000000009','Urban Planning','Green Infrastructure','GARCHING_HOCHBRUECK',25,2,'FULLY_FUNDED','Smart Green City Intern','Design sustainable urban green spaces.','GIS tools, planning, stakeholder interviews.','Bachelor/Master in Urban Design.','APPLICANT_FOUND','2025-10-01'),
--- Job 18
-('00000000-0000-0000-0000-000000020018','11111111-0000-0000-0000-000000000012','00000000-0000-0000-0000-000000000010','Environmental Science','Carbon Capture','HEILBRONN',40,3,'GOVERNMENT_FUNDED','Carbon Capture Researcher','Develop sustainable CO₂ capture materials.','Lab work, analysis, reporting.','Chemistry/Materials MSc.','PUBLISHED','2025-11-01'),
--- Job 19
-('00000000-0000-0000-0000-000000020019','00000000-0000-0000-0000-000000000102','00000000-0000-0000-0000-000000000001','Informatics','Educational Technology','GARCHING',NULL,NULL,'RESEARCH_GRANT','Learning Analytics Researcher','Analyze digital learning data to optimize student outcomes.','Data cleaning, statistical analysis, reporting.','MSc in CS, EdTech, or related.','DRAFT',NULL),
--- Job 20
-('00000000-0000-0000-0000-000000020020','11111111-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','Data Science','Data Privacy','MUNICH',40,3,'RESEARCH_GRANT','Privacy-Preserving ML','Explore federated and encrypted learning.','Protocol design, implementation.','MSc in DS, CS, Math.','CLOSED','2025-09-01'),
--- Job 21
-('00000000-0000-0000-0000-000000020021','11111111-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','Cybersecurity','Penetration Testing','MUNICH',30,2,'FULLY_FUNDED','Security Analyst Position','Conduct internal security audits and vulnerability scans.','Ethical hacking, reporting, mitigation strategies.','BSc/MSc in IT Security or CS.','PUBLISHED','2025-10-01'),
--- Job 22
-('00000000-0000-0000-0000-000000020022','11111111-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005','Civil Engineering','Structural Health Monitoring','GARCHING',40,4,'RESEARCH_GRANT','Bridge Monitoring Researcher','Monitor bridge stress data using sensors.','Deploy systems, analyze datasets.','MSc in Civil/Mechanical Eng.','PUBLISHED','2025-11-15'),
--- Job 23
-('00000000-0000-0000-0000-000000020023','11111111-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000006','Mechatronics','Robot Kinematics','STRAUBING',20,3,'PARTIALLY_FUNDED','Student Position: Arm Kinematics','Test low-cost robot arm designs.','Prototype building, testing, reports.','Bachelor in Mechatronics or EE.','PUBLISHED','2025-09-01'),
--- Job 24
-('00000000-0000-0000-0000-000000020024','11111111-0000-0000-0000-000000000008','00000000-0000-0000-0000-000000000007','Biochemistry','Drug Design','WEIHENSTEPHAN',35,3,'SCHOLARSHIP','Drug Synthesis Research Position','Research new synthesis pathways for antibiotics.','Organic chemistry, lab safety, documentation.','Chemistry MSc required.','PUBLISHED','2025-10-01'),
--- Job 25
-('00000000-0000-0000-0000-000000020025','11111111-0000-0000-0000-000000000009','00000000-0000-0000-0000-000000000008','Aerospace Engineering','Hypersonic Flight','MUNICH',40,5,'INDUSTRY_SPONSORED','Hypersonic Aerodynamics Research','Simulate flight dynamics at Mach 5+.','Wind tunnel testing, CFD, reporting.','MSc in Aero or Mechanical Engineering.','PUBLISHED','2025-09-01'),
--- Job 26
-('00000000-0000-0000-0000-000000020026','11111111-0000-0000-0000-000000000010','00000000-0000-0000-0000-000000000009','Urban Planning','Green Infrastructure','GARCHING_HOCHBRUECK',25,2,'FULLY_FUNDED','Smart Green City Intern','Design sustainable urban green spaces.','GIS tools, planning, stakeholder interviews.','Bachelor/Master in Urban Design.','PUBLISHED','2025-10-01'),
--- Job 27
-('00000000-0000-0000-0000-000000020027','11111111-0000-0000-0000-000000000012','00000000-0000-0000-0000-000000000010','Biomedical Engineering','Prosthetics','MUNICH',40,4,'GOVERNMENT_FUNDED','Researcher: Soft Robotics for Prosthetics','Design and test soft robotic prosthetic limbs.','Material design, electronics, user testing.','MSc in Biomed or Mech Eng.','PUBLISHED','2025-11-01'),
--- Job 28
-('00000000-0000-0000-0000-000000020028','00000000-0000-0000-0000-000000000102','00000000-0000-0000-0000-000000000001','Informatics','AI in Classrooms','MUNICH',35,2,'FULLY_FUNDED','AI Teaching Assistant Developer','Develop AI bots to assist educators in digital platforms.','Chatbot design, evaluation.','MSc in AI, NLP, or HCI.','PUBLISHED','2025-09-15'),
--- Job 29
-('00000000-0000-0000-0000-000000020029','11111111-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','Software Engineering','Formal Verification','SINGAPORE',30,2,'RESEARCH_GRANT','Verification Tools Research Assistant','Develop formal models and proofs.','Use tools like Isabelle or Coq.','CS or Math MSc.','PUBLISHED','2025-10-01'),
--- Job 30
-('00000000-0000-0000-0000-000000020030','11111111-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','Information Systems','Process Mining','MUNICH',20,2,'INDUSTRY_SPONSORED','Process Analyst','Analyze ERP logs for optimization.','Process models, automation.','Business Informatics or CS MSc.','PUBLISHED','2025-10-01'),
--- Job 31
-('00000000-0000-0000-0000-000000020031','11111111-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005','Mechanical Engineering','CFD Modeling','STRAUBING',40,3,'FULLY_FUNDED','Research Position IN Computational Fluid Dynamics','Simulate turbulent flows.','Use OpenFOAM, report results.','MSc in Mech/Aero Eng.','APPLICANT_FOUND','2025-09-15'),
--- Job 32
-('00000000-0000-0000-0000-000000020032','11111111-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000006','Industrial Design','User-Centered Design','GARCHING',20,1,'SELF_FUNDED','Design Intern','Support UX research and prototyping.','Figma, user testing, sketches.','BSc Design or UX.','APPLICANT_FOUND','2025-09-01'),
--- Job 33
-('00000000-0000-0000-0000-000000020033','11111111-0000-0000-0000-000000000008','00000000-0000-0000-0000-000000000007','Biology','Synthetic Biology','GARCHING',30,2,'SCHOLARSHIP','Synthetic Gene Circuit Designer','Engineer biological logic gates.','Wet lab, modeling.','Biology or Biotech MSc.','PUBLISHED','2025-10-01'),
--- Job 34
-('00000000-0000-0000-0000-000000020034','11111111-0000-0000-0000-000000000009','00000000-0000-0000-0000-000000000008','Chemical Engineering','Catalysis','MUNICH',40,3,'RESEARCH_GRANT','Catalyst Efficiency Researcher','Test heterogeneous catalysts.','Spectroscopy, analysis.','Chem Eng MSc.','PUBLISHED','2025-08-15'),
--- Job 35
-('00000000-0000-0000-0000-000000020035','11111111-0000-0000-0000-000000000010','00000000-0000-0000-0000-000000000009','Geosciences','Earthquake Monitoring','HEILBRONN',25,3,'PARTIALLY_FUNDED','Seismology Research Assistant','Develop early-warning models.','Data streams, alerts.','Geo or Physics MSc.','PUBLISHED','2025-09-01'),
--- Job 36
-('00000000-0000-0000-0000-000000020036','11111111-0000-0000-0000-000000000012','00000000-0000-0000-0000-000000000010','Environmental Law','Climate Policy','MUNICH',20,2,'GOVERNMENT_FUNDED','Legal Researcher in Climate Law','Evaluate international climate agreements.','Legal reviews, comparative analysis.','Law MSc, English proficiency.','PUBLISHED','2025-11-01'),
--- Job 37
-('00000000-0000-0000-0000-000000020037','00000000-0000-0000-0000-000000000102','00000000-0000-0000-0000-000000000001','Informatics','Interactive Platforms','GARCHING',30,2,'SELF_FUNDED','EdTech Interface Designer','Design and evaluate learning UIs.','Figma, usability studies.','Design or HCI student.','PUBLISHED','2025-11-01'),
--- Job 38
-('00000000-0000-0000-0000-000000020038','11111111-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','Statistics','Bayesian Modeling','MUNICH',30,3,'RESEARCH_GRANT','Bayesian Networks Researcher','Model uncertainty in complex systems.','Inference, MCMC methods.','Math or Stats MSc.','PUBLISHED','2025-10-01'),
--- Job 39
-('00000000-0000-0000-0000-000000020039','11111111-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','Informatics','Natural Interfaces','SINGAPORE',20,1,'SELF_FUNDED','Tangible Interfaces Intern','Build interfaces using physical objects.','Arduino, rapid prototyping.','CS or Design student.','PUBLISHED','2025-09-01'),
--- Job 40
-('00000000-0000-0000-0000-000000020040','11111111-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005','Geoinformatics','Remote Sensing','GARCHING',30,2,'GOVERNMENT_FUNDED','Remote Sensing Research Assistant','Analyze satellite imagery for environmental monitoring.','Process imagery, use GIS tools, produce reports.','MSc in Geoinformatics, Earth Sciences, or related.','PUBLISHED','2025-09-01'),
--- Job 41
-('00000000-0000-0000-0000-000000020041','11111111-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000006','Mechanical Engineering','Robotics','MUNICH',35,3,'INDUSTRY_SPONSORED','Robot Arm Control Developer','Develop control software for collaborative robotic arms.','Simulate motion, test control loops, write documentation.','CS, Mechatronics or Mech Eng MSc.','PUBLISHED','2025-10-01'),
--- Job 42
-('00000000-0000-0000-0000-000000020042','11111111-0000-0000-0000-000000000008','00000000-0000-0000-0000-000000000007','Life Sciences','Molecular Biology','WEIHENSTEPHAN',25,2,'RESEARCH_GRANT','Molecular Lab Intern','Support gene expression experiments.','Pipetting, gel electrophoresis, lab notebooks.','BSc in Biology or related.','PUBLISHED','2025-09-15'),
--- Job 43
-('00000000-0000-0000-0000-000000020043','11111111-0000-0000-0000-000000000009','00000000-0000-0000-0000-000000000008','Energy Systems','Hydrogen Storage','STRAUBING',30,3,'FULLY_FUNDED','Hydrogen Storage Researcher','Investigate metal hydrides for energy storage.','Material testing, simulations.','Materials Sci or Chem Eng MSc.','PUBLISHED','2025-10-01'),
--- Job 44
-('00000000-0000-0000-0000-000000020044','00000000-0000-0000-0000-000000000105','00000000-0000-0000-0000-000000000002','Data Science','Time Series Analysis','MUNICH',30,2,'RESEARCH_GRANT','Time Series Forecasting Intern','Predict trends using large-scale time-series data.','Implement ARIMA/LSTM models.','CS or Statistics MSc.','PUBLISHED','2025-09-01'),
--- Job 45
-('00000000-0000-0000-0000-000000020045','11111111-0000-0000-0000-000000000012','00000000-0000-0000-0000-000000000010','Environmental Chemistry','Microplastic Pollution','HEILBRONN',30,3,'SCHOLARSHIP','Microplastics Research Intern','Analyze plastic residues in water and soil.','Field sampling, lab analysis, statistics.','EnvSci, Chem, or Biotech BSc/MSc.','PUBLISHED','2025-10-01'),
--- Job 46
-('00000000-0000-0000-0000-000000020046','00000000-0000-0000-0000-000000000102','00000000-0000-0000-0000-000000000001','Informatics','Assessment Technology','GARCHING',40,3,'RESEARCH_GRANT','Automated Grading Researcher','Develop automated grading tools for online platforms.','ML modeling, data annotation.','CS or Data Sci MSc.','PUBLISHED','2025-10-15'),
--- Job 47
-('00000000-0000-0000-0000-000000020047','00000000-0000-0000-0000-000000000105','00000000-0000-0000-0000-000000000002','Data Science','Recommender Systems','MUNICH',25,2,'FULLY_FUNDED','Personalized Recommendation Research','Develop algorithms for personalization.','Matrix factorization, collaborative filtering.','MSc in DS/ML.','PUBLISHED','2025-09-15'),
--- Job 48
-('00000000-0000-0000-0000-000000020048','00000000-0000-0000-0000-000000000105','00000000-0000-0000-0000-000000000002','Data Science','Ethical AI','MUNICH',20,1,'GOVERNMENT_FUNDED','Bias Detection in ML Models','Detect and mitigate bias in datasets.','Model auditing, fairness metrics.','CS or Ethics MSc.','PUBLISHED','2025-10-01'),
--- Job 49
-('00000000-0000-0000-0000-000000020049','00000000-0000-0000-0000-000000000105','00000000-0000-0000-0000-000000000002','Data Science','Natural Language Processing','HEILBRONN',40,3,'INDUSTRY_SPONSORED','Multilingual NLP Research','Build NLP models across multiple languages.','Preprocessing, training, testing.','MSc in CS/Linguistics.','PUBLISHED','2025-10-15'),
--- Job 50
-('00000000-0000-0000-0000-000000020050','00000000-0000-0000-0000-000000000105','00000000-0000-0000-0000-000000000002','Data Science','Data Visualization','HEILBRONN',30,2,'SCHOLARSHIP','Visual Analytics Research Assistant','Visualize complex datasets for stakeholder use.','D3.js, Tableau, Python.','MSc in DS, HCI, or InfoVis.','PUBLISHED','2025-11-01');
+-- Research Group 1 (5 jobs)
+('00000000-0000-0000-0000-000000020001', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Informatics', 'Gamified Learning', 'GARCHING', 20, 1, 'SCHOLARSHIP', 'Gamification in Education Intern',
+ '<p><strong>Join our interdisciplinary team</strong> working on next-gen gamified learning tools in higher education. This role supports research in human-computer interaction (HCI), behavioral science, and UX design.</p><p>You will contribute to designing playful, motivating, and effective learning experiences for university students.</p>',
+ '<ul><li>Design and prototype interactive game elements</li><li>Conduct user surveys and usability testing</li><li>Analyze engagement data to inform design choices</li></ul>',
+ '<ul><li>Enrolled in B.Sc. program in HCI, Psychology, Computer Science, or related field</li><li>Interest in gamification and digital education</li><li>Basic knowledge of user research and design tools (e.g., Figma, Qualtrics)</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-15 09:00:00', '2025-01-15 09:00:00'),
+
+('00000000-0000-0000-0000-000000020002', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Informatics', 'Educational Technology', 'GARCHING', NULL, NULL, 'RESEARCH_GRANT', 'Learning Analytics Researcher',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-10 10:30:00', '2025-02-10 10:30:00'),
+
+('00000000-0000-0000-0000-000000020003', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Informatics', 'Interactive Platforms', 'GARCHING', 30, 2, 'SELF_FUNDED', 'EdTech Interface Designer',
+ '<p>Design and evaluate learning interfaces for our educational platforms. You will work closely with researchers and developers to create intuitive user experiences.</p>',
+ '<ul><li>Create wireframes and prototypes using Figma</li><li>Conduct usability studies with students</li><li>Iterate designs based on feedback</li></ul>',
+ '<ul><li>Currently enrolled in Design, HCI or related program</li><li>Experience with design tools</li><li>Understanding of UX principles</li></ul>',
+ 'PUBLISHED', '2025-11-01', '2025-01-20 14:15:00', '2025-01-25 16:45:00'),
+
+('00000000-0000-0000-0000-000000020004', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Data Science', 'Time Series Analysis', 'MUNICH', 30, 2, 'RESEARCH_GRANT', 'Time Series Forecasting Intern',
+ '<p>Predict trends using large-scale time-series data from educational platforms. Work with our data science team to implement forecasting models.</p>',
+ '<ul><li>Implement ARIMA/LSTM models</li><li>Clean and preprocess time-series data</li><li>Evaluate model performance</li></ul>',
+ '<ul><li>CS or Statistics MSc student</li><li>Python programming skills</li><li>Basic understanding of ML</li></ul>',
+ 'CLOSED', '2025-09-01', '2025-01-05 11:20:00', '2025-06-30 09:00:00'),
+
+('00000000-0000-0000-0000-000000020005', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Informatics', 'Assessment Technology', 'GARCHING', 40, 3, 'RESEARCH_GRANT', 'Automated Grading Researcher',
+ '<p>Develop automated grading tools for online platforms using machine learning techniques.</p>',
+ '<ul><li>Develop ML models for answer evaluation</li><li>Annotate training data</li><li>Test model accuracy</li></ul>',
+ '<ul><li>CS or Data Science MSc</li><li>Experience with NLP</li><li>Python programming</li></ul>',
+ 'APPLICANT_FOUND', '2025-10-15', '2025-01-10 13:45:00', '2025-03-15 17:30:00'),
+
+-- Research Group 2 (5 jobs)
+('00000000-0000-0000-0000-000000020006', '00000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000002', 'Data Science', 'Recommender Systems', 'MUNICH', 25, 2, 'FULLY_FUNDED', 'Personalized Recommendation Research',
+ '<p>Develop algorithms for personalizing educational content recommendations based on student behavior.</p>',
+ '<ul><li>Implement matrix factorization</li><li>Test collaborative filtering approaches</li><li>Evaluate recommendation quality</li></ul>',
+ '<ul><li>MSc in DS/ML</li><li>Python skills</li><li>Understanding of recsys</li></ul>',
+ 'PUBLISHED', '2025-09-15', '2025-02-01 10:00:00', '2025-02-01 10:00:00'),
+
+('00000000-0000-0000-0000-000000020007', '00000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000002', 'Data Science', 'Ethical AI', 'MUNICH', NULL, NULL, 'GOVERNMENT_FUNDED', 'Bias Detection in ML Models',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-15 14:30:00', '2025-02-15 14:30:00'),
+
+('00000000-0000-0000-0000-000000020008', '00000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000002', 'Data Science', 'Natural Language Processing', 'HEILBRONN', 40, 3, 'INDUSTRY_SPONSORED', 'Multilingual NLP Research',
+ '<p>Build NLP models that work across multiple languages for educational applications.</p>',
+ '<ul><li>Preprocess multilingual text</li><li>Train transformer models</li><li>Evaluate performance</li></ul>',
+ '<ul><li>MSc in CS/Linguistics</li><li>NLP experience</li><li>Python proficiency</li></ul>',
+ 'PUBLISHED', '2025-10-15', '2025-02-05 11:15:00', '2025-02-10 16:20:00'),
+
+('00000000-0000-0000-0000-000000020009', '00000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000002', 'Data Science', 'Data Visualization', 'HEILBRONN', 30, 2, 'SCHOLARSHIP', 'Visual Analytics Research Assistant',
+ '<p>Visualize complex educational datasets to help researchers understand student learning patterns.</p>',
+ '<ul><li>Create interactive visualizations</li><li>Design dashboards</li><li>Conduct user testing</li></ul>',
+ '<ul><li>MSc in DS, HCI or InfoVis</li><li>D3.js/Tableau experience</li><li>Design skills</li></ul>',
+ 'CLOSED', '2025-11-01', '2025-02-01 09:30:00', '2025-07-15 14:00:00'),
+
+('00000000-0000-0000-0000-000000020010', '00000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000002', 'Data Science', 'Time Series Analysis', 'MUNICH', 30, 2, 'RESEARCH_GRANT', 'Time Series Forecasting Intern',
+ '<p>Work with educational time-series data to predict student performance trends.</p>',
+ '<ul><li>Clean and process data</li><li>Implement forecasting models</li><li>Analyze results</li></ul>',
+ '<ul><li>CS or Stats background</li><li>Python skills</li><li>ML knowledge</li></ul>',
+ 'APPLICANT_FOUND', '2025-09-01', '2025-01-20 13:00:00', '2025-03-10 11:45:00'),
+
+-- Research Group 3 (5 jobs)
+('00000000-0000-0000-0000-000000020011', '11111111-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003', 'Data Science', 'Deep Learning', 'MUNICH', 40, 3, 'FULLY_FUNDED', 'Researcher in Deep Learning',
+ '<p>Join our cutting-edge research in neural networks applied to medical imaging.</p>',
+ '<ul><li>Develop new architectures</li><li>Test models</li><li>Publish results</li></ul>',
+ '<ul><li>Master in CS</li><li>Strong Python/ML skills</li></ul>',
+ 'PUBLISHED', '2025-09-01', '2025-01-10 10:00:00', '2025-01-10 10:00:00'),
+
+('00000000-0000-0000-0000-000000020012', '11111111-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003', 'Computer Vision', 'Medical Imaging', 'GARCHING', NULL, NULL, 'INDUSTRY_SPONSORED', 'Medical Image Analysis Research',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-20 15:30:00', '2025-02-20 15:30:00'),
+
+('00000000-0000-0000-0000-000000020013', '11111111-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003', 'Data Science', 'Data Privacy', 'MUNICH', 40, 3, 'RESEARCH_GRANT', 'Privacy-Preserving ML',
+ '<p>Explore federated and encrypted learning techniques for sensitive educational data.</p>',
+ '<ul><li>Design privacy protocols</li><li>Implement solutions</li><li>Evaluate trade-offs</li></ul>',
+ '<ul><li>MSc in DS, CS, Math</li><li>Crypto knowledge</li></ul>',
+ 'PUBLISHED', '2025-09-01', '2025-01-15 11:45:00', '2025-01-20 14:30:00'),
+
+('00000000-0000-0000-0000-000000020014', '11111111-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003', 'Statistics', 'Bayesian Modeling', 'MUNICH', 30, 3, 'RESEARCH_GRANT', 'Bayesian Networks Researcher',
+ '<p>Model uncertainty in educational systems using Bayesian approaches.</p>',
+ '<ul><li>Implement inference methods</li><li>Apply MCMC techniques</li><li>Analyze results</li></ul>',
+ '<ul><li>Math or Stats MSc</li><li>Probability background</li></ul>',
+ 'CLOSED', '2025-10-01', '2025-01-05 09:15:00', '2025-06-30 16:00:00'),
+
+('00000000-0000-0000-0000-000000020015', '11111111-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003', 'Software Engineering', 'Formal Verification', 'SINGAPORE', 30, 2, 'RESEARCH_GRANT', 'Verification Tools Research Assistant',
+ '<p>Develop formal models and proofs for educational software verification.</p>',
+ '<ul><li>Use tools like Isabelle or Coq</li><li>Develop proofs</li><li>Document results</li></ul>',
+ '<ul><li>CS or Math MSc</li><li>Logic background</li></ul>',
+ 'APPLICANT_FOUND', '2025-10-01', '2025-01-25 14:00:00', '2025-03-01 10:30:00'),
+
+-- Continue this pattern for all 10 research groups...
+-- Research Group 4 (5 jobs)
+('00000000-0000-0000-0000-000000020016', '11111111-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000004', 'Mathematics', 'Theoretical Computer Science', 'GARCHING', 30, 2, 'SCHOLARSHIP', 'Research Assistant in Algorithms',
+ '<p>Study complexity and optimization problems in computer science theory.</p>',
+ '<ul><li>Collaborate on theory papers</li><li>Develop proofs</li><li>Analyze algorithms</li></ul>',
+ '<ul><li>Bachelor or Master in Mathematics/CS</li><li>Strong theoretical background</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-15 10:00:00', '2025-01-15 10:00:00'),
+
+('00000000-0000-0000-0000-000000020017', '11111111-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000004', 'Mathematics', 'Cryptography', 'GARCHING', NULL, NULL, 'GOVERNMENT_FUNDED', 'Post-Quantum Cryptography Research',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-10 11:30:00', '2025-02-10 11:30:00'),
+
+('00000000-0000-0000-0000-000000020018', '11111111-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000004', 'Mathematics', 'Number Theory', 'MUNICH', 40, 3, 'RESEARCH_GRANT', 'Number Theory Research Assistant',
+ '<p>Investigate applications of number theory in modern cryptography.</p>',
+ '<ul><li>Literature review</li><li>Algorithm development</li><li>Paper writing</li></ul>',
+ '<ul><li>MSc in Mathematics</li><li>Algebra/number theory background</li></ul>',
+ 'PUBLISHED', '2025-09-15', '2025-01-20 14:00:00', '2025-01-25 16:00:00'),
+
+('00000000-0000-0000-0000-000000020019', '11111111-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000004', 'Mathematics', 'Graph Theory', 'GARCHING', 20, 1, 'SCHOLARSHIP', 'Graph Theory Intern',
+ '<p>Explore graph algorithms and their computational complexity.</p>',
+ '<ul><li>Implement algorithms</li><li>Run benchmarks</li><li>Analyze results</li></ul>',
+ '<ul><li>BSc in Math or CS</li><li>Programming skills</li></ul>',
+ 'CLOSED', '2025-07-01', '2025-01-05 09:00:00', '2025-06-30 10:00:00'),
+
+('00000000-0000-0000-0000-000000020020', '11111111-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000004', 'Mathematics', 'Combinatorics', 'MUNICH', 30, 2, 'RESEARCH_GRANT', 'Combinatorial Optimization Researcher',
+ '<p>Develop new approaches to combinatorial optimization problems.</p>',
+ '<ul><li>Formulate problems</li><li>Design algorithms</li><li>Compare with existing methods</li></ul>',
+ '<ul><li>MSc in Math or CS</li><li>Optimization background</li></ul>',
+ 'APPLICANT_FOUND', '2025-10-01', '2025-01-10 13:00:00', '2025-03-15 15:00:00'),
+
+-- Research Group 5 (5 jobs)
+('00000000-0000-0000-0000-000000020021', '11111111-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000005', 'Physics', 'Quantum Computing', 'GARCHING', 40, 3, 'FULLY_FUNDED', 'Quantum Algorithm Researcher',
+ '<p>Develop and analyze algorithms for quantum computers.</p>',
+ '<ul><li>Implement quantum circuits</li><li>Run simulations</li><li>Analyze results</li></ul>',
+ '<ul><li>MSc in Physics or CS</li><li>Quantum computing knowledge</li></ul>',
+ 'PUBLISHED', '2025-09-01', '2025-01-15 10:00:00', '2025-01-15 10:00:00'),
+
+('00000000-0000-0000-0000-000000020022', '11111111-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000005', 'Physics', 'Plasma Physics', 'GARCHING', NULL, NULL, 'RESEARCH_GRANT', 'Fusion Research Support',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-10 11:30:00', '2025-02-10 11:30:00'),
+
+('00000000-0000-0000-0000-000000020023', '11111111-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000005', 'Physics', 'Condensed Matter', 'GARCHING_HOCHBRUECK', 30, 2, 'RESEARCH_GRANT', 'Condensed Matter Research Assistant',
+ '<p>Investigate novel materials using advanced microscopy techniques.</p>',
+ '<ul><li>Prepare samples</li><li>Conduct experiments</li><li>Analyze data</li></ul>',
+ '<ul><li>MSc in Physics</li><li>Lab experience</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-20 14:00:00', '2025-01-25 16:00:00'),
+
+('00000000-0000-0000-0000-000000020024', '11111111-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000005', 'Physics', 'Astrophysics', 'GARCHING', 20, 1, 'SCHOLARSHIP', 'Astrophysics Data Analysis Intern',
+ '<p>Analyze astronomical data from telescopes and satellites.</p>',
+ '<ul><li>Process imaging data</li><li>Run statistical analyses</li><li>Prepare visualizations</li></ul>',
+ '<ul><li>BSc in Physics or Astronomy</li><li>Python skills</li></ul>',
+ 'CLOSED', '2025-07-01', '2025-01-05 09:00:00', '2025-06-30 10:00:00'),
+
+('00000000-0000-0000-0000-000000020025', '11111111-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000005', 'Physics', 'Particle Physics', 'GARCHING', 40, 3, 'RESEARCH_GRANT', 'Particle Physics Researcher',
+ '<p>Analyze data from particle collider experiments.</p>',
+ '<ul><li>Process collision data</li><li>Develop analysis pipelines</li><li>Contribute to publications</li></ul>',
+ '<ul><li>MSc in Physics</li><li>Programming skills</li></ul>',
+ 'APPLICANT_FOUND', '2025-09-15', '2025-01-10 13:00:00', '2025-03-15 15:00:00'),
+
+-- Research Group 6 (5 jobs)
+('00000000-0000-0000-0000-000000020026', '11111111-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000006', 'Electrical Engineering', 'Analog Circuits', 'MUNICH', 30, 3, 'INDUSTRY_SPONSORED', 'Circuit Design Internship',
+ '<p>Work on analog circuit design and testing for sensor applications.</p>',
+ '<ul><li>Design circuits</li><li>Simulate performance</li><li>Test prototypes</li></ul>',
+ '<ul><li>Bachelor in EE</li><li>Circuit theory knowledge</li></ul>',
+ 'PUBLISHED', '2025-09-01', '2025-01-15 10:00:00', '2025-01-15 10:00:00'),
+
+('00000000-0000-0000-0000-000000020027', '11111111-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000006', 'Electrical Engineering', 'Power Systems', 'HEILBRONN', NULL, NULL, 'RESEARCH_GRANT', 'Smart Grid Research',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-10 11:30:00', '2025-02-10 11:30:00'),
+
+('00000000-0000-0000-0000-000000020028', '11111111-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000006', 'Electrical Engineering', 'Signal Processing', 'HEILBRONN', 35, 3, 'INDUSTRY_SPONSORED', 'Signal Processing Researcher',
+ '<p>Develop low-power signal processing pipelines for embedded systems.</p>',
+ '<ul><li>Algorithm development</li><li>Simulations</li><li>Hardware testing</li></ul>',
+ '<ul><li>Master in EE</li><li>MATLAB or Python experience</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-20 14:00:00', '2025-01-25 16:00:00'),
+
+('00000000-0000-0000-0000-000000020029', '11111111-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000006', 'Electrical Engineering', 'Robotics', 'MUNICH', 35, 3, 'INDUSTRY_SPONSORED', 'Robot Arm Control Developer',
+ '<p>Develop control software for collaborative robotic arms.</p>',
+ '<ul><li>Simulate motion</li><li>Test control loops</li><li>Write documentation</li></ul>',
+ '<ul><li>CS, Mechatronics or Mech Eng MSc</li><li>Control theory knowledge</li></ul>',
+ 'CLOSED', '2025-07-01', '2025-01-05 09:00:00', '2025-06-30 10:00:00'),
+
+('00000000-0000-0000-0000-000000020030', '11111111-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000006', 'Electrical Engineering', 'Embedded Systems', 'MUNICH', 30, 2, 'RESEARCH_GRANT', 'Embedded Systems Researcher',
+ '<p>Develop energy-efficient embedded systems for IoT applications.</p>',
+ '<ul><li>Design firmware</li><li>Optimize power consumption</li><li>Test prototypes</li></ul>',
+ '<ul><li>MSc in EE or CS</li><li>Embedded programming experience</li></ul>',
+ 'APPLICANT_FOUND', '2025-09-15', '2025-01-10 13:00:00', '2025-03-15 15:00:00'),
+
+-- Research Group 7 (5 jobs)
+('00000000-0000-0000-0000-000000020031', '11111111-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000007', 'Biology', 'Genetics', 'WEIHENSTEPHAN', 20, 2, 'SCHOLARSHIP', 'Genetics Research Intern',
+ '<p>Assist in wet-lab DNA sequencing and analysis.</p>',
+ '<ul><li>Run PCR</li><li>Log data</li><li>Assist postdocs</li></ul>',
+ '<ul><li>BSc or MSc Biology</li><li>Lab experience preferred</li></ul>',
+ 'PUBLISHED', '2025-09-01', '2025-01-15 10:00:00', '2025-01-15 10:00:00'),
+
+('00000000-0000-0000-0000-000000020032', '11111111-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000007', 'Biology', 'Synthetic Biology', 'HEILBRONN', NULL, NULL, 'SCHOLARSHIP', 'Synthetic Gene Circuit Designer',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-10 11:30:00', '2025-02-10 11:30:00'),
+
+('00000000-0000-0000-0000-000000020033', '11111111-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000007', 'Biotechnology', 'Bioinformatics', 'WEIHENSTEPHAN', 25, 2, 'FULLY_FUNDED', 'Genome Data Mining Researcher',
+ '<p>Analyze large-scale genomic datasets to identify patterns.</p>',
+ '<ul><li>Use BioPython</li><li>Apply statistics</li><li>Contribute to publications</li></ul>',
+ '<ul><li>Bioinformatics or related MSc</li><li>Programming skills</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-20 14:00:00', '2025-01-25 16:00:00'),
+
+('00000000-0000-0000-0000-000000020034', '11111111-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000007', 'Biochemistry', 'Drug Design', 'WEIHENSTEPHAN', 35, 3, 'SCHOLARSHIP', 'Drug Synthesis Research Position',
+ '<p>Research new synthesis pathways for antibiotics and other drugs.</p>',
+ '<ul><li>Organic chemistry</li><li>Lab safety</li><li>Documentation</li></ul>',
+ '<ul><li>Chemistry MSc required</li><li>Synthesis experience</li></ul>',
+ 'CLOSED', '2025-07-01', '2025-01-05 09:00:00', '2025-06-30 10:00:00'),
+
+('00000000-0000-0000-0000-000000020035', '11111111-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000007', 'Life Sciences', 'Molecular Biology', 'WEIHENSTEPHAN', 25, 2, 'RESEARCH_GRANT', 'Molecular Lab Intern',
+ '<p>Support gene expression experiments and analysis.</p>',
+ '<ul><li>Pipetting</li><li>Gel electrophoresis</li><li>Lab notebooks</li></ul>',
+ '<ul><li>BSc in Biology or related</li><li>Attention to detail</li></ul>',
+ 'APPLICANT_FOUND', '2025-09-15', '2025-01-10 13:00:00', '2025-03-15 15:00:00'),
+
+-- Research Group 8 (5 jobs)
+('00000000-0000-0000-0000-000000020036', '11111111-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000008', 'Mechanical Engineering', 'Fluid Mechanics', 'STRAUBING', 30, 4, 'FULLY_FUNDED', 'Research Assistant in Fluid Dynamics',
+ '<p>Model turbulent flows in pipe systems for industrial applications.</p>',
+ '<ul><li>Simulate flows</li><li>Compare models</li><li>Write papers</li></ul>',
+ '<ul><li>Master in MechE or Physics</li><li>CFD experience</li></ul>',
+ 'PUBLISHED', '2025-09-15', '2025-01-15 10:00:00', '2025-01-15 10:00:00'),
+
+('00000000-0000-0000-0000-000000020037', '11111111-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000008', 'Mechanical Engineering', 'Thermodynamics', 'HEILBRONN', NULL, NULL, 'SCHOLARSHIP', 'Heat Engine Design Intern',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-10 11:30:00', '2025-02-10 11:30:00'),
+
+('00000000-0000-0000-0000-000000020038', '11111111-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000008', 'Mechanical Engineering', 'CFD Modeling', 'STRAUBING', 40, 3, 'FULLY_FUNDED', 'Research Position in CFD',
+ '<p>Simulate turbulent flows using computational fluid dynamics.</p>',
+ '<ul><li>Use OpenFOAM</li><li>Run simulations</li><li>Report results</li></ul>',
+ '<ul><li>MSc in Mech/Aero Eng</li><li>CFD background</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-20 14:00:00', '2025-01-25 16:00:00'),
+
+('00000000-0000-0000-0000-000000020039', '11111111-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000008', 'Aerospace Engineering', 'Hypersonic Flight', 'MUNICH', 40, 5, 'INDUSTRY_SPONSORED', 'Hypersonic Aerodynamics Research',
+ '<p>Simulate flight dynamics at Mach 5+ for next-gen aircraft.</p>',
+ '<ul><li>Wind tunnel testing</li><li>CFD analysis</li><li>Reporting</li></ul>',
+ '<ul><li>MSc in Aero or Mechanical Engineering</li><li>CFD experience</li></ul>',
+ 'CLOSED', '2025-07-01', '2025-01-05 09:00:00', '2025-06-30 10:00:00'),
+
+('00000000-0000-0000-0000-000000020040', '11111111-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000008', 'Energy Systems', 'Hydrogen Storage', 'STRAUBING', 30, 3, 'FULLY_FUNDED', 'Hydrogen Storage Researcher',
+ '<p>Investigate metal hydrides for energy storage applications.</p>',
+ '<ul><li>Material testing</li><li>Simulations</li><li>Analysis</li></ul>',
+ '<ul><li>Materials Sci or Chem Eng MSc</li><li>Research experience</li></ul>',
+ 'APPLICANT_FOUND', '2025-09-15', '2025-01-10 13:00:00', '2025-03-15 15:00:00'),
+
+-- Research Group 9 (5 jobs)
+('00000000-0000-0000-0000-000000020041', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Urban Planning', 'Green Infrastructure', 'GARCHING_HOCHBRUECK', 25, 2, 'FULLY_FUNDED', 'Smart Green City Intern',
+ '<p>Design sustainable urban green spaces using data-driven approaches.</p>',
+ '<ul><li>GIS tools</li><li>Planning</li><li>Stakeholder interviews</li></ul>',
+ '<ul><li>Bachelor/Master in Urban Design</li><li>GIS experience</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-15 10:00:00', '2025-01-15 10:00:00'),
+
+('00000000-0000-0000-0000-000000020042', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Architecture', 'Sustainable Urbanism', 'HEILBRONN', NULL, NULL, 'SELF_FUNDED', 'Assistant in Built Environment',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-10 11:30:00', '2025-02-10 11:30:00'),
+
+('00000000-0000-0000-0000-000000020043', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Geosciences', 'Earthquake Monitoring', 'HEILBRONN', 25, 3, 'PARTIALLY_FUNDED', 'Seismology Research Assistant',
+ '<p>Develop early-warning models for seismic events.</p>',
+ '<ul><li>Analyze data streams</li><li>Develop alerts</li><li>Test models</li></ul>',
+ '<ul><li>Geo or Physics MSc</li><li>Data analysis skills</li></ul>',
+ 'PUBLISHED', '2025-09-01', '2025-01-20 14:00:00', '2025-01-25 16:00:00'),
+
+('00000000-0000-0000-0000-000000020044', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Urban Planning', 'Green Infrastructure', 'GARCHING_HOCHBRUECK', 25, 2, 'FULLY_FUNDED', 'Smart Green City Intern',
+ '<p>Design sustainable urban green spaces for climate resilience.</p>',
+ '<ul><li>GIS analysis</li><li>Design proposals</li><li>Community engagement</li></ul>',
+ '<ul><li>Urban Planning or Landscape Architecture</li><li>Design skills</li></ul>',
+ 'CLOSED', '2025-07-01', '2025-01-05 09:00:00', '2025-06-30 10:00:00'),
+
+('00000000-0000-0000-0000-000000020045', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Geosciences', 'Remote Sensing', 'GARCHING', 30, 2, 'GOVERNMENT_FUNDED', 'Remote Sensing Research Assistant',
+ '<p>Analyze satellite imagery for environmental monitoring applications.</p>',
+ '<ul><li>Process imagery</li><li>Use GIS tools</li><li>Produce reports</li></ul>',
+ '<ul><li>MSc in Geoinformatics, Earth Sciences</li><li>Remote sensing experience</li></ul>',
+ 'APPLICANT_FOUND', '2025-09-15', '2025-01-10 13:00:00', '2025-03-15 15:00:00'),
+
+-- Research Group 10 (5 jobs)
+('00000000-0000-0000-0000-000000020046', '11111111-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000010', 'Environmental Science', 'Carbon Capture', 'HEILBRONN', 40, 3, 'GOVERNMENT_FUNDED', 'Carbon Capture Researcher',
+ '<p>Develop sustainable CO₂ capture materials for industrial applications.</p>',
+ '<ul><li>Conduct lab experiments</li><li>Analyze results</li><li>Prepare reports</li></ul>',
+ '<ul><li>Chemistry/Materials MSc</li><li>Lab experience</li></ul>',
+ 'PUBLISHED', '2025-11-01', '2025-01-20 10:30:00', '2025-01-20 10:30:00'),
+
+('00000000-0000-0000-0000-000000020047', '11111111-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000010', 'Agricultural Science', 'Precision Irrigation', 'HEILBRONN', NULL, NULL, 'RESEARCH_GRANT', 'Irrigation Modeling Research',
+ NULL, NULL, NULL,
+ 'DRAFT', NULL, '2025-02-25 16:45:00', '2025-02-25 16:45:00'),
+
+('00000000-0000-0000-0000-000000020048', '11111111-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000010', 'Environmental Chemistry', 'Microplastic Pollution', 'HEILBRONN', 30, 3, 'SCHOLARSHIP', 'Microplastics Research Intern',
+ '<p>Analyze plastic residues in water and soil samples from agricultural areas.</p>',
+ '<ul><li>Collect field samples</li><li>Perform lab analysis</li><li>Process data</li></ul>',
+ '<ul><li>EnvSci, Chem, or Biotech BSc/MSc</li><li>Lab skills</li></ul>',
+ 'PUBLISHED', '2025-10-01', '2025-01-15 14:20:00', '2025-01-18 11:10:00'),
+
+('00000000-0000-0000-0000-000000020049', '11111111-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000010', 'Environmental Law', 'Climate Policy', 'MUNICH', 20, 2, 'GOVERNMENT_FUNDED', 'Legal Researcher in Climate Law',
+ '<p>Evaluate international climate agreements and their implementation.</p>',
+ '<ul><li>Conduct legal reviews</li><li>Comparative analysis</li><li>Prepare reports</li></ul>',
+ '<ul><li>Law MSc</li><li>English proficiency</li></ul>',
+ 'CLOSED', '2025-11-01', '2025-01-10 09:45:00', '2025-06-30 15:00:00'),
+
+('00000000-0000-0000-0000-000000020050', '11111111-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000010', 'Biomedical Engineering', 'Prosthetics', 'MUNICH', 40, 4, 'GOVERNMENT_FUNDED', 'Researcher: Soft Robotics for Prosthetics',
+ '<p>Design and test soft robotic prosthetic limbs for improved mobility.</p>',
+ '<ul><li>Material design</li><li>Electronics integration</li><li>User testing</li></ul>',
+ '<ul><li>MSc in Biomed or Mech Eng</li><li>Robotics experience</li></ul>',
+ 'APPLICANT_FOUND', '2025-11-01', '2025-01-30 13:15:00', '2025-03-05 10:45:00');
