@@ -38,8 +38,8 @@ const ApplicationStates = {
 type ApplicationState = (typeof ApplicationStates)[keyof typeof ApplicationStates];
 
 const SavingStates = {
-  Saved: 'Changes saved',
-  Saving: 'Saving changes...',
+  SAVED: 'Changes saved',
+  SAVING: 'Saving changes...',
 } as const;
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
@@ -94,7 +94,7 @@ export default class ApplicationCreationFormComponent {
 
   savingBadgeCalculatedClass = computed<string>(
     () =>
-      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.Saved ? 'saved_color' : 'unsaved_color'}`,
+      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
   );
 
   panel1 = viewChild<TemplateRef<any>>('panel1');
@@ -245,7 +245,7 @@ export default class ApplicationCreationFormComponent {
 
   applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
 
-  savingState = signal<SavingState>(SavingStates.Saved);
+  savingState = signal<SavingState>(SavingStates.SAVED);
 
   mode: ApplicationFormMode = 'create';
 
@@ -319,9 +319,9 @@ export default class ApplicationCreationFormComponent {
   }
 
   performAutomaticSave(): void {
-    if (this.savingState() === SavingStates.Saving) {
+    if (this.savingState() === SavingStates.SAVING) {
       this.sendCreateApplicationData(this.applicationState(), false);
-      this.savingState.set(SavingStates.Saved);
+      this.savingState.set(SavingStates.SAVED);
     }
   }
 
@@ -408,7 +408,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   onValueChanged(): void {
-    this.savingState.set(SavingStates.Saving);
+    this.savingState.set(SavingStates.SAVING);
   }
 
   onPage2ValidityChanged(isValid: boolean): void {
