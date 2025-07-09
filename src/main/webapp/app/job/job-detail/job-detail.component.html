@@ -1,0 +1,170 @@
+@if (dataLoaded()) {
+  <div class="container">
+    <header class="page-header">
+      <!-- display job state if the logged-in user is a professor -->
+      <h1 class="job-title">{{ jobDetails()?.title }}</h1>
+      <div class="job-meta">
+        <div class="meta-item">
+          <fa-icon [icon]="['fas', 'user-tie']" class="meta-icon" />
+          <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong>{{ jobDetails()?.supervisingProfessor || noData() }}</span>
+        </div>
+        <div class="meta-item">
+          <fa-icon [icon]="['fas', 'microscope']" class="meta-icon" />
+          <span><strong jhiTranslate="jobDetailPage.header.researchGroup"></strong>{{ jobDetails()?.researchGroup || noData() }}</span>
+        </div>
+        <div class="meta-item">
+          <fa-icon [icon]="['fas', 'location-dot']" class="meta-icon" />
+          <span><strong jhiTranslate="jobDetailPage.header.location"></strong>{{ jobDetails()?.location || noData() }}</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-grid">
+      <main class="job-overview">
+        <section class="detail-group">
+          <h2 class="section-title" jhiTranslate="jobDetailPage.positionOverview.positionOverview"></h2>
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.fieldOfStudies"></span>
+            <span class="detail-value">
+              <span class="detail-value">{{ jobDetails()?.fieldOfStudies || noData() }}</span>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.researchArea"></span>
+            <span class="detail-value">{{ jobDetails()?.researchArea || noData() }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.workload"></span>
+            @if (jobDetails()?.workload !== '') {
+              <span
+                class="detail-value"
+                jhiTranslate="jobDetailPage.positionOverview.hoursPerWeek"
+                [translateValues]="{ workload: jobDetails()?.workload }"
+              ></span>
+            } @else {
+              <span class="detail-value">{{ noData() }}</span>
+            }
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.contractDuration"></span>
+            @if (jobDetails()?.workload !== '') {
+              <span
+                class="detail-value"
+                jhiTranslate="jobDetailPage.positionOverview.years"
+                [translateValues]="{ years: jobDetails()?.contractDuration }"
+              ></span>
+            } @else {
+              <span class="detail-value">{{ noData() }}</span>
+            }
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.fundingType"></span>
+            <span class="detail-value">{{ jobDetails()?.fundingType || noData() }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.startDate"></span>
+            <span class="detail-value">{{ jobDetails()?.startDate || noData() }}</span>
+          </div>
+        </section>
+
+        <section class="detail-group">
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.created"></span>
+            <span class="detail-value">{{ jobDetails()?.createdAt || noData() }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.lastModified"></span>
+            <span class="detail-value">{{ jobDetails()?.lastModifiedAt || noData() }}</span>
+          </div>
+        </section>
+      </main>
+
+      <aside class="research-group">
+        <h2 class="section-title" jhiTranslate="jobDetailPage.researchGroupDetails.researchGroup"></h2>
+
+        <h3>{{ jobDetails()?.researchGroup || noData() }}</h3>
+
+        @if (jobDetails()?.researchGroupDescription !== '') {
+          <p class="description-text" [innerHTML]="jobDetails()?.researchGroupDescription"></p>
+        } @else {
+          <p class="description-text">{{ noData() }}</p>
+        }
+
+        <div class="contact-info">
+          <div class="contact-item">
+            <fa-icon [icon]="['fas', 'envelope']" class="contact-icon" />
+            @if (jobDetails()?.researchGroupEmail !== '') {
+              <a [href]="'mailto:' + jobDetails()?.researchGroupEmail" class="link">{{ jobDetails()?.researchGroupEmail }}</a>
+            } @else {
+              {{ noData() }}
+            }
+          </div>
+          <div class="contact-item">
+            <fa-icon [icon]="['fas', 'globe']" class="contact-icon" />
+            @if (jobDetails()?.researchGroupWebsite !== '') {
+              <a [href]="jobDetails()?.researchGroupWebsite" class="link" target="_blank" rel="noopener noreferrer">{{
+                jobDetails()?.researchGroupWebsite
+              }}</a>
+            } @else {
+              {{ noData() }}
+            }
+          </div>
+          <div class="contact-item">
+            <fa-icon [icon]="['fas', 'location-dot']" class="contact-icon" />
+            <div>
+              <div>{{ jobDetails()?.researchGroupStreet || noData() }}</div>
+              <div>{{ jobDetails()?.researchGroupPostalCode || noData() }}</div>
+              <div>{{ jobDetails()?.researchGroupCity || noData() }}</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="descriptive-section">
+      <h2 class="section-title" jhiTranslate="jobDetailPage.positionDetails.positionDetails"></h2>
+
+      <div class="descriptive-grid">
+        <div class="description-column">
+          <div class="detail-group">
+            <h3 jhiTranslate="jobDetailPage.positionDetails.description"></h3>
+            @if (jobDetails()?.description !== '') {
+              <div class="description-text" [innerHTML]="jobDetails()?.description"></div>
+            } @else {
+              <div class="description-text">{{ noData() }}</div>
+            }
+          </div>
+
+          <div class="detail-group">
+            <h3 jhiTranslate="jobDetailPage.positionDetails.tasks"></h3>
+            @if (jobDetails()?.tasks !== '') {
+              <div class="description-text" [innerHTML]="jobDetails()?.tasks"></div>
+            } @else {
+              <div class="description-text">{{ noData() }}</div>
+            }
+          </div>
+        </div>
+
+        <div class="description-column">
+          <div class="detail-group">
+            <h3 jhiTranslate="jobDetailPage.positionDetails.requirements"></h3>
+            @if (jobDetails()?.requirements !== '') {
+              <div class="description-text" [innerHTML]="jobDetails()?.requirements"></div>
+            } @else {
+              <div class="description-text">{{ noData() }}</div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="data-privacy-section">
+      <h2 class="section-title" jhiTranslate="jobDetailPage.dataPrivacy.dataProtectionInformation"></h2>
+      <p class="data-text-section" [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"></p>
+    </section>
+    <section class="action-buttons-section">
+      <!-- if professor is logged in, then it shows "Close Job" button ("Delete Job" button if the Job is a draft) "Edit Job" button -->
+      <!-- else display "Apply Now" button -->
+      <jhi-button class="apply-btn" label="Apply Now" [disabled]="true" severity="primary" />
+    </section>
+  </div>
+}

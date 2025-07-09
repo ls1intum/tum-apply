@@ -21,7 +21,12 @@
 
     <ng-template #actionTemplate let-job>
       <div class="flex space-x-2">
-        <jhi-button label="{{ 'myPositionsPage.actionButton.view' | translate }}" severity="primary" data-testid="view" />
+        <jhi-button
+          label="{{ 'myPositionsPage.actionButton.view' | translate }}"
+          severity="primary"
+          data-testid="view"
+          (click)="onViewJob(job.jobId)"
+        />
         <jhi-button
           label="{{ 'myPositionsPage.actionButton.edit' | translate }}"
           severity="primary"
@@ -30,12 +35,23 @@
           data-testid="edit"
           [disabled]="job.state !== 'DRAFT'"
         />
-        <jhi-button
-          label="{{ 'myPositionsPage.actionButton.delete' | translate }}"
-          severity="danger"
-          (click)="onDeleteJob(job.jobId)"
-          data-testid="delete"
-        />
+        @if (job.state === 'DRAFT') {
+          <jhi-button
+            [label]="'myPositionsPage.actionButton.delete' | translate"
+            severity="danger"
+            (click)="onDeleteJob(job.jobId)"
+            data-testid="delete"
+          />
+        }
+        @if (job.state === 'PUBLISHED') {
+          <jhi-button
+            [label]="'myPositionsPage.actionButton.close' | translate"
+            severity="danger"
+            variant="outlined"
+            (click)="onCloseJob(job.jobId)"
+            data-testid="delete"
+          />
+        }
       </div>
     </ng-template>
 

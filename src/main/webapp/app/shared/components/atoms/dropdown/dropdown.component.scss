@@ -2,10 +2,8 @@
   display: flex;
   flex-direction: column;
 
-  // Add styling for labels on the left of the dropdown
-  &.label-left {
-    flex-direction: row;
-    align-items: center;
+  .custom-label {
+    color: var(--p-text-color);
   }
 
   // Add styling for labels on the top of the dropdown
@@ -39,12 +37,15 @@
       padding: 0;
     }
 
+    .p-select-list-container {
+      border-radius: 0.3rem;
+    }
+
     // Override primeng styling of unselected items in dropdown
     .p-dropdown-items,
     .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
     .p-ripple.p-select-option {
       background: var(--p-background-surface);
-      border-radius: 0.3rem;
 
       // Override primeng styling of hover on dropdown items
       &:hover {
@@ -67,7 +68,6 @@
   .p-select-option.p-select-option-selected.p-focus {
     background: var(--p-background-surface-alt);
     color: var(--p-text-primary);
-    border-radius: 0.3rem;
   }
 
   // Override primeng styling of border color when clicking on dropdown field

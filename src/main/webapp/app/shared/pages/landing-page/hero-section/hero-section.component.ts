@@ -18,4 +18,7 @@ export class HeroSectionComponent {
     { image: 'landing-page-hero-section-2', backgroundClass: 'hero-background-landing-page-hero-section-2' },
     { image: 'landing-page-hero-section-3', backgroundClass: 'hero-background-landing-page-hero-section-3' },
   ];
+  openExternalLink(): void {
+    window.open('https://portal.mytum.de/jobs/wissenschaftler', '_blank');
+  }
 }

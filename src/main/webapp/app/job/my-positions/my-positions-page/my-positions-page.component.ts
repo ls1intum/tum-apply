@@ -109,6 +109,13 @@ export class MyPositionsPageComponent {
     this.router.navigate([`/job/edit/${jobId}`]);
   }
 
+  onViewJob(jobId: string): void {
+    if (!jobId) {
+      console.error('Unable to view job with job id:', jobId);
+    }
+    this.router.navigate([`/job/detail/${jobId}`]);
+  }
+
   async onDeleteJob(jobId: string): Promise<void> {
     // TO-DO: adjust confirmation
     const confirmDelete = confirm('Do you really want to delete this job?');
@@ -125,6 +132,22 @@ export class MyPositionsPageComponent {
     }
   }
 
+  async onCloseJob(jobId: string): Promise<void> {
+    // TO-DO: adjust confirmation
+    const confirmClose = confirm('Do you really want to close this job?');
+    if (confirmClose) {
+      try {
+        await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
+        alert('Job successfully closed');
+        await this.loadJobs();
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(`Error closing job: ${error.message}`);
+        }
+      }
+    }
+  }
+
   private async loadJobs(): Promise<void> {
     try {
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
@@ -133,7 +156,6 @@ export class MyPositionsPageComponent {
       }
       const pageData = await firstValueFrom(
         this.jobService.getJobsByProfessor(
-          this.userId(),
           this.pageSize(),
           this.page(),
           undefined, // Optional title filter

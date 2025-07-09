@@ -10,15 +10,8 @@
   display: flex;
   flex-direction: column;
 
-  // Add styling for labels on the left of the field
-  &.label-left {
-    flex-direction: row;
-    align-items: center;
-
-    .input-wrapper,
-    .custom-input {
-      flex: 1;
-    }
+  .custom-label {
+    color: var(--p-text-color);
   }
 
   // Add styling for labels on the top of the field
@@ -36,8 +29,9 @@
   }
 
   .p-inputtext {
-    color: var(--text-primary);
+    color: var(--p-text-primary);
     border: 0.1rem solid var(--p-border-default);
+    background: transparent;
   }
 
   .p-inputtext::placeholder {
@@ -78,6 +72,9 @@
   width: 5rem;
 }
 
+/* -------------------------------
+   Custom Global Styles for Job Card
+---------------------------------- */
 .job-card {
   overflow: hidden;
   border: 0.1rem solid var(--p-primary-color);
@@ -85,6 +82,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--p-background-default);
+  color: var(--p-text-color);
 
   .card-header {
     position: relative;
@@ -166,6 +165,133 @@
   }
 }
 
+/* --------------------------------------------------
+   Custom Global Styles for Atomic Editor Component
+
+   fixes the issue, that the editor originally
+   does not grow with a larger placeholder
+--------------------------------------------------- */
+
+.ql-editor {
+  background: transparent;
+  color: var(--p-text-primary);
+}
+
+.ql-editor.ql-blank {
+  color: var(--p-background-disabled);
+}
+
+.ql-editor.ql-blank::before {
+  content: none;
+}
+
+.ql-editor.ql-blank::after {
+  content: attr(data-placeholder);
+  display: block;
+  font-style: italic;
+  margin-top: -1.15rem;
+  min-height: 0.81rem;
+  pointer-events: none;
+}
+
+/* -------------------------------
+   Primeng Editor Toolbar Styling
+---------------------------------- */
+
+/* Default text color for toolbar buttons and pickers */
+.ql-picker-label,
+.ql-picker-item,
+.p-editor .ql-snow.ql-toolbar button {
+  color: var(--p-text-primary);
+}
+
+/* Default icon styling */
+.p-editor .ql-snow.ql-toolbar .ql-fill {
+  fill: var(--p-text-primary);
+}
+.p-editor .ql-snow.ql-toolbar .ql-stroke {
+  stroke: var(--p-text-primary);
+}
+
+/* Picker dropdown background */
+.ql-picker-options {
+  background: var(--p-background-default);
+}
+
+/* -------------------------------
+   Active State
+---------------------------------- */
+.p-editor .ql-snow.ql-toolbar button.ql-active,
+.p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active,
+.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected {
+  color: var(--p-primary-color);
+}
+
+.p-editor .ql-snow.ql-toolbar button.ql-active .ql-fill {
+  fill: var(--p-primary-color);
+}
+
+.p-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke {
+  stroke: var(--p-primary-color);
+}
+
+/* -------------------------------
+   Hover State
+---------------------------------- */
+.p-editor .ql-snow.ql-toolbar button:hover,
+.p-editor .ql-snow.ql-toolbar .ql-picker-label:hover,
+.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover {
+  color: var(--p-primary-color);
+}
+
+.p-editor .ql-snow.ql-toolbar button:hover .ql-fill {
+  fill: var(--p-primary-color);
+}
+
+.p-editor .ql-snow.ql-toolbar button:hover .ql-stroke,
+.p-editor .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
+.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke {
+  stroke: var(--p-primary-color);
+}
+
+/* -------------------------------
+   Picker Expanded State
+---------------------------------- */
+.p-editor .ql-snow.ql-toolbar .ql-picker.ql-expanded .ql-picker-label {
+  color: var(--p-primary-color);
+}
+
+.p-editor .ql-snow.ql-toolbar .ql-picker.ql-expanded .ql-picker-label .ql-stroke {
+  stroke: var(--p-primary-color);
+}
+
+/* -------------------------------
+   Primeng Editor Border Styling
+---------------------------------- */
+.p-editor-toolbar.ql-toolbar.ql-snow {
+  border-top: 0.1rem solid var(--p-border-default);
+  border-left: 0.1rem solid var(--p-border-default);
+  border-right: 0.1rem solid var(--p-border-default);
+  border-bottom: none;
+}
+
+.p-editor-content.ql-container.ql-snow {
+  border-top: 0.1rem solid var(--p-border-default);
+  border-left: 0.1rem solid var(--p-border-default);
+  border-right: 0.1rem solid var(--p-border-default);
+  border-bottom: 0.1rem solid var(--p-border-default);
+
+  &:focus-within {
+    border-color: var(--p-primary-color);
+  }
+}
+
+.ql-editor ol li[data-list='bullet']:before {
+  content: '•';
+}
+
 /* Styles for the My Positions page */
 .my-positions-container {
   // Align the paginator and table contents
@@ -183,4 +309,25 @@
   .fa-circle-info {
     color: var(--p-primary-color);
   }
+}
+
+/* Styling for links */
+.link {
+  color: var(--p-primary-color);
+
+  &:hover {
+    color: var(--p-primary-color-hover);
+    text-decoration: underline;
+  }
+}
+
+/* Styles for overriding list styles in Job Detail Page */
+.description-text ol,
+.description-text ul {
+  margin-left: 2rem;
+  list-style: initial;
+}
+
+.description-text ol {
+  list-style-type: decimal;
 }

@@ -22,5 +22,39 @@
     align-items: center;
     gap: 2rem;
     align-self: stretch;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 1024px) {
+  .voices-section {
+    padding: 2.5rem 2rem;
+    gap: 2.5rem;
+
+    .title {
+      font-size: 1.75rem;
+    }
+
+    .voices-container {
+      padding: 0 2rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .voices-section {
+    padding: 2rem 1rem;
+    gap: 2rem;
+
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .voices-container {
+      flex-direction: column;
+      padding: 0;
+      gap: 1.5rem;
+    }
   }
 }

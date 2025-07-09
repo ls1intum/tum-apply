@@ -44,6 +44,12 @@ const routes: Routes = [
     loadComponent: () => import('./playground/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
   },
   {
+    path: 'playground/editor',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
+  },
+  {
     path: 'playground/docviewer',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
@@ -78,6 +84,11 @@ const routes: Routes = [
   // ======================================================================================
   // Job
   // ======================================================================================
+  {
+    path: 'job/detail/:job_id',
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./job/job-detail/job-detail.component').then(m => m.JobDetailComponent),
+  },
   {
     path: 'job/create',
     canActivate: [UserRouteAccessService],
@@ -146,6 +157,24 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () => import('./evaluation/application-detail/application-detail.component').then(m => m.ApplicationDetailComponent),
+  },
+
+  // ======================================================================================
+  // Footer
+  // ======================================================================================
+  {
+    path: 'imprint',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/pages/imprint-page/imprint-page.component').then(m => m.ImprintPageComponent),
+    title: 'imprint',
+  },
+  {
+    path: 'privacy',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/pages/privacy-page/privacy-page.component').then(m => m.PrivacyPageComponent),
+    title: 'privacy',
   },
 
   // ======================================================================================

@@ -39,3 +39,66 @@
   display: flex;
   gap: 1rem;
 }
+@media (max-width: 1024px) {
+  .doctoral-journey-section {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+
+    .image-container img {
+      max-width: 100%;
+    }
+
+    .text-container {
+      padding: 2rem;
+      align-items: center;
+
+      .title {
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      .text {
+        text-align: center;
+      }
+    }
+
+    .button-group {
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .doctoral-journey-section {
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .image-container img {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .text-container {
+    padding: 1.5rem;
+    align-items: flex-start; // so that the text is alligned to the left
+    text-align: left;
+
+    .title {
+      font-size: 1.75rem;
+      text-align: left;
+    }
+
+    .text {
+      text-align: left;
+    }
+  }
+
+  .button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

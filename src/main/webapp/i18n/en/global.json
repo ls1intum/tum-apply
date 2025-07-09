@@ -78,6 +78,26 @@
         }
       }
     },
+    "input": {
+      "error": {
+        "required": "This field is required.",
+        "minLength": "This field is required to be at least {{ min }} characters.",
+        "maxLength": "This field cannot be longer than {{ max }} characters.",
+        "pattern": "Invalid format."
+      }
+    },
+    "editor": {
+      "header": {
+        "heading": "Heading",
+        "subheading": "Subheading",
+        "normal": "Normal"
+      },
+      "align": {
+        "center": "center",
+        "right": "right",
+        "justify": "justify"
+      }
+    },
     "field": {
       "id": "ID"
     },
@@ -180,6 +200,5 @@
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
     }
-  },
-  "footer": "This is your footer"
+  }
 }
