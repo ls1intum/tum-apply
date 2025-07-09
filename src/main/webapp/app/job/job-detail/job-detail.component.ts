@@ -62,13 +62,6 @@ export class JobDetailComponent {
     return this.translate.instant('jobDetailPage.noData');
   });
 
-  private jobResourceService = inject(JobResourceService);
-  private accountService = inject(AccountService);
-  private router = inject(Router);
-  private translate = inject(TranslateService);
-  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
-  private location = inject(Location);
-
   readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
     const job = this.jobDetails();
     if (!job) return null;
@@ -79,7 +72,8 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            //label: this.translate.instant('jobDetailPage.actions.apply'),
+            // TO-DO
+            // label: this.translate.instant('jobDetailPage.actions.apply'),
             label: 'Apply',
             severity: 'primary',
             onClick: () => this.onApply(),
@@ -103,7 +97,7 @@ export class JobDetailComponent {
           {
             label: this.translate.instant('myPositionsPage.actionButton.delete'),
             severity: 'danger',
-            onClick: () => this.onDeleteJob(),
+            onClick: () => void this.onDeleteJob(),
             disabled: false,
           },
         ],
@@ -118,7 +112,7 @@ export class JobDetailComponent {
             label: this.translate.instant('myPositionsPage.actionButton.close'),
             severity: 'danger',
             variant: 'outlined',
-            onClick: () => this.onCloseJob(),
+            onClick: () => void this.onCloseJob(),
             disabled: false,
           },
         ],
@@ -141,6 +135,13 @@ export class JobDetailComponent {
     CLOSED: 'danger',
     APPLICANT_FOUND: 'warn',
   });
+
+  private jobResourceService = inject(JobResourceService);
+  private accountService = inject(AccountService);
+  private router = inject(Router);
+  private translate = inject(TranslateService);
+  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
+  private location = inject(Location);
 
   constructor(private route: ActivatedRoute) {
     this.init();
