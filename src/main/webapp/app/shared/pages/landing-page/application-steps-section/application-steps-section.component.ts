@@ -35,4 +35,7 @@ export class ApplicationStepsSectionComponent {
       description: 'landingPage.applicationSteps.steps.4.description',
     },
   ];
+  openExternalLink(): void {
+    window.open('https://www.gs.tum.de/en/gs/path-to-a-doctorate/application/application-steps/', '_blank', 'noopener,noreferrer');
+  }
 }

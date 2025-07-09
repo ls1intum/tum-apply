@@ -1,7 +1,6 @@
 {
   "header": {
     "login": "Anmelden",
-    "register": "Registrieren",
     "logout": "Abmelden"
   }
 }
