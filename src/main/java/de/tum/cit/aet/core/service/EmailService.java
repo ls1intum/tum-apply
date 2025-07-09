@@ -33,7 +33,7 @@ public class EmailService {
     @Value("${aet.email.enabled:false}")
     private boolean emailEnabled;
 
-    @Value("${aet.email.from}")
+    @Value("${aet.email.from:test}")
     private String from;
 
     public EmailService(
