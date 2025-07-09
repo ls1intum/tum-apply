@@ -109,7 +109,7 @@ export class JobDetailComponent {
         ],
       };
     }
-    // Case 3: PUBLISHED → show Edit + Close buttons
+    // Case 3: PUBLISHED → show Close button
     if (job.jobState === 'PUBLISHED') {
       return {
         direction: 'horizontal',
