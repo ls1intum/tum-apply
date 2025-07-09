@@ -1,3 +1,4 @@
+@use '../../../../../content/scss/breakpoints' as bp;
 .application-steps-section {
   display: flex;
   padding: 6.25rem 0;
@@ -28,7 +29,7 @@
     }
   }
 }
-@media (max-width: 1024px) {
+@media (max-width: bp.$lg) {
   .application-steps-section {
     padding: 4rem 4rem;
     gap: 4rem;
@@ -47,7 +48,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: bp.$md) {
   .application-steps-section {
     padding: 3rem 1rem;
     gap: 3rem;
