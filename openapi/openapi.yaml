@@ -62,6 +62,59 @@
         }
       }
     },
+    "/api/jobs/changeState/{jobId}": {
+      "put": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "changeJobState",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "jobState",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "shouldRejectRemainingApplications",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications": {
       "put": {
         "tags": [
@@ -2021,7 +2074,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "projects": {
@@ -2107,7 +2161,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "desiredDate": {
@@ -2261,7 +2316,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "projects": {
@@ -2465,13 +2521,13 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
@@ -2496,12 +2552,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -2690,7 +2746,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "desiredStartDate": {
@@ -3003,9 +3060,6 @@
               "CLOSED",
               "APPLICANT_FOUND"
             ]
-          },
-          "belongsToResearchGroup": {
-            "type": "boolean"
           }
         },
         "required": [
@@ -3168,13 +3222,13 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
@@ -3199,12 +3253,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -3244,7 +3298,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "jobName": {
@@ -3334,7 +3389,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "jobTitle": {
@@ -3488,7 +3544,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "timeSinceCreation": {
