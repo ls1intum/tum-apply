@@ -33,6 +33,9 @@ public class EmailService {
     @Value("${aet.email.enabled:false}")
     private boolean emailEnabled;
 
+    @Value("${aet.email.from}")
+    private String from;
+
     public EmailService(
         TemplateService templateService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
@@ -119,6 +122,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+            helper.setFrom(from);
             helper.setTo(email.getTo().toArray(new String[0]));
 
             if (!email.getCc().isEmpty()) {

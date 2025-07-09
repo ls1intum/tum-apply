@@ -127,3 +127,4 @@ jhipster:
 aet:
   email:
     enabled:
+    from:
