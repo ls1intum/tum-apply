@@ -52,6 +52,59 @@
         }
       }
     },
+    "/api/jobs/changeState/{jobId}": {
+      "put": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "changeJobState",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "jobState",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "shouldRejectRemainingApplications",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications": {
       "put": {
         "tags": [
@@ -1277,7 +1330,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "projects": {
@@ -1363,7 +1417,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "desiredDate": {
@@ -1457,6 +1512,48 @@
         "required": [
           "jobId",
           "title"
+        ]
+      },
+      "CreateApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "applicant": {
+            "$ref": "#/components/schemas/ApplicantDTO"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "applicant",
+          "applicationState",
+          "jobId"
         ]
       },
       "MultipartUploadRequest": {
@@ -1858,7 +1955,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "desiredStartDate": {
@@ -2409,7 +2507,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "jobName": {
@@ -2499,7 +2598,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "jobTitle": {
@@ -2630,7 +2730,8 @@
               "ACCEPTED",
               "IN_REVIEW",
               "REJECTED",
-              "WITHDRAWN"
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           },
           "timeSinceCreation": {
