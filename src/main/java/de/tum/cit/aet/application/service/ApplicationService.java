@@ -9,7 +9,6 @@ import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
-import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.job.domain.Job;
@@ -33,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
-    private final CurrentUserService currentUserService;
     private final DocumentService documentService;
     private final DocumentDictionaryService documentDictionaryService;
     private final ApplicantRepository applicantRepository;
@@ -57,8 +55,7 @@ public class ApplicationService {
         ) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        UUID userId = currentUserService.getUserId();
-        Applicant applicant = applicantRepository.getReferenceById(userId);
+        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
         applicant.setFirstName(createApplicationDTO.applicant().user().firstName());
         applicant.setLastName(createApplicationDTO.applicant().user().lastName());
         applicant.setGender(createApplicationDTO.applicant().user().gender());
@@ -152,9 +149,7 @@ public class ApplicationService {
         );
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
-        UUID userId = currentUserService.getUserId();
-        Applicant applicant = applicantRepository.getReferenceById(userId);
-
+        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
         applicant.setFirstName(applicantDTO.user().firstName());
         applicant.setLastName(applicantDTO.user().lastName());
         applicant.setGender(applicantDTO.user().gender());
