@@ -10,14 +10,13 @@ import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
 import { ApplicationEvaluationDetailDTO, ApplicationEvaluationDetailListDTO, ApplicationEvaluationResourceService } from '../../generated';
-import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
 import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
 
 const WINDOW_SIZE = 7;
 
 @Component({
   selector: 'jhi-application-detail',
-  imports: [ApplicationCarouselComponent, FilterSortBarComponent, RatingComponent, ApplicationDetailCardComponent, TranslateModule],
+  imports: [ApplicationCarouselComponent, FilterSortBarComponent, ApplicationDetailCardComponent, TranslateModule],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
 })

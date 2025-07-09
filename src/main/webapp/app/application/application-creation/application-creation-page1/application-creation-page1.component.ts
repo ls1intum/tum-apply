@@ -148,13 +148,14 @@ export default class ApplicationCreationPage1Component {
           ...this.data(),
           ...normalizedValue,
         });
-
         this.valid.emit(form.valid);
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
         this.valid.emit(form.valid);
       });
+
+      this.valid.emit(form.valid);
 
       onCleanup(() => {
         valueSubscription.unsubscribe();

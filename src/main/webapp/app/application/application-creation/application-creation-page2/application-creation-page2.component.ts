@@ -95,6 +95,8 @@ export default class ApplicationCreationPage2Component {
         this.valid.emit(form.valid);
       });
 
+      this.valid.emit(form.valid);
+
       onCleanup(() => {
         valueSubscription.unsubscribe();
         statusSubscription.unsubscribe();

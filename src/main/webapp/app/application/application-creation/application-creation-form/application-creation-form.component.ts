@@ -90,14 +90,13 @@ export default class ApplicationCreationFormComponent {
       this.sendCreateApplicationData(state);
     };
 
-    const deleteApplication = (): void => {
-      this.deleteApplication();
-    };
-
     const steps: StepData[] = [];
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const page1Valid = this.page1Valid();
+    const page2Valid = this.page2Valid();
+    const allPagesValid = this.allPagesValid();
     if (panel1) {
       steps.push({
         name: 'Personal Information',
@@ -115,19 +114,10 @@ export default class ApplicationCreationFormComponent {
         ],
         buttonGroupNext: [
           {
-            severity: 'danger',
-            onClick() {
-              deleteApplication();
-            },
-            disabled: false,
-            label: 'Delete',
-            changePanel: false,
-          },
-          {
             severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
-            disabled: false,
+            disabled: !page1Valid,
             label: 'Next',
             changePanel: true,
           },
@@ -151,19 +141,10 @@ export default class ApplicationCreationFormComponent {
         ],
         buttonGroupNext: [
           {
-            severity: 'danger',
-            onClick() {
-              deleteApplication();
-            },
-            disabled: false,
-            label: 'Delete',
-            changePanel: false,
-          },
-          {
             severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
-            disabled: false,
+            disabled: !page2Valid,
             label: 'Next',
             changePanel: true,
           },
@@ -197,21 +178,12 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
           {
-            severity: 'danger',
-            onClick() {
-              deleteApplication();
-            },
-            disabled: false,
-            label: 'Delete',
-            changePanel: false,
-          },
-          {
             severity: 'primary',
             icon: 'paper-plane',
             onClick() {
               sendData('SENT');
             },
-            disabled: this.allPagesValid(),
+            disabled: !allPagesValid,
             label: 'Send',
             changePanel: false,
           },
@@ -388,28 +360,6 @@ export default class ApplicationCreationFormComponent {
           console.error('Failed to save application:', err);
         },
       });
-    }
-  }
-
-  async deleteApplication(): Promise<void> {
-    const confirmResult = confirm('Are you sure you want to delete this application?');
-    if (!confirmResult) {
-      return;
-    }
-    const router = this.router;
-    const applicationId = this.applicationId();
-    if (applicationId !== undefined && applicationId.trim().length !== 0) {
-      try {
-        await firstValueFrom(this.applicationResourceService.deleteApplication(applicationId));
-        alert('Application sucessfully deleted');
-        router.navigate(['/']);
-      } catch (err) {
-        alert('Error deleting this application' + (err as HttpErrorResponse).statusText);
-        console.error('Failed to delete this application');
-      }
-    } else {
-      alert('There was an error because of an invalid applicationId');
-      this.router.navigate(['/']);
     }
   }
 

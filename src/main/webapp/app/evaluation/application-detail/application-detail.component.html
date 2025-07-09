@@ -17,11 +17,7 @@
   />
   @if (this.currentApplication(); as application) {
     <div class="w-full mt-8">
-      <jhi-application-detail-card [application]="application.applicationDetailDTO">
-        <div slot-rating>
-          <jhi-rating [rating]="application.rating" />
-        </div>
-      </jhi-application-detail-card>
+      <jhi-application-detail-card [application]="application.applicationDetailDTO" />
     </div>
   }
 </div>
