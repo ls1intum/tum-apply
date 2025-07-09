@@ -14,8 +14,8 @@
     [label]="label()"
     [rounded]="label() === undefined"
     [severity]="severity()"
+    [styleClass]="(label() === undefined ? 'rounded-full w-14 h-14' : '') + (fullWidth() ? ' w-full' : '')"
     [variant]="variant()"
-    [styleClass]="label() === undefined ? 'rounded-full w-14 h-14' : ''"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />

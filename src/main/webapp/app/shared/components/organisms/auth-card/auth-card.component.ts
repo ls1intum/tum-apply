@@ -34,12 +34,14 @@ export class AuthCardComponent {
   defaultLoginProvider(): ButtonGroupData {
     return {
       direction: 'vertical',
+      fullWidth: true,
       buttons: [
         {
           label: this.mode() === 'register' ? 'Register with Email' : 'Sign in with Email',
           icon: 'at',
           severity: 'primary',
           disabled: false,
+          fullWidth: true,
           onClick: () => this.onMicrosoftLogin(),
         },
         {
@@ -47,6 +49,7 @@ export class AuthCardComponent {
           severity: 'primary',
           variant: 'outlined',
           disabled: false,
+          fullWidth: true,
           onClick() {},
         },
       ],
@@ -56,6 +59,7 @@ export class AuthCardComponent {
   identityProvider(): ButtonGroupData {
     return {
       direction: 'vertical',
+      fullWidth: true,
       buttons: [
         {
           label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
@@ -63,6 +67,7 @@ export class AuthCardComponent {
           severity: 'primary',
           variant: 'outlined',
           disabled: false,
+          fullWidth: true,
           onClick: () => this.onMicrosoftLogin(),
         },
         {
@@ -71,6 +76,7 @@ export class AuthCardComponent {
           severity: 'primary',
           variant: 'outlined',
           disabled: false,
+          fullWidth: true,
           onClick() {},
         },
         {
@@ -79,6 +85,7 @@ export class AuthCardComponent {
           severity: 'primary',
           variant: 'outlined',
           disabled: false,
+          fullWidth: true,
           onClick() {},
         },
       ],

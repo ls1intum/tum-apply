@@ -16,6 +16,7 @@ export type Button = {
   label?: string;
   numberOfFavorites?: number;
   disabled: boolean;
+  fullWidth?: boolean;
   onClick: VoidFunction;
 };
 
@@ -34,6 +35,7 @@ export class ButtonComponent {
   label = input<string | undefined>(undefined);
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
+  fullWidth = input<boolean>(false);
 
   iconPrefix(): 'fas' | 'fab' {
     if (this.icon() === 'microsoft' || this.icon() === 'google' || this.icon() === 'apple') {
