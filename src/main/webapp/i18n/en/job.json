@@ -15,7 +15,8 @@
     "actionButton": {
       "view": "View",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "close": "Close"
     },
     "state": {
       "draft": "Draft",
@@ -55,6 +56,7 @@
     "dataPrivacy": {
       "dataProtectionInformation": "Data Protection Information",
       "dataProtectionText": "When you apply for a position with the Technical University of Munich (TUM), you are submitting personal information. With regard to personal information, please take note of the <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise gemäß Art. 13 Datenschutz-Grundverordnung (DSGVO) zur Erhebung und Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung. </a>(data protection information on collecting and processing personal data contained in your application in accordance with Art. 13 of the General Data Protection Regulation (GDPR)). By submitting your application, you confirm that you have acknowledged the above data protection information of TUM."
-    }
+    },
+    "noData": "Not Specified"
   }
 }

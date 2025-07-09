@@ -23,21 +23,15 @@ export class DoctoralJourneySectionComponent {
           severity: 'secondary',
           variant: 'outlined',
           disabled: false,
-          // Remove href, will be handled via (click)
-          onClick: () => this.redirectTo('https://www.tum.de/en/about-tum'),
+          onClick: () => window.open('https://www.gs.tum.de/en/gs/path-to-a-doctorate/why-do-your-doctorate-at-tum/', '_blank'),
         },
         {
           label: this.translate.instant('landingPage.doctoralJourney.button2'),
           severity: 'primary',
           disabled: false,
-          // Remove href, will be handled via (click)
-          onClick: () => this.redirectTo('https://www.gs.tum.de/en/gs/doctorate-at-tum/'),
+          onClick: () => window.open('https://www.gs.tum.de/en/gs/doctorate-at-tum/', '_blank'),
         },
       ],
     };
-  }
-
-  redirectTo(url: string): void {
-    window.open(url, '_blank');
   }
 }
