@@ -1,4 +1,4 @@
-import { Component, WritableSignal, inject } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -16,6 +16,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
   imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
   bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
@@ -45,13 +46,6 @@ export class HeaderComponent {
   navigateToLogin(): void {
     const currentUrl = this.router.url;
     void this.router.navigate(['/login'], {
-      queryParams: { redirect: currentUrl },
-    });
-  }
-
-  navigateToRegister(): void {
-    const currentUrl = this.router.url;
-    void this.router.navigate(['/register'], {
       queryParams: { redirect: currentUrl },
     });
   }

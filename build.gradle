@@ -12,7 +12,7 @@ plugins {
     id "idea"
     id "java"
     id "jacoco"
-    id "com.diffplug.spotless" version "7.0.3"
+    id "com.diffplug.spotless" version "7.1.0"
     id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
     id "com.github.ben-manes.versions" version "0.52.0"
     id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
@@ -23,7 +23,7 @@ plugins {
     id "org.sonarqube" version "6.2.0.5505"
     id "org.springframework.boot" version "${springBootVersion}"
     id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
-    id "org.openapi.generator" version "7.12.0"
+    id "org.openapi.generator" version "7.14.0"
 }
 
 group = "de.tum.cit.aet"
