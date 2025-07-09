@@ -2,6 +2,7 @@ package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
@@ -85,6 +86,24 @@ public class JobResource {
     public ResponseEntity<Void> deleteJob(@PathVariable UUID jobId) {
         jobService.deleteJob(jobId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * {@code PUT /api/jobs/changeState/{jobId}} : Change the state of a job posting and optionally reject all associated applications.
+     *
+     * @param jobId the ID of the job to delete.
+     * @param jobState the new state that the job should be updated with.
+     * @param shouldRejectRemainingApplications the boolean representing whether all corresponding published applications should be deleted or not, if the new job state is APPLICANT_FOUND
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated job.
+     */
+    @PutMapping("/changeState/{jobId}")
+    public ResponseEntity<JobFormDTO> changeJobState(
+        @PathVariable UUID jobId,
+        @RequestParam JobState jobState,
+        @RequestParam(required = false) boolean shouldRejectRemainingApplications
+    ) {
+        JobFormDTO updatedJob = jobService.changeJobState(jobId, jobState, shouldRejectRemainingApplications);
+        return ResponseEntity.ok(updatedJob);
     }
 
     /**
