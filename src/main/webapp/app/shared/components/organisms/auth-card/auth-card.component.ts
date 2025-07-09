@@ -10,21 +10,11 @@ import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-gr
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { AccountService } from '../../../../core/auth/account.service';
 import { KeycloakService } from '../../../../core/auth/keycloak.service';
-import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [
-    ButtonComponent,
-    ButtonModule,
-    ButtonGroupComponent,
-    CredentialsGroupComponent,
-    CommonModule,
-    DividerModule,
-    TabsModule,
-    RouterModule,
-  ],
+  imports: [ButtonComponent, ButtonModule, ButtonGroupComponent, CommonModule, DividerModule, TabsModule, RouterModule],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
 })
@@ -41,29 +31,54 @@ export class AuthCardComponent {
     this.authTabService.setSelectedTab(Number(newValue));
   }
 
-  studentButtons(): ButtonGroupData {
+  defaultLoginProvider(): ButtonGroupData {
+    return {
+      direction: 'vertical',
+      buttons: [
+        {
+          label: this.mode() === 'register' ? 'Register with Email' : 'Sign in with Email',
+          icon: 'at',
+          severity: 'primary',
+          disabled: false,
+          onClick: () => this.onMicrosoftLogin(),
+        },
+        {
+          label: this.mode() === 'register' ? 'Register with TUM' : 'Sign in with TUM',
+          severity: 'primary',
+          variant: 'outlined',
+          disabled: false,
+          onClick() {},
+        },
+      ],
+    };
+  }
+
+  identityProvider(): ButtonGroupData {
     return {
       direction: 'vertical',
       buttons: [
         {
           label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
           icon: 'microsoft',
-          severity: 'secondary',
+          severity: 'primary',
+          variant: 'outlined',
           disabled: false,
           onClick: () => this.onMicrosoftLogin(),
         },
         {
           label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
           icon: 'apple',
-          severity: 'secondary',
-          disabled: true,
+          severity: 'primary',
+          variant: 'outlined',
+          disabled: false,
           onClick() {},
         },
         {
           label: this.mode() === 'register' ? 'Register with Google' : 'Sign in with Google',
           icon: 'google',
-          severity: 'secondary',
-          disabled: true,
+          severity: 'primary',
+          variant: 'outlined',
+          disabled: false,
           onClick() {},
         },
       ],

@@ -52,14 +52,14 @@ describe('AuthCardComponent', () => {
   it('should show correct Microsoft label in login mode', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'login' });
     fixture.detectChanges();
-    const btnData = component.studentButtons().buttons[0];
+    const btnData = component.identityProvider().buttons[0];
     expect(btnData.label).toBe('Sign in with Microsoft');
   });
 
   it('should show correct Microsoft label in register mode', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'register' });
     fixture.detectChanges();
-    const btnData = component.studentButtons().buttons[0];
+    const btnData = component.identityProvider().buttons[0];
     expect(btnData.label).toBe('Register with Microsoft');
   });
 
