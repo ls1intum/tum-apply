@@ -51,7 +51,7 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    void this.accountService.signOut(this.router.url);
+    void this.accountService.signOut(window.location.origin + '/');
   }
 
   toggleColorScheme(): void {
