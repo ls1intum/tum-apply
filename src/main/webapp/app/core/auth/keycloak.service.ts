@@ -15,7 +15,7 @@ export interface UserProfile {
 export class KeycloakService {
   profile: UserProfile | undefined;
 
-  public readonly keycloak = new Keycloak({
+  private readonly keycloak = new Keycloak({
     url: environment.keycloak.url,
     realm: environment.keycloak.realm,
     clientId: environment.keycloak.clientId,
@@ -28,7 +28,7 @@ export class KeycloakService {
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: true,
+      checkLoginIframe: false,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
     };
