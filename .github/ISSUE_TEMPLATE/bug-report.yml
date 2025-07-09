@@ -1,4 +1,4 @@
-name: '🐛 Bug Report'
+name: '🐛 Bug Report (User)'
 description: Something on TumApply is not working as expected? Create a report to help us improve.
 labels: [bug]
 body:
