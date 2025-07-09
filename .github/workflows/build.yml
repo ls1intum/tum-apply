@@ -38,15 +38,6 @@ jobs:
       KEYCLOAK_REALM: ${{ steps.set-vars.outputs.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ steps.set-vars.outputs.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ steps.set-vars.outputs.KEYCLOAK_ENABLE_LOGGING }}
-      KEYCLOAK_ADMIN: ${{ steps.set-vars.outputs.KEYCLOAK_ADMIN }}
-      KEYCLOAK_ADMIN_PASSWORD: ${{ steps.set-vars.outputs.KEYCLOAK_ADMIN_PASSWORD }}
-      MYSQL_DATABASE: ${{ steps.set-vars.outputs.MYSQL_DATABASE }}
-      MYSQL_ROOT_PASSWORD: ${{ steps.set-vars.outputs.MYSQL_ROOT_PASSWORD }}
-      SPRING_DATASOURCE_URL: ${{ steps.set-vars.outputs.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ steps.set-vars.outputs.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ steps.set-vars.outputs.SPRING_DATASOURCE_PASSWORD }}
-      SPRING_LIQUIBASE_URL: ${{ steps.set-vars.outputs.SPRING_LIQUIBASE_URL }}
-      SPRING_PROFILES_ACTIVE: ${{ steps.set-vars.outputs.SPRING_PROFILES_ACTIVE }}
     steps:
       - id: set-vars
         run: |
@@ -54,15 +45,6 @@ jobs:
           echo "KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}" >> "$GITHUB_OUTPUT"
           echo "KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}" >> "$GITHUB_OUTPUT"
           echo "KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}" >> "$GITHUB_OUTPUT"
-          echo "KEYCLOAK_ADMIN=${{ vars.KEYCLOAK_ADMIN }}" >> "$GITHUB_OUTPUT"
-          echo "KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}" >> "$GITHUB_OUTPUT"
-          echo "MYSQL_DATABASE=${{ vars.MYSQL_DATABASE }}" >> "$GITHUB_OUTPUT"
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> "$GITHUB_OUTPUT"
-          echo "SPRING_DATASOURCE_URL=${{ vars.SPRING_DATASOURCE_URL }}" >> "$GITHUB_OUTPUT"
-          echo "SPRING_DATASOURCE_USERNAME=${{ vars.SPRING_DATASOURCE_USERNAME }}" >> "$GITHUB_OUTPUT"
-          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> "$GITHUB_OUTPUT"
-          echo "SPRING_LIQUIBASE_URL=${{ vars.SPRING_LIQUIBASE_URL }}" >> "$GITHUB_OUTPUT"
-          echo "SPRING_PROFILES_ACTIVE=${{ vars.SPRING_PROFILES_ACTIVE }}" >> "$GITHUB_OUTPUT"
   build:
     needs: prepare-vars
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
@@ -74,13 +56,4 @@ jobs:
         KEYCLOAK_REALM=${{ needs.prepare-vars.outputs.KEYCLOAK_REALM }}
         KEYCLOAK_CLIENT_ID=${{ needs.prepare-vars.outputs.KEYCLOAK_CLIENT_ID }}
         KEYCLOAK_ENABLE_LOGGING=${{ needs.prepare-vars.outputs.KEYCLOAK_ENABLE_LOGGING }}
-        KEYCLOAK_ADMIN=${{ needs.prepare-vars.outputs.KEYCLOAK_ADMIN }}
-        KEYCLOAK_ADMIN_PASSWORD=${{ needs.prepare-vars.outputs.KEYCLOAK_ADMIN_PASSWORD }}
-        MYSQL_DATABASE=${{ needs.prepare-vars.outputs.MYSQL_DATABASE }}
-        MYSQL_ROOT_PASSWORD=${{ needs.prepare-vars.outputs.MYSQL_ROOT_PASSWORD }}
-        SPRING_DATASOURCE_URL=${{ needs.prepare-vars.outputs.SPRING_DATASOURCE_URL }}
-        SPRING_DATASOURCE_USERNAME=${{ needs.prepare-vars.outputs.SPRING_DATASOURCE_USERNAME }}
-        SPRING_DATASOURCE_PASSWORD=${{ needs.prepare-vars.outputs.SPRING_DATASOURCE_PASSWORD }}
-        SPRING_LIQUIBASE_URL=${{ needs.prepare-vars.outputs.SPRING_LIQUIBASE_URL }}
-        SPRING_PROFILES_ACTIVE=${{ needs.prepare-vars.outputs.SPRING_PROFILES_ACTIVE }}
     secrets: inherit
