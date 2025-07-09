@@ -28,7 +28,7 @@ export class KeycloakService {
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: false,
+      checkLoginIframe: true,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
     };
@@ -80,6 +80,8 @@ export class KeycloakService {
    * Triggers the Keycloak logout and redirect.
    */
   async logout(redirectUri?: string): Promise<void> {
+    console.log(redirectUri);
+    console.log(redirectUri ?? window.location.origin + '/');
     try {
       await this.keycloak.logout({
         redirectUri: redirectUri ?? window.location.origin + '/',
