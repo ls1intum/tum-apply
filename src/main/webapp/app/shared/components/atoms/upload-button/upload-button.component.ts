@@ -107,22 +107,21 @@ export class UploadButtonComponent {
     }
   }
 
-  renameDocument(documentInfo: DocumentInformationHolderDTO): void {
+  async renameDocument(documentInfo: DocumentInformationHolderDTO): Promise<void> {
     const newName = documentInfo.name ?? '';
     if (!newName) {
       return;
     }
 
     const documentId = documentInfo.id;
-    firstValueFrom(this.applicationService.renameDocument(documentId, newName))
-      .then(() => {
-        const updatedDocs = this.documentIds()?.map(doc => (doc.id === documentId ? { ...doc, name: newName } : doc)) ?? [];
-        this.documentIds.set(updatedDocs);
-      })
-      .catch((err: unknown) => {
-        console.error('Failed to rename document', err);
-        alert('Failed to rename document');
-      });
+    try {
+      await firstValueFrom(this.applicationService.renameDocument(documentId, newName));
+      const updatedDocs = this.documentIds()?.map(doc => (doc.id === documentId ? { ...doc, name: newName } : doc)) ?? [];
+      this.documentIds.set(updatedDocs);
+    } catch (err) {
+      console.error('Failed to rename document', err);
+      alert('Failed to rename document');
+    }
   }
 
   formatSize(bytes: number): string {

@@ -89,7 +89,7 @@ describe('UploadButtonComponent', () => {
 
     const updatedDoc = { ...doc, name: 'New Name' };
 
-    component.renameDocument(updatedDoc);
+    await component.renameDocument(updatedDoc);
 
     expect(spy).toHaveBeenCalledWith('123', 'New Name');
     expect(component.documentIds()).toEqual([{ id: '123', name: 'New Name', size: 1024 }]);
