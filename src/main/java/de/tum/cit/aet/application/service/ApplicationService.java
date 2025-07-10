@@ -13,6 +13,7 @@ import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.job.domain.Job;
@@ -21,6 +22,7 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,10 +38,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
-    private final DocumentService documentService;
-    private final DocumentDictionaryService documentDictionaryService;
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
+    private final UserRepository userRepository;
+
+    private final DocumentService documentService;
+    private final DocumentDictionaryService documentDictionaryService;
+    private final CurrentUserService currentUserService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -185,7 +190,8 @@ public class ApplicationService {
         applicationRepository.deleteById(applicationId);
     }
 
-    public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
+    public List<ApplicationOverviewDTO> getAllApplications(int pageSize, int pageNumber) {
+        UUID applicantId = currentUserService.getUserId();
         return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
     }
 
@@ -238,9 +244,10 @@ public class ApplicationService {
      *
      * @param cv the uploaded CV file
      * @param application the application the CV belongs to
-     * @param user the user uploading the document
      */
-    public void uploadCV(MultipartFile cv, Application application, User user) {
+    public void uploadCV(MultipartFile cv, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Document document = documentService.upload(cv, user);
         updateDocumentDictionaries(application, DocumentType.CV, Set.of(document));
     }
@@ -250,9 +257,10 @@ public class ApplicationService {
      *
      * @param references the uploaded reference files
      * @param application the application the references belong to
-     * @param user the user uploading the documents
      */
-    public void uploadReferences(List<MultipartFile> references, Application application, User user) {
+    public void uploadReferences(List<MultipartFile> references, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
     }
@@ -262,9 +270,10 @@ public class ApplicationService {
      *
      * @param bachelorTranscripts the uploaded bachelor transcript files
      * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
      */
-    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
+    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
     }
@@ -274,9 +283,10 @@ public class ApplicationService {
      *
      * @param masterTranscripts the uploaded master transcript files
      * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
      */
-    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
+    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT, documents);
     }

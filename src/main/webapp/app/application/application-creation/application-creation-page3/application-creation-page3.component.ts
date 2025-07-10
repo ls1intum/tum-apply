@@ -68,6 +68,8 @@ export default class ApplicationCreationPage3Component {
       experiences: [currentData.experiences, Validators.required],
       motivation: [currentData.motivation, Validators.required],
       skills: [currentData.skills, Validators.required],
+      // optional
+      desiredStartDate: [currentData.desiredStartDate],
     });
   });
 
@@ -94,5 +96,17 @@ export default class ApplicationCreationPage3Component {
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  emitChanged(): void {
+    this.changed.emit(true);
+  }
+
+  setDesiredStartDate($event: string | undefined): void {
+    this.data.set({
+      ...this.data(),
+      desiredStartDate: $event ?? '',
+    });
+    this.emitChanged();
   }
 }

@@ -8,8 +8,6 @@ import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.usermanagement.domain.User;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -139,46 +137,14 @@ public class ApplicationResource {
         @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
         @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
     ) {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
         // purposes
-        return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
+        return ResponseEntity.ok(applicationService.getAllApplications(pageSize, pageNumber));
     }
 
     @GetMapping("/pages/length/{applicantId}")
     public ResponseEntity<Long> getApplicationPagesLength(@PathVariable UUID applicantId) {
         // purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
-    }
-
-    // TODO this is only for testing and can be removed
-    /**
-     * Test endpoint for uploading multiple documents related to an application.
-     * <p>
-     * <b>Note:</b> This endpoint is for testing purposes only and will be removed.
-     * File uploads should be integrated into {@code createApplication()} and
-     * {@code updateApplication()}.
-     * </p>
-     *
-     * @param applicationId the ID of the application to associate the uploaded
-     *                      documents with
-     * @param files         the list of documents to be uploaded as
-     *                      {@link MultipartFile}s
-     * @return {@link ResponseEntity} with HTTP 200 OK if the upload succeeds
-     */
-    @Hidden
-    @PostMapping("/{applicationId}/test-documents")
-    public ResponseEntity<Void> testUploadDocuments(@PathVariable UUID applicationId, @RequestParam("files") List<MultipartFile> files) {
-        // simulate current user
-        User user = new User();
-        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
-
-        Application application = new Application();
-        application.setApplicationId(UUID.fromString(applicationId.toString()));
-
-        // applicationService.uploadBachelorTranscripts(files, application, user);
-        applicationService.uploadMasterTranscripts(files, application, user);
-
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -225,27 +191,21 @@ public class ApplicationResource {
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
     ) {
-        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        // simulate current user
-        User user = new User();
-        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
-
         Application application = new Application();
         application.setApplicationId(UUID.fromString(applicationId.toString()));
 
         switch (documentType) {
             case BACHELOR_TRANSCRIPT:
-                applicationService.uploadBachelorTranscripts(files, application, user);
+                applicationService.uploadBachelorTranscripts(files, application);
                 break;
             case MASTER_TRANSCRIPT:
-                applicationService.uploadMasterTranscripts(files, application, user);
+                applicationService.uploadMasterTranscripts(files, application);
                 break;
             case REFERENCE:
-                applicationService.uploadReferences(files, application, user);
+                applicationService.uploadReferences(files, application);
                 break;
             case CV:
-                applicationService.uploadCV(files.getFirst(), application, user);
+                applicationService.uploadCV(files.getFirst(), application);
                 break; // TODO only one file allowed
             default:
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
