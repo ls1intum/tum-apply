@@ -8,6 +8,7 @@
   padding: 1rem;
   max-width: 25rem;
   width: 100%;
+  pointer-events: none;
 
   .title {
     color: var(--p-text-primary);
