@@ -11,7 +11,6 @@ import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.notification.Email;
-import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.EmailService;
@@ -38,7 +37,6 @@ public class ApplicationService {
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
     private final EmailService emailService;
-    private final CurrentUserService currentUserService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -58,9 +56,7 @@ public class ApplicationService {
         ) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        UUID applicantId = currentUserService.getUserId();
-        Applicant applicant = applicantRepository.getReferenceById(applicantId);
-
+        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
         applicant.setFirstName(createApplicationDTO.applicant().user().firstName());
         applicant.setLastName(createApplicationDTO.applicant().user().lastName());
         applicant.setGender(createApplicationDTO.applicant().user().gender());
@@ -154,9 +150,7 @@ public class ApplicationService {
         );
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
-        UUID applicantId = currentUserService.getUserId();
-        Applicant applicant = applicantRepository.getReferenceById(applicantId);
-
+        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
         applicant.setFirstName(applicantDTO.user().firstName());
         applicant.setLastName(applicantDTO.user().lastName());
         applicant.setGender(applicantDTO.user().gender());
@@ -289,9 +283,9 @@ public class ApplicationService {
     /**
      * Uploads a single CV document and updates the dictionary mapping.
      *
-     * @param cv          the uploaded CV file
+     * @param cv the uploaded CV file
      * @param application the application the CV belongs to
-     * @param user        the user uploading the document
+     * @param user the user uploading the document
      */
     public void uploadCV(MultipartFile cv, Application application, User user) {
         Document document = documentService.upload(cv, user);
@@ -301,9 +295,9 @@ public class ApplicationService {
     /**
      * Uploads multiple reference documents and updates the dictionary mapping.
      *
-     * @param references  the uploaded reference files
+     * @param references the uploaded reference files
      * @param application the application the references belong to
-     * @param user        the user uploading the documents
+     * @param user the user uploading the documents
      */
     public void uploadReferences(List<MultipartFile> references, Application application, User user) {
         Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
@@ -314,8 +308,8 @@ public class ApplicationService {
      * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
      *
      * @param bachelorTranscripts the uploaded bachelor transcript files
-     * @param application         the application the transcripts belong to
-     * @param user                the user uploading the documents
+     * @param application the application the transcripts belong to
+     * @param user the user uploading the documents
      */
     public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
         Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
@@ -326,8 +320,8 @@ public class ApplicationService {
      * Uploads multiple master transcript documents and updates the dictionary mapping.
      *
      * @param masterTranscripts the uploaded master transcript files
-     * @param application       the application the transcripts belong to
-     * @param user              the user uploading the documents
+     * @param application the application the transcripts belong to
+     * @param user the user uploading the documents
      */
     public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
         Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
@@ -337,9 +331,9 @@ public class ApplicationService {
     /**
      * Updates the document dictionary entries for a given application and document type.
      *
-     * @param application  the application to associate the documents with
-     * @param type         the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
-     * @param newDocuments the set of newly uploaded documents to associate
+     * @param application    the application to associate the documents with
+     * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
+     * @param newDocuments   the set of newly uploaded documents to associate
      */
     protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Document> newDocuments) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
@@ -350,7 +344,7 @@ public class ApplicationService {
      * Retrieves the set of document IDs for the given application filtered by the specified document type.
      *
      * @param application the application whose documents are queried; must not be {@code null}
-     * @param type        the document type to filter by; must not be {@code null}
+     * @param type the document type to filter by; must not be {@code null}
      * @return a set of document IDs matching the given application and document type; never {@code null}
      */
     public Set<UUID> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {

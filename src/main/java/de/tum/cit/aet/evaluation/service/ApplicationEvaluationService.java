@@ -2,11 +2,8 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.notification.Email;
-import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
@@ -38,7 +35,6 @@ public class ApplicationEvaluationService {
 
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
-    private final EmailService emailService;
 
     /**
      * Retrieves a paginated and optionally sorted list of applications for a given research group.
@@ -57,26 +53,6 @@ public class ApplicationEvaluationService {
         EvaluationFilterDTO filterDTO
     ) {
         UUID researchGroupId = researchGroup.getResearchGroupId();
-
-        //TODO remove
-        Email email = Email.builder()
-            .to("moritzschmidt1@gmail.com")
-            .template("application_withdrawn")
-            .language(Language.GERMAN)
-            .content(
-                Map.of(
-                    "applicantFirstName",
-                    "Moritz",
-                    "applicantLastName",
-                    "Schmidt",
-                    "jobTitle",
-                    "Job Title",
-                    "researchGroupName",
-                    "Test Research Group"
-                )
-            )
-            .build();
-        emailService.send(email);
 
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters());

@@ -4,7 +4,6 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,12 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicationResource {
 
     private final ApplicationService applicationService;
-    private final CurrentUserService currentUserService;
 
     @Autowired
-    public ApplicationResource(ApplicationService applicationService, CurrentUserService currentUserService) {
+    public ApplicationResource(ApplicationService applicationService) {
         this.applicationService = applicationService;
-        this.currentUserService = currentUserService;
     }
 
     /**
@@ -128,13 +125,15 @@ public class ApplicationResource {
         @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
         @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
     ) {
-        final UUID applicantId = currentUserService.getUserId();
+        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+        // purposes
         return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
     }
 
     @GetMapping("/pages/length")
     public ResponseEntity<Long> getApplicationPagesLength() {
-        final UUID applicantId = currentUserService.getUserId();
+        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+        // purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
     }
 
