@@ -39,22 +39,22 @@ bootstrapApplication(AppComponent, {
     translateService.use(languageKey);
     tooltipConfig.container = 'body';
 
-    // Set up global dark mode based on browser settings
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const updateDarkModeClass = (isDarkMode: boolean): void => {
-      const className = 'tum-apply-dark-mode';
-      if (isDarkMode) {
-        document.body.classList.add(className);
-      } else {
-        document.body.classList.remove(className);
-      }
-    };
-
-    // Initialize and listen for changes
-    updateDarkModeClass(darkModeMediaQuery.matches);
-    darkModeMediaQuery.addEventListener('change', event => {
-      updateDarkModeClass(event.matches);
-    });
+    /* // Set up global dark mode based on browser settings
+             const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+             const updateDarkModeClass = (isDarkMode: boolean): void => {
+               const className = 'tum-apply-dark-mode';
+               if (isDarkMode) {
+                 document.body.classList.add(className);
+               } else {
+                 document.body.classList.remove(className);
+               }
+             };
+    
+        // Initialize and listen for changes
+        updateDarkModeClass(darkModeMediaQuery.matches);
+        darkModeMediaQuery.addEventListener('change', event => {
+          updateDarkModeClass(event.matches);
+        });*/
   })
 
   .catch((err: unknown) => console.error(err));
