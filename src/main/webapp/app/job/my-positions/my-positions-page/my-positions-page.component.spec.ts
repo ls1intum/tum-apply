@@ -89,10 +89,10 @@ describe('MyPositionsPageComponent', () => {
   });
 
   it('should have correct state mappings', () => {
-    expect(component.stateTextMap().DRAFT).toBe('myPositionsPage.state.draft');
-    expect(component.stateTextMap().PUBLISHED).toBe('myPositionsPage.state.published');
-    expect(component.stateTextMap().CLOSED).toBe('myPositionsPage.state.closed');
-    expect(component.stateTextMap().APPLICANT_FOUND).toBe('myPositionsPage.state.applicantFound');
+    expect(component.stateTextMap().DRAFT).toBe('jobState.draft');
+    expect(component.stateTextMap().PUBLISHED).toBe('jobState.published');
+    expect(component.stateTextMap().CLOSED).toBe('jobState.closed');
+    expect(component.stateTextMap().APPLICANT_FOUND).toBe('jobState.applicantFound');
     expect(component.stateSeverityMap().DRAFT).toBe('info');
     expect(component.stateSeverityMap().PUBLISHED).toBe('success');
     expect(component.stateSeverityMap().CLOSED).toBe('danger');
