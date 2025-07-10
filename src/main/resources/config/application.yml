@@ -241,6 +241,7 @@ jhipster:
 aet:
   email:
     enabled: false
+    from:
   storage:
     root: storage/docs
     max-size-bytes: 26214400
