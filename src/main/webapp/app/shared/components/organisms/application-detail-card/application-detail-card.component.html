@@ -3,21 +3,15 @@
   <!-- Left Section -->
   <div class="left-section">
     <!-- Top Section: Avatar, Name, and Score -->
-    <div class="top-section">
-      <!-- Applicant Avatar -->
-      <!-- TODO here the icon will be placed. But the icon handling has to be implemented first -->
-      <!-- <div class="avatar">
+    <!-- Applicant Avatar -->
+    <!-- TODO here the icon will be placed - preferably within the slot-rating-applicant-info ng-content component. But the icon handling has to be implemented first -->
+    <!-- <div class="avatar">
         <img src="https://placehold.co/100x100" class="avatar-img" />
       </div> -->
 
-      <!-- User Info and Optional Rating -->
-      <div class="user-info-container">
-        <!-- Applicant Name -->
-        <div class="section-title">{{ application().applicant?.user?.name }}</div>
-        <!-- Rating Section (if applicable) -->
-        <ng-content select="[slot-rating]" />
-      </div>
-    </div>
+    <!-- Rating Section (if applicable) -->
+    <ng-content select="[slot-rating-applicant-info]" />
+
     <!-- Injected Template: Applicant Details -->
     <ng-container [ngTemplateOutlet]="applicantDetailsTemplate" />
 

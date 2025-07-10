@@ -187,6 +187,11 @@
       "applicant": {
         "header": "My Applications"
       }
+    },
+    "application_detail": {
+      "applicant": {
+        "header": "Application for '{{jobTitle}}'"
+      }
     }
   },
   "error": {
