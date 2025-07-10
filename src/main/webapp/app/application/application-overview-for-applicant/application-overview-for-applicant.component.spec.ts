@@ -4,6 +4,15 @@ import { Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
+import {
+  MissingTranslationHandler,
+  TranslateCompiler,
+  TranslateLoader,
+  TranslateModule,
+  TranslateParser,
+  TranslateService,
+  TranslateStore,
+} from '@ngx-translate/core';
 
 class MockApplicationResourceService {
   deleteApplication = jest.fn().mockReturnValue(of(undefined));
@@ -71,12 +80,21 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationOverviewForApplicantComponent],
+      imports: [ApplicationOverviewForApplicantComponent, TranslateModule.forRoot()],
       providers: [
         {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
         },
+        TranslateStore,
+        TranslateLoader,
+        TranslateCompiler,
+        TranslateParser,
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        TranslateService,
       ],
     }).compileComponents();
 
