@@ -6,3 +6,8 @@
   border: var(--p-border-default) solid 0.1rem;
   border-radius: 0.5rem;
 }
+
+.h-remaining-viewheight {
+  height: calc(100vh - 10rem); //subtracted the footer and the header
+  overflow-y: hidden;
+}
