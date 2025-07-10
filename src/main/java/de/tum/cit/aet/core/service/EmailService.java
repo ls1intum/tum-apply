@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -99,12 +98,21 @@ public class EmailService {
      * @param body    the rendered HTML body
      */
     private void simulateEmail(Email email, String subject, String body) {
-        log.info(">>>>Sending Simulated Email<<<<");
-        log.info("To: {}", email.getTo());
-        log.info("CC: {}", email.getCc());
-        log.info("BCC: {}", email.getBcc());
-        log.info("Subject: {}", subject);
-        log.info("Parsed Body: {}", Jsoup.parse(body).text());
+        log.info(
+            """
+            >>>> Sending Simulated Email <<<<
+              To: {}
+              CC: {}
+              BCC: {}
+              Subject: {}
+              Parsed Body: {}
+            """,
+            email.getTo(),
+            email.getCc(),
+            email.getBcc(),
+            subject,
+            body
+        );
     }
 
     /**
@@ -149,7 +157,7 @@ public class EmailService {
      *
      * @param email  the email containing document references
      * @param helper the message helper used for attachment
-     * @throws IOException         if document content cannot be read
+     * @throws IOException        if document content cannot be read
      * @throws MessagingException if attachment fails
      */
     private void attachDocuments(Email email, MimeMessageHelper helper) throws IOException, MessagingException {
