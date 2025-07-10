@@ -6,6 +6,6 @@ import org.jsoup.safety.Safelist;
 public class HtmlSanitizer {
 
     public static String sanitize(String html) {
-        return Jsoup.clean(html, Safelist.relaxed());
+        return Jsoup.clean(html, Safelist.basic());
     }
 }

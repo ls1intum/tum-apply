@@ -38,7 +38,7 @@ public class TemplateService {
             return "TUMApply – " + writer.toString().trim();
         } catch (IOException e) {
             // Subject template not found
-            return "TUMApply";
+            throw new TemplateProcessingException("Failed to load subject template: " + templatePath, e);
         } catch (TemplateException e) {
             throw new TemplateProcessingException("Failed to render subject template: " + templateName, e);
         }
