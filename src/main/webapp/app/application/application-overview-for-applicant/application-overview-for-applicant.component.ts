@@ -6,10 +6,11 @@ import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [DynamicTableComponent, ButtonComponent, BadgeModule],
+  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, TranslateModule],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })

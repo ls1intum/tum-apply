@@ -181,6 +181,11 @@
         "REFERENCE": "Empfehlungsschreiben",
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
+      },
+      "application-overview": {
+        "applicant": {
+          "header": "Meine Bewerbungen"
+        }
       }
     }
   },

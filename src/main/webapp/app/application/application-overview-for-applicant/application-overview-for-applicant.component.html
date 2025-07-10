@@ -1,5 +1,5 @@
 <div class="body mx-30">
-  <h1 class="mb-8 font-bold text-4xl">My Applications</h1>
+  <h1 class="mb-8 mt-4 font-bold text-4xl" jhiTranslate="entity.application-overview.applicant.header">My Applications</h1>
   <jhi-dynamic-table
     [columns]="columns()"
     [data]="pageData()"
@@ -28,6 +28,9 @@
       }
       @case ('WITHDRAWN') {
         <p-badge value="Withdrawn" severity="contrast" />
+      }
+      @case ('JOB_CLOSED') {
+        <p-badge value="Job closed" severity="danger" />
       }
       @default {
         <p-badge [value]="row.applicationState" severity="warn" />
