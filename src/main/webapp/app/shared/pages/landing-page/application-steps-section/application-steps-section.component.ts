@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ButtonComponent } from '../../../components/atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
 import { ApplicationStepComponent } from './application-step/application-step/application-step.component';
