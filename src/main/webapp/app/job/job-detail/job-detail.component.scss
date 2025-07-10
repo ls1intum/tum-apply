@@ -156,7 +156,7 @@
   .button-wrapper {
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap; // handles small screen responsiveness
+    flex-wrap: wrap;
     gap: 1rem;
   }
 }
