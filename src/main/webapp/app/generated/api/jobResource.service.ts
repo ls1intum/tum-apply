@@ -44,6 +44,70 @@ export class JobResourceService extends BaseService {
     }
 
     /**
+     * @param jobId 
+     * @param jobState 
+     * @param shouldRejectRemainingApplications 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public changeJobState(jobId: string, jobState: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', shouldRejectRemainingApplications?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<JobFormDTO>;
+    public changeJobState(jobId: string, jobState: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', shouldRejectRemainingApplications?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<JobFormDTO>>;
+    public changeJobState(jobId: string, jobState: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', shouldRejectRemainingApplications?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<JobFormDTO>>;
+    public changeJobState(jobId: string, jobState: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', shouldRejectRemainingApplications?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (jobId === null || jobId === undefined) {
+            throw new Error('Required parameter jobId was null or undefined when calling changeJobState.');
+        }
+        if (jobState === null || jobState === undefined) {
+            throw new Error('Required parameter jobState was null or undefined when calling changeJobState.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>jobState, 'jobState');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>shouldRejectRemainingApplications, 'shouldRejectRemainingApplications');
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/jobs/changeState/${this.configuration.encodeParam({name: "jobId", value: jobId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        return this.httpClient.request<JobFormDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * @param jobFormDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

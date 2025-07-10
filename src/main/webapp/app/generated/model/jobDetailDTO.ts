@@ -28,7 +28,6 @@ export interface JobDetailDTO {
     createdAt: string;
     lastModifiedAt: string;
     state?: JobDetailDTO.StateEnum;
-    belongsToResearchGroup?: boolean;
 }
 export namespace JobDetailDTO {
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';

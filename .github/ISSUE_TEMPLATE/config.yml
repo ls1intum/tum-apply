@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: ❓ Support Question
+  - name: ❓ Support Question (User)
     url: https://github.com/ls1intum/tum-apply
     about: Please do not file questions or support requests on the GitHub issues tracker. Please use the Q&A in the Discussions to ask your Question.

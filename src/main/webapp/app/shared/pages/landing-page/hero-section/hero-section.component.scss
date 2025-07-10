@@ -1,3 +1,4 @@
+@use '../../../../../content/scss/breakpoints' as bp;
 .hero-container {
   position: relative;
   display: flex;
@@ -49,11 +50,11 @@
 }
 
 .hero-background-landing-page-hero-section-1 {
-  background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-1.png');
+  background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-1.webp');
 }
 
 .hero-background-landing-page-hero-section-2 {
-  background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-2.jpg');
+  background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-2.webp');
   background-position: 50% 30%;
 }
 
@@ -61,7 +62,7 @@
   background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-3.webp');
   background-position: 50% 60%;
 }
-@media (max-width: 1024px) {
+@media (max-width: bp.$lg) {
   .hero-container {
     height: 26rem;
     background-position: center center;
@@ -81,7 +82,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: bp.$md) {
   .hero-container {
     height: 22rem;
     background-position: center center;
