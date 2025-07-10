@@ -72,9 +72,7 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            // TO-DO
-            // label: this.translate.instant('jobDetailPage.actions.apply'),
-            label: 'Apply',
+            label: this.translate.instant('jobActionButton.apply'),
             severity: 'primary',
             onClick: () => this.onApply(),
             disabled: false,
@@ -88,14 +86,14 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('myPositionsPage.actionButton.edit'),
+            label: this.translate.instant('jobActionButton.edit'),
             severity: 'primary',
             variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
           },
           {
-            label: this.translate.instant('myPositionsPage.actionButton.delete'),
+            label: this.translate.instant('jobActionButton.delete'),
             severity: 'danger',
             onClick: () => void this.onDeleteJob(),
             disabled: false,
@@ -109,7 +107,7 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('myPositionsPage.actionButton.close'),
+            label: this.translate.instant('jobActionButton.close'),
             severity: 'danger',
             variant: 'outlined',
             onClick: () => void this.onCloseJob(),
@@ -123,10 +121,10 @@ export class JobDetailComponent {
   });
 
   readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: this.translate.instant('myPositionsPage.state.draft'),
-    PUBLISHED: this.translate.instant('myPositionsPage.state.published'),
-    CLOSED: this.translate.instant('myPositionsPage.state.closed'),
-    APPLICANT_FOUND: this.translate.instant('myPositionsPage.state.applicantFound'),
+    DRAFT: this.translate.instant('jobState.draft'),
+    PUBLISHED: this.translate.instant('jobState.published'),
+    CLOSED: this.translate.instant('jobState.closed'),
+    APPLICANT_FOUND: this.translate.instant('jobState.applicantFound'),
   }));
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({

@@ -6,6 +6,11 @@
         <!-- display job state if the logged-in user belongs to the research group -->
         @if (jobDetails()?.belongsToResearchGroup) {
           @if (jobDetails()?.jobState) {
+            <!--<jhi-tag
+              class="job-state-badge"
+              jhiTranslate="jobAction.researchArea"
+              [color]="stateSeverityMap()[jobDetails()?.jobState!] || 'info'"
+            />-->
             <jhi-tag
               class="job-state-badge"
               [text]="stateTextMap()[jobDetails()?.jobState!] || 'Unknown'"
