@@ -181,11 +181,11 @@
         "REFERENCE": "References",
         "CV": "CV",
         "CUSTOM": "Custom"
-      },
-      "application-overview": {
-        "applicant": {
-          "header": "My Applications"
-        }
+      }
+    },
+    "application_overview": {
+      "applicant": {
+        "header": "My Applications"
       }
     }
   },
