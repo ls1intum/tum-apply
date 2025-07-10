@@ -10,7 +10,12 @@ import { ProfileService } from './profile.service';
   template: `
     @if (ribbonEnv$ | async; as ribbonEnv) {
       <div class="ribbon">
-        <a href="" [jhiTranslate]="'global.ribbon.' + (ribbonEnv ?? '')">{{ { dev: 'Development' }[ribbonEnv ?? ''] }}</a>
+        <a href="" [jhiTranslate]="'global.ribbon.' + (ribbonEnv ?? '')">{{
+          {
+            dev: 'Development',
+            prod: 'Demo',
+          }[ribbonEnv ?? '']
+        }}</a>
       </div>
     }
   `,
