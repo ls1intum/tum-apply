@@ -54,6 +54,8 @@ public class EmailService {
      * @param email the email object containing recipients, template, content, etc.
      */
     public void send(Email email) {
+        email.validate();
+
         String subject = renderSubject(email);
         String body = renderBody(email);
 

@@ -1,10 +1,9 @@
 package de.tum.cit.aet.core.notification;
 
 import de.tum.cit.aet.core.constants.Language;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -35,4 +34,20 @@ public class Email {
     private Language language = Language.ENGLISH;
 
     private Set<UUID> documentIds;
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+
+    /**
+     * Validates the email addresses
+     */
+    public void validate() {
+        Stream.of(to, cc, bcc)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .forEach(address -> {
+                if (!EMAIL_PATTERN.matcher(address).matches()) {
+                    throw new IllegalArgumentException("Invalid email address: " + address);
+                }
+            });
+    }
 }
