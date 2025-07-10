@@ -11,7 +11,6 @@
   <p-button
     [ariaLabel]="label() === undefined ? icon() : undefined"
     [disabled]="disabled()"
-    [label]="label()"
     [rounded]="label() === undefined"
     [severity]="severity()"
     [variant]="variant()"
@@ -19,6 +18,10 @@
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
+    }
+    {{ label() }}
+    @if (isExternalLink()) {
+      <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" aria-hidden="true"></fa-icon>
     }
   </p-button>
 </ng-template>
