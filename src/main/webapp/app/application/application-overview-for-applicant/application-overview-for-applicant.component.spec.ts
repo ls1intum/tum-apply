@@ -2,8 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ApplicationForApplicantDTO, ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
-
-import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 import {
   MissingTranslationHandler,
   TranslateCompiler,
@@ -13,6 +11,8 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
+
+import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
 class MockApplicationResourceService {
   deleteApplication = jest.fn().mockReturnValue(of(undefined));
