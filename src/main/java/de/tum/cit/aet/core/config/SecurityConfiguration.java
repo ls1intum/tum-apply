@@ -100,7 +100,7 @@ public class SecurityConfiguration {
                     // Publicly accessible API endpoints (allowed for everyone).
                     .requestMatchers("/api/*/public/**")
                     .permitAll()
-                    .requestMatchers("/api/jobs/available", "/api/jobs/available/**")
+                    .requestMatchers("/api/jobs/available", "/api/jobs/available/**", "/api/jobs/detail/**")
                     .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()

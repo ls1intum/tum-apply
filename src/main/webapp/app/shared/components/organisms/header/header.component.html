@@ -15,7 +15,13 @@
         }
       }
     </div>
-    <jhi-button (click)="toggleColorScheme()" [icon]="isDarkMode() ? 'moon' : 'sun'" severity="primary" variant="text" />
+    <jhi-button
+      class="theme-toggle-button"
+      (click)="toggleColorScheme()"
+      [icon]="isDarkMode() ? 'moon' : 'sun'"
+      severity="primary"
+      variant="text"
+    />
 
     @if (user() === undefined) {
       <jhi-button class="fixed-width-button" (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
