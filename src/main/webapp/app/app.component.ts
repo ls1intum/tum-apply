@@ -26,23 +26,23 @@ export default class AppComponent {
   }
 
   private setSystemTheme(): void {
-    const classList = document.documentElement.classList;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-
-    // set initial theme based on system preference
-    if (prefersDark.matches) {
-      classList.add('dark-theme');
-    } else {
-      classList.remove('dark-theme');
-    }
-
-    // change theme dynamically when user changes system theme
-    prefersDark.addEventListener('change', e => {
-      if (e.matches) {
-        classList.add('dark-theme');
-      } else {
-        classList.remove('dark-theme');
-      }
-    });
+    /* const classList = document.documentElement.classList;
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    
+        // set initial theme based on system preference
+        if (prefersDark.matches) {
+          classList.add('dark-theme');
+        } else {
+          classList.remove('dark-theme');
+        }
+    
+        // change theme dynamically when user changes system theme
+        prefersDark.addEventListener('change', e => {
+          if (e.matches) {
+            classList.add('dark-theme');
+          } else {
+            classList.remove('dark-theme');
+          }
+        });*/
   }
 }
