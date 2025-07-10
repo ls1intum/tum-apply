@@ -1,3 +1,4 @@
+@use '../../../../../content/scss/breakpoints' as bp;
 .information-section {
   display: flex;
   padding: 3rem 6.25rem;
@@ -22,7 +23,7 @@
     text-align: start;
   }
 }
-@media (max-width: 1024px) {
+@media (max-width: bp.$lg) {
   .information-section {
     padding: 2rem 2rem;
     gap: 2rem;
@@ -40,7 +41,7 @@
     }
   }
 }
-@media (max-width: 768px) {
+@media (max-width: bp.$md) {
   .information-section {
     padding: 1.5rem;
     gap: 2rem;
