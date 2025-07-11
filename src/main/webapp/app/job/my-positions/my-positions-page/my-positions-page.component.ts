@@ -64,10 +64,10 @@ export class MyPositionsPageComponent {
   });
 
   readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: this.translate.instant('myPositionsPage.state.draft'),
-    PUBLISHED: this.translate.instant('myPositionsPage.state.published'),
-    CLOSED: this.translate.instant('myPositionsPage.state.closed'),
-    APPLICANT_FOUND: this.translate.instant('myPositionsPage.state.applicantFound'),
+    DRAFT: this.translate.instant('jobState.draft'),
+    PUBLISHED: this.translate.instant('jobState.published'),
+    CLOSED: this.translate.instant('jobState.closed'),
+    APPLICANT_FOUND: this.translate.instant('jobState.applicantFound'),
   }));
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
