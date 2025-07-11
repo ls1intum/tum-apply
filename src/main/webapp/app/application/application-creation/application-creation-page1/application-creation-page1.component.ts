@@ -119,6 +119,7 @@ export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
   valid = output<boolean>();
+  changed = output<boolean>();
 
   dropdownGenderLocal = dropdownGender;
   dropdownLanguageLocal = dropdownLanguage;
@@ -136,6 +137,14 @@ export default class ApplicationCreationPage1Component {
       city: [currentData.city, Validators.required],
       country: [currentData.country, Validators.required],
       postcode: [currentData.postcode, Validators.required],
+
+      // Optional fields
+      gender: [currentData.gender ?? null],
+      nationality: [currentData.nationality ?? null],
+      language: [currentData.language ?? null],
+      dateOfBirth: [currentData.dateOfBirth],
+      website: [currentData.website],
+      linkedIn: [currentData.linkedIn],
     });
   });
 
@@ -148,6 +157,7 @@ export default class ApplicationCreationPage1Component {
           ...this.data(),
           ...normalizedValue,
         });
+        this.changed.emit(true);
         this.valid.emit(form.valid);
       });
 
@@ -162,5 +172,17 @@ export default class ApplicationCreationPage1Component {
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  emitChanged(): void {
+    this.changed.emit(true);
+  }
+
+  setDateOfBirth($event: string | undefined): void {
+    this.data.set({
+      ...this.data(),
+      dateOfBirth: $event ?? '',
+    });
+    this.emitChanged();
   }
 }

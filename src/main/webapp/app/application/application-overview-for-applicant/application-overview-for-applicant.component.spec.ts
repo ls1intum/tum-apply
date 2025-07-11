@@ -11,6 +11,7 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
+import { AccountService } from 'app/core/auth/account.service';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
@@ -95,6 +96,12 @@ describe('ApplicationOverviewForApplicantComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
+        {
+          provide: AccountService,
+          useValue: {
+            loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
+          },
+        },
       ],
     }).compileComponents();
 

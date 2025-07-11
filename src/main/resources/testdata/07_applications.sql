@@ -39,7 +39,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         'I am passionate about educational technology and have experience designing engaging learning experiences. This position aligns perfectly with my skills and interests.',
         NULL, '2025-02-01 14:30:00', '2025-02-01 14:30:00'),
 
-       ('00000000-0000-0000-0000-300000020002', '00000000-0000-0000-0000-000000000104',
+       ('00000000-0000-0000-0000-300000020002', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020001',
         'IN_REVIEW', '2025-10-01',
         'Conducted user research on educational apps. Designed interfaces for learning management systems. Published paper on motivation in digital learning.',
@@ -47,7 +47,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         'My psychology background gives me unique insights into motivation systems for learning. I want to apply this knowledge to improve educational technology.',
         NULL, '2025-02-05 10:15:00', '2025-02-05 10:15:00'),
 
-       ('00000000-0000-0000-0000-300000020003', '00000000-0000-0000-0000-000000000104',
+       ('00000000-0000-0000-0000-300000020003', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020002',
         'ACCEPTED', '2025-09-15',
         'Built recommendation systems for e-learning platforms. Published paper on collaborative filtering in education. Developed ML models for personalized learning.',
@@ -55,7 +55,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         'I have worked on similar recommendation problems in education and would love to contribute to research that improves learning personalization.',
         3, '2025-02-10 11:20:00', '2025-02-20 15:00:00'),
 
-       ('00000000-0000-0000-0000-300000020123', '00000000-0000-0000-0000-000000000104',
+       ('00000000-0000-0000-0000-300000020123', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020004',
         'JOB_CLOSED', '2025-10-15',
         'Research on approximation algorithms for network problems. Implemented several graph algorithms in Python. Coursework in advanced algorithms.',
@@ -63,7 +63,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         'I am fascinated by theoretical computer science and want to gain research experience in algorithms before applying to PhD programs.',
         NULL, '2025-02-12 09:45:00', '2025-02-12 09:45:00'),
 
-       ('00000000-0000-0000-0000-300000020111', '00000000-0000-0000-0000-000000000104',
+       ('00000000-0000-0000-0000-300000020111', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020005',
         'SENT', '2025-08-15',
         'Coursework in quantum mechanics and quantum computing. Developed quantum simulation software. Research internship in quantum information.',
@@ -71,7 +71,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         'While my background is more in physics than CS, I have strong quantum mechanics knowledge and programming skills that would benefit this research.',
         NULL, '2025-02-18 15:20:00', '2025-03-02 10:15:00'),
 
-       ('00000000-0000-0000-0000-300000020837', '00000000-0000-0000-0000-000000000104',
+       ('00000000-0000-0000-0000-300000020837', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020006',
         'REJECTED', '2025-10-01',
         'Designed analog circuits for sensor interfaces. Course projects on amplifier design. Internship at semiconductor company.',
@@ -79,7 +79,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         'I have hands-on experience with analog design and want to apply these skills to research with practical applications.',
         1, '2025-02-05 10:15:00', '2025-02-05 10:15:00'),
 
-       ('00000000-0000-0000-0000-300000020313', '00000000-0000-0000-0000-000000000104',
+       ('00000000-0000-0000-0000-300000020313', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020010',
         'SAVED', '2025-11-15',
         NULL,

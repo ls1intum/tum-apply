@@ -7,6 +7,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
 import SharedModule from 'app/shared/shared.module';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
@@ -53,16 +54,20 @@ export default class ApplicationOverviewForApplicantComponent {
   private readonly router = inject(Router);
 
   private readonly applicationService = inject(ApplicationResourceService);
+  private readonly accountService = inject(AccountService);
+
+  private applicantId = signal<string>('');
 
   constructor() {
     effect(() => {
+      this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
       this.loadTotal();
     });
   }
 
   async loadTotal(): Promise<void> {
     try {
-      const tempTotal = await firstValueFrom(this.applicationService.getApplicationPagesLength());
+      const tempTotal = await firstValueFrom(this.applicationService.getApplicationPagesLength(this.applicantId()));
       this.total.set(tempTotal);
     } catch (error) {
       alert('Failed to load total application count');
