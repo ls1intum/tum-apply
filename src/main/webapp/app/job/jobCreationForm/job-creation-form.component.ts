@@ -237,8 +237,8 @@ export class JobCreationFormComponent {
       ),
       location: [locationOption, Validators.required],
       startDate: [job?.startDate ?? '', Validators.required],
-      workload: [workloadOption, Validators.required],
-      contractDuration: [contractDurationOption, Validators.required],
+      workload: [workloadOption],
+      contractDuration: [contractDurationOption],
       fundingType: [fundingTypeOption, Validators.required],
     });
 
