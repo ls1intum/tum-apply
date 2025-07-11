@@ -1,3 +1,7 @@
+@use '../../../content/scss/breakpoints' as bp;
+
+$detail-card-2-column-max-width: bp.$xxl;
+
 .text-primary {
   color: var(--p-text-primary);
 }
@@ -8,6 +12,22 @@
 }
 
 .h-remaining-viewheight {
-  height: calc(100vh - 10rem); //subtracted the footer and the header
+  height: calc(100vh - 2rem); //subtracted the footer and the header
   overflow-y: hidden;
+}
+
+.slot-right-width {
+  width: 21.5rem;
+
+  @media (max-width: $detail-card-2-column-max-width) {
+    width: 100%;
+  }
+}
+
+.document-viewer-width {
+  width: 20rem;
+
+  @media (max-width: $detail-card-2-column-max-width) {
+    width: 100%;
+  }
 }
