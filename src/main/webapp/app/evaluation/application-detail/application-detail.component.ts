@@ -379,7 +379,6 @@ export class ApplicationDetailComponent {
     const qp: Params = this.buildQueryParams();
     void this.router.navigate([], {
       queryParams: qp,
-      queryParamsHandling: 'merge',
       replaceUrl: true,
     });
   }

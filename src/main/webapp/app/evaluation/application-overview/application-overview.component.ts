@@ -118,15 +118,12 @@ export class ApplicationOverviewComponent {
     this.page.set(newPage);
     this.pageSize.set(rows);
 
-    this.updateUrlQueryParams();
-
     void this.loadPage();
   }
 
   loadOnFilterEmit(filters: FilterField[]): void {
     this.page.set(0);
     this.filters.set(filters);
-    this.updateUrlQueryParams();
 
     void this.loadPage();
   }
@@ -136,8 +133,6 @@ export class ApplicationOverviewComponent {
 
     this.sortBy.set(event.field ?? this.sortableFields[0].field);
     this.sortDirection.set(event.direction);
-
-    this.updateUrlQueryParams();
 
     void this.loadPage();
   }
@@ -200,10 +195,10 @@ export class ApplicationOverviewComponent {
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
     };
-
     const filterParams: Params = {};
     this.filters().forEach(f => {
       const entry = f.getQueryParamEntry();
+
       if (entry) {
         filterParams[entry[0]] = entry[1];
       }
@@ -219,7 +214,6 @@ export class ApplicationOverviewComponent {
     const qp: Params = this.buildQueryParams();
     void this.router.navigate([], {
       queryParams: qp,
-      queryParamsHandling: 'merge',
       replaceUrl: true,
     });
   }
