@@ -12,6 +12,8 @@
     "accept": "Accept",
     "reject": "Reject",
 
+    "cancel": "Cancel",
+
     "statusBadge": {
       "SENT": "Unopened",
       "ACCEPTED": "Approved",
@@ -25,6 +27,16 @@
     },
 
     "application": "Application",
-    "applications": "Applications"
+    "applications": "Applications",
+
+    "message": "Message",
+    "writeMessage": "Write a message...",
+
+    "reason": "Reason",
+    "selectReason": "Select a reason...",
+
+    "closeJobAndRejectAll": "Close job and reject all other applications",
+
+    "defaultAcceptMessage": "<p>Dear {{APPLICANT_FIRST_NAME}},</p><br /><p>I am pleased to inform you that you have been accepted for the <b>{{JOB_NAME}}</b> position at our research group. We were impressed by your background, motivation, and potential for contributing to our academic and applied research efforts.</p><br /><p>As a candidate, you will take responsibility for managing your research project, including defining your research direction, publishing your results, and contributing to ongoing team activities. This position requires a high level of commitment, independence, and communication.</p><br /><p>We are confident in your ability to succeed in this role and look forward to seeing your impact on the group and the broader academic community.</p><br /><p><b>Please confirm acceptance of this offer as soon as possible and contact me at <a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a> to discuss the next steps.</b></p><br /><br /><p>Best regards,<br /><br />{{PROFESSOR_FIRST_NAME}}<br /><br />{{PROFESSOR_FIRST_NAME}} {{PROFESSOR_LAST_NAME}}<br />{{RESEARCH_GROUP_NAME}}<br />Technical University of Munich<br /><a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a><br /><a href=\"{{RESEARCH_GROUP_WEBSITE}}\" target=\"_blank\">{{RESEARCH_GROUP_WEBSITE}}</a></p><br />"
   }
 }
