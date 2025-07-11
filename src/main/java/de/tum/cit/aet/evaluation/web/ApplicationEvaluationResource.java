@@ -2,6 +2,7 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
@@ -156,6 +157,6 @@ public class ApplicationEvaluationResource {
     private UUID getCurrentUserResearchGroup() {
         return currentUserService
             .getResearchGroupIdIfProfessor()
-            .orElseThrow(() -> new RuntimeException("Research group not found for current user"));
+            .orElseThrow(() -> new AccessDeniedException("Current user does not have a research group"));
     }
 }
