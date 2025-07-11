@@ -30,117 +30,6 @@ are well known and you can find references in the web.
   traditional `npm` you can configure a Node-less environment to develop or test your application.
 - `/src/main/docker` - Docker configurations for the application and services that the application depends on
 
-## Development
-
-### 🛠️ Setting up the Database & Importing Test Data
-
-This project uses MySQL as a relational database. Follow the steps below to get started with the local setup:
-
-#### Requirements
-
-- Docker & Docker Compose:
-  - [macOS Installation Guide](https://docs.docker.com/desktop/install/mac-install/)
-  - [Windows Installation Guide](https://docs.docker.com/desktop/install/windows-install/)
-- MySQL Client (`mysql` CLI) installed and available in `PATH`:
-  - **macOS**:
-    ```bash
-    brew install mysql-client
-    echo 'export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"' >> ~/.zprofile
-    source ~/.zprofile
-    ```
-  - **Windows**: Download via MySQL Installer and ensure the `bin` directory is added to your PATH.
-
-#### Step 1: Start MySQL via Docker
-
-```bash
-docker compose -f src/main/docker/mysql.yml up -d
-```
-
-This starts a local MySQL instance with the database `tumapply`.
-
-#### Step 2: Apply Liquibase Migrations
-
-```bash
-./gradlew liquibaseUpdate
-```
-
-> If you encounter errors, ensure the MySQL container is running and reachable.
-
-#### Step 3: Import Example/Test Data
-
-This script automatically imports all SQL files from the `src/main/resources/testdata/` folder, sorted alphabetically.
-
-```bash
-bash ./src/main/resources/testdata/import-testdata.sh
-```
-
-💡 **Platform Notes:**
-
-- **macOS**: Requires MySQL CLI to be installed via Homebrew (`brew install mysql-client`) and
-  available in your `PATH`.
-- **Linux**: Requires `mysql` CLI to be installed (`sudo apt install mysql-client` or equivalent).
-- **Windows**: Use **Git Bash** to run this script. Make sure the MySQL CLI is installed (via MySQL Installer) and the
-  `bin` folder is added to your `PATH`.
-
----
-
-### 🔁 When Modifying the Schema
-
-- Update Liquibase changelog files under `config/liquibase/changelog`
-- Add new files to `master.xml`
-- Re-run the update with `./gradlew liquibaseUpdate`
-
----
-
-### 🔎 Troubleshooting
-
-- ❌ `mysql CLI not found`: Make sure MySQL client is installed and available in your PATH.
-- ❌ `Public Key Retrieval is not allowed`: Add `allowPublicKeyRetrieval=true` to the JDBC URL.
-- ❌ `Access denied`: Use `root` with an empty password (`""`) unless configured otherwise.
-
-### Doing API-First development using openapi-generator-cli
-
-[OpenAPI-Generator]() is configured for this application. You can generate API code from the
-`openapi/openapi.yml` definition file by running:
-
-```bash
-./gradlew openApiGenerate
-```
-
-Then implements the generated delegate classes with `@Service` classes.
-
-To generate the `openapi.yml` definition file, you can use the following command:
-
-```bash
-./gradlew generateApiDocs -x webapp
-```
-
-The build system will install automatically the recommended version of Node and npm.
-
-We provide a wrapper to launch npm.
-You will only need to run this command when dependencies change in [package.json](package.json).
-
-```
-./npmw install
-```
-
-We use npm scripts and [Angular CLI][] with [Webpack][] as our build system.
-
-Run the following commands in two separate terminals to create a blissful development experience where your browser
-auto-refreshes when files change on your hard drive.
-
-```
-./gradlew -x webapp
-./npmw start
-```
-
-Npm is also used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [package.json](package.json). You can also run `./npmw update` and `./npmw install` to
-manage dependencies.
-Add the `help` flag on any command to see how you can use it. For example, `./npmw help update`.
-
-The `./npmw run` command will list all the scripts available to run for this project.
-
 ### PWA Support
 
 JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a
@@ -151,57 +40,6 @@ The service worker initialization code is disabled by default. To enable it, unc
 
 ```typescript
 ServiceWorkerModule.register('ngsw-worker.js', {enabled: false}),
-```
-
-### Managing dependencies
-
-For example, to add [Leaflet][] library as a runtime dependency of your application, you would run following command:
-
-```
-./npmw install --save --save-exact leaflet
-```
-
-To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following
-command:
-
-```
-./npmw install --save-dev --save-exact @types/leaflet
-```
-
-Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows
-about them:
-Edit [src/main/webapp/app/app.config.ts](src/main/webapp/app/app.config.ts) file:
-
-```
-import 'leaflet/dist/leaflet.js';
-```
-
-Edit [src/main/webapp/content/scss/vendor.scss](src/main/webapp/content/scss/vendor.scss) file:
-
-```
-@import 'leaflet/dist/leaflet.css';
-```
-
-Note: There are still a few other things remaining to do for Leaflet that we won't detail here.
-
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
-
-### Using Angular CLI
-
-You can also use [Angular CLI][] to generate some custom client code.
-
-For example, the following command:
-
-```
-ng generate component my-component
-```
-
-will generate few files:
-
-```
-create src/main/webapp/app/my-component/my-component.component.html
-create src/main/webapp/app/my-component/my-component.component.ts
-update src/main/webapp/app/app.config.ts
 ```
 
 ## Building for production
@@ -253,12 +91,6 @@ For example, to start required services in Docker containers, run:
 ```
 docker compose -f src/main/docker/services.yml up -d
 ```
-
-- If you encounter a "Public Key Retrieval is not allowed" error when connecting to MySQL, you can fix it by either:
-  - Adding `allowPublicKeyRetrieval=true` to your JDBC URL (e.g.,
-    `jdbc:mysql://localhost:3306/dbname?allowPublicKeyRetrieval=true&useSSL=false`)
-  - Or, if you're using IntelliJ, open the Database tool window, navigate to your MySQL data source, open the driver
-    properties, and set `allowPublicKeyRetrieval` to `true` manually.
 
 To stop and remove the containers, run:
 
