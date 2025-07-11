@@ -2,12 +2,7 @@ package de.tum.cit.aet.application.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
-import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
-import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
+import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
@@ -360,6 +355,6 @@ public class ApplicationService {
         }
         Application application = applicationRepository.findById(applicationId).orElseThrow();
 
-        return ApplicationDetailDTO.getFromEntity(application);
+        return ApplicationDetailDTO.getFromEntity(application, application.getJob());
     }
 }
