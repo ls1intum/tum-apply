@@ -6,8 +6,10 @@ import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
+import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
 
+import SharedModule from '../../shared/shared.module';
 import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
 import { JobDTO, JobFormDTO } from '../../generated';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -37,6 +39,7 @@ type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
   imports: [
     CommonModule,
     TooltipModule,
+    SharedModule,
     ReactiveFormsModule,
     FontAwesomeModule,
     DropdownComponent,
@@ -128,12 +131,15 @@ export class JobCreationFormComponent {
     { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
   ];
 
-  readonly pageTitle = computed(() => (this.mode() === 'edit' ? 'Edit the Current Doctorate Position' : 'Create a new Doctorate Position'));
+  readonly pageTitle = computed(() =>
+    this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
+  );
 
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
+  private translate = inject(TranslateService);
 
   constructor(
     private fb: FormBuilder,
@@ -148,14 +154,14 @@ export class JobCreationFormComponent {
       direction: 'horizontal',
       buttons: [
         {
-          label: 'Save Draft',
+          label: this.translate.instant('jobActionButton.saveDraft'),
           icon: 'floppy-disk',
           severity: 'secondary',
           disabled: false,
           onClick: () => void this.saveDraft(),
         },
         {
-          label: 'Next',
+          label: this.translate.instant('jobActionButton.next'),
           icon: undefined,
           severity: 'primary',
           disabled: false,
@@ -170,14 +176,14 @@ export class JobCreationFormComponent {
       direction: 'horizontal',
       buttons: [
         {
-          label: 'Save Draft',
+          label: this.translate.instant('jobActionButton.saveDraft'),
           icon: 'floppy-disk',
           severity: 'secondary',
           disabled: false,
           onClick: () => void this.saveDraft(),
         },
         {
-          label: 'Publish Job',
+          label: this.translate.instant('jobActionButton.publish'),
           icon: undefined,
           severity: 'primary',
           disabled: this.basicInfoForm.invalid || this.positionDetailsForm.invalid,
