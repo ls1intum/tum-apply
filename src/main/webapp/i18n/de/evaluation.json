@@ -1,5 +1,8 @@
 {
   "evaluation": {
+    "overviewHeader": "Bewerbungen - Übersicht",
+    "reviewHeader": "Bewerbungen - Prüfen",
+
     "ratingToolTip": "Bewertung: {{value}} auf einer {{total}}-Likert Skala ({{label}})",
     "positive": "Positiv",
     "negative": "Negativ",

@@ -102,12 +102,12 @@ export class SidebarComponent {
           title: 'sidebar.applications.applications',
           buttons: [
             {
-              icon: 'file',
+              icon: 'table-list',
               text: 'sidebar.applications.applicationoverview',
               link: '/evaluation/overview',
             },
             {
-              icon: 'file-contract',
+              icon: 'id-card',
               text: 'sidebar.applications.reviewapplications',
               link: '/evaluation/application',
             },

@@ -15,11 +15,21 @@ import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
+import TranslateDirective from '../../shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-application-overview',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonComponent, DynamicTableComponent, TagComponent, FilterSortBarComponent, TranslateModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ButtonComponent,
+    DynamicTableComponent,
+    TagComponent,
+    FilterSortBarComponent,
+    TranslateModule,
+    TranslateDirective,
+  ],
   templateUrl: './application-overview.component.html',
   styleUrls: ['./application-overview.component.scss'],
 })

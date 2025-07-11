@@ -1,5 +1,8 @@
 {
   "evaluation": {
+    "overviewHeader": "Applications - Overview",
+    "reviewHeader": "Applications - Review",
+
     "ratingToolTip": "Rating: {{value}} on a {{total}}-Likert scale ({{label}})",
     "positive": "Positive",
     "negative": "Negative",
