@@ -8,6 +8,7 @@ import { ApplicationCardComponent } from '../../molecules/application-card/appli
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ApplicationEvaluationDetailDTO } from '../../../../generated';
+import { BREAKPOINT_QUERIES } from '../../../constants/breakpoints';
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;
@@ -83,17 +84,16 @@ export class ApplicationCarouselComponent {
   });
 
   constructor(private readonly bp: BreakpointObserver) {
-    const SMALL = '(max-width: 1024px)';
-    const ULTRA_WIDE = '(min-width: 2048px)';
-
-    const breakpoint = toSignal<BreakpointState | null>(this.bp.observe([SMALL, ULTRA_WIDE]), { initialValue: null });
+    const breakpoint = toSignal<BreakpointState | null>(this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]), {
+      initialValue: null,
+    });
 
     effect(() => {
       const result = breakpoint();
       if (!result) return;
-      if (result.breakpoints[SMALL]) {
+      if (result.breakpoints[BREAKPOINT_QUERIES.onlyMobile]) {
         this.cardsVisible.set(1);
-      } else if (result.breakpoints[ULTRA_WIDE]) {
+      } else if (result.breakpoints[BREAKPOINT_QUERIES.ultraWide]) {
         this.cardsVisible.set(5);
       } else {
         this.cardsVisible.set(VISIBLE_DESKTOP);
