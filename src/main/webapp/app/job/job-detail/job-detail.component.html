@@ -1,8 +1,21 @@
 @if (dataLoaded()) {
   <div class="container">
     <header class="page-header">
-      <!-- display job state if the logged-in user is a professor -->
-      <h1 class="job-title">{{ jobDetails()?.title }}</h1>
+      <div class="header-row">
+        <h1 class="job-title">{{ jobDetails()?.title }}</h1>
+        <!-- display job state if the logged-in user belongs to the research group -->
+        @if (jobDetails()?.belongsToResearchGroup) {
+          @if (jobDetails()?.jobState) {
+            <jhi-tag
+              class="job-state-badge"
+              [text]="stateTextMap()[jobDetails()?.jobState!] || 'Unknown'"
+              [color]="stateSeverityMap()[jobDetails()?.jobState!] || 'info'"
+            />
+          } @else {
+            <jhi-tag class="job-state-badge" [text]="'Unknown'" [color]="'info'" />
+          }
+        }
+      </div>
       <div class="job-meta">
         <div class="meta-item">
           <fa-icon [icon]="['fas', 'user-tie']" class="meta-icon" />
@@ -162,9 +175,18 @@
       <p class="data-text-section" [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"></p>
     </section>
     <section class="action-buttons-section">
-      <!-- if professor is logged in, then it shows "Close Job" button ("Delete Job" button if the Job is a draft) "Edit Job" button -->
-      <!-- else display "Apply Now" button -->
-      <jhi-button class="apply-btn" label="Apply Now" [disabled]="true" severity="primary" />
+      <div class="button-wrapper">
+        <!-- Left-aligned Back button -->
+        <div class="left-buttons">
+          <jhi-button label="Back" severity="info" variant="outlined" (click)="onBack()" />
+        </div>
+        <!-- Right-aligned dynamic button group -->
+        <div class="right-buttons">
+          @if (rightActionButtons()) {
+            <jhi-button-group [data]="rightActionButtons()!" />
+          }
+        </div>
+      </div>
     </section>
   </div>
 }
