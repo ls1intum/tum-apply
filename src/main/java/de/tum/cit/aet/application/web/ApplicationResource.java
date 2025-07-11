@@ -132,6 +132,13 @@ public class ApplicationResource {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Retrieves a paginated list of application overviews for the current user.
+     *
+     * @param pageSize   The number of items per page (default: 25).
+     * @param pageNumber The page number to retrieve (default: 0).
+     * @return A list of {@link ApplicationOverviewDTO} representing the application overview data.
+     */
     @GetMapping("/pages")
     public ResponseEntity<List<ApplicationOverviewDTO>> getApplicationPages(
         @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
@@ -141,6 +148,13 @@ public class ApplicationResource {
         return ResponseEntity.ok(applicationService.getAllApplications(pageSize, pageNumber));
     }
 
+    /**
+     * Retrieves the total number of applications submitted by a specific applicant.
+     * Can be removed once sorting and filtering demands using a ApplicationPageDTO, where this data can be directly included
+     *
+     * @param applicantId The UUID of the applicant.
+     * @return The total count of applications.
+     */
     @GetMapping("/pages/length/{applicantId}")
     public ResponseEntity<Long> getApplicationPagesLength(@PathVariable UUID applicantId) {
         // purposes
