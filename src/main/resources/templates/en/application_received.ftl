@@ -11,7 +11,7 @@
 
     <p style="margin: 20px 0;">
         <a href="${url!}/evaluation/application?sortBy=createdAt&sortDir=DESC&applicationId=${applicationId!}"
-           style="display: inline-block; padding: 10px 18px; background-color: #0056b3; color: #ffffff; text-decoration: none; border-radius: 5px;">
+           style="display: inline-block; padding: 10px 18px; background-color: #1872DD; color: #ffffff; text-decoration: none; border-radius: 5px;">
             View Application
         </a>
     </p>
