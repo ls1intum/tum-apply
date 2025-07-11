@@ -126,16 +126,33 @@ public class ApplicationEvaluationResource {
         return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroupId));
     }
 
+    /**
+     * Marks the specified application as IN_REVIEW if its current state is SENT.
+     *
+     * @param applicationId the ID of the application to update
+     * @return 204 No Content if the update was processed successfully
+     */
     @PutMapping("/applications/{applicationId}/open")
     public ResponseEntity<Void> markApplicationAsInReview(@PathVariable UUID applicationId) {
         applicationEvaluationService.markApplicationAsInReview(applicationId);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Retrieves the currently authenticated user entity.
+     *
+     * @return the current {@link User}
+     */
     private User getCurrentUser() {
         return currentUserService.getUser();
     }
 
+    /**
+     * Retrieves the research group ID of the current user if they are a professor.
+     *
+     * @return the research group ID
+     * @throws RuntimeException if no research group is associated with the user
+     */
     private UUID getCurrentUserResearchGroup() {
         return currentUserService
             .getResearchGroupIdIfProfessor()

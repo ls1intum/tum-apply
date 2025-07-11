@@ -12,6 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ApplicationEvaluationRepository extends TumApplyJpaRepository<Application, UUID>, ApplicationEvaluationRepositoryCustom {
+    /**
+     * Marks the application as IN_REVIEW if its current state is SENT.
+     *
+     * @param applicationId the ID of the application to update
+     */
     @Transactional
     @Modifying
     @Query(
