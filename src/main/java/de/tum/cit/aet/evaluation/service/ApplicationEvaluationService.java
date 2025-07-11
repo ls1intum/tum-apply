@@ -140,7 +140,7 @@ public class ApplicationEvaluationService {
      *         for the specified research group
      */
     public Set<JobFilterOptionDTO> getJobFilterOptions(UUID researchGroupId) {
-        return jobEvaluationRepository.findAllBYResearchGroup(researchGroupId);
+        return jobEvaluationRepository.findAllByResearchGroup(researchGroupId);
     }
 
     /**

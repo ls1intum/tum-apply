@@ -39,9 +39,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService
-            .getResearchGroupIdIfProfessor()
-            .orElseThrow(() -> new RuntimeException("Research group not found for current user"));
+        UUID researchGroupId = getResearchGroup();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getAllApplicationsOverviews(researchGroupId, offsetPageDTO, sortDto, filterDto)
@@ -63,9 +61,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService
-            .getResearchGroupIdIfProfessor()
-            .orElseThrow(() -> new RuntimeException("Research group not found for current user"));
+        UUID researchGroupId = getResearchGroup();
 
         return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroupId, offsetPageDTO, sortDto, filterDto));
     }
@@ -87,9 +83,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService
-            .getResearchGroupIdIfProfessor()
-            .orElseThrow(() -> new RuntimeException("Research group not found for current user"));
+        UUID researchGroupId = getResearchGroup();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroupId, sortDto, filterDto)
@@ -103,10 +97,14 @@ public class ApplicationEvaluationResource {
      */
     @GetMapping("/jobs")
     public ResponseEntity<Set<JobFilterOptionDTO>> getJobFilterOptions() {
-        UUID researchGroupId = currentUserService
-            .getResearchGroupIdIfProfessor()
-            .orElseThrow(() -> new RuntimeException("Research group not found for current user"));
+        UUID researchGroupId = getResearchGroup();
 
         return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroupId));
+    }
+
+    private UUID getResearchGroup() {
+        return currentUserService
+            .getResearchGroupIdIfProfessor()
+            .orElseThrow(() -> new RuntimeException("Research group not found for current user"));
     }
 }

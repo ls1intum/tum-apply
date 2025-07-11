@@ -48,7 +48,7 @@ export class ApplicationOverviewComponent {
         template: stateTpl,
       },
       { field: 'jobName', header: 'Job', width: '26rem' },
-      { field: 'rating', header: 'Rating', width: '10rem' },
+      // { field: 'rating', header: 'Rating', width: '10rem' },
       { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
