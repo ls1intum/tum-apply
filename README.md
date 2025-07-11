@@ -243,57 +243,6 @@ server (accessible on http://localhost:7419) with:
 docker compose -f src/main/docker/jhipster-control-center.yml up
 ```
 
-## Testing
-
-### Spring Boot tests
-
-To launch your application's tests, run:
-
-```
-./gradlew test integrationTest jacocoTestReport
-```
-
-### Client tests
-
-Unit tests are run by [Jest][]. They're located near components and can be run with:
-
-```
-./npmw test
-```
-
-## Others
-
-### Code quality using Sonar
-
-Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
-
-```
-docker compose -f src/main/docker/sonar.yml up -d
-```
-
-Note: we have turned off forced authentication redirect for UI in [src/main/docker/sonar.yml](src/main/docker/sonar.yml)
-for out of the box experience while trying out SonarQube, for real use cases turn it back on.
-
-You can run a Sonar analysis with using
-the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the gradle
-plugin.
-
-Then, run a Sonar analysis:
-
-```
-./gradlew -Pprod clean check jacocoTestReport sonarqube -Dsonar.login=admin -Dsonar.password=admin
-```
-
-Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured
-from [sonar-project.properties](sonar-project.properties) as shown below:
-
-```
-sonar.login=admin
-sonar.password=admin
-```
-
-For more information, refer to the [Code quality page][].
-
 ### Docker Compose support
 
 JHipster generates a number of Docker Compose configuration files in the [src/main/docker/](src/main/docker/) folder to
