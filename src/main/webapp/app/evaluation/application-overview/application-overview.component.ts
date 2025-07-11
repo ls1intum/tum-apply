@@ -70,12 +70,6 @@ export class ApplicationOverviewComponent {
     { displayName: 'Rating', field: 'rating', type: 'NUMBER' },
   ];
 
-  readonly stateTextMap = signal<Record<string, string>>({
-    SENT: 'Unopened',
-    ACCEPTED: 'Approved',
-    REJECTED: 'Rejected',
-    IN_REVIEW: 'In Review',
-  });
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     SENT: 'info',
     ACCEPTED: 'success',

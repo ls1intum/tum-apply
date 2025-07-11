@@ -22,11 +22,14 @@
     />
 
     <ng-template #actionTemplate let-application>
-      <jhi-button label="View" severity="primary" (click)="navigateToDetail(application)" />
+      <jhi-button [label]="'evaluation.more' | translate" severity="primary" (click)="navigateToDetail(application)" />
     </ng-template>
 
     <ng-template #stateTemplate let-application>
-      <jhi-tag [text]="stateTextMap()[application.state] || 'Unknown'" [color]="stateSeverityMap()[application.state] || 'info'" />
+      <jhi-tag
+        [text]="'evaluation.statusBadge.' + (application.state || '') | translate"
+        [color]="stateSeverityMap()[application.state] || 'info'"
+      />
     </ng-template>
   </div>
 </div>
