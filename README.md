@@ -141,68 +141,6 @@ Add the `help` flag on any command to see how you can use it. For example, `./np
 
 The `./npmw run` command will list all the scripts available to run for this project.
 
-### 🎨 Color System & Theming
-
-TUMApply uses a scalable and customizable theming system that's built on PrimeNG Themes and Tailwind CSS. It supports
-both light and dark mode through a centralized theme management.
-
-#### 🧱 Structure
-
-The theming system is structured as follows:
-
-- `src/main/webapp/content/theming/tumapplypreset.ts`: defines the custom PrimeNG theme with TUMApply-specific colors
-- CSS variables are provided by PrimeNG's theming system and are available globally
-- Tailwind CSS is used for additional styling options and is aligned with the PrimeNG theme
-
-#### 🌞 Light and 🌚 Dark Mode
-
-Theme switching is controlled through the `toggleTheme()` method in the NavbarComponent:
-
-- The selected theme preference is stored in `sessionStorage`
-- The theme is toggled by adding/removing the `dark-theme` class to the `<html>` element
-- PrimeNG components automatically respond to theme changes
-
-#### 🎨 Using Colors
-
-For consistent designs:
-
-```scss
-/* Using PrimeNG variables */
-color:
-var
-
-(
---text-color
-
-)
-;
-background-color:
-var
-
-(
---surface-ground
-
-)
-;
-
-/* Using Tailwind classes */
-<
-div class
-
-=
-"text-primary bg-surface-200 dark:bg-surface-700"
-> ...<
-
-/
-div >
-```
-
-Avoid hard-coded hex values. Instead, use the CSS variables provided by PrimeNG or Tailwind classes.
-
-#### ⚠️ Theme Customization
-
-To customize the theme, edit the color definitions in `src/main/webapp/content/theming/tumapplypreset.ts`
-
 ### PWA Support
 
 JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a
