@@ -4,12 +4,7 @@ import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
-import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
-import de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.Valid;
 import java.util.Set;
@@ -36,7 +31,7 @@ public class ApplicationEvaluationResource {
      */
     @PostMapping("/applications({applicationId}/accept")
     public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
-        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, getDummyCurrentUser());
+        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, getCurrentUser());
         return ResponseEntity.noContent().build();
     }
 
@@ -49,25 +44,8 @@ public class ApplicationEvaluationResource {
      */
     @PostMapping("/applications({applicationId}/reject")
     public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
-        applicationEvaluationService.rejectApplication(applicationId, rejectDTO, getDummyCurrentUser());
+        applicationEvaluationService.rejectApplication(applicationId, rejectDTO, getCurrentUser());
         return ResponseEntity.noContent().build();
-    }
-
-    //TODO remove
-    /**
-     * Returns a dummy user for testing purposes.
-     *
-     * @return a dummy {@link User} object
-     */
-    private User getDummyCurrentUser() {
-        User user = new User();
-        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000102"));
-
-        ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-        user.setResearchGroup(researchGroup);
-
-        return user;
     }
 
     /**
@@ -85,7 +63,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = getResearchGroup();
+        UUID researchGroupId = getCurrentUserResearchGroup();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getAllApplicationsOverviews(researchGroupId, offsetPageDTO, sortDto, filterDto)
@@ -107,7 +85,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = getResearchGroup();
+        UUID researchGroupId = getCurrentUserResearchGroup();
 
         return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroupId, offsetPageDTO, sortDto, filterDto));
     }
@@ -129,7 +107,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = getResearchGroup();
+        UUID researchGroupId = getCurrentUserResearchGroup();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroupId, sortDto, filterDto)
@@ -143,12 +121,22 @@ public class ApplicationEvaluationResource {
      */
     @GetMapping("/jobs")
     public ResponseEntity<Set<JobFilterOptionDTO>> getJobFilterOptions() {
-        UUID researchGroupId = getResearchGroup();
+        UUID researchGroupId = getCurrentUserResearchGroup();
 
         return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroupId));
     }
 
-    private UUID getResearchGroup() {
+    @PutMapping("/applications/{applicationId}/open")
+    public ResponseEntity<Void> markApplicationAsInReview(@PathVariable UUID applicationId) {
+        applicationEvaluationService.markApplicationAsInReview(applicationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    private User getCurrentUser() {
+        return currentUserService.getUser();
+    }
+
+    private UUID getCurrentUserResearchGroup() {
         return currentUserService
             .getResearchGroupIdIfProfessor()
             .orElseThrow(() -> new RuntimeException("Research group not found for current user"));

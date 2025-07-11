@@ -10,7 +10,6 @@ import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import java.util.Map;
@@ -215,6 +214,15 @@ public class ApplicationEvaluationService {
      */
     public Set<JobFilterOptionDTO> getJobFilterOptions(UUID researchGroupId) {
         return jobEvaluationRepository.findAllByResearchGroup(researchGroupId);
+    }
+
+    /**
+     * Sets the application state from "UNOPENED" to "IN_REVIEW"
+     *
+     * @param applicationId the Application to update the state
+     */
+    public void markApplicationAsInReview(UUID applicationId) {
+        applicationEvaluationRepository.markApplicationAsInReview(applicationId);
     }
 
     /**
