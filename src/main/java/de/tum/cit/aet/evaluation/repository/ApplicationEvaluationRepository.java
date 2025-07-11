@@ -18,7 +18,7 @@ public interface ApplicationEvaluationRepository extends TumApplyJpaRepository<A
         """
             UPDATE Application a
             SET a.state = 'IN_REVIEW'
-            WHERE a.state = 'UNOPENED'
+            WHERE a.state = 'SENT'
             AND a.applicationId = :applicationId
         """
     )

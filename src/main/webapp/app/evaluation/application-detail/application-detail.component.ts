@@ -21,9 +21,9 @@ import { RatingComponent } from '../../shared/components/atoms/rating/rating.com
 import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
+import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
-import TranslateDirective from '../../shared/language/translate.directive';
 
 const WINDOW_SIZE = 7;
 
@@ -117,6 +117,8 @@ export class ApplicationDetailComponent {
     const nextApp = this.applications()[this.windowIndex()];
     this.currentApplication.set(nextApp);
 
+    void this.markCurrentApplicationAsInReview();
+
     if (this.currentIndex() + this.half < this.totalRecords()) {
       // Load next item if within bounds
       void this.loadNext(this.currentIndex() + this.half);
@@ -135,6 +137,8 @@ export class ApplicationDetailComponent {
     this.windowIndex.update(v => v - 1);
     const prevApp = this.applications()[this.windowIndex()];
     this.currentApplication.set(prevApp);
+
+    void this.markCurrentApplicationAsInReview();
 
     if (this.currentIndex() - this.half >= 0) {
       // Load previous item if within bounds
@@ -178,6 +182,15 @@ export class ApplicationDetailComponent {
       this.updateCurrentApplicationState('REJECTED');
       this.reviewDialogVisible.set(false);
       await firstValueFrom(this.evaluationResourceService.rejectApplication(application.applicationDetailDTO.applicationId, rejectDTO));
+    }
+  }
+
+  async markCurrentApplicationAsInReview(): Promise<void> {
+    const application = this.currentApplication();
+
+    if (application && application.applicationDetailDTO.applicationState === 'SENT') {
+      this.updateCurrentApplicationState('IN_REVIEW');
+      await firstValueFrom(this.evaluationResourceService.markApplicationAsInReview(application.applicationDetailDTO.applicationId));
     }
   }
 
@@ -263,6 +276,8 @@ export class ApplicationDetailComponent {
       this.windowIndex.set(res.windowIndex ?? 0);
       this.currentIndex.set(res.currentIndex ?? 0);
       this.currentApplication.set(this.applications()[this.windowIndex()]);
+
+      void this.markCurrentApplicationAsInReview();
     } catch (error) {
       console.error('Failed to load applications:', error);
       return undefined;
@@ -313,6 +328,7 @@ export class ApplicationDetailComponent {
       this.windowIndex.set(0);
       this.applications.set(data);
       this.currentApplication.set(data[0]);
+      void this.markCurrentApplicationAsInReview();
       this.updateUrlQueryParams();
     }
   }
