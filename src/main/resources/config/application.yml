@@ -170,6 +170,13 @@ spring:
     ansi:
       console-available: true
 
+  freemarker:
+    enabled: true
+    template-loader-path: classpath:/templates/
+    suffix: .ftl
+    charset: UTF-8
+    cache: false # disable for development
+
 server:
   servlet:
     session:
@@ -182,7 +189,7 @@ springdoc:
 # Properties to be exposed on the /info management endpoint
 info:
   # Comma separated list of profiles that will trigger the ribbon to show
-  display-ribbon-on-profiles: 'dev'
+  display-ribbon-on-profiles: 'dev,prod'
 
 # ===================================================================
 # JHipster specific properties
@@ -232,6 +239,9 @@ jhipster:
 
 # Application specific properties:
 aet:
+  email:
+    enabled: false
+    from:
   storage:
     root: storage/docs
     max-size-bytes: 26214400

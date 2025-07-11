@@ -4,25 +4,29 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
-import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
-import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
-import de.tum.cit.aet.evaluation.dto.JobFilterOptionDTO;
+import de.tum.cit.aet.evaluation.domain.ApplicationReview;
+import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class ApplicationEvaluationService {
+
+    private final ApplicationEvaluationRepository applicationEvaluationRepository;
+    private final JobEvaluationRepository jobEvaluationRepository;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -31,10 +35,79 @@ public class ApplicationEvaluationService {
         ApplicationState.REJECTED
     );
 
+    private static final Set<ApplicationState> REVIEW_STATES = Set.of(ApplicationState.SENT, ApplicationState.IN_REVIEW);
+
     private static final Set<String> SORTABLE_FIELDS = Set.of("rating", "createdAt", "applicant.lastName");
 
-    private final ApplicationEvaluationRepository applicationEvaluationRepository;
-    private final JobEvaluationRepository jobEvaluationRepository;
+    /**
+     * Accepts the specified application and updates its state.
+     *
+     * @param applicationId the ID of the application to accept
+     * @param acceptDTO     the acceptance details
+     * @param reviewingUser the user performing the review
+     */
+    public void acceptApplication(@NonNull UUID applicationId, @NonNull AcceptDTO acceptDTO, @NonNull User reviewingUser) {
+        Application application = applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> new EntityNotFoundException("Application not found"));
+
+        //TODO add authorization
+
+        if (!REVIEW_STATES.contains(application.getState())) {
+            throw new IllegalArgumentException("Application can not be reviewed");
+        }
+
+        application.setState(ApplicationState.ACCEPTED);
+        setApplicationReview(application, reviewingUser, acceptDTO.message());
+        applicationEvaluationRepository.save(application);
+
+        if (acceptDTO.closeJob()) {
+            System.out.println("Should close Job and reject all");
+            //TODO integrate close job and reject all
+        }
+        //TODO add notification
+
+    }
+
+    /**
+     * Rejects the specified application and updates its state.
+     *
+     * @param applicationId the ID of the application to reject
+     * @param rejectDTO     the rejection details
+     * @param reviewingUser the user performing the review
+     */
+    public void rejectApplication(@NonNull UUID applicationId, @NonNull RejectDTO rejectDTO, @NonNull User reviewingUser) {
+        Application application = applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> new EntityNotFoundException("Application not found"));
+
+        //TODO add authorization
+
+        if (!REVIEW_STATES.contains(application.getState())) {
+            throw new IllegalArgumentException("Application can not be reviewed");
+        }
+
+        application.setState(ApplicationState.REJECTED);
+        setApplicationReview(application, reviewingUser, rejectDTO.reason().getValue());
+        applicationEvaluationRepository.save(application);
+        //TODO add notification
+    }
+
+    /**
+     * Sets the review details for the given application.
+     *
+     * @param application   the application to review
+     * @param reviewingUser the user performing the review
+     * @param reason        the review reason or message
+     */
+    private void setApplicationReview(Application application, User reviewingUser, String reason) {
+        ApplicationReview applicationReview = new ApplicationReview();
+        applicationReview.setReviewedBy(reviewingUser);
+        applicationReview.setReason(reason);
+
+        application.setApplicationReview(applicationReview);
+        applicationReview.setApplication(application);
+    }
 
     /**
      * Retrieves a paginated and optionally sorted list of applications for a given research group.
