@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.notification.Email;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.EmailService;
@@ -20,7 +21,12 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
-import java.util.*;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,68 +38,44 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
-    private final DocumentService documentService;
-    private final DocumentDictionaryService documentDictionaryService;
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
+    private final UserRepository userRepository;
+
+    private final DocumentService documentService;
+    private final DocumentDictionaryService documentDictionaryService;
+    private final CurrentUserService currentUserService;
     private final EmailService emailService;
 
     /**
      * Creates a new job application for the given applicant and job.
      * If an application already exists for the applicant and job, an exception is thrown.
      *
-     * @param createApplicationDTO DTO containing application and applicant data
+     * @param jobId the id of the job
+     * @param applicantId the id of the applicant
      * @return the created ApplicationForApplicantDTO
      * @throws OperationNotAllowedException if the applicant has already applied for the job
      */
     @Transactional
-    public ApplicationForApplicantDTO createApplication(CreateApplicationDTO createApplicationDTO) {
-        if (
-            applicationRepository.existsByApplicantUserIdAndJobJobId(
-                createApplicationDTO.applicant().user().userId(),
-                createApplicationDTO.jobId()
-            )
-        ) {
+    public ApplicationForApplicantDTO createApplication(UUID jobId, UUID applicantId) {
+        if (applicationRepository.existsByApplicantUserIdAndJobJobId(jobId, applicantId)) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
-        applicant.setFirstName(createApplicationDTO.applicant().user().firstName());
-        applicant.setLastName(createApplicationDTO.applicant().user().lastName());
-        applicant.setGender(createApplicationDTO.applicant().user().gender());
-        applicant.setNationality(createApplicationDTO.applicant().user().nationality());
-        applicant.setBirthday(createApplicationDTO.applicant().user().birthday());
-        applicant.setPhoneNumber(createApplicationDTO.applicant().user().phoneNumber());
-        applicant.setWebsite(createApplicationDTO.applicant().user().website());
-        applicant.setLinkedinUrl(createApplicationDTO.applicant().user().linkedinUrl());
-        if (createApplicationDTO.applicant().user().selectedLanguage() != null) {
-            applicant.setSelectedLanguage(createApplicationDTO.applicant().user().selectedLanguage());
-        }
+        Applicant applicant = applicantRepository
+            .findById(applicantId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Applicant", applicantId));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
-        applicant.setStreet(createApplicationDTO.applicant().street());
-        applicant.setPostalCode(createApplicationDTO.applicant().postalCode());
-        applicant.setCity(createApplicationDTO.applicant().city());
-        applicant.setCountry(createApplicationDTO.applicant().country());
-        applicant.setBachelorDegreeName(createApplicationDTO.applicant().bachelorDegreeName());
-        applicant.setBachelorGradingScale(createApplicationDTO.applicant().bachelorGradingScale());
-        applicant.setBachelorGrade(createApplicationDTO.applicant().bachelorGrade());
-        applicant.setBachelorUniversity(createApplicationDTO.applicant().bachelorUniversity());
-        applicant.setMasterDegreeName(createApplicationDTO.applicant().masterDegreeName());
-        applicant.setMasterGradingScale(createApplicationDTO.applicant().masterGradingScale());
-        applicant.setMasterGrade(createApplicationDTO.applicant().masterGrade());
-        applicant.setMasterUniversity(createApplicationDTO.applicant().masterUniversity());
-        applicantRepository.save(applicant);
-
-        Job job = jobRepository.getReferenceById(createApplicationDTO.jobId());
         Application application = new Application(
             null,
             null, // no applicationReview yet
             applicant,
             job,
-            createApplicationDTO.applicationState(),
-            createApplicationDTO.desiredDate(),
-            createApplicationDTO.projects(),
-            createApplicationDTO.specialSkills(),
-            createApplicationDTO.motivation(),
+            ApplicationState.SAVED,
+            null,
+            null,
+            null,
+            null,
             null,
             new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
             new HashSet<>()
@@ -150,7 +132,7 @@ public class ApplicationService {
         );
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
-        Applicant applicant = applicantRepository.getReferenceById(UUID.fromString("00000000-0000-0000-0000-000000000104"));
+        Applicant applicant = applicantRepository.getReferenceById(applicantDTO.user().userId());
         applicant.setFirstName(applicantDTO.user().firstName());
         applicant.setLastName(applicantDTO.user().lastName());
         applicant.setGender(applicantDTO.user().gender());
@@ -232,7 +214,8 @@ public class ApplicationService {
         applicationRepository.deleteById(applicationId);
     }
 
-    public List<ApplicationOverviewDTO> getAllApplications(UUID applicantId, int pageSize, int pageNumber) {
+    public List<ApplicationOverviewDTO> getAllApplications(int pageSize, int pageNumber) {
+        UUID applicantId = currentUserService.getUserId();
         return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
     }
 
@@ -285,9 +268,10 @@ public class ApplicationService {
      *
      * @param cv the uploaded CV file
      * @param application the application the CV belongs to
-     * @param user the user uploading the document
      */
-    public void uploadCV(MultipartFile cv, Application application, User user) {
+    public void uploadCV(MultipartFile cv, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Document document = documentService.upload(cv, user);
         updateDocumentDictionaries(application, DocumentType.CV, Set.of(document));
     }
@@ -297,9 +281,10 @@ public class ApplicationService {
      *
      * @param references the uploaded reference files
      * @param application the application the references belong to
-     * @param user the user uploading the documents
      */
-    public void uploadReferences(List<MultipartFile> references, Application application, User user) {
+    public void uploadReferences(List<MultipartFile> references, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
     }
@@ -309,9 +294,10 @@ public class ApplicationService {
      *
      * @param bachelorTranscripts the uploaded bachelor transcript files
      * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
      */
-    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application, User user) {
+    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
     }
@@ -321,9 +307,10 @@ public class ApplicationService {
      *
      * @param masterTranscripts the uploaded master transcript files
      * @param application the application the transcripts belong to
-     * @param user the user uploading the documents
      */
-    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application, User user) {
+    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
         updateDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT, documents);
     }
@@ -377,7 +364,9 @@ public class ApplicationService {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
-        Application application = applicationRepository.findById(applicationId).orElseThrow();
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
 
         return ApplicationDetailDTO.getFromEntity(application, application.getJob());
     }
