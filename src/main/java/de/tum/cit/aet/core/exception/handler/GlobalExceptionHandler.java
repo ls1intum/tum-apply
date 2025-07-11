@@ -114,6 +114,14 @@ public class GlobalExceptionHandler {
                 List.of(new ValidationFieldError("request", mismatch.getPropertyName(), "Invalid value"))
             );
         }
+        if (ex instanceof TemplateProcessingException tpe) {
+            log.warn("Handled template processing exception: {} - Path: {}", tpe.getClass().getSimpleName(), request.getRequestURI(), ex);
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.TEMPLATE_ERROR, ex, request.getRequestURI(), null);
+        }
+        if (ex instanceof MailingException me) {
+            log.warn("Handled mailing exception: {} - Path: {}", me.getClass().getSimpleName(), request.getRequestURI(), ex);
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR, ex, request.getRequestURI(), null);
+        }
         ExceptionMetadata metadata = EXCEPTION_METADATA.getOrDefault(
             ex.getClass(),
             new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR)

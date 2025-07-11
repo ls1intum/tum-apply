@@ -221,7 +221,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation "org.hibernate.validator:hibernate-validator"
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-    
+
     implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter-cache"
@@ -249,6 +249,12 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.38")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    // FreeMarker
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+
+    // Jsoup for sanitizing HTML
+    implementation 'org.jsoup:jsoup:1.21.1'
 }
 
 tasks.register("cleanResources", Delete) {

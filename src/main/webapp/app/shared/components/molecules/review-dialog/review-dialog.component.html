@@ -1,0 +1,77 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [styleClass]="'review-dialog ' + (mode() === 'REJECT' ? 'mode-reject' : 'mode-accept')"
+  [contentStyleClass]="mode() === 'REJECT' ? 'no-overflow' : undefined"
+  [closable]="false"
+>
+  <!-- ───────── Header (applicant + job title) ───────── -->
+  <ng-template #header class="custom-header">
+    <div class="info">
+      <span class="applicant-name">{{ application()?.applicationDetailDTO?.applicant?.user?.name ?? '' }}</span>
+      <div class="job-name">
+        <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+        <span>{{ application()?.applicationDetailDTO?.jobTitle ?? '' }}</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Swap between ACCEPT and REJECT content -->
+  <ng-container [ngTemplateOutlet]="mode() === 'ACCEPT' ? acceptTemplate : rejectTemplate" />
+
+  <ng-template pTemplate="footer">
+    <div class="footer-buttons">
+      <jhi-button [label]="'evaluation.cancel' | translate" variant="text" (click)="this.visible.set(false)" />
+      @if (mode() === 'ACCEPT') {
+        <jhi-button [label]="'evaluation.accept' | translate" severity="success" [disabled]="!canAccept()" (click)="onAccept()" />
+      } @else {
+        <jhi-button [label]="'evaluation.reject' | translate" severity="danger" [disabled]="!canReject()" (click)="onReject()" />
+      }
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- ───────── Template rendered in ACCEPT mode ───────── -->
+<ng-template #acceptTemplate>
+  <div>
+    <jhi-editor
+      [label]="'evaluation.message' | translate"
+      [placeholder]="'evaluation.writeMessage' | translate"
+      [model]="editorModel()"
+      (modelChange)="editorModel.set($event)"
+      [required]="true"
+    />
+    <ul class="review-checkboxes">
+      <!-- Will be added together with notifications
+      <li>
+        <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
+        <label>Notify the applicant</label>
+      </li>
+      -->
+      <li>
+        <p-checkbox [(ngModel)]="closeJob" [binary]="true" />
+        <label jhiTranslate="evaluation.closeJobAndRejectAll"></label>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+
+<!-- ───────── Template rendered in REJECT mode ───────── -->
+<ng-template #rejectTemplate>
+  <jhi-dropdown
+    [items]="rejectReasons"
+    [label]="'evaluation.reason' | translate"
+    [required]="true"
+    [selected]="selectedRejectReason()"
+    [placeholder]="'evaluation.selectReason' | translate"
+    (selectedChange)="onSelectChange($event)"
+  />
+  <ul class="review-checkboxes">
+    <!-- Will be added together with notifications
+    <li>
+      <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
+      <label>Notify the applicant</label>
+    </li>
+    -->
+  </ul>
+</ng-template>

@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -9,14 +9,32 @@ import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
-import { ApplicationEvaluationDetailDTO, ApplicationEvaluationDetailListDTO, ApplicationEvaluationResourceService } from '../../generated';
+import {
+  AcceptDTO,
+  ApplicationEvaluationDetailDTO,
+  ApplicationEvaluationDetailListDTO,
+  ApplicationEvaluationResourceService,
+  ApplicationForApplicantDTO,
+  RejectDTO,
+} from '../../generated';
 import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
+import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
+
+import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
 const WINDOW_SIZE = 7;
 
 @Component({
   selector: 'jhi-application-detail',
-  imports: [ApplicationCarouselComponent, FilterSortBarComponent, ApplicationDetailCardComponent, TranslateModule],
+  imports: [
+    ApplicationCarouselComponent,
+    FilterSortBarComponent,
+    ApplicationDetailCardComponent,
+    TranslateModule,
+    ButtonComponent,
+    ReviewDialogComponent,
+  ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
 })
@@ -31,7 +49,20 @@ export class ApplicationDetailComponent {
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
+  // accept/reject dialog
+  reviewDialogVisible = signal<boolean>(false);
+  reviewDialogMode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
+
   half = Math.floor(WINDOW_SIZE / 2); // Half the window size, used for centering
+
+  canReview = computed(() => {
+    const currentApplication = this.currentApplication();
+    if (!currentApplication) {
+      return false;
+    }
+    const state = currentApplication.applicationDetailDTO.applicationState;
+    return state !== 'ACCEPTED' && state !== 'REJECTED';
+  });
 
   protected readonly sortOptions = sortOptions;
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
@@ -114,6 +145,71 @@ export class ApplicationDetailComponent {
   onFilterChange(filters: FilterField[]): void {
     this.filters.set(filters);
     void this.loadInitialPage();
+  }
+
+  openAcceptDialog(): void {
+    this.reviewDialogMode.set('ACCEPT');
+    this.reviewDialogVisible.set(true);
+  }
+
+  openRejectDialog(): void {
+    this.reviewDialogMode.set('REJECT');
+    this.reviewDialogVisible.set(true);
+  }
+
+  async acceptApplication(acceptDTO: AcceptDTO): Promise<void> {
+    const application = this.currentApplication();
+
+    if (application) {
+      this.updateCurrentApplicationState('ACCEPTED');
+      this.reviewDialogVisible.set(false);
+      await firstValueFrom(this.evaluationResourceService.acceptApplication(application.applicationDetailDTO.applicationId, acceptDTO));
+    }
+  }
+
+  async rejectApplication(rejectDTO: RejectDTO): Promise<void> {
+    const application = this.currentApplication();
+
+    if (application) {
+      this.updateCurrentApplicationState('REJECTED');
+      this.reviewDialogVisible.set(false);
+      await firstValueFrom(this.evaluationResourceService.rejectApplication(application.applicationDetailDTO.applicationId, rejectDTO));
+    }
+  }
+
+  updateCurrentApplicationState(newState: ApplicationStateEnum): void {
+    const current = this.currentApplication();
+
+    if (!current) {
+      console.error('Current application is undefined');
+      return;
+    }
+
+    const id = current.applicationDetailDTO.applicationId;
+
+    // update applications
+    this.applications.update(apps =>
+      apps.map(app =>
+        app.applicationDetailDTO.applicationId === id
+          ? {
+              ...app,
+              applicationDetailDTO: {
+                ...app.applicationDetailDTO,
+                applicationState: newState,
+              },
+            }
+          : app,
+      ),
+    );
+
+    // update current application
+    this.currentApplication.set({
+      ...current,
+      applicationDetailDTO: {
+        ...current.applicationDetailDTO,
+        applicationState: newState,
+      },
+    });
   }
 
   /**

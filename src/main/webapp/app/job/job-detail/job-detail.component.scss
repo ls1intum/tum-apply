@@ -11,11 +11,19 @@
   border: 0.1rem solid var(--p-border-default);
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
 .job-title {
   font-size: 2rem;
   font-weight: 700;
   color: var(--p-primary-color);
-  margin-bottom: 1rem;
 }
 
 .job-meta {
@@ -143,9 +151,14 @@
 }
 
 .action-buttons-section {
-  display: flex;
   margin-top: 2rem;
-  place-content: center;
+
+  .button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 }
 
 @media (max-width: 48rem) {
