@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ApplicationForApplicantDTO, ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
+import { AccountService } from 'app/core/auth/account.service';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
@@ -76,6 +77,12 @@ describe('ApplicationOverviewForApplicantComponent', () => {
         {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
+        },
+        {
+          provide: AccountService,
+          useValue: {
+            loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
+          },
         },
       ],
     }).compileComponents();

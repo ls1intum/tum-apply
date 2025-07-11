@@ -59,6 +59,8 @@ export default class ApplicationCreationPage3Component {
   documentIdsReferences = input<string[] | undefined>(undefined);
 
   valid = output<boolean>();
+  changed = output<boolean>();
+
   fb = inject(FormBuilder);
   page3Form = computed(() => {
     const currentData = this.data();
@@ -66,6 +68,8 @@ export default class ApplicationCreationPage3Component {
       experiences: [currentData.experiences, Validators.required],
       motivation: [currentData.motivation, Validators.required],
       skills: [currentData.skills, Validators.required],
+      // optional
+      desiredStartDate: [currentData.desiredStartDate],
     });
   });
 
@@ -80,6 +84,7 @@ export default class ApplicationCreationPage3Component {
         });
 
         this.valid.emit(form.valid);
+        this.changed.emit(true);
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
@@ -91,5 +96,17 @@ export default class ApplicationCreationPage3Component {
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  emitChanged(): void {
+    this.changed.emit(true);
+  }
+
+  setDesiredStartDate($event: string | undefined): void {
+    this.data.set({
+      ...this.data(),
+      desiredStartDate: $event ?? '',
+    });
+    this.emitChanged();
   }
 }

@@ -65,6 +65,8 @@ export default class ApplicationCreationPage2Component {
   documentIdsMasterTranscript = input<string[] | undefined>(undefined);
 
   valid = output<boolean>();
+  changed = output<boolean>();
+
   fb = inject(FormBuilder);
   page2Form = computed(() => {
     const currentData = this.data();
@@ -89,6 +91,7 @@ export default class ApplicationCreationPage2Component {
         });
 
         this.valid.emit(form.valid);
+        this.changed.emit(true);
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
