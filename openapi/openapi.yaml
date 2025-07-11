@@ -249,6 +249,74 @@
         }
       }
     },
+    "/api/evaluation/applications({applicationId}/reject": {
+      "post": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "rejectApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications({applicationId}/accept": {
+      "post": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "acceptApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications/upload-documents/{applicationId}/{documentType}": {
       "post": {
         "tags": [
@@ -1585,6 +1653,42 @@
           "title"
         ]
       },
+      "RejectDTO": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "JOB_FILLED",
+              "JOB_OUTDATED",
+              "FAILED_REQUIREMENTS",
+              "OTHER_REASON"
+            ]
+          },
+          "notifyApplicant": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "AcceptDTO": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 0
+          },
+          "notifyApplicant": {
+            "type": "boolean"
+          },
+          "closeJob": {
+            "type": "boolean"
+          }
+        }
+      },
       "CreateApplicationDTO": {
         "type": "object",
         "properties": {
@@ -2721,6 +2825,9 @@
           "applicationDetailDTO": {
             "$ref": "#/components/schemas/ApplicationDetailDTO"
           },
+          "professor": {
+            "$ref": "#/components/schemas/ProfessorDTO"
+          },
           "rating": {
             "type": "integer",
             "format": "int32"
@@ -2754,6 +2861,26 @@
           "windowIndex": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "ProfessorDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "researchGroupName": {
+            "type": "string"
+          },
+          "researchGroupWebsite": {
+            "type": "string"
           }
         }
       },

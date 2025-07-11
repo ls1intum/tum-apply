@@ -140,7 +140,14 @@
       </form>
 
       <div class="form-actions">
-        <jhi-button [label]="'Cancel'" [icon]="'chevron-left'" [severity]="'primary'" [variant]="'outlined'" [disabled]="false" />
+        <jhi-button
+          [label]="'Cancel'"
+          [icon]="'chevron-left'"
+          [severity]="'primary'"
+          [variant]="'outlined'"
+          [disabled]="false"
+          (click)="onCancel()"
+        />
         <div class="action-right">
           <jhi-button-group [data]="nextAndSaveButtons()" />
         </div>

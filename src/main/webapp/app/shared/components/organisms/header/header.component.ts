@@ -54,10 +54,10 @@ export class HeaderComponent {
     void this.accountService.signOut();
   }
 
-  toggleColorScheme(): void {
-    const className = 'tum-apply-dark-mode';
-    document.body.classList.toggle(className);
-  }
+  /*  toggleColorScheme(): void {
+        const className = 'tum-apply-dark-mode';
+        document.body.classList.toggle(className);
+      }*/
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {

@@ -2,21 +2,18 @@ package de.tum.cit.aet.application.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
-import de.tum.cit.aet.application.domain.dto.CreateApplicationDTO;
-import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
-import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
+import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
+import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -25,6 +22,7 @@ import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -44,6 +42,7 @@ public class ApplicationService {
     private final DocumentDictionaryService documentDictionaryService;
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
+    private final EmailService emailService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -201,6 +200,29 @@ public class ApplicationService {
         if (application == null) {
             return;
         }
+        Applicant applicant = application.getApplicant();
+        Job job = application.getJob();
+
+        Email email = Email.builder()
+            .to(applicant.getEmail())
+            .template("application_withdrawn")
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .content(
+                Map.of(
+                    "applicantFirstName",
+                    applicant.getFirstName(),
+                    "applicantLastName",
+                    applicant.getLastName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "researchGroupName",
+                    job.getResearchGroup().getName()
+                )
+            )
+            .build();
+
+        emailService.send(email);
+
         application.setState(ApplicationState.WITHDRAWN);
         applicationRepository.save(application);
     }
@@ -375,7 +397,7 @@ public class ApplicationService {
         }
         Application application = applicationRepository.findById(applicationId).orElseThrow();
 
-        return ApplicationDetailDTO.getFromEntity(application);
+        return ApplicationDetailDTO.getFromEntity(application, application.getJob());
     }
 
     /**
