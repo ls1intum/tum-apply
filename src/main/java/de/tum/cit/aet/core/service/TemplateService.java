@@ -112,6 +112,7 @@ public class TemplateService {
      */
     private void addMetaData(Language language, Map<String, Object> dataModel) {
         dataModel.put("language", language.getCode());
-        //TODO add URL
+        //TODO replace by properties
+        dataModel.put("url", "https://tumapply.aet.cit.tum.de");
     }
 }

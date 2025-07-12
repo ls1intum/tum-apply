@@ -2,14 +2,21 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.notification.Email;
+import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.service.JobService;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
@@ -25,6 +32,8 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ApplicationEvaluationService {
 
+    private final JobService jobService;
+    private final EmailService emailService;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
 
@@ -61,12 +70,27 @@ public class ApplicationEvaluationService {
         setApplicationReview(application, reviewingUser, acceptDTO.message());
         applicationEvaluationRepository.save(application);
 
-        if (acceptDTO.closeJob()) {
-            System.out.println("Should close Job and reject all");
-            //TODO integrate close job and reject all
-        }
-        //TODO add notification
+        Job job = application.getJob();
 
+        if (acceptDTO.closeJob()) {
+            jobService.changeJobState(job.getJobId(), JobState.APPLICANT_FOUND, true);
+        }
+
+        if (acceptDTO.notifyApplicant()) {
+            Applicant applicant = application.getApplicant();
+            User supervisingProfessor = job.getSupervisingProfessor();
+
+            Email email = Email.builder()
+                .to(applicant.getEmail())
+                .bcc(supervisingProfessor.getEmail())
+                .htmlBody(acceptDTO.message())
+                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                // template and content are only set for the subject
+                .template("application_accepted")
+                .content(Map.of("jobTitle", job.getTitle()))
+                .build();
+            emailService.send(email);
+        }
     }
 
     /**
@@ -90,7 +114,33 @@ public class ApplicationEvaluationService {
         application.setState(ApplicationState.REJECTED);
         setApplicationReview(application, reviewingUser, rejectDTO.reason().getValue());
         applicationEvaluationRepository.save(application);
-        //TODO add notification
+
+        if (rejectDTO.notifyApplicant()) {
+            Job job = application.getJob();
+            Applicant applicant = application.getApplicant();
+            ResearchGroup researchGroup = job.getResearchGroup();
+
+            Email email = Email.builder()
+                .to(applicant.getEmail())
+                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .template("application_rejected")
+                .content(
+                    Map.of(
+                        "applicantFirstName",
+                        applicant.getFirstName(),
+                        "applicantLastName",
+                        applicant.getLastName(),
+                        "jobTitle",
+                        job.getTitle(),
+                        "researchGroupName",
+                        researchGroup.getName(),
+                        "reason",
+                        rejectDTO.reason()
+                    )
+                )
+                .build();
+            emailService.send(email);
+        }
     }
 
     /**

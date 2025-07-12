@@ -11,5 +11,6 @@ public record ApplicationShortDTO(
     String email,
     String firstName,
     String lastName,
+    String language,
     @NotNull ApplicationState applicationState
 ) {}

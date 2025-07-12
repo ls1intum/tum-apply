@@ -22,11 +22,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -159,7 +155,71 @@ public class ApplicationService {
         applicant.setMasterUniversity(applicantDTO.masterUniversity());
         applicantRepository.save(applicant);
 
-        return applicationRepository.findDtoById(updateApplicationDTO.applicationId());
+        ApplicationForApplicantDTO application = applicationRepository.findDtoById(updateApplicationDTO.applicationId());
+
+        if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
+            UUID jobId = application.job().jobId();
+            Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
+            User supervisingProfessor = job.getSupervisingProfessor();
+
+            confirmApplicationToApplicant(applicant.getEmail(), applicant.getSelectedLanguage(), application, job);
+            confirmApplicationToProfessor(supervisingProfessor.getEmail(), supervisingProfessor.getSelectedLanguage(), application, job);
+        }
+        return application;
+    }
+
+    private void confirmApplicationToApplicant(
+        String applicantEmail,
+        String selectedLanguage,
+        ApplicationForApplicantDTO application,
+        Job job
+    ) {
+        Email email = Email.builder()
+            .to(applicantEmail)
+            .language(Language.fromCode(selectedLanguage))
+            .template("application_confirmation")
+            .content(
+                Map.of(
+                    "applicantFirstName",
+                    application.applicant().user().firstName(),
+                    "applicantLastName",
+                    application.applicant().user().lastName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "researchGroupName",
+                    job.getResearchGroup().getName()
+                )
+            )
+            .build();
+        emailService.send(email);
+    }
+
+    private void confirmApplicationToProfessor(
+        String professorEmail,
+        String selectedLanguage,
+        ApplicationForApplicantDTO application,
+        Job job
+    ) {
+        Email email = Email.builder()
+            .to(professorEmail)
+            .language(Language.fromCode(selectedLanguage))
+            .template("application_received")
+            .content(
+                Map.of(
+                    "professorLastName",
+                    application.job().professorName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "applicantFirstName",
+                    application.applicant().user().firstName(),
+                    "applicantLastName",
+                    application.applicant().user().lastName(),
+                    "applicationId",
+                    application.applicationId()
+                )
+            )
+            .build();
+        emailService.send(email);
     }
 
     /**
