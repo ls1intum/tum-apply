@@ -23,7 +23,7 @@ class MockApplicationResourceService {
 }
 
 class FakeLoader implements TranslateLoader {
-  getTranslation(lang: string) {
+  getTranslation(): Observable<{}> {
     return of({}); // return an empty object or mock translations
   }
 }
