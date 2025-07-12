@@ -300,7 +300,7 @@ export default class ApplicationCreationFormComponent {
   sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): void {
     const location = this.location;
     const applicationId = this.applicationId();
-    if (applicationId === undefined) {
+    if (applicationId === '') {
       alert('There is an error with the applicationId');
       return;
     }
