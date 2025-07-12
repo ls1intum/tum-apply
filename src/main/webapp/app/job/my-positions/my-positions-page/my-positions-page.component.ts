@@ -47,18 +47,18 @@ export class MyPositionsPageComponent {
 
     return [
       { field: 'avatar', header: '', width: '5rem' },
-      { field: 'professorName', header: this.translate.instant('myPositionsPage.tableColumn.supervisingProfessor'), width: '12rem' },
-      { field: 'title', header: this.translate.instant('myPositionsPage.tableColumn.job'), width: '26rem' },
+      { field: 'professorName', header: 'myPositionsPage.tableColumn.supervisingProfessor', width: '12rem' },
+      { field: 'title', header: 'myPositionsPage.tableColumn.job', width: '26rem' },
       {
         field: 'state',
-        header: this.translate.instant('myPositionsPage.tableColumn.status'),
+        header: 'myPositionsPage.tableColumn.status',
         width: '10rem',
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'startDate', header: this.translate.instant('myPositionsPage.tableColumn.startDate'), type: 'date', width: '10rem' },
-      { field: 'createdAt', header: this.translate.instant('myPositionsPage.tableColumn.created'), type: 'date', width: '10rem' },
-      { field: 'lastModifiedAt', header: this.translate.instant('myPositionsPage.tableColumn.lastModified'), type: 'date', width: '10rem' },
+      { field: 'startDate', header: 'myPositionsPage.tableColumn.startDate', type: 'date', width: '10rem' },
+      { field: 'createdAt', header: 'myPositionsPage.tableColumn.created', type: 'date', width: '10rem' },
+      { field: 'lastModifiedAt', header: 'myPositionsPage.tableColumn.lastModified', type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });

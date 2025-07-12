@@ -20,9 +20,7 @@
         </th>
       }
       @for (col of columns(); track col.field) {
-        <th [style.width]="col.width">
-          {{ col.header }}
-        </th>
+        <th [style.width]="col.width" jhiTranslate="{{ col.header }}"></th>
       }
     </tr>
   </ng-template>
