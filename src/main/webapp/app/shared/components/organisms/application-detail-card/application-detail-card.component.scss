@@ -234,10 +234,6 @@ $detail-card-2-column-max-width: bp.$xl;
 .middle-column {
   justify-content: flex-start;
   align-items: center;
-
-  // @media (min-width: $detail-card-1-column-max-width) and (max-width: $detail-card-2-column-max-width) {
-  //   flex: 1;
-  // }
 }
 
 .right-section {
