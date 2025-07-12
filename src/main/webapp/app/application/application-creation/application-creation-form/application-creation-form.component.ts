@@ -117,8 +117,9 @@ export default class ApplicationCreationFormComponent {
     const updateDocumentInformation = this.updateDocumentInformation;
     if (panel1) {
       steps.push({
-        name: 'Personal Information',
+        name: 'entity.applicationSteps.personalInformation',
         panelTemplate: panel1,
+        shouldTranslate: true,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -129,8 +130,9 @@ export default class ApplicationCreationFormComponent {
               location.back();
             },
             disabled: false,
-            label: 'Cancel',
+            label: 'entity.applicationSteps.buttons.cancel',
             changePanel: false,
+            shouldTranslate: true,
           },
         ],
         buttonGroupNext: [
@@ -148,8 +150,9 @@ export default class ApplicationCreationFormComponent {
     }
     if (panel2) {
       steps.push({
-        name: 'Education',
+        name: 'entity.applicationSteps.education',
         panelTemplate: panel2,
+        shouldTranslate: true,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -159,7 +162,8 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'Prev',
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -171,7 +175,8 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'Next',
+            label: 'entity.applicationSteps.buttons.next',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -180,7 +185,8 @@ export default class ApplicationCreationFormComponent {
     }
     if (panel3) {
       steps.push({
-        name: 'Application Details',
+        name: 'entity.applicationSteps.applicationDetails',
+        shouldTranslate: true,
         panelTemplate: panel3,
         buttonGroupPrev: [
           {
@@ -191,7 +197,8 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'Prev',
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -203,7 +210,8 @@ export default class ApplicationCreationFormComponent {
               sendData('SENT');
             },
             disabled: this.allPagesValid(),
-            label: 'Send',
+            label: 'entity.applicationSteps.buttons.send',
+            shouldTranslate: true,
             changePanel: false,
           },
         ],
