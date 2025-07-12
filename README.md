@@ -47,15 +47,14 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ### Technology Stack
 
-| Component            | Technology                                     |
-| -------------------- | ---------------------------------------------- |
-| Client               | Angular                                        |
-| Server               | Spring Boot (Java)                             |
-| Proxy                | Nginx                                          |
-| Database             | MySQL with Hibernate                           |
-| Authentication       | Keycloak (with Google / Microsoft / Apple SSO) |
-| Deployment           | GitHub + GitHub Actions (CI/CD)                |
-| Logging & Monitoring | Prometheus & Grafana                           |
+| Component      | Technology                                     |
+| -------------- | ---------------------------------------------- |
+| Client         | Angular                                        |
+| Server         | Spring Boot (Java)                             |
+| Proxy          | Nginx                                          |
+| Database       | MySQL with Hibernate                           |
+| Authentication | Keycloak (with Google / Microsoft / Apple SSO) |
+| Deployment     | GitHub + GitHub Actions (CI/CD)                |
 
 ### Core Modules & Responsibilities
 
