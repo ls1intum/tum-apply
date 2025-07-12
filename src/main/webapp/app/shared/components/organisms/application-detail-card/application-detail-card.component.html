@@ -1,49 +1,50 @@
 <!-- Main Container Layout -->
 <div class="main-container">
-  <!-- Left Section -->
-  <div class="left-section">
-    <!-- Top Section: Avatar, Name, and Score -->
-    <div class="top-section">
-      <!-- Applicant Avatar -->
-      <div class="avatar">
-        <img src="https://placehold.co/100x100" class="avatar-img" />
-      </div>
+  <div class="left-middle-section">
+    <!-- Left Section -->
+    <div class="left-section">
+      <!-- Top Section: Avatar, Name, and Score -->
+      <div class="top-section">
+        <!-- Applicant Avatar -->
+        <div class="avatar">
+          <img src="https://placehold.co/100x100" class="avatar-img" />
+        </div>
 
-      <!-- User Info and Optional Rating -->
-      <div class="user-info-container">
-        <!-- Applicant Name -->
-        <div class="section-title">{{ application().applicant?.user?.name }}</div>
-        <!-- Rating Section (if applicable) -->
-        <ng-content select="[slot-rating]" />
+        <!-- User Info and Optional Rating -->
+        <div class="user-info-container">
+          <!-- Applicant Name -->
+          <div class="section-title">{{ application().applicant?.user?.name }}</div>
+          <!-- Rating Section (if applicable) -->
+          <ng-content select="[slot-rating]" />
+        </div>
       </div>
+      <!-- Injected Template: Applicant Details -->
+      <ng-container [ngTemplateOutlet]="applicantDetailsTemplate" />
+
+      <!-- Injected Template: Education Information -->
+      <ng-container [ngTemplateOutlet]="educationInfoTemplate" />
     </div>
-    <!-- Injected Template: Applicant Details -->
-    <ng-container [ngTemplateOutlet]="applicantDetailsTemplate" />
 
-    <!-- Injected Template: Education Information -->
-    <ng-container [ngTemplateOutlet]="educationInfoTemplate" />
+    <!-- Middle Column: Text Cards (Motivation, Skills, Research Experience) -->
+    <div class="middle-column">
+      <ng-container
+        [ngTemplateOutlet]="textCardTemplate"
+        [ngTemplateOutletContext]="{ icon: 'rocket', name: 'Motivation', text: application().motivation }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="textCardTemplate"
+        [ngTemplateOutletContext]="{ icon: 'brain', name: 'Skills', text: application().specialSkills }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="textCardTemplate"
+        [ngTemplateOutletContext]="{ icon: 'flask', name: 'Research Experience', text: application().projects }"
+      />
+      <!-- Slot for custom questions -->
+      <ng-content select="[slot-custom-questions]" />
+    </div>
   </div>
-
-  <!-- Middle Column: Text Cards (Motivation, Skills, Research Experience) -->
-  <div class="middle-column">
-    <ng-container
-      [ngTemplateOutlet]="textCardTemplate"
-      [ngTemplateOutletContext]="{ icon: 'rocket', name: 'Motivation', text: application().motivation }"
-    />
-    <ng-container
-      [ngTemplateOutlet]="textCardTemplate"
-      [ngTemplateOutletContext]="{ icon: 'brain', name: 'Skills', text: application().specialSkills }"
-    />
-    <ng-container
-      [ngTemplateOutlet]="textCardTemplate"
-      [ngTemplateOutletContext]="{ icon: 'flask', name: 'Research Experience', text: application().projects }"
-    />
-    <!-- Slot for custom questions -->
-    <ng-content select="[slot-custom-questions]" />
-  </div>
-
   <!-- Right Column: Slot for Additional Custom Content (e.g Documents, or Internal Comments) -->
-  <div class="flex gap-10">
+  <div class="right-section">
     <ng-content select="[slot-vertical-right]" />
   </div>
 </div>
