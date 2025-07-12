@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -38,8 +39,8 @@ const ApplicationStates = {
 type ApplicationState = (typeof ApplicationStates)[keyof typeof ApplicationStates];
 
 const SavingStates = {
-  SAVED: 'Changes saved',
-  SAVING: 'Saving changes...',
+  SAVED: 'SAVED',
+  SAVING: 'SAVING',
 } as const;
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
@@ -53,6 +54,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
     FontAwesomeModule,
+    TranslateModule,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -107,60 +109,53 @@ export default class ApplicationCreationFormComponent {
       this.sendCreateApplicationData(state, true);
     };
 
-    const deleteApplication = (): void => {
-      this.deleteApplication();
-    };
-
     const steps: StepData[] = [];
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const page1Valid = this.page1Valid();
+    const page2Valid = this.page2Valid();
+    const allPagesValid = this.allPagesValid();
     const location = this.location;
-    const performAutomaticSave = this.performAutomaticSave;
+    const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
     const statusPanel = this.savedStatusPanel();
     if (panel1) {
       steps.push({
-        name: 'Personal Information',
+        name: this.translate.instant('entity.applicationSteps.personalInformation'),
         panelTemplate: panel1,
         buttonGroupPrev: [
           {
             variant: 'outlined',
             severity: 'info',
             icon: 'caret-left',
-            onClick() {
-              performAutomaticSave();
-              location.back();
+            onClick(): void {
+              (async () => {
+                await performAutomaticSaveLocal();
+                location.back();
+              })();
             },
             disabled: false,
-            label: 'Cancel',
+            label: this.translate.instant('entity.applicationSteps.buttons.cancel'),
             changePanel: false,
           },
         ],
         buttonGroupNext: [
           {
-            severity: 'danger',
-            onClick() {
-              deleteApplication();
-            },
-            disabled: false,
-            label: 'Delete',
-            changePanel: false,
-          },
-          {
             severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
-            disabled: false,
-            label: 'Next',
+            disabled: !page1Valid,
+            label: this.translate.instant('entity.applicationSteps.buttons.next'),
             changePanel: true,
           },
         ],
         status: statusPanel,
       });
     }
+
     if (panel2) {
       steps.push({
-        name: 'Education',
+        name: this.translate.instant('entity.applicationSteps.education'),
         panelTemplate: panel2,
         buttonGroupPrev: [
           {
@@ -169,35 +164,27 @@ export default class ApplicationCreationFormComponent {
             icon: 'arrow-left',
             onClick() {},
             disabled: false,
-            label: 'Prev',
+            label: this.translate.instant('entity.applicationSteps.buttons.prev'),
             changePanel: true,
           },
         ],
         buttonGroupNext: [
           {
-            severity: 'danger',
-            onClick() {
-              deleteApplication();
-            },
-            disabled: false,
-            label: 'Delete',
-            changePanel: false,
-          },
-          {
             severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
-            disabled: false,
-            label: 'Next',
+            disabled: !page2Valid,
+            label: this.translate.instant('entity.applicationSteps.buttons.next'),
             changePanel: true,
           },
         ],
         status: statusPanel,
       });
     }
+
     if (panel3) {
       steps.push({
-        name: 'Application Details',
+        name: this.translate.instant('entity.applicationSteps.applicationDetails'),
         panelTemplate: panel3,
         buttonGroupPrev: [
           {
@@ -206,28 +193,19 @@ export default class ApplicationCreationFormComponent {
             icon: 'arrow-left',
             onClick() {},
             disabled: false,
-            label: 'Prev',
+            label: this.translate.instant('entity.applicationSteps.buttons.prev'),
             changePanel: true,
           },
         ],
         buttonGroupNext: [
-          {
-            severity: 'danger',
-            onClick() {
-              deleteApplication();
-            },
-            disabled: false,
-            label: 'Delete',
-            changePanel: false,
-          },
           {
             severity: 'primary',
             icon: 'paper-plane',
             onClick() {
               sendData('SENT');
             },
-            disabled: this.allPagesValid(),
-            label: 'Send',
+            disabled: !allPagesValid,
+            label: this.translate.instant('entity.applicationSteps.buttons.send'),
             changePanel: false,
           },
         ],
@@ -263,6 +241,7 @@ export default class ApplicationCreationFormComponent {
   private accountService = inject(AccountService);
 
   private location = inject(Location);
+  private translate = inject(TranslateService);
 
   constructor(private route: ActivatedRoute) {
     this.init(route);
@@ -318,14 +297,14 @@ export default class ApplicationCreationFormComponent {
     this.location.replaceState(`${segments[0].path}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
   }
 
-  performAutomaticSave(): void {
+  async performAutomaticSave(): Promise<void> {
     if (this.savingState() === SavingStates.SAVING) {
-      this.sendCreateApplicationData(this.applicationState(), false);
+      await this.sendCreateApplicationData(this.applicationState(), false);
       this.savingState.set(SavingStates.SAVED);
     }
   }
 
-  sendCreateApplicationData(state: ApplicationState, rerouteToOtherPage: boolean): void {
+  async sendCreateApplicationData(state: ApplicationState, rerouteToOtherPage: boolean): Promise<void> {
     const location = this.location;
     const applicationId = this.applicationId();
     if (applicationId === undefined) {
@@ -368,38 +347,16 @@ export default class ApplicationCreationFormComponent {
       projects: this.page3().experiences,
       // answers: new Set(),
     };
-    this.applicationResourceService.updateApplication(updateApplication).subscribe({
-      next() {
-        if (rerouteToOtherPage) {
-          alert('Successfully saved application');
-          location.back();
-        }
-      },
-      error(err) {
-        alert('Failed to save application:' + (err as HttpErrorResponse).statusText);
-        console.error('Failed to save application:', err);
-      },
-    });
-  }
-
-  async deleteApplication(): Promise<void> {
-    const confirmResult = confirm('Are you sure you want to delete this application?');
-    if (!confirmResult) {
-      return;
-    }
-    const applicationId = this.applicationId();
-    if (applicationId !== undefined && applicationId.trim().length !== 0) {
-      try {
-        await firstValueFrom(this.applicationResourceService.deleteApplication(applicationId));
-        alert('Application sucessfully deleted');
-        this.location.back();
-      } catch (err) {
-        alert('Error deleting this application' + (err as HttpErrorResponse).statusText);
-        console.error('Failed to delete this application');
+    try {
+      await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
+      if (rerouteToOtherPage) {
+        alert('Successfully saved application');
+        location.back();
       }
-    } else {
-      alert('There was an error because of an invalid applicationId');
-      this.location.back();
+    } catch (err) {
+      const httpError = err as HttpErrorResponse;
+      alert('Failed to save application: ' + httpError.statusText);
+      console.error('Failed to save application:', err);
     }
   }
 

@@ -2,6 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ApplicationForApplicantDTO, ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
+import {
+  MissingTranslationHandler,
+  TranslateCompiler,
+  TranslateLoader,
+  TranslateModule,
+  TranslateParser,
+  TranslateService,
+  TranslateStore,
+} from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
@@ -72,12 +81,21 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationOverviewForApplicantComponent],
+      imports: [ApplicationOverviewForApplicantComponent, TranslateModule.forRoot()],
       providers: [
         {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
         },
+        TranslateStore,
+        TranslateLoader,
+        TranslateCompiler,
+        TranslateParser,
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        TranslateService,
         {
           provide: AccountService,
           useValue: {

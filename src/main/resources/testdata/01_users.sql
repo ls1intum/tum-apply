@@ -29,7 +29,7 @@ REPLACE INTO users (
 VALUES
         ('00000000-0000-0000-0000-000000000101', NULL, 'admin1@tumapply.local', NULL, 'System', 'Admin', NULL, 'de', NULL, NULL, NULL, NULL, 'en'),
         ('00000000-0000-0000-0000-000000000102', NULL, 'professor1@tumapply.local', NULL, 'Anna', 'Professorin', 'female', 'de', '1990-01-01', '+49123456789', 'https://ai.tum.de', NULL, 'de'),
-        ('00000000-0000-0000-0000-000000000103', NULL, 'applicant1@tumapply.local', NULL, 'Max', 'Applicant', 'male', 'de', '1999-05-26', NULL, NULL, 'https://linkedin.com/in/max', 'de'),
+        ('00000000-0000-0000-0000-000000000103', NULL, 'applicant1@tumapply.local', NULL, 'Max', 'Applicant', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max', 'de'),
         ('00000000-0000-0000-0000-000000000104', NULL, 'external@uni.de', NULL, 'Sara', 'Extern', 'female', 'de', '1995-12-31', NULL, NULL, NULL, 'en'),
         ('00000000-0000-0000-0000-000000000105', NULL, 'professor2@tum.de', NULL, 'Professor2', 'TUM', NULL, NULL, NULL, NULL, NULL, NULL, 'en'),
         ('00000000-0000-0000-0000-000000000106', NULL, 'longnameperson@intl.edu', NULL, 'Jean-Pierre-Étienne', 'Van Der Straaten-Sánchez', 'male', 'be', '1975-07-20', '+3225551234', 'https://intl.edu/users/jps', NULL, 'en'),

@@ -1,24 +1,26 @@
 <form [formGroup]="page1Form()">
   <div class="form-row">
     <jhi-string-input
-      label="First Name"
+      label="{{ 'entity.applicationPage1.label.firstName' | translate }}"
       id="firstName"
       [required]="true"
       [(model)]="data().firstName"
       [control]="page1Form().controls.firstName"
     />
     <jhi-string-input
-      label="Last Name"
+      label="{{ 'entity.applicationPage1.label.lastName' | translate }}"
       id="lastName"
       [required]="true"
       [(model)]="data().lastName"
       [control]="page1Form().controls.lastName"
     />
   </div>
-  <p-divider layout="horizontal">User Information</p-divider>
+
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.userInformation"></span></p-divider>
+
   <div class="form-row">
     <jhi-string-input
-      label="Email"
+      label="{{ 'entity.applicationPage1.label.email' | translate }}"
       icon="envelope"
       [disabled]="true"
       id="email"
@@ -27,18 +29,19 @@
       [control]="page1Form().controls.email"
     />
     <jhi-string-input
-      label="Phone Number"
+      label="{{ 'entity.applicationPage1.label.phoneNumber' | translate }}"
       id="phoneNumber"
       [required]="true"
       [(model)]="data().phoneNumber"
       [control]="page1Form().controls.phoneNumber"
     />
   </div>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-dropdown
         width="100%"
-        label="Gender"
+        label="{{ 'entity.applicationPage1.label.gender' | translate }}"
         [items]="dropdownGenderLocal"
         id="gender"
         [(selected)]="data().gender"
@@ -48,7 +51,7 @@
     <div class="w-1/2 pr-4">
       <jhi-dropdown
         width="100%"
-        label="Nationality"
+        label="{{ 'entity.applicationPage1.label.nationality' | translate }}"
         [items]="dropdownNationalityLocal"
         id="nationality"
         [(selected)]="data().nationality"
@@ -56,11 +59,12 @@
       />
     </div>
   </div>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-dropdown
         width="100%"
-        label="Language"
+        label="{{ 'entity.applicationPage1.label.language' | translate }}"
         [items]="dropdownLanguageLocal"
         id="language"
         [(selected)]="data().language"
@@ -68,29 +72,36 @@
       />
     </div>
     <div class="w-1/2 pr-4">
-      <label>Date of Birth</label>
+      <label jhiTranslate="entity.applicationPage1.label.dateOfBirth"></label>
       <jhi-datepicker [selectedDate]="data().dateOfBirth" label="" width="100%" (selectedDateChange)="setDateOfBirth($event)" />
     </div>
   </div>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Website"
+        label="{{ 'entity.applicationPage1.label.website' | translate }}"
         id="website"
         [(model)]="data().website"
-        [control]="page1Form().controls.website"
         [control]="page1Form().controls.website"
       />
     </div>
     <div class="w-1/2 pr-4">
-      <jhi-string-input label="LinkedIn" id="linkedIn" [(model)]="data().linkedIn" [control]="page1Form().controls.linkedIn" />
+      <jhi-string-input
+        label="{{ 'entity.applicationPage1.label.linkedIn' | translate }}"
+        id="linkedIn"
+        [(model)]="data().linkedIn"
+        [control]="page1Form().controls.linkedIn"
+      />
     </div>
   </div>
-  <p-divider layout="horizontal">Address</p-divider>
+
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.address"></span></p-divider>
+
   <div class="form-row">
     <div class="w-full pr-4">
       <jhi-string-input
-        label="Adress Line"
+        label="{{ 'entity.applicationPage1.label.street' | translate }}"
         id="street"
         [required]="true"
         [(model)]="data().street"
@@ -98,13 +109,21 @@
       />
     </div>
   </div>
+
   <div class="form-row">
-    <jhi-string-input label="City" id="city" [required]="true" [(model)]="data().city" [control]="page1Form().controls.city" />
+    <jhi-string-input
+      label="{{ 'entity.applicationPage1.label.city' | translate }}"
+      id="city"
+      [required]="true"
+      [(model)]="data().city"
+      [control]="page1Form().controls.city"
+    />
   </div>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Country"
+        label="{{ 'entity.applicationPage1.label.country' | translate }}"
         id="country"
         [required]="true"
         [(model)]="data().country"
@@ -113,7 +132,7 @@
     </div>
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Postcode"
+        label="{{ 'entity.applicationPage1.label.postcode' | translate }}"
         id="postcode"
         [required]="true"
         [(model)]="data().postcode"
