@@ -26,7 +26,6 @@ model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
-model/createApplicationDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts

@@ -9,7 +9,13 @@
           pTooltip="Choose the preferred Date when you would like to start the position."
           tooltipPosition="top"
       /></label>
-      <jhi-datepicker [(selectedDate)]="data().desiredStartDate" label="" [placeholder]="'Select a Start Date...'" width="100%" />
+      <jhi-datepicker
+        [selectedDate]="data().desiredStartDate"
+        label=""
+        [placeholder]="'Select a Start Date...'"
+        width="100%"
+        (selectedDateChange)="setDesiredStartDate($event)"
+      />
     </div>
     <p-divider layout="horizontal">Uploads</p-divider>
     @if (applicationIdForDocuments(); as applicationId) {

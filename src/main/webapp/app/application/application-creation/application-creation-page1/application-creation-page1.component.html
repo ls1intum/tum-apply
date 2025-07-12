@@ -36,7 +36,14 @@
   </div>
   <div class="form-row">
     <div class="w-1/2 pr-4">
-      <jhi-dropdown width="100%" label="Gender" [items]="dropdownGenderLocal" id="gender" [(selected)]="data().gender" />
+      <jhi-dropdown
+        width="100%"
+        label="Gender"
+        [items]="dropdownGenderLocal"
+        id="gender"
+        [(selected)]="data().gender"
+        (selectedChange)="emitChanged()"
+      />
     </div>
     <div class="w-1/2 pr-4">
       <jhi-dropdown
@@ -45,24 +52,38 @@
         [items]="dropdownNationalityLocal"
         id="nationality"
         [(selected)]="data().nationality"
+        (selectedChange)="emitChanged()"
       />
     </div>
   </div>
   <div class="form-row">
     <div class="w-1/2 pr-4">
-      <jhi-dropdown width="100%" label="Language" [items]="dropdownLanguageLocal" id="language" [(selected)]="data().language" />
+      <jhi-dropdown
+        width="100%"
+        label="Language"
+        [items]="dropdownLanguageLocal"
+        id="language"
+        [(selected)]="data().language"
+        (selectedChange)="emitChanged()"
+      />
     </div>
     <div class="w-1/2 pr-4">
       <label>Date of Birth</label>
-      <jhi-datepicker [(selectedDate)]="data().dateOfBirth" label="" width="100%" />
+      <jhi-datepicker [selectedDate]="data().dateOfBirth" label="" width="100%" (selectedDateChange)="setDateOfBirth($event)" />
     </div>
   </div>
   <div class="form-row">
     <div class="w-1/2 pr-4">
-      <jhi-string-input label="Website" id="website" [(model)]="data().website" />
+      <jhi-string-input
+        label="Website"
+        id="website"
+        [(model)]="data().website"
+        [control]="page1Form().controls.website"
+        [control]="page1Form().controls.website"
+      />
     </div>
     <div class="w-1/2 pr-4">
-      <jhi-string-input label="LinkedIn" id="linkedIn" [(model)]="data().linkedIn" />
+      <jhi-string-input label="LinkedIn" id="linkedIn" [(model)]="data().linkedIn" [control]="page1Form().controls.linkedIn" />
     </div>
   </div>
   <p-divider layout="horizontal">Address</p-divider>

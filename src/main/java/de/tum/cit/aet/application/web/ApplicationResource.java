@@ -1,10 +1,14 @@
 package de.tum.cit.aet.application.web;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.dto.*;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
+import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
+import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.usermanagement.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,15 +36,17 @@ public class ApplicationResource {
     }
 
     /**
-     * @param createApplicationDTO The data necessary to create an Application
+     *
+     * @param jobId The UUID of the Job
+     * @param applicantId Temporarily the id of the applicant (to be removed with serverside user handling)
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
      *         the createApplicationDTO is invalid
      */
-    @PostMapping
-    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
+    @PostMapping("/create/{jobId}/applicant/{applicantId}")
+    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@PathVariable UUID jobId, @PathVariable UUID applicantId) {
         // TODO check authorization
 
-        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(createApplicationDTO);
+        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(jobId, applicantId);
         return ResponseEntity.ok(applicationForApplicantDTO);
     }
 
@@ -163,19 +169,31 @@ public class ApplicationResource {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Retrieves a paginated list of application overviews for the current user.
+     *
+     * @param pageSize   The number of items per page (default: 25).
+     * @param pageNumber The page number to retrieve (default: 0).
+     * @return A list of {@link ApplicationOverviewDTO} representing the application overview data.
+     */
     @GetMapping("/pages")
     public ResponseEntity<List<ApplicationOverviewDTO>> getApplicationPages(
         @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
         @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
     ) {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
         // purposes
-        return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
+        return ResponseEntity.ok(applicationService.getAllApplications(pageSize, pageNumber));
     }
 
-    @GetMapping("/pages/length")
-    public ResponseEntity<Long> getApplicationPagesLength() {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+    /**
+     * Retrieves the total number of applications submitted by a specific applicant.
+     * Can be removed once sorting and filtering demands using a ApplicationPageDTO, where this data can be directly included
+     *
+     * @param applicantId The UUID of the applicant.
+     * @return The total count of applications.
+     */
+    @GetMapping("/pages/length/{applicantId}")
+    public ResponseEntity<Long> getApplicationPagesLength(@PathVariable UUID applicantId) {
         // purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
     }
@@ -226,12 +244,6 @@ public class ApplicationResource {
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
     ) {
-        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        // simulate current user
-        User user = new User();
-        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
-
         Application application = new Application();
         application.setApplicationId(UUID.fromString(applicationId.toString()));
 
@@ -239,10 +251,10 @@ public class ApplicationResource {
             case BACHELOR_TRANSCRIPT:
             case MASTER_TRANSCRIPT:
             case REFERENCE:
-                applicationService.uploadAdditionalTranscripts(files, documentType, application, user);
+                applicationService.uploadAdditionalTranscripts(files, documentType, application);
                 break;
             case CV:
-                applicationService.uploadCV(files.getFirst(), application, user);
+                applicationService.uploadCV(files.getFirst(), application);
                 break; // TODO only one file allowed
             default:
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));

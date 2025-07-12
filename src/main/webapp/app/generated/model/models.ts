@@ -12,7 +12,6 @@ export * from './applicationEvaluationOverviewListDTO';
 export * from './applicationForApplicantDTO';
 export * from './applicationOverviewDTO';
 export * from './applicationReview';
-export * from './createApplicationDTO';
 export * from './createdJobDTO';
 export * from './customField';
 export * from './customFieldAnswer';

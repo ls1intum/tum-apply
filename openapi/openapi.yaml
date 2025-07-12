@@ -133,34 +133,6 @@
             }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "createApplication",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateApplicationDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/applications/withdraw/{applicationId}": {
@@ -177,38 +149,6 @@
             "schema": {
               "type": "string",
               "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/applications/rename-document/{documentDictionaryId}": {
-      "put": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "renameDocument",
-        "parameters": [
-          {
-            "name": "documentDictionaryId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "newName",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
             }
           }
         ],
@@ -370,6 +310,46 @@
                     "$ref": "#/components/schemas/DocumentInformationHolderDTO"
                   },
                   "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/create/{jobId}/applicant/{applicantId}": {
+      "post": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "createApplication",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "applicantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
                 }
               }
             }
@@ -1115,12 +1095,23 @@
         }
       }
     },
-    "/api/applications/pages/length": {
+    "/api/applications/pages/length/{applicantId}": {
       "get": {
         "tags": [
           "application-resource"
         ],
         "operationId": "getApplicationPagesLength",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1745,26 +1736,6 @@
           }
         }
       },
-      "DocumentInformationHolderDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "size"
-        ]
-      },
       "UserShortDTO": {
         "type": "object",
         "properties": {
@@ -1978,19 +1949,19 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageSize": {
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "paged": {
-            "type": "boolean"
           }
         }
       },
