@@ -1,6 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { VERSION } from 'app/app.constants';
 
 import TranslateDirective from '../../shared/language/translate.directive';
