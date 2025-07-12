@@ -1,7 +1,8 @@
 import { Component, input } from '@angular/core';
-import { DocumentViewerComponent } from '../../atoms/document-viewer/document-viewer.component';
-import { ApplicationDocumentIdsDTO, DocumentInformationHolderDTO } from 'app/generated';
+import { ApplicationDocumentIdsDTO } from 'app/generated';
 import { TranslateDirective } from 'app/shared/language';
+
+import { DocumentViewerComponent } from '../../atoms/document-viewer/document-viewer.component';
 
 /**
  * A UI component that displays a group of buttons arranged

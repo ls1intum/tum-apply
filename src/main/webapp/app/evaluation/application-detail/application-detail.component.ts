@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
+import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
@@ -19,14 +20,12 @@ import {
   ApplicationResourceService,
   RejectDTO,
 } from '../../generated';
-import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
 import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
 import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
-import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 
 const WINDOW_SIZE = 7;
 
