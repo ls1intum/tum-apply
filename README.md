@@ -96,5 +96,7 @@ If you're a developer or contributor, head over to the full documentation:
 
 Full documentation is available in the [`/docs`](./docs) folder.
 
+---
+
 © 2025 Technische Universität München – Built with ❤️ by the TUMApply Team at [Applied Education
 Technologies (AET)](https://aet.cit.tum.de/)
