@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AccountService } from 'app/core/auth/account.service';
