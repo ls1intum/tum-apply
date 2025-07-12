@@ -5,6 +5,7 @@ import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
+import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -84,6 +85,50 @@ public class ApplicationResource {
         // TODO check authorization
         applicationService.deleteApplication(applicationId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     *
+     * @param documentDictionaryId id of the documentDictionary that will be deleted
+     * @return 204 No Content when deletion is successful
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @DeleteMapping("/delete-document/{documentDictionaryId}")
+    public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
+        // simulate current user (replace with actual auth in production)
+        applicationService.deleteDocument(documentDictionaryId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     *
+     * @param applicationId id of the application
+     * @param documentType  document type, of which the documents will be deleted
+     * @return 204 no content when deletion is successful
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @DeleteMapping("/batch-delete-document/{applicationId}/{documentType}")
+    public ResponseEntity<Void> deleteDocumentBatchByTypeFromApplication(
+        @PathVariable UUID applicationId,
+        @PathVariable DocumentType documentType
+    ) {
+        applicationService.deleteDocumentTypeOfDocuments(applicationId, documentType);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Renames a document associated with an application.
+     *
+     * @param documentDictionaryId the UUID of the document to rename
+     * @param newName              the new name to assign to the document
+     * @return {@code 200 OK} if the rename operation was successful
+     *
+     */
+    @PutMapping("/rename-document/{documentDictionaryId}")
+    @PreAuthorize("hasRole('APPLICANT')")
+    public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
+        applicationService.renameDocument(documentDictionaryId, newName);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -173,11 +218,13 @@ public class ApplicationResource {
      * Only users with {@code ROLE_APPLICANT} are allowed.
      * </p>
      *
-     * <p>Unsupported types throw {@link NotImplementedException}.</p>
+     * <p>
+     * Unsupported types throw {@link NotImplementedException}.
+     * </p>
      *
      * @param applicationId UUID of the target application
-     * @param documentType type of document to upload
-     * @param files uploaded multipart files
+     * @param documentType  type of document to upload
+     * @param files         uploaded multipart files
      * @return 200 OK if successful
      * @throws NotImplementedException if the document type is still unsupported
      */
@@ -192,7 +239,7 @@ public class ApplicationResource {
     )
     @PreAuthorize("hasRole('APPLICANT')")
     @PostMapping("/upload-documents/{applicationId}/{documentType}")
-    public ResponseEntity<Set<UUID>> uploadDocuments(
+    public ResponseEntity<Set<DocumentInformationHolderDTO>> uploadDocuments(
         @PathVariable UUID applicationId,
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
@@ -202,13 +249,9 @@ public class ApplicationResource {
 
         switch (documentType) {
             case BACHELOR_TRANSCRIPT:
-                applicationService.uploadBachelorTranscripts(files, application);
-                break;
             case MASTER_TRANSCRIPT:
-                applicationService.uploadMasterTranscripts(files, application);
-                break;
             case REFERENCE:
-                applicationService.uploadReferences(files, application);
+                applicationService.uploadAdditionalTranscripts(files, documentType, application);
                 break;
             case CV:
                 applicationService.uploadCV(files.getFirst(), application);
@@ -217,7 +260,10 @@ public class ApplicationResource {
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
         }
 
-        Set<UUID> documentIdsOfUploadedDocuments = applicationService.getDocumentIdsOfApplicationAndType(application, documentType);
+        Set<DocumentInformationHolderDTO> documentIdsOfUploadedDocuments = applicationService.getDocumentIdsOfApplicationAndType(
+            application,
+            documentType
+        );
 
         return ResponseEntity.ok(documentIdsOfUploadedDocuments);
     }

@@ -5,13 +5,14 @@ import { CommonModule } from '@angular/common';
 import { JobCardDTO, JobResourceService } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
 
+import SharedModule from '../../../shared/shared.module';
 import { JobCardComponent } from '../job-card/job-card.component';
 import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
-  imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SortBarComponent],
+  imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SortBarComponent, SharedModule],
   templateUrl: './job-card-list.component.html',
   styleUrls: ['./job-card-list.component.scss'],
 })

@@ -173,15 +173,24 @@
       },
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
-      "instruction": "Klicken oder Dateien hierher ziehen, um sie hochzuladen.",
+      "add": "Hinzufügen",
+      "clear": "Alles löschen",
+      "upload": "Hochladen",
+      "instruction": "Hier klicken oder Dateien hinziehen ziehen, um sie hochzuladen.",
       "max_size": "Maximale Upload-Größe:",
       "upload_progress": "Upload-Fortschritt: ",
       "document_type": {
         "BACHELOR_TRANSCRIPT": "Bachelor-Zeugnis",
         "MASTER_TRANSCRIPT": "Master-Zeugnis",
-        "REFERENCE": "Empfehlungsschreiben",
+        "REFERENCES": "Empfehlungsschreiben",
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
+      },
+      "tooltip": {
+        "to_upload": "Muss noch hochgeladen werden",
+        "already_uploaded": "Bereits hochgeladen",
+        "remove": "Diese Datei aus der Upload-Liste entfernen",
+        "delete": "Diese Datei vom Server löschen"
       }
     }
   },

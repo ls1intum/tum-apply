@@ -1,27 +1,35 @@
-<div class="body">
-  <jhi-filter-sort-bar
-    [totalRecords]="total()"
-    [filterFields]="filters()"
-    (filterChange)="loadOnFilterEmit($event)"
-    [singleEntity]="'evaluation.application' | translate"
-    [multipleEntities]="'evaluation.applications' | translate"
-  />
+<div class="content">
+  <div class="header">
+    <h1 jhiTranslate="evaluation.overviewHeader">Applications - Overview</h1>
+  </div>
+  <div class="body">
+    <jhi-filter-sort-bar
+      [totalRecords]="total()"
+      [filterFields]="filters()"
+      (filterChange)="loadOnFilterEmit($event)"
+      [singleEntity]="'evaluation.application' | translate"
+      [multipleEntities]="'evaluation.applications' | translate"
+    />
 
-  <jhi-dynamic-table
-    [columns]="columns()"
-    [data]="pageData()"
-    [totalRecords]="total()"
-    [page]="page()"
-    [rows]="pageSize()"
-    [selectable]="true"
-    (lazyLoad)="loadOnTableEmit($event)"
-  />
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="pageData()"
+      [totalRecords]="total()"
+      [page]="page()"
+      [rows]="pageSize()"
+      [selectable]="true"
+      (lazyLoad)="loadOnTableEmit($event)"
+    />
 
-  <ng-template #actionTemplate let-application>
-    <jhi-button label="View" severity="primary" (click)="navigateToDetail(application)" />
-  </ng-template>
+    <ng-template #actionTemplate let-application>
+      <jhi-button [label]="'evaluation.more' | translate" severity="primary" (click)="navigateToDetail(application)" />
+    </ng-template>
 
-  <ng-template #stateTemplate let-application>
-    <jhi-tag [text]="stateTextMap()[application.state] || 'Unknown'" [color]="stateSeverityMap()[application.state] || 'info'" />
-  </ng-template>
+    <ng-template #stateTemplate let-application>
+      <jhi-tag
+        [text]="'evaluation.statusBadge.' + (application.state || '') | translate"
+        [color]="stateSeverityMap()[application.state] || 'info'"
+      />
+    </ng-template>
+  </div>
 </div>

@@ -7,12 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DocumentInformationHolderDTO } from './documentInformationHolderDTO';
 
 
 export interface ApplicationDocumentIdsDTO { 
-    bachelorDocumentDictionaryIds?: Array<string>;
-    masterDocumentDictionaryIds?: Array<string>;
-    referenceDocumentDictionaryIds?: Array<string>;
-    cvDocumentDictionaryId?: string;
+    bachelorDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
+    masterDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
+    referenceDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
+    cvDocumentDictionaryId?: DocumentInformationHolderDTO;
 }
 

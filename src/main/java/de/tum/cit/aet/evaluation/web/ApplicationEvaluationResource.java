@@ -2,10 +2,9 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class ApplicationEvaluationResource {
 
     private final ApplicationEvaluationService applicationEvaluationService;
+    private final CurrentUserService currentUserService;
 
     /**
      * Accepts an application with the given ID.
@@ -30,7 +30,7 @@ public class ApplicationEvaluationResource {
      */
     @PostMapping("/applications({applicationId}/accept")
     public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
-        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, getDummyCurrentUser());
+        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
     }
 
@@ -43,25 +43,8 @@ public class ApplicationEvaluationResource {
      */
     @PostMapping("/applications({applicationId}/reject")
     public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
-        applicationEvaluationService.rejectApplication(applicationId, rejectDTO, getDummyCurrentUser());
+        applicationEvaluationService.rejectApplication(applicationId, rejectDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
-    }
-
-    //TODO remove
-    /**
-     * Returns a dummy user for testing purposes.
-     *
-     * @return a dummy {@link User} object
-     */
-    private User getDummyCurrentUser() {
-        User user = new User();
-        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000102"));
-
-        ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-        user.setResearchGroup(researchGroup);
-
-        return user;
     }
 
     /**
@@ -69,8 +52,8 @@ public class ApplicationEvaluationResource {
      * for a research group.
      *
      * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination (offset and limit) information
-     * @param sortDto the {@link SortDTO} specifying sorting criteria
-     * @param filterDto the {@link EvaluationFilterDTO} specifying dynamic filters to apply
+     * @param sortDto       the {@link SortDTO} specifying sorting criteria
+     * @param filterDto     the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationOverviewListDTO}
      */
     @GetMapping("/applications")
@@ -79,12 +62,10 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
-        ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
         return ResponseEntity.ok(
-            applicationEvaluationService.getAllApplicationsOverviews(researchGroup, offsetPageDTO, sortDto, filterDto)
+            applicationEvaluationService.getAllApplicationsOverviews(researchGroupId, offsetPageDTO, sortDto, filterDto)
         );
     }
 
@@ -93,8 +74,8 @@ public class ApplicationEvaluationResource {
      * for a research group.
      *
      * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination (offset and limit) information
-     * @param sortDto the {@link SortDTO} specifying sorting criteria
-     * @param filterDto the {@link EvaluationFilterDTO} specifying dynamic filters to apply
+     * @param sortDto       the {@link SortDTO} specifying sorting criteria
+     * @param filterDto     the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
     @GetMapping("/application-details")
@@ -103,10 +84,9 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
-        ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-        return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroup, offsetPageDTO, sortDto, filterDto));
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+
+        return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroupId, offsetPageDTO, sortDto, filterDto));
     }
 
     /**
@@ -114,9 +94,9 @@ public class ApplicationEvaluationResource {
      * Applies sorting and dynamic filtering based on request parameters.
      *
      * @param applicationId the ID of the application to center the window on
-     * @param windowSize the size of the window (must be a positive odd integer)
-     * @param sortDto the {@link SortDTO} specifying sorting criteria
-     * @param filterDto the {@link EvaluationFilterDTO} specifying dynamic filters to apply
+     * @param windowSize    the size of the window (must be a positive odd integer)
+     * @param sortDto       the {@link SortDTO} specifying sorting criteria
+     * @param filterDto     the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
     @GetMapping("/application-details/window")
@@ -126,11 +106,10 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
-        ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+
         return ResponseEntity.ok(
-            applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroup, sortDto, filterDto)
+            applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroupId, sortDto, filterDto)
         );
     }
 
@@ -141,9 +120,20 @@ public class ApplicationEvaluationResource {
      */
     @GetMapping("/jobs")
     public ResponseEntity<Set<JobFilterOptionDTO>> getJobFilterOptions() {
-        //TODO this will be removed when the ResearchGroup can be accessed through the authenticated user
-        ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setResearchGroupId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-        return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroup));
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+
+        return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroupId));
+    }
+
+    /**
+     * Marks the specified application as IN_REVIEW if its current state is SENT.
+     *
+     * @param applicationId the ID of the application to update
+     * @return 204 No Content if the update was processed successfully
+     */
+    @PutMapping("/applications/{applicationId}/open")
+    public ResponseEntity<Void> markApplicationAsInReview(@PathVariable UUID applicationId) {
+        applicationEvaluationService.markApplicationAsInReview(applicationId);
+        return ResponseEntity.noContent().build();
     }
 }

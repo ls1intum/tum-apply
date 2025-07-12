@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 export interface SortOption {
   displayName: string;
@@ -24,7 +25,7 @@ export enum SortDirection {
 
 @Component({
   selector: 'jhi-sort-bar',
-  imports: [CommonModule, DropdownComponent, ButtonComponent, FontAwesomeModule, TranslateModule],
+  imports: [CommonModule, DropdownComponent, ButtonComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sort-bar.component.html',
   styleUrls: ['./sort-bar.component.scss'],
@@ -33,6 +34,11 @@ export enum SortDirection {
 export class SortBarComponent {
   totalRecords = input.required<number>();
   sortableFields = input.required<SortOption[]>();
+
+  // translation keys used for the total number of records found
+  // those fields should already be translated within the parent component
+  singleEntity = input.required<string>();
+  multipleEntities = input.required<string>();
 
   sortChange = output<Sort>();
 
