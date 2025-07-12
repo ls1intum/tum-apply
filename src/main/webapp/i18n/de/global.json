@@ -183,7 +183,7 @@
       "document_type": {
         "BACHELOR_TRANSCRIPT": "Bachelor-Zeugnis",
         "MASTER_TRANSCRIPT": "Master-Zeugnis",
-        "REFERENCE": "Empfehlungsschreiben",
+        "REFERENCES": "Empfehlungsschreiben",
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
       },

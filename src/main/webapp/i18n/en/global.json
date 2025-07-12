@@ -183,7 +183,7 @@
       "document_type": {
         "BACHELOR_TRANSCRIPT": "Bachelor Transcript",
         "MASTER_TRANSCRIPT": "Master Transcript",
-        "REFERENCE": "References",
+        "REFERENCES": "References",
         "CV": "CV",
         "CUSTOM": "Custom"
       },
