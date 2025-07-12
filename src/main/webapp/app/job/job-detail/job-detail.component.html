@@ -182,12 +182,12 @@
       <div class="button-wrapper">
         <!-- Left-aligned Back button -->
         <div class="left-buttons">
-          <jhi-button label="jobActionButton.close" severity="info" variant="outlined" (click)="onBack()" [shouldTranslate]="true" />
+          <jhi-button label="jobActionButton.back" severity="info" variant="outlined" (click)="onBack()" [shouldTranslate]="true" />
         </div>
         <!-- Right-aligned dynamic button group -->
         <div class="right-buttons">
           @if (rightActionButtons()) {
-            <jhi-button-group [data]="rightActionButtons()!" />
+            <jhi-button-group [data]="rightActionButtons()!" [shouldTranslate]="true" />
           }
         </div>
       </div>

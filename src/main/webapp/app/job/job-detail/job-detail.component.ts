@@ -72,10 +72,11 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('jobActionButton.apply'),
+            label: 'jobActionButton.apply',
             severity: 'primary',
             onClick: () => this.onApply(),
             disabled: false,
+            shouldTranslate: true,
           },
         ],
       };
@@ -86,17 +87,19 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('jobActionButton.edit'),
+            label: 'jobActionButton.edit',
             severity: 'primary',
             variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
+            shouldTranslate: true,
           },
           {
-            label: this.translate.instant('jobActionButton.delete'),
+            label: 'jobActionButton.delete',
             severity: 'danger',
             onClick: () => void this.onDeleteJob(),
             disabled: false,
+            shouldTranslate: true,
           },
         ],
       };
@@ -107,11 +110,12 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('jobActionButton.close'),
+            label: 'jobActionButton.close',
             severity: 'danger',
             variant: 'outlined',
             onClick: () => void this.onCloseJob(),
             disabled: false,
+            shouldTranslate: true,
           },
         ],
       };
