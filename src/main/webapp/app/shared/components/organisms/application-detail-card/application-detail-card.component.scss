@@ -1,6 +1,6 @@
 @use '../../../../../content/scss/breakpoints' as bp;
 $detail-card-1-column-max-width: bp.$lg;
-$detail-card-2-column-max-width: bp.$xxl;
+$detail-card-2-column-max-width: bp.$xl;
 
 :host {
   overflow-y: hidden;
