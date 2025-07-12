@@ -19,7 +19,8 @@
       },
       "researchArea": {
         "label": "Research Area",
-        "placeholder": "e.g. Machine Learning, Human-Computer Interaction"
+        "placeholder": "e.g. Machine Learning, Human-Computer Interaction",
+        "toolTipText": "Specify the main Research Area the doctoral position focuses on."
       },
       "fieldOfStudies": {
         "label": "Field Of Studies",

@@ -45,7 +45,7 @@
               [model]="basicInfoForm.get('researchArea')?.value"
               (modelChange)="onSelectionChange(basicInfoForm, 'researchArea', $event)"
               [control]="basicInfoForm.get('researchArea') ?? undefined"
-              tooltipText="Specify the main Research Area the doctoral position focuses on."
+              [tooltipText]="'jobCreationForm.basicInformationSection.researchArea.toolTipText' | translate"
             />
           </div>
 

@@ -19,7 +19,8 @@
       },
       "researchArea": {
         "label": "Forschungsbereich",
-        "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion"
+        "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion",
+        "toolTipText": "Geben Sie das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
       },
       "fieldOfStudies": {
         "label": "Studienfach",
