@@ -161,14 +161,13 @@
         <h2 jhiTranslate="jobCreationForm.header.steps.positionDetails"></h2>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <div class="form-field">
-          <label for="description" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.label">
-            <span class="required">*</span>
-            <fa-icon
-              [icon]="['fas', 'circle-info']"
-              pTooltip="Help the applicant understand the research focus and goals of the position."
-              tooltipPosition="top"
-            />
-          </label>
+          <label for="description" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.label"> </label>
+          <span class="required">*</span>
+          <fa-icon
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.toolTipText' | translate"
+            tooltipPosition="top"
+          />
           <div class="input-with-icon">
             <textarea
               formControlName="description"
@@ -187,14 +186,13 @@
           </div>
         </div>
         <div class="form-field">
-          <label for="tasks" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.label">
-            <span class="required">*</span>
-            <fa-icon
-              [icon]="['fas', 'circle-info']"
-              pTooltip="Provide a clear picture of the position’s responsibilities and activities."
-              tooltipPosition="top"
-            />
-          </label>
+          <label for="tasks" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.label"> </label>
+          <span class="required">*</span>
+          <fa-icon
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'jobCreationForm.positionDetailsSection.tasks.toolTipText' | translate"
+            tooltipPosition="top"
+          />
           <div class="input-with-icon">
             <textarea
               formControlName="tasks"
@@ -210,14 +208,13 @@
           </div>
         </div>
         <div class="form-field">
-          <label for="requirements" jhiTranslate="jobCreationForm.positionDetailsSection.requirements.label">
-            <span class="required">*</span>
-            <fa-icon
-              [icon]="['fas', 'circle-info']"
-              pTooltip="Ensure the applicant knows what qualifications are expected."
-              tooltipPosition="top"
-            />
-          </label>
+          <label for="requirements" jhiTranslate="jobCreationForm.positionDetailsSection.requirements.label"> </label>
+          <span class="required">*</span>
+          <fa-icon
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'jobCreationForm.positionDetailsSection.requirements.toolTipText' | translate"
+            tooltipPosition="top"
+          />
           <div class="input-with-icon">
             <textarea
               formControlName="requirements"
