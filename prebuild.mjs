@@ -71,7 +71,7 @@ const keycloakConfig = {
 };
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
-export const __VERSION__ = '${process.env.ENVIRONMENT || inferVersion()}';
+export const __VERSION__ = '${process.env.APP_VERSION || inferVersion()}';
 export const I18N_HASH = '${languagesHash.hash}';
 export const environment = {
   production: ${!developFlag},
