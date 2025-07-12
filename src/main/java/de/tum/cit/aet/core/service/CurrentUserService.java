@@ -12,7 +12,6 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -101,8 +100,10 @@ public class CurrentUserService {
      *
      * @return an Optional containing the research group ID if user is a professor, or empty otherwise
      */
-    public Optional<UUID> getResearchGroupIdIfProfessor() {
-        return getCurrentUser().getResearchGroupIdIfProfessor();
+    public UUID getResearchGroupIdIfProfessor() {
+        return getCurrentUser()
+            .getResearchGroupIdIfProfessor()
+            .orElseThrow(() -> new IllegalStateException("Current User does not have a research group"));
     }
 
     /**
@@ -140,7 +141,7 @@ public class CurrentUserService {
      * @return true if the user has access to the group, false otherwise
      */
     public boolean isAdminOrProfessorOf(UUID researchGroupId) {
-        return isAdmin() || getResearchGroupIdIfProfessor().map(id -> id.equals(researchGroupId)).orElse(false);
+        return isAdmin() || getResearchGroupIdIfProfessor().equals(researchGroupId);
     }
 
     /**

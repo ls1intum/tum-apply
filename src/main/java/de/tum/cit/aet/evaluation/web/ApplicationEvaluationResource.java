@@ -2,11 +2,9 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
-import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
@@ -32,7 +30,7 @@ public class ApplicationEvaluationResource {
      */
     @PostMapping("/applications({applicationId}/accept")
     public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
-        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, getCurrentUser());
+        applicationEvaluationService.acceptApplication(applicationId, acceptDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
     }
 
@@ -45,7 +43,7 @@ public class ApplicationEvaluationResource {
      */
     @PostMapping("/applications({applicationId}/reject")
     public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
-        applicationEvaluationService.rejectApplication(applicationId, rejectDTO, getCurrentUser());
+        applicationEvaluationService.rejectApplication(applicationId, rejectDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
     }
 
@@ -64,7 +62,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = getCurrentUserResearchGroup();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getAllApplicationsOverviews(researchGroupId, offsetPageDTO, sortDto, filterDto)
@@ -86,7 +84,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = getCurrentUserResearchGroup();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
         return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroupId, offsetPageDTO, sortDto, filterDto));
     }
@@ -108,7 +106,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = getCurrentUserResearchGroup();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroupId, sortDto, filterDto)
@@ -122,7 +120,7 @@ public class ApplicationEvaluationResource {
      */
     @GetMapping("/jobs")
     public ResponseEntity<Set<JobFilterOptionDTO>> getJobFilterOptions() {
-        UUID researchGroupId = getCurrentUserResearchGroup();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
         return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroupId));
     }
@@ -137,26 +135,5 @@ public class ApplicationEvaluationResource {
     public ResponseEntity<Void> markApplicationAsInReview(@PathVariable UUID applicationId) {
         applicationEvaluationService.markApplicationAsInReview(applicationId);
         return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Retrieves the currently authenticated user entity.
-     *
-     * @return the current {@link User}
-     */
-    private User getCurrentUser() {
-        return currentUserService.getUser();
-    }
-
-    /**
-     * Retrieves the research group ID of the current user if they are a professor.
-     *
-     * @return the research group ID
-     * @throws RuntimeException if no research group is associated with the user
-     */
-    private UUID getCurrentUserResearchGroup() {
-        return currentUserService
-            .getResearchGroupIdIfProfessor()
-            .orElseThrow(() -> new AccessDeniedException("Current user does not have a research group"));
     }
 }
