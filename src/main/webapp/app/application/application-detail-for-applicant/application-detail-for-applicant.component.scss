@@ -1,3 +1,18 @@
+header {
+  padding-bottom: 1.25rem;
+
+  h1 {
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--p-primary-color);
+  }
+
+  p {
+    color: var(--p-background-disabled);
+    font-size: 1rem;
+  }
+}
+
 .text-primary {
   color: var(--p-text-primary);
 }

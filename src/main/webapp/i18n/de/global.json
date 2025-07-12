@@ -193,6 +193,127 @@
       "applicant": {
         "header": "Bewerbung für '{{jobTitle}}'"
       }
+    },
+    "applicationSteps": {
+      "personalInformation": "Persönliche Informationen",
+      "education": "Ausbildung",
+      "applicationDetails": "Bewerbungsdetails",
+      "buttons": {
+        "cancel": "Abbrechen",
+        "next": "Weiter",
+        "prev": "Zurück",
+        "send": "Senden"
+      },
+      "status": {
+        "SAVING": "Änderungen werden gespeichert...",
+        "SAVED": "Änderungen gespeichert"
+      }
+    },
+    "applicationPage1": {
+      "label": {
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail",
+        "phoneNumber": "Telefonnummer",
+        "gender": "Geschlecht",
+        "nationality": "Nationalität",
+        "language": "Sprache",
+        "dateOfBirth": "Geburtsdatum",
+        "website": "Webseite",
+        "linkedIn": "LinkedIn",
+        "street": "Straße und Hausnummer",
+        "city": "Stadt",
+        "country": "Land",
+        "postcode": "Postleitzahl"
+      },
+      "section": {
+        "userInformation": "Benutzerinformationen",
+        "address": "Adresse"
+      }
+    },
+    "applicationPage2": {
+      "section": {
+        "bachelor": "Bachelor",
+        "master": "Master"
+      },
+      "label": {
+        "bachelorDegreeName": "Bachelor-Studiengang",
+        "bachelorDegreeUniversity": "Universität des Bachelors",
+        "bachelorGradingScale": "Benotungsskala Bachelor",
+        "bachelorGrade": "Bachelor-Abschlussnote",
+        "masterDegreeName": "Master-Studiengang",
+        "masterDegreeUniversity": "Universität des Masters",
+        "masterGradingScale": "Benotungsskala Master",
+        "masterGrade": "Master-Abschlussnote"
+      },
+      "tooltip": {
+        "bachelorDegreeName": "Geben Sie den Studiengang Ihres Bachelors an.",
+        "bachelorDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Bachelor absolviert haben.",
+        "bachelorGradingScale": "Wählen Sie die Benotungsskala Ihres Bachelors.",
+        "bachelorGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an.",
+        "masterDegreeName": "Geben Sie den Studiengang Ihres Masters an.",
+        "masterDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Master absolviert haben.",
+        "masterGradingScale": "Wählen Sie die Benotungsskala Ihres Masters.",
+        "masterGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an."
+      }
+    },
+    "applicationPage3": {
+      "label": {
+        "desiredStartDate": "Gewünschter Starttermin",
+        "motivation": "Was motiviert Sie für diese Position?",
+        "skills": "Welche Fähigkeiten bringen Sie mit?",
+        "experiences": "Welche Forschungserfahrungen haben Sie bereits gesammelt?"
+      },
+      "tooltip": {
+        "desiredStartDate": "Wählen Sie das bevorzugte Startdatum für die Position.",
+        "motivation": "Erläutern Sie, wie diese Position zu Ihren beruflichen oder wissenschaftlichen Zielen passt.",
+        "skills": "Beschreiben Sie Ihre Forschungserfahrungen und wie diese zur Position passen.",
+        "experiences": "Heben Sie Ergebnisse oder Erkenntnisse hervor, die Ihre Forschungserfahrung geprägt haben."
+      },
+      "floatlabel": {
+        "motivation": "Berufliche oder persönliche Gründe angeben",
+        "skills": "Erfahrungen und Fähigkeiten beschreiben",
+        "experiences": "Frühere Forschungsprojekte, Abschlussarbeiten oder Veröffentlichungen erläutern"
+      },
+      "sublabel": {
+        "motivation": "Halten Sie es kurz, aber informativ ...",
+        "skills": "Warum passen Sie gut zu diesem Programm oder Labor?",
+        "experiences": "Beschreiben Sie Ihre Rolle, verwendete Methoden, Ergebnisse, Themen, Projekte usw."
+      },
+      "section": {
+        "uploads": "Dateiuploads"
+      },
+      "placeholder": {
+        "selectStartDate": "Startdatum auswählen..."
+      }
+    },
+    "applicationOverview": {
+      "header": "Ihre Bewerbungen",
+      "state": {
+        "draft": "Entwurf",
+        "submitted": "Eingereicht",
+        "accepted": "Angenommen",
+        "rejected": "Abgelehnt",
+        "withdrawn": "Zurückgezogen",
+        "closed": "Geschlossen"
+      },
+      "actions": {
+        "view": "Ansehen",
+        "withdraw": "Zurückziehen",
+        "update": "Bearbeiten",
+        "delete": "Löschen"
+      },
+      "columns": {
+        "positionTitle": "Stellentitel",
+        "researchGroup": "Forschungsgruppe",
+        "status": "Status",
+        "created": "Erstellt"
+      }
+    },
+    "applicationDetail": {
+      "motivation": "Motivation",
+      "skills": "Fähigkeiten",
+      "researchExperience": "Forschungserfahrung"
     }
   },
   "error": {

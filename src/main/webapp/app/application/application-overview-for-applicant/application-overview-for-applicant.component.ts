@@ -8,10 +8,12 @@ import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule],
+  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
@@ -43,11 +45,33 @@ export default class ApplicationOverviewForApplicantComponent {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
     return [
-      { field: 'jobTitle', header: 'Position Title', width: '34rem' },
-      { field: 'researchGroup', header: 'Research Group', width: '20rem' },
-      { field: 'badges', header: 'Status', width: '10rem', template: badgeTemplate },
-      { field: 'timeSinceCreation', header: 'Created', width: '10rem' },
-      { field: 'actions', header: '', width: '15rem', template: actionTemplate },
+      {
+        field: 'jobTitle',
+        header: this.translate.instant('entity.applicationOverview.columns.positionTitle'),
+        width: '34rem',
+      },
+      {
+        field: 'researchGroup',
+        header: this.translate.instant('entity.applicationOverview.columns.researchGroup'),
+        width: '20rem',
+      },
+      {
+        field: 'badges',
+        header: this.translate.instant('entity.applicationOverview.columns.status'),
+        width: '10rem',
+        template: badgeTemplate,
+      },
+      {
+        field: 'timeSinceCreation',
+        header: this.translate.instant('entity.applicationOverview.columns.created'),
+        width: '10rem',
+      },
+      {
+        field: 'actions',
+        header: '',
+        width: '15rem',
+        template: actionTemplate,
+      },
     ];
   });
 
@@ -55,6 +79,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private readonly applicationService = inject(ApplicationResourceService);
   private readonly accountService = inject(AccountService);
+  private readonly translate = inject(TranslateService);
 
   private applicantId = signal<string>('');
 

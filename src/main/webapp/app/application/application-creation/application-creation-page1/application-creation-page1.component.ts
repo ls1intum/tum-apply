@@ -3,6 +3,8 @@ import { Component, computed, effect, inject, model, output } from '@angular/cor
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
+import { TranslateModule } from '@ngx-translate/core';
+import SharedModule from 'app/shared/shared.module';
 
 import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
@@ -110,7 +112,16 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page1',
-  imports: [CommonModule, ReactiveFormsModule, DividerModule, DropdownComponent, DatePickerComponent, StringInputComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    DividerModule,
+    DropdownComponent,
+    DatePickerComponent,
+    StringInputComponent,
+    TranslateModule,
+    SharedModule,
+  ],
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',
   standalone: true,

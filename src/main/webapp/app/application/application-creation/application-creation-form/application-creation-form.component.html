@@ -34,13 +34,15 @@
   <div [className]="savingBadgeCalculatedClass()">
     <fa-icon icon="save" />
     <span class="font-bold">
-      {{ this.savingState() }}
+      {{ `entity.applicationSteps.status.${this.savingState()}`| translate }}
     </span>
   </div>
 </ng-template>
 
 <div class="ml-8 mb-8 p-2">
-  <h1 class="block">{{ this.title() }}</h1>
+  <header>
+    <h1>{{ this.title() }}</h1>
+  </header>
   <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>
 </div>
 <div class="m-4 p-1">

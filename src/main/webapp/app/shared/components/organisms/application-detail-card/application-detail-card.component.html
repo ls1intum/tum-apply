@@ -23,15 +23,27 @@
   <div class="middle-column">
     <ng-container
       [ngTemplateOutlet]="textCardTemplate"
-      [ngTemplateOutletContext]="{ icon: 'rocket', name: 'Motivation', text: application().motivation }"
+      [ngTemplateOutletContext]="{
+        icon: 'rocket',
+        name: ('entity.applicationDetail.motivation' | translate),
+        text: application().motivation,
+      }"
     />
     <ng-container
       [ngTemplateOutlet]="textCardTemplate"
-      [ngTemplateOutletContext]="{ icon: 'brain', name: 'Skills', text: application().specialSkills }"
+      [ngTemplateOutletContext]="{
+        icon: 'brain',
+        name: ('entity.applicationDetail.skills' | translate),
+        text: application().specialSkills,
+      }"
     />
     <ng-container
       [ngTemplateOutlet]="textCardTemplate"
-      [ngTemplateOutletContext]="{ icon: 'flask', name: 'Research Experience', text: application().projects }"
+      [ngTemplateOutletContext]="{
+        icon: 'flask',
+        name: ('entity.applicationDetail.researchExperience' | translate),
+        text: application().projects,
+      }"
     />
     <!-- Slot for custom questions -->
     <ng-content select="[slot-custom-questions]" />

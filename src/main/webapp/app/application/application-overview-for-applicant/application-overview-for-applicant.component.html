@@ -1,5 +1,8 @@
 <div class="body mx-30">
-  <h1 class="mb-8 mt-4 font-bold text-4xl" jhiTranslate="entity.application_overview.applicant.header"></h1>
+  <header>
+    <h1 jhiTranslate="entity.application_overview.applicant.header"></h1>
+  </header>
+
   <jhi-dynamic-table
     [columns]="columns()"
     [data]="pageData()"
@@ -12,25 +15,25 @@
   <ng-template #stateTemplate let-row>
     @switch (row.applicationState) {
       @case ('SAVED') {
-        <p-badge value="Draft" severity="secondary" />
+        <p-badge [value]="'entity.applicationOverview.state.draft' | translate" severity="secondary" />
       }
       @case ('SENT') {
-        <p-badge value="Submitted" />
+        <p-badge [value]="'entity.applicationOverview.state.submitted' | translate" />
       }
       @case ('ACCEPTED') {
-        <p-badge value="Accepted" severity="success" />
+        <p-badge [value]="'entity.applicationOverview.state.accepted' | translate" severity="success" />
       }
       @case ('IN_REVIEW') {
-        <p-badge value="Submitted" />
+        <p-badge [value]="'entity.applicationOverview.state.submitted' | translate" />
       }
       @case ('REJECTED') {
-        <p-badge value="Rejected" severity="danger" />
+        <p-badge [value]="'entity.applicationOverview.state.rejected' | translate" severity="danger" />
       }
       @case ('WITHDRAWN') {
-        <p-badge value="Withdrawn" severity="contrast" />
+        <p-badge [value]="'entity.applicationOverview.state.withdrawn' | translate" severity="contrast" />
       }
       @case ('JOB_CLOSED') {
-        <p-badge value="Job closed" severity="contrast" />
+        <p-badge [value]="'entity.applicationOverview.state.closed' | translate" severity="contrast" />
       }
       @default {
         <p-badge [value]="row.applicationState" severity="warn" />
@@ -40,15 +43,36 @@
 
   <ng-template #actionTemplate let-row>
     <div class="flex space-x-2">
-      <jhi-button label="View" severity="primary" (click)="onViewApplication(row.applicationId)" />
-      @if (['SENT', 'IN_REVIEW', 'REJCETED'].includes(row.applicationState)) {
-        <jhi-button label="Withdraw" severity="danger" variant="outlined" (click)="onWithdrawApplication(row.applicationId)" />
+      <jhi-button
+        [label]="'entity.applicationOverview.actions.view' | translate"
+        severity="primary"
+        (click)="onViewApplication(row.applicationId)"
+      />
+
+      @if (['SENT', 'IN_REVIEW', 'REJECTED'].includes(row.applicationState)) {
+        <jhi-button
+          [label]="'entity.applicationOverview.actions.withdraw' | translate"
+          severity="danger"
+          variant="outlined"
+          (click)="onWithdrawApplication(row.applicationId)"
+        />
       }
+
       @if (['SAVED'].includes(row.applicationState)) {
-        <jhi-button label="Update" severity="primary" variant="outlined" (click)="onUpdateApplication(row.applicationId)" />
+        <jhi-button
+          [label]="'entity.applicationOverview.actions.update' | translate"
+          severity="primary"
+          variant="outlined"
+          (click)="onUpdateApplication(row.applicationId)"
+        />
       }
+
       @if (['SAVED'].includes(row.applicationState)) {
-        <jhi-button label="Delete" severity="danger" (click)="onDeleteApplication(row.applicationId)" />
+        <jhi-button
+          [label]="'entity.applicationOverview.actions.delete' | translate"
+          severity="danger"
+          (click)="onDeleteApplication(row.applicationId)"
+        />
       }
     </div>
   </ng-template>
