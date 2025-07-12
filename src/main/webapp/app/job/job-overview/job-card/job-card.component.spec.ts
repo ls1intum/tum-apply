@@ -5,7 +5,7 @@ import { By } from '@angular/platform-browser';
 import { Router, provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { JobCardComponent } from './job-card.component';
 
@@ -13,7 +13,7 @@ import { JobCardComponent } from './job-card.component';
 class DummyComponent {}
 
 class FakeLoader implements TranslateLoader {
-  getTranslation(lang: string) {
+  getTranslation(): Observable<{}> {
     return of({}); // return an empty object or mock translations
   }
 }
