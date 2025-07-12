@@ -109,11 +109,11 @@ export class JobCreationFormComponent {
     { name: 'Urban Planning', value: 'Urban Planning' },
   ];
   workloadOptions = [
-    { name: '100% (Full-time)', value: 100 },
-    { name: '60%', value: 60 },
-    { name: '40%', value: 40 },
-    { name: '20%', value: 20 },
-    { name: '10%', value: 10 },
+    { name: '100% (Full-time)', value: 40 },
+    { name: '60%', value: 24 },
+    { name: '40%', value: 16 },
+    { name: '20%', value: 8 },
+    { name: '10%', value: 4 },
   ];
   contractDurations = [
     { name: '1 year', value: 1 },
