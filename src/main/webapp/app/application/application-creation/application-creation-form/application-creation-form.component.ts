@@ -128,7 +128,7 @@ export default class ApplicationCreationFormComponent {
             variant: 'outlined',
             severity: 'info',
             icon: 'caret-left',
-            async onClick() {
+            async onClick(): Promise<void> {
               await performAutomaticSaveLocal();
               location.back();
             },
