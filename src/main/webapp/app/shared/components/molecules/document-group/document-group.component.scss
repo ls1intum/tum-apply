@@ -1,0 +1,16 @@
+@use '../../../../../content/scss/breakpoints' as bp;
+
+$detail-card-2-column-max-width: bp.$xl;
+
+.document-viewer-width {
+  width: 20rem;
+
+  @media (max-width: $detail-card-2-column-max-width) {
+    width: 100%;
+  }
+}
+
+.border-neutral-rounded {
+  border: var(--p-border-default) solid 0.1rem;
+  border-radius: 0.5rem;
+}

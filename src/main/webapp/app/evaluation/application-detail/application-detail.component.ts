@@ -11,10 +11,12 @@ import { FilterSortBarComponent } from '../../shared/components/molecules/filter
 import { sortOptions } from '../filterSortOptions';
 import {
   AcceptDTO,
+  ApplicationDocumentIdsDTO,
   ApplicationEvaluationDetailDTO,
   ApplicationEvaluationDetailListDTO,
   ApplicationEvaluationResourceService,
   ApplicationForApplicantDTO,
+  ApplicationResourceService,
   RejectDTO,
 } from '../../generated';
 import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
@@ -24,6 +26,7 @@ import { ReviewDialogComponent } from '../../shared/components/molecules/review-
 import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
+import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 
 const WINDOW_SIZE = 7;
 
@@ -32,12 +35,12 @@ const WINDOW_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     FilterSortBarComponent,
-    RatingComponent,
     ApplicationDetailCardComponent,
     TranslateModule,
     ButtonComponent,
     ReviewDialogComponent,
     TranslateDirective,
+    DocumentGroupComponent,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
@@ -49,6 +52,7 @@ export class ApplicationDetailComponent {
   windowIndex = signal<number>(0);
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
+  currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   filters = signal<FilterField[]>([]);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
@@ -73,6 +77,7 @@ export class ApplicationDetailComponent {
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
   private readonly evaluationService = inject(EvaluationService);
+  private readonly applicationResourceService = inject(ApplicationResourceService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -298,6 +303,7 @@ export class ApplicationDetailComponent {
         this.windowIndex.update(v => v - 1); // Adjust index to match slice
       }
       this.applications.set(apps);
+      this.updateDocumentInformation(apps[this.windowIndex()].applicationDetailDTO.applicationId);
     }
   }
 
@@ -314,6 +320,7 @@ export class ApplicationDetailComponent {
       }
       this.windowIndex.update(v => v + 1); // Adjust index to match new position
       this.applications.set(apps);
+      this.updateDocumentInformation(apps[this.windowIndex()].applicationDetailDTO.applicationId);
     }
   }
 
@@ -330,6 +337,7 @@ export class ApplicationDetailComponent {
       this.currentApplication.set(data[0]);
       void this.markCurrentApplicationAsInReview();
       this.updateUrlQueryParams();
+      this.updateDocumentInformation(data[this.windowIndex()].applicationDetailDTO.applicationId);
     }
   }
 
@@ -381,5 +389,13 @@ export class ApplicationDetailComponent {
       queryParams: qp,
       replaceUrl: true,
     });
+  }
+
+  private updateDocumentInformation(applicationId: string): void {
+    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
+      .then(ids => {
+        this.currentDocumentIds.set(ids);
+      })
+      .catch(() => alert('Error: fetching the document ids for this application'));
   }
 }
