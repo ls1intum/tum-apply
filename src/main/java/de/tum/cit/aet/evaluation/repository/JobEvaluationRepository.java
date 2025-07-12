@@ -6,6 +6,7 @@ import de.tum.cit.aet.job.domain.Job;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface JobEvaluationRepository extends TumApplyJpaRepository<Job, UUID> {
     /**
@@ -24,5 +25,5 @@ public interface JobEvaluationRepository extends TumApplyJpaRepository<Job, UUID
             WHERE j.researchGroup.researchGroupId = :researchGroupId
         """
     )
-    Set<JobFilterOptionDTO> findAllBYResearchGroup(UUID researchGroupId);
+    Set<JobFilterOptionDTO> findAllByResearchGroup(@Param("researchGroupId") UUID researchGroupId);
 }

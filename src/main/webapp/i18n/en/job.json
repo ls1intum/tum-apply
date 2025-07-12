@@ -1,4 +1,83 @@
 {
+  "jobCreationForm": {
+    "header": {
+      "title": {
+        "create": "Create a new Doctorate Position",
+        "edit": "Edit the Current Doctorate Position"
+      },
+      "steps": {
+        "basicInfo": "Basic Information",
+        "positionDetails": "Position Details",
+        "additionalInfo": "Additional Information"
+      }
+    },
+    "basicInformationSection": {
+      "description": "Provide the key details about the doctoral position, such as title, field of study, and supervising professor.",
+      "jobTitle": {
+        "label": "Job Title",
+        "placeholder": "e.g. Doctoral Position in Robotics"
+      },
+      "researchArea": {
+        "label": "Research Area",
+        "placeholder": "e.g. Machine Learning, Human-Computer Interaction"
+      },
+      "fieldOfStudies": {
+        "label": "Field Of Studies",
+        "placeholder": "Select a Field of Studies..."
+      },
+      "supervisingProfessor": {
+        "label": "Supervising Professor"
+      },
+      "location": {
+        "label": "Location",
+        "placeholder": "Select a Location..."
+      },
+      "startDate": {
+        "label": "Start Date",
+        "placeholder": "Select a Start Date..."
+      },
+      "workload": {
+        "label": "Workload",
+        "placeholder": "Select a Workload..."
+      },
+      "contractDuration": {
+        "label": "Contract Duration",
+        "placeholder": "Select a Contract Duration..."
+      },
+      "fundingType": {
+        "label": "Funding Type",
+        "placeholder": "Select a Funding Type..."
+      }
+    },
+    "positionDetailsSection": {
+      "description": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
+      "jobDescription": {
+        "label": "Job Description",
+        "placeholder": "Describe the scope and focus of the position...",
+        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. Keep it concise but informative."
+      },
+      "tasks": {
+        "label": "Tasks",
+        "placeholder": "List the main responsibilities...",
+        "descriptionHelper": "List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended."
+      },
+      "requirements": {
+        "label": "Eligibility Criteria",
+        "placeholder": "List the minimum requirements for applicants...",
+        "descriptionHelper": "Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill."
+      }
+    },
+    "additionalInformationSection": {
+      "extras": {
+        "title": "Extras",
+        "description": "Add custom questions that applicants will see in the application form."
+      },
+      "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>."
+    }
+  },
+  "jobOverviewPage": {
+    "title": "Find Your Perfect Position"
+  },
   "myPositionsPage": {
     "header": {
       "title": "Manage your Doctorate Positions",
@@ -53,7 +132,11 @@
     "delete": "Delete",
     "close": "Close",
     "view": "View",
-    "publish": "Publish"
+    "publish": "Publish",
+    "cancel": "Cancel",
+    "next": "Next",
+    "back": "Back",
+    "saveDraft": "Save Draft"
   },
   "jobState": {
     "draft": "Draft",
@@ -61,5 +144,7 @@
     "closed": "Closed",
     "applicantFound": "Applicant Found",
     "unknown": "Unknown"
-  }
+  },
+  "job": "Position",
+  "jobs": "Positions"
 }

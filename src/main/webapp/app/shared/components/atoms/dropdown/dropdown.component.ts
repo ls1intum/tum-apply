@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { TranslateDirective } from '../../../language';
+
 export type DropdownOption = {
   name: string;
   value: string | number;
@@ -16,7 +18,7 @@ export type DropdownOption = {
   standalone: true,
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.scss'],
-  imports: [DropdownModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule],
+  imports: [DropdownModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective],
   encapsulation: ViewEncapsulation.None,
 })
 export class DropdownComponent {
@@ -33,6 +35,7 @@ export class DropdownComponent {
   width = input<string>('100%');
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
+  translateItems = input<boolean>(false);
 
   selectedChange = output<DropdownOption>();
 
