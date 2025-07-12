@@ -128,9 +128,11 @@ export default class ApplicationCreationFormComponent {
             variant: 'outlined',
             severity: 'info',
             icon: 'caret-left',
-            async onClick(): Promise<void> {
-              await performAutomaticSaveLocal();
-              location.back();
+            onClick(): void {
+              (async () => {
+                await performAutomaticSaveLocal();
+                location.back();
+              })();
             },
             disabled: false,
             label: this.translate.instant('entity.applicationSteps.buttons.cancel'),
