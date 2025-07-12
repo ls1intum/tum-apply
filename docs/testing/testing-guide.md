@@ -6,7 +6,7 @@ This document describes how to run and structure tests in TUMApply, both for the
 
 ## Server-Side Testing (Spring Boot)
 
-To run all backend tests including unit and integration tests, use:
+To run all server tests including unit and integration tests, use:
 
 ```bash
 ./gradlew test integrationTest jacocoTestReport
@@ -24,7 +24,7 @@ Test reports will be available under `build/reports/tests/` and `build/reports/j
 
 ## Client-Side Testing (Angular + Jest)
 
-Client tests are powered by **Jest** and run independently from the backend:
+Client tests are powered by **Jest** and run independently from the server:
 
 ```bash
 ./npmw test

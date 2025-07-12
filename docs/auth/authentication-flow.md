@@ -6,7 +6,7 @@ OAuth 2.0 / OIDC.
 ## 🔗 Overview
 
 TUMApply uses **Keycloak** as an identity provider. The client authenticates via OAuth 2.0 and obtains a JWT token. This
-token is sent with each request and validated by the Spring Boot backend.
+token is sent with each request and validated by the Spring Boot server.
 
 - A **Realm** called `tumapply`
 - A **public client** called `tumapply-client`

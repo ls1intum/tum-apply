@@ -24,7 +24,7 @@ scalable, secure, and transparent recruitment processes.
 
 ### For Professors & Research Groups
 
-- Create and publish PhD calls
+- Create and publish doctoral positions
 - Manage incoming applications
 - Evaluate candidates and assign status
 - Notify applicants directly via the system

@@ -27,7 +27,7 @@ Install npm dependencies via the wrapper:
 Start the server and client development servers in two separate terminals:
 
 ```bash
-# Terminal 1 - Start Spring Boot without frontend build
+# Terminal 1 - Start Spring Boot without client build
 ./gradlew -x webapp
 
 # Terminal 2 - Start Angular dev server
