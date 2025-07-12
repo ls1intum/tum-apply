@@ -67,8 +67,8 @@ export class AccountService {
     await this.loadUser();
   }
 
-  async signOut(): Promise<void> {
-    await this.keycloakService.logout();
+  async signOut(redirectUri?: string): Promise<void> {
+    await this.keycloakService.logout(redirectUri);
   }
 
   hasAnyAuthority(requiredRoles: string[]): boolean {

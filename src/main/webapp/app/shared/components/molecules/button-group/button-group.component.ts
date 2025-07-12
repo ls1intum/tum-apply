@@ -16,6 +16,7 @@ export type ButtonGroupDirection = 'vertical' | 'horizontal';
  */
 export type ButtonGroupData = {
   direction: ButtonGroupDirection;
+  fullWidth?: boolean;
   buttons: Button[];
 };
 
