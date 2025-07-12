@@ -5,8 +5,8 @@ import { TranslateDirective } from 'app/shared/language';
 import { DocumentViewerComponent } from '../../atoms/document-viewer/document-viewer.component';
 
 /**
- * A UI component that displays a group of buttons arranged
- * vertically or horizontally based on the provided input data.
+ * A UI component that displays a group of document viewers arranged
+ * vertically.
  */
 @Component({
   selector: 'jhi-document-group',
