@@ -8,11 +8,17 @@
   align-items: center;
 
   .logo-section {
-    text-align: start;
-    color: var(--p-primary-color);
-    font-weight: 700;
+    display: flex;
     padding-left: 1rem;
-    padding-right: 1rem;
+    padding-right: 0.5rem;
+    align-items: center;
+
+    .app-name {
+      text-align: start;
+      color: var(--p-primary-color);
+      font-weight: 700;
+      padding-right: 0.5rem;
+    }
   }
 
   .rights-section {
