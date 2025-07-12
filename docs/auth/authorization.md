@@ -1,104 +1,3 @@
-# 🔐 Keycloak & Role-Based Authentication Setup for TUMApply
-
-This document describes how to set up and understand the authentication and authorization system in **TUMApply**.  
-It uses **Keycloak** for login and a **Spring Boot server** for secure role-based access control.
-
----
-
-## 🧩 What will be set up?
-
-By starting the Keycloak container, the following resources are created automatically:
-
-- A **Realm** called `tumapply`
-- A **public client** called `tumapply-client`
-- Three **test users** with password login:
-
-| Username     | Password    | Role        |
-| ------------ | ----------- | ----------- |
-| `admin1`     | `admin`     | `ADMIN`     |
-| `professor1` | `professor` | `PROFESSOR` |
-| `applicant1` | `applicant` | `APPLICANT` |
-
-These users can authenticate with a password and receive a valid access token (JWT).
-
----
-
-## 🚀 How to start Keycloak
-
-```bash
-docker compose -f ../src/main/docker/services.yml up --build
-```
-
-- This will spin up a local Keycloak instance at:  
-  `http://localhost:9080/`
-- The admin UI is available at:  
-  `http://localhost:9080/admin`
-- Admin credentials:  
-  Username: `admin`  
-  Password: `admin`
-
----
-
-## 📁 Realm Import
-
-Keycloak automatically imports everything from the file `keycloak/realm-config/tumapply-realm.json`.  
-This file defines the realm, users, and client.
-
-**Do not change the admin interface manually**, unless you plan to re-export the JSON file afterward.
-
----
-
-## 🔑 Testing Login via Bruno
-
-You can test the login flow using [Bruno](https://www.usebruno.com/):
-
-1. Open Bruno and load the request collection at:  
-   `docs/TUMapply API/Authentication/collection.bru`
-
-2. Use the POST `Keycloak Token` request in the Authentication folder.
-
-✅ You should receive a JSON response like:
-
-```json
-{
-  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6...",
-  "expires_in": 300,
-  "token_type": "Bearer"
-}
-```
-
----
-
-## 🧠 What’s inside the JWT token?
-
-Decoded, it will look like:
-
-```json
-{
-  "preferred_username": "admin1",
-  "given_name": "Admin",
-  "family_name": "One",
-  ...
-}
-```
-
-You can view and debug it using [jwt.io](https://jwt.io).
-
----
-
-## 🔗 How this is used in the application
-
-- The **client** (Angular) must send the token in each request:
-  ```
-  Authorization: Bearer <access_token>
-  ```
-- The **server** (Spring Boot) validates the token and extracts user information such as `preferred_username`,
-  `given_name`, `family_name`.
-
-The user’s **role is not synced from Keycloak**, but instead assigned and managed inside the TUMApply **database**.
-
----
-
 ## 🛡️ Roles and Authorization
 
 ### 🎭 Available Roles
@@ -255,17 +154,15 @@ this user belong to the research group that owns this application?).
 In the Angular client, you can determine the currently logged-in user's role(s) by calling the `/api/users/me` endpoint
 after login.
 
+### 👤 `/api/users/me` Endpoint
+
+The `GET /api/users/me` endpoint allows the client to fetch details of the currently logged-in user.
+
 #### Notes:
 
 - The response contains the `roles` array, which can include one or multiple roles.
 - Make sure the token is sent with the request (automatically added if using the HTTP interceptor).
 - Use this role information to control visibility of menus, routes, and functionality in the UI.
-
----
-
-### 👤 `/api/users/me` Endpoint
-
-The `GET /api/users/me` endpoint allows the client to fetch details of the currently logged-in user.
 
 #### Behavior:
 

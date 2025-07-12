@@ -157,34 +157,6 @@
             }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "application-resource"
-        ],
-        "operationId": "createApplication",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateApplicationDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/applications/withdraw/{applicationId}": {
@@ -363,6 +335,46 @@
                     "format": "uuid"
                   },
                   "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/create/{jobId}/applicant/{applicantId}": {
+      "post": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "createApplication",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "applicantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
                 }
               }
             }
@@ -1108,12 +1120,23 @@
         }
       }
     },
-    "/api/applications/pages/length": {
+    "/api/applications/pages/length/{applicantId}": {
       "get": {
         "tags": [
           "application-resource"
         ],
         "operationId": "getApplicationPagesLength",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1891,6 +1914,9 @@
           "paged": {
             "type": "boolean"
           },
+          "unpaged": {
+            "type": "boolean"
+          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
@@ -1898,9 +1924,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
