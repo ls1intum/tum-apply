@@ -143,5 +143,7 @@
     "published": "Veröffentlicht",
     "closed": "Geschlossen",
     "applicantFound": "Bewerber gefunden"
-  }
+  },
+  "job": "Stelle",
+  "jobs": "Stellen"
 }

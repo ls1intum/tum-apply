@@ -1,4 +1,10 @@
-<jhi-sort-bar [totalRecords]="totalRecords()" [sortableFields]="sortableFields" (sortChange)="loadOnSortEmit($event)" />
+<jhi-sort-bar
+  [totalRecords]="totalRecords()"
+  [sortableFields]="sortableFields"
+  (sortChange)="loadOnSortEmit($event)"
+  [singleEntity]="'job' | translate"
+  [multipleEntities]="'jobs' | translate"
+/>
 @if (jobs().length > 0) {
   <div class="job-card-grid">
     @for (job of jobs(); track job.jobId) {

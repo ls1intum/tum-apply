@@ -143,5 +143,7 @@
     "published": "Published",
     "closed": "Closed",
     "applicantFound": "Applicant Found"
-  }
+  },
+  "job": "Position",
+  "jobs": "Positions"
 }
