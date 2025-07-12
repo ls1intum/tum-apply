@@ -336,3 +336,15 @@
 .description-text ol {
   list-style-type: decimal;
 }
+
+/* ---------------------------
+ Style for file upload component
+------------------------------- */
+.p-fileupload-content {
+  color: var(--p-text-color);
+  background: var(--p-background-default);
+}
+
+.p-fileupload-header {
+  background: var(--p-background-default);
+}

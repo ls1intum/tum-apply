@@ -38,7 +38,7 @@
   <ng-template #actionTemplate let-row>
     <div class="flex space-x-2">
       <jhi-button label="View" severity="primary" (click)="onViewApplication(row.applicationId)" />
-      @if (['SENT', 'IN_REVIEW', 'REJCETED'].includes(row.applicationState)) {
+      @if (['SENT', 'IN_REVIEW', 'REJECTED'].includes(row.applicationState)) {
         <jhi-button label="Withdraw" severity="danger" variant="outlined" (click)="onWithdrawApplication(row.applicationId)" />
       }
       @if (['SAVED'].includes(row.applicationState)) {

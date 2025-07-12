@@ -30,6 +30,7 @@ model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
 model/customFieldAnswerDTO.ts
+model/documentInformationHolderDTO.ts
 model/internalComment.ts
 model/job.ts
 model/jobCardDTO.ts

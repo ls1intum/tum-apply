@@ -331,8 +331,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "format": "uuid"
+                    "$ref": "#/components/schemas/DocumentInformationHolderDTO"
                   },
                   "uniqueItems": true
                 }
@@ -1252,6 +1251,69 @@
           }
         }
       }
+    },
+    "/api/applications/delete-document/{documentDictionaryId}": {
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteDocumentFromApplication",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/batch-delete-document/{applicationId}/{documentType}": {
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteDocumentBatchByTypeFromApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BACHELOR_TRANSCRIPT",
+                "MASTER_TRANSCRIPT",
+                "REFERENCE",
+                "CV",
+                "CUSTOM"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1921,7 +1983,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "pageSize": {
+          "pageNumber": {
             "type": "integer",
             "format": "int32"
           }
@@ -1933,10 +1995,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -2896,30 +2958,26 @@
           "bachelorDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "masterDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "referenceDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "cvDocumentDictionaryId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/DocumentInformationHolderDTO"
           }
         }
       }
