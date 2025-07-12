@@ -32,4 +32,5 @@ export type ButtonGroupData = {
 })
 export default class ButtonGroupComponent {
   data = input.required<ButtonGroupData>();
+  shouldTranslate = input<boolean>(false);
 }
