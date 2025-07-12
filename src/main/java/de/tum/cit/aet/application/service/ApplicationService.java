@@ -230,7 +230,6 @@ public class ApplicationService {
     /**
      * Retrieves a paginated list of application overviews for a specific applicant.
      *
-     * @param applicantId the ID of the applicant
      * @param pageSize    the number of applications per page
      * @param pageNumber  the page number to retrieve
      * @return a list of application overview DTOs
@@ -309,7 +308,6 @@ public class ApplicationService {
      * @param transcripts the uploaded transcript files
      * @param type        the type of the transcript
      * @param application the application the transcripts belong to
-     * @param user        the user uploading the documents
      */
     public void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application) {
         UUID userId = currentUserService.getUserId();
