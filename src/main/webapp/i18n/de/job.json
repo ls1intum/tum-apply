@@ -76,7 +76,8 @@
     }
   },
   "jobOverviewPage": {
-    "title": "Finden Sie Ihre passende Stelle"
+    "title": "Finden Sie Ihre passende Stelle",
+    "noJobsFound": "Keine Stellen gefunden."
   },
   "myPositionsPage": {
     "header": {
@@ -131,7 +132,7 @@
     "edit": "Bearbeiten",
     "delete": "Löschen",
     "close": "Schließen",
-    "view": "Anzeigen",
+    "view": "Details anzeigen",
     "publish": "Veröffentlichen",
     "cancel": "Abbrechen",
     "next": "Weiter",

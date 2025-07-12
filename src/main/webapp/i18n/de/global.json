@@ -163,6 +163,7 @@
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
+    "sortBy": "Sortieren nach:",
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",
       "upload_instruction": {
@@ -182,7 +183,7 @@
       "document_type": {
         "BACHELOR_TRANSCRIPT": "Bachelor-Zeugnis",
         "MASTER_TRANSCRIPT": "Master-Zeugnis",
-        "REFERENCE": "Empfehlungsschreiben",
+        "REFERENCES": "Empfehlungsschreiben",
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
       },

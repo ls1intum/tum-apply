@@ -22,8 +22,15 @@
     </ul>
 
     <div class="card-actions">
-      <jhi-button severity="primary" variant="outlined" label="View Details" (click)="onViewDetails()" class="view-button" />
-      <jhi-button severity="primary" label="Apply" (click)="onApply()" class="apply-button" />
+      <jhi-button
+        severity="primary"
+        variant="outlined"
+        label="jobActionButton.view"
+        (click)="onViewDetails()"
+        class="view-button"
+        [shouldTranslate]="true"
+      />
+      <jhi-button severity="primary" label="jobActionButton.apply" (click)="onApply()" class="apply-button" [shouldTranslate]="true" />
     </div>
   </div>
 </p-card>

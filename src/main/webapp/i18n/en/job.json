@@ -76,7 +76,8 @@
     }
   },
   "jobOverviewPage": {
-    "title": "Find Your Perfect Position"
+    "title": "Find Your Perfect Position",
+    "noJobsFound": "No Jobs Found."
   },
   "myPositionsPage": {
     "header": {
@@ -131,7 +132,7 @@
     "edit": "Edit",
     "delete": "Delete",
     "close": "Close",
-    "view": "View",
+    "view": "View Details",
     "publish": "Publish",
     "cancel": "Cancel",
     "next": "Next",

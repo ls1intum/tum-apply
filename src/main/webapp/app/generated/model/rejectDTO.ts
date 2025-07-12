@@ -14,13 +14,13 @@ export interface RejectDTO {
     notifyApplicant?: boolean;
 }
 export namespace RejectDTO {
-    export type ReasonEnum = 'JOB_FILLED' | 'JOB_OUTDATED' | 'FAILED_REQUIREMENTS' | 'OTHER_REASON';
     export const ReasonEnum = {
-        JobFilled: 'JOB_FILLED' as ReasonEnum,
-        JobOutdated: 'JOB_OUTDATED' as ReasonEnum,
-        FailedRequirements: 'FAILED_REQUIREMENTS' as ReasonEnum,
-        OtherReason: 'OTHER_REASON' as ReasonEnum
-    };
+        JobFilled: 'JOB_FILLED',
+        JobOutdated: 'JOB_OUTDATED',
+        FailedRequirements: 'FAILED_REQUIREMENTS',
+        OtherReason: 'OTHER_REASON'
+    } as const;
+    export type ReasonEnum = typeof ReasonEnum[keyof typeof ReasonEnum];
 }
 
 

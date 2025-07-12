@@ -140,15 +140,16 @@
 
       <div class="form-actions">
         <jhi-button
-          [label]="'jobActionButton.cancel' | translate"
+          label="jobActionButton.cancel"
           [icon]="'chevron-left'"
           [severity]="'primary'"
           [variant]="'outlined'"
           [disabled]="false"
           (click)="onCancel()"
+          [shouldTranslate]="true"
         />
         <div class="action-right">
-          <jhi-button-group [data]="nextAndSaveButtons()" />
+          <jhi-button-group [data]="nextAndSaveButtons()" [shouldTranslate]="true" />
         </div>
       </div>
     </div>
@@ -234,15 +235,16 @@
       </form>
       <div class="form-actions">
         <jhi-button
-          [label]="'jobActionButton.back' | translate"
+          label="jobActionButton.back"
           [icon]="'chevron-left'"
           [severity]="'primary'"
           [variant]="'outlined'"
           [disabled]="false"
           (click)="previousStep()"
+          [shouldTranslate]="true"
         />
         <div class="action-right">
-          <jhi-button-group [data]="nextAndSaveButtons()" />
+          <jhi-button-group [data]="nextAndSaveButtons()" [shouldTranslate]="true" />
         </div>
       </div>
     </div>
@@ -268,15 +270,16 @@
       </form>
       <div class="form-actions">
         <jhi-button
-          [label]="'jobActionButton.back' | translate"
+          label="jobActionButton.back"
           [icon]="'chevron-left'"
           [severity]="'primary'"
           [variant]="'outlined'"
           [disabled]="false"
           (click)="previousStep()"
+          [shouldTranslate]="true"
         />
         <div class="action-right">
-          <jhi-button-group [data]="publishAndSaveButtons()" />
+          <jhi-button-group [data]="publishAndSaveButtons()" [shouldTranslate]="true" />
         </div>
       </div>
     </div>
