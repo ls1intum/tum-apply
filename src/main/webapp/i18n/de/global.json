@@ -163,6 +163,7 @@
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
+    "sortBy": "Sortieren nach:",
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",
       "upload_instruction": {

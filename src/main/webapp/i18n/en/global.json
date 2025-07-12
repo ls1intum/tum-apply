@@ -163,6 +163,7 @@
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },
+    "sortBy": "Sort By:",
     "upload": {
       "upload_instruction_standard": "Please upload",
       "upload_instruction": {
