@@ -40,7 +40,7 @@
       }
     </ng-template>
 
-    <!-- Render each dropdown item -->
+    <!-- Render each selected dropdown item -->
     <ng-template pTemplate="selectedItem" let-item>
       @if (!translateItems()) {
         {{ item[labelField()] }}
