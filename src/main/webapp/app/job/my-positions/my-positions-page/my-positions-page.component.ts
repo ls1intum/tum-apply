@@ -80,7 +80,6 @@ export class MyPositionsPageComponent {
   private jobService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
-  private translate = inject(TranslateService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
