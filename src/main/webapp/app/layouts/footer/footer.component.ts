@@ -15,7 +15,7 @@ import TranslateDirective from '../../shared/language/translate.directive';
 export default class FooterComponent {
   version: string;
   constructor(private router: Router) {
-    this.version = VERSION ? VERSION : '';
+    this.version = VERSION;
   }
 
   navigateToImprint(): void {
