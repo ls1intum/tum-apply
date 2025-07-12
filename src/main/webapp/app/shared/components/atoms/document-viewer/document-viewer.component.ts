@@ -11,7 +11,7 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
 })
 export class DocumentViewerComponent {
-  documentDictionaryId = input.required<string>();
+  documentDictionaryId = input.required<DocumentInformationHolderDTO>();
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 

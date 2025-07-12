@@ -42,11 +42,11 @@ describe('DocumentViewerComponent', () => {
 
   it('should call downloadDocument with the provided documentDictionaryId', () => {
     const service = TestBed.inject(DocumentResourceService) as jest.Mocked<DocumentResourceService>;
-    const expectedId = 'example-id-999';
+    const expectedId = { id: 'example-id-999', size: 230 };
     fixture.componentRef.setInput('documentDictionaryId', expectedId);
     fixture.detectChanges();
 
-    expect(service.downloadDocument).toHaveBeenCalledWith(expectedId);
+    expect(service.downloadDocument).toHaveBeenCalledWith(expectedId.id);
   });
 
   it('should show "Nothing to display" when pdfSrc is undefined', () => {

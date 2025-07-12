@@ -38,4 +38,7 @@ public class DocumentDictionary {
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", nullable = false)
     private DocumentType documentType;
+
+    @Column(name = "name", nullable = false)
+    private String name;
 }

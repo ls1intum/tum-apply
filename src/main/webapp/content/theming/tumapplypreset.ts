@@ -961,4 +961,17 @@ export const TUMApplyPreset = definePreset(Lara, {
       },
     },
   },
+  fileupload: {
+    header: {
+      border: {
+        width: '0',
+      },
+      gap: '0',
+      color: '{background.default}',
+    },
+    content: {
+      color: '{text.primary}',
+      background: '{background.default}',
+    },
+  },
 });

@@ -25,10 +25,12 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,12 +51,14 @@ public class ApplicationService {
 
     /**
      * Creates a new job application for the given applicant and job.
-     * If an application already exists for the applicant and job, an exception is thrown.
+     * If an application already exists for the applicant and job, an exception is
+     * thrown.
      *
      * @param jobId the id of the job
      * @param applicantId the id of the applicant
      * @return the created ApplicationForApplicantDTO
-     * @throws OperationNotAllowedException if the applicant has already applied for the job
+     * @throws OperationNotAllowedException if the applicant has already applied for
+     *                                      the job
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId, UUID applicantId) {
@@ -214,11 +218,33 @@ public class ApplicationService {
         applicationRepository.deleteById(applicationId);
     }
 
-    public List<ApplicationOverviewDTO> getAllApplications(int pageSize, int pageNumber) {
-        UUID applicantId = currentUserService.getUserId();
-        return applicationRepository.findApplicationsByApplicant(applicantId, pageNumber, pageSize);
+    /**
+     * Deletes a document from the document dictionary by its ID.
+     *
+     * @param documentDictionaryId the ID of the document to be deleted
+     */
+    public void deleteDocument(UUID documentDictionaryId) {
+        documentDictionaryService.deleteById(documentDictionaryId);
     }
 
+    /**
+     * Retrieves a paginated list of application overviews for a specific applicant.
+     *
+     * @param pageSize    the number of applications per page
+     * @param pageNumber  the page number to retrieve
+     * @return a list of application overview DTOs
+     */
+    public List<ApplicationOverviewDTO> getAllApplications(int pageSize, int pageNumber) {
+        UUID userId = currentUserService.getUserId();
+        return applicationRepository.findApplicationsByApplicant(userId, pageNumber, pageSize);
+    }
+
+    /**
+     * Returns the total number of applications submitted by a specific applicant.
+     *
+     * @param applicantId the ID of the applicant
+     * @return the total number of applications
+     */
     public long getNumberOfTotalApplications(UUID applicantId) {
         return this.applicationRepository.countByApplicant_UserId(applicantId);
     }
@@ -266,84 +292,69 @@ public class ApplicationService {
     /**
      * Uploads a single CV document and updates the dictionary mapping.
      *
-     * @param cv the uploaded CV file
+     * @param cv          the uploaded CV file
      * @param application the application the CV belongs to
      */
     public void uploadCV(MultipartFile cv, Application application) {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(application, DocumentType.CV, Set.of(document));
+        updateDocumentDictionaries(application, DocumentType.CV, Set.of(Pair.of(document, cv.getName())));
     }
 
     /**
-     * Uploads multiple reference documents and updates the dictionary mapping.
+     * Uploads multiple transcript documents and updates the dictionary mapping.
      *
-     * @param references the uploaded reference files
-     * @param application the application the references belong to
-     */
-    public void uploadReferences(List<MultipartFile> references, Application application) {
-        UUID userId = currentUserService.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-        Set<Document> documents = references.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(application, DocumentType.REFERENCE, documents);
-    }
-
-    /**
-     * Uploads multiple bachelor transcript documents and updates the dictionary mapping.
-     *
-     * @param bachelorTranscripts the uploaded bachelor transcript files
+     * @param transcripts the uploaded transcript files
+     * @param type        the type of the transcript
      * @param application the application the transcripts belong to
      */
-    public void uploadBachelorTranscripts(List<MultipartFile> bachelorTranscripts, Application application) {
+    public void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application) {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-        Set<Document> documents = bachelorTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT, documents);
+        Set<Pair<Document, String>> documents = transcripts
+            .stream()
+            .map(file -> Pair.of(documentService.upload(file, user), Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf")))
+            .collect(Collectors.toSet());
+        updateDocumentDictionaries(application, type, documents);
     }
 
     /**
-     * Uploads multiple master transcript documents and updates the dictionary mapping.
+     * Updates the document dictionary entries for a given application and document
+     * type.
      *
-     * @param masterTranscripts the uploaded master transcript files
-     * @param application the application the transcripts belong to
+     * @param application  the application to associate the documents with
+     * @param type         the type of documents being updated (e.g.,
+     *                     BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
+     * @param newDocuments the set of newly uploaded documents to associate
      */
-    public void uploadMasterTranscripts(List<MultipartFile> masterTranscripts, Application application) {
-        UUID userId = currentUserService.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-        Set<Document> documents = masterTranscripts.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
-        updateDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT, documents);
-    }
-
-    /**
-     * Updates the document dictionary entries for a given application and document type.
-     *
-     * @param application    the application to associate the documents with
-     * @param type           the type of documents being updated (e.g., BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
-     * @param newDocuments   the set of newly uploaded documents to associate
-     */
-    protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Document> newDocuments) {
+    protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Pair<Document, String>> newDocuments) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
     }
 
     /**
-     * Retrieves the set of document IDs for the given application filtered by the specified document type.
+     * Retrieves the set of document IDs for the given application filtered by the
+     * specified document type.
      *
-     * @param application the application whose documents are queried; must not be {@code null}
-     * @param type the document type to filter by; must not be {@code null}
-     * @return a set of document IDs matching the given application and document type; never {@code null}
+     * @param application the application whose documents are queried; must not be
+     *                    {@code null}
+     * @param type        the document type to filter by; must not be {@code null}
+     * @return a set of document IDs matching the given application and document
+     *         type; never {@code null}
      */
-    public Set<UUID> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
+    public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
-        return existingEntries.stream().map(e -> e.getDocument().getDocumentId()).collect(Collectors.toSet());
+        return existingEntries.stream().map(e -> DocumentInformationHolderDTO.getFromDocumentDictionary(e)).collect(Collectors.toSet());
     }
 
     /**
-     * Retrieves the document IDs associated with the application identified by the given UUID.
+     * Retrieves the document IDs associated with the application identified by the
+     * given UUID.
      *
      * @param applicationId the UUID of the application; must not be {@code null}
-     * @return an {@link ApplicationDocumentIdsDTO} containing the categorized document IDs for the application
+     * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
+     *         document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
@@ -369,5 +380,31 @@ public class ApplicationService {
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
 
         return ApplicationDetailDTO.getFromEntity(application, application.getJob());
+    }
+
+    /**
+     * Deletes all documents of a specific type associated with the given
+     * application.
+     *
+     * @param applicationId the ID of the application
+     * @param documentType  the type of documents to delete
+     * @throws EntityNotFoundException if the application does not exist
+     */
+    public void deleteDocumentTypeOfDocuments(UUID applicationId, DocumentType documentType) {
+        Optional<Application> application = this.applicationRepository.findById(applicationId);
+        if (application.isEmpty()) {
+            throw new EntityNotFoundException("Application does not exist");
+        }
+        this.documentDictionaryService.deleteByApplicationAndType(application.get(), documentType);
+    }
+
+    /**
+     * Updates the name of the document with the given ID.
+     *
+     * @param documentId the ID of the document to rename
+     * @param newName the new name to set for the document
+     */
+    public void renameDocument(UUID documentId, String newName) {
+        documentDictionaryService.renameDocument(documentId, newName);
     }
 }
