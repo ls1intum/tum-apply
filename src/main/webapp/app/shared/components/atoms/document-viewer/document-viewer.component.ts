@@ -1,6 +1,6 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentResourceService } from 'app/generated';
+import { DocumentInformationHolderDTO, DocumentResourceService } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -25,7 +25,7 @@ export class DocumentViewerComponent {
 
   async initDocument(): Promise<void> {
     try {
-      const response = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId()));
+      const response = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId().id));
       const pdfBlob = new Blob([response], { type: 'application/pdf' });
       const blobUrl = URL.createObjectURL(pdfBlob);
       this.sanitizedBlobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl + '#toolbar=0&navpanes=0'));

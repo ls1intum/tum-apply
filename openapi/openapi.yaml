@@ -183,6 +183,38 @@
         }
       }
     },
+    "/api/applications/rename-document/{documentDictionaryId}": {
+      "put": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "renameDocument",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "newName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/jobs/create": {
       "post": {
         "tags": [
@@ -1704,48 +1736,6 @@
           }
         }
       },
-      "CreateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantDTO"
-          },
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN",
-              "JOB_CLOSED"
-            ]
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicant",
-          "applicationState",
-          "jobId"
-        ]
-      },
       "MultipartUploadRequest": {
         "type": "object",
         "properties": {
@@ -1759,6 +1749,26 @@
             }
           }
         }
+      },
+      "DocumentInformationHolderDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "size"
+        ]
       },
       "UserShortDTO": {
         "type": "object",
@@ -1928,12 +1938,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1958,6 +1962,12 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -1976,16 +1986,16 @@
           "paged": {
             "type": "boolean"
           },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
           "unpaged": {
             "type": "boolean"
-          },
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },
@@ -1995,10 +2005,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
@@ -2629,12 +2639,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -2658,6 +2662,12 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
