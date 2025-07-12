@@ -4,11 +4,19 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router, provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { of } from 'rxjs';
 
 import { JobCardComponent } from './job-card.component';
 
 @Component({ template: '' })
 class DummyComponent {}
+
+class FakeLoader implements TranslateLoader {
+  getTranslation(lang: string) {
+    return of({}); // return an empty object or mock translations
+  }
+}
 
 describe('JobCardComponent', () => {
   let component: JobCardComponent;
@@ -18,12 +26,23 @@ describe('JobCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobCardComponent],
+      imports: [
+        JobCardComponent,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: FakeLoader },
+          defaultLanguage: 'en',
+          useDefaultLang: true,
+        }),
+      ],
       providers: [
         provideRouter([
           { path: 'job/detail/:id', component: DummyComponent },
           { path: 'application/create/:id', component: DummyComponent },
         ]),
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
       ],
     }).compileComponents();
 
