@@ -42,11 +42,33 @@ export default class ApplicationOverviewForApplicantComponent {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
     return [
-      { field: 'jobTitle', header: 'Position Title', width: '34rem' },
-      { field: 'researchGroup', header: 'Research Group', width: '20rem' },
-      { field: 'badges', header: 'Status', width: '10rem', template: badgeTemplate },
-      { field: 'timeSinceCreation', header: 'Created', width: '10rem' },
-      { field: 'actions', header: '', width: '15rem', template: actionTemplate },
+      {
+        field: 'jobTitle',
+        header: 'entity.applicationOverview.columns.positionTitle',
+        width: '34rem',
+      },
+      {
+        field: 'researchGroup',
+        header: 'entity.applicationOverview.columns.researchGroup',
+        width: '20rem',
+      },
+      {
+        field: 'badges',
+        header: 'entity.applicationOverview.columns.status',
+        width: '10rem',
+        template: badgeTemplate,
+      },
+      {
+        field: 'timeSinceCreation',
+        header: 'entity.applicationOverview.columns.created',
+        width: '10rem',
+      },
+      {
+        field: 'actions',
+        header: '',
+        width: '15rem',
+        template: actionTemplate,
+      },
     ];
   });
 

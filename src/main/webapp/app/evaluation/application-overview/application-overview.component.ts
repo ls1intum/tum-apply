@@ -49,17 +49,17 @@ export class ApplicationOverviewComponent {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
     return [
-      { field: 'name', header: 'Name', width: '12rem' },
+      { field: 'name', header: 'evaluation.tableHeaders.name', width: '12rem' },
       {
         field: 'state',
-        header: 'Status',
+        header: 'evaluation.tableHeaders.status',
         width: '10rem',
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'jobName', header: 'Job', width: '26rem' },
+      { field: 'jobName', header: 'evaluation.tableHeaders.job', width: '26rem' },
       // { field: 'rating', header: 'Rating', width: '10rem' },
-      { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
+      { field: 'appliedAt', header: 'evaluation.tableHeaders.appliedAt', type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });

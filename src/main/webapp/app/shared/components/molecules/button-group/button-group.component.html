@@ -10,6 +10,7 @@
       [label]="button.label"
       [numberOfFavorites]="button.numberOfFavorites"
       [disabled]="button.disabled"
+      [shouldTranslate]="shouldTranslate()"
       (click)="button.onClick()"
     />
   }

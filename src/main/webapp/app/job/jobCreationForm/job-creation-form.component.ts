@@ -6,7 +6,6 @@ import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
 
 import SharedModule from '../../shared/shared.module';
@@ -139,7 +138,6 @@ export class JobCreationFormComponent {
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
-  private translate = inject(TranslateService);
 
   constructor(
     private fb: FormBuilder,
@@ -154,18 +152,20 @@ export class JobCreationFormComponent {
       direction: 'horizontal',
       buttons: [
         {
-          label: this.translate.instant('jobActionButton.saveDraft'),
+          label: 'jobActionButton.saveDraft',
           icon: 'floppy-disk',
           severity: 'secondary',
           disabled: false,
           onClick: () => void this.saveDraft(),
+          shouldTranslate: true,
         },
         {
-          label: this.translate.instant('jobActionButton.next'),
+          label: 'jobActionButton.next',
           icon: undefined,
           severity: 'primary',
           disabled: false,
           onClick: () => this.nextStep(),
+          shouldTranslate: true,
         },
       ],
     };
@@ -176,18 +176,20 @@ export class JobCreationFormComponent {
       direction: 'horizontal',
       buttons: [
         {
-          label: this.translate.instant('jobActionButton.saveDraft'),
+          label: 'jobActionButton.saveDraft',
           icon: 'floppy-disk',
           severity: 'secondary',
           disabled: false,
           onClick: () => void this.saveDraft(),
+          shouldTranslate: true,
         },
         {
-          label: this.translate.instant('jobActionButton.publish'),
+          label: 'jobActionButton.publish',
           icon: undefined,
           severity: 'primary',
           disabled: this.basicInfoForm.invalid || this.positionDetailsForm.invalid,
           onClick: () => void this.publishJob(),
+          shouldTranslate: true,
         },
       ],
     };

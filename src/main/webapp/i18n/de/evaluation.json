@@ -12,6 +12,13 @@
     "accept": "Annehmen",
     "reject": "Ablehnen",
 
+    "tableHeaders": {
+      "name": "Name",
+      "status": "Status",
+      "job": "Position",
+      "appliedAt": "Beworben am"
+    },
+
     "cancel": "Abbrechen",
 
     "more": "Mehr",

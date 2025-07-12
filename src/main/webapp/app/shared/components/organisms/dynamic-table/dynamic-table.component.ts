@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 
+import SharedModule from '../../../shared.module';
+
 export class DynamicTableColumn {
   field!: string;
   header!: string;
@@ -15,7 +17,7 @@ export class DynamicTableColumn {
 @Component({
   selector: 'jhi-dynamic-table',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule],
+  imports: [CommonModule, TableModule, ButtonModule, SharedModule],
   templateUrl: './dynamic-table.component.html',
   styleUrls: ['./dynamic-table.component.scss'],
 })
