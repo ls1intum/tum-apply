@@ -4,6 +4,7 @@ import { StepperModule } from 'primeng/stepper';
 
 import { Button } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 /**
  * Represents a button used in the stepper, extending the base Button type.
@@ -19,11 +20,12 @@ export type StepData = {
   buttonGroupPrev: StepButton[];
   buttonGroupNext: StepButton[];
   status?: TemplateRef<HTMLDivElement>;
+  shouldTranslate?: boolean;
 };
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent],
+  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule],
   templateUrl: './progress-stepper.component.html',
   styleUrl: './progress-stepper.component.scss',
   standalone: true,

@@ -192,6 +192,44 @@
         "remove": "Remove this file from the upload list",
         "delete": "Delete this file from the server"
       }
+    },
+    "applicationSteps": {
+      "personalInformation": "Personal Information",
+      "education": "Education",
+      "applicationDetails": "Application Details",
+      "buttons": {
+        "cancel": "Cancel",
+        "next": "Next",
+        "prev": "Previous",
+        "send": "Send"
+      },
+      "status": {
+        "SAVING": "Saving changes...",
+        "SAVED": "Changes saved"
+      }
+    },
+    "applicationOverview": {
+      "header": "Your Applications",
+      "state": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "withdrawn": "Withdrawn",
+        "closed": "Closed"
+      },
+      "actions": {
+        "view": "View",
+        "withdraw": "Withdraw",
+        "update": "Update",
+        "delete": "Delete"
+      },
+      "columns": {
+        "positionTitle": "Position Title",
+        "researchGroup": "Research Group",
+        "status": "Status",
+        "created": "Created"
+      }
     }
   },
   "error": {

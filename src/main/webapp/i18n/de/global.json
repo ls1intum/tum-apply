@@ -192,6 +192,44 @@
         "remove": "Diese Datei aus der Upload-Liste entfernen",
         "delete": "Diese Datei vom Server löschen"
       }
+    },
+    "applicationSteps": {
+      "personalInformation": "Persönliche Informationen",
+      "education": "Ausbildung",
+      "applicationDetails": "Bewerbungsdetails",
+      "buttons": {
+        "cancel": "Abbrechen",
+        "next": "Weiter",
+        "prev": "Zurück",
+        "send": "Senden"
+      },
+      "status": {
+        "SAVING": "Änderungen werden gespeichert...",
+        "SAVED": "Änderungen gespeichert"
+      }
+    },
+    "applicationOverview": {
+      "header": "Ihre Bewerbungen",
+      "state": {
+        "draft": "Entwurf",
+        "submitted": "Eingereicht",
+        "accepted": "Angenommen",
+        "rejected": "Abgelehnt",
+        "withdrawn": "Zurückgezogen",
+        "closed": "Geschlossen"
+      },
+      "actions": {
+        "view": "Ansehen",
+        "withdraw": "Zurückziehen",
+        "update": "Bearbeiten",
+        "delete": "Löschen"
+      },
+      "columns": {
+        "positionTitle": "Stellentitel",
+        "researchGroup": "Forschungsgruppe",
+        "status": "Status",
+        "created": "Erstellt"
+      }
     }
   },
   "error": {
