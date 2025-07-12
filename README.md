@@ -4,14 +4,10 @@
 of Munich. It streamlines application management, improves usability for applicants and research groups, and supports
 scalable, secure, and transparent recruitment processes.
 
----
-
 ## 👥 Who is this for?
 
 - **Applicants**: Search and apply for open doctoral positions across all TUM research groups.
 - **Professors and Research Groups**: Create job positions, review applications, and manage evaluations in one place.
-
----
 
 ## 🚀 What can you do on TUMApply?
 
@@ -29,16 +25,12 @@ scalable, secure, and transparent recruitment processes.
 - Evaluate candidates and assign status
 - Notify applicants directly via the system
 
----
-
 ## 🧭 How to Get Started
 
 1. Visit the portal: [TUMApply](https://tumapply.aet.cit.tum.de/)
 2. Browse available doctoral positions
 3. Log in with your preferred account
 4. Start applying or managing applications
-
----
 
 ## 🔐 Login
 
@@ -47,8 +39,6 @@ TUMApply supports **secure login** via:
 - TUM Single Sign-On (SSO)
 - Google and Microsoft accounts
 - Email and password
-
----
 
 ## 🧱 Architecture Overview
 
@@ -93,8 +83,6 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ![TUMApply Project Architecture UML Diagram](docs/architecture/tumapply-project-architecture.svg)
 
----
-
 ## 📄 Documentation for Developers
 
 If you're a developer or contributor, head over to the full documentation:
@@ -107,8 +95,6 @@ If you're a developer or contributor, head over to the full documentation:
 - 🚀 [Build for Production](docs/deployment/build-production.md)
 
 Full documentation is available in the [`/docs`](./docs) folder.
-
----
 
 © 2025 Technische Universität München – Built with ❤️ by the TUMApply Team at [Applied Education
 Technologies (AET)](https://aet.cit.tum.de/)
