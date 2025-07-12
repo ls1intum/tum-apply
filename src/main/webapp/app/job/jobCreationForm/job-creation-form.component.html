@@ -1,33 +1,33 @@
 <div class="doctorate-form-container">
   <header>
-    <h1>{{ pageTitle() }}</h1>
+    <h1 jhiTranslate="{{ pageTitle() }}"></h1>
   </header>
   <div class="stepper">
     <div (click)="currentStep = 1" [ngClass]="{ active: currentStep === 1, completed: currentStep > 1 }" class="step">
       <div class="step-number">1</div>
-      <div class="step-label">Basic Information</div>
+      <div class="step-label" jhiTranslate="jobCreationForm.header.steps.basicInfo"></div>
     </div>
     <div class="step-connector"></div>
     <div (click)="currentStep = 2" [ngClass]="{ active: currentStep === 2, completed: currentStep > 2 }" class="step">
       <div class="step-number">2</div>
-      <div class="step-label">Position Details</div>
+      <div class="step-label" jhiTranslate="jobCreationForm.header.steps.positionDetails"></div>
     </div>
     <div class="step-connector"></div>
     <div (click)="currentStep = 3" [ngClass]="{ active: currentStep === 3 }" class="step">
       <div class="step-number">3</div>
-      <div class="step-label">Additional Information</div>
+      <div class="step-label" jhiTranslate="jobCreationForm.header.steps.additionalInfo"></div>
     </div>
   </div>
   <!-- Step 1: Basic Information -->
   @if (currentStep === 1 && !isLoading()) {
     <div class="form-step">
       <form [formGroup]="basicInfoForm">
-        <h2>Basic Information</h2>
-        <p>Provide the key details about the doctoral position, such as title, field of study, and supervising professor.</p>
+        <h2 jhiTranslate="jobCreationForm.header.steps.basicInfo"></h2>
+        <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
         <div class="form-field">
           <jhi-string-input
-            [label]="'Job Title'"
-            [placeholder]="'e.g. Doctoral Position in Robotics'"
+            [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
+            [placeholder]="'jobCreationForm.basicInformationSection.jobTitle.placeholder' | translate"
             [required]="true"
             [model]="basicInfoForm.get('title')?.value"
             (modelChange)="onSelectionChange(basicInfoForm, 'title', $event)"
@@ -38,8 +38,8 @@
         <div class="form-row">
           <div class="form-field">
             <jhi-string-input
-              [label]="'Research Area'"
-              [placeholder]="'e.g. Machine Learning, Human-Computer Interaction'"
+              [label]="'jobCreationForm.basicInformationSection.researchArea.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.researchArea.placeholder' | translate"
               [required]="true"
               icon="circle-info"
               [model]="basicInfoForm.get('researchArea')?.value"
@@ -55,9 +55,9 @@
               (selectedChange)="onSelectionChange(basicInfoForm, 'fieldOfStudies', $event)"
               [iconField]="'icon'"
               [items]="fieldsOfStudies"
-              [label]="'Field Of Studies'"
+              [label]="'jobCreationForm.basicInformationSection.fieldOfStudies.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
               [required]="true"
-              [placeholder]="'Select a Field of Studies...'"
               [width]="'100%'"
             />
           </div>
@@ -65,7 +65,9 @@
 
         <div class="form-row">
           <div class="form-field input-with-icon">
-            <label for="supervisingProfessor"> Supervising Professor <span class="required">*</span> </label>
+            <label for="supervisingProfessor" jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label"
+              ><span class="required">*</span>
+            </label>
             <div class="icon-input-wrapper">
               <fa-icon [icon]="['fas', 'user']" class="input-icon" />
               <input [readonly]="true" formControlName="supervisingProfessor" id="supervisingProfessor" type="text" />
@@ -78,9 +80,9 @@
               (selectedChange)="onSelectionChange(basicInfoForm, 'location', $event)"
               [iconField]="'icon'"
               [items]="locations"
-              [label]="'Location'"
+              [label]="'jobCreationForm.basicInformationSection.location.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
               [required]="true"
-              [placeholder]="'Select a Location...'"
               [width]="'100%'"
             />
           </div>
@@ -91,9 +93,8 @@
             <jhi-datepicker
               [selectedDate]="basicInfoForm.get('startDate')?.value"
               (selectedDateChange)="onSelectionChange(basicInfoForm, 'startDate', $event)"
-              [label]="'Start Date'"
-              [required]="true"
-              [placeholder]="'Select a Start Date...'"
+              [label]="'jobCreationForm.basicInformationSection.startDate.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder' | translate"
               [width]="'100%'"
             />
           </div>
@@ -103,9 +104,8 @@
               (selectedChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
               [iconField]="'icon'"
               [items]="workloadOptions"
-              [label]="'Workload'"
-              [required]="true"
-              [placeholder]="'Select a Workload...'"
+              [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
               [width]="'100%'"
             />
           </div>
@@ -118,9 +118,8 @@
               (selectedChange)="onSelectionChange(basicInfoForm, 'contractDuration', $event)"
               [iconField]="'icon'"
               [items]="contractDurations"
-              [label]="'Contract Duration'"
-              [required]="true"
-              [placeholder]="'Select a Contract Duration...'"
+              [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.contractDuration.placeholder' | translate"
               [width]="'100%'"
             />
           </div>
@@ -130,9 +129,9 @@
               (selectedChange)="onSelectionChange(basicInfoForm, 'fundingType', $event)"
               [iconField]="'icon'"
               [items]="fundingTypes"
-              [label]="'Funding Type'"
+              [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
               [required]="true"
-              [placeholder]="'Select a Funding Type...'"
               [width]="'100%'"
             />
           </div>
@@ -141,7 +140,7 @@
 
       <div class="form-actions">
         <jhi-button
-          [label]="'Cancel'"
+          [label]="'jobActionButton.cancel' | translate"
           [icon]="'chevron-left'"
           [severity]="'primary'"
           [variant]="'outlined'"
@@ -158,14 +157,10 @@
   @if (currentStep === 2) {
     <div class="form-step">
       <form [formGroup]="positionDetailsForm">
-        <h2>Position Details</h2>
-        <p>
-          Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred
-          qualifications for applicants.
-        </p>
+        <h2 jhiTranslate="jobCreationForm.header.steps.positionDetails"></h2>
+        <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <div class="form-field">
-          <label for="description"
-            >Job Description
+          <label for="description" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.label">
             <span class="required">*</span>
             <fa-icon
               [icon]="['fas', 'circle-info']"
@@ -178,20 +173,20 @@
               formControlName="description"
               maxlength="1000"
               id="description"
-              placeholder="Describe the scope and focus of the position..."
+              [placeholder]="'jobCreationForm.positionDetailsSection.jobDescription.placeholder' | translate"
               rows="10"
             ></textarea>
           </div>
           <div class="form-footer">
-            <small class="description-helper"
-              >Describe the research context, goals, and overall scope of the position. Keep it concise but informative.</small
-            >
+            <small
+              class="description-helper"
+              jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+            ></small>
             <small class="char-counter"> {{ descriptionLength }}/1000 </small>
           </div>
         </div>
         <div class="form-field">
-          <label for="tasks"
-            >Tasks
+          <label for="tasks" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.label">
             <span class="required">*</span>
             <fa-icon
               [icon]="['fas', 'circle-info']"
@@ -204,20 +199,17 @@
               formControlName="tasks"
               maxlength="1000"
               id="tasks"
-              placeholder="List the main responsibilities..."
+              [placeholder]="'jobCreationForm.positionDetailsSection.tasks.placeholder' | translate"
               rows="8"
             ></textarea>
           </div>
           <div class="form-footer">
-            <small class="description-helper"
-              >List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.</small
-            >
+            <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
             <small class="char-counter"> {{ tasksLength }}/1000 </small>
           </div>
         </div>
         <div class="form-field">
-          <label for="requirements"
-            >Eligibility Criteria
+          <label for="requirements" jhiTranslate="jobCreationForm.positionDetailsSection.requirements.label">
             <span class="required">*</span>
             <fa-icon
               [icon]="['fas', 'circle-info']"
@@ -230,21 +222,19 @@
               formControlName="requirements"
               maxlength="1000"
               id="requirements"
-              placeholder="List the minimum requirements for applicants..."
+              [placeholder]="'jobCreationForm.positionDetailsSection.requirements.placeholder' | translate"
               rows="10"
             ></textarea>
           </div>
           <div class="form-footer">
-            <small class="description-helper"
-              >Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.</small
-            >
+            <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
             <small class="char-counter"> {{ requirementsLength }}/1000 </small>
           </div>
         </div>
       </form>
       <div class="form-actions">
         <jhi-button
-          [label]="'Back'"
+          [label]="'jobActionButton.back' | translate"
           [icon]="'chevron-left'"
           [severity]="'primary'"
           [variant]="'outlined'"
@@ -262,8 +252,8 @@
     <div class="form-step">
       <form [formGroup]="additionalInformationForm">
         <section class="extras-section">
-          <h2>Extras</h2>
-          <p>Add custom questions that applicants will see in the application form.</p>
+          <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
+          <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
           <!--        Not implemented yet-->
           <!--        <div class="custom-questions-dropdown">-->
           <!--          <div class="dropdown-header">-->
@@ -272,17 +262,13 @@
           <!--          </div>-->
           <!--        </div>-->
           <div class="data-privacy-notice">
-            <p>
-              A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more
-              information, please visit:
-              <a class="tum-link" href="https://www.community.tum.de/en/privacy-policy/">TUM Data Protection Information</a>.
-            </p>
+            <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
           </div>
         </section>
       </form>
       <div class="form-actions">
         <jhi-button
-          [label]="'Back'"
+          [label]="'jobActionButton.back' | translate"
           [icon]="'chevron-left'"
           [severity]="'primary'"
           [variant]="'outlined'"
