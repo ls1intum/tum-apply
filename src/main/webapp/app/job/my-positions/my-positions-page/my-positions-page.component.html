@@ -46,11 +46,12 @@
         }
         @if (job.state === 'PUBLISHED') {
           <jhi-button
-            [label]="'jobActionButton.close' | translate"
+            label="jobActionButton.close"
             severity="danger"
             variant="outlined"
             (click)="onCloseJob(job.jobId)"
             data-testid="delete"
+            [shouldTranslate]="true"
           />
         }
       </div>
