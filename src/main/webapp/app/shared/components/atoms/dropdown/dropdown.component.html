@@ -31,6 +31,24 @@
     [style]="{ width: width() }"
     class="custom-dropdown"
   >
+    <!-- Render each dropdown item -->
+    <ng-template pTemplate="item" let-item>
+      @if (!translateItems()) {
+        {{ item[labelField()] }}
+      } @else {
+        <span jhiTranslate="{{ item[labelField()] }}"></span>
+      }
+    </ng-template>
+
+    <!-- Render each dropdown item -->
+    <ng-template pTemplate="selectedItem" let-item>
+      @if (!translateItems()) {
+        {{ item[labelField()] }}
+      } @else {
+        <span jhiTranslate="{{ item[labelField()] }}"></span>
+      }
+    </ng-template>
+
     <ng-template pTemplate="dropdownicon">
       <fa-icon [icon]="isOpen ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']" />
     </ng-template>
