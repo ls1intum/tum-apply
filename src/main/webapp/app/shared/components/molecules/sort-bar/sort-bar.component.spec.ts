@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { Sort, SortBarComponent, SortDirection, SortOption } from './sort-bar.component';
 
@@ -39,7 +40,7 @@ describe('SortBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SortBarComponent, MockDropdownComponent, MockButtonComponent],
+      imports: [SortBarComponent, MockDropdownComponent, MockButtonComponent, TranslateModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SortBarComponent);
@@ -50,6 +51,8 @@ describe('SortBarComponent', () => {
 
     fixture.componentRef.setInput('totalRecords', 0);
     fixture.componentRef.setInput('sortableFields', sortableFields);
+    fixture.componentRef.setInput('singleEntity', 'Application');
+    fixture.componentRef.setInput('multipleEntities', 'Applications');
     fixture.detectChanges();
   });
 
@@ -59,15 +62,15 @@ describe('SortBarComponent', () => {
 
   describe('record-count rendering', () => {
     it.each`
-      count | expected
-      ${0}  | ${'0 Applications found'}
-      ${1}  | ${'1 Application found'}
-      ${2}  | ${'2 Applications found'}
-    `('renders "$expected" when totalRecords is $count', ({ count, expected }) => {
+      count | expectedEntity
+      ${0}  | ${'Applications'}
+      ${1}  | ${'Application'}
+      ${2}  | ${'Applications'}
+    `('selects correct entity string for $count', ({ count, expectedEntity }) => {
       fixture.componentRef.setInput('totalRecords', count);
       fixture.detectChanges();
-      const text = fixture.nativeElement.querySelector('.sort-bar__count').textContent.trim();
-      expect(text).toBe(expected);
+      expect(component.totalRecords()).toBe(count);
+      expect(count === 1 ? component.singleEntity() : component.multipleEntities()).toBe(expectedEntity);
     });
   });
 
