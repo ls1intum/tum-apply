@@ -119,6 +119,7 @@ export default class ApplicationCreationFormComponent {
     const location = this.location;
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
     const statusPanel = this.savedStatusPanel();
+    const updateDocumentInformation = this.updateDocumentInformation;
     if (panel1) {
       steps.push({
         name: this.translate.instant('entity.applicationSteps.personalInformation'),
@@ -162,7 +163,9 @@ export default class ApplicationCreationFormComponent {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
-            onClick() {},
+            onClick() {
+              updateDocumentInformation();
+            },
             disabled: false,
             label: this.translate.instant('entity.applicationSteps.buttons.prev'),
             changePanel: true,
@@ -172,7 +175,9 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'primary',
             icon: 'arrow-right',
-            onClick() {},
+            onClick() {
+              updateDocumentInformation();
+            },
             disabled: !page2Valid,
             label: this.translate.instant('entity.applicationSteps.buttons.next'),
             changePanel: true,
@@ -191,7 +196,9 @@ export default class ApplicationCreationFormComponent {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
-            onClick() {},
+            onClick() {
+              updateDocumentInformation();
+            },
             disabled: false,
             label: this.translate.instant('entity.applicationSteps.buttons.prev'),
             changePanel: true,
@@ -219,7 +226,7 @@ export default class ApplicationCreationFormComponent {
 
   jobId = signal<string>('');
   applicantId = signal<string>('');
-  applicationId = signal<string | undefined>(undefined);
+  applicationId = signal<string>('');
 
   applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
 
@@ -289,11 +296,7 @@ export default class ApplicationCreationFormComponent {
     this.page2.set(getPage2FromApplication(application));
     this.page3.set(getPage3FromApplication(application));
 
-    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(application.applicationId))
-      .then(ids => {
-        this.documentIds.set(ids);
-      })
-      .catch(() => alert('Error: fetching the document ids for this application'));
+    this.updateDocumentInformation();
     this.location.replaceState(`${segments[0].path}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
   }
 
@@ -304,10 +307,10 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  async sendCreateApplicationData(state: ApplicationState, rerouteToOtherPage: boolean): Promise<void> {
+  async sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): Promise<void> {
     const location = this.location;
     const applicationId = this.applicationId();
-    if (applicationId === undefined) {
+    if (applicationId === '') {
       alert('There is an error with the applicationId');
       return;
     }
@@ -360,12 +363,20 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  onPage1ValidityChanged(isValid: boolean): void {
-    this.page1Valid.set(isValid);
+  updateDocumentInformation(): void {
+    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
+      .then(ids => {
+        this.documentIds.set(ids);
+      })
+      .catch(() => alert('Error: fetching the document ids for this application'));
   }
 
   onValueChanged(): void {
     this.savingState.set(SavingStates.SAVING);
+  }
+
+  onPage1ValidityChanged(isValid: boolean): void {
+    this.page1Valid.set(isValid);
   }
 
   onPage2ValidityChanged(isValid: boolean): void {

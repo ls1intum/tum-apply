@@ -1,18 +1,29 @@
-.body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  padding: 4rem;
+.content {
+  padding: 2rem 4rem;
   width: 100%;
-  box-sizing: border-box;
-}
 
-jhi-filter-sort-bar {
-  display: block;
-  width: 70%;
-  max-width: 80rem;
-  min-width: 50rem;
-  margin-inline: auto;
-  box-sizing: border-box;
+  .header {
+    font-weight: 700;
+    padding-bottom: 4rem;
+    font-size: 2rem;
+    color: var(--p-primary-color);
+    align-items: center;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    box-sizing: border-box;
+  }
+
+  jhi-filter-sort-bar {
+    display: block;
+    width: 70%;
+    max-width: 80rem;
+    min-width: 50rem;
+    margin-inline: auto;
+    box-sizing: border-box;
+  }
 }

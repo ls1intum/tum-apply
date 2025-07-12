@@ -1,5 +1,8 @@
 {
   "evaluation": {
+    "overviewHeader": "Bewerbungen - Übersicht",
+    "reviewHeader": "Bewerbungen - Prüfen",
+
     "ratingToolTip": "Bewertung: {{value}} auf einer {{total}}-Likert Skala ({{label}})",
     "positive": "Positiv",
     "negative": "Negativ",
@@ -10,6 +13,8 @@
     "reject": "Ablehnen",
 
     "cancel": "Abbrechen",
+
+    "more": "Mehr",
 
     "statusBadge": {
       "SENT": "Ungelesen",

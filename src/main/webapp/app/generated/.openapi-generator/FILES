@@ -30,6 +30,7 @@ model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
 model/customFieldAnswerDTO.ts
+model/documentInformationHolderDTO.ts
 model/internalComment.ts
 model/job.ts
 model/jobCardDTO.ts
@@ -41,9 +42,9 @@ model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageableObject.ts
-model/researchGroup.ts
 model/professorDTO.ts
 model/rejectDTO.ts
+model/researchGroup.ts
 model/researchGroupShortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
@@ -55,5 +56,6 @@ model/userShortDTO.ts
 ng-package.json
 package.json
 param.ts
+provide-api.ts
 tsconfig.json
 variables.ts

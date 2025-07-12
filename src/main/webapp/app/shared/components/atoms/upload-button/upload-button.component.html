@@ -1,44 +1,102 @@
-<button
-  class="border border-neutral flex flex-col justify-center rounded-md p-2 w-full h-full"
-  (click)="triggerFileInput()"
-  (dragover)="onDragOver($event)"
-  (dragleave)="onDragLeave($event)"
-  (drop)="onDrop($event)"
-  [class]="{ 'drag-over': isDragOver(), 'background-disabled': disabled() }"
-  [disabled]="disabled()"
+<p-fileupload
+  [customUpload]="true"
+  [multiple]="true"
+  accept="application/pdf"
+  mode="advanced"
+  [maxFileSize]="maxUploadSizeInMb * 1024 * 1024"
+  (onClear)="onClear()"
+  (onSelect)="onFileSelected($event)"
+  #fileupload_component
 >
-  <input type="file" (change)="onFileSelected($event)" accept="application/pdf" multiple hidden #fileInput />
-  @if (disabled()) {
-    @if (documentIds()) {
-      <p class="font-bold mt-1 mb-1 text-color">
-        {{ documentIdLength() }}
-        @if (documentIdLength() === 1) {
-          <span jhiTranslate="entity.upload.uploaded_document"></span>
-        } @else if (documentIdLength() > 1) {
-          <span jhiTranslate="entity.upload.uploaded_documents"></span>
-        } @else {}
-        <span [jhiTranslate]="`entity.upload.document_type.${ documentType() }`"></span>
-      </p>
-    }
-  } @else {
-    <p class="font-bold mt-1 mb-1 text-color" [jhiTranslate]="uploadKey()"></p>
-  }
-  @if (disabled()) {
-    <div class="flex w-full justify-center">
-      <span class="flex border items-center justify-center rounded-full border-success size-20">
-        <fa-icon [icon]="['fas', 'check']" class="background-success" size="xl" />
-      </span>
+  <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
+    <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full" (click)="fileupload_component.choose()">
+      <div [jhiTranslate]="uploadKey()" class="text-center flex items-center"></div>
     </div>
-  } @else {
-    <div class="flex w-full justify-center">
-      <span class="flex border items-center justify-center rounded-full border-primary size-20">
-        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
-      </span>
+  </ng-template>
+  <ng-template #empty>
+    <div class="flex justify-center flex-col gap-0.5" (click)="fileupload_component.choose()">
+      <div class="flex w-full justify-center">
+        <span class="flex border items-center justify-center rounded-full border-primary size-20">
+          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
+        </span>
+      </div>
+      <p class="mt-0 text-sm text-color text-center" jhiTranslate="entity.upload.instruction"></p>
+      <p class="mt-0 mb-0 text-xs text-color text-center"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
     </div>
-    <p class="mt-1 text-sm text-color" jhiTranslate="entity.upload.instruction"></p>
-    <p class="mt-1 mb-1 text-xs text-color"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
-  }
-  @if (isUploading()) {
-    <div><span jhiTranslate="entity.upload.upload_progress"></span>{{ uploadProgress() }}%</div>
-  }
-</button>
+  </ng-template>
+  <ng-template #content let-files let-removeFileCallback="removeFileCallback">
+    <div class="mt-0 w-full">
+      <table class="table-fixed border-collapse w-full slim-table">
+        <thead>
+          <tr>
+            <th class="w-1/10"></th>
+            <th></th>
+            <th class="w-3/20"></th>
+            <th class="w-1/10"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (selectedFiles(); as selectedFiles) {
+            @for (file of selectedFiles; track $index) {
+              <tr class="border border-color leading-0 border-x-0">
+                <td>
+                  <span class="w-full h-full inline-flex justify-center">
+                    <fa-icon
+                      icon="cloud-arrow-up"
+                      class="icon-color-warning"
+                      [pTooltip]="'entity.upload.tooltip.to_upload' | translate"
+                      tooltipPosition="top"
+                    />
+                  </span>
+                </td>
+                <td>
+                  <span class="w-full h-full inline-flex justify-center">
+                    <input [(ngModel)]="file.name" class="editable-input" />
+                  </span>
+                </td>
+                <td class="text-center">
+                  <small class="text-muted">{{ formatSize(file.size) }}</small>
+                </td>
+                <td>
+                  <jhi-button
+                    icon="times"
+                    severity="danger"
+                    variant="text"
+                    (click)="removeFileCallback($event, $index)"
+                    aria-label="Remove file"
+                  />
+                </td>
+              </tr>
+            }
+          }
+          @if (documentIds(); as documentIds) {
+            @for (info of documentIds; track $index) {
+              <tr class="border border-color leading-0 border-x-0">
+                <td>
+                  <span class="w-full h-full inline-flex justify-center">
+                    <fa-icon
+                      icon="file-circle-check"
+                      class="icon-color-success"
+                      [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate"
+                      tooltipPosition="top"
+                    />
+                  </span>
+                </td>
+                <td>
+                  <input [(ngModel)]="info.name" (blur)="renameDocument(info)" class="editable-input" />
+                </td>
+                <td class="text-center">
+                  <small class="text-muted">{{ formatSize(info.size) }}</small>
+                </td>
+                <td class="border-r-0">
+                  <jhi-button icon="trash-alt" severity="danger" variant="text" (click)="deleteDictionary(info)" aria-label="Remove file" />
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+  <ng-template #file />
+</p-fileupload>

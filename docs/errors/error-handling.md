@@ -76,7 +76,7 @@ User user = getOrThrow(userRepository.findById(id), () -> EntityNotFoundExceptio
 
 ```java
 if(!email.contains("@")){
-  throw new
+        throw new
 
 InvalidParameterException("Invalid email format");
 }

@@ -1,9 +1,11 @@
 <div class="sort-bar">
   <!-- LEFT: total count -->
-  <div class="sort-bar__count">
-    {{ totalRecords() }}
-    {{ totalRecords() === 1 ? 'Application' : 'Applications' }} found
-  </div>
+  <span
+    class="record-count"
+    jhiTranslate="entity.filters.recordsFound"
+    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+  >
+  </span>
 
   <div class="sort-bar__controls">
     <span>Sort by:</span>

@@ -105,6 +105,30 @@
         }
       }
     },
+    "/api/evaluation/applications/{applicationId}/open": {
+      "put": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "markApplicationAsInReview",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications": {
       "put": {
         "tags": [
@@ -149,6 +173,38 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/rename-document/{documentDictionaryId}": {
+      "put": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "renameDocument",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "newName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -307,8 +363,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "format": "uuid"
+                    "$ref": "#/components/schemas/DocumentInformationHolderDTO"
                   },
                   "uniqueItems": true
                 }
@@ -1228,6 +1283,69 @@
           }
         }
       }
+    },
+    "/api/applications/delete-document/{documentDictionaryId}": {
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteDocumentFromApplication",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/batch-delete-document/{applicationId}/{documentType}": {
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteDocumentBatchByTypeFromApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BACHELOR_TRANSCRIPT",
+                "MASTER_TRANSCRIPT",
+                "REFERENCE",
+                "CV",
+                "CUSTOM"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1607,7 +1725,7 @@
         "properties": {
           "message": {
             "type": "string",
-            "maxLength": 1000,
+            "maxLength": 3000,
             "minLength": 0
           },
           "notifyApplicant": {
@@ -1617,48 +1735,6 @@
             "type": "boolean"
           }
         }
-      },
-      "CreateApplicationDTO": {
-        "type": "object",
-        "properties": {
-          "applicant": {
-            "$ref": "#/components/schemas/ApplicantDTO"
-          },
-          "jobId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "desiredDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "applicationState": {
-            "type": "string",
-            "enum": [
-              "SAVED",
-              "SENT",
-              "ACCEPTED",
-              "IN_REVIEW",
-              "REJECTED",
-              "WITHDRAWN",
-              "JOB_CLOSED"
-            ]
-          },
-          "projects": {
-            "type": "string"
-          },
-          "specialSkills": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicant",
-          "applicationState",
-          "jobId"
-        ]
       },
       "MultipartUploadRequest": {
         "type": "object",
@@ -1673,6 +1749,26 @@
             }
           }
         }
+      },
+      "DocumentInformationHolderDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "size"
+        ]
       },
       "UserShortDTO": {
         "type": "object",
@@ -1842,12 +1938,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1872,6 +1962,12 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -1890,16 +1986,16 @@
           "paged": {
             "type": "boolean"
           },
-          "unpaged": {
-            "type": "boolean"
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -2543,12 +2639,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -2572,6 +2662,12 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
@@ -2872,30 +2968,26 @@
           "bachelorDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "masterDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "referenceDocumentDictionaryIds": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
             },
             "uniqueItems": true
           },
           "cvDocumentDictionaryId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/DocumentInformationHolderDTO"
           }
         }
       }

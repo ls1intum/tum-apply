@@ -95,7 +95,6 @@ export default class ApplicationOverviewForApplicantComponent {
       const tempTotal = await firstValueFrom(this.applicationService.getApplicationPagesLength(this.applicantId()));
       this.total.set(tempTotal);
     } catch (error) {
-      alert('Failed to load total application count');
       console.error('Failed to load total application count', error);
     }
   }

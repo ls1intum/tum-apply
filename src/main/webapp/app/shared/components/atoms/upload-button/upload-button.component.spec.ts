@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { ApplicationResourceService } from 'app/generated';
+import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faCheck, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCloudArrowUp, faFileCircleCheck, faPlus, faTimes, faUpload } from '@fortawesome/free-solid-svg-icons';
 import {
   MissingTranslationHandler,
   TranslateCompiler,
@@ -17,20 +17,13 @@ import {
 import { UploadButtonComponent } from './upload-button.component';
 
 class MockApplicationResourceService {
-  uploadDocuments(): Observable<
-    | HttpResponse<any>
-    | {
-        type: HttpEventType;
-        loaded: number;
-        total: number;
-      }
-  > {
-    // Simulate an observable HTTP stream of events
-    return of({ type: HttpEventType.UploadProgress, loaded: 50, total: 100 }, {
-      type: HttpEventType.Response,
-      body: ['mock-doc-id'],
-    } as HttpResponse<any>);
+  uploadDocuments(): Observable<DocumentInformationHolderDTO[]> {
+    return of([{ id: 'mock-doc-id', name: 'test.pdf', size: 12345 }]);
   }
+
+  deleteDocumentBatchByTypeFromApplication = (): any => of({});
+  deleteDocumentFromApplication = (): any => of({});
+  renameDocument = (): any => of({});
 }
 
 describe('UploadButtonComponent', () => {
@@ -51,12 +44,17 @@ describe('UploadButtonComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
+        provideHttpClient(),
       ],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faCloudArrowUp);
     library.addIcons(faCheck);
+    library.addIcons(faPlus);
+    library.addIcons(faUpload);
+    library.addIcons(faTimes);
+    library.addIcons(faFileCircleCheck);
 
     fixture = TestBed.createComponent(UploadButtonComponent);
     component = fixture.componentInstance;
@@ -69,38 +67,43 @@ describe('UploadButtonComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should trigger upload when a file is selected', () => {
-    const fakeFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+  it('should upload files and update documentIds', async () => {
+    const mockFiles = [new File(['dummy'], 'test.pdf', { type: 'application/pdf' })];
+    component.selectedFiles.set(mockFiles);
 
-    jest.spyOn(component, 'uploadFile');
-    const event = { target: { files: [fakeFile] } } as unknown as Event;
+    // Call onUpload and subscribe to changes
+    await component.onUpload();
 
-    component.onFileSelected(event);
-
-    expect(component.selectedFile()).toEqual([fakeFile]);
-    expect(component.uploadFile).toHaveBeenCalled();
+    // Wait for observable to complete
+    expect(component.documentIds()).toEqual([{ id: 'mock-doc-id', name: 'test.pdf', size: 12345 }]);
+    expect(component.selectedFiles()).toEqual([]);
+    expect(component.isUploading()).toBe(false);
   });
 
-  it('should disable the button when documentIds is set', () => {
-    component.documentIds.set(['doc1', 'doc2']);
-    fixture.detectChanges();
+  it('should rename a document and update it in documentIds', async () => {
+    const doc = { id: '123', name: 'Old Name', size: 1024 };
+    component.documentIds.set([doc]);
 
-    expect(component.disabled()).toBeTruthy();
+    const service = TestBed.inject(ApplicationResourceService);
+    const spy = jest.spyOn(service, 'renameDocument').mockReturnValue(of({} as any));
 
-    const button = fixture.nativeElement.querySelector('button');
-    expect(button.disabled).toBeTruthy();
+    const updatedDoc = { ...doc, name: 'New Name' };
+
+    await component.renameDocument(updatedDoc);
+
+    expect(spy).toHaveBeenCalledWith('123', 'New Name');
+    expect(component.documentIds()).toEqual([{ id: '123', name: 'New Name', size: 1024 }]);
   });
 
-  it('should alert if total file size exceeds 1MB and not proceed with upload', () => {
-    const largeFile = new File([new ArrayBuffer(2 * 1024 * 1024)], 'large.pdf'); // 2MB
-    component.selectedFile.set([largeFile]);
+  it('should delete a document and update documentIds list', async () => {
+    const doc = { id: 'abc', name: 'doc1', size: 500 };
+    component.documentIds.set([doc]);
 
-    jest.spyOn(window, 'alert');
-    const spy = jest.spyOn(component['applicationService'], 'uploadDocuments');
+    const spy = jest.spyOn(TestBed.inject(ApplicationResourceService), 'deleteDocumentFromApplication').mockReturnValue(of({} as any));
 
-    component.uploadFile();
+    await component.deleteDictionary(doc);
 
-    expect(window.alert).toHaveBeenCalledWith('The total size of the file(s) being uploaded is too large. Upload aborted.');
-    expect(spy).not.toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith('abc');
+    expect(component.documentIds()).toEqual([]);
   });
 });

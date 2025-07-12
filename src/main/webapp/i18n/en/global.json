@@ -171,6 +171,9 @@
         "REFERENCE": "Please upload your References",
         "CV": "Please upload your CV"
       },
+      "add": "Add",
+      "clear": "Delete all",
+      "upload": "Upload",
       "uploaded_document": "Uploaded Document for ",
       "uploaded_documents": "Uploaded Documents for ",
       "instruction": "Click or drag and drop files to here to upload.",
@@ -179,9 +182,15 @@
       "document_type": {
         "BACHELOR_TRANSCRIPT": "Bachelor Transcript",
         "MASTER_TRANSCRIPT": "Master Transcript",
-        "REFERENCE": "References",
+        "REFERENCES": "References",
         "CV": "CV",
         "CUSTOM": "Custom"
+      },
+      "tooltip": {
+        "to_upload": "Still needs to be uploaded",
+        "already_uploaded": "Already uploaded",
+        "remove": "Remove this file from the upload list",
+        "delete": "Delete this file from the server"
       }
     },
     "application_overview": {
