@@ -30,13 +30,13 @@ export interface JobDetailDTO {
     state?: JobDetailDTO.StateEnum;
 }
 export namespace JobDetailDTO {
-    export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {
-        Draft: 'DRAFT' as StateEnum,
-        Published: 'PUBLISHED' as StateEnum,
-        Closed: 'CLOSED' as StateEnum,
-        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
-    };
+        Draft: 'DRAFT',
+        Published: 'PUBLISHED',
+        Closed: 'CLOSED',
+        ApplicantFound: 'APPLICANT_FOUND'
+    } as const;
+    export type StateEnum = typeof StateEnum[keyof typeof StateEnum];
 }
 
 
