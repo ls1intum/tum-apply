@@ -8,7 +8,7 @@
 
   .tiles-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -20,7 +20,9 @@
     color: var(--p-text-primary);
     font-size: 2.25rem;
     font-weight: 700;
-    text-align: start;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 @media (max-width: bp.$lg) {
