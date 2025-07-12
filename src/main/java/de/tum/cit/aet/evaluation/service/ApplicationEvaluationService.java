@@ -2,14 +2,22 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.notification.Email;
+import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.service.JobService;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +32,8 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ApplicationEvaluationService {
 
+    private final JobService jobService;
+    private final EmailService emailService;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
 
@@ -60,12 +70,27 @@ public class ApplicationEvaluationService {
         setApplicationReview(application, reviewingUser, acceptDTO.message());
         applicationEvaluationRepository.save(application);
 
-        if (acceptDTO.closeJob()) {
-            System.out.println("Should close Job and reject all");
-            //TODO integrate close job and reject all
-        }
-        //TODO add notification
+        Job job = application.getJob();
 
+        if (acceptDTO.closeJob()) {
+            jobService.changeJobState(job.getJobId(), JobState.APPLICANT_FOUND, true);
+        }
+
+        if (acceptDTO.notifyApplicant()) {
+            Applicant applicant = application.getApplicant();
+            User supervisingProfessor = job.getSupervisingProfessor();
+
+            Email email = Email.builder()
+                .to(applicant.getEmail())
+                .bcc(supervisingProfessor.getEmail())
+                .htmlBody(acceptDTO.message())
+                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                // template and content are only set for the subject
+                .template("application_accepted")
+                .content(Map.of("jobTitle", job.getTitle()))
+                .build();
+            emailService.send(email);
+        }
     }
 
     /**
@@ -89,7 +114,33 @@ public class ApplicationEvaluationService {
         application.setState(ApplicationState.REJECTED);
         setApplicationReview(application, reviewingUser, rejectDTO.reason().getValue());
         applicationEvaluationRepository.save(application);
-        //TODO add notification
+
+        if (rejectDTO.notifyApplicant()) {
+            Job job = application.getJob();
+            Applicant applicant = application.getApplicant();
+            ResearchGroup researchGroup = job.getResearchGroup();
+
+            Email email = Email.builder()
+                .to(applicant.getEmail())
+                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .template("application_rejected")
+                .content(
+                    Map.of(
+                        "applicantFirstName",
+                        applicant.getFirstName(),
+                        "applicantLastName",
+                        applicant.getLastName(),
+                        "jobTitle",
+                        job.getTitle(),
+                        "researchGroupName",
+                        researchGroup.getName(),
+                        "reason",
+                        rejectDTO.reason()
+                    )
+                )
+                .build();
+            emailService.send(email);
+        }
     }
 
     /**
@@ -112,9 +163,9 @@ public class ApplicationEvaluationService {
      * Retrieves a paginated and optionally sorted list of applications for a given research group.
      *
      * @param researchGroupId the {@link UUID} whose applications are to be fetched
-     * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination information (offset and limit)
-     * @param sortDTO the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO the {@link EvaluationFilterDTO} specifying dynamic filters to apply
+     * @param offsetPageDTO   the {@link OffsetPageDTO} containing pagination information (offset and limit)
+     * @param sortDTO         the {@link SortDTO} specifying the sorting criteria
+     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return an {@link ApplicationEvaluationOverviewListDTO} containing application overviews
      * and the total number of matching records
      */
@@ -135,13 +186,13 @@ public class ApplicationEvaluationService {
      * Retrieves a window of applications centered around a specific application for the given research group,
      * applying dynamic filters and sorting. The window size must be a positive odd integer.
      *
-     * @param applicationId the ID of the application to center the window on
-     * @param windowSize the desired size of the window (must be positive and odd)
+     * @param applicationId   the ID of the application to center the window on
+     * @param windowSize      the desired size of the window (must be positive and odd)
      * @param researchGroupId the {@link UUID} whose applications are to be fetched
-     * @param sortDTO the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO the {@link EvaluationFilterDTO} specifying dynamic filters to apply
+     * @param sortDTO         the {@link SortDTO} specifying the sorting criteria
+     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications in the window,
-     *         total record count, the index of the target application, and its position in the window
+     * total record count, the index of the target application, and its position in the window
      * @throws IllegalArgumentException if the window size is not a positive odd integer
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetailsWindow(
@@ -187,9 +238,9 @@ public class ApplicationEvaluationService {
      * Retrieves a paginated and filtered list of application evaluation details for the given research group.
      *
      * @param researchGroupId the {@link UUID} whose applications are to be fetched
-     * @param offsetPageDTO the {@link OffsetPageDTO} containing pagination information (offset and limit)
-     * @param sortDTO the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO the {@link EvaluationFilterDTO} specifying dynamic filters to apply
+     * @param offsetPageDTO   the {@link OffsetPageDTO} containing pagination information (offset and limit)
+     * @param sortDTO         the {@link SortDTO} specifying the sorting criteria
+     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications and total record count
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetails(
@@ -210,7 +261,7 @@ public class ApplicationEvaluationService {
      *
      * @param researchGroupId the {@link UUID} for which to retrieve job filter options
      * @return a set of {@link JobFilterOptionDTO} representing the available job filter options
-     *         for the specified research group
+     * for the specified research group
      */
     public Set<JobFilterOptionDTO> getJobFilterOptions(UUID researchGroupId) {
         return jobEvaluationRepository.findAllByResearchGroup(researchGroupId);
@@ -230,8 +281,8 @@ public class ApplicationEvaluationService {
      * applying optional dynamic filters.
      *
      * @param researchGroupId the ID of the research group to filter applications by
-     * @param pageable the {@link Pageable} object containing pagination and sorting information
-     * @param dynamicFilters additional dynamic filters to apply
+     * @param pageable        the {@link Pageable} object containing pagination and sorting information
+     * @param dynamicFilters  additional dynamic filters to apply
      * @return a list of matching {@link Application} entities
      */
     private List<Application> getApplicationsDetails(UUID researchGroupId, Pageable pageable, Map<String, List<?>> dynamicFilters) {
@@ -243,7 +294,7 @@ public class ApplicationEvaluationService {
      * applying optional dynamic filters.
      *
      * @param researchGroupId the ID of the research group to filter applications by
-     * @param dynamicFilters additional dynamic filters to apply
+     * @param dynamicFilters  additional dynamic filters to apply
      * @return the total count of matching applications
      */
     private long getTotalRecords(UUID researchGroupId, Map<String, List<?>> dynamicFilters) {

@@ -2,17 +2,22 @@ package de.tum.cit.aet.job.service;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.core.util.PageUtil;
+import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -25,17 +30,20 @@ public class JobService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
+    private final EmailService emailService;
     private final ApplicationRepository applicationRepository;
 
     public JobService(
         JobRepository jobRepository,
         UserRepository userRepository,
         ApplicationRepository applicationRepository,
+        EmailService emailService,
         CurrentUserService currentUserService
     ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
+        this.emailService = emailService;
         this.currentUserService = currentUserService;
     }
 
@@ -85,6 +93,8 @@ public class JobService {
 
             // update the state of all submitted and unsubmitted applications to 'JOB_CLOSED'
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
+
+            notifyApplicants(applicationsToNotify, jobTitle, researchGroupName, RejectReason.JOB_OUTDATED);
         } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
             // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
@@ -93,9 +103,36 @@ public class JobService {
 
             // update the state of all submitted applications to 'REJECTED', all unsubmitted applications to 'JOB_CLOSED'
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
+
+            notifyApplicants(applicationsToNotify, jobTitle, researchGroupName, RejectReason.JOB_FILLED);
         }
 
         return JobFormDTO.getFromEntity(jobRepository.save(job));
+    }
+
+    private void notifyApplicants(Set<ApplicationShortDTO> applicants, String jobTitle, String researchGroupName, RejectReason reason) {
+        for (ApplicationShortDTO applicant : applicants) {
+            Email email = Email.builder()
+                .to(applicant.email())
+                .template("application_rejected")
+                .language(Language.fromCode(applicant.language()))
+                .content(
+                    Map.of(
+                        "applicantFirstName",
+                        applicant.firstName(),
+                        "applicantLastName",
+                        applicant.lastName(),
+                        "jobTitle",
+                        jobTitle,
+                        "researchGroupName",
+                        researchGroupName,
+                        "reason",
+                        reason
+                    )
+                )
+                .build();
+            emailService.send(email);
+        }
     }
 
     /**

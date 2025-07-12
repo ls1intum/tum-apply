@@ -22,12 +22,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -54,7 +49,7 @@ public class ApplicationService {
      * If an application already exists for the applicant and job, an exception is
      * thrown.
      *
-     * @param jobId the id of the job
+     * @param jobId       the id of the job
      * @param applicantId the id of the applicant
      * @return the created ApplicationForApplicantDTO
      * @throws OperationNotAllowedException if the applicant has already applied for
@@ -163,7 +158,71 @@ public class ApplicationService {
         applicant.setMasterUniversity(applicantDTO.masterUniversity());
         applicantRepository.save(applicant);
 
-        return applicationRepository.findDtoById(updateApplicationDTO.applicationId());
+        ApplicationForApplicantDTO application = applicationRepository.findDtoById(updateApplicationDTO.applicationId());
+
+        if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
+            UUID jobId = application.job().jobId();
+            Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
+            User supervisingProfessor = job.getSupervisingProfessor();
+
+            confirmApplicationToApplicant(applicant.getEmail(), applicant.getSelectedLanguage(), application, job);
+            confirmApplicationToProfessor(supervisingProfessor.getEmail(), supervisingProfessor.getSelectedLanguage(), application, job);
+        }
+        return application;
+    }
+
+    private void confirmApplicationToApplicant(
+        String applicantEmail,
+        String selectedLanguage,
+        ApplicationForApplicantDTO application,
+        Job job
+    ) {
+        Email email = Email.builder()
+            .to(applicantEmail)
+            .language(Language.fromCode(selectedLanguage))
+            .template("application_confirmation")
+            .content(
+                Map.of(
+                    "applicantFirstName",
+                    application.applicant().user().firstName(),
+                    "applicantLastName",
+                    application.applicant().user().lastName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "researchGroupName",
+                    job.getResearchGroup().getName()
+                )
+            )
+            .build();
+        emailService.send(email);
+    }
+
+    private void confirmApplicationToProfessor(
+        String professorEmail,
+        String selectedLanguage,
+        ApplicationForApplicantDTO application,
+        Job job
+    ) {
+        Email email = Email.builder()
+            .to(professorEmail)
+            .language(Language.fromCode(selectedLanguage))
+            .template("application_received")
+            .content(
+                Map.of(
+                    "professorLastName",
+                    application.job().professorName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "applicantFirstName",
+                    application.applicant().user().firstName(),
+                    "applicantLastName",
+                    application.applicant().user().lastName(),
+                    "applicationId",
+                    application.applicationId()
+                )
+            )
+            .build();
+        emailService.send(email);
     }
 
     /**
@@ -230,8 +289,8 @@ public class ApplicationService {
     /**
      * Retrieves a paginated list of application overviews for a specific applicant.
      *
-     * @param pageSize    the number of applications per page
-     * @param pageNumber  the page number to retrieve
+     * @param pageSize   the number of applications per page
+     * @param pageNumber the page number to retrieve
      * @return a list of application overview DTOs
      */
     public List<ApplicationOverviewDTO> getAllApplications(int pageSize, int pageNumber) {
@@ -341,7 +400,7 @@ public class ApplicationService {
      *                    {@code null}
      * @param type        the document type to filter by; must not be {@code null}
      * @return a set of document IDs matching the given application and document
-     *         type; never {@code null}
+     * type; never {@code null}
      */
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
@@ -354,7 +413,7 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     *         document IDs for the application
+     * document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
@@ -402,7 +461,7 @@ public class ApplicationService {
      * Updates the name of the document with the given ID.
      *
      * @param documentId the ID of the document to rename
-     * @param newName the new name to set for the document
+     * @param newName    the new name to set for the document
      */
     public void renameDocument(UUID documentId, String newName) {
         documentDictionaryService.renameDocument(documentId, newName);

@@ -2833,6 +2833,10 @@
           "professor": {
             "$ref": "#/components/schemas/ProfessorDTO"
           },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "rating": {
             "type": "integer",
             "format": "int32"
