@@ -1,10 +1,10 @@
 import { Component, Signal, TemplateRef, computed, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { Button } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
-import { TranslateModule } from '@ngx-translate/core';
 
 /**
  * Represents a button used in the stepper, extending the base Button type.
