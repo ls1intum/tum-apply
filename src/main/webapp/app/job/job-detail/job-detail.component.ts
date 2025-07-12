@@ -121,10 +121,10 @@ export class JobDetailComponent {
   });
 
   readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: this.translate.instant('jobState.draft'),
-    PUBLISHED: this.translate.instant('jobState.published'),
-    CLOSED: this.translate.instant('jobState.closed'),
-    APPLICANT_FOUND: this.translate.instant('jobState.applicantFound'),
+    DRAFT: 'jobState.draft',
+    PUBLISHED: 'jobState.published',
+    CLOSED: 'jobState.closed',
+    APPLICANT_FOUND: 'jobState.applicantFound',
   }));
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({

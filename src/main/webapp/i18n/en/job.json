@@ -59,6 +59,7 @@
     "draft": "Draft",
     "published": "Published",
     "closed": "Closed",
-    "applicantFound": "Applicant Found"
+    "applicantFound": "Applicant Found",
+    "unknown": "Unknown"
   }
 }

@@ -51,7 +51,10 @@
     </ng-template>
 
     <ng-template #stateTemplate let-job>
-      <jhi-tag [text]="stateTextMap()[job.state] || 'Unknown'" [color]="stateSeverityMap()[job.state] || 'info'" />
+      <jhi-tag
+        [text]="stateTextMap()[job.state] ? (stateTextMap()[job.state] | translate) : ('jobState.unknown' | translate)"
+        [color]="stateSeverityMap()[job.state] || 'info'"
+      />
     </ng-template>
   </div>
 </div>

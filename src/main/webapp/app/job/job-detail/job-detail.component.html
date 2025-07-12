@@ -8,7 +8,11 @@
           @if (jobDetails()?.jobState) {
             <jhi-tag
               class="job-state-badge"
-              [text]="stateTextMap()[jobDetails()?.jobState!] || 'Unknown'"
+              [text]="
+                stateTextMap()[jobDetails()?.jobState!]
+                  ? (stateTextMap()[jobDetails()?.jobState!] | translate)
+                  : ('jobState.unknown' | translate)
+              "
               [color]="stateSeverityMap()[jobDetails()?.jobState!] || 'info'"
             />
           } @else {

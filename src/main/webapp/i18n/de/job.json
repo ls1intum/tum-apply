@@ -59,6 +59,7 @@
     "draft": "Entwurf",
     "published": "Veröffentlicht",
     "closed": "Geschlossen",
-    "applicantFound": "Bewerber gefunden"
+    "applicantFound": "Bewerber gefunden",
+    "unknown": "Unbekannt"
   }
 }
