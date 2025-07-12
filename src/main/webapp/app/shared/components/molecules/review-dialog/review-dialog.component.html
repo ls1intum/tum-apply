@@ -42,12 +42,10 @@
       [required]="true"
     />
     <ul class="review-checkboxes">
-      <!-- Will be added together with notifications
       <li>
         <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
-        <label>Notify the applicant</label>
+        <label jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>
       </li>
-      -->
       <li>
         <p-checkbox [(ngModel)]="closeJob" [binary]="true" />
         <label jhiTranslate="evaluation.closeJobAndRejectAll"></label>
@@ -58,20 +56,21 @@
 
 <!-- ───────── Template rendered in REJECT mode ───────── -->
 <ng-template #rejectTemplate>
-  <jhi-dropdown
-    [items]="rejectReasons"
-    [label]="'evaluation.reason' | translate"
-    [required]="true"
-    [selected]="selectedRejectReason()"
-    [placeholder]="'evaluation.selectReason' | translate"
-    (selectedChange)="onSelectChange($event)"
-  />
-  <ul class="review-checkboxes">
-    <!-- Will be added together with notifications
-    <li>
-      <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
-      <label>Notify the applicant</label>
-    </li>
-    -->
-  </ul>
+  <div>
+    <jhi-dropdown
+      [items]="rejectReasons"
+      [label]="'evaluation.reason' | translate"
+      [required]="true"
+      [selected]="selectedRejectReason()"
+      [placeholder]="'evaluation.selectReason' | translate"
+      [translateItems]="true"
+      (selectedChange)="onSelectChange($event)"
+    />
+    <ul class="review-checkboxes">
+      <li>
+        <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
+        <label jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>
+      </li>
+    </ul>
+  </div>
 </ng-template>
