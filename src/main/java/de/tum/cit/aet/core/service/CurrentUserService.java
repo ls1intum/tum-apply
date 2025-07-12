@@ -12,7 +12,6 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -30,37 +29,61 @@ public class CurrentUserService {
 
     private final UserRepository userRepository;
 
+    private User user;
+
     private CurrentUser currentUser;
 
     /**
-     * Lazily loads and returns the current user including their research group roles.
+     * Returns the current authenticated user as a DTO.
+     * Loads the user from the security context if not already loaded.
      *
-     * @return the current authenticated user
-     * @throws AccessDeniedException if the user cannot be found in the database
+     * @return the current user as a {@link CurrentUser} object
      */
     public CurrentUser getCurrentUser() {
         if (currentUser == null) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (!(authentication instanceof JwtAuthenticationToken jwtToken)) {
-                throw new AccessDeniedException("Cannot extract user ID from authentication.");
-            }
-            UUID userId = UUID.fromString(jwtToken.getToken().getSubject());
-
-            User user = userRepository
-                .findWithResearchGroupRolesByUserId(userId)
-                .orElseThrow(() -> new AccessDeniedException("User not found"));
-
-            List<ResearchGroupRole> roles = user
-                .getResearchGroupRoles()
-                .stream()
-                .map(r ->
-                    new ResearchGroupRole(r.getRole(), r.getResearchGroup() != null ? r.getResearchGroup().getResearchGroupId() : null)
-                )
-                .toList();
-
-            this.currentUser = new CurrentUser(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName(), roles);
+            loadCurrentUser();
         }
         return currentUser;
+    }
+
+    /**
+     * Returns the current authenticated user as an entity.
+     * Loads the user from the security context if not already loaded.
+     *
+     * @return the current user as a {@link User} entity
+     */
+    public User getUser() {
+        if (user == null) {
+            loadCurrentUser();
+        }
+        return user;
+    }
+
+    /**
+     * Loads the current authenticated user from the security context.
+     * Initializes the {@link User} entity and the {@link CurrentUser} DTO.
+     *
+     * @throws AccessDeniedException if the user cannot be resolved from the security context
+     */
+    private void loadCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof JwtAuthenticationToken jwtToken)) {
+            throw new AccessDeniedException("Cannot extract user ID from authentication.");
+        }
+        UUID userId = UUID.fromString(jwtToken.getToken().getSubject());
+
+        User user = userRepository
+            .findWithResearchGroupRolesByUserId(userId)
+            .orElseThrow(() -> new AccessDeniedException("User not found"));
+
+        List<ResearchGroupRole> roles = user
+            .getResearchGroupRoles()
+            .stream()
+            .map(r -> new ResearchGroupRole(r.getRole(), r.getResearchGroup() != null ? r.getResearchGroup().getResearchGroupId() : null))
+            .toList();
+
+        this.user = user;
+        this.currentUser = new CurrentUser(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName(), roles);
     }
 
     /**
@@ -77,8 +100,10 @@ public class CurrentUserService {
      *
      * @return an Optional containing the research group ID if user is a professor, or empty otherwise
      */
-    public Optional<UUID> getResearchGroupIdIfProfessor() {
-        return getCurrentUser().getResearchGroupIdIfProfessor();
+    public UUID getResearchGroupIdIfProfessor() {
+        return getCurrentUser()
+            .getResearchGroupIdIfProfessor()
+            .orElseThrow(() -> new IllegalStateException("Current User does not have a research group"));
     }
 
     /**
@@ -116,7 +141,7 @@ public class CurrentUserService {
      * @return true if the user has access to the group, false otherwise
      */
     public boolean isAdminOrProfessorOf(UUID researchGroupId) {
-        return isAdmin() || getResearchGroupIdIfProfessor().map(id -> id.equals(researchGroupId)).orElse(false);
+        return isAdmin() || getResearchGroupIdIfProfessor().equals(researchGroupId);
     }
 
     /**

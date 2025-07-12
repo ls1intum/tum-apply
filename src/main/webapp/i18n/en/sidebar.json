@@ -10,8 +10,8 @@
       "applications": "Applications",
       "myapplications": "My Applications",
       "savedpositions": "Saved Positions",
-      "applicationoverview": "Application Overview",
-      "reviewapplications": "Review Applications"
+      "applicationoverview": "Overview",
+      "reviewapplications": "Review"
     },
     "manage": {
       "manage": "Manage",
