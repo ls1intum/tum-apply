@@ -25,13 +25,6 @@ export class ApplicationCardComponent {
     return undefined;
   });
 
-  readonly stateTextMap: Record<string, string> = {
-    SENT: 'evaluation.statusBadge.SENT',
-    ACCEPTED: 'evaluation.statusBadge.ACCEPTED',
-    REJECTED: 'evaluation.statusBadge.REJECTED',
-    IN_REVIEW: 'evaluation.statusBadge.IN_REVIEW',
-  };
-
   readonly stateSeverityMap: Record<string, 'success' | 'warn' | 'danger' | 'info'> = {
     SENT: 'info',
     ACCEPTED: 'success',

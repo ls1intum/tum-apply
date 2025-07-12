@@ -6,7 +6,13 @@
 </div>
 <div class="my-positions-container">
   <div class="body">
-    <jhi-sort-bar [totalRecords]="totalRecords()" [sortableFields]="sortableFields" (sortChange)="loadOnSortEmit($event)" />
+    <jhi-sort-bar
+      [totalRecords]="totalRecords()"
+      [sortableFields]="sortableFields"
+      (sortChange)="loadOnSortEmit($event)"
+      [singleEntity]="'job' | translate"
+      [multipleEntities]="'job' | translate"
+    />
     <div class="table-wrapper">
       <jhi-dynamic-table
         [columns]="columns()"

@@ -94,7 +94,7 @@ export class SidebarComponent {
           title: 'sidebar.manage.manage',
           buttons: [
             { icon: 'home', text: 'sidebar.manage.home', link: '/' },
-            { icon: 'folder', text: 'sidebar.manage.mypositions', link: '/my-positions' },
+            { icon: 'list', text: 'sidebar.manage.mypositions', link: '/my-positions' },
             { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job/create' },
           ],
         },
@@ -102,12 +102,12 @@ export class SidebarComponent {
           title: 'sidebar.applications.applications',
           buttons: [
             {
-              icon: 'file',
+              icon: 'table-list',
               text: 'sidebar.applications.applicationoverview',
               link: '/evaluation/overview',
             },
             {
-              icon: 'file-contract',
+              icon: 'id-card',
               text: 'sidebar.applications.reviewapplications',
               link: '/evaluation/application',
             },

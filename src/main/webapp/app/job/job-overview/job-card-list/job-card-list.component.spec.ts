@@ -4,6 +4,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { of } from 'rxjs';
 import { JobResourceService, PageJobCardDTO } from 'app/generated';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { JobCardListComponent } from './job-card-list.component';
 
@@ -22,7 +23,7 @@ describe('JobCardListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobCardListComponent],
+      imports: [JobCardListComponent, TranslateModule.forRoot()],
       providers: [{ provide: JobResourceService, useValue: mockJobService }, provideHttpClientTesting()],
     }).compileComponents();
 

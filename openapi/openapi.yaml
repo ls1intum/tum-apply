@@ -105,6 +105,30 @@
         }
       }
     },
+    "/api/evaluation/applications/{applicationId}/open": {
+      "put": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "markApplicationAsInReview",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications": {
       "put": {
         "tags": [
@@ -1607,7 +1631,7 @@
         "properties": {
           "message": {
             "type": "string",
-            "maxLength": 1000,
+            "maxLength": 3000,
             "minLength": 0
           },
           "notifyApplicant": {
