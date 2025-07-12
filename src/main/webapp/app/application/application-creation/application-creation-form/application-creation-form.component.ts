@@ -119,7 +119,7 @@ export default class ApplicationCreationFormComponent {
     const location = this.location;
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
     const statusPanel = this.savedStatusPanel();
-    const updateDocumentInformation = this.updateDocumentInformation;
+    const updateDocumentInformation = this.updateDocumentInformation.bind(this);
     if (panel1) {
       steps.push({
         name: this.translate.instant('entity.applicationSteps.personalInformation'),
