@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import DocumentGroupComponent from './document-group.component';
 import { Component } from '@angular/core';
 import { ApplicationDocumentIdsDTO, ApplicationResourceService, DocumentResourceService } from 'app/generated';
 import {
@@ -12,6 +11,8 @@ import {
   TranslateStore,
 } from '@ngx-translate/core';
 import { of } from 'rxjs';
+
+import DocumentGroupComponent from './document-group.component';
 
 @Component({
   standalone: true,
