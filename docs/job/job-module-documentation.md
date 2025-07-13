@@ -14,8 +14,6 @@
 - 3.2 [Position Creation Form](#32-position-creation-form)
 - 3.3 [Job Detail Page (Professor View)](#33-job-detail-page-professor-view)
 
-4. [User Workflows](#4-user-workflows)
-
 ---
 
 ## 1. Overview
@@ -280,17 +278,3 @@ The available actions mirror those from the "My Positions" dashboard:
 Contains the same comprehensive information as the applicant view, but with additional management context and editing capabilities for the position owner.
 
 ---
-
-## 4. User Workflows
-
-### 4.1 Applicant Workflow
-
-1. **Browse Positions**: Navigate the "Find Positions" page to discover available opportunities
-2. **Review Details**: Access comprehensive position information through detail pages
-
-### 4.2 Professor Workflow
-
-1. **Create Position**: Use the multi-step form to define new doctorate positions
-2. **Edit Position**: Enhance key details and complete the remaining steps of the position creation form
-3. **Publish Position**: Make position live and available for applications
-4. **Monitor Positions**: Manage all positions in the **My Positions** dashboard
