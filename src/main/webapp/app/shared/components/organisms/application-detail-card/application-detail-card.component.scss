@@ -36,14 +36,6 @@ $detail-card-2-column-max-width: bp.$xl;
   flex: 1;
 }
 
-/* Section title text */
-.section-title {
-  width: 100%;
-  margin-bottom: 0.5rem;
-  margin-left: 7.5rem;
-  font-weight: 700;
-}
-
 /* Generic card wrapper */
 .card {
   padding-bottom: 1.5rem;
@@ -224,6 +216,7 @@ $detail-card-2-column-max-width: bp.$xl;
 
 .left-section {
   align-items: center;
+  margin-top: 0;
 
   @media (min-width: $detail-card-2-column-max-width) {
     width: max-content;

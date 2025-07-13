@@ -5,6 +5,7 @@ import { ApplicantDTO, ApplicationForApplicantDTO, DocumentInformationHolderDTO 
 import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
@@ -49,7 +50,15 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page2',
-  imports: [CommonModule, DividerModule, DropdownComponent, UploadButtonComponent, ReactiveFormsModule, StringInputComponent],
+  imports: [
+    CommonModule,
+    DividerModule,
+    DropdownComponent,
+    UploadButtonComponent,
+    ReactiveFormsModule,
+    StringInputComponent,
+    TranslateModule,
+  ],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
   standalone: true,
@@ -97,6 +106,8 @@ export default class ApplicationCreationPage2Component {
       const statusSubscription = form.statusChanges.subscribe(() => {
         this.valid.emit(form.valid);
       });
+
+      this.valid.emit(form.valid);
 
       onCleanup(() => {
         valueSubscription.unsubscribe();
