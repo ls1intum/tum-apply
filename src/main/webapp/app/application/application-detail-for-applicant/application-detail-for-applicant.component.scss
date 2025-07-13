@@ -1,16 +1,7 @@
 @use '../../../content/scss/breakpoints' as bp;
+@use '../../../content/scss/_header';
 
 $detail-card-2-column-max-width: bp.$xl;
-
-.header {
-  padding-bottom: 1.25rem;
-
-  .h1-text {
-    font-weight: 700;
-    font-size: 2rem;
-    color: var(--p-primary-color);
-  }
-}
 
 .text-primary {
   color: var(--p-text-primary);
