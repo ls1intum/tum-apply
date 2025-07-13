@@ -280,7 +280,7 @@ export class ApplicationDetailComponent {
       this.windowIndex.set(res.windowIndex ?? 0);
       this.currentIndex.set(res.currentIndex ?? 0);
       this.currentApplication.set(this.applications()[this.windowIndex()]);
-
+      this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
       void this.markCurrentApplicationAsInReview();
     } catch (error) {
       console.error('Failed to load applications:', error);
