@@ -48,7 +48,13 @@
 
     @if (this.currentApplication(); as application) {
       <div class="w-full mt-8">
-        <jhi-application-detail-card [application]="application.applicationDetailDTO" />
+        <jhi-application-detail-card [application]="application.applicationDetailDTO">
+          <div class="slot-right-width" slot-vertical-right>
+            @if (currentDocumentIds(); as documentIds) {
+              <jhi-document-group [documentIds]="documentIds" />
+            }
+          </div>
+        </jhi-application-detail-card>
       </div>
     }
   </div>

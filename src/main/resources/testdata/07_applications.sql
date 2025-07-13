@@ -41,7 +41,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
 
        ('00000000-0000-0000-0000-300000020002', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020001',
-        'IN_REVIEW', '2025-10-01',
+        'SAVED', '2025-10-01',
         'Conducted user research on educational apps. Designed interfaces for learning management systems. Published paper on motivation in digital learning.',
         'User Research, Psychology, Statistics, Qualtrics',
         'My psychology background gives me unique insights into motivation systems for learning. I want to apply this knowledge to improve educational technology.',
