@@ -3,6 +3,12 @@ import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 
 import { environment } from '../../environments/environment';
 
+export enum IdpProvider {
+  Google = 'google',
+  Microsoft = 'microsoft',
+  Apple = 'apple',
+}
+
 export interface UserProfile {
   sub: string;
   email: string;
@@ -63,9 +69,9 @@ export class KeycloakService {
   }
 
   /**
-   * Triggers the Keycloak login flow for a specific provider (idpHint) with PKCE (S256).
+   * Triggers the Keycloak login flow for a specific provider (idpHint).
    */
-  async loginWithProvider(provider: string, redirectUri?: string): Promise<void> {
+  async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
     try {
       await this.keycloak.login({
         redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
@@ -80,8 +86,6 @@ export class KeycloakService {
    * Triggers the Keycloak logout and redirect.
    */
   async logout(redirectUri?: string): Promise<void> {
-    console.log(redirectUri);
-    console.log(redirectUri ?? window.location.origin + '/');
     try {
       await this.keycloak.logout({
         redirectUri: redirectUri ?? window.location.origin + '/',

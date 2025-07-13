@@ -9,7 +9,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { AccountService } from '../../../../core/auth/account.service';
-import { KeycloakService } from '../../../../core/auth/keycloak.service';
+import { IdpProvider, KeycloakService } from '../../../../core/auth/keycloak.service';
 
 @Component({
   selector: 'jhi-auth-card',
@@ -42,7 +42,7 @@ export class AuthCardComponent {
           severity: 'primary',
           disabled: false,
           fullWidth: true,
-          onClick: () => this.onMicrosoftLogin(),
+          onClick: () => this.onTUMSSOLogin(),
         },
         {
           label: this.mode() === 'register' ? 'Register with TUM' : 'Sign in with TUM',
@@ -70,15 +70,16 @@ export class AuthCardComponent {
           fullWidth: true,
           onClick: () => this.onMicrosoftLogin(),
         },
-        {
-          label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
-          icon: 'apple',
-          severity: 'primary',
-          variant: 'outlined',
-          disabled: false,
-          fullWidth: true,
-          onClick() {},
-        },
+        // TODO: Enable Apple login when available in Production environment
+        /* {
+                                      label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
+                                      icon: 'apple',
+                                      severity: 'primary',
+                                      variant: 'outlined',
+                                      disabled: false,
+                                      fullWidth: true,
+                                      onClick: () => this.onAppleLogin(),
+                                    },*/
         {
           label: this.mode() === 'register' ? 'Register with Google' : 'Sign in with Google',
           icon: 'google',
@@ -86,7 +87,7 @@ export class AuthCardComponent {
           variant: 'outlined',
           disabled: false,
           fullWidth: true,
-          onClick() {},
+          onClick: () => this.onGoogleLogin(),
         },
       ],
     };
@@ -97,6 +98,14 @@ export class AuthCardComponent {
   }
 
   onMicrosoftLogin(): void {
-    this.keycloakService.loginWithProvider('microsoft', this.redirectUri());
+    this.keycloakService.loginWithProvider(IdpProvider.Microsoft, this.redirectUri());
+  }
+
+  onGoogleLogin(): void {
+    this.keycloakService.loginWithProvider(IdpProvider.Google, this.redirectUri());
+  }
+
+  onAppleLogin(): void {
+    this.keycloakService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
   }
 }
