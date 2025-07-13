@@ -1,7 +1,11 @@
 <div class="px-4 py-4 text-primary w-full h-remaining-viewheight flex flex-col">
   @if (application(); as application) {
-    <header>
-      <h1 jhiTranslate="entity.application_detail.applicant.header" [translateValues]="{ jobTitle: application.jobTitle }"></h1>
+    <header class="header">
+      <h1
+        jhiTranslate="entity.application_detail.applicant.header"
+        [translateValues]="{ jobTitle: application.jobTitle }"
+        class="h1-text"
+      ></h1>
     </header>
     <jhi-application-detail-card [application]="application">
       <div class="slot-right-width" slot-vertical-right>

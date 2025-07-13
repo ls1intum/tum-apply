@@ -2,18 +2,13 @@
 
 $detail-card-2-column-max-width: bp.$xl;
 
-header {
+.header {
   padding-bottom: 1.25rem;
 
-  h1 {
+  .h1-text {
     font-weight: 700;
     font-size: 2rem;
     color: var(--p-primary-color);
-  }
-
-  p {
-    color: var(--p-background-disabled);
-    font-size: 1rem;
   }
 }
 
