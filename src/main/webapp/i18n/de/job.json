@@ -107,7 +107,7 @@
     "sortingOptions": {
       "lastModified": "Zuletzt geändert",
       "jobTitle": "Stellentitel",
-      "Status": "Status",
+      "status": "Status",
       "startDate": "Startdatum",
       "created": "Erstellt"
     }

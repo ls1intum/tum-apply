@@ -107,7 +107,7 @@
     "sortingOptions": {
       "lastModified": "Last Modified",
       "jobTitle": "Job Title",
-      "Status": "Status",
+      "status": "Status",
       "startDate": "Start Date",
       "created": "Created"
     }
