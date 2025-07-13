@@ -20,6 +20,7 @@ export type Button = {
   disabled: boolean;
   fullWidth?: boolean;
   onClick: VoidFunction;
+  shouldTranslate?: boolean;
 };
 
 @Component({
@@ -38,6 +39,7 @@ export class ButtonComponent {
   label = input<string | undefined>(undefined);
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
+  shouldTranslate = input<boolean>(false);
   fullWidth = input<boolean>(false);
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;

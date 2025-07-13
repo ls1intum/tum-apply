@@ -2,11 +2,17 @@
   <div class="ml-2 mt-5 mb-8 p-2">
     <h1 jhiTranslate="myPositionsPage.header.title"></h1>
   </div>
-  <jhi-button label="{{ 'myPositionsPage.header.createButton' | translate }}" severity="primary" (click)="onCreateJob()" />
+  <jhi-button label="myPositionsPage.header.createButton" severity="primary" (click)="onCreateJob()" [shouldTranslate]="true" />
 </div>
 <div class="my-positions-container">
   <div class="body">
-    <jhi-sort-bar [totalRecords]="totalRecords()" [sortableFields]="sortableFields" (sortChange)="loadOnSortEmit($event)" />
+    <jhi-sort-bar
+      [totalRecords]="totalRecords()"
+      [sortableFields]="sortableFields"
+      (sortChange)="loadOnSortEmit($event)"
+      [singleEntity]="'job' | translate"
+      [multipleEntities]="'job' | translate"
+    />
     <div class="table-wrapper">
       <jhi-dynamic-table
         [columns]="columns()"
@@ -21,37 +27,49 @@
 
     <ng-template #actionTemplate let-job>
       <div class="flex space-x-2">
-        <jhi-button label="{{ 'jobActionButton.view' | translate }}" severity="primary" data-testid="view" (click)="onViewJob(job.jobId)" />
         <jhi-button
-          label="{{ 'jobActionButton.edit' | translate }}"
+          label="jobActionButton.view"
+          severity="primary"
+          data-testid="view"
+          (click)="onViewJob(job.jobId)"
+          [shouldTranslate]="true"
+        />
+        <jhi-button
+          label="jobActionButton.edit"
           severity="primary"
           variant="outlined"
           (click)="onEditJob(job.jobId)"
           data-testid="edit"
           [disabled]="job.state !== 'DRAFT'"
+          [shouldTranslate]="true"
         />
         @if (job.state === 'DRAFT') {
           <jhi-button
-            [label]="'jobActionButton.delete' | translate"
+            label="jobActionButton.delete"
             severity="danger"
             (click)="onDeleteJob(job.jobId)"
             data-testid="delete"
+            [shouldTranslate]="true"
           />
         }
         @if (job.state === 'PUBLISHED') {
           <jhi-button
-            [label]="'jobActionButton.close' | translate"
+            label="jobActionButton.close"
             severity="danger"
             variant="outlined"
             (click)="onCloseJob(job.jobId)"
             data-testid="delete"
+            [shouldTranslate]="true"
           />
         }
       </div>
     </ng-template>
 
     <ng-template #stateTemplate let-job>
-      <jhi-tag [text]="stateTextMap()[job.state] || 'Unknown'" [color]="stateSeverityMap()[job.state] || 'info'" />
+      <jhi-tag
+        [text]="stateTextMap()[job.state] ? (stateTextMap()[job.state] | translate) : ('jobState.unknown' | translate)"
+        [color]="stateSeverityMap()[job.state] || 'info'"
+      />
     </ng-template>
   </div>
 </div>

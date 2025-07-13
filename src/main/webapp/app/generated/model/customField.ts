@@ -22,13 +22,13 @@ export interface CustomField {
     required?: boolean;
 }
 export namespace CustomField {
-    export type CustomFieldTypeEnum = 'FREE_TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILE_UPLOAD';
     export const CustomFieldTypeEnum = {
-        FreeText: 'FREE_TEXT' as CustomFieldTypeEnum,
-        SingleChoice: 'SINGLE_CHOICE' as CustomFieldTypeEnum,
-        MultipleChoice: 'MULTIPLE_CHOICE' as CustomFieldTypeEnum,
-        FileUpload: 'FILE_UPLOAD' as CustomFieldTypeEnum
-    };
+        FreeText: 'FREE_TEXT',
+        SingleChoice: 'SINGLE_CHOICE',
+        MultipleChoice: 'MULTIPLE_CHOICE',
+        FileUpload: 'FILE_UPLOAD'
+    } as const;
+    export type CustomFieldTypeEnum = typeof CustomFieldTypeEnum[keyof typeof CustomFieldTypeEnum];
 }
 
 

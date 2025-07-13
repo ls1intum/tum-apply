@@ -163,6 +163,7 @@
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },
+    "sortBy": "Sort By:",
     "upload": {
       "upload_instruction_standard": "Please upload",
       "upload_instruction": {
@@ -171,6 +172,9 @@
         "REFERENCE": "Please upload your References",
         "CV": "Please upload your CV"
       },
+      "add": "Add",
+      "clear": "Delete all",
+      "upload": "Upload",
       "uploaded_document": "Uploaded Document for ",
       "uploaded_documents": "Uploaded Documents for ",
       "instruction": "Click or drag and drop files to here to upload.",
@@ -179,9 +183,53 @@
       "document_type": {
         "BACHELOR_TRANSCRIPT": "Bachelor Transcript",
         "MASTER_TRANSCRIPT": "Master Transcript",
-        "REFERENCE": "References",
+        "REFERENCES": "References",
         "CV": "CV",
         "CUSTOM": "Custom"
+      },
+      "tooltip": {
+        "to_upload": "Still needs to be uploaded",
+        "already_uploaded": "Already uploaded",
+        "remove": "Remove this file from the upload list",
+        "delete": "Delete this file from the server"
+      }
+    },
+    "applicationSteps": {
+      "personalInformation": "Personal Information",
+      "education": "Education",
+      "applicationDetails": "Application Details",
+      "buttons": {
+        "cancel": "Cancel",
+        "next": "Next",
+        "prev": "Previous",
+        "send": "Send"
+      },
+      "status": {
+        "SAVING": "Saving changes...",
+        "SAVED": "Changes saved"
+      }
+    },
+    "applicationOverview": {
+      "header": "Your Applications",
+      "state": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "withdrawn": "Withdrawn",
+        "closed": "Closed"
+      },
+      "actions": {
+        "view": "View",
+        "withdraw": "Withdraw",
+        "update": "Update",
+        "delete": "Delete"
+      },
+      "columns": {
+        "positionTitle": "Position Title",
+        "researchGroup": "Research Group",
+        "status": "Status",
+        "created": "Created"
       }
     }
   },

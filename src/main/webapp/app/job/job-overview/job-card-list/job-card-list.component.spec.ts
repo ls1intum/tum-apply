@@ -4,6 +4,15 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { of } from 'rxjs';
 import { JobResourceService, PageJobCardDTO } from 'app/generated';
+import {
+  MissingTranslationHandler,
+  TranslateCompiler,
+  TranslateLoader,
+  TranslateModule,
+  TranslateParser,
+  TranslateService,
+  TranslateStore,
+} from '@ngx-translate/core';
 
 import { JobCardListComponent } from './job-card-list.component';
 
@@ -22,8 +31,20 @@ describe('JobCardListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobCardListComponent],
-      providers: [{ provide: JobResourceService, useValue: mockJobService }, provideHttpClientTesting()],
+      imports: [JobCardListComponent, TranslateModule.forRoot()],
+      providers: [
+        { provide: JobResourceService, useValue: mockJobService },
+        provideHttpClientTesting(),
+        TranslateStore,
+        TranslateLoader,
+        TranslateCompiler,
+        TranslateParser,
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        TranslateService,
+      ],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
@@ -65,6 +86,6 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
     const noJobsText = fixture.nativeElement.querySelector('.no-jobs-text');
     expect(noJobsText).toBeTruthy();
-    expect(noJobsText.textContent).toContain('No jobs found');
+    expect(noJobsText.textContent).toContain('jobOverviewPage.noJobsFound');
   });
 });

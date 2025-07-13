@@ -1,32 +1,45 @@
-.border-primary {
-  border: solid var(--p-primary-color) 0.1rem;
+.slim-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed; /* Enables wrapping */
 }
 
-.border-success {
-  border: solid var(--p-success-color) 0.1rem;
+.slim-table th,
+.slim-table td {
+  color: var(--p-text-color);
+  padding: 0ren 0.3rem;
+  font-size: 0.875rem;
+  vertical-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.2;
 }
 
-.border-neutral {
-  border: solid var(--p-background-disabled) 0.1rem;
+.slim-table td {
+  white-space: normal;
 }
 
-.background-disabled {
-  background: var(--p-background-disabled);
+.icon-color-success {
+  color: var(--p-success-disabled-color);
 }
 
-.background-primary {
-  color: var(--p-primary-color);
+.icon-color-warning {
+  color: var(--p-warn-disabled-color);
 }
 
-.background-success {
-  color: var(--p-success-color);
+.editable-input {
+  width: 100%;
+  padding: 0.625rem 0.25rem;
+  font-size: 0.9rem;
+  border: 0.1rem var(--p-border-default) solid;
+  border-radius: 0.375rem;
 }
 
-.text-color {
-  color: var(--p-text-primary);
+.editable-input:focus {
+  outline: none;
+  border-color: var(--p-border-default);
 }
 
-.drag-over {
-  border-color: var(--p-primary-color);
-  background: var(--p-primary-hover-color-outlined);
+.border-color {
+  color: var(--p-border-default);
 }

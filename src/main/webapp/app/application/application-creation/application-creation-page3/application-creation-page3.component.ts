@@ -3,7 +3,7 @@ import { Component, computed, effect, inject, input, model, output } from '@angu
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { ApplicationForApplicantDTO } from 'app/generated';
+import { ApplicationForApplicantDTO, DocumentInformationHolderDTO } from 'app/generated';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -48,17 +48,19 @@ export default class ApplicationCreationPage3Component {
   data = model.required<ApplicationCreationPage3Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
-  documentIdsCv = input<string | undefined>(undefined);
-  computedDocumentIdsCvSet = computed<string[] | undefined>(() => {
+  documentIdsCv = input<DocumentInformationHolderDTO | undefined>(undefined);
+  computedDocumentIdsCvSet = computed<DocumentInformationHolderDTO[] | undefined>(() => {
     const documentIdsCv = this.documentIdsCv();
     if (documentIdsCv) {
       return [documentIdsCv];
     }
     return undefined;
   });
-  documentIdsReferences = input<string[] | undefined>(undefined);
+  documentIdsReferences = input<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   valid = output<boolean>();
+  changed = output<boolean>();
+
   fb = inject(FormBuilder);
   page3Form = computed(() => {
     const currentData = this.data();
@@ -66,6 +68,8 @@ export default class ApplicationCreationPage3Component {
       experiences: [currentData.experiences, Validators.required],
       motivation: [currentData.motivation, Validators.required],
       skills: [currentData.skills, Validators.required],
+      // optional
+      desiredStartDate: [currentData.desiredStartDate],
     });
   });
 
@@ -80,6 +84,7 @@ export default class ApplicationCreationPage3Component {
         });
 
         this.valid.emit(form.valid);
+        this.changed.emit(true);
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
@@ -91,5 +96,17 @@ export default class ApplicationCreationPage3Component {
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  emitChanged(): void {
+    this.changed.emit(true);
+  }
+
+  setDesiredStartDate($event: string | undefined): void {
+    this.data.set({
+      ...this.data(),
+      desiredStartDate: $event ?? '',
+    });
+    this.emitChanged();
   }
 }

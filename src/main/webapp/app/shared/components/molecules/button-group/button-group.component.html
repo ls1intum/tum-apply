@@ -14,6 +14,7 @@
       [label]="button.label"
       [numberOfFavorites]="button.numberOfFavorites"
       [disabled]="button.disabled"
+      [shouldTranslate]="shouldTranslate()"
       [fullWidth]="button.fullWidth ?? false"
       (click)="button.onClick()"
     />

@@ -194,16 +194,6 @@ header {
     margin: 0;
     color: var(--p-text-disabled);
   }
-
-  .tum-link {
-    color: var(--p-text-primary);
-    text-decoration: none;
-    font-weight: bold;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 // Form actions

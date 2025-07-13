@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ApplicationForApplicantDTO, ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
-import { Observable, of } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
+import { AccountService } from 'app/core/auth/account.service';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
@@ -18,6 +20,20 @@ class MockApplicationResourceService {
   getApplicationPagesLength(): Observable<number> {
     return of(mockApplications.length);
   }
+}
+
+class FakeLoader implements TranslateLoader {
+  getTranslation(): Observable<{}> {
+    return of({}); // return an empty object or mock translations
+  }
+}
+
+class MockTranslateService {
+  onLangChange = new Subject();
+  onTranslationChange = new Subject();
+  onDefaultLangChange = new Subject();
+
+  get = jest.fn().mockImplementation((key: string) => of(key));
 }
 
 const mockApplications: ApplicationOverviewDTO[] = [
@@ -71,12 +87,30 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationOverviewForApplicantComponent],
+      imports: [
+        ApplicationOverviewForApplicantComponent,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: FakeLoader },
+          defaultLanguage: 'en',
+          useDefaultLang: true,
+        }),
+      ],
       providers: [
         {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
         },
+        {
+          provide: AccountService,
+          useValue: {
+            loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
+          },
+        },
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
 

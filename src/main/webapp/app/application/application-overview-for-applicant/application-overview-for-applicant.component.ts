@@ -6,6 +6,7 @@ import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
@@ -41,30 +42,55 @@ export default class ApplicationOverviewForApplicantComponent {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
     return [
-      { field: 'jobTitle', header: 'Position Title', width: '34rem' },
-      { field: 'researchGroup', header: 'Research Group', width: '20rem' },
-      { field: 'badges', header: 'Status', width: '10rem', template: badgeTemplate },
-      { field: 'timeSinceCreation', header: 'Created', width: '10rem' },
-      { field: 'actions', header: '', width: '15rem', template: actionTemplate },
+      {
+        field: 'jobTitle',
+        header: 'entity.applicationOverview.columns.positionTitle',
+        width: '34rem',
+      },
+      {
+        field: 'researchGroup',
+        header: 'entity.applicationOverview.columns.researchGroup',
+        width: '20rem',
+      },
+      {
+        field: 'badges',
+        header: 'entity.applicationOverview.columns.status',
+        width: '10rem',
+        template: badgeTemplate,
+      },
+      {
+        field: 'timeSinceCreation',
+        header: 'entity.applicationOverview.columns.created',
+        width: '10rem',
+      },
+      {
+        field: 'actions',
+        header: '',
+        width: '15rem',
+        template: actionTemplate,
+      },
     ];
   });
 
   private readonly router = inject(Router);
 
   private readonly applicationService = inject(ApplicationResourceService);
+  private readonly accountService = inject(AccountService);
+
+  private applicantId = signal<string>('');
 
   constructor() {
     effect(() => {
+      this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
       this.loadTotal();
     });
   }
 
   async loadTotal(): Promise<void> {
     try {
-      const tempTotal = await firstValueFrom(this.applicationService.getApplicationPagesLength());
+      const tempTotal = await firstValueFrom(this.applicationService.getApplicationPagesLength(this.applicantId()));
       this.total.set(tempTotal);
     } catch (error) {
-      alert('Failed to load total application count');
       console.error('Failed to load total application count', error);
     }
   }

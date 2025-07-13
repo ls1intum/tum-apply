@@ -15,11 +15,21 @@ import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
+import TranslateDirective from '../../shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-application-overview',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonComponent, DynamicTableComponent, TagComponent, FilterSortBarComponent, TranslateModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ButtonComponent,
+    DynamicTableComponent,
+    TagComponent,
+    FilterSortBarComponent,
+    TranslateModule,
+    TranslateDirective,
+  ],
   templateUrl: './application-overview.component.html',
   styleUrls: ['./application-overview.component.scss'],
 })
@@ -39,17 +49,17 @@ export class ApplicationOverviewComponent {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
     return [
-      { field: 'name', header: 'Name', width: '12rem' },
+      { field: 'name', header: 'evaluation.tableHeaders.name', width: '12rem' },
       {
         field: 'state',
-        header: 'Status',
+        header: 'evaluation.tableHeaders.status',
         width: '10rem',
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'jobName', header: 'Job', width: '26rem' },
-      { field: 'rating', header: 'Rating', width: '10rem' },
-      { field: 'appliedAt', header: 'Applied at', type: 'date', width: '10rem' },
+      { field: 'jobName', header: 'evaluation.tableHeaders.job', width: '26rem' },
+      // { field: 'rating', header: 'Rating', width: '10rem' },
+      { field: 'appliedAt', header: 'evaluation.tableHeaders.appliedAt', type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });
@@ -60,12 +70,6 @@ export class ApplicationOverviewComponent {
     { displayName: 'Rating', field: 'rating', type: 'NUMBER' },
   ];
 
-  readonly stateTextMap = signal<Record<string, string>>({
-    SENT: 'Unopened',
-    ACCEPTED: 'Approved',
-    REJECTED: 'Rejected',
-    IN_REVIEW: 'In Review',
-  });
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     SENT: 'info',
     ACCEPTED: 'success',
@@ -114,15 +118,12 @@ export class ApplicationOverviewComponent {
     this.page.set(newPage);
     this.pageSize.set(rows);
 
-    this.updateUrlQueryParams();
-
     void this.loadPage();
   }
 
   loadOnFilterEmit(filters: FilterField[]): void {
     this.page.set(0);
     this.filters.set(filters);
-    this.updateUrlQueryParams();
 
     void this.loadPage();
   }
@@ -132,8 +133,6 @@ export class ApplicationOverviewComponent {
 
     this.sortBy.set(event.field ?? this.sortableFields[0].field);
     this.sortDirection.set(event.direction);
-
-    this.updateUrlQueryParams();
 
     void this.loadPage();
   }
@@ -196,10 +195,10 @@ export class ApplicationOverviewComponent {
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
     };
-
     const filterParams: Params = {};
     this.filters().forEach(f => {
       const entry = f.getQueryParamEntry();
+
       if (entry) {
         filterParams[entry[0]] = entry[1];
       }
@@ -215,7 +214,6 @@ export class ApplicationOverviewComponent {
     const qp: Params = this.buildQueryParams();
     void this.router.navigate([], {
       queryParams: qp,
-      queryParamsHandling: 'merge',
       replaceUrl: true,
     });
   }

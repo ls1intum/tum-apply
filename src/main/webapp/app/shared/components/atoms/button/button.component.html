@@ -19,7 +19,13 @@
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
     }
-    {{ label() }}
+    @if (label() !== undefined) {
+      @if (shouldTranslate()) {
+        <span jhiTranslate="{{ label() }}"></span>
+      } @else {
+        {{ label() }}
+      }
+    }
     @if (isExternalLink()) {
       <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" aria-hidden="true" />
     }

@@ -1,11 +1,14 @@
 package de.tum.cit.aet.application.web;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.dto.*;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
+import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
+import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.usermanagement.domain.User;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,15 +36,17 @@ public class ApplicationResource {
     }
 
     /**
-     * @param createApplicationDTO The data necessary to create an Application
+     *
+     * @param jobId The UUID of the Job
+     * @param applicantId Temporarily the id of the applicant (to be removed with serverside user handling)
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
      *         the createApplicationDTO is invalid
      */
-    @PostMapping
-    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@RequestBody CreateApplicationDTO createApplicationDTO) {
+    @PostMapping("/create/{jobId}/applicant/{applicantId}")
+    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@PathVariable UUID jobId, @PathVariable UUID applicantId) {
         // TODO check authorization
 
-        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(createApplicationDTO);
+        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(jobId, applicantId);
         return ResponseEntity.ok(applicationForApplicantDTO);
     }
 
@@ -83,6 +88,50 @@ public class ApplicationResource {
     }
 
     /**
+     *
+     * @param documentDictionaryId id of the documentDictionary that will be deleted
+     * @return 204 No Content when deletion is successful
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @DeleteMapping("/delete-document/{documentDictionaryId}")
+    public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
+        // simulate current user (replace with actual auth in production)
+        applicationService.deleteDocument(documentDictionaryId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     *
+     * @param applicationId id of the application
+     * @param documentType  document type, of which the documents will be deleted
+     * @return 204 no content when deletion is successful
+     */
+    @PreAuthorize("hasRole('APPLICANT')")
+    @DeleteMapping("/batch-delete-document/{applicationId}/{documentType}")
+    public ResponseEntity<Void> deleteDocumentBatchByTypeFromApplication(
+        @PathVariable UUID applicationId,
+        @PathVariable DocumentType documentType
+    ) {
+        applicationService.deleteDocumentTypeOfDocuments(applicationId, documentType);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Renames a document associated with an application.
+     *
+     * @param documentDictionaryId the UUID of the document to rename
+     * @param newName              the new name to assign to the document
+     * @return {@code 200 OK} if the rename operation was successful
+     *
+     */
+    @PutMapping("/rename-document/{documentDictionaryId}")
+    @PreAuthorize("hasRole('APPLICANT')")
+    public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
+        applicationService.renameDocument(documentDictionaryId, newName);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * @param applicantId the UUID of the applicant
      * @return Set of ApplicationForApplicantDTOm where the applicant has the
      *         applicantId as UUID
@@ -120,52 +169,33 @@ public class ApplicationResource {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Retrieves a paginated list of application overviews for the current user.
+     *
+     * @param pageSize   The number of items per page (default: 25).
+     * @param pageNumber The page number to retrieve (default: 0).
+     * @return A list of {@link ApplicationOverviewDTO} representing the application overview data.
+     */
     @GetMapping("/pages")
     public ResponseEntity<List<ApplicationOverviewDTO>> getApplicationPages(
         @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
         @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
     ) {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
         // purposes
-        return ResponseEntity.ok(applicationService.getAllApplications(applicantId, pageSize, pageNumber));
+        return ResponseEntity.ok(applicationService.getAllApplications(pageSize, pageNumber));
     }
 
-    @GetMapping("/pages/length")
-    public ResponseEntity<Long> getApplicationPagesLength() {
-        final UUID applicantId = UUID.fromString("00000000-0000-0000-0000-000000000104"); // temporary for testing
+    /**
+     * Retrieves the total number of applications submitted by a specific applicant.
+     * Can be removed once sorting and filtering demands using a ApplicationPageDTO, where this data can be directly included
+     *
+     * @param applicantId The UUID of the applicant.
+     * @return The total count of applications.
+     */
+    @GetMapping("/pages/length/{applicantId}")
+    public ResponseEntity<Long> getApplicationPagesLength(@PathVariable UUID applicantId) {
         // purposes
         return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
-    }
-
-    // TODO this is only for testing and can be removed
-    /**
-     * Test endpoint for uploading multiple documents related to an application.
-     * <p>
-     * <b>Note:</b> This endpoint is for testing purposes only and will be removed.
-     * File uploads should be integrated into {@code createApplication()} and
-     * {@code updateApplication()}.
-     * </p>
-     *
-     * @param applicationId the ID of the application to associate the uploaded
-     *                      documents with
-     * @param files         the list of documents to be uploaded as
-     *                      {@link MultipartFile}s
-     * @return {@link ResponseEntity} with HTTP 200 OK if the upload succeeds
-     */
-    @Hidden
-    @PostMapping("/{applicationId}/test-documents")
-    public ResponseEntity<Void> testUploadDocuments(@PathVariable UUID applicationId, @RequestParam("files") List<MultipartFile> files) {
-        // simulate current user
-        User user = new User();
-        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
-
-        Application application = new Application();
-        application.setApplicationId(UUID.fromString(applicationId.toString()));
-
-        // applicationService.uploadBachelorTranscripts(files, application, user);
-        applicationService.uploadMasterTranscripts(files, application, user);
-
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -188,11 +218,13 @@ public class ApplicationResource {
      * Only users with {@code ROLE_APPLICANT} are allowed.
      * </p>
      *
-     * <p>Unsupported types throw {@link NotImplementedException}.</p>
+     * <p>
+     * Unsupported types throw {@link NotImplementedException}.
+     * </p>
      *
      * @param applicationId UUID of the target application
-     * @param documentType type of document to upload
-     * @param files uploaded multipart files
+     * @param documentType  type of document to upload
+     * @param files         uploaded multipart files
      * @return 200 OK if successful
      * @throws NotImplementedException if the document type is still unsupported
      */
@@ -207,38 +239,31 @@ public class ApplicationResource {
     )
     @PreAuthorize("hasRole('APPLICANT')")
     @PostMapping("/upload-documents/{applicationId}/{documentType}")
-    public ResponseEntity<Set<UUID>> uploadDocuments(
+    public ResponseEntity<Set<DocumentInformationHolderDTO>> uploadDocuments(
         @PathVariable UUID applicationId,
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
     ) {
-        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        // simulate current user
-        User user = new User();
-        user.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000103"));
-
         Application application = new Application();
         application.setApplicationId(UUID.fromString(applicationId.toString()));
 
         switch (documentType) {
             case BACHELOR_TRANSCRIPT:
-                applicationService.uploadBachelorTranscripts(files, application, user);
-                break;
             case MASTER_TRANSCRIPT:
-                applicationService.uploadMasterTranscripts(files, application, user);
-                break;
             case REFERENCE:
-                applicationService.uploadReferences(files, application, user);
+                applicationService.uploadAdditionalTranscripts(files, documentType, application);
                 break;
             case CV:
-                applicationService.uploadCV(files.getFirst(), application, user);
+                applicationService.uploadCV(files.getFirst(), application);
                 break; // TODO only one file allowed
             default:
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
         }
 
-        Set<UUID> documentIdsOfUploadedDocuments = applicationService.getDocumentIdsOfApplicationAndType(application, documentType);
+        Set<DocumentInformationHolderDTO> documentIdsOfUploadedDocuments = applicationService.getDocumentIdsOfApplicationAndType(
+            application,
+            documentType
+        );
 
         return ResponseEntity.ok(documentIdsOfUploadedDocuments);
     }

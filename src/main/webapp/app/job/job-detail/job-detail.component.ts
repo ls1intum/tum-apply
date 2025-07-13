@@ -72,10 +72,11 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('jobActionButton.apply'),
+            label: 'jobActionButton.apply',
             severity: 'primary',
             onClick: () => this.onApply(),
             disabled: false,
+            shouldTranslate: true,
           },
         ],
       };
@@ -86,17 +87,19 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('jobActionButton.edit'),
+            label: 'jobActionButton.edit',
             severity: 'primary',
             variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
+            shouldTranslate: true,
           },
           {
-            label: this.translate.instant('jobActionButton.delete'),
+            label: 'jobActionButton.delete',
             severity: 'danger',
             onClick: () => void this.onDeleteJob(),
             disabled: false,
+            shouldTranslate: true,
           },
         ],
       };
@@ -107,11 +110,12 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.translate.instant('jobActionButton.close'),
+            label: 'jobActionButton.close',
             severity: 'danger',
             variant: 'outlined',
             onClick: () => void this.onCloseJob(),
             disabled: false,
+            shouldTranslate: true,
           },
         ],
       };
@@ -121,10 +125,10 @@ export class JobDetailComponent {
   });
 
   readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: this.translate.instant('jobState.draft'),
-    PUBLISHED: this.translate.instant('jobState.published'),
-    CLOSED: this.translate.instant('jobState.closed'),
-    APPLICANT_FOUND: this.translate.instant('jobState.applicantFound'),
+    DRAFT: 'jobState.draft',
+    PUBLISHED: 'jobState.published',
+    CLOSED: 'jobState.closed',
+    APPLICANT_FOUND: 'jobState.applicantFound',
   }));
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
@@ -232,7 +236,7 @@ export class JobDetailComponent {
       description: job.description ?? '',
       tasks: job.tasks ?? '',
       requirements: job.requirements ?? '',
-      startDate: dayjs(job.startDate).format('DD.MM.YYYY'),
+      startDate: job.startDate !== undefined ? dayjs(job.startDate).format('DD.MM.YYYY') : '',
       createdAt: dayjs(job.createdAt).format('DD.MM.YYYY'),
       lastModifiedAt: dayjs(job.lastModifiedAt).format('DD.MM.YYYY'),
 

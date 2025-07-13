@@ -1,4 +1,88 @@
 {
+  "jobCreationForm": {
+    "header": {
+      "title": {
+        "create": "Neue Doktorandenstelle erstellen",
+        "edit": "Aktuelle Doktorandenstelle bearbeiten"
+      },
+      "steps": {
+        "basicInfo": "Grundlegende Informationen",
+        "positionDetails": "Stellenbeschreibung",
+        "additionalInfo": "Zusätzliche Informationen"
+      }
+    },
+    "basicInformationSection": {
+      "description": "Geben Sie die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende/r Professor/in.",
+      "jobTitle": {
+        "label": "Stellentitel",
+        "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
+      },
+      "researchArea": {
+        "label": "Forschungsbereich",
+        "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion",
+        "toolTipText": "Geben Sie das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
+      },
+      "fieldOfStudies": {
+        "label": "Studienfach",
+        "placeholder": "Wählen Sie ein Studienfach..."
+      },
+      "supervisingProfessor": {
+        "label": "Betreuende/r Professor/in"
+      },
+      "location": {
+        "label": "Standort",
+        "placeholder": "Wählen Sie einen Standort..."
+      },
+      "startDate": {
+        "label": "Startdatum",
+        "placeholder": "Wählen Sie ein Startdatum..."
+      },
+      "workload": {
+        "label": "Arbeitsaufwand",
+        "placeholder": "Wählen Sie einen Arbeitsaufwand..."
+      },
+      "contractDuration": {
+        "label": "Vertragslaufzeit",
+        "placeholder": "Wählen Sie eine Vertragslaufzeit..."
+      },
+      "fundingType": {
+        "label": "Finanzierungsart",
+        "placeholder": "Wählen Sie eine Finanzierungsart..."
+      }
+    },
+    "positionDetailsSection": {
+      "description": "Beschreiben Sie den Forschungsschwerpunkt, die Hauptaufgaben und die Erwartungen an die Bewerber*innen. Definieren Sie die Mindestanforderungen und gegebenenfalls wünschenswerte Qualifikationen.",
+      "jobDescription": {
+        "label": "Stellenbeschreibung",
+        "placeholder": "Beschreiben Sie den Umfang und den Schwerpunkt der Position...",
+        "descriptionHelper": "Beschreiben Sie den Forschungskontext, die Ziele und den Gesamtumfang der Stelle. Halten Sie es kurz, aber informativ.",
+        "toolTipText": "Helfen Sie den Bewerbern, den Forschungsschwerpunkt und die Ziele der Position zu verstehen."
+      },
+      "tasks": {
+        "label": "Aufgaben",
+        "placeholder": "Geben Sie die wichtigsten Aufgaben und Verantwortlichkeiten an...",
+        "descriptionHelper": "Listen Sie die wichtigsten Aufgaben oder Tätigkeiten auf, an denen die/der Kandidat*in beteiligt sein wird. Stichpunkte werden empfohlen.",
+        "toolTipText": "Verschaffen Sie den Bewerbern ein klares Bild von den Aufgaben und Tätigkeiten der Position."
+      },
+      "requirements": {
+        "label": "Zugangsvoraussetzungen",
+        "placeholder": "Listen Sie die Mindestanforderungen für Bewerber*innen auf...",
+        "descriptionHelper": "Geben Sie die Mindestanforderungen an (z. B. Abschluss, Noten, Sprachkenntnisse), die erfüllt sein müssen.",
+        "toolTipText": "Stellen Sie sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
+      }
+    },
+    "additionalInformationSection": {
+      "extras": {
+        "title": "Zusätzliches",
+        "description": "Fügen Sie benutzerdefinierte Fragen hinzu, die den Bewerber*innen im Bewerbungsformular angezeigt werden."
+      },
+      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen finden Sie unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>."
+    }
+  },
+  "jobOverviewPage": {
+    "title": "Finden Sie Ihre passende Stelle",
+    "noJobsFound": "Keine Stellen gefunden."
+  },
   "myPositionsPage": {
     "header": {
       "title": "Verwalten Sie Ihre Doktorandenstellen",
@@ -53,12 +137,19 @@
     "delete": "Löschen",
     "close": "Schließen",
     "view": "Anzeigen",
-    "publish": "Veröffentlichen"
+    "publish": "Veröffentlichen",
+    "cancel": "Abbrechen",
+    "next": "Weiter",
+    "back": "Zurück",
+    "saveDraft": "Entwurf speichern"
   },
   "jobState": {
     "draft": "Entwurf",
     "published": "Veröffentlicht",
     "closed": "Geschlossen",
-    "applicantFound": "Bewerber gefunden"
-  }
+    "applicantFound": "Bewerber gefunden",
+    "unknown": "Unbekannt"
+  },
+  "job": "Stelle",
+  "jobs": "Stellen"
 }
