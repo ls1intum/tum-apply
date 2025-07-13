@@ -359,6 +359,7 @@ export class ApplicationDetailComponent {
       const diff = apps.length - windowIndex - 1 - this.half;
       this.applications.set(apps.slice(0, apps.length - diff));
     }
+    this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
   }
 
   private buildQueryParams(): Params {
