@@ -246,4 +246,4 @@ aet:
     root: storage/docs
     max-size-bytes: 26214400
   client:
-    url:
+    url: ${AET_CLIENT_URL}
