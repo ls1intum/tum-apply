@@ -18,7 +18,7 @@ public class EmailLoginResource {
     private final KeycloakAuthenticationService keycloakAuthenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
         String token = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }

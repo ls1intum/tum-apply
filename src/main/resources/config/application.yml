@@ -245,3 +245,10 @@ aet:
   storage:
     root: storage/docs
     max-size-bytes: 26214400
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
+  resource: ${KEYCLOAK_CLIENT_ID}
+  credentials:
+    secret: ${KEYCLOAK_CLIENT_SECRET}
