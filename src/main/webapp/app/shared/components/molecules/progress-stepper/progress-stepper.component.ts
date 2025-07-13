@@ -34,6 +34,8 @@ export class ProgressStepperComponent {
   currentStep = signal<number>(1);
   steps = input<StepData[]>([]);
 
+  shouldTranslate = input<boolean | undefined>(undefined);
+
   buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev, 'prev', this.currentStep()),
   );

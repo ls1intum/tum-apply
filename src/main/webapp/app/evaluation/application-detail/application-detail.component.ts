@@ -17,7 +17,6 @@ import {
   ApplicationForApplicantDTO,
   RejectDTO,
 } from '../../generated';
-import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
 import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
@@ -32,7 +31,6 @@ const WINDOW_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     FilterSortBarComponent,
-    RatingComponent,
     ApplicationDetailCardComponent,
     TranslateModule,
     ButtonComponent,
