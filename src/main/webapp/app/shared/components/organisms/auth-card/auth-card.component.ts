@@ -1,22 +1,23 @@
-import { Component, Signal, inject, input } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, inject, input } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
-import { ButtonModule } from 'primeng/button';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { AccountService } from '../../../../core/auth/account.service';
 import { IdpProvider, KeycloakService } from '../../../../core/auth/keycloak.service';
+import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [ButtonComponent, ButtonModule, ButtonGroupComponent, CommonModule, DividerModule, TabsModule, RouterModule],
+  imports: [ButtonComponent, ButtonGroupComponent, CommonModule, DividerModule, TabsModule, RouterModule, CredentialsGroupComponent],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AuthCardComponent {
   mode = input<'login' | 'register'>('login');
@@ -31,19 +32,11 @@ export class AuthCardComponent {
     this.authTabService.setSelectedTab(Number(newValue));
   }
 
-  defaultLoginProvider(): ButtonGroupData {
+  identityProvider(): ButtonGroupData {
     return {
       direction: 'vertical',
       fullWidth: true,
       buttons: [
-        {
-          label: this.mode() === 'register' ? 'Register with Email' : 'Sign in with Email',
-          icon: 'at',
-          severity: 'primary',
-          disabled: false,
-          fullWidth: true,
-          onClick: () => this.onTUMSSOLogin(),
-        },
         {
           label: this.mode() === 'register' ? 'Register with TUM' : 'Sign in with TUM',
           severity: 'primary',
@@ -52,34 +45,26 @@ export class AuthCardComponent {
           fullWidth: true,
           onClick() {},
         },
-      ],
-    };
-  }
-
-  identityProvider(): ButtonGroupData {
-    return {
-      direction: 'vertical',
-      fullWidth: true,
-      buttons: [
-        {
-          label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
-          icon: 'microsoft',
-          severity: 'primary',
-          variant: 'outlined',
-          disabled: false,
-          fullWidth: true,
-          onClick: () => this.onMicrosoftLogin(),
-        },
+        // TODO: Enable Microsoft login when available in Production environment
+        /* {
+                                                                                                                                                                                                                                                  label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
+                                                                                                                                                                                                                                                  icon: 'microsoft',
+                                                                                                                                                                                                                                                  severity: 'primary',
+                                                                                                                                                                                                                                                  variant: 'outlined',
+                                                                                                                                                                                                                                                  disabled: false,
+                                                                                                                                                                                                                                                  fullWidth: true,
+                                                                                                                                                                                                                                                  onClick: () => this.onMicrosoftLogin(),
+                                                                                                                                                                                                                                                },*/
         // TODO: Enable Apple login when available in Production environment
         /* {
-                                      label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
-                                      icon: 'apple',
-                                      severity: 'primary',
-                                      variant: 'outlined',
-                                      disabled: false,
-                                      fullWidth: true,
-                                      onClick: () => this.onAppleLogin(),
-                                    },*/
+                                                                                                                                                                                                                                                                                      label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
+                                                                                                                                                                                                                                                                                      icon: 'apple',
+                                                                                                                                                                                                                                                                                      severity: 'primary',
+                                                                                                                                                                                                                                                                                      variant: 'outlined',
+                                                                                                                                                                                                                                                                                      disabled: false,
+                                                                                                                                                                                                                                                                                      fullWidth: true,
+                                                                                                                                                                                                                                                                                      onClick: () => this.onAppleLogin(),
+                                                                                                                                                                                                                                                                                    },*/
         {
           label: this.mode() === 'register' ? 'Register with Google' : 'Sign in with Google',
           icon: 'google',
@@ -107,5 +92,9 @@ export class AuthCardComponent {
 
   onAppleLogin(): void {
     this.keycloakService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
+  }
+
+  onEmailLogin(email: string, password: string): void {
+    console.log('Email login:', email, password);
   }
 }

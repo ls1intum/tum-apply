@@ -14,6 +14,7 @@
     [rounded]="label() === undefined"
     [severity]="severity()"
     [styleClass]="(label() === undefined ? 'rounded-full w-14 h-14' : '') + (fullWidth() ? ' w-full' : '')"
+    [type]="type()"
     [variant]="variant()"
   >
     @if (icon() !== undefined) {

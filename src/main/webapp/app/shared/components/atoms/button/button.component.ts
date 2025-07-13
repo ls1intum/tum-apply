@@ -41,6 +41,7 @@ export class ButtonComponent {
   disabled = input<boolean>(false);
   shouldTranslate = input<boolean>(false);
   fullWidth = input<boolean>(false);
+  type = input<'button' | 'submit' | 'reset'>('button');
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 

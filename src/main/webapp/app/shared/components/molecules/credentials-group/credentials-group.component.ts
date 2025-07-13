@@ -1,19 +1,54 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PasswordModule } from 'primeng/password';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
+import { MessageService } from 'primeng/api';
+import { CommonModule } from '@angular/common';
 
-import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-credentials-group',
   standalone: true,
-  imports: [ButtonComponent, StringInputComponent, PasswordModule, FormsModule],
+  providers: [MessageService],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ButtonComponent,
+    PasswordModule,
+    InputTextModule,
+    PasswordModule,
+    MessageModule,
+    FormsModule,
+  ],
   templateUrl: './credentials-group.component.html',
   styleUrl: './credentials-group.component.scss',
 })
 export class CredentialsGroupComponent {
-  username = '';
-  password = '';
-  disabled = this.username === '' || this.password === '';
+  @Input() submitHandler?: (credentials: { email: string; password: string }) => void;
+
+  form: FormGroup;
+  formSubmitted = false;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+    });
+  }
+
+  onSubmit(): void {
+    this.formSubmitted = true;
+    if (this.form.valid && this.submitHandler) {
+      this.submitHandler(this.form.value);
+      this.form.reset();
+      this.formSubmitted = false;
+    }
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid === true && (control.touched || this.formSubmitted);
+  }
 }
