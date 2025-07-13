@@ -1,4 +1,5 @@
 @use '../../../content/scss/breakpoints' as bp;
+@use '../../../content/scss/_header';
 
 $detail-card-2-column-max-width: bp.$xl;
 
@@ -18,14 +19,6 @@ $detail-card-2-column-max-width: bp.$xl;
 
 .slot-right-width {
   width: 21.5rem;
-
-  @media (max-width: $detail-card-2-column-max-width) {
-    width: 100%;
-  }
-}
-
-.document-viewer-width {
-  width: 20rem;
 
   @media (max-width: $detail-card-2-column-max-width) {
     width: 100%;

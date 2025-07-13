@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
+import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
@@ -11,13 +12,14 @@ import { FilterSortBarComponent } from '../../shared/components/molecules/filter
 import { sortOptions } from '../filterSortOptions';
 import {
   AcceptDTO,
+  ApplicationDocumentIdsDTO,
   ApplicationEvaluationDetailDTO,
   ApplicationEvaluationDetailListDTO,
   ApplicationEvaluationResourceService,
   ApplicationForApplicantDTO,
+  ApplicationResourceService,
   RejectDTO,
 } from '../../generated';
-import { RatingComponent } from '../../shared/components/atoms/rating/rating.component';
 import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
@@ -32,12 +34,12 @@ const WINDOW_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     FilterSortBarComponent,
-    RatingComponent,
     ApplicationDetailCardComponent,
     TranslateModule,
     ButtonComponent,
     ReviewDialogComponent,
     TranslateDirective,
+    DocumentGroupComponent,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
@@ -49,6 +51,7 @@ export class ApplicationDetailComponent {
   windowIndex = signal<number>(0);
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
+  currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   filters = signal<FilterField[]>([]);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
@@ -73,6 +76,7 @@ export class ApplicationDetailComponent {
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
   private readonly evaluationService = inject(EvaluationService);
+  private readonly applicationResourceService = inject(ApplicationResourceService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -301,7 +305,7 @@ export class ApplicationDetailComponent {
       this.windowIndex.set(res.windowIndex ?? 0);
       this.currentIndex.set(res.currentIndex ?? 0);
       this.currentApplication.set(this.applications()[this.windowIndex()]);
-
+      this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
       void this.markCurrentApplicationAsInReview();
     } catch (error) {
       console.error('Failed to load applications:', error);
@@ -323,6 +327,7 @@ export class ApplicationDetailComponent {
         this.windowIndex.update(v => v - 1); // Adjust index to match slice
       }
       this.applications.set(apps);
+      this.updateDocumentInformation(apps[this.windowIndex()].applicationDetailDTO.applicationId);
     }
   }
 
@@ -339,6 +344,7 @@ export class ApplicationDetailComponent {
       }
       this.windowIndex.update(v => v + 1); // Adjust index to match new position
       this.applications.set(apps);
+      this.updateDocumentInformation(apps[this.windowIndex()].applicationDetailDTO.applicationId);
     }
   }
 
@@ -355,6 +361,7 @@ export class ApplicationDetailComponent {
       this.currentApplication.set(data[0]);
       void this.markCurrentApplicationAsInReview();
       this.updateUrlQueryParams();
+      this.updateDocumentInformation(data[this.windowIndex()].applicationDetailDTO.applicationId);
     }
   }
 
@@ -377,6 +384,7 @@ export class ApplicationDetailComponent {
       const diff = apps.length - windowIndex - 1 - this.half;
       this.applications.set(apps.slice(0, apps.length - diff));
     }
+    this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
   }
 
   private buildQueryParams(): Params {
@@ -406,5 +414,13 @@ export class ApplicationDetailComponent {
       queryParams: qp,
       replaceUrl: true,
     });
+  }
+
+  private updateDocumentInformation(applicationId: string): void {
+    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
+      .then(ids => {
+        this.currentDocumentIds.set(ids);
+      })
+      .catch(() => alert('Error: fetching the document ids for this application'));
   }
 }

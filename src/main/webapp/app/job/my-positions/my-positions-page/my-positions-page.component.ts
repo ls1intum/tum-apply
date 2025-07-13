@@ -5,7 +5,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -31,11 +31,11 @@ export class MyPositionsPageComponent {
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'Last Modified', field: 'lastModifiedAt', type: 'NUMBER' },
-    { displayName: 'Job Title', field: 'title', type: 'TEXT' },
-    { displayName: 'Status', field: 'state', type: 'TEXT' },
-    { displayName: 'Start Date', field: 'startDate', type: 'NUMBER' },
-    { displayName: 'Created', field: 'createdAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.lastModified', field: 'lastModifiedAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
+    { displayName: 'myPositionsPage.sortingOptions.status', field: 'state', type: 'TEXT' },
+    { displayName: 'myPositionsPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.created', field: 'createdAt', type: 'NUMBER' },
   ];
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -47,27 +47,27 @@ export class MyPositionsPageComponent {
 
     return [
       { field: 'avatar', header: '', width: '5rem' },
-      { field: 'professorName', header: this.translate.instant('myPositionsPage.tableColumn.supervisingProfessor'), width: '12rem' },
-      { field: 'title', header: this.translate.instant('myPositionsPage.tableColumn.job'), width: '26rem' },
+      { field: 'professorName', header: 'myPositionsPage.tableColumn.supervisingProfessor', width: '12rem' },
+      { field: 'title', header: 'myPositionsPage.tableColumn.job', width: '26rem' },
       {
         field: 'state',
-        header: this.translate.instant('myPositionsPage.tableColumn.status'),
+        header: 'myPositionsPage.tableColumn.status',
         width: '10rem',
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'startDate', header: this.translate.instant('myPositionsPage.tableColumn.startDate'), type: 'date', width: '10rem' },
-      { field: 'createdAt', header: this.translate.instant('myPositionsPage.tableColumn.created'), type: 'date', width: '10rem' },
-      { field: 'lastModifiedAt', header: this.translate.instant('myPositionsPage.tableColumn.lastModified'), type: 'date', width: '10rem' },
+      { field: 'startDate', header: 'myPositionsPage.tableColumn.startDate', type: 'date', width: '10rem' },
+      { field: 'createdAt', header: 'myPositionsPage.tableColumn.created', type: 'date', width: '10rem' },
+      { field: 'lastModifiedAt', header: 'myPositionsPage.tableColumn.lastModified', type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });
 
   readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: this.translate.instant('jobState.draft'),
-    PUBLISHED: this.translate.instant('jobState.published'),
-    CLOSED: this.translate.instant('jobState.closed'),
-    APPLICANT_FOUND: this.translate.instant('jobState.applicantFound'),
+    DRAFT: 'jobState.draft',
+    PUBLISHED: 'jobState.published',
+    CLOSED: 'jobState.closed',
+    APPLICANT_FOUND: 'jobState.applicantFound',
   }));
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
@@ -80,7 +80,6 @@ export class MyPositionsPageComponent {
   private jobService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
-  private translate = inject(TranslateService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));

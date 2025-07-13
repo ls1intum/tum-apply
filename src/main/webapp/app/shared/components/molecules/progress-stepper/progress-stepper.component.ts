@@ -1,6 +1,7 @@
 import { Component, Signal, TemplateRef, computed, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { Button } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
@@ -19,11 +20,12 @@ export type StepData = {
   buttonGroupPrev: StepButton[];
   buttonGroupNext: StepButton[];
   status?: TemplateRef<HTMLDivElement>;
+  shouldTranslate?: boolean;
 };
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent],
+  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule],
   templateUrl: './progress-stepper.component.html',
   styleUrl: './progress-stepper.component.scss',
   standalone: true,
@@ -31,6 +33,8 @@ export type StepData = {
 export class ProgressStepperComponent {
   currentStep = signal<number>(1);
   steps = input<StepData[]>([]);
+
+  shouldTranslate = input<boolean | undefined>(undefined);
 
   buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev, 'prev', this.currentStep()),

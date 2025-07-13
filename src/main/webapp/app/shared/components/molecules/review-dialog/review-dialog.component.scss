@@ -25,6 +25,7 @@
 
     .job-name {
       color: var(--p-text-disabled);
+
       .icon {
         color: var(--p-primary-color);
       }
@@ -33,11 +34,10 @@
 
   .review-checkboxes {
     list-style: none;
-    padding: 0;
-    margin: 1rem 0;
+    margin-top: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 2rem;
 
     li {
       display: flex;

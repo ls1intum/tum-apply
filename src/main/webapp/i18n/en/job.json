@@ -19,7 +19,8 @@
       },
       "researchArea": {
         "label": "Research Area",
-        "placeholder": "e.g. Machine Learning, Human-Computer Interaction"
+        "placeholder": "e.g. Machine Learning, Human-Computer Interaction",
+        "toolTipText": "Specify the main Research Area the doctoral position focuses on."
       },
       "fieldOfStudies": {
         "label": "Field Of Studies",
@@ -54,17 +55,20 @@
       "jobDescription": {
         "label": "Job Description",
         "placeholder": "Describe the scope and focus of the position...",
-        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. Keep it concise but informative."
+        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. Keep it concise but informative.",
+        "toolTipText": "Help the applicant understand the research focus and goals of the position."
       },
       "tasks": {
         "label": "Tasks",
         "placeholder": "List the main responsibilities...",
-        "descriptionHelper": "List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended."
+        "descriptionHelper": "List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.",
+        "toolTipText": "Provide a clear picture of the position’s responsibilities and activities."
       },
       "requirements": {
         "label": "Eligibility Criteria",
         "placeholder": "List the minimum requirements for applicants...",
-        "descriptionHelper": "Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill."
+        "descriptionHelper": "Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.",
+        "toolTipText": "Ensure the applicant knows what qualifications are expected."
       }
     },
     "additionalInformationSection": {
@@ -76,7 +80,16 @@
     }
   },
   "jobOverviewPage": {
-    "title": "Find Your Perfect Position"
+    "title": "Find Your Perfect Position",
+    "noJobsFound": "No Jobs Found.",
+    "sortingOptions": {
+      "startDate": "Start Date",
+      "jobTitle": "Job Title",
+      "fieldOfStudies": "Field of Studies",
+      "location": "Location",
+      "professor": "Professor",
+      "workload": "Workload"
+    }
   },
   "myPositionsPage": {
     "header": {
@@ -90,6 +103,13 @@
       "startDate": "Start Date",
       "created": "Created",
       "lastModified": "Last Modified"
+    },
+    "sortingOptions": {
+      "lastModified": "Last Modified",
+      "jobTitle": "Job Title",
+      "status": "Status",
+      "startDate": "Start Date",
+      "created": "Created"
     }
   },
   "jobDetailPage": {
@@ -142,7 +162,8 @@
     "draft": "Draft",
     "published": "Published",
     "closed": "Closed",
-    "applicantFound": "Applicant Found"
+    "applicantFound": "Applicant Found",
+    "unknown": "Unknown"
   },
   "job": "Position",
   "jobs": "Positions"

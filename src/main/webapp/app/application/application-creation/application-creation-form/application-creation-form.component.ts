@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -38,8 +39,8 @@ const ApplicationStates = {
 type ApplicationState = (typeof ApplicationStates)[keyof typeof ApplicationStates];
 
 const SavingStates = {
-  SAVED: 'Changes saved',
-  SAVING: 'Saving changes...',
+  SAVED: 'SAVED',
+  SAVING: 'SAVING',
 } as const;
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
@@ -53,6 +54,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
     FontAwesomeModule,
+    TranslateModule,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -111,26 +113,33 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const page1Valid = this.page1Valid();
+    const page2Valid = this.page2Valid();
+    const allPagesValid = this.allPagesValid();
     const location = this.location;
-    const performAutomaticSave = this.performAutomaticSave;
+    const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
     const statusPanel = this.savedStatusPanel();
-    const updateDocumentInformation = this.updateDocumentInformation;
+    const updateDocumentInformation = this.updateDocumentInformation.bind(this);
     if (panel1) {
       steps.push({
-        name: 'Personal Information',
+        name: 'entity.applicationSteps.personalInformation',
         panelTemplate: panel1,
+        shouldTranslate: true,
         buttonGroupPrev: [
           {
             variant: 'outlined',
             severity: 'info',
             icon: 'caret-left',
-            onClick() {
-              performAutomaticSave();
-              location.back();
+            onClick(): void {
+              (async () => {
+                await performAutomaticSaveLocal();
+                location.back();
+              })();
             },
             disabled: false,
-            label: 'Cancel',
+            label: 'entity.applicationSteps.buttons.cancel',
             changePanel: false,
+            shouldTranslate: true,
           },
         ],
         buttonGroupNext: [
@@ -138,18 +147,21 @@ export default class ApplicationCreationFormComponent {
             severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
-            disabled: false,
-            label: 'Next',
+            disabled: !page1Valid,
+            label: 'entity.applicationSteps.buttons.next',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
         status: statusPanel,
       });
     }
+
     if (panel2) {
       steps.push({
-        name: 'Education',
+        name: 'entity.applicationSteps.education',
         panelTemplate: panel2,
+        shouldTranslate: true,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -159,7 +171,8 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'Prev',
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -170,17 +183,20 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               updateDocumentInformation();
             },
-            disabled: false,
-            label: 'Next',
+            disabled: !page2Valid,
+            label: 'entity.applicationSteps.buttons.next',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
         status: statusPanel,
       });
     }
+
     if (panel3) {
       steps.push({
-        name: 'Application Details',
+        name: 'entity.applicationSteps.applicationDetails',
+        shouldTranslate: true,
         panelTemplate: panel3,
         buttonGroupPrev: [
           {
@@ -191,7 +207,8 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'Prev',
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -202,8 +219,9 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               sendData('SENT');
             },
-            disabled: this.allPagesValid(),
-            label: 'Send',
+            disabled: !allPagesValid,
+            label: 'entity.applicationSteps.buttons.send',
+            shouldTranslate: true,
             changePanel: false,
           },
         ],
@@ -239,6 +257,7 @@ export default class ApplicationCreationFormComponent {
   private accountService = inject(AccountService);
 
   private location = inject(Location);
+  private translate = inject(TranslateService);
 
   constructor(private route: ActivatedRoute) {
     this.init(route);
@@ -290,14 +309,14 @@ export default class ApplicationCreationFormComponent {
     this.location.replaceState(`${segments[0].path}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
   }
 
-  performAutomaticSave(): void {
+  async performAutomaticSave(): Promise<void> {
     if (this.savingState() === SavingStates.SAVING) {
-      this.sendCreateApplicationData(this.applicationState(), false);
+      await this.sendCreateApplicationData(this.applicationState(), false);
       this.savingState.set(SavingStates.SAVED);
     }
   }
 
-  sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): void {
+  async sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): Promise<void> {
     const location = this.location;
     const applicationId = this.applicationId();
     if (applicationId === '') {
@@ -340,18 +359,17 @@ export default class ApplicationCreationFormComponent {
       projects: this.page3().experiences,
       // answers: new Set(),
     };
-    this.applicationResourceService.updateApplication(updateApplication).subscribe({
-      next() {
-        if (rerouteToOtherPage) {
-          alert('Successfully saved application');
-          location.back();
-        }
-      },
-      error(err) {
-        alert('Failed to save application:' + (err as HttpErrorResponse).statusText);
-        console.error('Failed to save application:', err);
-      },
-    });
+    try {
+      await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
+      if (rerouteToOtherPage) {
+        alert('Successfully saved application');
+        location.back();
+      }
+    } catch (err) {
+      const httpError = err as HttpErrorResponse;
+      alert('Failed to save application: ' + httpError.statusText);
+      console.error('Failed to save application:', err);
+    }
   }
 
   updateDocumentInformation(): void {

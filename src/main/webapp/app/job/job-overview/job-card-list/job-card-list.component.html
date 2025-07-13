@@ -4,6 +4,7 @@
   (sortChange)="loadOnSortEmit($event)"
   [singleEntity]="'job' | translate"
   [multipleEntities]="'jobs' | translate"
+  [shouldTranslate]="true"
 />
 @if (jobs().length > 0) {
   <div class="job-card-grid">
@@ -21,7 +22,7 @@
     }
   </div>
 } @else {
-  <p class="no-jobs-text">No jobs found.</p>
+  <p class="no-jobs-text" jhiTranslate="jobOverviewPage.noJobsFound"></p>
 }
 <p-table
   [value]="jobs()"

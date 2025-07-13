@@ -80,19 +80,19 @@ export class ReviewDialogComponent {
   // TODO adapt to translation keys when dropdown is adjusted
   rejectReasons: DropdownOption[] = [
     {
-      name: 'Job already filled',
+      name: 'evaluation.rejectReasons.jobFilled',
       value: 'JOB_FILLED',
     },
     {
-      name: 'Job outdated',
+      name: 'evaluation.rejectReasons.jobOutdated',
       value: 'JOB_OUTDATED',
     },
     {
-      name: 'Failed requirements',
+      name: 'evaluation.rejectReasons.failedRequirements',
       value: 'FAILED_REQUIREMENTS',
     },
     {
-      name: 'Other reason',
+      name: 'evaluation.rejectReasons.otherReason',
       value: 'OTHER_REASON',
     },
   ];

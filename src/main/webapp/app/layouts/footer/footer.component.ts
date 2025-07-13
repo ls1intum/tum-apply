@@ -1,5 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { VERSION } from 'app/app.constants';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 
@@ -12,7 +13,10 @@ import TranslateDirective from '../../shared/language/translate.directive';
   encapsulation: ViewEncapsulation.None,
 })
 export default class FooterComponent {
-  constructor(private router: Router) {}
+  version: string;
+  constructor(private router: Router) {
+    this.version = VERSION;
+  }
 
   navigateToImprint(): void {
     void this.router.navigate(['/imprint']);

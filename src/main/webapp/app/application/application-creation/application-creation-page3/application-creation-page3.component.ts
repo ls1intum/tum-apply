@@ -8,6 +8,8 @@ import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button
 import { DividerModule } from 'primeng/divider';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
+import SharedModule from 'app/shared/shared.module';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
@@ -39,6 +41,8 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
     UploadButtonComponent,
     FontAwesomeModule,
     TooltipModule,
+    TranslateModule,
+    SharedModule,
   ],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
@@ -68,8 +72,7 @@ export default class ApplicationCreationPage3Component {
       experiences: [currentData.experiences, Validators.required],
       motivation: [currentData.motivation, Validators.required],
       skills: [currentData.skills, Validators.required],
-      // optional
-      desiredStartDate: [currentData.desiredStartDate],
+      desiredStartDate: [currentData.desiredStartDate, Validators.required],
     });
   });
 
@@ -90,6 +93,8 @@ export default class ApplicationCreationPage3Component {
       const statusSubscription = form.statusChanges.subscribe(() => {
         this.valid.emit(form.valid);
       });
+
+      this.valid.emit(form.valid);
 
       onCleanup(() => {
         valueSubscription.unsubscribe();

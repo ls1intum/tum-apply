@@ -19,7 +19,8 @@
       },
       "researchArea": {
         "label": "Forschungsbereich",
-        "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion"
+        "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion",
+        "toolTipText": "Geben Sie das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
       },
       "fieldOfStudies": {
         "label": "Studienfach",
@@ -54,17 +55,20 @@
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "placeholder": "Beschreiben Sie den Umfang und den Schwerpunkt der Position...",
-        "descriptionHelper": "Beschreiben Sie den Forschungskontext, die Ziele und den Gesamtumfang der Stelle. Halten Sie es kurz, aber informativ."
+        "descriptionHelper": "Beschreiben Sie den Forschungskontext, die Ziele und den Gesamtumfang der Stelle. Halten Sie es kurz, aber informativ.",
+        "toolTipText": "Helfen Sie den Bewerbern, den Forschungsschwerpunkt und die Ziele der Position zu verstehen."
       },
       "tasks": {
         "label": "Aufgaben",
         "placeholder": "Geben Sie die wichtigsten Aufgaben und Verantwortlichkeiten an...",
-        "descriptionHelper": "Listen Sie die wichtigsten Aufgaben oder Tätigkeiten auf, an denen die/der Kandidat*in beteiligt sein wird. Stichpunkte werden empfohlen."
+        "descriptionHelper": "Listen Sie die wichtigsten Aufgaben oder Tätigkeiten auf, an denen die/der Kandidat*in beteiligt sein wird. Stichpunkte werden empfohlen.",
+        "toolTipText": "Verschaffen Sie den Bewerbern ein klares Bild von den Aufgaben und Tätigkeiten der Position."
       },
       "requirements": {
         "label": "Zugangsvoraussetzungen",
         "placeholder": "Listen Sie die Mindestanforderungen für Bewerber*innen auf...",
-        "descriptionHelper": "Geben Sie die Mindestanforderungen an (z. B. Abschluss, Noten, Sprachkenntnisse), die erfüllt sein müssen."
+        "descriptionHelper": "Geben Sie die Mindestanforderungen an (z. B. Abschluss, Noten, Sprachkenntnisse), die erfüllt sein müssen.",
+        "toolTipText": "Stellen Sie sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
       }
     },
     "additionalInformationSection": {
@@ -76,7 +80,16 @@
     }
   },
   "jobOverviewPage": {
-    "title": "Finden Sie Ihre passende Stelle"
+    "title": "Finden Sie Ihre passende Stelle",
+    "noJobsFound": "Keine Stellen gefunden.",
+    "sortingOptions": {
+      "startDate": "Startdatum",
+      "jobTitle": "Jobtitel",
+      "fieldOfStudies": "Studienrichtung",
+      "location": "Standort",
+      "professor": "Betreuer/in",
+      "workload": "Arbeitsaufwand"
+    }
   },
   "myPositionsPage": {
     "header": {
@@ -90,6 +103,13 @@
       "startDate": "Startdatum",
       "created": "Erstellt am",
       "lastModified": "Zuletzt geändert"
+    },
+    "sortingOptions": {
+      "lastModified": "Zuletzt geändert",
+      "jobTitle": "Stellentitel",
+      "status": "Status",
+      "startDate": "Startdatum",
+      "created": "Erstellt"
     }
   },
   "jobDetailPage": {
@@ -142,7 +162,8 @@
     "draft": "Entwurf",
     "published": "Veröffentlicht",
     "closed": "Geschlossen",
-    "applicantFound": "Bewerber gefunden"
+    "applicantFound": "Bewerber gefunden",
+    "unknown": "Unbekannt"
   },
   "job": "Stelle",
   "jobs": "Stellen"

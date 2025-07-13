@@ -1,7 +1,11 @@
 <p-stepper [value]="currentStep()" (valueChange)="currentStep.set($event ?? 1)" class="basis-[50rem]">
   <p-step-list>
     @for (step of steps(); track $index) {
-      <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''">{{ step.name }}</p-step>
+      @if (step.shouldTranslate) {
+        <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''">{{ step.name | translate }}</p-step>
+      } @else {
+        <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''">{{ step.name }}</p-step>
+      }
     }
   </p-step-list>
 </p-stepper>
@@ -11,12 +15,12 @@
 
 <div class="flex m-2 pt-6 justify-between">
   <div>
-    <jhi-button-group [data]="buttonGroupPrev()" />
+    <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
   </div>
   <div class="flex gap-6">
     @if (statusDiv(); as statusDiv) {
       <ng-container [ngTemplateOutlet]="statusDiv" />
     }
-    <jhi-button-group [data]="buttonGroupNext()" />
+    <jhi-button-group [data]="buttonGroupNext()" [shouldTranslate]="shouldTranslate() ?? false" />
   </div>
 </div>
