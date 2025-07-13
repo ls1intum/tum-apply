@@ -11,7 +11,8 @@
       [sortableFields]="sortableFields"
       (sortChange)="loadOnSortEmit($event)"
       [singleEntity]="'job' | translate"
-      [multipleEntities]="'job' | translate"
+      [multipleEntities]="'jobs' | translate"
+      [shouldTranslate]="true"
     />
     <div class="table-wrapper">
       <jhi-dynamic-table

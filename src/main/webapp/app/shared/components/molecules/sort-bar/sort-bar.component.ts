@@ -39,6 +39,7 @@ export class SortBarComponent {
   // those fields should already be translated within the parent component
   singleEntity = input.required<string>();
   multipleEntities = input.required<string>();
+  shouldTranslate = input<boolean>(false);
 
   sortChange = output<Sort>();
 
