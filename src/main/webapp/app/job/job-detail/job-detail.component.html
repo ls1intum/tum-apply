@@ -8,7 +8,11 @@
           @if (jobDetails()?.jobState) {
             <jhi-tag
               class="job-state-badge"
-              [text]="stateTextMap()[jobDetails()?.jobState!] || 'Unknown'"
+              [text]="
+                stateTextMap()[jobDetails()?.jobState!]
+                  ? (stateTextMap()[jobDetails()?.jobState!] | translate)
+                  : ('jobState.unknown' | translate)
+              "
               [color]="stateSeverityMap()[jobDetails()?.jobState!] || 'info'"
             />
           } @else {
@@ -178,12 +182,12 @@
       <div class="button-wrapper">
         <!-- Left-aligned Back button -->
         <div class="left-buttons">
-          <jhi-button label="Back" severity="info" variant="outlined" (click)="onBack()" />
+          <jhi-button label="jobActionButton.back" severity="info" variant="outlined" (click)="onBack()" [shouldTranslate]="true" />
         </div>
         <!-- Right-aligned dynamic button group -->
         <div class="right-buttons">
           @if (rightActionButtons()) {
-            <jhi-button-group [data]="rightActionButtons()!" />
+            <jhi-button-group [data]="rightActionButtons()!" [shouldTranslate]="true" />
           }
         </div>
       </div>

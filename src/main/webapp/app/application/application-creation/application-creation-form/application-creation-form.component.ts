@@ -122,8 +122,9 @@ export default class ApplicationCreationFormComponent {
     const updateDocumentInformation = this.updateDocumentInformation.bind(this);
     if (panel1) {
       steps.push({
-        name: this.translate.instant('entity.applicationSteps.personalInformation'),
+        name: 'entity.applicationSteps.personalInformation',
         panelTemplate: panel1,
+        shouldTranslate: true,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -136,8 +137,9 @@ export default class ApplicationCreationFormComponent {
               })();
             },
             disabled: false,
-            label: this.translate.instant('entity.applicationSteps.buttons.cancel'),
+            label: 'entity.applicationSteps.buttons.cancel',
             changePanel: false,
+            shouldTranslate: true,
           },
         ],
         buttonGroupNext: [
@@ -156,8 +158,9 @@ export default class ApplicationCreationFormComponent {
 
     if (panel2) {
       steps.push({
-        name: this.translate.instant('entity.applicationSteps.education'),
+        name: 'entity.applicationSteps.education',
         panelTemplate: panel2,
+        shouldTranslate: true,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -167,7 +170,8 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: this.translate.instant('entity.applicationSteps.buttons.prev'),
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -178,8 +182,9 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               updateDocumentInformation();
             },
-            disabled: !page2Valid,
-            label: this.translate.instant('entity.applicationSteps.buttons.next'),
+            disabled: false,
+            label: 'entity.applicationSteps.buttons.next',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -189,7 +194,8 @@ export default class ApplicationCreationFormComponent {
 
     if (panel3) {
       steps.push({
-        name: this.translate.instant('entity.applicationSteps.applicationDetails'),
+        name: 'entity.applicationSteps.applicationDetails',
+        shouldTranslate: true,
         panelTemplate: panel3,
         buttonGroupPrev: [
           {
@@ -200,7 +206,8 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: this.translate.instant('entity.applicationSteps.buttons.prev'),
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
             changePanel: true,
           },
         ],
@@ -211,8 +218,9 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               sendData('SENT');
             },
-            disabled: !allPagesValid,
-            label: this.translate.instant('entity.applicationSteps.buttons.send'),
+            disabled: this.allPagesValid(),
+            label: 'entity.applicationSteps.buttons.send',
+            shouldTranslate: true,
             changePanel: false,
           },
         ],

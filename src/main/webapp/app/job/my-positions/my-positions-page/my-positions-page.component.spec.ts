@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AccountService } from 'app/core/auth/account.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
@@ -45,17 +45,32 @@ class MockAccountService {
   loadedUser = (): { id: string } => ({ id: 'professor-id' });
 }
 
+class MockTranslateService {
+  onLangChange = new Subject();
+  onTranslationChange = new Subject();
+  onDefaultLangChange = new Subject();
+
+  get = jest.fn().mockImplementation((key: string) => of(key));
+}
+
 describe('MyPositionsPageComponent', () => {
   let component: MyPositionsPageComponent;
   let fixture: ComponentFixture<MyPositionsPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MyPositionsPageComponent, TranslateModule.forRoot()],
+      imports: [
+        MyPositionsPageComponent,
+        TranslateModule.forRoot({
+          defaultLanguage: 'en',
+          useDefaultLang: true,
+        }),
+      ],
       providers: [
         provideHttpClientTesting(),
         { provide: JobResourceService, useClass: MockJobResourceService },
         { provide: AccountService, useClass: MockAccountService },
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
 

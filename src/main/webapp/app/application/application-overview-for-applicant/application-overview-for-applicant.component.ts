@@ -47,23 +47,23 @@ export default class ApplicationOverviewForApplicantComponent {
     return [
       {
         field: 'jobTitle',
-        header: this.translate.instant('entity.applicationOverview.columns.positionTitle'),
+        header: 'entity.applicationOverview.columns.positionTitle',
         width: '34rem',
       },
       {
         field: 'researchGroup',
-        header: this.translate.instant('entity.applicationOverview.columns.researchGroup'),
+        header: 'entity.applicationOverview.columns.researchGroup',
         width: '20rem',
       },
       {
         field: 'badges',
-        header: this.translate.instant('entity.applicationOverview.columns.status'),
+        header: 'entity.applicationOverview.columns.status',
         width: '10rem',
         template: badgeTemplate,
       },
       {
         field: 'timeSinceCreation',
-        header: this.translate.instant('entity.applicationOverview.columns.created'),
+        header: 'entity.applicationOverview.columns.created',
         width: '10rem',
       },
       {
