@@ -11,12 +11,16 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TemplateService {
 
     private final Configuration freemarkerConfig;
+
+    @Value("${aet.client.url}")
+    private String url;
 
     public TemplateService(Configuration freemarkerConfig) {
         this.freemarkerConfig = freemarkerConfig;
@@ -113,6 +117,6 @@ public class TemplateService {
     private void addMetaData(Language language, Map<String, Object> dataModel) {
         dataModel.put("language", language.getCode());
         //TODO replace by properties
-        dataModel.put("url", "https://tumapply.aet.cit.tum.de");
+        dataModel.put("url", url);
     }
 }
