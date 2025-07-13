@@ -31,11 +31,11 @@ export class MyPositionsPageComponent {
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'Last Modified', field: 'lastModifiedAt', type: 'NUMBER' },
-    { displayName: 'Job Title', field: 'title', type: 'TEXT' },
-    { displayName: 'Status', field: 'state', type: 'TEXT' },
-    { displayName: 'Start Date', field: 'startDate', type: 'NUMBER' },
-    { displayName: 'Created', field: 'createdAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.lastModified', field: 'lastModifiedAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
+    { displayName: 'myPositionsPage.sortingOptions.status', field: 'state', type: 'TEXT' },
+    { displayName: 'myPositionsPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.created', field: 'createdAt', type: 'NUMBER' },
   ];
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
