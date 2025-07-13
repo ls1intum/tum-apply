@@ -81,7 +81,15 @@
   },
   "jobOverviewPage": {
     "title": "Finden Sie Ihre passende Stelle",
-    "noJobsFound": "Keine Stellen gefunden."
+    "noJobsFound": "Keine Stellen gefunden.",
+    "sortingOptions": {
+      "startDate": "Startdatum",
+      "jobTitle": "Jobtitel",
+      "fieldOfStudies": "Studienrichtung",
+      "location": "Standort",
+      "professor": "Betreuer/in",
+      "workload": "Arbeitsaufwand"
+    }
   },
   "myPositionsPage": {
     "header": {
@@ -95,6 +103,13 @@
       "startDate": "Startdatum",
       "created": "Erstellt am",
       "lastModified": "Zuletzt geändert"
+    },
+    "sortingOptions": {
+      "lastModified": "Zuletzt geändert",
+      "jobTitle": "Stellentitel",
+      "Status": "Status",
+      "startDate": "Startdatum",
+      "created": "Erstellt"
     }
   },
   "jobDetailPage": {
