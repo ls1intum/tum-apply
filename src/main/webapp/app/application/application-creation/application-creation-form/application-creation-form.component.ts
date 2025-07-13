@@ -183,7 +183,7 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               updateDocumentInformation();
             },
-            disabled: false,
+            disabled: !page2Valid,
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
             changePanel: true,
@@ -219,7 +219,7 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               sendData('SENT');
             },
-            disabled: this.allPagesValid(),
+            disabled: !allPagesValid,
             label: 'entity.applicationSteps.buttons.send',
             shouldTranslate: true,
             changePanel: false,
