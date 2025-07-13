@@ -6,11 +6,14 @@ import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
+import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [DynamicTableComponent, ButtonComponent, BadgeModule],
+  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
@@ -76,6 +79,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private readonly applicationService = inject(ApplicationResourceService);
   private readonly accountService = inject(AccountService);
+  private readonly translate = inject(TranslateService);
 
   private applicantId = signal<string>('');
 

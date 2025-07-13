@@ -26,12 +26,12 @@ export class JobCardListComponent {
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'Start Date', field: 'startDate', type: 'NUMBER' },
-    { displayName: 'Job Title', field: 'title', type: 'TEXT' },
-    { displayName: 'Field of Studies', field: 'fieldOfStudies', type: 'TEXT' },
-    { displayName: 'Location', field: 'location', type: 'TEXT' },
-    { displayName: 'Professor', field: 'professorName', type: 'TEXT' },
-    { displayName: 'Workload', field: 'workload', type: 'NUMBER' },
+    { displayName: 'jobOverviewPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
+    { displayName: 'jobOverviewPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.fieldOfStudies', field: 'fieldOfStudies', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.location', field: 'location', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.professor', field: 'professorName', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.workload', field: 'workload', type: 'NUMBER' },
   ];
 
   private jobService = inject(JobResourceService);

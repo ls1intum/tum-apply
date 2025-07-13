@@ -194,6 +194,16 @@
         "delete": "Delete this file from the server"
       }
     },
+    "application_overview": {
+      "applicant": {
+        "header": "My Applications"
+      }
+    },
+    "application_detail": {
+      "applicant": {
+        "header": "Application for '{{jobTitle}}'"
+      }
+    },
     "applicationSteps": {
       "personalInformation": "Personal Information",
       "education": "Education",
@@ -207,6 +217,84 @@
       "status": {
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved"
+      }
+    },
+    "applicationPage1": {
+      "label": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "phoneNumber": "Phone Number",
+        "gender": "Gender",
+        "nationality": "Nationality",
+        "language": "Language",
+        "dateOfBirth": "Date of Birth",
+        "website": "Website",
+        "linkedIn": "LinkedIn",
+        "street": "Address Line",
+        "city": "City",
+        "country": "Country",
+        "postcode": "Postcode"
+      },
+      "section": {
+        "userInformation": "User Information",
+        "address": "Address"
+      }
+    },
+    "applicationPage2": {
+      "section": {
+        "bachelor": "Bachelor",
+        "master": "Master"
+      },
+      "label": {
+        "bachelorDegreeName": "Bachelor Degree Name",
+        "bachelorDegreeUniversity": "Bachelor Degree University",
+        "bachelorGradingScale": "Bachelor Grading Scale",
+        "bachelorGrade": "Bachelor Grade",
+        "masterDegreeName": "Master Degree Name",
+        "masterDegreeUniversity": "Master Degree University",
+        "masterGradingScale": "Master Grading Scale",
+        "masterGrade": "Master Grade"
+      },
+      "tooltip": {
+        "bachelorDegreeName": "Specify the study program of your Bachelor's Degree.",
+        "bachelorDegreeUniversity": "Enter the name of the University where you completed your Bachelor's Degree.",
+        "bachelorGradingScale": "Choose the Grading Scale used for your Bachelor's Degree.",
+        "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
+        "masterDegreeName": "Specify the study program of your Master's Degree.",
+        "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
+        "masterGradingScale": "Choose the Grading Scale used for your Master's Degree.",
+        "masterGrade": "Enter your final Master's Grade according to your institution's grading system."
+      }
+    },
+    "applicationPage3": {
+      "label": {
+        "desiredStartDate": "Desired Start Date",
+        "motivation": "What is your motivation to take this position?",
+        "skills": "What are your skills?",
+        "experiences": "If you already worked in research topics, what are your experiences?"
+      },
+      "tooltip": {
+        "desiredStartDate": "Choose the preferred Date when you would like to start the position.",
+        "motivation": "Explain how this position aligns with your career plans or research interests.",
+        "skills": "Share your research background in order to help us see how your experience fits the role.",
+        "experiences": "Highlight results or insights that shaped your research experience."
+      },
+      "floatlabel": {
+        "motivation": "List professional or personal reasons",
+        "skills": "Describe experiences and skills",
+        "experiences": "Discuss previous research projects, theses or publications"
+      },
+      "sublabel": {
+        "motivation": "Keep it concise but informative ...",
+        "skills": "Why are you a good fit for this program or lab?",
+        "experiences": "Include your role, methods used, key findings, subjects, projects, ..."
+      },
+      "section": {
+        "uploads": "Uploads"
+      },
+      "placeholder": {
+        "selectStartDate": "Select a Start Date..."
       }
     },
     "applicationOverview": {
@@ -231,6 +319,11 @@
         "status": "Status",
         "created": "Created"
       }
+    },
+    "applicationDetail": {
+      "motivation": "Motivation",
+      "skills": "Skills",
+      "researchExperience": "Research Experience"
     }
   },
   "error": {

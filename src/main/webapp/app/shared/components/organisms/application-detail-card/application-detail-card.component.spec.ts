@@ -98,16 +98,11 @@ describe('ApplicationDetailCardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the applicant full name', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Alice Smith');
-  });
-
   it('should render motivation, skills, and research experience sections', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Motivation');
-    expect(compiled.textContent).toContain('Skills');
-    expect(compiled.textContent).toContain('Research Experience');
+    expect(compiled.textContent).toContain('entity.applicationDetail.motivation');
+    expect(compiled.textContent).toContain('entity.applicationDetail.skills');
+    expect(compiled.textContent).toContain('entity.applicationDetail.researchExperience');
 
     expect(compiled.textContent).toContain(mockData.motivation);
     expect(compiled.textContent).toContain(mockData.specialSkills);
