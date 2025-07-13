@@ -1,347 +1,155 @@
-# Doctorate Application Website Documentation
+# User Flow Documentation 📚
 
-## Table of Contents
+## 1. User Flow Overview 🔄
 
-1. [Overview](#1-overview)
-2. [Applicant Features](#2-applicant-features)
+The Job Module consists of two main user types with distinct workflows:
 
-- 2.1 [Find Positions Page](#21-find-positions-page)
-- 2.2 [Job Detail Page](#22-job-detail-page)
-
-3. [Professor Features](#3-professor-features)
-
-- 3.1 [Position Management Dashboard](#31-position-management-dashboard)
-- 3.2 [Position Creation Form](#32-position-creation-form)
-- 3.3 [Job Detail Page (Professor View)](#33-position-detail-page-professor-view)
-
-4. [User Workflows](#4-user-workflows)
-5. [System Benefits](#5-system-benefits)
-6. [Future Enhancements](#6-future-enhancements)
+- **Applicants**: Browse and apply for doctorate positions
+- **Professors**: Create, manage, and monitor their posted positions
 
 ---
 
-## 1. Overview
+## 2. User Workflows Description 📋
 
-This documentation covers the key features and user flows for the job module of the TUMApply website, designed to connect professors with potential doctoral candidates. The platform provides two main user perspectives: **applicants** seeking positions and **professors** creating and managing job postings.
+### 2.1 Applicant Workflow 🎓
 
-The system supports a complete lifecycle from position creation to position management, with distinct interfaces optimized for each user type.
+#### Step 1: Browse Available Positions
+
+Navigate to the "Find Positions" page to discover available doctorate opportunities displayed as job cards.
+
+--TODO: Screencast of Find Positions --
+
+#### Step 2: View Position Details
+
+Click on any job card to access the detailed job information page, which includes:
+
+- Key details
+- Complete job description
+- tasks and responsibilities
+- Eligibility criteria
+- Research area description
+
+The bottom of the page features an "Apply" button that allows applicants to start the doctorate application process.
+Applicants can navigate back to the previous page using the "Back" button, if they prefer to browse further positions.
+
+--TODO: Screencast of Job Details (Applicant)--
+
+### 2.2 Professor Workflow 👨‍🏫
+
+#### Step 1: Create New Position 📝
+
+Professors can navigate to the Job Creation Form when clicking on "Create Position" in the sidebar, and access the job creation form through a multi-step process:
+
+##### Page 1: Basic Information
+
+Fill out fundamental details including:
+
+- Job Title
+- Research Area
+- Field of Studies
+- Funding Type
+- Optional contract duration
+
+##### Page 2: Position Details
+
+Complete essential information for applicants:
+
+- Detailed job description
+- Key tasks and responsibilities
+- Eligibility criteria requirements
+
+##### Page 3: Additional Information
+
+Review and confirm additional details:
+
+- Data privacy information (displayed for all positions)
+
+If professors would like to continue updating the job details at a later date, they can save the currently filled-out job as a draft.
+
+--TODO: Screencast of job creation form--
+
+#### Step 2: Manage Positions Dashboard 📊
+
+Navigate to "My Positions" page to view all created doctorate positions with dynamic action buttons:
+
+##### Available Actions:
+
+- **👁️ View Details**: Access complete position information
+- **✏️ Edit/Refine**: Available for draft positions to make changes before publishing
+- **🗑️ Delete**: Remove draft positions that won't be published
+- **🔒 Close**: Close published positions and notify all applicants
+
+--TODO: Screencast of My Positions --
+
+#### Step 3: Edit Draft Positions ✏️
+
+Access the editing interface for draft positions where:
+
+- All previously saved information is pre-filled
+- Professors can refine details before publishing
+- Changes can be made to any section of the form
+
+--TODO: Screencast of editing page --
+
+#### Step 4: Professor Job Detail View 🔍
+
+View position details from the professor perspective, which includes:
+
+- Current job state indicator
+- Dynamic action buttons based on position status
+- Enhanced controls compared to applicant view
+
+--TODO: Screencast of job detail page (Professor) --
+
+#### Step 5: Job Closing / Deletion 🔒🗑️
+
+Manage the lifecycle end of a position.
+
+**Closing a Published Position**:
+
+- When the professor clicks the "Close" button on a published position, the system updates the job’s state from **Published** to **Closed**.
+- A status badge visibly reflects this change in the interface.
+- Notifications are automatically sent to all applicants who previously submitted applications for the position, informing them that positions will no longer be reviewed.
+
+**Deleting a Draft Position**:
+
+- A professor can also delete a draft position using the **Delete** button.
+- Upon confirmation, the draft is permanently removed from the dashboard and cannot be recovered.
+
+## --TODO: Add screencast of closing a published position and deleting a draft position --
+
+## 3. Key Features Summary ⭐
+
+### For Applicants:
+
+- 🔍 **Position Discovery**: Browse available positions through intuitive job cards
+- 📖 **Detailed Information**: Access comprehensive job details before applying
+- 📝 **Easy Application**: Streamlined application process
+
+### For Professors:
+
+- 📋 **Multi-step Creation**: Structured form for complete position definition
+- 🎛️ **Dynamic Management**: Context-aware action buttons for position control
+- 📊 **Centralized Dashboard**: All positions managed from single interface
+- ✏️ **Flexible Editing**: Edit drafts with pre-filled information
+- 🔄 **Status Management**: Real-time position state tracking
 
 ---
 
-## 2. Applicant Features
+## 4. Position States 🔄
 
-### 2.1 Find Positions Page
-
----TODO---
-
-#### 2.1.1 Purpose
-
-The **Find Positions** page serves as the main discovery hub where applicants can browse available doctorate positions across various fields and institutions.
-
-#### 2.1.2 Position Cards Display
-
-Positions are displayed as organized cards in a responsive grid layout. Each card contains:
-
-- **Position Title**: Clear job titles (e.g., "EdTech Interface Designer", "Carbon Capture Researcher")
-- **Field of Study**: Academic discipline (Informatics, Environmental Science, Data Science, etc.)
-- **Location**: Geographic location (Garching, Heilbronn, Straubing, etc.)
-- **Supervisor Name**: Responsible faculty member (Stephan Krusche, etc.)
-- **Workload Percentage**: Time commitment (20%, 30%, 40%, etc.)
-- **Start Date**: Position commencement date (01.11.2025, 15.10.2025, etc.)
-- **Posted Timeline**: Time since publication ("5 months ago")
-
-#### 2.1.3 Interactive Elements
-
-- **View Button**: Access detailed position information
-- **Apply Button**: Direct application submission for interested candidates
-- **Pagination Controls**: Navigate through multiple pages of positions
-
-### 2.2 Job Detail Page
-
-#### 2.2.1 Purpose
-
-Provides comprehensive information about a specific doctorate position to help applicants make informed decisions before applying.
-
-#### 2.2.2 Position Overview Section
-
-Contains essential position details:
-
-- **Field of Studies**: Academic discipline classification
-- **Research Area**: Specific focus area within the field
-- **Workload**: Time commitment requirements (in hours/week)
-- **Contract Duration**: Employment period specifications (in years)
-- **Funding Type**: Financial support classification (Research Grant, etc.)
-- **Start Date**: Position commencement timeline
-- **Creation Date**: When position was first posted
-- **Last Modified**: Most recent update timestamp
-
-#### 2.2.3 Research Group Information
-
-Displays comprehensive contact and organizational details:
-
-- **Research Group**: Name of the academic research team or lab offering the position (e.g., Applied Education Technologies)
-- **Contact Email**: Direct communication channel (e.g. aet@tum.de)
-- **Website**: Research group web presence (e.g. https://aet.cit.tum.de)
-- **Physical Address**:
-  - Street address (e.g. Boltzmannstrasse 3)
-  - Postal code and city (e.g. 85748 Garching b. München)
-
-#### 2.2.4 Position Details Section
-
-Provides specific job information:
-
-- **Project Description**: Detailed explanation of research project
-- **Key Tasks & Responsibilities**: Expected duties and activities
-- **Requirements**: Qualifications and prerequisites for applicants
-
-#### 2.2.5 Data Protection Information
-
-Comprehensive GDPR compliance section including:
-
-- **Privacy Notice**: Data collection and processing explanation
-- **Legal Framework**: Reference to Art. 13 DSGVO (General Data Protection Regulation)
-- **Consent Information**: Clear explanation of data usage rights
-
-#### 2.2.6 Navigation Controls
-
-- **Back Button**: Return to previous page
-- **Apply Button**: Initiate application process
+| State               | Description                                                                                     | Available Actions  |
+| ------------------- | ----------------------------------------------------------------------------------------------- | ------------------ |
+| **Draft**           | Position created but not published                                                              | Edit, Delete, View |
+| **Published**       | Position live and accepting applications                                                        | View, Close        |
+| **Applicant Found** | An applicant has been selected; position remains visible but not accepting further applications | View               |
+| **Closed**          | Position no longer accepting applications                                                       | View               |
 
 ---
 
-## 3. Professor Features
-
-### 3.1 Position Management Dashboard
-
-#### 3.1.1 Purpose
-
-Central management hub where professors can oversee all their posted doctorate positions with comprehensive status tracking and action capabilities.
-
-#### 3.1.2 Position Management Table Structure
-
-The dashboard displays positions in a structured table format with the following columns:
-
-- **Selection Checkbox**: Bulk selection for multiple positions
-- **Supervising Professor**: Faculty member responsible for the position
-- **Job Title**: Position name and description
-- **Status**: Current position state with visual indicators
-- **Start Date**: Position commencement timeline
-- **Created**: Position creation timestamp
-- **Last Modified**: Most recent update timestamp
-- **Actions**: Context-sensitive management buttons
-
-#### 3.1.3 Status Types and Visual Indicators
-
-##### Closed Status
-
-- **Visual Indicator**: Red badge with "Closed" text
-- **Meaning**: Position is no longer accepting applications
-- **Example**: "Time Series Forecasting Intern"
-
-##### Applicant Found Status
-
-- **Visual Indicator**: Orange badge with "Applicant Found" text
-- **Meaning**: Suitable candidate has been identified
-- **Example**: "Automated Grading Researcher"
-
-##### Published Status
-
-- **Visual Indicator**: Green badge with "Published" text
-- **Meaning**: Position is live and accepting applications
-- **Examples**: "EdTech Interface Designer", "Gamification in Education Intern"
-
-##### Draft Status
-
-- **Visual Indicator**: Gray badge with "Draft" text
-- **Meaning**: Position is being prepared but not yet published
-- **Example**: "Learning Analytics Researcher"
-
-#### 3.1.4 Dynamic Action Buttons
-
-##### View Button
-
-- **Availability**: All positions regardless of status
-- **Function**: Access detailed position information
-- **Styling**: Blue background with white text
-
-##### Edit Button
-
-- **Availability**: All positions regardless of status
-- **Function**: Modify position details and specifications
-- **Styling**: Blue background with white text
-
-##### Delete Button
-
-- **Availability**: Draft positions only
-- **Function**: Remove unpublished positions from the system
-- **Styling**: Red background with white text
-- **Use Case**: When professor decides not to proceed with a draft position
-
-##### Close Button
-
-- **Availability**: Published positions only
-- **Function**: End application acceptance and notify all applicants
-- **Styling**: Red outline with red text
-- **Process**: Automatically sends notifications to all applicants about position closure
-
-### 3.2 Position Creation Form
-
-#### 3.2.1 Purpose
-
-Comprehensive multi-step form allowing professors to create detailed doctorate position postings with all necessary information for potential applicants.
-
-#### 3.2.2 Step 1: Basic Information
-
-##### Required Fields
-
-- **Job Title**:
-
-  - Input type: Text field
-  - Placeholder: "e.g. Doctoral Position in Robotics"
-  - Validation: Required field (indicated by red asterisk)
-
-- **Field of Studies**:
-
-  - Input type: Dropdown selection
-  - Validation: Required field
-  - Placeholder: "Select a Field of Studies..."
-
-- **Location**:
-
-  - Input type: Dropdown selection
-  - Validation: Required field
-  - Placeholder: "Select a Location..."
-
-- **Funding Type**:
-  - Input type: Dropdown selection
-  - Validation: Required field
-  - Placeholder: "Select a Funding Type..."
-
-##### Research Details
-
-- **Research Area**:
-
-  - Input type: Text field
-  - Placeholder: "e.g. Machine Learning, Human-Computer Interaction"
-  - Validation: Optional field with informational tooltip
-
-- **Supervising Professor**:
-  - Input type: Pre-populated field
-  - Value: "Anna Professorin"
-  - Status: Non-editable (grayed out)
-
-##### Timeline and Workload
-
-- **Start Date**:
-
-  - Input type: Date picker interface
-  - Placeholder: "Select a Start Date..."
-  - Feature: Calendar icon for easy selection
-
-- **Workload**:
-
-  - Input type: Dropdown selection
-  - Placeholder: "Select a Workload..."
-  - Validation: Optional field
-
-- **Contract Duration**:
-  - Input type: Dropdown selection
-  - Placeholder: "Select a Contract Duration..."
-  - Validation: Optional field
-
-##### Form Controls
-
-- **Cancel Button**: Return to previous page without saving changes
-- **Next Button**: Continue to position details step
-
-#### 3.2.3 Step 2: Position Details
-
-Multi-section form for detailed position information including project description, key tasks, and requirements.
-
-#### 3.2.4 Step 3: Additional Information
-
-Final step containing data protection information and additional terms applicable to all positions.
-
-### 3.3 Position Detail Page (Professor View)
-
-#### 3.3.1 Purpose
-
-Provides professors with a comprehensive view of their position details, including status indicators and management capabilities not available to applicants.
-
-#### 3.3.2 Status Display
-
-- **Current Status**: Prominently displayed in the top-right corner
-- **Visual Design**: Matches status indicators from the management dashboard
-- **Dynamic Updates**: Changes based on position lifecycle
-
-#### 3.3.3 Status-Dependent Actions
-
-The available actions mirror those from the "My Positions" dashboard:
-
-- **Draft Positions**: Edit and Delete options available
-- **Published Positions**: View and Close options available
-- **Closed Positions**: View-only access
-- **Applicant Found Status**: Position-specific management tools
-
-#### 3.3.4 Enhanced Information Display
-
-Contains the same comprehensive information as the applicant view, but with additional management context and editing capabilities for the position owner.
-
----
-
-## 4. User Workflows
-
-### 4.1 Applicant Workflow
-
-1. **Browse Positions**: Navigate the "Find Positions" page to discover available opportunities
-2. **Review Details**: Access comprehensive position information through detail pages
-3. **Submit Application**: Apply for suitable positions using the integrated application system
-4. **Receive Updates**: Get notifications about application status and position changes
-
-### 4.2 Professor Workflow
-
-1. **Create Position**: Use the multi-step form to define new doctorate positions
-2. **Save as Draft**: Preserve progress for later completion and refinement
-3. **Publish Position**: Make position live and available for applications
-4. **Monitor Applications**: Track application status and position metrics
-5. **Edit Position**: Modify position details as needed throughout the lifecycle
-6. **Close Position**: End application acceptance when suitable candidate is found
-
----
-
-## 5. System Benefits
-
-### 5.1 For Applicants
-
-- **Efficient Discovery**: Intuitive browsing interface for finding relevant positions
-- **Comprehensive Information**: All necessary details consolidated in one location
-- **Streamlined Application**: Simplified application process with clear requirements
-
-### 5.2 For Professors
-
-- **Centralized Management**: Single dashboard for overseeing all positions
-- **Flexible Workflow**: Support for draft, publish, and close position states
-- **Status Tracking**: Clear visibility of position lifecycle and application status
-- **Dynamic Actions**: Context-appropriate management tools based on position state
-
----
-
-## 6. Future Enhancements
-
-### 6.1 Applicant Features
-
-- **Advanced Filtering**: Enhanced search capabilities with multiple criteria
-- **Application Tracking**: Personal dashboard for monitoring application status
-- **Saved Positions**: Bookmark functionality for positions of interest
-
-### 6.2 Professor Features
-
-- **Analytics Dashboard**: Detailed statistics on application metrics and trends
-- **Bulk Operations**: Multi-select actions for position management
-- **Application Review Tools**: Integrated candidate evaluation system
-
-### 6.3 System-Wide Improvements
-
-- **Communication Tools**: Direct messaging between professors and applicants
-- **Mobile Optimization**: Enhanced mobile experience for all user types
-- **Integration Features**: API connections with external academic systems
+## 5. User Experience Highlights 🌟
+
+- **Intuitive Navigation**: Clear pathways for both user types
+- **Pre-filled Forms**: Editing maintains previously saved information
+- **Dynamic Interface**: Action buttons adapt to current position state
+- **Comprehensive Management**: Complete position lifecycle control
