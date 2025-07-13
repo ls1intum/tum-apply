@@ -44,12 +44,12 @@ VALUES
  '<p>Design and evaluate learning interfaces for our educational platforms. You will work closely with researchers and developers to create intuitive user experiences.</p>',
  '<ul><li>Create wireframes and prototypes using Figma</li><li>Conduct usability studies with students</li><li>Iterate designs based on feedback</li></ul>',
  '<ul><li>Currently enrolled in Design, HCI or related program</li><li>Experience with design tools</li><li>Understanding of UX principles</li></ul>',
- 'PUBLISHED', '2025-11-01', '2025-01-20 14:15:00', '2025-01-25 16:45:00'),
+ 'CLOSED', '2025-11-01', '2025-01-20 14:15:00', '2025-01-25 16:45:00'),
 
-('00000000-0000-0000-0000-000000020004', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Data Science', 'Time Series Analysis', 'MUNICH', 30, 2, 'RESEARCH_GRANT', 'Time Series Forecasting Intern',
- '<p>Predict trends using large-scale time-series data from educational platforms. Work with our data science team to implement forecasting models.</p>',
- '<ul><li>Implement ARIMA/LSTM models</li><li>Clean and preprocess time-series data</li><li>Evaluate model performance</li></ul>',
- '<ul><li>CS or Statistics MSc student</li><li>Python programming skills</li><li>Basic understanding of ML</li></ul>',
+('00000000-0000-0000-0000-000000020004', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Informatics', 'Learning Analytics', 'MUNICH', 30, 2, 'RESEARCH_GRANT', 'Student Engagement Analytics Intern',
+ '<p>Join the AET research group to explore how time-series data can enhance student engagement in digital learning environments. This internship focuses on analyzing interaction patterns and developing models to support adaptive educational technologies.</p>',
+ '<ul><li>Analyze behavioral data from online learning platforms</li><li>Develop engagement forecasting models using tools like ARIMA or LSTM</li><li>Collaborate with UX designers and educational researchers to translate findings into platform improvements</li></ul>',
+ '<ul><li>Enrolled in a Master’s program in Data Science, HCI, Educational Technology, or related fields</li><li>Experience with Python and time-series analysis</li><li>Interest in data-driven learning innovation and user-centered design</li></ul>',
  'CLOSED', '2025-09-01', '2025-01-05 11:20:00', '2025-06-30 09:00:00'),
 
 ('00000000-0000-0000-0000-000000020005', '00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000001', 'Informatics', 'Assessment Technology', 'GARCHING', 40, 3, 'RESEARCH_GRANT', 'Automated Grading Researcher',
@@ -278,10 +278,10 @@ VALUES
  '<ul><li>Geo or Physics MSc</li><li>Data analysis skills</li></ul>',
  'PUBLISHED', '2025-09-01', '2025-01-20 14:00:00', '2025-01-25 16:00:00'),
 
-('00000000-0000-0000-0000-000000020044', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Urban Planning', 'Green Infrastructure', 'GARCHING_HOCHBRUECK', 25, 2, 'FULLY_FUNDED', 'Smart Green City Intern',
- '<p>Design sustainable urban green spaces for climate resilience.</p>',
- '<ul><li>GIS analysis</li><li>Design proposals</li><li>Community engagement</li></ul>',
- '<ul><li>Urban Planning or Landscape Architecture</li><li>Design skills</li></ul>',
+('00000000-0000-0000-0000-000000020044', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Urban Planning', 'Green Infrastructure', 'GARCHING_HOCHBRUECK', 25, 2, 'FULLY_FUNDED', 'Urban Green Resilience Intern',
+ '<p>Contribute to the design of climate-resilient urban green spaces through a participatory and data-driven approach.</p>',
+ '<ul><li>Conduct climate impact assessments for urban areas</li><li>Develop green infrastructure design alternatives</li><li>Facilitate participatory workshops</li></ul>',
+ '<ul><li>Background in Urban Ecology, Planning, or Landscape Architecture</li><li>Strong communication and design skills</li></ul>',
  'CLOSED', '2025-07-01', '2025-01-05 09:00:00', '2025-06-30 10:00:00'),
 
 ('00000000-0000-0000-0000-000000020045', '11111111-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000009', 'Geosciences', 'Remote Sensing', 'GARCHING', 30, 2, 'GOVERNMENT_FUNDED', 'Remote Sensing Research Assistant',

@@ -97,7 +97,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
 
        ('00000000-0000-0000-0000-300000020005', '11111111-0000-0000-0000-000000000006',
         '00000000-0000-0000-0000-000000020004',
-        'SENT', '2025-10-15',
+        'JOB_CLOSED', '2025-10-15',
         'Research on approximation algorithms for network problems. Implemented several graph algorithms in Python. Coursework in advanced algorithms.',
         'Python, C++, Algorithms, Complexity Theory',
         'I am fascinated by theoretical computer science and want to gain research experience in algorithms before applying to PhD programs.',
@@ -105,7 +105,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
 
        ('00000000-0000-0000-0000-300000020006', '11111111-0000-0000-0000-000000000007',
         '00000000-0000-0000-0000-000000020004',
-        'IN_REVIEW', '2025-09-01',
+        'JOB_CLOSED', '2025-09-01',
         'Developed optimization algorithms for scheduling problems. Published paper on parallel algorithms. Teaching assistant for algorithms course.',
         'Java, Algorithm Design, Mathematical Proofs, LaTeX',
         'My background in discrete mathematics and algorithm design makes me well-suited for this research position. I enjoy both theoretical and practical aspects of algorithms.',
@@ -113,7 +113,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
 
        ('00000000-0000-0000-0000-300000020007', '11111111-0000-0000-0000-000000000030',
         '00000000-0000-0000-0000-000000020005',
-        'ACCEPTED', '2025-09-01',
+        'IN_REVIEW', '2025-09-01',
         'Research on quantum algorithms for machine learning. Implemented quantum circuits for optimization problems. Published paper on quantum error correction.',
         'Qiskit, Python, Quantum Computing, Linear Algebra',
         'I have experience with quantum algorithms and want to contribute to research that pushes the boundaries of quantum computing applications.',
