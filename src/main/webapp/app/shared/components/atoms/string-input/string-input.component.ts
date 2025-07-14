@@ -15,7 +15,7 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
 })
 export class StringInputComponent extends BaseInputDirective<string> {
-  tooltipText = input<string | undefined>(undefined); // TODO - extend it to the numberinput and editor field as well
+  tooltipText = input<string | undefined>(undefined);
 
   onInputChange(value: string): void {
     this.modelChange.emit(value);

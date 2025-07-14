@@ -182,6 +182,8 @@ server:
     session:
       cookie:
         http-only: true
+        secure: true
+        same-site: Strict
 
 springdoc:
   show-actuator: true

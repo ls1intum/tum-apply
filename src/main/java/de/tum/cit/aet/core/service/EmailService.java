@@ -161,7 +161,9 @@ public class EmailService {
      * @throws MessagingException if attachment fails
      */
     private void attachDocuments(Email email, MimeMessageHelper helper) throws IOException, MessagingException {
-        if (email.getDocumentIds() == null) return;
+        if (email.getDocumentIds() == null) {
+            return;
+        }
 
         int count = 1;
         for (UUID documentId : email.getDocumentIds()) {
