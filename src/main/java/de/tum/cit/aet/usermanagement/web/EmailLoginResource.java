@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.usermanagement.dto.LoginRequestDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.time.Duration;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,7 @@ public class EmailLoginResource {
      * @throws UnauthorizedException if login credentials are invalid
      */
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
         String token = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
 
         ResponseCookie cookie = ResponseCookie.from("access_token", token)
