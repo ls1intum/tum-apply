@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.core.exception.UnauthorizedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -9,25 +10,26 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public class KeycloakAuthenticationService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${keycloak.auth-server-url}")
-    private String keycloakAuthUrl;
+    @Value("${KEYCLOAK_URL}")
+    private String keycloakUrl;
 
-    @Value("${keycloak.realm}")
+    @Value("${KEYCLOAK_REALM}")
     private String realm;
 
-    @Value("${keycloak.resource}")
+    @Value("${KEYCLOAK_SERVER_CLIENT_ID}")
     private String clientId;
 
-    @Value("${keycloak.credentials.secret}")
+    @Value("${KEYCLOAK_SERVER_CLIENT_SECRET}")
     private String clientSecret;
 
     public String loginWithCredentials(String email, String password) {
-        String tokenUrl = keycloakAuthUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+        String tokenUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/token";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
