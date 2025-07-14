@@ -16,16 +16,16 @@ public class KeycloakAuthenticationService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${KEYCLOAK_URL}")
+    @Value("${KEYCLOAK_URL:http://localhost:9080}")
     private String keycloakUrl;
 
-    @Value("${KEYCLOAK_REALM}")
+    @Value("${KEYCLOAK_REALM:tumapply}")
     private String realm;
 
-    @Value("${KEYCLOAK_SERVER_CLIENT_ID}")
+    @Value("${KEYCLOAK_SERVER_CLIENT_ID:server-client}")
     private String clientId;
 
-    @Value("${KEYCLOAK_SERVER_CLIENT_SECRET}")
+    @Value("${KEYCLOAK_SERVER_CLIENT_SECRET:my-secret}")
     private String clientSecret;
 
     public String loginWithCredentials(String email, String password) {
