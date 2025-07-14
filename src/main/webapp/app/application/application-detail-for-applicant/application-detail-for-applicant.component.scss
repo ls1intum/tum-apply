@@ -24,11 +24,3 @@ $detail-card-2-column-max-width: bp.$xl;
     width: 100%;
   }
 }
-
-.document-viewer-width {
-  width: 20rem;
-
-  @media (max-width: $detail-card-2-column-max-width) {
-    width: 100%;
-  }
-}

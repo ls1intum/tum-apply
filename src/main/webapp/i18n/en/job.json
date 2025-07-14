@@ -81,7 +81,15 @@
   },
   "jobOverviewPage": {
     "title": "Find Your Perfect Position",
-    "noJobsFound": "No Jobs Found."
+    "noJobsFound": "No Jobs Found.",
+    "sortingOptions": {
+      "startDate": "Start Date",
+      "jobTitle": "Job Title",
+      "fieldOfStudies": "Field of Studies",
+      "location": "Location",
+      "professor": "Professor",
+      "workload": "Workload"
+    }
   },
   "myPositionsPage": {
     "header": {
@@ -95,6 +103,13 @@
       "startDate": "Start Date",
       "created": "Created",
       "lastModified": "Last Modified"
+    },
+    "sortingOptions": {
+      "lastModified": "Last Modified",
+      "jobTitle": "Job Title",
+      "status": "Status",
+      "startDate": "Start Date",
+      "created": "Created"
     }
   },
   "jobDetailPage": {

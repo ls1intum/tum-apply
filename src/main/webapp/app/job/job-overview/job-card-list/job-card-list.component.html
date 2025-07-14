@@ -4,6 +4,7 @@
   (sortChange)="loadOnSortEmit($event)"
   [singleEntity]="'job' | translate"
   [multipleEntities]="'jobs' | translate"
+  [shouldTranslate]="true"
 />
 @if (jobs().length > 0) {
   <div class="job-card-grid">
