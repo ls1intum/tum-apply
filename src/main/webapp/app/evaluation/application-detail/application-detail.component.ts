@@ -174,6 +174,11 @@ export class ApplicationDetailComponent {
 
     if (application) {
       this.updateCurrentApplicationState('ACCEPTED');
+
+      if (acceptDTO.closeJob === true) {
+        // update the state of all applications in memory for this job
+        this.rejectOtherApplicationsOfJob(application.jobId ?? '');
+      }
       this.reviewDialogVisible.set(false);
       await firstValueFrom(this.evaluationResourceService.acceptApplication(application.applicationDetailDTO.applicationId, acceptDTO));
     }
@@ -231,6 +236,26 @@ export class ApplicationDetailComponent {
         applicationState: newState,
       },
     });
+  }
+
+  /**
+   * sets the Application State of all Applications (in memory) to "REJECTED" for a specific job
+   */
+  rejectOtherApplicationsOfJob(jobId: string): void {
+    this.applications.update(apps =>
+      apps.map(application =>
+        application.jobId === jobId &&
+        (application.applicationDetailDTO.applicationState === 'SENT' || application.applicationDetailDTO.applicationState === 'IN_REVIEW')
+          ? {
+              ...application,
+              applicationDetailDTO: {
+                ...application.applicationDetailDTO,
+                applicationState: 'REJECTED',
+              },
+            }
+          : application,
+      ),
+    );
   }
 
   /**

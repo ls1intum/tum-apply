@@ -7,11 +7,13 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.dto.ProfessorDTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationEvaluationDetailDTO(
     @NotNull ApplicationDetailDTO applicationDetailDTO,
     ProfessorDTO professor,
+    UUID jobId,
     Integer rating,
     LocalDateTime appliedAt
 ) {
@@ -26,6 +28,7 @@ public record ApplicationEvaluationDetailDTO(
         return new ApplicationEvaluationDetailDTO(
             ApplicationDetailDTO.getFromEntity(application, job),
             ProfessorDTO.fromEntity(job.getSupervisingProfessor()),
+            job.getJobId(),
             application.getRating(),
             application.getCreatedAt()
         );

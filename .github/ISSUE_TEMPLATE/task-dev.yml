@@ -1,0 +1,14 @@
+name: '🐛 Task (Developer)'
+description: Task for TumApply
+labels: [task]
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: What needs to be done?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Notes
+      description: Which page is affected? Any other relevant information?

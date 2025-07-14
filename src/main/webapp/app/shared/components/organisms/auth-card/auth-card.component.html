@@ -10,14 +10,24 @@
       <p-tab [value]="1">Professor / Supervisor</p-tab>
     </p-tablist>
     <p-tabpanels>
+      <!-- Students / Applicants -->
       <p-tabpanel [value]="0" class="login-panel">
         @if (mode() === 'register') {
           <p class="login-description">
             {{ 'Create an account with one of these providers to start your application journey.' }}
           </p>
         }
-        <jhi-button-group [data]="studentButtons()" class="login-providers" />
+        <jhi-button
+          (click)="onEmailLogin()"
+          [fullWidth]="true"
+          [label]="mode() === 'register' ? 'Register with Email' : 'Sign in with Email'"
+        />
+        <!--        <jhi-credentials-group [submitHandler]="onEmailLogin" />-->
+        <p-divider align="center">OR</p-divider>
+        <jhi-button-group [data]="identityProvider()" class="login-providers" />
       </p-tabpanel>
+
+      <!-- Professors / Supervisors -->
       <p-tabpanel [value]="1" class="login-panel">
         <p class="login-description">
           {{

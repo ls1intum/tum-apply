@@ -48,7 +48,7 @@
         severity="primary"
         (click)="onViewApplication(row.applicationId)"
       />
-      @if (['SENT', 'IN_REVIEW', 'REJECTED'].includes(row.applicationState)) {
+      @if (['SENT', 'IN_REVIEW'].includes(row.applicationState)) {
         <jhi-button
           [label]="'entity.applicationOverview.actions.withdraw' | translate"
           severity="danger"

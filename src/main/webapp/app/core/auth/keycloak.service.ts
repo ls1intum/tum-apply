@@ -3,6 +3,12 @@ import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 
 import { environment } from '../../environments/environment';
 
+export enum IdpProvider {
+  Google = 'google',
+  Microsoft = 'microsoft',
+  Apple = 'apple',
+}
+
 export interface UserProfile {
   sub: string;
   email: string;
@@ -28,7 +34,7 @@ export class KeycloakService {
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: false,
+      checkLoginIframe: true,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
     };
@@ -63,12 +69,26 @@ export class KeycloakService {
   }
 
   /**
+   * Triggers the Keycloak login flow for a specific provider (idpHint).
+   */
+  async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
+    try {
+      await this.keycloak.login({
+        redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
+        idpHint: provider,
+      });
+    } catch (err) {
+      console.error(`Login with provider ${provider} failed:`, err);
+    }
+  }
+
+  /**
    * Triggers the Keycloak logout and redirect.
    */
-  async logout(): Promise<void> {
+  async logout(redirectUri?: string): Promise<void> {
     try {
       await this.keycloak.logout({
-        redirectUri: window.location.origin + '/',
+        redirectUri: redirectUri ?? window.location.origin + '/',
       });
     } catch (err) {
       console.error('Logout failed:', err);

@@ -294,6 +294,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 ap.email,
                 ap.firstName,
                 ap.lastName,
+                ap.selectedLanguage,
                 a.state
             )
             FROM Application a
