@@ -28,6 +28,14 @@ public class KeycloakAuthenticationService {
     @Value("${KEYCLOAK_SERVER_CLIENT_SECRET:my-secret}")
     private String clientSecret;
 
+    /**
+     * Authenticates a user against the Keycloak server using their email and password.
+     *
+     * @param email    the email address of the user (used as username)
+     * @param password the user's password
+     * @return a valid access token as a String if authentication is successful
+     * @throws UnauthorizedException if authentication fails or the token response is invalid
+     */
     public String loginWithCredentials(String email, String password) {
         String tokenUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/token";
 

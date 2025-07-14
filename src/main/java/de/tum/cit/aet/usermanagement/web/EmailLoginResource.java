@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.usermanagement.dto.LoginRequestDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,14 @@ public class EmailLoginResource {
 
     private final KeycloakAuthenticationService keycloakAuthenticationService;
 
+    /**
+     * Authenticates a user via email and password and sets an access token as an HttpOnly cookie.
+     *
+     * @param loginRequest the DTO containing the user's email and password
+     * @param response     the HTTP servlet response used to set the authentication cookie
+     * @return HTTP 200 OK if login is successful and the cookie is set
+     * @throws UnauthorizedException if login credentials are invalid
+     */
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
         String token = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
