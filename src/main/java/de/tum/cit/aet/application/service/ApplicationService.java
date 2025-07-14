@@ -17,6 +17,7 @@ import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -70,7 +71,14 @@ public class ApplicationService {
         if (applicationRepository.existsByApplicantUserIdAndJobJobId(jobId, userId)) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        Applicant applicant = applicantRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("userId", userId));
+        Optional<Applicant> applicantOptional = applicantRepository.findById(userId); //.orElseThrow(() -> EntityNotFoundException.forId("userId", userId));
+        Applicant applicant;
+        if (applicantOptional.isEmpty()) {
+            createApplicant(userId);
+            applicant = applicantRepository.findById(userId).orElseThrow();
+        } else {
+            applicant = applicantOptional.get();
+        }
 
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
@@ -475,6 +483,7 @@ public class ApplicationService {
     public void renameDocument(UUID documentId, String newName) {
         documentDictionaryService.renameDocument(documentId, newName);
     }
+
     /**
      * Create an applicant
      *
@@ -495,4 +504,23 @@ public class ApplicationService {
     // Applicant newApplicant = (Applicant) user;
     // applicantRepository.save(newApplicant);
     // }
+
+    void createApplicant(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        Applicant applicant = new Applicant();
+        applicant.setUserId(userId);
+        applicant.setFirstName(user.getFirstName());
+        applicant.setLastName(user.getLastName());
+        applicant.setGender(user.getGender());
+        applicant.setNationality(user.getNationality());
+        applicant.setBirthday(user.getBirthday());
+        applicant.setPhoneNumber(user.getPhoneNumber());
+        applicant.setWebsite(user.getWebsite());
+        applicant.setLinkedinUrl(user.getLinkedinUrl());
+        applicant.setSelectedLanguage(user.getSelectedLanguage());
+        applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
+        applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);
+
+        applicantRepository.save(applicant);
+    }
 }
