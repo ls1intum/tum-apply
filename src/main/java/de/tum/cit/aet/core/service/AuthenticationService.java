@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -33,28 +34,42 @@ public class AuthenticationService {
     @Transactional
     public User provisionUserIfMissing(Jwt jwt) {
         UUID userId = UUID.fromString(jwt.getSubject());
-        User user = userRepository
-            .findWithResearchGroupRolesByUserId(userId)
-            .orElseGet(() -> {
-                User newUser = new User();
-                newUser.setUserId(userId);
-                newUser.setSelectedLanguage("en");
-                return newUser;
-            });
-
-        user.setEmail(jwt.getClaimAsString("email").toLowerCase(Locale.ROOT));
-        user.setFirstName(jwt.getClaimAsString("given_name"));
-        user.setLastName(jwt.getClaimAsString("family_name"));
-        userRepository.save(user);
-
-        boolean hasRoles = userResearchGroupRoleRepository.existsByUserUserId(user.getUserId());
+        boolean hasRoles = userResearchGroupRoleRepository.existsByUserUserId(userId);
+        User user;
         if (!hasRoles) {
+            user = userRepository
+                .findWithResearchGroupRolesByUserId(userId)
+                .orElseGet(() -> {
+                    Applicant newUser = new Applicant();
+                    newUser.setUserId(userId);
+                    newUser.setSelectedLanguage("en");
+                    return newUser;
+                });
+
+            user.setEmail(jwt.getClaimAsString("email").toLowerCase(Locale.ROOT));
+            user.setFirstName(jwt.getClaimAsString("given_name"));
+            user.setLastName(jwt.getClaimAsString("family_name"));
+            userRepository.save(user);
+
             UserResearchGroupRole defaultRole = new UserResearchGroupRole();
             defaultRole.setUser(user);
             defaultRole.setRole(UserRole.APPLICANT);
             userResearchGroupRoleRepository.save(defaultRole);
-        }
+        } else {
+            user = userRepository
+                .findWithResearchGroupRolesByUserId(userId)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUserId(userId);
+                    newUser.setSelectedLanguage("en");
+                    return newUser;
+                });
 
+            user.setEmail(jwt.getClaimAsString("email").toLowerCase(Locale.ROOT));
+            user.setFirstName(jwt.getClaimAsString("given_name"));
+            user.setLastName(jwt.getClaimAsString("family_name"));
+            userRepository.save(user);
+        }
         return user;
     }
 }
