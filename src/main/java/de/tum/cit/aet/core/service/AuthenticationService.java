@@ -49,7 +49,7 @@ public class AuthenticationService {
             user.setEmail(jwt.getClaimAsString("email").toLowerCase(Locale.ROOT));
             user.setFirstName(jwt.getClaimAsString("given_name"));
             user.setLastName(jwt.getClaimAsString("family_name"));
-            userRepository.save(user);
+            user = userRepository.save(user);
 
             UserResearchGroupRole defaultRole = new UserResearchGroupRole();
             defaultRole.setUser(user);
@@ -68,7 +68,7 @@ public class AuthenticationService {
             user.setEmail(jwt.getClaimAsString("email").toLowerCase(Locale.ROOT));
             user.setFirstName(jwt.getClaimAsString("given_name"));
             user.setLastName(jwt.getClaimAsString("family_name"));
-            userRepository.save(user);
+            user = userRepository.save(user);
         }
         return user;
     }
