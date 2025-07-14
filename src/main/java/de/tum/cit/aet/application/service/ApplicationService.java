@@ -167,7 +167,71 @@ public class ApplicationService {
         applicant.setMasterUniversity(applicantDTO.masterUniversity());
         applicantRepository.save(applicant);
 
-        return applicationRepository.findDtoById(updateApplicationDTO.applicationId());
+        ApplicationForApplicantDTO application = applicationRepository.findDtoById(updateApplicationDTO.applicationId());
+
+        if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
+            UUID jobId = application.job().jobId();
+            Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
+            User supervisingProfessor = job.getSupervisingProfessor();
+
+            confirmApplicationToApplicant(applicant.getEmail(), applicant.getSelectedLanguage(), application, job);
+            confirmApplicationToProfessor(supervisingProfessor.getEmail(), supervisingProfessor.getSelectedLanguage(), application, job);
+        }
+        return application;
+    }
+
+    private void confirmApplicationToApplicant(
+        String applicantEmail,
+        String selectedLanguage,
+        ApplicationForApplicantDTO application,
+        Job job
+    ) {
+        Email email = Email.builder()
+            .to(applicantEmail)
+            .language(Language.fromCode(selectedLanguage))
+            .template("application_confirmation")
+            .content(
+                Map.of(
+                    "applicantFirstName",
+                    application.applicant().user().firstName(),
+                    "applicantLastName",
+                    application.applicant().user().lastName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "researchGroupName",
+                    job.getResearchGroup().getName()
+                )
+            )
+            .build();
+        emailService.send(email);
+    }
+
+    private void confirmApplicationToProfessor(
+        String professorEmail,
+        String selectedLanguage,
+        ApplicationForApplicantDTO application,
+        Job job
+    ) {
+        Email email = Email.builder()
+            .to(professorEmail)
+            .language(Language.fromCode(selectedLanguage))
+            .template("application_received")
+            .content(
+                Map.of(
+                    "professorLastName",
+                    application.job().professorName(),
+                    "jobTitle",
+                    job.getTitle(),
+                    "applicantFirstName",
+                    application.applicant().user().firstName(),
+                    "applicantLastName",
+                    application.applicant().user().lastName(),
+                    "applicationId",
+                    application.applicationId()
+                )
+            )
+            .build();
+        emailService.send(email);
     }
 
     /**
@@ -345,7 +409,7 @@ public class ApplicationService {
      *                    {@code null}
      * @param type        the document type to filter by; must not be {@code null}
      * @return a set of document IDs matching the given application and document
-     *         type; never {@code null}
+     * type; never {@code null}
      */
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
@@ -358,7 +422,7 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     *         document IDs for the application
+     * document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {

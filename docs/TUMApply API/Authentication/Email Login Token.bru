@@ -1,0 +1,18 @@
+meta {
+  name: Email Login Token
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "applicant1@tumapply.local",
+    "password": "applicant"
+  }
+}

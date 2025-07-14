@@ -91,3 +91,5 @@ aet:
   storage:
     root: build/test-docs
     max-size-bytes: 26214400
+  client:
+    url:

@@ -51,6 +51,7 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
