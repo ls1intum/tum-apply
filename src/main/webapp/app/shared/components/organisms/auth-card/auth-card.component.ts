@@ -10,6 +10,7 @@ import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { AccountService } from '../../../../core/auth/account.service';
 import { IdpProvider, KeycloakService } from '../../../../core/auth/keycloak.service';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
+import { EmailLoginResourceService } from '../../../../generated';
 
 @Component({
   selector: 'jhi-auth-card',
@@ -27,6 +28,7 @@ export class AuthCardComponent {
   value: Signal<number> = this.authTabService.getSelectedTab();
   accountService = inject(AccountService);
   keycloakService = inject(KeycloakService);
+  emailLoginResourceService = inject(EmailLoginResourceService);
 
   onTabChange(newValue: string | number): void {
     this.authTabService.setSelectedTab(Number(newValue));
@@ -47,24 +49,24 @@ export class AuthCardComponent {
         },
         // TODO: Enable Microsoft login when available in Production environment
         /* {
-                                                                                                                                                                                                                                                                  label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
-                                                                                                                                                                                                                                                                  icon: 'microsoft',
-                                                                                                                                                                                                                                                                  severity: 'primary',
-                                                                                                                                                                                                                                                                  variant: 'outlined',
-                                                                                                                                                                                                                                                                  disabled: false,
-                                                                                                                                                                                                                                                                  fullWidth: true,
-                                                                                                                                                                                                                                                                  onClick: () => this.onMicrosoftLogin(),
-                                                                                                                                                                                                                                                                },*/
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          label: this.mode() === 'register' ? 'Register with Microsoft' : 'Sign in with Microsoft',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          icon: 'microsoft',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          severity: 'primary',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          variant: 'outlined',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          disabled: false,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          fullWidth: true,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          onClick: () => this.onMicrosoftLogin(),
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        },*/
         // TODO: Enable Apple login when available in Production environment
         /* {
-                                                                                                                                                                                                                                                                                                      label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
-                                                                                                                                                                                                                                                                                                      icon: 'apple',
-                                                                                                                                                                                                                                                                                                      severity: 'primary',
-                                                                                                                                                                                                                                                                                                      variant: 'outlined',
-                                                                                                                                                                                                                                                                                                      disabled: false,
-                                                                                                                                                                                                                                                                                                      fullWidth: true,
-                                                                                                                                                                                                                                                                                                      onClick: () => this.onAppleLogin(),
-                                                                                                                                                                                                                                                                                                    },*/
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              label: this.mode() === 'register' ? 'Register with Apple' : 'Sign in with Apple',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              icon: 'apple',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              severity: 'primary',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              variant: 'outlined',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              disabled: false,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              fullWidth: true,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              onClick: () => this.onAppleLogin(),
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            },*/
         {
           label: this.mode() === 'register' ? 'Register with Google' : 'Sign in with Google',
           icon: 'google',
@@ -94,8 +96,20 @@ export class AuthCardComponent {
     this.keycloakService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
   }
 
-  onEmailLogin(credentials: { email: string; password: string }): void {
+  onEmailLogin = (credentials: { email: string; password: string }): void => {
     const { email, password } = credentials;
-    console.log('Email login:', email, password);
-  }
+    this.emailLoginResourceService
+      .login(
+        {
+          email,
+          password,
+        },
+        'response',
+      )
+      .subscribe({
+        next: async response => {
+          await this.accountService.loadUser();
+        },
+      });
+  };
 }

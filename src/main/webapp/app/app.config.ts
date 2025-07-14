@@ -20,6 +20,7 @@ import { providePrimeNG } from 'primeng/config';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
+import { ApiModule, Configuration } from './generated';
 import { httpInterceptorProviders } from './core/interceptor';
 import routes from './app.routes';
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
@@ -38,6 +39,12 @@ export function initializeKeycloak(keycloakService: KeycloakService, accountServ
       await accountService.loadUser();
     }
   };
+}
+
+export function apiConfigFactory(): Configuration {
+  return new Configuration({
+    withCredentials: true,
+  });
 }
 
 export const appConfig: ApplicationConfig = {
@@ -64,6 +71,7 @@ export const appConfig: ApplicationConfig = {
     // Set this to true to enable service worker (PWA)
     importProvidersFrom(ServiceWorkerModule.register('ngsw-worker.js', { enabled: false })),
     importProvidersFrom(
+      ApiModule.forRoot(apiConfigFactory),
       RouterModule,
       ScrollingModule,
       TranslateModule.forRoot({
