@@ -373,7 +373,7 @@
         }
       }
     },
-    "/api/applications/create/{jobId}/applicant/{applicantId}": {
+    "/api/applications/create/{jobId}": {
       "post": {
         "tags": [
           "application-resource"
@@ -382,15 +382,6 @@
         "parameters": [
           {
             "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "applicantId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1930,13 +1921,19 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1962,12 +1959,6 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "empty": {
             "type": "boolean"
           }
@@ -1983,7 +1974,7 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "paged": {
+          "unpaged": {
             "type": "boolean"
           },
           "pageSize": {
@@ -1994,7 +1985,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "unpaged": {
+          "paged": {
             "type": "boolean"
           }
         }
@@ -2005,10 +1996,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -2631,13 +2622,19 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -2662,12 +2659,6 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "empty": {
             "type": "boolean"

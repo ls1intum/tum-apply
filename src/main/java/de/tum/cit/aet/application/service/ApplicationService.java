@@ -1,5 +1,6 @@
 package de.tum.cit.aet.application.service;
 
+import de.tum.cit.aet.TumApplyApp;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -17,11 +18,14 @@ import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +45,8 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @Service
 public class ApplicationService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationService.class);
 
     private final ApplicationRepository applicationRepository;
     private final ApplicantRepository applicantRepository;
@@ -49,25 +58,34 @@ public class ApplicationService {
     private final CurrentUserService currentUserService;
     private final EmailService emailService;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     /**
      * Creates a new job application for the given applicant and job.
      * If an application already exists for the applicant and job, an exception is
      * thrown.
      *
      * @param jobId the id of the job
-     * @param applicantId the id of the applicant
      * @return the created ApplicationForApplicantDTO
      * @throws OperationNotAllowedException if the applicant has already applied for
      *                                      the job
      */
     @Transactional
-    public ApplicationForApplicantDTO createApplication(UUID jobId, UUID applicantId) {
-        if (applicationRepository.existsByApplicantUserIdAndJobJobId(jobId, applicantId)) {
+    public ApplicationForApplicantDTO createApplication(UUID jobId) {
+        UUID userId = currentUserService.getUserId();
+        if (applicationRepository.existsByApplicantUserIdAndJobJobId(jobId, userId)) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        Applicant applicant = applicantRepository
-            .findById(applicantId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Applicant", applicantId));
+        LOG.error(userId.toString());
+        Applicant applicant = applicantRepository.findById(userId).orElse(null);
+        if (applicant == null) {
+            createApplicant(userId);
+            applicant = applicantRepository
+                .findById(userId)
+                .orElseThrow(() -> new IllegalStateException("Failed to create applicant with userId: " + userId));
+        }
+        LOG.error(applicant.toString());
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         Application application = new Application(
@@ -230,8 +248,8 @@ public class ApplicationService {
     /**
      * Retrieves a paginated list of application overviews for a specific applicant.
      *
-     * @param pageSize    the number of applications per page
-     * @param pageNumber  the page number to retrieve
+     * @param pageSize   the number of applications per page
+     * @param pageNumber the page number to retrieve
      * @return a list of application overview DTOs
      */
     public List<ApplicationOverviewDTO> getAllApplications(int pageSize, int pageNumber) {
@@ -402,9 +420,72 @@ public class ApplicationService {
      * Updates the name of the document with the given ID.
      *
      * @param documentId the ID of the document to rename
-     * @param newName the new name to set for the document
+     * @param newName    the new name to set for the document
      */
     public void renameDocument(UUID documentId, String newName) {
         documentDictionaryService.renameDocument(documentId, newName);
     }
+
+    /**
+     * Create an applicant
+     *
+     * @param userId
+     * @return newly created applicants
+     */
+    // @Modifying(clearAutomatically = true, flushAutomatically = true)
+    // @Transactional
+    // void createApplicant(UUID userId) {
+    // // Insert into applicants table via native query
+    // // applicantRepository.insertApplicant(
+    // // userId,
+    // // null, null, null, null, // street, postalCode, city, country
+    // // null, GradingScale.ONE_TO_FOUR.name(), null, null,
+    // // null, GradingScale.ONE_TO_FOUR.name(), null, null);
+    // // applicantRepository.flush();
+    // User user = userRepository.findByIdElseThrow(userId);
+    // Applicant newApplicant = (Applicant) user;
+    // applicantRepository.save(newApplicant);
+    // }
+
+    @Transactional
+    public Applicant createApplicant(UUID userId) {
+        User baseUser = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
+
+        // Detach base user to avoid Hibernate treating the new Applicant as a dirty
+        // update to User
+        entityManager.detach(baseUser);
+
+        // Create a new Applicant and copy fields
+        Applicant applicant = new Applicant();
+        applicant.setUserId(baseUser.getUserId()); // Ensure same ID for JOINED inheritance
+        applicant.setEmail(baseUser.getEmail());
+        applicant.setFirstName(baseUser.getFirstName());
+        applicant.setLastName(baseUser.getLastName());
+        applicant.setGender(baseUser.getGender());
+        applicant.setNationality(baseUser.getNationality());
+        applicant.setBirthday(baseUser.getBirthday());
+        applicant.setPhoneNumber(baseUser.getPhoneNumber());
+        applicant.setWebsite(baseUser.getWebsite());
+        applicant.setLinkedinUrl(baseUser.getLinkedinUrl());
+        applicant.setSelectedLanguage(baseUser.getSelectedLanguage());
+
+        // Applicant-specific fields
+        applicant.setStreet(null);
+        applicant.setPostalCode(null);
+        applicant.setCity(null);
+        applicant.setCountry(null);
+        applicant.setBachelorDegreeName(null);
+        applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
+        applicant.setBachelorGrade(null);
+        applicant.setBachelorUniversity(null);
+        applicant.setMasterDegreeName(null);
+        applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);
+        applicant.setMasterGrade(null);
+        applicant.setMasterUniversity(null);
+
+        // Save the new applicant
+        return applicantRepository.save(applicant);
+    }
+    //2025-07-14T14:09:29.496+02:00  WARN 4612 --- [nio-8080-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.dao.DataIntegrityViolationException: could not execute batch [Duplicate entry '00000000-0000-0000-0000-000000000103' for key 'users.PRIMARY'] [insert into users (avatar,birthday,created_at,email,first_name,gender,last_modified_at,last_name,linkedin_url,nationality,phone_number,research_group_id,selected_language,website,user_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)]; SQL [insert into users (avatar,birthday,created_at,email,first_name,gender,last_modified_at,last_name,linkedin_url,nationality,phone_number,research_group_id,selected_language,website,user_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)]; constraint [users.PRIMARY]]
+
 }
