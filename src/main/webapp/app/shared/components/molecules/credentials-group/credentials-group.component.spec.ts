@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { CredentialsGroupComponent } from './credentials-group.component';
 
@@ -9,6 +10,7 @@ describe('CredentialsGroupComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CredentialsGroupComponent],
+      providers: [provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CredentialsGroupComponent);
