@@ -59,11 +59,11 @@
   <div>
     <jhi-dropdown
       [items]="rejectReasons"
-      [label]="'evaluation.reason' | translate"
+      label="evaluation.reason"
       [required]="true"
       [selected]="selectedRejectReason()"
       [placeholder]="'evaluation.selectReason' | translate"
-      [translateItems]="true"
+      [shouldTranslate]="true"
       (selectedChange)="onSelectChange($event)"
     />
     <ul class="review-checkboxes">

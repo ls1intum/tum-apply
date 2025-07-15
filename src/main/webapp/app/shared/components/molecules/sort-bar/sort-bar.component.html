@@ -14,7 +14,8 @@
       [items]="dropdownOptions()"
       [selected]="selectedDropdownOption()"
       (selectedChange)="onSortFieldChange($event)"
-      [translateItems]="shouldTranslate()"
+      [shouldTranslate]="shouldTranslate()"
+      [displayErrorText]="false"
     />
     @if (currentOption().type === 'NUMBER' && isAsc()) {
       <jhi-button [icon]="'arrow-down-1-9'" variant="text" (click)="toggleDirection()" />

@@ -1,12 +1,17 @@
 <div
   [ngClass]="{
     disabled: disabled(),
+    'invalid-field': isInvalid(),
   }"
   class="label-top dropdown-wrapper"
 >
   @if (label()) {
-    <label class="custom-label"
-      >{{ label() }}
+    <label class="custom-label">
+      @if (!shouldTranslate()) {
+        {{ label() }}
+      } @else {
+        <span jhiTranslate="{{ label() }}"></span>
+      }
       @if (required()) {
         <span class="required">*</span>
       }
@@ -21,7 +26,7 @@
   }
   <p-dropdown
     (ngModelChange)="onSelectionChange($event)"
-    (onHide)="isOpen = false"
+    (onHide)="isOpen = false; onBlur()"
     (onShow)="isOpen = true"
     [disabled]="disabled()"
     [ngModel]="selected()"
@@ -33,7 +38,7 @@
   >
     <!-- Render each dropdown item -->
     <ng-template pTemplate="item" let-item>
-      @if (!translateItems()) {
+      @if (!shouldTranslate()) {
         {{ item[labelField()] }}
       } @else {
         <span jhiTranslate="{{ item[labelField()] }}"></span>
@@ -42,7 +47,7 @@
 
     <!-- Render each selected dropdown item -->
     <ng-template pTemplate="selectedItem" let-item>
-      @if (!translateItems()) {
+      @if (!shouldTranslate()) {
         {{ item[labelField()] }}
       } @else {
         <span jhiTranslate="{{ item[labelField()] }}"></span>
@@ -53,4 +58,11 @@
       <fa-icon [icon]="isOpen ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']" />
     </ng-template>
   </p-dropdown>
+  @if (displayErrorText()) {
+    <div class="error-text">
+      @if (inputState() === 'invalid') {
+        <span jhiTranslate="{{ errorMessage() }}"></span>
+      }
+    </div>
+  }
 </div>

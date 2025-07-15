@@ -75,4 +75,10 @@
     box-shadow: none;
     border: 0.1rem solid var(--p-primary-color);
   }
+
+  &.invalid-field {
+    .custom-dropdown {
+      border-color: var(--p-danger-color);
+    }
+  }
 }
