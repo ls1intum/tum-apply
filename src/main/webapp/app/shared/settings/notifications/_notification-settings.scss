@@ -7,7 +7,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 0.75rem;
 
     .setting-label {
       font-size: 1rem;
@@ -18,5 +17,9 @@
     p-toggleSwitch {
       min-width: 3rem;
     }
+  }
+
+  .tight-divider {
+    margin: 0.7rem 0;
   }
 }

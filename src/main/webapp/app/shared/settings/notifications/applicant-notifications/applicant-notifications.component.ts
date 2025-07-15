@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DividerModule } from 'primeng/divider';
 
@@ -7,5 +7,6 @@ import { DividerModule } from 'primeng/divider';
   imports: [DividerModule, ToggleSwitchModule],
   templateUrl: './applicant-notifications.component.html',
   styleUrl: './applicant-notifications.component.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class ApplicantNotificationsComponent {}
