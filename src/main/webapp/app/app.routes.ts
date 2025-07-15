@@ -179,6 +179,17 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Settings Pages
+  // ======================================================================================
+  {
+    path: 'settings',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
+    title: 'Settings',
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,
