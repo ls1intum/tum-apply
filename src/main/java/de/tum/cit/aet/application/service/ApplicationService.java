@@ -221,7 +221,7 @@ public class ApplicationService {
         Job job
     ) {
         Email email = Email.builder()
-            .to("ishanibudhwar@gmail.com")
+            .to(professorEmail)
             .language(Language.fromCode(selectedLanguage))
             .template("application_received")
             .content(
