@@ -19,4 +19,10 @@
       </div>
     </p-panel>
   }
+  <div class="settings">
+    <p-divider />
+    <div class="settings-button-wrapper">
+      <jhi-sidebar-button icon="gear" [label]="'settings.header' | translate" link="/settings" [isActive]="isActive('/settings')" />
+    </div>
+  </div>
 </div>

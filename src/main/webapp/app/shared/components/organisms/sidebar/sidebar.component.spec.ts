@@ -10,6 +10,8 @@ import {
 } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarComponent } from './sidebar.component';
 
@@ -46,6 +48,10 @@ describe('SidebarComponent', () => {
 
     fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;
+
+    const library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faGear);
+
     fixture.detectChanges();
   });
 
