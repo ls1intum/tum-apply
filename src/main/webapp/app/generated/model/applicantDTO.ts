@@ -26,14 +26,14 @@ export interface ApplicantDTO {
     masterUniversity?: string;
 }
 export namespace ApplicantDTO {
+    export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
     export const BachelorGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR'
-    } as const;
-    export type BachelorGradingScaleEnum = typeof BachelorGradingScaleEnum[keyof typeof BachelorGradingScaleEnum];
+        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
+    };
+    export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
     export const MasterGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR'
-    } as const;
-    export type MasterGradingScaleEnum = typeof MasterGradingScaleEnum[keyof typeof MasterGradingScaleEnum];
+        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
+    };
 }
 
 

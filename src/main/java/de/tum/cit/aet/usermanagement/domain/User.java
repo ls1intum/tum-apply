@@ -19,7 +19,6 @@ import org.hibernate.type.SqlTypes;
 @Setter
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class User extends AbstractAuditingEntity {
 
     @Id

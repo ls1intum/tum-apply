@@ -35,33 +35,33 @@ export interface Job {
     applications?: Array<Application>;
 }
 export namespace Job {
+    export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
     export const LocationEnum = {
-        Garching: 'GARCHING',
-        GarchingHochbrueck: 'GARCHING_HOCHBRUECK',
-        Heilbronn: 'HEILBRONN',
-        Munich: 'MUNICH',
-        Straubing: 'STRAUBING',
-        Weihenstephan: 'WEIHENSTEPHAN',
-        Singapore: 'SINGAPORE'
-    } as const;
-    export type LocationEnum = typeof LocationEnum[keyof typeof LocationEnum];
+        Garching: 'GARCHING' as LocationEnum,
+        GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
+        Heilbronn: 'HEILBRONN' as LocationEnum,
+        Munich: 'MUNICH' as LocationEnum,
+        Straubing: 'STRAUBING' as LocationEnum,
+        Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
+        Singapore: 'SINGAPORE' as LocationEnum
+    };
+    export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
     export const FundingTypeEnum = {
-        FullyFunded: 'FULLY_FUNDED',
-        PartiallyFunded: 'PARTIALLY_FUNDED',
-        Scholarship: 'SCHOLARSHIP',
-        SelfFunded: 'SELF_FUNDED',
-        IndustrySponsored: 'INDUSTRY_SPONSORED',
-        GovernmentFunded: 'GOVERNMENT_FUNDED',
-        ResearchGrant: 'RESEARCH_GRANT'
-    } as const;
-    export type FundingTypeEnum = typeof FundingTypeEnum[keyof typeof FundingTypeEnum];
+        FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
+        PartiallyFunded: 'PARTIALLY_FUNDED' as FundingTypeEnum,
+        Scholarship: 'SCHOLARSHIP' as FundingTypeEnum,
+        SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
+        IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
+        GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
+        ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
+    };
+    export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {
-        Draft: 'DRAFT',
-        Published: 'PUBLISHED',
-        Closed: 'CLOSED',
-        ApplicantFound: 'APPLICANT_FOUND'
-    } as const;
-    export type StateEnum = typeof StateEnum[keyof typeof StateEnum];
+        Draft: 'DRAFT' as StateEnum,
+        Published: 'PUBLISHED' as StateEnum,
+        Closed: 'CLOSED' as StateEnum,
+        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
+    };
 }
 
 

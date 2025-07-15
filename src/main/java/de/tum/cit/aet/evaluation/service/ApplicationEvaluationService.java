@@ -81,10 +81,10 @@ public class ApplicationEvaluationService {
             User supervisingProfessor = job.getSupervisingProfessor();
 
             Email email = Email.builder()
-                .to(applicant.getEmail())
+                .to(applicant.getUser().getEmail())
                 .bcc(supervisingProfessor.getEmail())
                 .htmlBody(acceptDTO.message())
-                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 // template and content are only set for the subject
                 .template("application_accepted")
                 .content(Map.of("jobTitle", job.getTitle()))
@@ -121,15 +121,15 @@ public class ApplicationEvaluationService {
             ResearchGroup researchGroup = job.getResearchGroup();
 
             Email email = Email.builder()
-                .to(applicant.getEmail())
-                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .to(applicant.getUser().getEmail())
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 .template("application_rejected")
                 .content(
                     Map.of(
                         "applicantFirstName",
-                        applicant.getFirstName(),
+                        applicant.getUser().getFirstName(),
                         "applicantLastName",
-                        applicant.getLastName(),
+                        applicant.getUser().getLastName(),
                         "jobTitle",
                         job.getTitle(),
                         "researchGroupName",

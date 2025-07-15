@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import jakarta.persistence.*;
 import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,15 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "applicants")
-public class Applicant extends User {
+public class Applicant {
+
+    @Id
+    private UUID userId;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // Contains all the Applications that a User (Applicant) has submitted
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)

@@ -283,7 +283,7 @@ export default class ApplicationCreationFormComponent {
       } else {
         this.jobId.set(jobId);
       }
-      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId(), this.applicantId()));
+      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
     } else if (firstSegment === ApplicationFormModes.EDIT) {
       this.mode = ApplicationFormModes.EDIT;
       const applicationId = this.route.snapshot.paramMap.get('application_id');

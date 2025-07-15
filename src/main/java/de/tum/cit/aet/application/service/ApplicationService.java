@@ -17,12 +17,20 @@ import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -44,25 +52,34 @@ public class ApplicationService {
     private final CurrentUserService currentUserService;
     private final EmailService emailService;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     /**
      * Creates a new job application for the given applicant and job.
      * If an application already exists for the applicant and job, an exception is
      * thrown.
      *
-     * @param jobId       the id of the job
-     * @param applicantId the id of the applicant
+     * @param jobId the id of the job
      * @return the created ApplicationForApplicantDTO
      * @throws OperationNotAllowedException if the applicant has already applied for
      *                                      the job
      */
     @Transactional
-    public ApplicationForApplicantDTO createApplication(UUID jobId, UUID applicantId) {
-        if (applicationRepository.existsByApplicantUserIdAndJobJobId(jobId, applicantId)) {
+    public ApplicationForApplicantDTO createApplication(UUID jobId) {
+        UUID userId = currentUserService.getUserId();
+        if (applicationRepository.existsByApplicant_User_UserIdAndJob_JobId(jobId, userId)) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        Applicant applicant = applicantRepository
-            .findById(applicantId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Applicant", applicantId));
+        Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
+        Applicant applicant;
+        if (applicantOptional.isEmpty()) {
+            createApplicant(userId);
+            applicant = applicantRepository.findById(userId).orElseThrow();
+        } else {
+            applicant = applicantOptional.get();
+        }
+
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         Application application = new Application(
@@ -132,16 +149,16 @@ public class ApplicationService {
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
         Applicant applicant = applicantRepository.getReferenceById(applicantDTO.user().userId());
-        applicant.setFirstName(applicantDTO.user().firstName());
-        applicant.setLastName(applicantDTO.user().lastName());
-        applicant.setGender(applicantDTO.user().gender());
-        applicant.setNationality(applicantDTO.user().nationality());
-        applicant.setBirthday(applicantDTO.user().birthday());
-        applicant.setPhoneNumber(applicantDTO.user().phoneNumber());
-        applicant.setWebsite(applicantDTO.user().website());
-        applicant.setLinkedinUrl(applicantDTO.user().linkedinUrl());
+        applicant.getUser().setFirstName(applicantDTO.user().firstName());
+        applicant.getUser().setLastName(applicantDTO.user().lastName());
+        applicant.getUser().setGender(applicantDTO.user().gender());
+        applicant.getUser().setNationality(applicantDTO.user().nationality());
+        applicant.getUser().setBirthday(applicantDTO.user().birthday());
+        applicant.getUser().setPhoneNumber(applicantDTO.user().phoneNumber());
+        applicant.getUser().setWebsite(applicantDTO.user().website());
+        applicant.getUser().setLinkedinUrl(applicantDTO.user().linkedinUrl());
         if (applicantDTO.user().selectedLanguage() != null) {
-            applicant.setSelectedLanguage(applicantDTO.user().selectedLanguage());
+            applicant.getUser().setSelectedLanguage(applicantDTO.user().selectedLanguage());
         }
 
         applicant.setStreet(applicantDTO.street());
@@ -165,7 +182,7 @@ public class ApplicationService {
             Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
             User supervisingProfessor = job.getSupervisingProfessor();
 
-            confirmApplicationToApplicant(applicant.getEmail(), applicant.getSelectedLanguage(), application, job);
+            confirmApplicationToApplicant(applicant.getUser().getEmail(), applicant.getUser().getSelectedLanguage(), application, job);
             confirmApplicationToProfessor(supervisingProfessor.getEmail(), supervisingProfessor.getSelectedLanguage(), application, job);
         }
         return application;
@@ -241,15 +258,15 @@ public class ApplicationService {
         Job job = application.getJob();
 
         Email email = Email.builder()
-            .to(applicant.getEmail())
+            .to(applicant.getUser().getEmail())
             .template("application_withdrawn")
-            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
             .content(
                 Map.of(
                     "applicantFirstName",
-                    applicant.getFirstName(),
+                    applicant.getUser().getFirstName(),
                     "applicantLastName",
-                    applicant.getLastName(),
+                    applicant.getUser().getLastName(),
                     "jobTitle",
                     job.getTitle(),
                     "researchGroupName",
@@ -305,7 +322,7 @@ public class ApplicationService {
      * @return the total number of applications
      */
     public long getNumberOfTotalApplications(UUID applicantId) {
-        return this.applicationRepository.countByApplicant_UserId(applicantId);
+        return this.applicationRepository.countByApplicant_User_UserId(applicantId);
     }
 
     /**
@@ -465,5 +482,14 @@ public class ApplicationService {
      */
     public void renameDocument(UUID documentId, String newName) {
         documentDictionaryService.renameDocument(documentId, newName);
+    }
+
+    void createApplicant(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        Applicant applicant = new Applicant();
+        applicant.setUser(user);
+        applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
+        applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);
+        applicantRepository.save(applicant);
     }
 }
