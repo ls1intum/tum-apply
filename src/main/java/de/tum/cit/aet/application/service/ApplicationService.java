@@ -68,10 +68,10 @@ public class ApplicationService {
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
         UUID userId = currentUserService.getUserId();
-        if (applicationRepository.existsByApplicantUserIdAndJobJobId(jobId, userId)) {
+        if (applicationRepository.existsByApplicant_User_UserIdAndJob_JobId(jobId, userId)) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
-        Optional<Applicant> applicantOptional = applicantRepository.findById(userId); //.orElseThrow(() -> EntityNotFoundException.forId("userId", userId));
+        Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
         Applicant applicant;
         if (applicantOptional.isEmpty()) {
             createApplicant(userId);
@@ -149,16 +149,16 @@ public class ApplicationService {
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
         Applicant applicant = applicantRepository.getReferenceById(applicantDTO.user().userId());
-        applicant.setFirstName(applicantDTO.user().firstName());
-        applicant.setLastName(applicantDTO.user().lastName());
-        applicant.setGender(applicantDTO.user().gender());
-        applicant.setNationality(applicantDTO.user().nationality());
-        applicant.setBirthday(applicantDTO.user().birthday());
-        applicant.setPhoneNumber(applicantDTO.user().phoneNumber());
-        applicant.setWebsite(applicantDTO.user().website());
-        applicant.setLinkedinUrl(applicantDTO.user().linkedinUrl());
+        applicant.getUser().setFirstName(applicantDTO.user().firstName());
+        applicant.getUser().setLastName(applicantDTO.user().lastName());
+        applicant.getUser().setGender(applicantDTO.user().gender());
+        applicant.getUser().setNationality(applicantDTO.user().nationality());
+        applicant.getUser().setBirthday(applicantDTO.user().birthday());
+        applicant.getUser().setPhoneNumber(applicantDTO.user().phoneNumber());
+        applicant.getUser().setWebsite(applicantDTO.user().website());
+        applicant.getUser().setLinkedinUrl(applicantDTO.user().linkedinUrl());
         if (applicantDTO.user().selectedLanguage() != null) {
-            applicant.setSelectedLanguage(applicantDTO.user().selectedLanguage());
+            applicant.getUser().setSelectedLanguage(applicantDTO.user().selectedLanguage());
         }
 
         applicant.setStreet(applicantDTO.street());
@@ -182,7 +182,7 @@ public class ApplicationService {
             Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
             User supervisingProfessor = job.getSupervisingProfessor();
 
-            confirmApplicationToApplicant(applicant.getEmail(), applicant.getSelectedLanguage(), application, job);
+            confirmApplicationToApplicant(applicant.getUser().getEmail(), applicant.getUser().getSelectedLanguage(), application, job);
             confirmApplicationToProfessor(supervisingProfessor.getEmail(), supervisingProfessor.getSelectedLanguage(), application, job);
         }
         return application;
@@ -258,15 +258,15 @@ public class ApplicationService {
         Job job = application.getJob();
 
         Email email = Email.builder()
-            .to(applicant.getEmail())
+            .to(applicant.getUser().getEmail())
             .template("application_withdrawn")
-            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
             .content(
                 Map.of(
                     "applicantFirstName",
-                    applicant.getFirstName(),
+                    applicant.getUser().getFirstName(),
                     "applicantLastName",
-                    applicant.getLastName(),
+                    applicant.getUser().getLastName(),
                     "jobTitle",
                     job.getTitle(),
                     "researchGroupName",
@@ -322,7 +322,7 @@ public class ApplicationService {
      * @return the total number of applications
      */
     public long getNumberOfTotalApplications(UUID applicantId) {
-        return this.applicationRepository.countByApplicant_UserId(applicantId);
+        return this.applicationRepository.countByApplicant_User_UserId(applicantId);
     }
 
     /**
@@ -484,43 +484,13 @@ public class ApplicationService {
         documentDictionaryService.renameDocument(documentId, newName);
     }
 
-    /**
-     * Create an applicant
-     *
-     * @param userId
-     * @return newly created applicants
-     */
-    // @Modifying(clearAutomatically = true, flushAutomatically = true)
-    // @Transactional
-    // void createApplicant(UUID userId) {
-    // // Insert into applicants table via native query
-    // // applicantRepository.insertApplicant(
-    // // userId,
-    // // null, null, null, null, // street, postalCode, city, country
-    // // null, GradingScale.ONE_TO_FOUR.name(), null, null,
-    // // null, GradingScale.ONE_TO_FOUR.name(), null, null);
-    // // applicantRepository.flush();
-    // User user = userRepository.findByIdElseThrow(userId);
-    // Applicant newApplicant = (Applicant) user;
-    // applicantRepository.save(newApplicant);
-    // }
-
     void createApplicant(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow();
         Applicant applicant = new Applicant();
         applicant.setUserId(userId);
-        applicant.setFirstName(user.getFirstName());
-        applicant.setLastName(user.getLastName());
-        applicant.setGender(user.getGender());
-        applicant.setNationality(user.getNationality());
-        applicant.setBirthday(user.getBirthday());
-        applicant.setPhoneNumber(user.getPhoneNumber());
-        applicant.setWebsite(user.getWebsite());
-        applicant.setLinkedinUrl(user.getLinkedinUrl());
-        applicant.setSelectedLanguage(user.getSelectedLanguage());
+        applicant.setUser(user);
         applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
         applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);
-
         applicantRepository.save(applicant);
     }
 }
