@@ -14,11 +14,49 @@
 
   <div class="card-body">
     <ul class="card-info">
-      <li class="info-item"><fa-icon [icon]="['fas', 'graduation-cap']" /> {{ fieldOfStudies() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'location-dot']" /> {{ location() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'user']" /> {{ professor() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'clock']" /> {{ workload() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'calendar']" /> Start: {{ formattedStartDate() }}</li>
+      <li class="info-item">
+        <fa-icon [icon]="['fas', 'graduation-cap']" />
+        @if (fieldOfStudies()) {
+          {{ fieldOfStudies() }}
+        } @else {
+          <span jhiTranslate="jobDetailPage.noData"></span>
+        }
+      </li>
+
+      <li class="info-item">
+        <fa-icon [icon]="['fas', 'location-dot']" />
+        @if (location()) {
+          {{ location() }}
+        } @else {
+          <span jhiTranslate="jobDetailPage.noData"></span>
+        }
+      </li>
+
+      <li class="info-item">
+        <fa-icon [icon]="['fas', 'user']" />
+        @if (professor()) {
+          {{ professor() }}
+        } @else {
+          <span jhiTranslate="jobDetailPage.noData"></span>
+        }
+      </li>
+      <li class="info-item">
+        <fa-icon [icon]="['fas', 'clock']" />
+        @if (workload()) {
+          {{ formattedWorkload() }}%
+        } @else {
+          <span jhiTranslate="jobDetailPage.noData"></span>
+        }
+      </li>
+      <li class="info-item">
+        <fa-icon [icon]="['fas', 'calendar']" />
+        Start:
+        @if (startDate()) {
+          {{ formattedStartDate() }}
+        } @else {
+          &nbsp;<span jhiTranslate="jobDetailPage.noData"></span>
+        }
+      </li>
     </ul>
 
     <div class="card-actions">
