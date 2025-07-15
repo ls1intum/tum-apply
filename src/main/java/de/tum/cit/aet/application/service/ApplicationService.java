@@ -487,7 +487,6 @@ public class ApplicationService {
     void createApplicant(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow();
         Applicant applicant = new Applicant();
-        applicant.setUserId(userId);
         applicant.setUser(user);
         applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
         applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);

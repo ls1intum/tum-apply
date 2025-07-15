@@ -18,7 +18,6 @@ import lombok.Setter;
 public class Applicant {
 
     @Id
-    @Column(name = "user_id")
     private UUID userId;
 
     @OneToOne
