@@ -12,7 +12,13 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="inputState() === 'invalid'">
+    <div
+      class="input-wrapper"
+      [class.error]="inputState() === 'invalid'"
+      contenteditable="false"
+      (focusin)="onFocus()"
+      (focusout)="onBlur()"
+    >
       <p-editor
         [id]="id()"
         type="text"
@@ -20,8 +26,6 @@
         [readonly]="disabled()"
         [ngModel]="model()"
         (onTextChange)="onInputChange($event)"
-        (blur)="onBlur()"
-        (focus)="onFocus()"
         [required]="required()"
         [style]="{ width: width() }"
         autocomplete="off"
