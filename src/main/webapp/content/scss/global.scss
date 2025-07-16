@@ -47,8 +47,9 @@
     color: var(--p-text-disabled);
   }
 
+  .error .p-editor-content,
   .error .p-inputtext {
-    border-color: var(--p-danger-color);
+    border-color: var(--p-danger-color) !important;
   }
 }
 
