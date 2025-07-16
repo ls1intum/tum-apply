@@ -16,6 +16,7 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
+import * as DropdownOptions from '.././dropdown-options';
 
 const JobFormModes = {
   CREATE: 'create',
@@ -61,74 +62,7 @@ export class JobCreationFormComponent {
   positionDetailsForm: FormGroup = this.fb.group({});
   additionalInformationForm: FormGroup = this.fb.group({});
 
-  /**
-   * Dropdown options used in the form
-   */
-  locations = [
-    { name: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
-    { name: 'Garching Hochbrueck Campus', value: JobFormDTO.LocationEnum.GarchingHochbrueck },
-    { name: 'Heilbronn Campus', value: JobFormDTO.LocationEnum.Heilbronn },
-    { name: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
-    { name: 'Straubing Campus', value: JobFormDTO.LocationEnum.Straubing },
-    { name: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
-    { name: 'Singapore Campus', value: JobFormDTO.LocationEnum.Singapore },
-  ];
-  fieldsOfStudies = [
-    { name: 'Agricultural Engineering', value: 'Agricultural Engineering' },
-    { name: 'Aerospace Engineering', value: 'Aerospace Engineering' },
-    { name: 'Architecture', value: 'Architecture' },
-    { name: 'Art History', value: 'Art History' },
-    { name: 'Automotive Engineering', value: 'Automotive Engineering' },
-    { name: 'Bioengineering', value: 'Bioengineering' },
-    { name: 'Chemistry', value: 'Chemistry' },
-    { name: 'Computer Engineering', value: 'Computer Engineering' },
-    { name: 'Computer Science', value: 'Computer Science' },
-    { name: 'Economics', value: 'Economics' },
-    { name: 'Education Technology', value: 'Education Technology' },
-    { name: 'Electrical Engineering', value: 'Electrical Engineering' },
-    { name: 'Environmental Engineering', value: 'Environmental Engineering' },
-    { name: 'Financial Engineering', value: 'Financial Engineering' },
-    { name: 'Food Technology', value: 'Food Technology' },
-    { name: 'Geology', value: 'Geology' },
-    { name: 'Industrial Engineering', value: 'Industrial Engineering' },
-    { name: 'Information Systems', value: 'Information Systems' },
-    { name: 'Linguistics', value: 'Linguistics' },
-    { name: 'Marine Biology', value: 'Marine Biology' },
-    { name: 'Materials Science', value: 'Materials Science' },
-    { name: 'Mathematics', value: 'Mathematics' },
-    { name: 'Mechanical Engineering', value: 'Mechanical Engineering' },
-    { name: 'Medical Informatics', value: 'Medical Informatics' },
-    { name: 'Neuroscience', value: 'Neuroscience' },
-    { name: 'Philosophy', value: 'Philosophy' },
-    { name: 'Physics', value: 'Physics' },
-    { name: 'Psychology', value: 'Psychology' },
-    { name: 'Software Engineering', value: 'Software Engineering' },
-    { name: 'Sports Science', value: 'Sports Science' },
-    { name: 'Telecommunications', value: 'Telecommunications' },
-    { name: 'Urban Planning', value: 'Urban Planning' },
-  ];
-  workloadOptions = [
-    { name: '100% (Full-time)', value: 40 },
-    { name: '60%', value: 24 },
-    { name: '40%', value: 16 },
-    { name: '20%', value: 8 },
-    { name: '10%', value: 4 },
-  ];
-  contractDurations = [
-    { name: '1 year', value: 1 },
-    { name: '2 years', value: 2 },
-    { name: '3 years', value: 3 },
-    { name: '4 years', value: 4 },
-    { name: '5+ years', value: 5 },
-  ];
-  fundingTypes = [
-    { name: 'University Budget', value: JobFormDTO.FundingTypeEnum.FullyFunded },
-    { name: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
-    { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
-    { name: 'Industry Sponsored', value: JobFormDTO.FundingTypeEnum.IndustrySponsored },
-    { name: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
-    { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
-  ];
+  protected readonly DropdownOptions = DropdownOptions;
 
   readonly pageTitle = computed(() =>
     this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
@@ -225,11 +159,11 @@ export class JobCreationFormComponent {
     };
 
     // Initialize dropdown options
-    const locationOption = findOption(this.locations, job?.location, 'value');
-    const fieldOfStudiesOption = findOption(this.fieldsOfStudies, job?.fieldOfStudies, 'value');
-    const workloadOption = findOption(this.workloadOptions, job?.workload, 'value');
-    const contractDurationOption = findOption(this.contractDurations, job?.contractDuration, 'value');
-    const fundingTypeOption = findOption(this.fundingTypes, job?.fundingType, 'value');
+    const locationOption = findOption(DropdownOptions.locations, job?.location, 'value');
+    const fieldOfStudiesOption = findOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies, 'value');
+    const workloadOption = findOption(DropdownOptions.workloadOptions, job?.workload, 'value');
+    const contractDurationOption = findOption(DropdownOptions.contractDurations, job?.contractDuration, 'value');
+    const fundingTypeOption = findOption(DropdownOptions.fundingTypes, job?.fundingType, 'value');
 
     // Basic Information form
     this.basicInfoForm = this.fb.group({
