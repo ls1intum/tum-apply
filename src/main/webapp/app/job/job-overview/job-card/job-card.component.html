@@ -14,49 +14,31 @@
 
   <div class="card-body">
     <ul class="card-info">
-      <li class="info-item">
-        <fa-icon [icon]="['fas', 'graduation-cap']" />
-        @if (fieldOfStudies()) {
-          {{ fieldOfStudies() }}
-        } @else {
-          <span jhiTranslate="jobDetailPage.noData"></span>
-        }
-      </li>
-
-      <li class="info-item">
-        <fa-icon [icon]="['fas', 'location-dot']" />
-        @if (location()) {
-          {{ location() }}
-        } @else {
-          <span jhiTranslate="jobDetailPage.noData"></span>
-        }
-      </li>
-
-      <li class="info-item">
-        <fa-icon [icon]="['fas', 'user']" />
-        @if (professor()) {
-          {{ professor() }}
-        } @else {
-          <span jhiTranslate="jobDetailPage.noData"></span>
-        }
-      </li>
-      <li class="info-item">
-        <fa-icon [icon]="['fas', 'clock']" />
-        @if (workload()) {
-          {{ formattedWorkload() }}%
-        } @else {
-          <span jhiTranslate="jobDetailPage.noData"></span>
-        }
-      </li>
-      <li class="info-item">
-        <fa-icon [icon]="['fas', 'calendar']" />
-        Start:
-        @if (startDate()) {
-          {{ formattedStartDate() }}
-        } @else {
-          &nbsp;<span jhiTranslate="jobDetailPage.noData"></span>
-        }
-      </li>
+      <ng-template #infoItem let-icon="icon" let-value="value">
+        <li class="info-item">
+          <fa-icon [icon]="['fas', icon]" />
+          @if (value) {
+            @if (icon === 'calendar') {
+              Start:
+            }
+            @if (icon === 'clock') {
+              {{ value }}%
+            } @else {
+              {{ value }}
+            }
+          } @else {
+            @if (icon === 'calendar') {
+              Start:&nbsp;
+            }
+            <span jhiTranslate="jobDetailPage.noData"></span>
+          }
+        </li>
+      </ng-template>
+      <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'graduation-cap', value: fieldOfStudies() }" />
+      <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'location-dot', value: location() }" />
+      <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'user', value: professor() }" />
+      <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'clock', value: formattedWorkload() }" />
+      <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'calendar', value: formattedStartDate() }" />
     </ul>
 
     <div class="card-actions">
