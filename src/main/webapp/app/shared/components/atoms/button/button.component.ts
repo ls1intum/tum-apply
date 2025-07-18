@@ -18,6 +18,7 @@ export type Button = {
   label?: string;
   numberOfFavorites?: number;
   disabled: boolean;
+  fullWidth?: boolean;
   onClick: VoidFunction;
   shouldTranslate?: boolean;
 };
@@ -39,6 +40,8 @@ export class ButtonComponent {
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
   shouldTranslate = input<boolean>(false);
+  fullWidth = input<boolean>(false);
+  type = input<'button' | 'submit' | 'reset'>('button');
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 

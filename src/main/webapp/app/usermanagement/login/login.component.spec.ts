@@ -1,3 +1,4 @@
+import { EmailLoginResourceService } from 'app/generated/api/emailLoginResource.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
@@ -41,6 +42,12 @@ describe('LoginComponent', () => {
         {
           provide: UserResourceService,
           useValue: {},
+        },
+        {
+          provide: EmailLoginResourceService,
+          useValue: {
+            login: jest.fn(),
+          },
         },
       ],
     }).compileComponents();

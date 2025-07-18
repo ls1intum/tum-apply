@@ -28,6 +28,7 @@ jobs:
           KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
           KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
           KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+          AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
         run: |
           ./gradlew -Pprod bootRun > boot.log 2>&1 & SERVER_PID=$!
 

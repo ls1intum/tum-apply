@@ -5,6 +5,10 @@ import { ActivatedRoute } from '@angular/router';
 import { signal } from '@angular/core';
 import { TranslateService, TranslateStore } from '@ngx-translate/core';
 import { AccountService, User } from 'app/core/auth/account.service';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+
+import { EmailLoginResourceService } from '../../../../generated';
+import { KeycloakService } from '../../../../core/auth/keycloak.service';
 
 import { AuthCardComponent } from './auth-card.component';
 
@@ -18,6 +22,7 @@ describe('AuthCardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AuthCardComponent],
       providers: [
+        provideHttpClientTesting(),
         TranslateService,
         TranslateStore,
         {
@@ -30,6 +35,12 @@ describe('AuthCardComponent', () => {
             user: signal<User | undefined>(undefined),
             loaded: signal(true),
             signIn: jest.fn(),
+          },
+        },
+        {
+          provide: EmailLoginResourceService,
+          useValue: {
+            login: jest.fn(),
           },
         },
       ],
@@ -49,18 +60,18 @@ describe('AuthCardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show correct Microsoft label in login mode', () => {
+  it('should show correct Google label in login mode', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'login' });
     fixture.detectChanges();
-    const btnData = component.studentButtons().buttons[0];
-    expect(btnData.label).toBe('Sign in with Microsoft');
+    const btnData = component.identityProvider().buttons[1];
+    expect(btnData.label).toBe('Sign in with Google');
   });
 
-  it('should show correct Microsoft label in register mode', () => {
+  it('should show correct Google label in register mode', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'register' });
     fixture.detectChanges();
-    const btnData = component.studentButtons().buttons[0];
-    expect(btnData.label).toBe('Register with Microsoft');
+    const btnData = component.identityProvider().buttons[1];
+    expect(btnData.label).toBe('Register with Google');
   });
 
   it('should call authTabService.setSelectedTab when onTabChange is called', () => {
@@ -71,7 +82,7 @@ describe('AuthCardComponent', () => {
   });
 
   it('should call AccountService.signIn when onTUMSSOLogin is called', () => {
-    const signInSpy = jest.spyOn(fixture.debugElement.injector.get(AccountService), 'signIn');
+    const signInSpy = jest.spyOn(fixture.debugElement.injector.get(KeycloakService), 'login');
     component.onTUMSSOLogin();
     expect(signInSpy).toHaveBeenCalledTimes(1);
   });

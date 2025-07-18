@@ -102,6 +102,8 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/jobs/available", "/api/jobs/available/**", "/api/jobs/detail/**")
                     .permitAll()
+                    .requestMatchers("/api/auth/login")
+                    .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()
                     .requestMatchers("/login/webauthn")
