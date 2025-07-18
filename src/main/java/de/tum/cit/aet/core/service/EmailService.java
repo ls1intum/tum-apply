@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,6 +19,10 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -48,11 +53,33 @@ public class EmailService {
     }
 
     /**
+     * Sends an email asynchronously with retry logic for transient mailing errors.
+     *
+     * @param email the email to be sent
+     */
+    @Async
+    @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
+    public void send(Email email) {
+        sendEmail(email);
+    }
+
+    /**
+     * Recovery method called when all retry attempts for sending an email fail.
+     *
+     * @param ex the exception that caused the failure
+     * @param email the email that failed to send
+     */
+    @Recover
+    public void recoverMailingException(MailingException ex, Email email) {
+        log.error("Email sending failed permanently after retries. To: {}, Reason: {}", email.getTo(), ex.getMessage());
+    }
+
+    /**
      * Sends an email using the provided configuration.
      *
      * @param email the email object containing recipients, template, content, etc.
      */
-    public void send(Email email) {
+    private void sendEmail(Email email) {
         email.validate();
 
         String subject = renderSubject(email);
@@ -64,6 +91,7 @@ public class EmailService {
         }
 
         sendEmail(email, subject, body);
+        log.info("Email successfully sent to: {}", email.getTo());
     }
 
     /**
@@ -111,7 +139,7 @@ public class EmailService {
             email.getCc(),
             email.getBcc(),
             subject,
-            body
+            Jsoup.parse(body)
         );
     }
 
@@ -148,6 +176,7 @@ public class EmailService {
             attachDocuments(email, helper);
             mailSender.send(message);
         } catch (MessagingException | IOException e) {
+            log.error("Failed to send email to: {}", email.getTo(), e);
             throw new MailingException(String.format("Failed to send email %s to %s", subject, email.getTo()));
         }
     }
