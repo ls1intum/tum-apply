@@ -5,10 +5,13 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.ObjectProvider;
@@ -28,6 +31,7 @@ public class EmailService {
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final DocumentService documentService;
     private final DocumentRepository documentRepository;
+    private final EmailSettingService emailSettingService;
 
     @Value("${aet.email.enabled:false}")
     private boolean emailEnabled;
@@ -39,12 +43,14 @@ public class EmailService {
         TemplateService templateService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
         DocumentService documentService,
-        DocumentRepository documentRepository
+        DocumentRepository documentRepository,
+        EmailSettingService emailSettingService
     ) {
         this.templateService = templateService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
         this.documentRepository = documentRepository;
+        this.emailSettingService = emailSettingService;
     }
 
     /**
@@ -132,16 +138,17 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+            Set<String> to = getRecipientsToNotify(email.getTo(), email);
+
+            // do not send email when to is empty
+            if (to.isEmpty()) {
+                return;
+            }
+            helper.setTo(to.toArray(new String[0]));
+            helper.setCc(getRecipientsToNotify(email.getCc(), email).toArray(new String[0]));
+            helper.setBcc(getRecipientsToNotify(email.getBcc(), email).toArray(new String[0]));
+
             helper.setFrom(from);
-            helper.setTo(email.getTo().toArray(new String[0]));
-
-            if (!email.getCc().isEmpty()) {
-                helper.setCc(email.getCc().toArray(new String[0]));
-            }
-            if (!email.getBcc().isEmpty()) {
-                helper.setBcc(email.getBcc().toArray(new String[0]));
-            }
-
             helper.setSubject(subject);
             helper.setText(body, true);
 
@@ -150,6 +157,13 @@ public class EmailService {
         } catch (MessagingException | IOException e) {
             throw new MailingException(String.format("Failed to send email %s to %s", subject, email.getTo()));
         }
+    }
+
+    private Set<String> getRecipientsToNotify(Set<User> users, Email email) {
+        if (users == null || users.isEmpty()) {
+            return Set.of();
+        }
+        return users.stream().filter(user -> emailSettingService.canNotify(email, user)).map(User::getEmail).collect(Collectors.toSet());
     }
 
     /**

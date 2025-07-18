@@ -2,7 +2,6 @@ package de.tum.cit.aet.application.repository;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import java.time.LocalDate;
 import java.util.Set;
@@ -285,25 +284,18 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
      * This is used to notify applicants about the job status update.
      *
      * @param jobId the ID of the job for which to find applicants
-     * @return a set of {@link ApplicationShortDTO} containing all important applicant details
+     * @return a set of {@link Application} containing all important applicant details
      */
     @Query(
         """
-            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationShortDTO(
-                a.applicationId,
-                ap.email,
-                ap.firstName,
-                ap.lastName,
-                ap.selectedLanguage,
-                a.state
-            )
+            SELECT a
             FROM Application a
             JOIN a.applicant ap
             WHERE a.job.jobId = :jobId
             AND a.state IN ('SENT', 'IN_REVIEW')
         """
     )
-    Set<ApplicationShortDTO> findApplicantsToNotify(@Param("jobId") UUID jobId);
+    Set<Application> findApplicantsToNotify(@Param("jobId") UUID jobId);
 
     /**
      * Updates the state of all applications for a specific job based on the target job state.

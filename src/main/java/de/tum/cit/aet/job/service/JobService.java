@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.service;
 
-import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
@@ -15,6 +15,7 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class JobService {
 
         if (targetState == JobState.CLOSED) {
             // send emails stating that the job has been closed, to all applicants whose application was 'SENT' or 'IN_REVIEW'
-            Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+            Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
             String jobTitle = job.getTitle();
             String researchGroupName = job.getResearchGroup().getName();
 
@@ -97,7 +98,7 @@ public class JobService {
             notifyApplicants(applicationsToNotify, jobTitle, researchGroupName, RejectReason.JOB_OUTDATED);
         } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
             // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
-            Set<ApplicationShortDTO> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
+            Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
             String jobTitle = job.getTitle();
             String researchGroupName = job.getResearchGroup().getName();
 
@@ -110,18 +111,19 @@ public class JobService {
         return JobFormDTO.getFromEntity(jobRepository.save(job));
     }
 
-    private void notifyApplicants(Set<ApplicationShortDTO> applicants, String jobTitle, String researchGroupName, RejectReason reason) {
-        for (ApplicationShortDTO applicant : applicants) {
+    private void notifyApplicants(Set<Application> applications, String jobTitle, String researchGroupName, RejectReason reason) {
+        for (Application application : applications) {
+            Applicant applicant = application.getApplicant();
             Email email = Email.builder()
-                .to(applicant.email())
+                .to(applicant)
                 .template("application_rejected")
-                .language(Language.fromCode(applicant.language()))
+                .language(Language.fromCode(applicant.getSelectedLanguage()))
                 .content(
                     Map.of(
                         "applicantFirstName",
-                        applicant.firstName(),
+                        applicant.getFirstName(),
                         "applicantLastName",
-                        applicant.lastName(),
+                        applicant.getLastName(),
                         "jobTitle",
                         jobTitle,
                         "researchGroupName",
