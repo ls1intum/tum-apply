@@ -9,6 +9,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -59,39 +60,37 @@ public class EmailService {
      */
     @Async
     @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
-    public void send(Email email) {
-        sendEmail(email);
-    }
-
-    /**
-     * Recovery method called when all retry attempts for sending an email fail.
-     *
-     * @param ex the exception that caused the failure
-     * @param email the email that failed to send
-     */
-    @Recover
-    public void recoverMailingException(MailingException ex, Email email) {
-        log.error("Email sending failed permanently after retries. To: {}, Reason: {}", email.getTo(), ex.getMessage());
-    }
-
-    /**
-     * Sends an email using the provided configuration.
-     *
-     * @param email the email object containing recipients, template, content, etc.
-     */
-    private void sendEmail(Email email) {
-        email.validate();
+    public CompletableFuture<Void> send(Email email) {
+        try {
+            email.validate();
+        } catch (IllegalArgumentException e) {
+            log.error("Email validation failed", e);
+            return CompletableFuture.completedFuture(null);
+        }
 
         String subject = renderSubject(email);
         String body = renderBody(email);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
         sendEmail(email, subject, body);
         log.info("Email successfully sent to: {}", email.getTo());
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * Recovery method called when all retry attempts for sending an email fail.
+     *
+     * @param ex    the exception that caused the failure
+     * @param email the email that failed to send
+     */
+    @Recover
+    public CompletableFuture<Void> recoverMailingException(MailingException ex, Email email) {
+        log.error("Email sending failed permanently after multiple retries. To: {}. Reason: {}", email.getTo(), ex.getMessage());
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -154,6 +153,7 @@ public class EmailService {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
             if (mailSender == null) {
+                log.error("Mail sender not configured but email sending is enabled. Could not sent email to {}", email.getTo());
                 throw new IllegalStateException("Mail sender not configured but email sending is enabled");
             }
 
@@ -176,8 +176,8 @@ public class EmailService {
             attachDocuments(email, helper);
             mailSender.send(message);
         } catch (MessagingException | IOException e) {
-            log.error("Failed to send email to: {}", email.getTo(), e);
-            throw new MailingException(String.format("Failed to send email %s to %s", subject, email.getTo()));
+            log.error("Failed to send email to: {}. Reason: {}", email.getTo(), e.getMessage());
+            throw new MailingException(e.getMessage());
         }
     }
 

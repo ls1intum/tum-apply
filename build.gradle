@@ -258,6 +258,7 @@ dependencies {
 
     // Spring Retry
     implementation 'org.springframework.retry:spring-retry:2.0.12'
+    implementation 'org.springframework:spring-aspects'
 }
 
 tasks.register("cleanResources", Delete) {
