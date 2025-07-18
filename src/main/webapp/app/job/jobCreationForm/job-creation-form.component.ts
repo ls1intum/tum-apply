@@ -245,9 +245,10 @@ export class JobCreationFormComponent {
       ),
       location: [locationOption, Validators.required],
       startDate: [job?.startDate ?? ''],
+      endDate: [job?.endDate ?? ''],
       workload: [workloadOption],
       contractDuration: [contractDurationOption],
-      fundingType: [fundingTypeOption, Validators.required],
+      fundingType: [fundingTypeOption],
     });
 
     // Position Details form
@@ -335,6 +336,7 @@ export class JobCreationFormComponent {
       supervisingProfessor: this.userId(),
       location: this.basicInfoForm.value.location?.value ?? null,
       startDate: this.basicInfoForm.value.startDate,
+      endDate: this.basicInfoForm.value.endDate,
       workload: this.basicInfoForm.value.workload?.value ?? null,
       contractDuration: this.basicInfoForm.value.contractDuration?.value ?? null,
       fundingType: this.basicInfoForm.value.fundingType?.value ?? null,
@@ -366,6 +368,7 @@ export class JobCreationFormComponent {
       supervisingProfessor: this.userId(),
       location: this.basicInfoForm.value.location?.value ?? null,
       startDate: this.basicInfoForm.value.startDate,
+      endDate: this.basicInfoForm.value.endDate,
       workload: this.basicInfoForm.value.workload?.value ?? null,
       contractDuration: this.basicInfoForm.value.contractDuration?.value ?? null,
       fundingType: this.basicInfoForm.value.fundingType?.value ?? null,

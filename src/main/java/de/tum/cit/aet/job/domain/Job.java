@@ -55,7 +55,7 @@ public class Job extends AbstractAuditingEntity {
     private Integer contractDuration;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "funding_type", nullable = false)
+    @Column(name = "funding_type")
     private FundingType fundingType;
 
     @Column(name = "title", nullable = false)
@@ -73,6 +73,9 @@ public class Job extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private JobState state;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     @Column(name = "start_date")
     private LocalDate startDate;
