@@ -12,6 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
@@ -43,6 +44,7 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
     TooltipModule,
     TranslateModule,
     SharedModule,
+    EditorComponent,
   ],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',

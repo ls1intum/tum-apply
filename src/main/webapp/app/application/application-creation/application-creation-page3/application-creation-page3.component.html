@@ -45,23 +45,42 @@
     }
 
     <div class="form-row">
-      <label class="pb-4">
-        <span jhiTranslate="entity.applicationPage3.label.motivation"></span><span class="text-red-600">*</span>
-        <fa-icon
-          class="icon"
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'entity.applicationPage3.tooltip.motivation' | translate"
-          tooltipPosition="top"
-        />
-      </label>
-      <p-floatlabel>
-        <textarea class="w-full" rows="5" pTextarea formControlName="motivation"></textarea>
-        <label jhiTranslate="entity.applicationPage3.floatlabel.motivation"></label>
-      </p-floatlabel>
+      <jhi-editor
+        [label]="'entity.applicationPage3.label.motivation' | translate"
+        [control]="page3Form().controls.motivation"
+        [(model)]="data().motivation"
+        [required]="true"
+        [pTooltip]="'entity.applicationPage3.sublabel.motivation' | translate"
+        [placeholder]="'entity.applicationPage3.tooltip.motivation' | translate"
+      />
       <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.motivation"></label>
     </div>
 
     <div class="form-row">
+      <jhi-editor
+        [label]="'entity.applicationPage3.label.skills' | translate"
+        [control]="page3Form().controls.skills"
+        [(model)]="data().skills"
+        [required]="true"
+        [pTooltip]="'entity.applicationPage3.sublabel.skills' | translate"
+        [placeholder]="'entity.applicationPage3.tooltip.skills' | translate"
+      />
+      <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.skills"></label>
+    </div>
+
+    <div class="form-row">
+      <jhi-editor
+        [label]="'entity.applicationPage3.label.experiences' | translate"
+        [control]="page3Form().controls.experiences"
+        [(model)]="data().experiences"
+        [required]="true"
+        [pTooltip]="'entity.applicationPage3.sublabel.experiences' | translate"
+        [placeholder]="'entity.applicationPage3.tooltip.experiences' | translate"
+      />
+      <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.experiences"></label>
+    </div>
+
+    <!-- <div class="form-row">
       <label class="pb-4">
         <span jhiTranslate="entity.applicationPage3.label.skills"></span><span class="text-red-600">*</span>
         <fa-icon
@@ -76,9 +95,9 @@
         <label jhiTranslate="entity.applicationPage3.floatlabel.skills"></label>
       </p-floatlabel>
       <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.skills"></label>
-    </div>
+    </div> -->
 
-    <div class="form-row">
+    <!-- <div class="form-row">
       <label class="pb-4">
         <span jhiTranslate="entity.applicationPage3.label.experiences"></span><span class="text-red-600">*</span>
         <fa-icon
@@ -93,6 +112,6 @@
         <label jhiTranslate="entity.applicationPage3.floatlabel.experiences"></label>
       </p-floatlabel>
       <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.experiences"></label>
-    </div>
+    </div> -->
   </form>
 }
