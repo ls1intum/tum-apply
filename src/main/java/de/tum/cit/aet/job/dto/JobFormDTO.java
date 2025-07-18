@@ -20,7 +20,7 @@ public record JobFormDTO(
     LocalDate startDate,
     Integer workload,
     Integer contractDuration,
-    @NotNull FundingType fundingType,
+    FundingType fundingType,
     String description,
     String tasks,
     String requirements,
