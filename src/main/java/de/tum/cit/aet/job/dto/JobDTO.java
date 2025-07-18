@@ -17,6 +17,7 @@ public record JobDTO(
     @NotNull UUID supervisingProfessor,
     Campus location,
     LocalDate startDate,
+    LocalDate endDate,
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,

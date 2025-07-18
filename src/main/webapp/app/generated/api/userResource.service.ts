@@ -70,12 +70,11 @@ export class UserResourceService extends BaseService {
         }
 
         let localVarPath = `/api/users/me`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<UserShortDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<UserShortDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,

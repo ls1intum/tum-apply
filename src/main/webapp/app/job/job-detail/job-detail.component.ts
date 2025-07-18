@@ -29,6 +29,7 @@ export interface JobDetails {
   tasks: string;
   requirements: string;
   startDate: string;
+  endDate: string;
   createdAt: string;
   lastModifiedAt: string;
 
@@ -237,6 +238,7 @@ export class JobDetailComponent {
       tasks: job.tasks ?? '',
       requirements: job.requirements ?? '',
       startDate: job.startDate !== undefined ? dayjs(job.startDate).format('DD.MM.YYYY') : '',
+      endDate: job.endDate !== undefined ? dayjs(job.endDate).format('DD.MM.YYYY') : '',
       createdAt: dayjs(job.createdAt).format('DD.MM.YYYY'),
       lastModifiedAt: dayjs(job.lastModifiedAt).format('DD.MM.YYYY'),
 

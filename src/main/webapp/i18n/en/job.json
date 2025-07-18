@@ -37,6 +37,10 @@
         "label": "Start Date",
         "placeholder": "Select a Start Date..."
       },
+      "endDate": {
+        "label": "End Date",
+        "placeholder": "Select the final listing date..."
+      },
       "workload": {
         "label": "Workload",
         "placeholder": "Select a Workload..."
@@ -128,6 +132,7 @@
       "years": "{{years}} years",
       "fundingType": "Funding Type:",
       "startDate": "Start Date:",
+      "endDate": "Application End Date:",
       "created": "Created:",
       "lastModified": "Last Modified:"
     },
