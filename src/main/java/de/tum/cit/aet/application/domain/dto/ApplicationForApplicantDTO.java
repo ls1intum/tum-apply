@@ -3,6 +3,7 @@ package de.tum.cit.aet.application.domain.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import jakarta.validation.constraints.NotNull;
@@ -31,10 +32,20 @@ public record ApplicationForApplicantDTO(
         if (application == null) {
             return null;
         }
+        Job job = application.getJob();
         return new ApplicationForApplicantDTO(
             application.getApplicationId(),
             ApplicantDTO.getFromEntity(application.getApplicant()),
-            null, // TODO JobDTO.getFromEntity(application.getJob()),
+            new JobCardDTO(
+                job.getJobId(),
+                job.getTitle(),
+                job.getFieldOfStudies(),
+                job.getLocation(),
+                job.getSupervisingProfessor().getLastName(),
+                job.getWorkload(),
+                job.getStartDate(),
+                job.getCreatedAt()
+            ),
             application.getState(),
             application.getDesiredStartDate(),
             application.getProjects(),

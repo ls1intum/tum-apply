@@ -122,6 +122,7 @@ Desktop.ini
 # Logs
 ######################
 *.log*
+/src/main/resources/testdata/generated-user-ids.json
 
 ######################
 # Others
@@ -165,3 +166,8 @@ package-lock.json
 # File Storage
 ######################
 storage
+
+######################
+# Environment files
+######################
+.env.local

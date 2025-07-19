@@ -1,0 +1,11 @@
+<p-carousel [autoplayInterval]="8000" [circular]="true" [numVisible]="1" [showNavigators]="false" [value]="imagesWithBackgroundClass">
+  <ng-template #item let-image>
+    <div [class]="image.backgroundClass" class="hero-container">
+      <div class="hero-content">
+        <h1 class="title" jhiTranslate="landingPage.hero.headline"></h1>
+        <p class="subtitle" jhiTranslate="landingPage.hero.subline"></p>
+        <jhi-button (click)="navigateToJobOverview()" label="{{ 'landingPage.hero.button' | translate }}" severity="primary" />
+      </div>
+    </div>
+  </ng-template>
+</p-carousel>

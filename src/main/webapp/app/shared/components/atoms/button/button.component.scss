@@ -1,19 +1,19 @@
 p-button > button:disabled {
   background: var(--p-background-disabled);
   border: var(--p-background-disabled) solid;
-  color: var(--p-color-disabled);
+  color: var(--p-text-disabled);
 }
 
 p-button > .p-button-outlined:disabled {
   background: transparent;
   border: 0.1rem var(--p-background-disabled) solid;
-  color: var(--p-color-disabled);
+  color: var(--p-text-disabled);
 }
 
 p-button > .p-button-text:disabled {
   background: transparent;
   border: 0.1rem transparent solid;
-  color: var(--p-color-disabled);
+  color: var(--p-text-disabled);
 }
 
 p-button > .p-button-outlined {
@@ -28,4 +28,9 @@ p-button > .p-button-outlined {
   padding: 0.3rem;
   min-width: 1.2rem;
   box-shadow: var(--p-button-raised-shadow);
+}
+
+.button-overlay {
+  outline-style: none;
+  color: var(--p-base-white);
 }

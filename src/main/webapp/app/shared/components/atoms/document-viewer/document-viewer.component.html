@@ -1,0 +1,5 @@
+@if (sanitizedBlobUrl(); as sanitizedBlobUrl) {
+  <iframe [src]="sanitizedBlobUrl" class="w-full h-full"></iframe>
+} @else {
+  <p>Nothing to display</p>
+}

@@ -1,8 +1,8 @@
 package de.tum.cit.aet.application.domain.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.core.dto.InstantToRelativeTimeLabelTranslator;
-import java.time.Instant;
+import de.tum.cit.aet.core.dto.UiTextFormatter;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,12 +22,12 @@ public class ApplicationOverviewDTO {
         String jobTitle,
         String researchGroup,
         ApplicationState applicationState,
-        Instant createdAt
+        LocalDateTime createdAt
     ) {
         this.applicationId = applicationId;
         this.jobTitle = jobTitle;
         this.researchGroup = researchGroup;
         this.applicationState = applicationState;
-        this.timeSinceCreation = InstantToRelativeTimeLabelTranslator.getRelativeTimeLabel(createdAt);
+        this.timeSinceCreation = UiTextFormatter.getRelativeTimeLabel(createdAt);
     }
 }

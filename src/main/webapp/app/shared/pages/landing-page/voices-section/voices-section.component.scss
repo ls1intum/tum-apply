@@ -1,0 +1,61 @@
+@use '../../../../../content/scss/breakpoints' as bp;
+.voices-section {
+  display: flex;
+  padding: 3.25rem 0rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3.25rem;
+  align-self: stretch;
+  background: var(--p-background-special);
+
+  .title {
+    color: var(--p-text-primary);
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .voices-container {
+    display: flex;
+    padding: 0 5rem;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    align-self: stretch;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: bp.$lg) {
+  .voices-section {
+    padding: 2.5rem 2rem;
+    gap: 2.5rem;
+
+    .title {
+      font-size: 1.75rem;
+    }
+
+    .voices-container {
+      padding: 0 2rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: bp.$md) {
+  .voices-section {
+    padding: 2rem 1rem;
+    gap: 2rem;
+
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .voices-container {
+      flex-direction: column;
+      padding: 0;
+      gap: 1.5rem;
+    }
+  }
+}

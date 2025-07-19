@@ -7,6 +7,10 @@
   border: var(--p-border-default);
   background: var(--p-background-surface);
   width: 28rem;
+
+  .p-divider-content {
+    background-color: var(--p-background-surface);
+  }
 }
 
 .login-header {

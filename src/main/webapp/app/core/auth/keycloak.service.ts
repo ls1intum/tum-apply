@@ -3,6 +3,12 @@ import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 
 import { environment } from '../../environments/environment';
 
+export enum IdpProvider {
+  Google = 'google',
+  Microsoft = 'microsoft',
+  Apple = 'apple',
+}
+
 export interface UserProfile {
   sub: string;
   email: string;
@@ -10,19 +16,16 @@ export interface UserProfile {
   family_name: string;
   token: string;
 }
+
 @Injectable({ providedIn: 'root' })
 export class KeycloakService {
-  _keycloak: Keycloak | undefined;
   profile: UserProfile | undefined;
 
-  get keycloak(): Keycloak {
-    this._keycloak ??= new Keycloak({
-      url: environment.keycloak.url,
-      realm: environment.keycloak.realm,
-      clientId: environment.keycloak.clientId,
-    });
-    return this._keycloak;
-  }
+  private readonly keycloak = new Keycloak({
+    url: environment.keycloak.url,
+    realm: environment.keycloak.realm,
+    clientId: environment.keycloak.clientId,
+  });
 
   /**
    * Initializes the Keycloak client and determines login status.
@@ -31,7 +34,7 @@ export class KeycloakService {
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: false,
+      checkLoginIframe: true,
       pkceMethod: 'S256',
       enableLogging: environment.keycloak.enableLogging,
     };
@@ -55,10 +58,10 @@ export class KeycloakService {
   /**
    * Triggers the Keycloak login flow.
    */
-  async login(): Promise<void> {
+  async login(redirectUri?: string): Promise<void> {
     try {
       await this.keycloak.login({
-        redirectUri: window.location.origin + '/',
+        redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
       });
     } catch (err) {
       console.error('Login failed:', err);
@@ -66,12 +69,26 @@ export class KeycloakService {
   }
 
   /**
+   * Triggers the Keycloak login flow for a specific provider (idpHint).
+   */
+  async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
+    try {
+      await this.keycloak.login({
+        redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
+        idpHint: provider,
+      });
+    } catch (err) {
+      console.error(`Login with provider ${provider} failed:`, err);
+    }
+  }
+
+  /**
    * Triggers the Keycloak logout and redirect.
    */
-  async logout(): Promise<void> {
+  async logout(redirectUri?: string): Promise<void> {
     try {
       await this.keycloak.logout({
-        redirectUri: window.location.origin + '/',
+        redirectUri: redirectUri ?? window.location.origin + '/',
       });
     } catch (err) {
       console.error('Logout failed:', err);
@@ -83,34 +100,6 @@ export class KeycloakService {
    */
   getToken(): string | undefined {
     return this.keycloak.token;
-  }
-
-  /**
-   * Returns the current username.
-   */
-  getUsername(): string {
-    return this.keycloak.tokenParsed?.preferred_username ?? '';
-  }
-
-  /**
-   * Returns the current user's first name.
-   */
-  getFirstName(): string {
-    return this.keycloak.tokenParsed?.given_name ?? '';
-  }
-
-  /**
-   * Checks if the user has a specific role.
-   */
-  hasRole(role: string): boolean {
-    return this.keycloak.tokenParsed?.realm_access?.roles.includes(role) ?? false;
-  }
-
-  /**
-   * Returns all realm roles assigned to the user.
-   */
-  getUserRoles(): string[] {
-    return this.keycloak.tokenParsed?.realm_access?.roles ?? [];
   }
 
   /**

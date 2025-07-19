@@ -1,17 +1,20 @@
 <div class="sort-bar">
   <!-- LEFT: total count -->
-  <div class="sort-bar__count">
-    {{ totalRecords() }}
-    {{ totalRecords() === 1 ? 'Application' : 'Applications' }} found
-  </div>
+  <span
+    class="record-count"
+    jhiTranslate="entity.filters.recordsFound"
+    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+  >
+  </span>
 
   <div class="sort-bar__controls">
-    <span>Sort by:</span>
+    <span jhiTranslate="entity.sortBy"></span>
     <jhi-dropdown
       width="11rem"
       [items]="dropdownOptions()"
       [selected]="selectedDropdownOption()"
       (selectedChange)="onSortFieldChange($event)"
+      [translateItems]="shouldTranslate()"
     />
     @if (currentOption().type === 'NUMBER' && isAsc()) {
       <jhi-button [icon]="'arrow-down-1-9'" variant="text" (click)="toggleDirection()" />

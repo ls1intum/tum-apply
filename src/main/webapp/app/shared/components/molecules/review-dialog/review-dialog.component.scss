@@ -1,0 +1,59 @@
+.review-dialog {
+  width: 70%;
+  max-width: 50rem;
+  padding: 1rem;
+
+  // only for REJECT dialog
+  .p-dialog-content.no-overflow {
+    overflow: visible;
+  }
+
+  .p-dialog-header {
+    align-items: flex-start;
+  }
+
+  .info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .applicant-name {
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .job-name {
+      color: var(--p-text-disabled);
+
+      .icon {
+        color: var(--p-primary-color);
+      }
+    }
+  }
+
+  .review-checkboxes {
+    list-style: none;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      label {
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .footer-buttons {
+    padding-top: 1rem;
+    display: flex;
+    justify-content: right;
+    gap: 1.5rem;
+  }
+}

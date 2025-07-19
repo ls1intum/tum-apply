@@ -2,6 +2,7 @@ package de.tum.cit.aet.application.repository;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationShortDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import java.time.LocalDate;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Spring Data JPA repository for the {@link Application} entity.
@@ -277,4 +279,57 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
 
     @Query("UPDATE Application a set a.state = 'WITHDRAWN' WHERE a.id = :applicationId")
     void withdrawApplicationById(UUID applicationId);
+
+    /**
+     * Finds all applicants for a specific job that are in the 'SENT' or 'IN_REVIEW' state.
+     * This is used to notify applicants about the job status update.
+     *
+     * @param jobId the ID of the job for which to find applicants
+     * @return a set of {@link ApplicationShortDTO} containing all important applicant details
+     */
+    @Query(
+        """
+            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationShortDTO(
+                a.applicationId,
+                ap.email,
+                ap.firstName,
+                ap.lastName,
+                ap.selectedLanguage,
+                a.state
+            )
+            FROM Application a
+            JOIN a.applicant ap
+            WHERE a.job.jobId = :jobId
+            AND a.state IN ('SENT', 'IN_REVIEW')
+        """
+    )
+    Set<ApplicationShortDTO> findApplicantsToNotify(@Param("jobId") UUID jobId);
+
+    /**
+     * Updates the state of all applications for a specific job based on the target job state.
+     * <ul>
+     *   <li>SAVED → JOB_CLOSED</li>
+     *   <li>SENT/IN_REVIEW → JOB_CLOSED if targetState is 'CLOSED'</li>
+     *   <li>SENT/IN_REVIEW → REJECTED if targetState is 'APPLICANT_FOUND'</li>
+     * </ul>
+     *
+     * @param jobId the job ID
+     * @param targetState the state of the job used to determine how application states are updated
+     */
+    @Transactional
+    @Modifying
+    @Query(
+        """
+           UPDATE Application a
+           SET a.state =
+                CASE
+                    WHEN a.state = 'SAVED' THEN 'JOB_CLOSED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
+                    ELSE a.state
+                END
+            WHERE a.job.jobId = :jobId
+        """
+    )
+    void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
 }

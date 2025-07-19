@@ -6,7 +6,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -26,10 +27,10 @@ public abstract class AbstractAuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private Instant createdAt = Instant.now();
+    @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME(3)")
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneOffset.UTC);
 
     @LastModifiedDate
-    @Column(name = "last_modified_at")
-    private Instant lastModifiedAt = Instant.now();
+    @Column(name = "last_modified_at", columnDefinition = "DATETIME(3)")
+    private LocalDateTime lastModifiedAt = LocalDateTime.now(ZoneOffset.UTC);
 }

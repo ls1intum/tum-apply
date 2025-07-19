@@ -336,6 +336,15 @@ export const TUMApplyPreset = definePreset(Lara, {
               hoverColor: '{secondary.inverseColor}',
               activeBackground: '{secondary.activeColor}',
             },
+            contrast: {
+              background: '{accent.color}',
+              color: '{accent.inverseColor}',
+              hoverBackground: '{accent.hoverColor}',
+              hoverColor: '{accent.inverseColor}',
+              borderColor: '{accent.color}',
+              hoverBorderColor: '{accent.hoverColor}',
+              activeBackground: '{accent.activeColor}',
+            },
             success: {
               background: '{success.color}',
               color: '{success.inverseColor}',
@@ -515,6 +524,15 @@ export const TUMApplyPreset = definePreset(Lara, {
               hoverBackground: '{secondary.hoverColor}',
               hoverColor: '{secondary.inverseColor}',
               activeBackground: '{secondary.activeColor}',
+            },
+            contrast: {
+              background: '{accent.color}',
+              color: '{accent.inverseColor}',
+              hoverBackground: '{accent.hoverColor}',
+              hoverColor: '{accent.inverseColor}',
+              borderColor: '{accent.color}',
+              hoverBorderColor: '{accent.hoverColor}',
+              activeBackground: '{accent.activeColor}',
             },
             success: {
               background: '{success.color}',
@@ -878,6 +896,82 @@ export const TUMApplyPreset = definePreset(Lara, {
           },
         },
       },
+    },
+    multiselect: {
+      background: '{transparent}',
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          overlay: {
+            background: '{background.default}',
+          },
+          option: {
+            color: '{text.primary}',
+            selected: {
+              color: '{text.primary}',
+              background: '{background.surface}',
+            },
+            focus: {
+              background: '{primary.color}',
+              color: '{base.white}',
+            },
+          },
+        },
+        dark: {
+          color: '{text.primary}',
+          overlay: {
+            background: '{background.default}',
+          },
+          option: {
+            color: '{text.primary}',
+            selected: {
+              color: '{text.primary}',
+              background: '{background.surface}',
+            },
+            focus: {
+              background: '{primary.color}',
+              color: '{base.white}',
+            },
+          },
+        },
+      },
+    },
+    inputtext: {
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          background: '{transparent}',
+        },
+        dark: {
+          color: '{text.primary}',
+          background: '{transparent}',
+        },
+      },
+    },
+    dialog: {
+      colorScheme: {
+        light: {
+          color: '{text.primary}',
+          background: '{background.default}',
+        },
+        dark: {
+          color: '{text.primary}',
+          background: '{background.default}',
+        },
+      },
+    },
+  },
+  fileupload: {
+    header: {
+      border: {
+        width: '0',
+      },
+      gap: '0',
+      color: '{background.default}',
+    },
+    content: {
+      color: '{text.primary}',
+      background: '{background.default}',
     },
   },
 });

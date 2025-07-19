@@ -1,0 +1,26 @@
+@use '../../../content/scss/breakpoints' as bp;
+@use '../../../content/scss/_header';
+
+$detail-card-2-column-max-width: bp.$xl;
+
+.text-primary {
+  color: var(--p-text-primary);
+}
+
+.border-neutral-rounded {
+  border: var(--p-border-default) solid 0.1rem;
+  border-radius: 0.5rem;
+}
+
+.h-remaining-viewheight {
+  height: calc(100vh - 8rem); //subtracted the footer and the header
+  overflow-y: hidden;
+}
+
+.slot-right-width {
+  width: 21.5rem;
+
+  @media (max-width: $detail-card-2-column-max-width) {
+    width: 100%;
+  }
+}

@@ -4,27 +4,29 @@
   "displayName": "TUMApply Realm",
   "users": [
     {
-      "username": "applicant1",
+      "id": "00000000-0000-0000-0000-000000000101",
+      "username": "admin1",
       "enabled": true,
-      "email": "applicant1@tumapply.local",
+      "email": "admin1@tumapply.local",
       "emailVerified": true,
-      "firstName": "Applicant",
-      "lastName": "One",
+      "firstName": "System",
+      "lastName": "Admin",
       "credentials": [
         {
           "type": "password",
-          "value": "applicant",
+          "value": "admin",
           "temporary": false
         }
       ]
     },
     {
+      "id": "00000000-0000-0000-0000-000000000102",
       "username": "professor1",
       "enabled": true,
       "email": "professor1@tumapply.local",
       "emailVerified": true,
-      "firstName": "Professor",
-      "lastName": "One",
+      "firstName": "Anna",
+      "lastName": "Professorin",
       "credentials": [
         {
           "type": "password",
@@ -34,16 +36,65 @@
       ]
     },
     {
-      "username": "admin1",
+      "id": "00000000-0000-0000-0000-000000000103",
+      "username": "applicant1",
       "enabled": true,
-      "email": "admin1@tumapply.local",
+      "email": "applicant1@tumapply.local",
       "emailVerified": true,
-      "firstName": "Admin",
-      "lastName": "One",
+      "firstName": "Max",
+      "lastName": "Applicant",
       "credentials": [
         {
           "type": "password",
-          "value": "admin",
+          "value": "applicant",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000104",
+      "username": "applicant2",
+      "enabled": true,
+      "email": "external@uni.de",
+      "emailVerified": true,
+      "firstName": "Sara",
+      "lastName": "Extern",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "applicant",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000105",
+      "username": "professor2",
+      "enabled": true,
+      "email": "professor2@tum.de",
+      "emailVerified": true,
+      "firstName": "Professor2",
+      "lastName": "TUM",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "professor",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000106",
+      "username": "applicant3",
+      "enabled": true,
+      "email": "longnameperson@intl.edu",
+      "emailVerified": true,
+      "firstName": "Jean-Pierre-Étienne",
+      "lastName": "Van Der Straaten-Sánchez",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "applicant",
           "temporary": false
         }
       ]

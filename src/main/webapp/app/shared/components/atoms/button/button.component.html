@@ -1,20 +1,34 @@
 <div class="relative">
+  @if (numberOfFavorites()) {
+    <p-overlaybadge [value]="numberOfFavorites()" styleClass="button-overlay">
+      <ng-container [ngTemplateOutlet]="button" />
+    </p-overlaybadge>
+  } @else {
+    <ng-container [ngTemplateOutlet]="button" />
+  }
+</div>
+<ng-template #button>
   <p-button
     [ariaLabel]="label() === undefined ? icon() : undefined"
     [disabled]="disabled()"
-    [label]="label()"
-    [raised]="numberOfFavorites() !== undefined"
     [rounded]="label() === undefined"
     [severity]="severity()"
+    [styleClass]="(label() === undefined ? 'rounded-full w-14 h-14' : '') + (fullWidth() ? ' w-full' : '')"
+    [type]="type()"
     [variant]="variant()"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
     }
+    @if (label() !== undefined) {
+      @if (shouldTranslate()) {
+        <span jhiTranslate="{{ label() }}"></span>
+      } @else {
+        {{ label() }}
+      }
+    }
+    @if (isExternalLink()) {
+      <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" aria-hidden="true" />
+    }
   </p-button>
-  @if (numberOfFavorites() !== undefined) {
-    <span class="jhi-button-badge-mini absolute flex items-center justify-center overflow-hidden right_full rounded-full top-0 ml-8">{{
-      numberOfFavorites()
-    }}</span>
-  }
-</div>
+</ng-template>

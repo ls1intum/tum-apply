@@ -30,9 +30,30 @@ on:
       - created
 
 jobs:
+  prepare-vars:
+    runs-on: ubuntu-latest
+    environment: test-server
+    outputs:
+      KEYCLOAK_URL: ${{ steps.set-vars.outputs.KEYCLOAK_URL }}
+      KEYCLOAK_REALM: ${{ steps.set-vars.outputs.KEYCLOAK_REALM }}
+      KEYCLOAK_CLIENT_ID: ${{ steps.set-vars.outputs.KEYCLOAK_CLIENT_ID }}
+      KEYCLOAK_ENABLE_LOGGING: ${{ steps.set-vars.outputs.KEYCLOAK_ENABLE_LOGGING }}
+    steps:
+      - id: set-vars
+        run: |
+          echo "KEYCLOAK_URL=${{ vars.KEYCLOAK_URL }}" >> "$GITHUB_OUTPUT"
+          echo "KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}" >> "$GITHUB_OUTPUT"
+          echo "KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}" >> "$GITHUB_OUTPUT"
+          echo "KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}" >> "$GITHUB_OUTPUT"
   build:
+    needs: prepare-vars
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
     with:
       image-name: ghcr.io/ls1intum/tum-apply
       docker-file: Dockerfile
+      build-args: |
+        KEYCLOAK_URL=${{ needs.prepare-vars.outputs.KEYCLOAK_URL }}
+        KEYCLOAK_REALM=${{ needs.prepare-vars.outputs.KEYCLOAK_REALM }}
+        KEYCLOAK_CLIENT_ID=${{ needs.prepare-vars.outputs.KEYCLOAK_CLIENT_ID }}
+        KEYCLOAK_ENABLE_LOGGING=${{ needs.prepare-vars.outputs.KEYCLOAK_ENABLE_LOGGING }}
     secrets: inherit

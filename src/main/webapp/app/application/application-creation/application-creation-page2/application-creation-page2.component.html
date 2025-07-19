@@ -1,90 +1,131 @@
 <form [formGroup]="page2Form()">
-  <p-divider layout="horizontal">Bachelor</p-divider>
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage2.section.bachelor"></span>
+  </p-divider>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Bachelor Degree Name"
+        label="{{ 'entity.applicationPage2.label.bachelorDegreeName' | translate }}"
         [required]="true"
         [(model)]="data().bachelorDegreeName"
         [control]="page2Form().get('bachelorDegreeName') ?? undefined"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorDegreeName' | translate"
       />
     </div>
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Bachelor Degree University"
+        label="{{ 'entity.applicationPage2.label.bachelorDegreeUniversity' | translate }}"
         [required]="true"
         [(model)]="data().bachelorDegreeUniversity"
         [control]="page2Form().controls.bachelorDegreeUniversity"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorDegreeUniversity' | translate"
       />
     </div>
   </div>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-dropdown
-        label="Bachelor Grading Scale"
+        label="{{ 'entity.applicationPage2.label.bachelorGradingScale' | translate }}"
         [disabled]="true"
         width="100%"
         [required]="true"
         [items]="bachelorGradingScaleLocal"
         [(selected)]="data().bachelorGradingScale"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradingScale' | translate"
       />
     </div>
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Bachelor Grade"
+        label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}"
         [required]="true"
         [(model)]="data().bachelorGrade"
         [control]="page2Form().controls.bachelorGrade"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
       />
     </div>
   </div>
-  <div class="form-row justify-center">
-    <div class="w-1/2">
-      <jhi-upload-button uploadText="Please upload your Bachelor Certificate" />
+
+  @if (applicationIdForDocuments(); as applicationId) {
+    <div class="form-row justify-center">
+      <div class="w-1/2">
+        <jhi-upload-button
+          uploadKey="entity.upload.upload_instruction.BACHELOR_TRANSCRIPT"
+          documentType="BACHELOR_TRANSCRIPT"
+          [applicationId]="applicationId"
+          [documentIds]="documentIdsBachelorTranscript()"
+        />
+      </div>
     </div>
-  </div>
-  <p-divider layout="horizontal">Master</p-divider>
+  }
+
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage2.section.master"></span>
+  </p-divider>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Master Degree Name"
+        label="{{ 'entity.applicationPage2.label.masterDegreeName' | translate }}"
         [required]="true"
         [(model)]="data().masterDegreeName"
         [control]="page2Form().controls.masterDegreeName"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.masterDegreeName' | translate"
       />
     </div>
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Master Degree University"
+        label="{{ 'entity.applicationPage2.label.masterDegreeUniversity' | translate }}"
         [required]="true"
         [(model)]="data().masterDegreeUniversity"
         [control]="page2Form().controls.masterDegreeUniversity"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.masterDegreeUniversity' | translate"
       />
     </div>
   </div>
+
   <div class="form-row">
     <div class="w-1/2 pr-4">
       <jhi-dropdown
-        label="Master Grading Scale"
+        label="{{ 'entity.applicationPage2.label.masterGradingScale' | translate }}"
         [disabled]="true"
         width="100%"
         [required]="true"
         [items]="masterGradingScaleLocal"
         [(selected)]="data().masterGradingScale"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.masterGradingScale' | translate"
       />
     </div>
     <div class="w-1/2 pr-4">
       <jhi-string-input
-        label="Master Grade"
+        label="{{ 'entity.applicationPage2.label.masterGrade' | translate }}"
         [required]="true"
         [(model)]="data().masterGrade"
         [control]="page2Form().controls.masterGrade"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
       />
     </div>
   </div>
-  <div class="form-row justify-center">
-    <div class="w-1/2">
-      <jhi-upload-button uploadText="Please upload your Master Certificate" />
+
+  @if (applicationIdForDocuments(); as applicationId) {
+    <div class="form-row justify-center">
+      <div class="w-1/2">
+        <jhi-upload-button
+          [applicationId]="applicationId"
+          documentType="MASTER_TRANSCRIPT"
+          uploadKey="entity.upload.upload_instruction.MASTER_TRANSCRIPT"
+          [documentIds]="documentIdsMasterTranscript()"
+        />
+      </div>
     </div>
-  </div>
+  }
 </form>

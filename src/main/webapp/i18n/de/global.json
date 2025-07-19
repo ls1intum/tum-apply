@@ -78,11 +78,32 @@
         }
       }
     },
+    "input": {
+      "error": {
+        "required": "Dieses Feld ist ein Pflichtfeld.",
+        "minLength": "Dieses Feld muss mindestens {{min}} Zeichen lang sein.",
+        "maxLength": "Dieses Feld darf höchstens {{max}} Zeichen lang sein.",
+        "pattern": "Ungültiges Format."
+      }
+    },
+    "editor": {
+      "header": {
+        "heading": "Heading",
+        "subheading": "Subheading",
+        "normal": "Normal"
+      },
+      "align": {
+        "center": "center",
+        "right": "right",
+        "justify": "justify"
+      }
+    },
     "field": {
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Entwicklung"
+      "dev": "Entwicklung",
+      "prod": "Demo"
     },
     "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
   },
@@ -103,6 +124,21 @@
       "field": "Feld",
       "value": "Wert"
     },
+    "detail_card": {
+      "name": "Name",
+      "grade": "Note",
+      "university": "Universität",
+      "motivation": "Motivation",
+      "skills": "Fähigkeiten",
+      "research_experience": "Forschungserfahrung",
+      "bachelor_info": "Informationen zum Bachelorabschluss",
+      "master_info": "Informationen zum Masterabschluss",
+      "gender": "Geschlecht",
+      "desired_start_date": "Gewünschtes Anfangsdatum",
+      "preferred_language": "Bevorzugte Sprache",
+      "applicant_info": "Bewerberinformationen",
+      "nationality": "Nationalität"
+    },
     "delete": {
       "title": "Löschen bestätigen"
     },
@@ -120,9 +156,174 @@
       "patternLogin": "Dieses Feld darf nur Buchstaben, Ziffern und E-Mail-Adressen enthalten."
     },
     "filters": {
-      "set": "Folgende Filter sind gesetzt",
-      "clear": "Filter entfernen",
-      "clearAll": "Alle Filter entfernen"
+      "filter": "Filter",
+      "numberSelected": "{{selected}} ausgewählt",
+      "clear": "Entfernen",
+      "clearAll": "Alle entfernen",
+      "apply": "Anwenden",
+      "recordsFound": "{{count}} {{entity}} gefunden"
+    },
+    "sortBy": "Sortieren nach:",
+    "upload": {
+      "upload_instruction_standard": "Bitte hochladen",
+      "upload_instruction": {
+        "BACHELOR_TRANSCRIPT": "Bitte laden Sie Ihr Bachelor-Zeugnis hoch",
+        "MASTER_TRANSCRIPT": "Bitte laden Sie Ihr Master-Zeugnis hoch",
+        "REFERENCE": "Bitte laden Sie Ihre Empfehlungsschreiben hoch",
+        "CV": "Bitte laden Sie Ihren Lebenslauf hoch"
+      },
+      "uploaded_document": "Hochgeladenes Dokument für ",
+      "uploaded_documents": "Hochgeladene Dokumente für ",
+      "add": "Hinzufügen",
+      "clear": "Alles löschen",
+      "upload": "Hochladen",
+      "instruction": "Hier klicken oder Dateien hinziehen ziehen, um sie hochzuladen.",
+      "max_size": "Maximale Upload-Größe:",
+      "upload_progress": "Upload-Fortschritt: ",
+      "document_type": {
+        "BACHELOR_TRANSCRIPT": "Bachelor-Zeugnis",
+        "MASTER_TRANSCRIPT": "Master-Zeugnis",
+        "REFERENCES": "Empfehlungsschreiben",
+        "CV": "Lebenslauf",
+        "CUSTOM": "Benutzerdefiniert"
+      },
+      "tooltip": {
+        "to_upload": "Muss noch hochgeladen werden",
+        "already_uploaded": "Bereits hochgeladen",
+        "remove": "Diese Datei aus der Upload-Liste entfernen",
+        "delete": "Diese Datei vom Server löschen"
+      }
+    },
+    "application_overview": {
+      "applicant": {
+        "header": "Meine Bewerbungen"
+      }
+    },
+    "application_detail": {
+      "applicant": {
+        "header": "Bewerbung für '{{jobTitle}}'"
+      }
+    },
+    "applicationSteps": {
+      "personalInformation": "Persönliche Informationen",
+      "education": "Ausbildung",
+      "applicationDetails": "Bewerbungsdetails",
+      "buttons": {
+        "cancel": "Abbrechen",
+        "next": "Weiter",
+        "prev": "Zurück",
+        "send": "Senden"
+      },
+      "status": {
+        "SAVING": "Änderungen werden gespeichert...",
+        "SAVED": "Änderungen gespeichert"
+      }
+    },
+    "applicationPage1": {
+      "label": {
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail",
+        "phoneNumber": "Telefonnummer",
+        "gender": "Geschlecht",
+        "nationality": "Nationalität",
+        "language": "Sprache",
+        "dateOfBirth": "Geburtsdatum",
+        "website": "Webseite",
+        "linkedIn": "LinkedIn",
+        "street": "Straße und Hausnummer",
+        "city": "Stadt",
+        "country": "Land",
+        "postcode": "Postleitzahl"
+      },
+      "section": {
+        "userInformation": "Benutzerinformationen",
+        "address": "Adresse"
+      }
+    },
+    "applicationPage2": {
+      "section": {
+        "bachelor": "Bachelor",
+        "master": "Master"
+      },
+      "label": {
+        "bachelorDegreeName": "Bachelor-Studiengang",
+        "bachelorDegreeUniversity": "Universität des Bachelors",
+        "bachelorGradingScale": "Benotungsskala Bachelor",
+        "bachelorGrade": "Bachelor-Abschlussnote",
+        "masterDegreeName": "Master-Studiengang",
+        "masterDegreeUniversity": "Universität des Masters",
+        "masterGradingScale": "Benotungsskala Master",
+        "masterGrade": "Master-Abschlussnote"
+      },
+      "tooltip": {
+        "bachelorDegreeName": "Geben Sie den Studiengang Ihres Bachelors an.",
+        "bachelorDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Bachelor absolviert haben.",
+        "bachelorGradingScale": "Wählen Sie die Benotungsskala Ihres Bachelors.",
+        "bachelorGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an.",
+        "masterDegreeName": "Geben Sie den Studiengang Ihres Masters an.",
+        "masterDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Master absolviert haben.",
+        "masterGradingScale": "Wählen Sie die Benotungsskala Ihres Masters.",
+        "masterGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an."
+      }
+    },
+    "applicationPage3": {
+      "label": {
+        "desiredStartDate": "Gewünschter Starttermin",
+        "motivation": "Was motiviert Sie für diese Position?",
+        "skills": "Welche Fähigkeiten bringen Sie mit?",
+        "experiences": "Welche Forschungserfahrungen haben Sie bereits gesammelt?"
+      },
+      "tooltip": {
+        "desiredStartDate": "Wählen Sie das bevorzugte Startdatum für die Position.",
+        "motivation": "Erläutern Sie, wie diese Position zu Ihren beruflichen oder wissenschaftlichen Zielen passt.",
+        "skills": "Beschreiben Sie Ihre Forschungserfahrungen und wie diese zur Position passen.",
+        "experiences": "Heben Sie Ergebnisse oder Erkenntnisse hervor, die Ihre Forschungserfahrung geprägt haben."
+      },
+      "floatlabel": {
+        "motivation": "Berufliche oder persönliche Gründe angeben",
+        "skills": "Erfahrungen und Fähigkeiten beschreiben",
+        "experiences": "Frühere Forschungsprojekte, Abschlussarbeiten oder Veröffentlichungen erläutern"
+      },
+      "sublabel": {
+        "motivation": "Halten Sie es kurz, aber informativ ...",
+        "skills": "Warum passen Sie gut zu diesem Programm oder Labor?",
+        "experiences": "Beschreiben Sie Ihre Rolle, verwendete Methoden, Ergebnisse, Themen, Projekte usw."
+      },
+      "section": {
+        "uploads": "Dateiuploads"
+      },
+      "placeholder": {
+        "selectStartDate": "Startdatum auswählen..."
+      }
+    },
+    "applicationOverview": {
+      "header": "Ihre Bewerbungen",
+      "state": {
+        "draft": "Entwurf",
+        "submitted": "Eingereicht",
+        "accepted": "Angenommen",
+        "rejected": "Abgelehnt",
+        "withdrawn": "Zurückgezogen",
+        "closed": "Geschlossen"
+      },
+      "actions": {
+        "view": "Ansehen",
+        "withdraw": "Zurückziehen",
+        "update": "Bearbeiten",
+        "delete": "Löschen"
+      },
+      "columns": {
+        "positionTitle": "Stellentitel",
+        "researchGroup": "Forschungsgruppe",
+        "status": "Status",
+        "created": "Erstellt"
+      }
+    },
+    "applicationDetail": {
+      "motivation": "Motivation",
+      "skills": "Fähigkeiten",
+      "researchExperience": "Forschungserfahrung"
     }
   },
   "error": {
@@ -141,6 +342,5 @@
       "could.not.extract": "Datei konnte nicht extrahiert werden",
       "not.image": "Es wird erwartet, dass die Datei ein Bild ist. Die Datei ist jedoch vom Typ \"{{ fileType }}\""
     }
-  },
-  "footer": "Dies ist Ihre Fußzeile"
+  }
 }

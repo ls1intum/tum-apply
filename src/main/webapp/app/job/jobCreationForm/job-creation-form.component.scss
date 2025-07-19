@@ -25,9 +25,9 @@ header {
   padding-bottom: 1.25rem;
 
   h1 {
+    font-weight: 700;
+    font-size: 2rem;
     color: var(--p-primary-color);
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
   }
 
   p {
@@ -193,16 +193,6 @@ header {
   p {
     margin: 0;
     color: var(--p-text-disabled);
-  }
-
-  .tum-link {
-    color: var(--p-text-primary);
-    text-decoration: none;
-    font-weight: bold;
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
 }
 

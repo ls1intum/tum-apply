@@ -1,8 +1,9 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
+import dayjs from 'dayjs/esm';
 
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
@@ -27,10 +28,14 @@ export class JobCardComponent {
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
   icon = input<string>('flask-vial');
 
+  readonly formattedStartDate = computed(() =>
+    this.startDate() ? dayjs(this.startDate()).format('DD.MM.YYYY') : 'No Start Date specified',
+  );
+
   private router = inject(Router);
 
   onViewDetails(): void {
-    alert('View Details clicked!');
+    this.router.navigate([`/job/detail/${this.jobId()}`]);
   }
 
   onApply(): void {

@@ -1,23 +1,50 @@
 <ng-template #panel1>
   <div class="panel">
-    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" />
+    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
   </div>
 </ng-template>
 <ng-template #panel2>
   <div class="panel">
-    <jhi-application-creation-page2 class="w-full" [(data)]="page2" (valid)="onPage2ValidityChanged($event)" />
+    <jhi-application-creation-page2
+      class="w-full"
+      [(data)]="page2"
+      (valid)="onPage2ValidityChanged($event)"
+      (changed)="onValueChanged()"
+      [applicationIdForDocuments]="applicationId()"
+      [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
+      [documentIdsMasterTranscript]="documentIds()?.masterDocumentDictionaryIds"
+    />
   </div>
 </ng-template>
 <ng-template #panel3>
   <div class="panel">
-    <jhi-application-creation-page3 class="w-full" [(data)]="page3" (valid)="onPage3ValidityChanged($event)" />
+    <jhi-application-creation-page3
+      class="w-full"
+      [(data)]="page3"
+      (changed)="onValueChanged()"
+      (valid)="onPage3ValidityChanged($event)"
+      [applicationIdForDocuments]="applicationId()"
+      [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
+      [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
+    />
+  </div>
+</ng-template>
+
+<ng-template #saving_state_panel>
+  <div [className]="savingBadgeCalculatedClass()">
+    <fa-icon icon="save" />
+    <span class="font-bold">
+      {{ `entity.applicationSteps.status.${this.savingState()}`| translate }}
+    </span>
   </div>
 </ng-template>
 
 <div class="ml-8 mb-8 p-2">
-  <h1 class="block">{{ this.title() }}</h1>
+  <header>
+    <h1>{{ this.title() }}</h1>
+  </header>
   <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>
 </div>
 <div class="m-4 p-1">
-  <jhi-progress-stepper [steps]="stepData()" />
+  <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
 </div>

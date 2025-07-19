@@ -3,6 +3,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
+
+import { TranslateDirective } from '../../../language';
 
 export type DropdownOption = {
   name: string;
@@ -15,7 +18,7 @@ export type DropdownOption = {
   standalone: true,
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.scss'],
-  imports: [DropdownModule, FontAwesomeModule, FormsModule, CommonModule],
+  imports: [DropdownModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective],
   encapsulation: ViewEncapsulation.None,
 })
 export class DropdownComponent {
@@ -29,8 +32,10 @@ export class DropdownComponent {
   valueField = input<string>('value');
   iconField = input<string | undefined>(undefined); // For displaying custom icons for each dropdown item
   prefixIcon = input<string | undefined>(undefined); // For default icon for dropdown placeholder
-  labelPosition = input<'top' | 'left'>('top');
   width = input<string>('100%');
+  icon = input<string | undefined>(undefined);
+  tooltipText = input<string | undefined>(undefined);
+  translateItems = input<boolean>(false);
 
   selectedChange = output<DropdownOption>();
 

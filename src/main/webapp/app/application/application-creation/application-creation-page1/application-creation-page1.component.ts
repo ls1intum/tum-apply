@@ -3,6 +3,8 @@ import { Component, computed, effect, inject, model, output } from '@angular/cor
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
+import { TranslateModule } from '@ngx-translate/core';
+import SharedModule from 'app/shared/shared.module';
 
 import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
@@ -110,7 +112,16 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 
 @Component({
   selector: 'jhi-application-creation-page1',
-  imports: [CommonModule, ReactiveFormsModule, DividerModule, DropdownComponent, DatePickerComponent, StringInputComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    DividerModule,
+    DropdownComponent,
+    DatePickerComponent,
+    StringInputComponent,
+    TranslateModule,
+    SharedModule,
+  ],
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',
   standalone: true,
@@ -119,6 +130,7 @@ export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
   valid = output<boolean>();
+  changed = output<boolean>();
 
   dropdownGenderLocal = dropdownGender;
   dropdownLanguageLocal = dropdownLanguage;
@@ -136,6 +148,14 @@ export default class ApplicationCreationPage1Component {
       city: [currentData.city, Validators.required],
       country: [currentData.country, Validators.required],
       postcode: [currentData.postcode, Validators.required],
+
+      // Optional fields
+      gender: [currentData.gender ?? null],
+      nationality: [currentData.nationality ?? null],
+      language: [currentData.language ?? null],
+      dateOfBirth: [currentData.dateOfBirth],
+      website: [currentData.website],
+      linkedIn: [currentData.linkedIn],
     });
   });
 
@@ -148,7 +168,7 @@ export default class ApplicationCreationPage1Component {
           ...this.data(),
           ...normalizedValue,
         });
-
+        this.changed.emit(true);
         this.valid.emit(form.valid);
       });
 
@@ -156,10 +176,24 @@ export default class ApplicationCreationPage1Component {
         this.valid.emit(form.valid);
       });
 
+      this.valid.emit(form.valid);
+
       onCleanup(() => {
         valueSubscription.unsubscribe();
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  emitChanged(): void {
+    this.changed.emit(true);
+  }
+
+  setDateOfBirth($event: string | undefined): void {
+    this.data.set({
+      ...this.data(),
+      dateOfBirth: $event ?? '',
+    });
+    this.emitChanged();
   }
 }

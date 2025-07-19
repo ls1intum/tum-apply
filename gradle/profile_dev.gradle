@@ -1,3 +1,23 @@
+def dotenvFile = file("${rootDir}/.env.local")
+if (!dotenvFile.exists()) {
+    throw new GradleException(".env.local file is missing in project root")
+}
+
+def envVars = [:]
+dotenvFile.eachLine { line ->
+    if (!line.startsWith("#") && line.contains("=")) {
+        def (key, value) = line.split("=", 2)
+        envVars[key.trim()] = value.trim()
+    }
+}
+
+def requiredVars = ["KEYCLOAK_URL", "KEYCLOAK_REALM", "KEYCLOAK_CLIENT_ID", "KEYCLOAK_ENABLE_LOGGING"]
+requiredVars.each { key ->
+    if (!envVars.containsKey(key) || envVars[key] == null) {
+        throw new GradleException("Missing required environment variable in .env.local: ${key}")
+    }
+}
+
 dependencies {
     implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
     testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
@@ -15,6 +35,7 @@ springBoot {
 }
 
 bootRun {
+    environment envVars
     args = ["--spring.profiles.active=${springProfiles}"]
 }
 
@@ -35,7 +56,13 @@ task webapp(type: NpmTask) {
     dependsOn npmInstall
 
     args = ["run", "webapp:build"]
-    environment = [APP_VERSION: project.version]
+    environment = [
+            "APP_VERSION"            : project.version,
+            "KEYCLOAK_URL"           : envVars["KEYCLOAK_URL"],
+            "KEYCLOAK_REALM"         : envVars["KEYCLOAK_REALM"],
+            "KEYCLOAK_CLIENT_ID"     : envVars["KEYCLOAK_CLIENT_ID"],
+            "KEYCLOAK_ENABLE_LOGGING": envVars["KEYCLOAK_ENABLE_LOGGING"],
+    ]
 }
 
 processResources {

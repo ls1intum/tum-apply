@@ -1,0 +1,16 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .image {
+    width: 15rem;
+    aspect-ratio: 1;
+  }
+
+  .text {
+    color: var(--p-text-secondary);
+    font-size: 1.5rem;
+  }
+}

@@ -1,10 +1,9 @@
 name: tumapply
 services:
   mysql:
-    image: mysql:9.2.0
-    environment:
-      - MYSQL_DATABASE=tumapply
-      - MYSQL_ROOT_PASSWORD=root
+    image: mysql:9.3.0
+    env_file:
+      - .env
     expose:
       - '3306'
     command: mysqld --lower_case_table_names=1 --tls-version='' --character_set_server=utf8mb4  --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
@@ -17,33 +16,14 @@ services:
     restart: always
     networks:
       - shared-network
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.1.1
-    command: 'start-dev --import-realm'
     volumes:
-      - ./realm-config:/opt/keycloak/data/import
-      - ./realm-config/keycloak-health-check.sh:/opt/keycloak/health-check.sh
-    environment:
-      - KC_DB=dev-file
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_FEATURES=scripts
-      - KC_HTTP_PORT=9080
-      - KC_HTTPS_PORT=9443
-      - KC_HEALTH_ENABLED=true
-      - KC_HTTP_MANAGEMENT_PORT=9990
-    labels:
-      org.springframework.boot.ignore: true
-    networks:
-      - shared-network
+      - mysql_data:/var/lib/mysql
+    ports:
+      - '5432:5432'
   tumapply:
     image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev, api-docs
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
-      - SPRING_LIQUIBASE_URL=jdbc:mysql://mysql:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=FALSE&allowPublicKeyRetrieval=true
+    env_file:
+      - .env
     expose:
       - '8080'
     healthcheck:
@@ -57,7 +37,7 @@ services:
     networks:
       - shared-network
   nginx:
-    image: nginx:1.27.4-alpine-slim
+    image: nginx:1.28.0-alpine-slim
     ports:
       - '80:80'
       - '443:443'
@@ -68,6 +48,9 @@ services:
       test: service nginx status || exit 1
       start_period: 10s
     restart: always
+    depends_on:
+      tumapply:
+        condition: service_healthy
     volumes:
       - ./src/main/resources/config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - type: bind
@@ -83,3 +66,6 @@ networks:
   shared-network:
     name: tumapply-shared-network
     driver: bridge
+
+volumes:
+  mysql_data:

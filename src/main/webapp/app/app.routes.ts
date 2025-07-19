@@ -12,8 +12,8 @@ const routes: Routes = [
     path: '',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
-    loadComponent: () => import('./home/home.component'),
-    title: 'home.title',
+    loadComponent: () => import('./shared/pages/landing-page/landing-page.component').then(m => m.LandingPageComponent),
+    title: 'landingPage.title',
   },
   {
     path: '',
@@ -42,6 +42,19 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
+  },
+  {
+    path: 'playground/editor',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
+  },
+  {
+    path: 'playground/docviewer',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
   },
 
   // ======================================================================================
@@ -72,18 +85,34 @@ const routes: Routes = [
   // Job
   // ======================================================================================
   {
-    path: 'job-creation',
+    path: 'job/detail/:job_id',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./job/job-detail/job-detail.component').then(m => m.JobDetailComponent),
+  },
+  {
+    path: 'job/create',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
-    title: 'home.title',
+  },
+  {
+    path: 'job/edit/:job_id',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
   },
   {
     path: 'job-overview',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
     loadComponent: () => import('./job/job-overview/job-overview-page/job-overview-page.component').then(m => m.JobOverviewPageComponent),
-    title: 'home.title',
+  },
+  {
+    path: 'my-positions',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () => import('./job/my-positions/my-positions-page/my-positions-page.component').then(m => m.MyPositionsPageComponent),
   },
 
   // ======================================================================================
@@ -105,7 +134,13 @@ const routes: Routes = [
     path: 'application/overview',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
-    loadComponent: () => import('./pages/application/application-overview-for-applicant/application-overview-for-applicant.component'),
+    loadComponent: () => import('./application/application-overview-for-applicant/application-overview-for-applicant.component'),
+  },
+  {
+    path: 'application/detail/:application_id',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./application/application-detail-for-applicant/application-detail-for-applicant.component'),
   },
 
   // ======================================================================================
@@ -117,6 +152,30 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () =>
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
+  },
+  {
+    path: 'evaluation/application',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () => import('./evaluation/application-detail/application-detail.component').then(m => m.ApplicationDetailComponent),
+  },
+
+  // ======================================================================================
+  // Footer
+  // ======================================================================================
+  {
+    path: 'imprint',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/pages/imprint-page/imprint-page.component').then(m => m.ImprintPageComponent),
+    title: 'imprint',
+  },
+  {
+    path: 'privacy',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/pages/privacy-page/privacy-page.component').then(m => m.PrivacyPageComponent),
+    title: 'privacy',
   },
 
   // ======================================================================================

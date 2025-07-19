@@ -16,6 +16,7 @@ export type ButtonGroupDirection = 'vertical' | 'horizontal';
  */
 export type ButtonGroupData = {
   direction: ButtonGroupDirection;
+  fullWidth?: boolean;
   buttons: Button[];
 };
 
@@ -32,4 +33,5 @@ export type ButtonGroupData = {
 })
 export default class ButtonGroupComponent {
   data = input.required<ButtonGroupData>();
+  shouldTranslate = input<boolean>(false);
 }

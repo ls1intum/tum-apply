@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,36 +25,34 @@ public class DocumentDictionaryService {
 
     /**
      * Synchronizes the document dictionary entries with a new set of documents.
-     * The owning entity (e.g., Applicant, Application) is set dynamically using the provided {@code ownerSetter}.
+     * The owning entity (e.g., Applicant, Application) is set dynamically using the
+     * provided {@code ownerSetter}.
      *
-     * @param existingEntries the current document dictionary entries associated with an entity
+     * @param existingEntries the current document dictionary entries associated
+     *                        with an entity
      * @param newDocuments    the newly uploaded documents to be associated
-     * @param type            the type of documents being updated (e.g., CV, REFERENCE)
-     * @param ownerSetter     a functional interface used to set the owning entity (e.g., via {@code setApplicant()} or {@code setApplication()})
+     * @param type            the type of documents being updated (e.g., CV,
+     *                        REFERENCE)
+     * @param ownerSetter     a functional interface used to set the owning entity
+     *                        (e.g., via {@code setApplicant()} or
+     *                        {@code setApplication()})
      */
     public void updateDocumentDictionaries(
         Set<DocumentDictionary> existingEntries,
-        Set<Document> newDocuments,
+        Set<Pair<Document, String>> newDocuments,
         DocumentType type,
         DocumentDictionaryOwnerSetter ownerSetter
     ) {
-        Set<UUID> newDocumentIds = newDocuments.stream().map(Document::getDocumentId).collect(Collectors.toSet());
-
         Set<UUID> existingDocumentIds = existingEntries.stream().map(dd -> dd.getDocument().getDocumentId()).collect(Collectors.toSet());
 
-        // Delete outdated entries
-        for (DocumentDictionary dd : existingEntries) {
-            if (!newDocumentIds.contains(dd.getDocument().getDocumentId())) {
-                delete(dd);
-            }
-        }
-
         // Add new entries
-        for (Document doc : newDocuments) {
-            if (!existingDocumentIds.contains(doc.getDocumentId())) {
+        for (Pair<Document, String> doc : newDocuments) {
+            Document document = doc.getFirst();
+            if (!existingDocumentIds.contains(document.getDocumentId())) {
                 DocumentDictionary newEntry = new DocumentDictionary();
                 ownerSetter.accept(newEntry); // Set owning entity (applicant/application)
-                newEntry.setDocument(doc);
+                newEntry.setDocument(document);
+                newEntry.setName(doc.getSecond());
                 newEntry.setDocumentType(type);
                 save(newEntry);
             }
@@ -64,7 +64,8 @@ public class DocumentDictionaryService {
      *
      * @param id the UUID of the DocumentDictionary to retrieve
      * @return the {@link DocumentDictionary} entity associated with the given ID
-     * @throws EntityNotFoundException if no DocumentDictionary is found for the provided ID
+     * @throws EntityNotFoundException if no DocumentDictionary is found for the
+     *                                 provided ID
      */
     public DocumentDictionary findDocumentDictionaryById(UUID id) {
         return documentDictionaryRepository
@@ -85,17 +86,34 @@ public class DocumentDictionaryService {
     /**
      * Deletes a DocumentDictionary entry from the database.
      *
-     * @param documentDictionary the document dictionary entry to delete
+     * @param documentDictionaryId the id of the document dictionary entry to delete
      */
-    public void delete(DocumentDictionary documentDictionary) {
-        documentDictionaryRepository.delete(documentDictionary);
+    public void deleteById(UUID documentDictionaryId) {
+        if (!documentDictionaryRepository.existsById(documentDictionaryId)) {
+            throw new EntityNotFoundException("DocumentDictionaryId does not exist");
+        }
+        documentDictionaryRepository.deleteById(documentDictionaryId);
     }
 
     /**
-     * Retrieves all DocumentDictionary entries for a given applicant and document type.
+     * Deletes all document dictionary entries associated with the given application
+     * and document type.
      *
-     * @param applicant the applicant whose documents to retrieve
-     * @param documentType the type of document to filter by (e.g., BACHELOR_TRANSCRIPT)
+     * @param application  the application associated with the documents
+     * @param documentType the type of documents to delete
+     */
+    public void deleteByApplicationAndType(Application application, DocumentType documentType) {
+        Set<DocumentDictionary> documentDictionaries = getDocumentDictionaries(application, documentType);
+        this.documentDictionaryRepository.deleteAll(documentDictionaries);
+    }
+
+    /**
+     * Retrieves all DocumentDictionary entries for a given applicant and document
+     * type.
+     *
+     * @param applicant    the applicant whose documents to retrieve
+     * @param documentType the type of document to filter by (e.g.,
+     *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
     public Set<DocumentDictionary> getDocumentDictionaries(Applicant applicant, DocumentType documentType) {
@@ -103,10 +121,12 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Retrieves all DocumentDictionary entries for a given application and document type.
+     * Retrieves all DocumentDictionary entries for a given application and document
+     * type.
      *
-     * @param application the application whose documents to retrieve
-     * @param documentType the type of document to filter by (e.g., BACHELOR_TRANSCRIPT)
+     * @param application  the application whose documents to retrieve
+     * @param documentType the type of document to filter by (e.g.,
+     *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
     public Set<DocumentDictionary> getDocumentDictionaries(Application application, DocumentType documentType) {
@@ -121,5 +141,41 @@ public class DocumentDictionaryService {
      */
     public Set<DocumentDictionary> getDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
         return documentDictionaryRepository.findByCustomFieldAnswer(customFieldAnswer);
+    }
+
+    /**
+     * Retrieves a {@link ApplicationDocumentIdsDTO} containing categorized document
+     * IDs
+     * associated with the specified {@link Application}.
+     *
+     * @param application the {@link Application} entity whose related document IDs
+     *                    should be retrieved;
+     *                    must not be {@code null}
+     * @return an {@link ApplicationDocumentIdsDTO} populated with document IDs
+     *         grouped by document type;
+     *         never {@code null}, but fields may be empty if no documents are
+     *         associated
+     * @throws IllegalArgumentException if the {@code application} is {@code null}
+     */
+    public ApplicationDocumentIdsDTO getDocumentIdsDTO(Application application) {
+        if (application == null) {
+            throw new IllegalArgumentException("Application may not be null");
+        }
+        return documentDictionaryRepository.getApplicationDocumentIdsDTOByApplicationId(application.getApplicationId());
+    }
+
+    /**
+     * Updates the name of the document with the given ID.
+     *
+     * @param documentDictionaryId the ID of the document to rename
+     * @param newName    the new name to set for the document
+     */
+    public void renameDocument(UUID documentDictionaryId, String newName) {
+        documentDictionaryRepository
+            .findById(documentDictionaryId)
+            .ifPresent(document -> {
+                document.setName(newName);
+                documentDictionaryRepository.save(document);
+            });
     }
 }

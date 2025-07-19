@@ -1,4 +1,4 @@
-import { Component, WritableSignal, inject } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -6,8 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { map } from 'rxjs';
-import { fromEventPattern } from 'rxjs';
+import { fromEventPattern, map } from 'rxjs';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 
@@ -17,6 +16,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
   imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
   bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
@@ -44,21 +44,20 @@ export class HeaderComponent {
   }
 
   navigateToLogin(): void {
-    void this.router.navigate(['/login']);
-  }
-
-  navigateToRegister(): void {
-    void this.router.navigate(['/register']);
+    const currentUrl = this.router.url;
+    void this.router.navigate(['/login'], {
+      queryParams: { redirect: currentUrl },
+    });
   }
 
   logout(): void {
-    void this.accountService.signOut();
+    void this.accountService.signOut(window.location.origin + '/');
   }
 
-  toggleColorScheme(): void {
-    const className = 'tum-apply-dark-mode';
-    document.body.classList.toggle(className);
-  }
+  /*  toggleColorScheme(): void {
+        const className = 'tum-apply-dark-mode';
+        document.body.classList.toggle(className);
+      }*/
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {

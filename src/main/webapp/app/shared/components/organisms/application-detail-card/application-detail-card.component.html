@@ -1,0 +1,210 @@
+<!-- Main Container Layout -->
+<div class="main-container">
+  <div class="left-middle-section">
+    <!-- Left Section -->
+    <div class="left-section">
+      <!-- Top Section: Avatar, Name, and Score -->
+      <!-- Applicant Avatar -->
+      <!-- TODO here the icon will be placed - preferably within the slot-rating-applicant-info ng-content component. But the icon handling has to be implemented first -->
+      <!-- <div class="avatar">
+          <img src="https://placehold.co/100x100" class="avatar-img" />
+        </div> -->
+
+      <!-- Rating Section (if applicable) -->
+      <ng-content select="[slot-rating-applicant-info]" />
+
+      <!-- Injected Template: Applicant Details -->
+      <ng-container [ngTemplateOutlet]="applicantDetailsTemplate" />
+
+      <!-- Injected Template: Education Information -->
+      <ng-container [ngTemplateOutlet]="educationInfoTemplate" />
+    </div>
+
+    <!-- Middle Column: Text Cards (Motivation, Skills, Research Experience) -->
+    <div class="middle-column">
+      <ng-container
+        [ngTemplateOutlet]="textCardTemplate"
+        [ngTemplateOutletContext]="{
+          icon: 'rocket',
+          name: ('entity.applicationDetail.motivation' | translate),
+          text: application().motivation,
+        }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="textCardTemplate"
+        [ngTemplateOutletContext]="{
+          icon: 'brain',
+          name: ('entity.applicationDetail.skills' | translate),
+          text: application().specialSkills,
+        }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="textCardTemplate"
+        [ngTemplateOutletContext]="{
+          icon: 'flask',
+          name: ('entity.applicationDetail.researchExperience' | translate),
+          text: application().projects,
+        }"
+      />
+      <!-- Slot for custom questions -->
+      <ng-content select="[slot-custom-questions]" />
+    </div>
+  </div>
+  <!-- Right Column: Slot for Additional Custom Content (e.g Documents, or Internal Comments) -->
+  <div class="right-section">
+    <ng-content select="[slot-vertical-right]" />
+  </div>
+</div>
+
+<!-- Template: Applicant Details Card -->
+<ng-template #applicantDetailsTemplate>
+  <div class="card h-60">
+    <!-- Card Header -->
+    <ng-container
+      [ngTemplateOutlet]="card_header"
+      [ngTemplateOutletContext]="{ header: 'entity.detail_card.applicant_info', icon: 'circle-user' }"
+    />
+    <!-- Applicant Information Rows -->
+    <div class="card-body">
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{
+          $implicit: 'entity.detail_card.preferred_language',
+          val: application().applicant?.user?.preferredLanguage,
+        }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.desired_start_date', val: application().desiredDate }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.gender', val: application().applicant?.user?.gender }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.nationality', val: application().applicant?.user?.nationality }"
+      />
+    </div>
+
+    <!-- Links: Website and LinkedIn -->
+    <div class="links-container">
+      <a
+        class="link-item"
+        [class.disabled-link]="!application().applicant?.user?.website"
+        [href]="application().applicant?.user?.website"
+        [attr.aria-disabled]="!application().applicant?.user?.website"
+        [attr.tabindex]="!application().applicant?.user?.website ? -1 : null"
+        [attr.target]="application().applicant?.user?.website ? '_blank' : null"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div>Website</div>
+        <fa-icon icon="link" class="icon" [class.disabled-icon]="!application().applicant?.user?.linkedinUrl" />
+      </a>
+
+      <a
+        class="link-item"
+        [class.disabled-link]="!application().applicant?.user?.linkedinUrl"
+        [href]="application().applicant?.user?.linkedinUrl"
+        [attr.aria-disabled]="!application().applicant?.user?.linkedinUrl"
+        [attr.tabindex]="!application().applicant?.user?.linkedinUrl ? -1 : null"
+        [attr.target]="application().applicant?.user?.linkedinUrl ? '_blank' : null"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div>LinkedIn</div>
+        <fa-icon [icon]="['fab', 'linkedin']" class="icon" [class.disabled-icon]="!application().applicant?.user?.linkedinUrl" />
+      </a>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Template: Generic Text Card for Motivation, Skills, etc. -->
+<ng-template #textCardTemplate let-icon="icon" let-name="name" let-text="text">
+  <div class="text-card">
+    <div class="card-row-icon">
+      <fa-icon [icon]="icon" class="icon" />
+      <div class="flex-1 justify-start text-base">{{ name }}</div>
+    </div>
+    <div class="w-full justify-start">
+      {{ text }}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #infoRow let-name let-val="val">
+  <div class="card-row">
+    <div class="flex-1 text-left" [jhiTranslate]="name"></div>
+    <div class="flex-1 text-right">{{ val }}</div>
+  </div>
+</ng-template>
+
+<!-- Template: Row with Icon (for grades etc.) -->
+<ng-template #infoRowWithIcon let-name let-val="val">
+  <div class="card-row-icon">
+    <div class="flex-1" [jhiTranslate]="name"></div>
+    <div class="flex-1 flex items-center justify-end gap-2.5">
+      <div class="text-right">
+        {{ val }}
+      </div>
+      <div class="transform -rotate-90">
+        <fa-icon icon="arrow-right-arrow-left" class="icon-disabled" />
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Template: Card Header -->
+<ng-template #card_header let-header="header" let-icon="icon">
+  <div class="h-14 flex self-stretch items-center justify-center gap-2.5 px-4">
+    <fa-icon [icon]="icon" class="icon" />
+    <div class="font-bold text-center" [jhiTranslate]="header"></div>
+  </div>
+</ng-template>
+
+<!-- Education Information Template -->
+<ng-template #educationInfoTemplate>
+  <!-- Bachelor's Information Card -->
+  <div class="card">
+    <ng-container
+      [ngTemplateOutlet]="card_header"
+      [ngTemplateOutletContext]="{ header: 'entity.detail_card.bachelor_info', icon: 'building-columns' }"
+    />
+    <div class="card-body">
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.name', val: application().applicant?.bachelorDegreeName }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRowWithIcon"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.grade', val: application().applicant?.bachelorGrade }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.university', val: application().applicant?.bachelorUniversity }"
+      />
+    </div>
+  </div>
+  <!-- Master's Information Card -->
+  <div class="card">
+    <ng-container
+      [ngTemplateOutlet]="card_header"
+      [ngTemplateOutletContext]="{ header: 'entity.detail_card.master_info', icon: 'building-columns' }"
+    />
+    <div class="card-body">
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.name', val: application().applicant?.masterDegreeName }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRowWithIcon"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.grade', val: application().applicant?.masterGrade }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="infoRow"
+        [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.university', val: application().applicant?.masterUniversity }"
+      />
+    </div>
+  </div>
+</ng-template>

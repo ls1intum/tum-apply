@@ -2,26 +2,60 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendar, faClock, faFlaskVial, faGraduationCap, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { Router, provideRouter } from '@angular/router';
+import { Component } from '@angular/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
 
 import { JobCardComponent } from './job-card.component';
+
+@Component({ template: '' })
+class DummyComponent {}
+
+class FakeLoader implements TranslateLoader {
+  getTranslation(): Observable<{}> {
+    return of({}); // return an empty object or mock translations
+  }
+}
 
 describe('JobCardComponent', () => {
   let component: JobCardComponent;
   let fixture: ComponentFixture<JobCardComponent>;
   let library: FaIconLibrary;
+  let router: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobCardComponent],
+      imports: [
+        JobCardComponent,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: FakeLoader },
+          defaultLanguage: 'en',
+          useDefaultLang: true,
+        }),
+      ],
+      providers: [
+        provideRouter([
+          { path: 'job/detail/:id', component: DummyComponent },
+          { path: 'application/create/:id', component: DummyComponent },
+        ]),
+        {
+          provide: MissingTranslationHandler,
+          useValue: { handle: jest.fn() },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(JobCardComponent);
     component = fixture.componentInstance;
 
+    router = TestBed.inject(Router);
+
     library = TestBed.inject(FaIconLibrary);
     library.addIcons(faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial);
 
     fixture.componentRef.setInput('jobTitle', 'Test Job');
+    fixture.componentRef.setInput('jobId', '123');
     fixture.componentRef.setInput('fieldOfStudies', 'Computer Science');
     fixture.componentRef.setInput('location', 'Munich');
     fixture.componentRef.setInput('professor', 'Prof. John Doe');
@@ -47,7 +81,7 @@ describe('JobCardComponent', () => {
     expect(compiled.textContent).toContain('Munich');
     expect(compiled.textContent).toContain('Prof. John Doe');
     expect(compiled.textContent).toContain('20%');
-    expect(compiled.textContent).toContain('Start: 2025-10-01');
+    expect(compiled.textContent).toContain('Start: 01.10.2025');
     expect(compiled.textContent).toContain('Today');
   });
 
@@ -63,5 +97,13 @@ describe('JobCardComponent', () => {
     const button = fixture.debugElement.query(By.css('.apply-button')).nativeElement;
     button.click();
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should navigate to job detail page when "View" button is clicked', () => {
+    const navigateSpy = jest.spyOn(router, 'navigate');
+    const button = fixture.debugElement.query(By.css('.view-button')).nativeElement;
+    button.click();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/job/detail/123']);
   });
 });

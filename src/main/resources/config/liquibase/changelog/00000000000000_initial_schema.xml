@@ -29,16 +29,16 @@
       <column name="selected_language" type="VARCHAR(10)" defaultValue="en">
         <constraints nullable="false"/>
       </column>
-      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
-      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="last_modified_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
     </createTable>
     <sql>
-      ALTER TABLE users MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE
-        CURRENT_TIMESTAMP;
+      ALTER TABLE users MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE
+        CURRENT_TIMESTAMP(3);
     </sql>
   </changeSet>
 
@@ -62,10 +62,10 @@
       <column name="street" type="TEXT"/>
       <column name="postal_code" type="VARCHAR(10)"/>
       <column name="city" type="TEXT"/>
-      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
-      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="last_modified_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -140,10 +140,10 @@
         <constraints nullable="false"/>
       </column>
       <column name="start_date" type="DATE"/>
-      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
-      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="last_modified_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -159,7 +159,7 @@
                              referencedTableName="research_groups"
                              referencedColumnNames="research_group_id"/>
     <sql>
-      ALTER TABLE jobs MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+      ALTER TABLE jobs MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
   </changeSet>
 
@@ -244,27 +244,22 @@
       </column>
 
       <column name="application_state"
-              type="ENUM('SAVED','SENT','ACCEPTED','IN_REVIEW','REJECTED','WITHDRAWN')">
+              type="ENUM('SAVED','SENT','ACCEPTED','IN_REVIEW','REJECTED','WITHDRAWN', 'JOB_CLOSED')">
         <constraints nullable="false"/>
       </column>
       <column name="desired_start_date" type="DATE"/>
-
-      <column name="cv_file_id" type="CHAR(36)"/>
-      <column name="reference_file_id" type="CHAR(36)"/>
-      <column name="bachelor_certificate_id" type="CHAR(36)"/>
-      <column name="master_certificate_id" type="CHAR(36)"/>
 
       <column name="rating" type="INT"/>
       <column name="projects" type="LONGTEXT"/>
       <column name="special_skills" type="LONGTEXT"/>
       <column name="motivation" type="LONGTEXT"/>
 
-      <column name="created_at" type="TIMESTAMP"
-              defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="created_at" type="DATETIME(3)"
+              defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
-      <column name="last_modified_at" type="TIMESTAMP"
-              defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="last_modified_at" type="DATETIME(3)"
+              defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -284,10 +279,10 @@
     <!-- keep last_modified_at automatically updated -->
     <sql>
       ALTER TABLE applications
-        MODIFY last_modified_at TIMESTAMP NOT NULL
-        DEFAULT CURRENT_TIMESTAMP
+        MODIFY last_modified_at DATETIME(3) NOT NULL
+        DEFAULT CURRENT_TIMESTAMP(3)
         ON
-      UPDATE CURRENT_TIMESTAMP;
+      UPDATE CURRENT_TIMESTAMP(3);
     </sql>
 
   </changeSet>
@@ -304,8 +299,8 @@
       </column>
       <column name="user_id" type="CHAR(36)"/>
       <column name="reason" type="TEXT"/>
-      <column name="reviewed_at" type="TIMESTAMP"
-              defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="reviewed_at" type="DATETIME(3)"
+              defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -384,11 +379,11 @@
         <constraints nullable="false"/>
       </column>
 
-      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
 
-      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="last_modified_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -406,8 +401,8 @@
 
     <sql>
       ALTER TABLE documents
-        MODIFY last_modified_at TIMESTAMP NOT NULL
-        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+        MODIFY last_modified_at DATETIME(3) NOT NULL
+        DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
     </changeSet>
     <changeSet id="012_create_internal_comments" author="assistant">
@@ -418,10 +413,10 @@
       <column name="created_by" type="CHAR(36)"/>
       <column name="application_id" type="CHAR(36)"/>
       <column name="message" type="LONGTEXT"/>
-      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
-      <column name="last_modified_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+      <column name="last_modified_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -437,7 +432,7 @@
                              onDelete="CASCADE"/>
 
     <sql>
-      ALTER TABLE internal_comments MODIFY last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+      ALTER TABLE internal_comments MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
   </changeSet>
 
@@ -460,6 +455,11 @@
       <column name="document_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
+  
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
     </createTable>
 
     <!-- Foreign Keys -->

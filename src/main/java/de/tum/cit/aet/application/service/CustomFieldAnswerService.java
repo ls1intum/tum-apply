@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,7 +44,10 @@ public class CustomFieldAnswerService {
         if (!customFieldAnswer.getCustomField().getCustomFieldType().equals(CustomFieldType.FILE_UPLOAD)) {
             throw new IllegalArgumentException("CustomField is no FileUpload");
         }
-        Set<Document> documents = files.stream().map(file -> documentService.upload(file, user)).collect(Collectors.toSet());
+        Set<Pair<Document, String>> documents = files
+            .stream()
+            .map(file -> Pair.of(documentService.upload(file, user), file.getName()))
+            .collect(Collectors.toSet());
         updateDocumentDictionaries(customFieldAnswer, documents);
     }
 
@@ -53,7 +57,7 @@ public class CustomFieldAnswerService {
      * @param customFieldAnswer the custom field answer to associate the documents with
      * @param newDocuments the set of new documents to update in the dictionaries
      */
-    protected void updateDocumentDictionaries(CustomFieldAnswer customFieldAnswer, Set<Document> newDocuments) {
+    protected void updateDocumentDictionaries(CustomFieldAnswer customFieldAnswer, Set<Pair<Document, String>> newDocuments) {
         documentDictionaryService.updateDocumentDictionaries(getDocuments(customFieldAnswer), newDocuments, null, dd ->
             dd.setCustomFieldAnswer(customFieldAnswer)
         );

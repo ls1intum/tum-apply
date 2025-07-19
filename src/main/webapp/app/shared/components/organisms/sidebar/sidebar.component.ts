@@ -7,6 +7,9 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 
+type SidebarButton = { icon: string; text: string; link: string };
+type SidebarCategory = { title: string; buttons: SidebarButton[] };
+
 @Component({
   selector: 'jhi-sidebar',
   imports: [PanelModule, SidebarButtonComponent, TranslateModule],
@@ -14,13 +17,59 @@ import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-butto
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
+  /**
+   * Custom groups for sidebar links that have multiple paths.
+   * This allows for more flexible matching of active links.
+   */
+  private readonly customGroups: Partial<Record<string, string[]>> = {
+    '/application/overview': ['/application/detail', '/application/edit'],
+    '/job-overview': ['/job/detail', '/application/create'],
+    '/my-positions': ['/job/detail', '/job/edit'],
+  };
+
   constructor(
     private accountService: AccountService,
     private router: Router,
   ) {}
 
-  get categories(): { title: string; buttons: { icon: string; text: string; link: string }[] }[] | undefined {
-    const categoryConfig = {
+  /**
+   * Returns the categories for the sidebar based on the user's roles.
+   * The categories are defined in the getCategoryConfig method.
+   */
+  get categories(): SidebarCategory[] | undefined {
+    const categoryConfig = this.getCategoryConfig();
+    const authorities = this.accountService.user()?.authorities;
+    return authorities?.map((authority: string) => categoryConfig[authority as UserShortDTO.RolesEnum]).flat();
+  }
+
+  /**
+   * Checks if the given link is active based on the current router URL.
+   * It also checks against custom groups for more complex matching.
+   * @param link The link to check for activity.
+   * @returns True if the link is active, false otherwise.
+   */
+  isActive(link: string): boolean {
+    const currentPath = this.router.url.split('?')[0].split(';')[0];
+
+    // If the link is the root path, check if the current path is also the root
+    if (link === '/') {
+      return currentPath === '/';
+    }
+
+    // Check if the link is in the custom groups
+    const subPaths = this.customGroups[link];
+    if (subPaths) {
+      if (currentPath === link || currentPath.startsWith(link + '/')) {
+        return true;
+      }
+      return subPaths.some(subPath => currentPath === subPath || currentPath.startsWith(subPath + '/'));
+    }
+
+    return currentPath === link || currentPath.startsWith(link + '/');
+  }
+
+  private getCategoryConfig(): Record<string, SidebarCategory[]> {
+    return {
       APPLICANT: [
         {
           title: 'sidebar.dashboard.dashboard',
@@ -32,8 +81,11 @@ export class SidebarComponent {
         {
           title: 'sidebar.applications.applications',
           buttons: [
-            { icon: 'file', text: 'sidebar.applications.myapplications', link: '/application/overview' },
-            { icon: 'bookmark', text: 'sidebar.applications.savedpositions', link: '/saved' },
+            {
+              icon: 'file',
+              text: 'sidebar.applications.myapplications',
+              link: '/application/overview',
+            },
           ],
         },
       ],
@@ -42,30 +94,23 @@ export class SidebarComponent {
           title: 'sidebar.manage.manage',
           buttons: [
             { icon: 'home', text: 'sidebar.manage.home', link: '/' },
-            { icon: 'folder', text: 'sidebar.manage.mypositions', link: '/my-positions' },
-            { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job-creation' },
+            { icon: 'list', text: 'sidebar.manage.mypositions', link: '/my-positions' },
+            { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job/create' },
           ],
         },
         {
           title: 'sidebar.applications.applications',
           buttons: [
             {
-              icon: 'file',
+              icon: 'table-list',
               text: 'sidebar.applications.applicationoverview',
               link: '/evaluation/overview',
             },
             {
-              icon: 'file-contract',
+              icon: 'id-card',
               text: 'sidebar.applications.reviewapplications',
               link: '/evaluation/application',
             },
-          ],
-        },
-        {
-          title: 'sidebar.researchgroup.researchgroup',
-          buttons: [
-            { icon: 'microscope', text: 'sidebar.researchgroup.yourgroup', link: '/group' },
-            { icon: 'people-roof', text: 'sidebar.researchgroup.yourmembers', link: '/members' },
           ],
         },
       ],
@@ -97,11 +142,5 @@ export class SidebarComponent {
         },
       ],
     };
-    const authorities = this.accountService.user()?.authorities;
-    return authorities?.map((authority: string) => categoryConfig[authority as UserShortDTO.RolesEnum]).flat();
-  }
-
-  isActive(link: string): boolean {
-    return this.router.url === link;
   }
 }
