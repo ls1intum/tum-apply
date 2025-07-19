@@ -24,16 +24,10 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     this.modelChange.emit(value);
     const ctrl = this.formControl();
-    const plainText = this.extractTextFromHtml(value);
 
     ctrl.setValue(value);
 
-    // If empty, reset dirty state
-    if (plainText.trim() === '') {
-      ctrl.markAsPristine();
-    } else {
-      ctrl.markAsDirty();
-    }
+    ctrl.markAsDirty();
     ctrl.updateValueAndValidity();
   }
 
