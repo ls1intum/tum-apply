@@ -2,6 +2,7 @@ package de.tum.cit.aet.job.service;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -117,6 +118,7 @@ public class JobService {
             Email email = Email.builder()
                 .to(applicant)
                 .template("application_rejected")
+                .emailType(EmailType.APPLICATION_REJECTED)
                 .language(Language.fromCode(applicant.getSelectedLanguage()))
                 .content(
                     Map.of(

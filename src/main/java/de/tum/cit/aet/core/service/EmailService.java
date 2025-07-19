@@ -113,9 +113,9 @@ public class EmailService {
               Subject: {}
               Parsed Body: {}
             """,
-            email.getTo(),
-            email.getCc(),
-            email.getBcc(),
+            getRecipientsToNotify(email.getTo(), email),
+            getRecipientsToNotify(email.getCc(), email),
+            getRecipientsToNotify(email.getBcc(), email),
             subject,
             body
         );
@@ -163,7 +163,11 @@ public class EmailService {
         if (users == null || users.isEmpty()) {
             return Set.of();
         }
-        return users.stream().filter(user -> emailSettingService.canNotify(email, user)).map(User::getEmail).collect(Collectors.toSet());
+        return users
+            .stream()
+            .filter(user -> emailSettingService.canNotify(email.getEmailType(), user))
+            .map(User::getEmail)
+            .collect(Collectors.toSet());
     }
 
     /**

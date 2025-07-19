@@ -5,6 +5,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
@@ -165,22 +166,23 @@ public class ApplicationService {
             Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
             User supervisingProfessor = job.getSupervisingProfessor();
 
-            confirmApplicationToApplicant(applicant.getEmail(), applicant.getSelectedLanguage(), application, job);
-            confirmApplicationToProfessor(supervisingProfessor.getEmail(), supervisingProfessor.getSelectedLanguage(), application, job);
+            confirmApplicationToApplicant(applicant, applicant.getSelectedLanguage(), application, job);
+            confirmApplicationToProfessor(supervisingProfessor, supervisingProfessor.getSelectedLanguage(), application, job);
         }
         return application;
     }
 
     private void confirmApplicationToApplicant(
-        String applicantEmail,
+        Applicant applicant,
         String selectedLanguage,
         ApplicationForApplicantDTO application,
         Job job
     ) {
         Email email = Email.builder()
-            .to(applicantEmail)
+            .to(applicant)
             .language(Language.fromCode(selectedLanguage))
             .template("application_confirmation")
+            .emailType(EmailType.APPLICATION_SENT)
             .content(
                 Map.of(
                     "applicantFirstName",
@@ -198,15 +200,16 @@ public class ApplicationService {
     }
 
     private void confirmApplicationToProfessor(
-        String professorEmail,
+        User supervisingProfessor,
         String selectedLanguage,
         ApplicationForApplicantDTO application,
         Job job
     ) {
         Email email = Email.builder()
-            .to(professorEmail)
+            .to(supervisingProfessor)
             .language(Language.fromCode(selectedLanguage))
             .template("application_received")
+            .emailType(EmailType.APPLICATION_RECEIVED)
             .content(
                 Map.of(
                     "professorLastName",
@@ -241,7 +244,8 @@ public class ApplicationService {
         Job job = application.getJob();
 
         Email email = Email.builder()
-            .to(applicant.getEmail())
+            .to(applicant)
+            .emailType(EmailType.APPLICATION_WITHDRAWN)
             .template("application_withdrawn")
             .language(Language.fromCode(applicant.getSelectedLanguage()))
             .content(

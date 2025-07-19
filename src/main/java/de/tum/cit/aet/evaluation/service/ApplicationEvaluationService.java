@@ -2,6 +2,7 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -81,9 +82,10 @@ public class ApplicationEvaluationService {
             User supervisingProfessor = job.getSupervisingProfessor();
 
             Email email = Email.builder()
-                .to(applicant.getEmail())
-                .bcc(supervisingProfessor.getEmail())
+                .to(applicant)
+                .bcc(supervisingProfessor)
                 .htmlBody(acceptDTO.message())
+                .emailType(EmailType.APPLICATION_ACCEPTED)
                 .language(Language.fromCode(applicant.getSelectedLanguage()))
                 // template and content are only set for the subject
                 .template("application_accepted")
@@ -121,9 +123,10 @@ public class ApplicationEvaluationService {
             ResearchGroup researchGroup = job.getResearchGroup();
 
             Email email = Email.builder()
-                .to(applicant.getEmail())
+                .to(applicant)
                 .language(Language.fromCode(applicant.getSelectedLanguage()))
                 .template("application_rejected")
+                .emailType(EmailType.APPLICATION_REJECTED)
                 .content(
                     Map.of(
                         "applicantFirstName",
