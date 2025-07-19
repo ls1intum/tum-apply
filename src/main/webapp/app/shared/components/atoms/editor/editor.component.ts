@@ -15,6 +15,8 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 export class EditorComponent extends BaseInputDirective<string> {
   characterCount = computed(() => this.extractTextFromHtml(this.htmlValue()).length);
   characterLimit = input<number | undefined>(500); // Optionally set maximum character limit
+  // Check if error message should be displayed
+  isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused());
 
   private htmlValue = signal('');
 

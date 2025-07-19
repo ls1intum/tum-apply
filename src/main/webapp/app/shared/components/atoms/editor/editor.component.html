@@ -12,13 +12,7 @@
       </label>
     }
 
-    <div
-      class="input-wrapper"
-      [class.error]="inputState() === 'invalid'"
-      contenteditable="false"
-      (focusin)="onFocus()"
-      (focusout)="onBlur()"
-    >
+    <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()">
       <p-editor
         [id]="id()"
         type="text"
@@ -67,7 +61,7 @@
     </div>
     <div class="editor-footer">
       <div class="error-text">
-        @if (inputState() === 'invalid' && !isFocused()) {
+        @if (isEmpty()) {
           {{ errorMessage() }}
         }
       </div>
