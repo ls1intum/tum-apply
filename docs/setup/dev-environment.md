@@ -28,7 +28,7 @@ Environment-specific values are stored in a `.env.local` file in the root of the
 - Never commit your `.env.local` file – it may contain sensitive information.
 
 For details on each variable and how environments are handled in development, test, and production, refer to
-the [Environment Configuration Guide](https://confluence.aet.cit.tum.de/spaces/AP/pages/273843427/Development+Environment+File).
+the [Environment Configuration Guide](environment-variables.md).
 
 ---
 
