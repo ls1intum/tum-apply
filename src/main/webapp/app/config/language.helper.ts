@@ -3,7 +3,6 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { SessionStorageService } from 'ngx-webstorage';
 
 import { LocaleConversionService } from '../service/locale-conversion.service';
 
@@ -15,7 +14,6 @@ export class JhiLanguageHelper {
   private localeConversionService = inject(LocaleConversionService);
   private titleService = inject(Title);
   private router = inject(Router);
-  private sessionStorage = inject(SessionStorageService);
 
   private renderer: Renderer2;
   private _language: BehaviorSubject<string>;
@@ -93,7 +91,7 @@ export class JhiLanguageHelper {
       const languageKey = this.translateService.currentLang;
       this._language.next(languageKey);
       this.localeConversionService.locale = languageKey;
-      this.sessionStorage.store('locale', languageKey);
+      sessionStorage.setItem('locale', languageKey);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', this.translateService.currentLang);
       this.updateTitle();
     });
