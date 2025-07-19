@@ -1,4 +1,10 @@
-import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  LOCALE_ID,
+  importProvidersFrom,
+  provideZonelessChangeDetection,
+  APP_INITIALIZER
+} from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -6,7 +12,6 @@ import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromD
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import './config/dayjs';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -14,6 +19,7 @@ import { providePrimeNG } from 'primeng/config';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
+import { ApiModule, Configuration } from './generated';
 import { httpInterceptorProviders } from './core/interceptor';
 import routes from './app.routes';
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
@@ -22,9 +28,33 @@ import { missingTranslationHandler, translatePartialLoader } from './config/tran
 import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
+import { KeycloakService } from './core/auth/keycloak.service';
+import { AccountService } from './core/auth/account.service';
+
+export function initializeKeycloak(keycloakService: KeycloakService, accountService: AccountService) {
+  return async () => {
+    const success = await keycloakService.init();
+    if (success) {
+      await accountService.loadUser();
+    }
+  };
+}
+
+export function apiConfigFactory(): Configuration {
+  return new Configuration({
+    withCredentials: true,
+  });
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // TODO: use provideAppInitializer
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      deps: [KeycloakService, AccountService],
+      multi: true,
+    },
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
@@ -41,6 +71,7 @@ export const appConfig: ApplicationConfig = {
     // Set this to true to enable service worker (PWA)
     importProvidersFrom(ServiceWorkerModule.register('ngsw-worker.js', { enabled: false })),
     importProvidersFrom(
+      ApiModule.forRoot(apiConfigFactory),
       RouterModule,
       ScrollingModule,
       TranslateModule.forRoot({
@@ -56,14 +87,6 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withInterceptorsFromDi()),
-    provideNgxWebstorage(
-      withNgxWebstorageConfig({
-        prefix: 'jhi',
-        separator: '-',
-      }),
-      withLocalStorage(),
-      withSessionStorage(),
-    ),
     Title,
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
