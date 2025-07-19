@@ -57,6 +57,7 @@ public class EmailService {
      * Sends an email asynchronously with retry logic for transient mailing errors.
      *
      * @param email the email to be sent
+     * @return empty CompletableFuture
      */
     @Async
     @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
@@ -86,6 +87,7 @@ public class EmailService {
      *
      * @param ex    the exception that caused the failure
      * @param email the email that failed to send
+     * @return empty CompletableFuture
      */
     @Recover
     public CompletableFuture<Void> recoverMailingException(MailingException ex, Email email) {
