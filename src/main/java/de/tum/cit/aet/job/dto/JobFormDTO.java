@@ -14,7 +14,7 @@ import java.util.UUID;
 public record JobFormDTO(
     @NotNull String title,
     String researchArea,
-    String fieldOfStudies,
+    @NotNull String fieldOfStudies,
     @NotNull UUID supervisingProfessor,
     @NotNull Campus location,
     LocalDate startDate,

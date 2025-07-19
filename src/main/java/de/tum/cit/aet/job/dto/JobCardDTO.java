@@ -12,9 +12,9 @@ import java.util.UUID;
 public record JobCardDTO(
     @NotNull UUID jobId,
     @NotNull String title,
-    String fieldOfStudies,
-    String location,
-    String professorName,
+    @NotNull String fieldOfStudies,
+    @NotNull String location,
+    @NotNull String professorName,
     Integer workload,
     LocalDate startDate,
     String relativeTime
@@ -22,9 +22,9 @@ public record JobCardDTO(
     public JobCardDTO(
         @NotNull UUID jobId,
         @NotNull String title,
-        String fieldOfStudies,
-        Campus location,
-        String professorName,
+        @NotNull String fieldOfStudies,
+        @NotNull Campus location,
+        @NotNull String professorName,
         Integer workload,
         LocalDate startDate,
         LocalDateTime createdAt
