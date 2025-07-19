@@ -13,6 +13,7 @@ export type DropdownOption = {
   icon?: string;
 };
 
+// TODO: we need to implement the dropdown differently because DropdownModule (which was already deprecated in v18) was removed in v20 of PrimeNG
 @Component({
   selector: 'jhi-dropdown',
   standalone: true,
