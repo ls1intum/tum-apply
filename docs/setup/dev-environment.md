@@ -16,6 +16,22 @@ Make sure you have the following installed:
 
 ---
 
+## Environment Variables
+
+Environment-specific values are stored in a `.env.local` file in the root of the project.
+
+- Copy `.env.example` to `.env.local`:
+  ```bash
+  cp .env.example .env.local
+  ```
+- Fill in the required secrets or configuration values. Please ask your team lead for the necessary secrets if needed.
+- Never commit your `.env.local` file – it may contain sensitive information.
+
+For details on each variable and how environments are handled in development, test, and production, refer to
+the [Environment Configuration Guide](environment-variables.md).
+
+---
+
 ## Initial Setup
 
 Install npm dependencies via the wrapper:
