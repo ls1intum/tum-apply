@@ -65,10 +65,14 @@
         </ng-template>
       </p-editor>
     </div>
-    <div class="error-text">
-      @if (inputState() === 'invalid' && !isFocused()) {
-        {{ errorMessage() }}
-      }
+    <div class="editor-footer">
+      <div class="error-text">
+        @if (inputState() === 'invalid' && !isFocused()) {
+          {{ errorMessage() }}
+        }
+      </div>
+      <!-- Character Count Display -->
+      <div class="char-counter">{{ characterCount() }}/{{ characterLimit() }}</div>
     </div>
   </div>
 </div>

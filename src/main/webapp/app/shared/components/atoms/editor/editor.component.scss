@@ -1,0 +1,9 @@
+.editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .char-counter {
+    color: var(--p-text-primary);
+  }
+}
