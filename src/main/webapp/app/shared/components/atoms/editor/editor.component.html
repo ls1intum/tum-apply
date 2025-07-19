@@ -12,7 +12,7 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="inputState() === 'invalid'">
+    <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()">
       <p-editor
         [id]="id()"
         type="text"
@@ -20,8 +20,6 @@
         [readonly]="disabled()"
         [ngModel]="model()"
         (onTextChange)="onInputChange($event)"
-        (blur)="onBlur()"
-        (focus)="onFocus()"
         [required]="required()"
         [style]="{ width: width() }"
         autocomplete="off"
@@ -61,10 +59,14 @@
         </ng-template>
       </p-editor>
     </div>
-    <div class="error-text">
-      @if (inputState() === 'invalid' && !isFocused()) {
-        {{ errorMessage() }}
-      }
+    <div class="editor-footer">
+      <div class="error-text">
+        @if (isEmpty()) {
+          {{ errorMessage() }}
+        }
+      </div>
+      <!-- Character Count Display -->
+      <div class="char-counter">{{ characterCount() }}/{{ characterLimit() }}</div>
     </div>
   </div>
 </div>
