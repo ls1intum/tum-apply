@@ -1,3 +1,5 @@
 module.exports = {
-  '{,**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java,html,css,scss}': ['prettier --write'],
+  'src/{main/webapp,test}/**/*.{json,js,ts,css,scss,html}': ['prettier --write'],
+  'src/{main/webapp,test}/**/*.{ts,html}': ['eslint --fix'],
+  'src/{main,test}/java/**/*.java': ['bash ./linting.sh'],
 };

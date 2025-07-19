@@ -1,9 +1,9 @@
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   LOCALE_ID,
   importProvidersFrom,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
+  APP_INITIALIZER
 } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
@@ -12,7 +12,6 @@ import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromD
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import './config/dayjs';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -49,13 +48,14 @@ export function apiConfigFactory(): Configuration {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // TODO: use provideAppInitializer
     {
       provide: APP_INITIALIZER,
       useFactory: initializeKeycloak,
       deps: [KeycloakService, AccountService],
       multi: true,
     },
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
     providePrimeNG({
@@ -87,14 +87,6 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withInterceptorsFromDi()),
-    provideNgxWebstorage(
-      withNgxWebstorageConfig({
-        prefix: 'jhi',
-        separator: '-',
-      }),
-      withLocalStorage(),
-      withSessionStorage(),
-    ),
     Title,
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
