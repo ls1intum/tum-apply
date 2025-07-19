@@ -12,9 +12,9 @@
       <jhi-job-card
         [jobId]="job.jobId"
         [jobTitle]="job.title"
-        [fieldOfStudies]="job.fieldOfStudies || undefined"
-        [location]="job.location?.toString() || undefined"
-        [professor]="job.professorName || undefined"
+        [fieldOfStudies]="job.fieldOfStudies"
+        [location]="job.location.toString()"
+        [professor]="job.professorName"
         [workload]="job.workload || undefined"
         [startDate]="job.startDate?.toString() || undefined"
         [relativeTime]="job.relativeTime || ''"

@@ -18,9 +18,9 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
 export class JobCardComponent {
   jobId = input<string>('');
   jobTitle = input<string>('');
-  fieldOfStudies = input<string | undefined>('');
-  location = input<string | undefined>('');
-  professor = input<string | undefined>('');
+  fieldOfStudies = input<string>('');
+  location = input<string>('');
+  professor = input<string>('');
   workload = input<number | undefined>(undefined);
   startDate = input<string | undefined>('');
   relativeTime = input<string>('');
