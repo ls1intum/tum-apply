@@ -16,7 +16,31 @@ export class EditorComponent extends BaseInputDirective<string> {
   characterCount = computed(() => this.extractTextFromHtml(this.htmlValue()).length);
   characterLimit = input<number | undefined>(500); // Optionally set maximum character limit
   // Check if error message should be displayed
-  isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused());
+  isTouched = signal(false);
+  isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
+
+  errorMessage = computed(() => {
+    this.langChange();
+
+    if (this.isEmpty()) {
+      return this.translate.instant('global.input.error.required');
+    }
+    // TODO: Add error message for writing more than max char limit
+    return null;
+  });
+
+  charCounterColor = computed(() => {
+    const count = this.characterCount();
+    const limit = this.characterLimit() ?? 500;
+    const over = count - limit;
+
+    if (over > 0 && over < 50) {
+      return 'char-counter-warning';
+    } else if (over >= 50) {
+      return 'char-counter-danger';
+    }
+    return 'char-counter-normal'; // default character count color
+  });
 
   private htmlValue = signal('');
 
@@ -31,6 +55,7 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     ctrl.markAsDirty();
     ctrl.updateValueAndValidity();
+    this.isTouched.set(true);
   }
 
   // Extract plain text from HTML

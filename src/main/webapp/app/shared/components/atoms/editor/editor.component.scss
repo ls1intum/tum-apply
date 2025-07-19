@@ -3,7 +3,13 @@
   justify-content: space-between;
   align-items: center;
 
-  .char-counter {
+  .char-counter-normal {
     color: var(--p-text-primary);
+  }
+  .char-counter-warning {
+    color: var(--p-warn-color);
+  }
+  .char-counter-danger {
+    color: var(--p-danger-color);
   }
 }

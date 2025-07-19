@@ -50,8 +50,8 @@ export abstract class BaseInputDirective<T> {
     return defaults[key] ?? `Invalid: ${key}`;
   });
 
-  private translate = inject(TranslateService);
-  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
+  protected translate = inject(TranslateService);
+  protected langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
 
   constructor() {
     effect(onCleanup => {
