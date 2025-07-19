@@ -218,7 +218,7 @@
   stroke: var(--p-text-primary);
 }
 
-/* Picker dropdown background */
+/* Picker select component background */
 .ql-picker-options {
   background: var(--p-background-default);
 }
@@ -309,8 +309,8 @@
   }
 }
 
-/* Styles for the tooltip icon in the Dropdown component */
-.dropdown-wrapper {
+/* Styles for the tooltip icon in the Select component */
+.select-wrapper {
   .fa-circle-info {
     color: var(--p-primary-color);
   }

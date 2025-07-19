@@ -17,10 +17,10 @@
     <jhi-filter-dialog [(visible)]="filterDialogVisible" [filterFields]="filterFields()" (applyFilters)="updateFilters($event)" />
 
     @if ((this.sortOptions() ?? []).length > 0) {
-      <jhi-dropdown
+      <jhi-select
         width="13rem"
-        [items]="sortDropdownOptions()"
-        [selected]="selectedSortDropdownOption()"
+        [items]="sortSelectOptions()"
+        [selected]="selectedSortSelectOption()"
         (selectedChange)="updateSort($event)"
       />
     }

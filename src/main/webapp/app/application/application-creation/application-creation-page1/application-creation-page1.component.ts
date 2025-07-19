@@ -6,7 +6,7 @@ import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 
-import { DropdownComponent, DropdownOption } from '../../../shared/components/atoms/dropdown/dropdown.component';
+import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
@@ -15,9 +15,9 @@ export type ApplicationCreationPage1Data = {
   lastName: string;
   email: string;
   phoneNumber: string;
-  gender?: DropdownOption;
-  nationality?: DropdownOption;
-  language?: DropdownOption;
+  gender?: SelectOption;
+  nationality?: SelectOption;
+  language?: SelectOption;
   dateOfBirth: string;
   website: string;
   linkedIn: string;
@@ -27,18 +27,18 @@ export type ApplicationCreationPage1Data = {
   postcode: string;
 };
 
-export const dropdownGender: DropdownOption[] = [
+export const selectGender: SelectOption[] = [
   { value: 'female', name: 'Female' },
   { value: 'male', name: 'Male' },
   { value: 'other', name: 'Other' },
 ];
 
-export const dropdownLanguage: DropdownOption[] = [
+export const selectLanguage: SelectOption[] = [
   { value: 'de', name: 'German' },
   { value: 'en', name: 'English' },
 ];
 
-export const dropdownNationality: DropdownOption[] = [
+export const selectNationality: SelectOption[] = [
   { value: 'al', name: 'Albanian' },
   { value: 'ad', name: 'Andorran' },
   { value: 'am', name: 'Armenian' },
@@ -97,9 +97,9 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     lastName: application.applicant?.user.lastName ?? '',
     email: application.applicant?.user.email ?? '',
     phoneNumber: application.applicant?.user.phoneNumber ?? '',
-    gender: dropdownGender.find(val => val.value === application.applicant?.user.gender),
-    nationality: dropdownNationality.find(val => val.value === application.applicant?.user.nationality),
-    language: dropdownLanguage.find(val => val.value === application.applicant?.user.selectedLanguage),
+    gender: selectGender.find(val => val.value === application.applicant?.user.gender),
+    nationality: selectNationality.find(val => val.value === application.applicant?.user.nationality),
+    language: selectLanguage.find(val => val.value === application.applicant?.user.selectedLanguage),
     dateOfBirth: application.applicant?.user.birthday ?? '',
     website: application.applicant?.user.website ?? '',
     linkedIn: application.applicant?.user.linkedinUrl ?? '',
@@ -116,7 +116,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     CommonModule,
     ReactiveFormsModule,
     DividerModule,
-    DropdownComponent,
+    SelectComponent,
     DatePickerComponent,
     StringInputComponent,
     TranslateModule,
@@ -132,9 +132,9 @@ export default class ApplicationCreationPage1Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
-  dropdownGenderLocal = dropdownGender;
-  dropdownLanguageLocal = dropdownLanguage;
-  dropdownNationalityLocal = dropdownNationality;
+  selectGenderLocal = selectGender;
+  selectLanguageLocal = selectLanguage;
+  selectNationalityLocal = selectNationality;
   fb = inject(FormBuilder);
   page1Form = computed(() => {
     const currentData = this.data();

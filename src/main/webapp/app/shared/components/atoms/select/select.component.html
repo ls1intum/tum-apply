@@ -2,7 +2,7 @@
   [ngClass]="{
     disabled: disabled(),
   }"
-  class="label-top dropdown-wrapper"
+  class="label-top select-wrapper"
 >
   @if (label()) {
     <label class="custom-label"
@@ -19,7 +19,7 @@
       }
     </label>
   }
-  <p-dropdown
+  <p-select
     (ngModelChange)="onSelectionChange($event)"
     (onHide)="isOpen = false"
     (onShow)="isOpen = true"
@@ -29,9 +29,9 @@
     [options]="items()"
     [placeholder]="placeholder()"
     [style]="{ width: width() }"
-    class="custom-dropdown"
+    class="custom-select"
   >
-    <!-- Render each dropdown item -->
+    <!-- Render each select item -->
     <ng-template pTemplate="item" let-item>
       @if (!translateItems()) {
         {{ item[labelField()] }}
@@ -40,7 +40,7 @@
       }
     </ng-template>
 
-    <!-- Render each selected dropdown item -->
+    <!-- Render each selected select item -->
     <ng-template pTemplate="selectedItem" let-item>
       @if (!translateItems()) {
         {{ item[labelField()] }}
@@ -52,5 +52,5 @@
     <ng-template pTemplate="dropdownicon">
       <fa-icon [icon]="isOpen ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']" />
     </ng-template>
-  </p-dropdown>
+  </p-select>
 </div>

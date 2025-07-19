@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
+import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -25,7 +25,7 @@ export enum SortDirection {
 
 @Component({
   selector: 'jhi-sort-bar',
-  imports: [CommonModule, DropdownComponent, ButtonComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
+  imports: [CommonModule, SelectComponent, ButtonComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sort-bar.component.html',
   styleUrls: ['./sort-bar.component.scss'],
@@ -48,19 +48,19 @@ export class SortBarComponent {
 
   readonly currentOption = computed(() => this.selectedOption() ?? this.sortableFields()[0]);
 
-  readonly dropdownOptions = computed<DropdownOption[]>(() =>
+  readonly selectOptions = computed<SelectOption[]>(() =>
     this.sortableFields().map(opt => ({
       name: opt.displayName,
       value: opt.field,
     })),
   );
 
-  readonly selectedDropdownOption = computed<DropdownOption | undefined>(() => {
+  readonly selectedSelectOption = computed<SelectOption | undefined>(() => {
     const cur = this.currentOption();
     return { name: cur.displayName, value: cur.field };
   });
 
-  onSortFieldChange(opt: DropdownOption): void {
+  onSortFieldChange(opt: SelectOption): void {
     if (opt.value === '') {
       this.selectedOption.set(undefined);
     } else {

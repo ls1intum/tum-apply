@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
+import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { EditorComponent } from '../../atoms/editor/editor.component';
 import { AcceptDTO, ApplicationEvaluationDetailDTO, RejectDTO } from '../../../../generated';
@@ -23,7 +23,7 @@ import ReasonEnum = RejectDTO.ReasonEnum;
     FontAwesomeModule,
     ReactiveFormsModule,
     TranslateModule,
-    DropdownComponent,
+    SelectComponent,
     NgTemplateOutlet,
     ButtonComponent,
     EditorComponent,
@@ -46,7 +46,7 @@ export class ReviewDialogComponent {
 
   editorModel = signal<string>('');
 
-  selectedRejectReason = signal<DropdownOption | undefined>(undefined);
+  selectedRejectReason = signal<SelectOption | undefined>(undefined);
 
   accept = output<AcceptDTO>();
   reject = output<RejectDTO>();
@@ -77,8 +77,8 @@ export class ReviewDialogComponent {
     return undefined;
   });
 
-  // TODO adapt to translation keys when dropdown is adjusted
-  rejectReasons: DropdownOption[] = [
+  // TODO adapt to translation keys when select is adjusted
+  rejectReasons: SelectOption[] = [
     {
       name: 'evaluation.rejectReasons.jobFilled',
       value: 'JOB_FILLED',
@@ -113,7 +113,7 @@ export class ReviewDialogComponent {
     this.selectedRejectReason.set(undefined);
   }
 
-  onSelectChange(option: DropdownOption): void {
+  onSelectChange(option: SelectOption): void {
     this.selectedRejectReason.set(option);
   }
 
@@ -137,7 +137,7 @@ export class ReviewDialogComponent {
     });
   }
 
-  getRejectReason(option: DropdownOption): ReasonEnum {
+  getRejectReason(option: SelectOption): ReasonEnum {
     return option.value as ReasonEnum;
   }
 }

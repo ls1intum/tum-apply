@@ -7,11 +7,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Sort, SortBarComponent, SortDirection, SortOption } from './sort-bar.component';
 
 @Component({
-  selector: 'jhi-dropdown',
+  selector: 'jhi-select',
   template: '',
   standalone: true,
 })
-class MockDropdownComponent {
+class MockSelectComponent {
   width = signal<string>('');
   items = signal<unknown>([]);
   selected = signal<unknown>(null);
@@ -40,7 +40,7 @@ describe('SortBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SortBarComponent, MockDropdownComponent, MockButtonComponent, TranslateModule.forRoot()],
+      imports: [SortBarComponent, MockSelectComponent, MockButtonComponent, TranslateModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SortBarComponent);
