@@ -455,7 +455,7 @@
       <column name="document_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-  
+
       <column name="name" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
@@ -507,6 +507,40 @@
     <createIndex indexName="idx_document_dictionary_custom_field_answer_id" tableName="document_dictionary">
       <column name="custom_field_answer_id"/>
     </createIndex>
+  </changeSet>
+
+
+  <changeSet id="014_create-email-settings" author="moritz-schmidt">
+    <createTable tableName="email_settings">
+      <column name="email_setting_id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="user" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="email_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="enabled" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+      tableName="email_settings"
+      columnNames="user, email_type"
+      constraintName="uk_email_setting_user_email_type"/>
+
+    <addForeignKeyConstraint
+      baseTableName="email_settings"
+      baseColumnNames="user"
+      constraintName="fk_email_setting_user"
+      referencedTableName="users"
+      referencedColumnNames="user_id"
+      onDelete="CASCADE"/>
   </changeSet>
 
 
