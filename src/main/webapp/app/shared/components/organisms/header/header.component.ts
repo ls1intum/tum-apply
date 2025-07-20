@@ -50,12 +50,12 @@ export class HeaderComponent {
   openLoginDialog(): void {
     this.dialogService.open(AuthCardComponent, {
       data: { mode: 'login', redirectUri: this.router.url },
-      width: '32rem',
       modal: true,
-      styleClass: 'auth-dialog-overlay',
+      contentStyle: { padding: '0', border: '0' },
       dismissableMask: true,
       closeOnEscape: true,
       focusOnShow: true,
+      showHeader: false,
     });
   }
 
@@ -64,9 +64,9 @@ export class HeaderComponent {
   }
 
   /*  toggleColorScheme(): void {
-          const className = 'tum-apply-dark-mode';
-          document.body.classList.toggle(className);
-        }*/
+            const className = 'tum-apply-dark-mode';
+            document.body.classList.toggle(className);
+          }*/
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {

@@ -1,4 +1,4 @@
-import { Component, Signal, ViewEncapsulation, inject, input } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, inject, signal } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -31,8 +31,7 @@ import { CredentialsGroupComponent } from '../../molecules/credentials-group/cre
   encapsulation: ViewEncapsulation.None,
 })
 export class AuthCardComponent {
-  mode = input<'login' | 'register'>('login');
-  redirectUri = input<string>('/');
+  mode = signal<'login' | 'register'>('login');
 
   authTabService = inject(AuthTabService);
   value: Signal<number> = this.authTabService.getSelectedTab();
@@ -99,18 +98,26 @@ export class AuthCardComponent {
   onEmailLogin = (): void => {
     this.keycloakService.login(this.redirectUri());
     /* const { email, password } = credentials;
-                                                                this.emailLoginResourceService
-                                                                  .login(
-                                                                    {
-                                                                      email,
-                                                                      password,
-                                                                    },
-                                                                    'response',
-                                                                  )
-                                                                  .subscribe({
-                                                                    next: async response => {
-                                                                      await this.accountService.loadUser();
-                                                                      },
-                                                                  });*/
+                                                                    this.emailLoginResourceService
+                                                                      .login(
+                                                                        {
+                                                                          email,
+                                                                          password,
+                                                                        },
+                                                                        'response',
+                                                                      )
+                                                                      .subscribe({
+                                                                        next: async response => {
+                                                                          await this.accountService.loadUser();
+                                                                          },
+                                                                      });*/
   };
+
+  toggleMode(): void {
+    this.mode.set(this.mode() === 'register' ? 'login' : 'register');
+  }
+
+  private redirectUri(): string {
+    return window.location.origin;
+  }
 }

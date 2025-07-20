@@ -43,8 +43,9 @@
         jhiTranslate="{{ mode() === 'register' ? 'register.texts.accountmissing.prefix' : 'login.texts.accountmissing.prefix' }}"
       ></span>
       <a
-        [routerLink]="mode() === 'register' ? '/login' : '/register'"
+        (click)="toggleMode()"
         jhiTranslate="{{ mode() === 'register' ? 'register.texts.accountmissing.link' : 'login.texts.accountmissing.link' }}"
+        style="cursor: pointer"
       ></a>
     </p>
   </p-tabs>
