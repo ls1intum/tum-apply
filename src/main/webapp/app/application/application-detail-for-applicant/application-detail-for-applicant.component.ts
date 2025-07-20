@@ -3,12 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [ApplicationDetailCardComponent, DocumentGroupComponent, SharedModule],
+  imports: [ApplicationDetailCardComponent, DocumentGroupComponent, SharedModule, ToastComponent],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
@@ -20,14 +22,14 @@ export default class ApplicationDetailForApplicantComponent {
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
 
-  constructor() {
+  constructor(private toastService: ToastService) {
     this.init();
   }
 
   async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
-      alert('Error: this is no valid jobId');
+      this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
     } else {
       this.applicationId.set(applicationId);
     }
@@ -38,6 +40,6 @@ export default class ApplicationDetailForApplicantComponent {
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() => alert('Error: fetching the document ids for this application'));
+      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }
 }
