@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, signal, viewChild, ViewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
 import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
