@@ -74,8 +74,7 @@ public class ApplicationService {
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
         Applicant applicant;
         if (applicantOptional.isEmpty()) {
-            createApplicant(userId);
-            applicant = applicantRepository.findById(userId).orElseThrow();
+            applicant = createApplicant(userId);
         } else {
             applicant = applicantOptional.get();
         }
@@ -149,14 +148,15 @@ public class ApplicationService {
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
         Applicant applicant = applicantRepository.getReferenceById(applicantDTO.user().userId());
-        applicant.getUser().setFirstName(applicantDTO.user().firstName());
-        applicant.getUser().setLastName(applicantDTO.user().lastName());
-        applicant.getUser().setGender(applicantDTO.user().gender());
-        applicant.getUser().setNationality(applicantDTO.user().nationality());
-        applicant.getUser().setBirthday(applicantDTO.user().birthday());
-        applicant.getUser().setPhoneNumber(applicantDTO.user().phoneNumber());
-        applicant.getUser().setWebsite(applicantDTO.user().website());
-        applicant.getUser().setLinkedinUrl(applicantDTO.user().linkedinUrl());
+        User user = applicant.getUser();
+        user.setFirstName(applicantDTO.user().firstName());
+        user.setLastName(applicantDTO.user().lastName());
+        user.setGender(applicantDTO.user().gender());
+        user.setNationality(applicantDTO.user().nationality());
+        user.setBirthday(applicantDTO.user().birthday());
+        user.setPhoneNumber(applicantDTO.user().phoneNumber());
+        user.setWebsite(applicantDTO.user().website());
+        user.setLinkedinUrl(applicantDTO.user().linkedinUrl());
         if (applicantDTO.user().selectedLanguage() != null) {
             applicant.getUser().setSelectedLanguage(applicantDTO.user().selectedLanguage());
         }
@@ -484,12 +484,18 @@ public class ApplicationService {
         documentDictionaryService.renameDocument(documentId, newName);
     }
 
-    void createApplicant(UUID userId) {
+    /**
+     * Creates an Applicant for the given userId
+     *
+     * @param userId The id of the User
+     * @return the created Applicant
+     */
+    private Applicant createApplicant(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow();
         Applicant applicant = new Applicant();
         applicant.setUser(user);
         applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
         applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);
-        applicantRepository.save(applicant);
+        return applicantRepository.save(applicant);
     }
 }
