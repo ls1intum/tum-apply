@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 
 @Component({
   selector: 'jhi-stepper-playground',
-  imports: [CommonModule, ProgressStepperComponent],
+  imports: [CommonModule, ProgressStepperComponent, ToastComponent],
   templateUrl: './stepper-playground.component.html',
   styleUrl: './stepper-playground.component.scss',
   standalone: true,
@@ -15,6 +17,8 @@ export class StepperPlaygroundComponent implements OnInit {
   @ViewChild('panel3', { static: true }) panel3!: TemplateRef<any>;
 
   data: StepData[] = [];
+
+  constructor(private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.data = [
@@ -34,8 +38,8 @@ export class StepperPlaygroundComponent implements OnInit {
           {
             severity: 'primary',
             icon: 'arrow-right',
-            onClick() {
-              alert('Clicked');
+            onClick: () => {
+              this.toastService.showInfo({ detail: 'Clicked' });
             },
             disabled: false,
             label: 'Next',
@@ -51,8 +55,8 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
-            onClick() {
-              alert('Clicked');
+            onClick: () => {
+              this.toastService.showInfo({ detail: 'Clicked' });
             },
             disabled: false,
             label: 'Prev',
@@ -71,8 +75,8 @@ export class StepperPlaygroundComponent implements OnInit {
           {
             severity: 'primary',
             icon: 'arrow-right',
-            onClick() {
-              alert('Clicked');
+            onClick: () => {
+              this.toastService.showInfo({ detail: 'Clicked' });
             },
             disabled: false,
             label: 'Next',
@@ -88,8 +92,8 @@ export class StepperPlaygroundComponent implements OnInit {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
-            onClick() {
-              alert('Clicked');
+            onClick: () => {
+              this.toastService.showInfo({ detail: 'Clicked' });
             },
             disabled: false,
             label: 'Prev',
@@ -100,8 +104,8 @@ export class StepperPlaygroundComponent implements OnInit {
           {
             severity: 'primary',
             icon: 'paper-plane',
-            onClick() {
-              alert('Clicked');
+            onClick: () => {
+              this.toastService.showInfo({ detail: 'Clicked' });
             },
             disabled: false,
             label: 'Send',
