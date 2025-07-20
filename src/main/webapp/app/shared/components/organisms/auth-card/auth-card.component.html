@@ -15,13 +15,7 @@
         @if (mode() === 'register') {
           <p class="login-description" jhiTranslate="register.texts.applicant"></p>
         }
-        <jhi-button
-          (click)="onEmailLogin()"
-          [fullWidth]="true"
-          [label]="mode() === 'register' ? 'register.buttons.email' : 'login.buttons.email'"
-          [shouldTranslate]="true"
-        />
-        <!--        <jhi-credentials-group [submitHandler]="onEmailLogin" />-->
+        <jhi-credentials-group [submitHandler]="onEmailLogin" />
         <p-divider align="center">
           <span class="divider-text" jhiTranslate="login.texts.or"></span>
         </p-divider>

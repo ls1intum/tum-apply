@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-credentials-group',
@@ -21,6 +22,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
     PasswordModule,
     MessageModule,
     FormsModule,
+    TranslateDirective,
   ],
   templateUrl: './credentials-group.component.html',
   styleUrl: './credentials-group.component.scss',

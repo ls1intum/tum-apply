@@ -11,11 +11,21 @@ import { AccountService } from '../../../../core/auth/account.service';
 import { IdpProvider, KeycloakService } from '../../../../core/auth/keycloak.service';
 import { EmailLoginResourceService } from '../../../../generated';
 import TranslateDirective from '../../../language/translate.directive';
+import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [ButtonComponent, ButtonGroupComponent, CommonModule, DividerModule, TabsModule, RouterModule, TranslateDirective],
+  imports: [
+    ButtonComponent,
+    ButtonGroupComponent,
+    CommonModule,
+    CredentialsGroupComponent,
+    DividerModule,
+    TabsModule,
+    RouterModule,
+    TranslateDirective,
+  ],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -89,18 +99,18 @@ export class AuthCardComponent {
   onEmailLogin = (): void => {
     this.keycloakService.login(this.redirectUri());
     /* const { email, password } = credentials;
-                                                            this.emailLoginResourceService
-                                                              .login(
-                                                                {
-                                                                  email,
-                                                                  password,
-                                                                },
-                                                                'response',
-                                                              )
-                                                              .subscribe({
-                                                                next: async response => {
-                                                                  await this.accountService.loadUser();
-                                                                  },
-                                                              });*/
+                                                                this.emailLoginResourceService
+                                                                  .login(
+                                                                    {
+                                                                      email,
+                                                                      password,
+                                                                    },
+                                                                    'response',
+                                                                  )
+                                                                  .subscribe({
+                                                                    next: async response => {
+                                                                      await this.accountService.loadUser();
+                                                                      },
+                                                                  });*/
   };
 }

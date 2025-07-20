@@ -5,12 +5,20 @@
       "student": "Studierende / Bewerbende",
       "professor": "Professor*in / Betreuende"
     },
+    "emailLogin": {
+      "email": "E-Mail",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "password": "Passwort",
+      "passwordRequired": "Passwort ist erforderlich",
+      "login": "Anmelden",
+      "register": "Registrieren"
+    },
     "buttons": {
       "microsoft": "Anmelden mit Microsoft",
       "apple": "Anmelden mit Apple",
       "google": "Anmelden mit Google",
-      "tum": "Anmelden mit TUM",
-      "email": "Anmelden mit E-Mail"
+      "tum": "Anmelden mit TUM"
     },
     "texts": {
       "or": "ODER",
