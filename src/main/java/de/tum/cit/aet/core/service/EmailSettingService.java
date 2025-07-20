@@ -50,9 +50,7 @@ public class EmailSettingService {
             EmailSetting setting = settingMap.get(dto.emailType());
 
             if (setting == null) {
-                throw new IllegalStateException(
-                    "User %s is not allowed to receive email type: %s".formatted(user.getUserId(), dto.emailType())
-                );
+                throw new IllegalStateException("User is not allowed to receive email type: %s".formatted(dto.emailType()));
             }
 
             setting.setEnabled(dto.enabled());
