@@ -9,9 +9,9 @@ import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-gr
 import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { AccountService } from '../../../../core/auth/account.service';
 import { IdpProvider, KeycloakService } from '../../../../core/auth/keycloak.service';
-import { EmailLoginResourceService } from '../../../../generated';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
+import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
 
 @Component({
   selector: 'jhi-auth-card',
