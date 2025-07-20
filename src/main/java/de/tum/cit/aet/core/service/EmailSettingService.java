@@ -20,6 +20,15 @@ public class EmailSettingService {
 
     private final EmailSettingRepository emailSettingRepository;
 
+    /**
+     * Checks if a user can be notified for a specific email type based on their settings.
+     * Updates user email settings before checking to ensure all required settings exist.
+     *
+     * @param emailType the type of email to check notification permission for
+     * @param user the user to check notification settings for
+     * @return true if the user has enabled notifications for this email type, false otherwise
+     * @throws IllegalStateException if the user doesn't have the required role to receive this email type
+     */
     @Transactional // ensures new settings are persisted and visible in the same DB transaction
     public boolean canNotify(EmailType emailType, User user) {
         updateUserEmailSettings(user);
@@ -32,12 +41,28 @@ public class EmailSettingService {
         throw new IllegalStateException("User " + user.getUserId() + " has not the required role to receive this email");
     }
 
+    /**
+     * Retrieves all email settings for a specific user.
+     * Updates user email settings before retrieval to ensure all required settings exist.
+     *
+     * @param user the user to retrieve email settings for
+     * @return a set of EmailSettingDTO objects representing the user's email preferences
+     */
     @Transactional // ensures new settings are persisted and visible in the same DB transaction
     public Set<EmailSettingDTO> getSettingsForUser(User user) {
         updateUserEmailSettings(user);
         return emailSettingRepository.findAllByUser(user).stream().map(EmailSettingDTO::fromEmailSetting).collect(Collectors.toSet());
     }
 
+    /**
+     * Updates email settings for a specific user with the provided settings.
+     * Validates that the user has permission to modify each email type before updating.
+     *
+     * @param settingDTOs a set of EmailSettingDTO objects containing the new email preferences
+     * @param user the user whose email settings should be updated
+     * @return a set of updated EmailSettingDTO objects after successful persistence
+     * @throws IllegalStateException if the user attempts to modify an email type they're not allowed to receive
+     */
     @Transactional // ensures new settings are persisted and visible in the same DB transaction
     public Set<EmailSettingDTO> updateSettingsForUser(Set<EmailSettingDTO> settingDTOs, User user) {
         updateUserEmailSettings(user);
@@ -63,14 +88,16 @@ public class EmailSettingService {
             .collect(Collectors.toSet());
     }
 
+    /**
+     * Updates user email settings by creating missing settings for email types the user is eligible for.
+     * Compares required email types based on user roles with existing settings and creates defaults for missing ones.
+     *
+     * @param user the user whose email settings should be updated with missing defaults
+     */
     private void updateUserEmailSettings(User user) {
         Set<EmailType> requiredTypes = getAvailableEmailTypesForUser(user);
 
-        Set<EmailType> existingTypes = emailSettingRepository
-            .findAllByUser(user)
-            .stream()
-            .map(EmailSetting::getEmailType)
-            .collect(Collectors.toSet());
+        Set<EmailType> existingTypes = emailSettingRepository.findAvailableEmailTypesForUser(user);
 
         Set<EmailSetting> missingSettings = requiredTypes
             .stream()
@@ -89,6 +116,13 @@ public class EmailSettingService {
         }
     }
 
+    /**
+     * Determines which email types a user is eligible to receive based on their roles.
+     * Filters all available email types to only include those matching the user's current roles.
+     *
+     * @param user the user to determine available email types for (must not be null)
+     * @return a set of EmailType values that the user is eligible to receive based on their roles
+     */
     private Set<EmailType> getAvailableEmailTypesForUser(@NonNull User user) {
         Set<UserRole> userRoles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).collect(Collectors.toSet());
 
