@@ -12,7 +12,7 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()">
+    <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()" #editorElem>
       <p-editor
         [id]="id()"
         type="text"

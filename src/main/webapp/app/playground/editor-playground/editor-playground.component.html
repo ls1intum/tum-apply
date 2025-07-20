@@ -1,20 +1,23 @@
 <form [formGroup]="form()">
-  <div class="w-150 max-w-150 flex flex-col justify-center items-center">
-    <div class="m-2">
-      <jhi-editor
-        label="Motivation"
-        id="motivation"
-        [required]="true"
-        placeholder="Placeholder for motivation..."
-        [(model)]="motivation"
-        [control]="form().controls.motivation"
-        icon="house"
-      />
-    </div>
-    <div class="m-2">
-      <p class="block"><b>Html value:</b></p>
-      <div class="border rounded p-1 min-h-6 w-100 text-wrap break-all">
-        {{ motivation() }}
+  <div class="w-full h-full flex justify-center items-center">
+    <div class="w-50 max-w-50 flex flex-col justify-center items-center">
+      <div class="m-2">
+        <jhi-editor
+          label="Motivation"
+          id="motivation"
+          [required]="true"
+          placeholder="Placeholder for motivation..."
+          [(model)]="motivation"
+          [control]="form().controls.motivation"
+          icon="house"
+          [characterLimit]="30"
+        />
+      </div>
+      <div class="m-2">
+        <p class="block"><b>Html value:</b></p>
+        <div class="border rounded p-1 min-h-6 w-100 text-wrap break-all">
+          {{ motivation() }}
+        </div>
       </div>
     </div>
   </div>
