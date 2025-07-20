@@ -38,7 +38,7 @@ public class EmailSettingService {
         if (emailSetting.isPresent()) {
             return emailSetting.get().isEnabled();
         }
-        throw new IllegalStateException("User " + user.getUserId() + " has not the required role to receive this email");
+        throw new IllegalStateException(String.format("User %s has not the required role to receive this email", user.getUserId()));
     }
 
     /**
@@ -75,7 +75,9 @@ public class EmailSettingService {
             EmailSetting setting = settingMap.get(dto.emailType());
 
             if (setting == null) {
-                throw new IllegalStateException("User is not allowed to receive email type: %s".formatted(dto.emailType()));
+                throw new IllegalStateException(
+                    "User %s is not allowed to receive email type: %s".formatted(user.getUserId(), dto.emailType())
+                );
             }
 
             setting.setEnabled(dto.enabled());
