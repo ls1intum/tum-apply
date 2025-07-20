@@ -7,13 +7,16 @@ import { Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fromEventPattern, map } from 'rxjs';
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { AuthCardComponent } from '../auth-card/auth-card.component';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule],
+  providers: [DialogService],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -37,16 +40,22 @@ export class HeaderComponent {
   constructor(
     private translateService: TranslateService,
     private router: Router,
+    private dialogService: DialogService,
   ) {}
 
   navigateToHome(): void {
     void this.router.navigate(['/']);
   }
 
-  navigateToLogin(): void {
-    const currentUrl = this.router.url;
-    void this.router.navigate(['/login'], {
-      queryParams: { redirect: currentUrl },
+  openLoginDialog(): void {
+    this.dialogService.open(AuthCardComponent, {
+      data: { mode: 'login', redirectUri: this.router.url },
+      width: '32rem',
+      modal: true,
+      styleClass: 'auth-dialog-overlay',
+      dismissableMask: true,
+      closeOnEscape: true,
+      focusOnShow: true,
     });
   }
 
@@ -55,9 +64,9 @@ export class HeaderComponent {
   }
 
   /*  toggleColorScheme(): void {
-        const className = 'tum-apply-dark-mode';
-        document.body.classList.toggle(className);
-      }*/
+          const className = 'tum-apply-dark-mode';
+          document.body.classList.toggle(className);
+        }*/
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {
