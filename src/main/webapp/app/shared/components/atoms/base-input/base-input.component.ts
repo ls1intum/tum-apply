@@ -16,6 +16,7 @@ export abstract class BaseInputDirective<T> {
   required = input<boolean>(false);
   width = input<string>('100%');
   id = input<string | undefined>(undefined);
+  shouldTranslate = input<boolean>(false); // Whether to translate the label and placeholder
 
   readonly formValidityVersion = signal(0);
   isTouched = signal(false);
@@ -70,4 +71,6 @@ export abstract class BaseInputDirective<T> {
   onFocus(): void {
     this.isFocused.set(true);
   }
+
+  // TODO: Add optional tooltip handling
 }

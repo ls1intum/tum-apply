@@ -208,6 +208,31 @@
           </div>
         </div>
         <div class="form-field">
+          <jhi-editor
+            label="jobCreationForm.positionDetailsSection.requirements.label"
+            placeholder="jobCreationForm.positionDetailsSection.requirements.placeholder"
+            helperText="jobCreationForm.positionDetailsSection.requirements.descriptionHelper"
+            [required]="true"
+            [characterLimit]="1000"
+            [model]="positionDetailsForm.get('requirements')?.value"
+            (modelChange)="onSelectionChange(positionDetailsForm, 'requirements', $event)"
+            [control]="positionDetailsForm.get('requirements') ?? undefined"
+            icon="house"
+            [shouldTranslate]="true"
+          />
+          <!--          <jhi-editor-->
+          <!--            label="jobCreationForm.positionDetailsSection.requirements.label"-->
+          <!--            id="requirements"-->
+          <!--            [required]="true"-->
+          <!--            placeholder="jobCreationForm.positionDetailsSection.requirements.placeholder"-->
+          <!--            [(model)]="motivation"-->
+          <!--            [control]="form().controls.motivation"-->
+          <!--            icon="house"-->
+          <!--            [characterLimit]="30"-->
+          <!--            helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"-->
+          <!--            [shouldTranslate]="true"-->
+          <!--          />-->
+          <!--
           <label for="requirements" jhiTranslate="jobCreationForm.positionDetailsSection.requirements.label"> </label>
           <span class="required">*</span>
           <fa-icon
@@ -227,7 +252,7 @@
           <div class="form-footer">
             <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
             <small class="char-counter"> {{ requirementsLength }}/1000 </small>
-          </div>
+          </div>-->
         </div>
       </form>
       <div class="form-actions">
