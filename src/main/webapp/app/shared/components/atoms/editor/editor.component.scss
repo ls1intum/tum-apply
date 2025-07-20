@@ -1,7 +1,7 @@
 .editor-footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  min-height: 3rem;
 
   .char-counter-normal {
     color: var(--p-text-primary);
