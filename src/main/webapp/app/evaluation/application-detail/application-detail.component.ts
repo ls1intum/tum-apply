@@ -4,6 +4,8 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
@@ -40,6 +42,7 @@ const WINDOW_SIZE = 7;
     ReviewDialogComponent,
     TranslateDirective,
     DocumentGroupComponent,
+    ToastComponent,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
@@ -82,7 +85,7 @@ export class ApplicationDetailComponent {
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
-  constructor() {
+  constructor(private toastService: ToastService) {
     void this.init();
   }
 
@@ -421,6 +424,6 @@ export class ApplicationDetailComponent {
       .then(ids => {
         this.currentDocumentIds.set(ids);
       })
-      .catch(() => alert('Error: fetching the document ids for this application'));
+      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }
 }
