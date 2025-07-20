@@ -1,56 +1,55 @@
 <div class="login-card">
   <div class="login-header">
     <img alt="TUM Logo" class="tum-logo" src="/content/images/tum-logo/tum-logo.gif" />
-    <h1>{{ mode() === 'register' ? 'Create your TUMApply Account' : 'Sign in to TUMApply' }}</h1>
+    <h1 jhiTranslate="{{ mode() === 'register' ? 'register.header' : 'login.header' }}"></h1>
   </div>
 
   <p-tabs (valueChange)="onTabChange($event)" [value]="value()" class="login-content">
     <p-tablist>
-      <p-tab [value]="0">Student / Applicant</p-tab>
-      <p-tab [value]="1">Professor / Supervisor</p-tab>
+      <p-tab [value]="0" jhiTranslate="login.tabs.student" />
+      <p-tab [value]="1" jhiTranslate="login.tabs.professor" />
     </p-tablist>
     <p-tabpanels>
       <!-- Students / Applicants -->
       <p-tabpanel [value]="0" class="login-panel">
         @if (mode() === 'register') {
-          <p class="login-description">
-            {{ 'Create an account with one of these providers to start your application journey.' }}
-          </p>
+          <p class="login-description" jhiTranslate="register.texts.applicant"></p>
         }
         <jhi-button
           (click)="onEmailLogin()"
           [fullWidth]="true"
-          [label]="mode() === 'register' ? 'Register with Email' : 'Sign in with Email'"
+          [label]="mode() === 'register' ? 'register.buttons.email' : 'login.buttons.email'"
+          [shouldTranslate]="true"
         />
         <!--        <jhi-credentials-group [submitHandler]="onEmailLogin" />-->
-        <p-divider align="center">OR</p-divider>
-        <jhi-button-group [data]="identityProvider()" class="login-providers" />
+        <p-divider align="center">
+          <span class="divider-text" jhiTranslate="login.texts.or"></span>
+        </p-divider>
+        <jhi-button-group [data]="identityProvider()" [shouldTranslate]="true" class="login-providers" />
       </p-tabpanel>
 
       <!-- Professors / Supervisors -->
       <p-tabpanel [value]="1" class="login-panel">
-        <p class="login-description">
-          {{
-            mode() === 'register'
-              ? 'As a TUM professor or supervisor, please register with your TUM login credentials.'
-              : 'As a TUM professor or supervisor, please sign in with your TUM login credentials.'
-          }}
-        </p>
+        <p class="login-description" jhiTranslate="{{ mode() === 'register' ? 'register.texts.professor' : 'login.texts.professor' }}"></p>
         <div class="login-providers">
           <jhi-button
             (click)="onTUMSSOLogin()"
             [disabled]="false"
-            [label]="mode() === 'register' ? 'Register with TUM' : 'Sign in with TUM'"
+            [fullWidth]="true"
+            [label]="mode() === 'register' ? 'register.buttons.tum' : 'login.buttons.tum'"
+            [shouldTranslate]="true"
           />
         </div>
       </p-tabpanel>
     </p-tabpanels>
     <p class="login-footer">
-      @if (mode() === 'register') {
-        <span> Already have a TUMApply account? <a routerLink="/login">Sign in here</a> </span>
-      } @else if (mode() === 'login') {
-        <span> Don't have a TUMApply account yet? <a routerLink="/register">Register here</a> </span>
-      }
+      <span
+        jhiTranslate="{{ mode() === 'register' ? 'register.texts.accountmissing.prefix' : 'login.texts.accountmissing.prefix' }}"
+      ></span>
+      <a
+        [routerLink]="mode() === 'register' ? '/login' : '/register'"
+        jhiTranslate="{{ mode() === 'register' ? 'register.texts.accountmissing.link' : 'login.texts.accountmissing.link' }}"
+      ></a>
     </p>
   </p-tabs>
 </div>

@@ -2,18 +2,23 @@
   "login": {
     "header": "Melde dich bei TUMApply an",
     "tabs": {
-      "student": "Student / Bewerber",
-      "professor": "Professor / Betreuer"
+      "student": "Studierende / Bewerbende",
+      "professor": "Professor*in / Betreuende"
     },
     "buttons": {
       "microsoft": "Anmelden mit Microsoft",
       "apple": "Anmelden mit Apple",
       "google": "Anmelden mit Google",
-      "tum": "Anmelden mit TUM SSO"
+      "tum": "Anmelden mit TUM",
+      "email": "Anmelden mit E-Mail"
     },
     "texts": {
-      "professor": "TUM Single Sign-On ist für Professoren und Betreuer erforderlich.",
-      "accountmissing": "Sie haben noch kein TUMApply-Konto? <a href=\"/register\">Registrieren Sie sich hier</a>."
+      "or": "ODER",
+      "professor": "Als TUM-Professor*in oder Betreuer*in melden Sie sich bitte mit Ihren TUM-Zugangsdaten an.",
+      "accountmissing": {
+        "prefix": "Sie haben noch kein TUMApply-Konto?",
+        "link": "Hier registrieren."
+      }
     },
     "messages": {
       "error": {
