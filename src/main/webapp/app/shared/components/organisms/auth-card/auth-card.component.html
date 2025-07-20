@@ -32,8 +32,8 @@
         <p class="login-description">
           {{
             mode() === 'register'
-              ? 'As a TUM professor or supervisor, you can simply use your TUM login credentials.'
-              : 'TUM Single Sign-On is required for professors and supervisors.'
+              ? 'As a TUM professor or supervisor, please register with your TUM login credentials.'
+              : 'As a TUM professor or supervisor, please sign in with your TUM login credentials.'
           }}
         </p>
         <div class="login-providers">
@@ -43,7 +43,6 @@
             [label]="mode() === 'register' ? 'Register with TUM' : 'Sign in with TUM'"
           />
         </div>
-        <p class="login-hint">TUM Single Sign-On is required for professors and supervisors.</p>
       </p-tabpanel>
     </p-tabpanels>
     <p class="login-footer">
