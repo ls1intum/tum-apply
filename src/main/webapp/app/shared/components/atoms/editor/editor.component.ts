@@ -53,24 +53,42 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
 
     const quill = maybeQuill;
-    const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
-    const maxChars = limit + STANDARD_CHARACTER_BUFFER;
+
+    const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
 
     let isReverting = false;
 
-    quill.on('text-change', (delta, oldDelta) => {
-      if (isReverting) return;
+    quill.on('text-change', (delta, oldDelta, source) => {
+      if (isReverting || source !== 'user') return;
 
       const isInsert = delta.ops?.some(op => typeof op.insert === 'string');
       const currentText = this.extractTextFromHtml(quill.root.innerHTML);
-      const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
-      const maxChars = limit + STANDARD_CHARACTER_BUFFER;
 
       if (isInsert && currentText.length > maxChars) {
         isReverting = true;
-        quill.updateContents(oldDelta);
+        quill.setContents(oldDelta, 'silent');
+
+        const html = quill.root.innerHTML;
+        const ctrl = this.formControl();
+        this.modelChange.emit(html);
+        this.htmlValue.set(html);
+        // ctrl.setValue(html);
+        ctrl.markAsDirty();
+        ctrl.updateValueAndValidity();
+        this.isTouched.set(true);
+
         isReverting = false;
+        return;
       }
+
+      const html = quill.root.innerHTML;
+      const ctrl = this.formControl();
+      this.modelChange.emit(html);
+      this.htmlValue.set(html);
+      // ctrl.setValue(html);
+      ctrl.markAsDirty();
+      ctrl.updateValueAndValidity();
+      this.isTouched.set(true);
     });
 
     console.info('Quill initialized and listener attached');
@@ -101,37 +119,6 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   private htmlValue = signal('');
   private lastValidValue = signal<string>('');
-
-  onInputChange(event: EditorTextChangeEvent): void {
-    const proposedValue = event.htmlValue;
-    const proposedText = this.extractTextFromHtml(proposedValue);
-    const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
-    const maxAllowed = limit + STANDARD_CHARACTER_BUFFER;
-    const ctrl = this.formControl();
-
-    if (proposedText.length > maxAllowed) {
-      // Revert to last valid value
-      const previousHtml = this.lastValidValue();
-
-      // Force editor and form control to revert
-      this.htmlValue.set(previousHtml);
-      ctrl.setValue(previousHtml);
-      ctrl.updateValueAndValidity();
-
-      this.modelChange.emit(previousHtml);
-      return;
-    }
-
-    // Input is valid, update value
-    this.lastValidValue.set(proposedValue);
-    this.htmlValue.set(proposedValue);
-    this.modelChange.emit(proposedValue);
-
-    ctrl.setValue(proposedValue);
-    ctrl.markAsDirty();
-    ctrl.updateValueAndValidity();
-    this.isTouched.set(true);
-  }
 
   // Extract plain text from HTML
   private extractTextFromHtml(htmlText: string): string {
