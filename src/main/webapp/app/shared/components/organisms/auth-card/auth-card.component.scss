@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 4rem;
+  border-radius: 0.75rem;
   border: var(--p-border-default);
   background: var(--p-background-surface);
   width: 28rem;
@@ -15,7 +15,7 @@
 
 .login-header {
   display: flex;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -25,7 +25,11 @@
   color: var(--p-text-on-primary);
   font-weight: 600;
   font-size: 1.25rem;
-  border-radius: 4rem 4rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
+
+  .tum-logo {
+    height: 3rem;
+  }
 }
 
 .login-content {
