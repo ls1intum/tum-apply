@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
 import Quill from 'quill';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -12,21 +13,30 @@ const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, EditorModule, FontAwesomeModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, EditorModule, FontAwesomeModule, FormsModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
 export class EditorComponent extends BaseInputDirective<string> {
   characterCount = computed(() => this.extractTextFromHtml(this.htmlValue()).length);
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
+  helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   // Check if error message should be displayed
   isTouched = signal(false);
+  isOverCharLimit = signal(false);
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
 
   editorElem = viewChild<ElementRef<HTMLElement>>('editorElem');
 
   constructor() {
     super();
+
+    effect(() => {
+      const count = this.characterCount();
+      const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
+
+      this.isOverCharLimit.set(count - limit >= STANDARD_CHARACTER_BUFFER);
+    });
 
     effect(() => {
       const host = this.editorElem();
@@ -100,7 +110,9 @@ export class EditorComponent extends BaseInputDirective<string> {
     if (this.isEmpty()) {
       return this.translate.instant('global.input.error.required');
     }
-    // TODO: Add error message for writing more than max char limit
+    if (this.isOverCharLimit()) {
+      return this.translate.instant('global.input.error.maxLength', { max: this.characterLimit() });
+    }
     return null;
   });
 

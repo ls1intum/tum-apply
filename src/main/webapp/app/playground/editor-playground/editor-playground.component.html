@@ -1,6 +1,6 @@
 <form [formGroup]="form()">
   <div class="w-full h-full flex justify-center items-center">
-    <div class="w-50 max-w-50 flex flex-col justify-center items-center">
+    <div class="w-150 max-w-150 flex flex-col justify-center items-center">
       <div class="m-2">
         <jhi-editor
           label="Motivation"
@@ -11,6 +11,7 @@
           [control]="form().controls.motivation"
           icon="house"
           [characterLimit]="30"
+          helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
         />
       </div>
       <div class="m-2">

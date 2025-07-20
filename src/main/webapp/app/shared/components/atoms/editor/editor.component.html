@@ -60,8 +60,15 @@
     </div>
     <div class="editor-footer">
       <div class="error-text">
-        @if (isEmpty()) {
+        @if (isEmpty() || isOverCharLimit()) {
           {{ errorMessage() }}
+        } @else {
+          @if (helperText()) {
+            <!-- Translation Pipe is necessary here since the translation of the ql headers is not working with the jhiTranslate directive -->
+            <!--            <span class="helper-text" jhiTranslate="{{ helperText() }}"></span>-->
+            <!-- TODO: stop the editor from changing widths if the footer size is changed -->
+            <span class="helper-text">{{ helperText()! | translate }}</span>
+          }
         }
       </div>
       <!-- Character Count Display -->
