@@ -9,6 +9,7 @@
  */
 import { ResearchGroup } from './researchGroup';
 import { UserResearchGroupRole } from './userResearchGroupRole';
+import { EmailSetting } from './emailSetting';
 import { Job } from './job';
 
 
@@ -30,5 +31,6 @@ export interface User {
     selectedLanguage?: string;
     postedJobs?: Array<Job>;
     researchGroupRoles?: Array<UserResearchGroupRole>;
+    emailSettings?: Array<EmailSetting>;
 }
 

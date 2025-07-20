@@ -9,6 +9,7 @@
  */
 import { ResearchGroup } from './researchGroup';
 import { UserResearchGroupRole } from './userResearchGroupRole';
+import { EmailSetting } from './emailSetting';
 import { Application } from './application';
 
 
@@ -29,6 +30,7 @@ export interface Applicant {
     linkedinUrl?: string;
     selectedLanguage?: string;
     researchGroupRoles?: Array<UserResearchGroupRole>;
+    emailSettings?: Array<EmailSetting>;
     submittedApplications?: Array<Application>;
     street?: string;
     postalCode?: string;
@@ -44,14 +46,14 @@ export interface Applicant {
     masterUniversity?: string;
 }
 export namespace Applicant {
+    export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
     export const BachelorGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR'
-    } as const;
-    export type BachelorGradingScaleEnum = typeof BachelorGradingScaleEnum[keyof typeof BachelorGradingScaleEnum];
+        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
+    };
+    export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
     export const MasterGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR'
-    } as const;
-    export type MasterGradingScaleEnum = typeof MasterGradingScaleEnum[keyof typeof MasterGradingScaleEnum];
+        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
+    };
 }
 
 
