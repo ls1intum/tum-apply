@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild, ViewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
 import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
@@ -6,6 +6,8 @@ import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -23,6 +25,7 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
+import { MessageService } from 'primeng/api';
 
 const ApplicationFormModes = {
   CREATE: 'create',
@@ -53,9 +56,11 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
+    ToastComponent,
     FontAwesomeModule,
     TranslateModule,
   ],
+
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
   standalone: true,
@@ -259,7 +264,10 @@ export default class ApplicationCreationFormComponent {
   private location = inject(Location);
   private translate = inject(TranslateService);
 
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute,
+    private toastService: ToastService,
+  ) {
     this.init(route);
 
     effect(() => {
@@ -279,7 +287,7 @@ export default class ApplicationCreationFormComponent {
       this.mode = ApplicationFormModes.CREATE;
       const jobId = this.route.snapshot.paramMap.get('job_id');
       if (jobId === null) {
-        alert('Error: this is no valid jobId');
+        this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
       } else {
         this.jobId.set(jobId);
       }
@@ -288,12 +296,12 @@ export default class ApplicationCreationFormComponent {
       this.mode = ApplicationFormModes.EDIT;
       const applicationId = this.route.snapshot.paramMap.get('application_id');
       if (applicationId === null) {
-        alert('Error: this is no valid applicationId');
+        this.toastService.showError({ summary: 'Error', detail: 'This is no valid applicationId' });
         return;
       }
       application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
     } else {
-      alert('Error: this is no valid application page link');
+      this.toastService.showError({ summary: 'Error', detail: 'This is no valid application page link' });
       return;
     }
     this.jobId.set(application.job.jobId);
@@ -320,7 +328,7 @@ export default class ApplicationCreationFormComponent {
     const location = this.location;
     const applicationId = this.applicationId();
     if (applicationId === '') {
-      alert('There is an error with the applicationId');
+      this.toastService.showError({ detail: 'There is an error with the applicationId' });
       return;
     }
     const updateApplication: UpdateApplicationDTO = {
@@ -362,12 +370,12 @@ export default class ApplicationCreationFormComponent {
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
       if (rerouteToOtherPage) {
-        alert('Successfully saved application');
+        this.toastService.showSuccess({ detail: 'Successfully saved application' });
         location.back();
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
-      alert('Failed to save application: ' + httpError.statusText);
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
       console.error('Failed to save application:', err);
     }
   }
@@ -377,7 +385,7 @@ export default class ApplicationCreationFormComponent {
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() => alert('Error: fetching the document ids for this application'));
+      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }
 
   onValueChanged(): void {
