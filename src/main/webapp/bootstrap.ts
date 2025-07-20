@@ -13,6 +13,7 @@ import { DEBUG_INFO_ENABLED } from './app/app.constants';
 import AppComponent from './app/app.component';
 import { appConfig } from './app/app.config';
 import { JhiLanguageHelper } from './app/config/language.helper';
+import { MessageService } from 'primeng/api';
 
 // disable debug data on prod profile to improve performance
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -22,7 +23,7 @@ if (!DEBUG_INFO_ENABLED) {
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
-  providers: [...appConfig.providers, provideAnimations()],
+  providers: [...appConfig.providers, provideAnimations(), MessageService],
 })
   .then(app => {
     const dpConfig = app.injector.get(NgbDatepickerConfig);
