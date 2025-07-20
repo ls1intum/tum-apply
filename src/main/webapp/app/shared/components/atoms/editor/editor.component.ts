@@ -56,10 +56,20 @@ export class EditorComponent extends BaseInputDirective<string> {
     const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
     const maxChars = limit + STANDARD_CHARACTER_BUFFER;
 
-    quill.on('text-change', (_delta, oldDelta) => {
-      const text = this.extractTextFromHtml(quill.root.innerHTML);
-      if (text.length > maxChars) {
+    let isReverting = false;
+
+    quill.on('text-change', (delta, oldDelta) => {
+      if (isReverting) return;
+
+      const isInsert = delta.ops?.some(op => typeof op.insert === 'string');
+      const currentText = this.extractTextFromHtml(quill.root.innerHTML);
+      const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
+      const maxChars = limit + STANDARD_CHARACTER_BUFFER;
+
+      if (isInsert && currentText.length > maxChars) {
+        isReverting = true;
         quill.updateContents(oldDelta);
+        isReverting = false;
       }
     });
 
