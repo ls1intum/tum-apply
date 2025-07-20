@@ -8,14 +8,11 @@ import { RouterModule } from '@angular/router';
 
 import { fontAwesomeIcons } from './config/font-awesome-icons';
 import MainComponent from './layouts/main/main.component';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'jhi-app',
-  template: '<p-toast></p-toast><jhi-main />',
-  imports: [MainComponent, RouterModule, ToastModule],
-  providers: [MessageService],
+  template: '<jhi-main />',
+  imports: [MainComponent, RouterModule],
 })
 export default class AppComponent {
   private readonly iconLibrary = inject(FaIconLibrary);
