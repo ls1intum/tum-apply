@@ -1,16 +1,20 @@
 import { Component } from '@angular/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 
 @Component({
   selector: 'jhi-button-play-ground',
-  imports: [ButtonComponent, ButtonGroupComponent],
+  imports: [ButtonComponent, ButtonGroupComponent, ToastComponent],
   templateUrl: './button-play-ground.component.html',
   styleUrl: './button-play-ground.component.scss',
   standalone: true,
 })
 export class ButtonPlayGroundComponent {
+  constructor(private toastService: ToastService) {}
+
   buttonGroupVertical: ButtonGroupData = {
     direction: 'vertical',
     buttons: [
@@ -20,7 +24,7 @@ export class ButtonPlayGroundComponent {
         icon: 'home',
         disabled: false,
         label: 'Label',
-        onClick: () => alert('Tadaaaa'),
+        onClick: () => this.toastService.showInfo({ detail: 'Tadaaaa' }),
       },
       {
         severity: 'secondary',
@@ -28,14 +32,14 @@ export class ButtonPlayGroundComponent {
         icon: 'home',
         disabled: false,
         label: 'Secondary',
-        onClick: () => alert('I am secondary. Click the first button'),
+        onClick: () => this.toastService.showInfo({ detail: 'I am secondary. Click the first button' }),
       },
       {
         severity: 'secondary',
         variant: undefined,
         disabled: false,
         label: 'Secondary',
-        onClick: () => alert('I am secondary. Click the first button'),
+        onClick: () => this.toastService.showInfo({ detail: 'I am secondary. Click the first button' }),
       },
     ],
   };
@@ -48,7 +52,7 @@ export class ButtonPlayGroundComponent {
         icon: 'home',
         disabled: false,
         label: 'Label',
-        onClick: () => alert('Tadaaaa'),
+        onClick: () => this.toastService.showInfo({ detail: 'Tadaaaa' }),
       },
       {
         severity: 'secondary',
@@ -56,7 +60,7 @@ export class ButtonPlayGroundComponent {
         icon: 'home',
         disabled: false,
         label: 'Secondary',
-        onClick: () => alert('I am secondary. Click the first button'),
+        onClick: () => this.toastService.showInfo({ detail: 'I am secondary. Click the first button' }),
       },
       {
         severity: 'secondary',
@@ -64,7 +68,7 @@ export class ButtonPlayGroundComponent {
         icon: 'home',
         disabled: false,
         label: 'Secondary',
-        onClick: () => alert('I am secondary. Click the first button'),
+        onClick: () => this.toastService.showInfo({ detail: 'I am secondary. Click the first button' }),
       },
     ],
   };
