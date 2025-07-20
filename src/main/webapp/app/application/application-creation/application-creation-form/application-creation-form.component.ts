@@ -25,7 +25,6 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
-import { MessageService } from 'primeng/api';
 
 const ApplicationFormModes = {
   CREATE: 'create',
