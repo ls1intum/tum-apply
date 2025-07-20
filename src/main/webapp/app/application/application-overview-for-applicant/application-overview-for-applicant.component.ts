@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
@@ -13,7 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule],
+  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule, ToastComponent],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
@@ -83,7 +85,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private applicantId = signal<string>('');
 
-  constructor() {
+  constructor(private toastService: ToastService) {
     effect(() => {
       this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
       this.loadTotal();
@@ -134,12 +136,12 @@ export default class ApplicationOverviewForApplicantComponent {
     if (confirmDelete) {
       this.applicationService.deleteApplication(applicationId).subscribe({
         next: () => {
-          alert('Application successfully deleted');
+          this.toastService.showSuccess({ detail: 'Application successfully deleted' });
           const event = this.lastLazyLoadEvent();
           if (event) this.loadPage(event);
         },
-        error(err) {
-          alert('Error withdrawing the application');
+        error: err => {
+          this.toastService.showError({ detail: 'Error withdrawing the application' });
           console.error('Delete failed', err);
         },
       });
@@ -152,12 +154,12 @@ export default class ApplicationOverviewForApplicantComponent {
     if (confirmWithdraw) {
       this.applicationService.withdrawApplication(applicationId).subscribe({
         next: () => {
-          alert('Application successfully withdrawn');
+          this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
           const event = this.lastLazyLoadEvent();
           if (event) this.loadPage(event);
         },
-        error(err) {
-          alert('Error withdrawing the application');
+        error: err => {
+          this.toastService.showError({ detail: 'Error withdrawing the application' });
           console.error('Withdraw failed', err);
         },
       });
