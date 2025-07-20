@@ -4,6 +4,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -45,7 +47,7 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ToastComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
@@ -145,7 +147,10 @@ export class JobDetailComponent {
   private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   private location = inject(Location);
 
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute,
+    private toastService: ToastService,
+  ) {
     this.init();
   }
 
@@ -170,11 +175,11 @@ export class JobDetailComponent {
     if (confirmClose) {
       try {
         await firstValueFrom(this.jobResourceService.changeJobState(this.jobId(), 'CLOSED'));
-        alert('Job successfully closed');
+        this.toastService.showSuccess({ detail: 'Job successfully closed' });
         this.location.back();
       } catch (error) {
         if (error instanceof Error) {
-          alert(`Error closing job: ${error.message}`);
+          this.toastService.showError({ detail: `Error closing job: ${error.message}` });
         }
       }
     }
@@ -186,11 +191,11 @@ export class JobDetailComponent {
     if (confirmDelete) {
       try {
         await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
-        alert('Job successfully deleted');
+        this.toastService.showSuccess({ detail: 'Job successfully deleted' });
         this.location.back();
       } catch (error) {
         if (error instanceof Error) {
-          alert(`Error deleting job: ${error.message}`);
+          this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
         }
       }
     }
@@ -214,9 +219,9 @@ export class JobDetailComponent {
       this.dataLoaded.set(true);
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
-        alert(`Error loading job details: ${error.status} ${error.statusText}`);
+        this.toastService.showError({ detail: `Error loading job details: ${error.status} ${error.statusText}` });
       } else if (error instanceof Error) {
-        alert(`Error loading job details: ${error.message}`);
+        this.toastService.showError({ detail: `Error loading job details: ${error.message}` });
       }
       this.location.back();
     }
