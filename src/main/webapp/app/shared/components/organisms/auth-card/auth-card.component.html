@@ -15,11 +15,13 @@
         @if (mode() === 'register') {
           <p class="login-description" jhiTranslate="register.texts.applicant"></p>
         }
-        <jhi-credentials-group [submitHandler]="onEmailLogin" />
-        <p-divider align="center">
-          <span class="divider-text" jhiTranslate="login.texts.or"></span>
-        </p-divider>
-        <jhi-button-group [data]="identityProvider()" [shouldTranslate]="true" class="login-providers" />
+        <div class="login-buttons">
+          <jhi-credentials-group [submitHandler]="onEmailLogin" />
+          <p-divider align="center">
+            <span class="divider-text" jhiTranslate="login.texts.or"></span>
+          </p-divider>
+          <jhi-button-group [data]="identityProvider()" [shouldTranslate]="true" class="login-providers" />
+        </div>
       </p-tabpanel>
 
       <!-- Professors / Supervisors -->

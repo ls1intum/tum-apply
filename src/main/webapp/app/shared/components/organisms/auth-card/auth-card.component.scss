@@ -19,7 +19,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   align-self: stretch;
   background: var(--p-primary-color);
   color: var(--p-text-on-primary);
@@ -34,10 +34,10 @@
 
 .login-content {
   display: flex;
-  padding: 2rem;
+  padding: 1rem;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.25rem;
   align-self: stretch;
 }
 
@@ -46,7 +46,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
+  align-self: stretch;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   align-self: stretch;
 }
 
