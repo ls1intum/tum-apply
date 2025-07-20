@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, computed } from '@angular/core';
 import { PasswordModule } from 'primeng/password';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
@@ -28,27 +28,28 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 export class CredentialsGroupComponent {
   @Input() submitHandler?: (credentials: { email: string; password: string }) => void;
 
-  form: FormGroup;
+  form = new FormGroup({
+    email: new FormControl<string>('', [Validators.required, Validators.email]),
+    password: new FormControl<string>('', Validators.required),
+  });
   formSubmitted = false;
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-    });
-  }
+  emailInvalid = computed(() => {
+    const control = this.form.controls['email'];
+    return control.invalid && (control.touched || this.formSubmitted);
+  });
+
+  passwordInvalid = computed(() => {
+    const control = this.form.controls['password'];
+    return control.invalid && (control.touched || this.formSubmitted);
+  });
 
   onSubmit(): void {
     this.formSubmitted = true;
     if (this.form.valid && this.submitHandler) {
-      this.submitHandler(this.form.value);
+      this.submitHandler(this.form.value as { email: string; password: string });
       this.form.reset();
       this.formSubmitted = false;
     }
-  }
-
-  isInvalid(controlName: string): boolean {
-    const control = this.form.get(controlName);
-    return control?.invalid === true && (control.touched || this.formSubmitted);
   }
 }
