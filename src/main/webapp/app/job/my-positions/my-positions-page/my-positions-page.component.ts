@@ -5,6 +5,8 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
@@ -16,7 +18,16 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
-  imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent, TranslateDirective, TranslateModule, SortBarComponent],
+  imports: [
+    CommonModule,
+    TagComponent,
+    ButtonComponent,
+    DynamicTableComponent,
+    TranslateDirective,
+    TranslateModule,
+    SortBarComponent,
+    ToastComponent,
+  ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
 })
@@ -29,6 +40,8 @@ export class MyPositionsPageComponent {
 
   sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
+
+  constructor(private toastService: ToastService) {}
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'myPositionsPage.sortingOptions.lastModified', field: 'lastModifiedAt', type: 'NUMBER' },
@@ -121,11 +134,11 @@ export class MyPositionsPageComponent {
     if (confirmDelete) {
       try {
         await firstValueFrom(this.jobService.deleteJob(jobId));
-        alert('Job successfully deleted');
+        this.toastService.showError({ detail: 'Job successfully deleted' });
         await this.loadJobs();
       } catch (error) {
         if (error instanceof Error) {
-          alert(`Error deleting job: ${error.message}`);
+          this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
         }
       }
     }
@@ -137,11 +150,11 @@ export class MyPositionsPageComponent {
     if (confirmClose) {
       try {
         await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
-        alert('Job successfully closed');
+        this.toastService.showSuccess({ detail: 'Job successfully closed' });
         await this.loadJobs();
       } catch (error) {
         if (error instanceof Error) {
-          alert(`Error closing job: ${error.message}`);
+          this.toastService.showError({ detail: `Error closing job: ${error.message}` });
         }
       }
     }
