@@ -7,8 +7,8 @@ import { TranslateService, TranslateStore } from '@ngx-translate/core';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { EmailLoginResourceService } from '../../../../generated';
 import { KeycloakService } from '../../../../core/auth/keycloak.service';
+import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
 
 import { AuthCardComponent } from './auth-card.component';
 
