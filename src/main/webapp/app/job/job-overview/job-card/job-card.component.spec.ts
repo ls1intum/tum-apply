@@ -15,7 +15,7 @@ class DummyComponent {}
 class MockTranslationLoader implements TranslateLoader {
   getTranslation(): Observable<{}> {
     return of({
-      'jobDetailPage.positionOverview.hoursPerWeek': '{{workload}} hours/week',
+      'jobOverviewPage.hoursPerWeek': '{{workload}} h/week',
     });
   }
 }
