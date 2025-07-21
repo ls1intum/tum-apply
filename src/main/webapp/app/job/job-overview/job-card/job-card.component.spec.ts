@@ -82,7 +82,7 @@ describe('JobCardComponent', () => {
     expect(compiled.textContent).toContain('Computer Science');
     expect(compiled.textContent).toContain('Munich');
     expect(compiled.textContent).toContain('Prof. John Doe');
-    expect(compiled.textContent).toContain('20 hours/week');
+    expect(compiled.textContent).toContain('20 h/week');
     expect(compiled.textContent).toContain('Start:  01.10.2025');
     expect(compiled.textContent).toContain('Today');
   });
