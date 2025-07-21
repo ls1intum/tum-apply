@@ -106,20 +106,21 @@ export class AuthCardComponent {
         'response',
       )
       .subscribe({
-        next: async response => {
-          await this.accountService.loadUser();
-          const loadedUser = this.accountService.user();
-          if (loadedUser) {
-            this.keycloakService.profile = {
-              sub: loadedUser.id,
-              email: loadedUser.email,
-              given_name: loadedUser.name.split(' ')[0] ?? '',
-              family_name: loadedUser.name.split(' ').slice(1).join(' '),
-              token: loadedUser.bearer,
-            };
-          }
-          const redirectUri = this.redirectUri();
-          window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+        next: () => {
+          this.accountService.loadUser().then(() => {
+            const loadedUser = this.accountService.user();
+            if (loadedUser) {
+              this.keycloakService.profile = {
+                sub: loadedUser.id,
+                email: loadedUser.email,
+                given_name: loadedUser.name.split(' ')[0] ?? '',
+                family_name: loadedUser.name.split(' ').slice(1).join(' '),
+                token: loadedUser.bearer,
+              };
+            }
+            const redirectUri = this.redirectUri();
+            window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+          });
         },
       });
   };
