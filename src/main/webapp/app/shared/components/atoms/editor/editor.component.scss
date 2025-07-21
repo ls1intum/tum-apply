@@ -1,7 +1,7 @@
 .editor-footer {
   display: flex;
   justify-content: space-between;
-  min-height: 3rem;
+  min-height: 4rem;
 
   .char-counter-normal {
     color: var(--p-text-primary);
@@ -16,4 +16,11 @@
     color: var(--p-text-primary);
     font-size: 0.8rem;
   }
+  .error-text {
+    display: flex;
+    flex-direction: column;
+  }
+}
+.p-editor {
+  height: 20rem;
 }

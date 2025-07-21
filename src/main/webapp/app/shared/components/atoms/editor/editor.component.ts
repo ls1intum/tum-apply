@@ -5,6 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
 import Quill from 'quill';
 import { TranslateModule } from '@ngx-translate/core';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -13,7 +14,7 @@ const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, EditorModule, FontAwesomeModule, FormsModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, EditorModule, FontAwesomeModule, FormsModule, ReactiveFormsModule, TranslateModule, TooltipModule],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
@@ -67,6 +68,12 @@ export class EditorComponent extends BaseInputDirective<string> {
     const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
 
     let isReverting = false;
+
+    // Initialize the editor with the initial value from the model
+    const initialValue = this.model();
+    if (initialValue !== undefined) {
+      this.htmlValue.set(initialValue);
+    }
 
     quill.on('text-change', (delta, oldDelta, source) => {
       if (isReverting || source !== 'user') return;
@@ -139,3 +146,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     return (temp.textContent ?? temp.innerText) || '';
   }
 }
+
+//TODO: add rows
+//TODO: implement placeholder text as HTML

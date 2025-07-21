@@ -198,22 +198,6 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Calculates the current length of the input fields with a character limit.
-   * Used for character count feedback.
-   */
-  get descriptionLength(): number {
-    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
-  }
-
-  get tasksLength(): number {
-    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
-  }
-
-  get requirementsLength(): number {
-    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
-  }
-
-  /**
    * Initializes all three form groups used in the form wizard.
    * Sets up validators, default values, and disabled controls.
    */
