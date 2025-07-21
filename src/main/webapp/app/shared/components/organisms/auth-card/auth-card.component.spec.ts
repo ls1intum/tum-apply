@@ -3,7 +3,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { signal } from '@angular/core';
-import { TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
@@ -20,11 +20,9 @@ describe('AuthCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthCardComponent],
+      imports: [AuthCardComponent, TranslateModule.forRoot()],
       providers: [
         provideHttpClientTesting(),
-        TranslateService,
-        TranslateStore,
         {
           provide: ActivatedRoute,
           useValue: {},
@@ -64,14 +62,14 @@ describe('AuthCardComponent', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'login' });
     fixture.detectChanges();
     const btnData = component.identityProvider().buttons[1];
-    expect(btnData.label).toBe('Sign in with Google');
+    expect(btnData.label).toBe('login.buttons.apple');
   });
 
   it('should show correct Google label in register mode', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'register' });
     fixture.detectChanges();
     const btnData = component.identityProvider().buttons[1];
-    expect(btnData.label).toBe('Register with Google');
+    expect(btnData.label).toBe('register.buttons.apple');
   });
 
   it('should call authTabService.setSelectedTab when onTabChange is called', () => {
