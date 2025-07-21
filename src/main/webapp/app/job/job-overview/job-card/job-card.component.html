@@ -22,7 +22,7 @@
               Start:
             }
             @if (icon === 'clock') {
-              {{ value }}%
+              <span jhiTranslate="jobDetailPage.positionOverview.hoursPerWeek" [translateValues]="{ workload: value }"></span>
             } @else {
               {{ value }}
             }
@@ -37,7 +37,7 @@
       <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'graduation-cap', value: fieldOfStudies() }" />
       <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'location-dot', value: location() }" />
       <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'user', value: professor() }" />
-      <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'clock', value: formattedWorkload() }" />
+      <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'clock', value: workload() }" />
       <ng-container [ngTemplateOutlet]="infoItem" [ngTemplateOutletContext]="{ icon: 'calendar', value: formattedStartDate() }" />
     </ul>
 

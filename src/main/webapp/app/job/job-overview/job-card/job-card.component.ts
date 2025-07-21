@@ -31,9 +31,6 @@ export class JobCardComponent {
 
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
 
-  // Convert workload from hours/week to percentage
-  readonly formattedWorkload = computed(() => (this.workload() !== undefined ? (this.workload()! / 40) * 100 : undefined));
-
   private router = inject(Router);
 
   onViewDetails(): void {
