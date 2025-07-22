@@ -25,19 +25,15 @@
     }
 
     <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()" #editorElem>
-      <p-editor
-        [id]="id()"
-        type="text"
+      <quill-editor
+        [styles]="{ height: '200px' }"
+        (onFocus)="onFocus()"
+        (onBlur)="onBlur()"
         [placeholder]="shouldTranslate() && placeholder() ? (placeholder()! | translate) : placeholder()"
-        [readonly]="disabled()"
         [ngModel]="model()"
-        [required]="required()"
-        [style]="{ width: width() }"
-        autocomplete="off"
-        pInputText
-        class="custom-input"
+        (onContentChanged)="textChanged($event)"
       >
-        <ng-template #header>
+        <div quill-editor-toolbar>
           <span class="ql-formats">
             <button type="button" class="ql-bold" aria-label="Bold"></button>
             <button type="button" class="ql-italic" aria-label="Italic"></button>
@@ -60,8 +56,8 @@
           <span class="ql-formats">
             <button class="ql-link" aria-label="Insert Link" type="button"></button>
           </span>
-        </ng-template>
-      </p-editor>
+        </div>
+      </quill-editor>
     </div>
     <div class="editor-footer">
       <div class="error-text">

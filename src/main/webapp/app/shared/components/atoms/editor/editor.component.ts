@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, computed, effect, input, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, effect, input, model, signal, viewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
-import Quill from 'quill';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
+import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -14,7 +13,7 @@ const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, EditorModule, FontAwesomeModule, FormsModule, ReactiveFormsModule, TranslateModule, TooltipModule],
+  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, ReactiveFormsModule, TranslateModule, TooltipModule],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
@@ -27,8 +26,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   isOverCharLimit = signal(false);
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
 
-  editorElem = viewChild<ElementRef<HTMLElement>>('editorElem');
-
   constructor() {
     super();
 
@@ -38,77 +35,6 @@ export class EditorComponent extends BaseInputDirective<string> {
 
       this.isOverCharLimit.set(count - limit >= STANDARD_CHARACTER_BUFFER);
     });
-
-    effect(() => {
-      const host = this.editorElem();
-      if (!host) return;
-      this.waitForQuillReady(host.nativeElement);
-    });
-  }
-
-  private waitForQuillReady(container: HTMLElement, retries = 20): void {
-    const el = container.querySelector('.ql-container');
-    if (!el) {
-      if (retries <= 0) {
-        console.error('.ql-editor never appeared in DOM');
-        return;
-      }
-      requestAnimationFrame(() => this.waitForQuillReady(container, retries - 1));
-      return;
-    }
-
-    const maybeQuill = Quill.find(el);
-    if (!(maybeQuill instanceof Quill)) {
-      console.error('Found a Blot instead of a Quill instance');
-      return;
-    }
-
-    const quill = maybeQuill;
-
-    const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
-
-    let isReverting = false;
-
-    // Initialize the editor with the initial value from the model
-    const initialValue = this.model();
-    if (initialValue !== undefined) {
-      this.htmlValue.set(initialValue);
-    }
-
-    quill.on('text-change', (delta, oldDelta, source) => {
-      if (isReverting || source !== 'user') return;
-
-      const isInsert = delta.ops?.some(op => typeof op.insert === 'string');
-      const currentText = this.extractTextFromHtml(quill.root.innerHTML);
-
-      if (isInsert && currentText.length > maxChars) {
-        isReverting = true;
-        quill.setContents(oldDelta, 'silent');
-
-        const html = quill.root.innerHTML;
-        const ctrl = this.formControl();
-        this.modelChange.emit(html);
-        this.htmlValue.set(html);
-        // ctrl.setValue(html);
-        ctrl.markAsDirty();
-        ctrl.updateValueAndValidity();
-        this.isTouched.set(true);
-
-        isReverting = false;
-        return;
-      }
-
-      const html = quill.root.innerHTML;
-      const ctrl = this.formControl();
-      this.modelChange.emit(html);
-      this.htmlValue.set(html);
-      // ctrl.setValue(html);
-      ctrl.markAsDirty();
-      ctrl.updateValueAndValidity();
-      this.isTouched.set(true);
-    });
-
-    console.info('Quill initialized and listener attached');
   }
 
   errorMessage = computed(() => {
@@ -137,13 +63,68 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   private htmlValue = signal('');
-  private lastValidValue = signal<string>('');
 
   // Extract plain text from HTML
   private extractTextFromHtml(htmlText: string): string {
     const temp = document.createElement('div');
     temp.innerHTML = htmlText;
     return (temp.textContent ?? temp.innerText) || '';
+  }
+
+  // textChanged(event: ContentChange) {
+  //   console.log(this.model());
+  //   const { source, text, oldDelta, editor } = event;
+
+  //   const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
+
+  //   const newTextLength = this.extractTextFromHtml(editor.root.innerHTML).length;
+  //   if (newTextLength > maxChars) {
+  //     const range = editor.getSelection();
+  //     editor.setContents(oldDelta, 'silent');
+  //     if (range) {
+  //       editor.setSelection(range.index, range.length, 'silent');
+  //     }
+  //     return;
+  //   }
+
+  //   const html = editor.root.innerHTML;
+  //   this.modelChange.emit(html);
+  //   this.htmlValue.set(html);
+
+  //   const ctrl = this.formControl();
+  //   ctrl.markAsDirty();
+  //   ctrl.updateValueAndValidity();
+  //   this.isTouched.set(true);
+
+  // }
+
+  textChanged(event: ContentChange) {
+    console.log(this.htmlValue());
+    const { source, text, oldDelta, editor } = event;
+
+    const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
+
+    if (source !== 'user') return;
+    const newTextLength = this.extractTextFromHtml(editor.root.innerHTML).length;
+    // console.log(newTextLength)
+    if (newTextLength > maxChars) {
+      const range = editor.getSelection();
+      editor.setContents(oldDelta, 'silent');
+      if (range) {
+        editor.setSelection(range.index, range.length, 'silent');
+      }
+      return;
+    }
+
+    const html = editor.root.innerHTML;
+    this.modelChange.emit(html);
+    this.htmlValue.set(html);
+
+    const ctrl = this.formControl();
+    ctrl.setValue(html, { emitEvent: true });
+    ctrl.markAsDirty();
+    ctrl.updateValueAndValidity();
+    this.isTouched.set(true);
   }
 }
 
