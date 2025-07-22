@@ -25,7 +25,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   isTouched = signal(false);
   isOverCharLimit = signal(false);
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
-  private hasFormControl = computed(() => !!this.formControl());
 
   constructor() {
     super();
@@ -63,15 +62,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     return 'char-counter-normal'; // default character count color
   });
 
-  private htmlValue = signal('');
-
-  // Extract plain text from HTML
-  private extractTextFromHtml(htmlText: string): string {
-    const temp = document.createElement('div');
-    temp.innerHTML = htmlText;
-    return (temp.textContent ?? temp.innerText) || '';
-  }
-
   editorValue = computed(() => {
     if (this.hasFormControl()) {
       return this.formControl().value ?? '';
@@ -80,7 +70,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   });
 
-  textChanged(event: ContentChange) {
+  textChanged(event: ContentChange): void {
     const { source, oldDelta, editor } = event;
 
     const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
@@ -101,7 +91,7 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     const ctrl = this.formControl();
     if (this.hasFormControl()) {
-      if (ctrl.value != html) {
+      if (ctrl.value !== html) {
         ctrl.patchValue(html, { emitEvent: false });
       }
       ctrl.markAsDirty();
@@ -110,6 +100,16 @@ export class EditorComponent extends BaseInputDirective<string> {
       this.modelChange.emit(html);
     }
     this.isTouched.set(true);
+  }
+
+  private htmlValue = signal('');
+  private hasFormControl = computed(() => !!this.formControl());
+
+  // Extract plain text from HTML
+  private extractTextFromHtml(htmlText: string): string {
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlText;
+    return (temp.textContent ?? temp.innerText) || '';
   }
 }
 
