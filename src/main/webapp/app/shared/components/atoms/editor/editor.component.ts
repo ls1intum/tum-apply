@@ -25,6 +25,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   isTouched = signal(false);
   isOverCharLimit = signal(false);
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
+  private hasFormControl = computed(() => !!this.formControl());
 
   constructor() {
     super();
@@ -71,42 +72,21 @@ export class EditorComponent extends BaseInputDirective<string> {
     return (temp.textContent ?? temp.innerText) || '';
   }
 
-  // textChanged(event: ContentChange) {
-  //   console.log(this.model());
-  //   const { source, text, oldDelta, editor } = event;
-
-  //   const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
-
-  //   const newTextLength = this.extractTextFromHtml(editor.root.innerHTML).length;
-  //   if (newTextLength > maxChars) {
-  //     const range = editor.getSelection();
-  //     editor.setContents(oldDelta, 'silent');
-  //     if (range) {
-  //       editor.setSelection(range.index, range.length, 'silent');
-  //     }
-  //     return;
-  //   }
-
-  //   const html = editor.root.innerHTML;
-  //   this.modelChange.emit(html);
-  //   this.htmlValue.set(html);
-
-  //   const ctrl = this.formControl();
-  //   ctrl.markAsDirty();
-  //   ctrl.updateValueAndValidity();
-  //   this.isTouched.set(true);
-
-  // }
+  editorValue = computed(() => {
+    if (this.hasFormControl()) {
+      return this.formControl().value ?? '';
+    } else {
+      return this.model();
+    }
+  });
 
   textChanged(event: ContentChange) {
-    console.log(this.htmlValue());
-    const { source, text, oldDelta, editor } = event;
+    const { source, oldDelta, editor } = event;
 
     const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
 
     if (source !== 'user') return;
     const newTextLength = this.extractTextFromHtml(editor.root.innerHTML).length;
-    // console.log(newTextLength)
     if (newTextLength > maxChars) {
       const range = editor.getSelection();
       editor.setContents(oldDelta, 'silent');
@@ -117,13 +97,18 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
 
     const html = editor.root.innerHTML;
-    this.modelChange.emit(html);
     this.htmlValue.set(html);
 
     const ctrl = this.formControl();
-    ctrl.setValue(html, { emitEvent: true });
-    ctrl.markAsDirty();
-    ctrl.updateValueAndValidity();
+    if (this.hasFormControl()) {
+      if (ctrl.value != html) {
+        ctrl.patchValue(html, { emitEvent: false });
+      }
+      ctrl.markAsDirty();
+      ctrl.updateValueAndValidity();
+    } else {
+      this.modelChange.emit(html);
+    }
     this.isTouched.set(true);
   }
 }
