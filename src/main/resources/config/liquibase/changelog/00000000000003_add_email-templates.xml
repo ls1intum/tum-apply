@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="016_create-email-templates" author="moritz-schmidt">
+    <createTable tableName="email_templates">
+      <column name="email_template_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="research_group_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="template_name" type="VARCHAR(255)"/>
+
+      <column name="language" type="VARCHAR(10)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="email_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="email_case" type="TEXT"/>
+
+      <column name="subject" type="TEXT"/>
+
+      <column name="body_html" type="LONGTEXT"/>
+
+      <column name="is_default" type="BOOLEAN" defaultValueBoolean="false"/>
+
+      <column name="last_modified_by" type="CHAR(36)"/>
+
+      <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="last_modified_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="email_templates"
+                             baseColumnNames="research_group_id"
+                             referencedTableName="research_groups"
+                             referencedColumnNames="research_group_id"
+                             constraintName="fk_email_templates_research_group"/>
+
+    <addForeignKeyConstraint baseTableName="email_templates"
+                             baseColumnNames="last_modified_by"
+                             referencedTableName="users"
+                             referencedColumnNames="user_id"
+                             constraintName="fk_email_templates_last_modified_by"/>
+
+    <createIndex indexName="idx_email_templates_research_group" tableName="email_templates">
+      <column name="research_group_id"/>
+    </createIndex>
+
+    <createIndex indexName="idx_email_templates_type_group_lang_case" tableName="email_templates">
+      <column name="email_type"/>
+      <column name="research_group_id"/>
+      <column name="language"/>
+      <column name="email_case"/>
+    </createIndex>
+
+    <sql>
+      ALTER TABLE email_templates
+        MODIFY last_modified_at DATETIME(3) NOT NULL
+        DEFAULT CURRENT_TIMESTAMP(3)
+        ON UPDATE CURRENT_TIMESTAMP(3);
+    </sql>
+  </changeSet>
+</databaseChangeLog>
