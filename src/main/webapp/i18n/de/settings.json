@@ -3,7 +3,28 @@
     "header": "Einstellungen",
 
     "notifications": {
-      "header": "Benachrichtigungen"
+      "header": "Benachrichtigungen",
+
+      "applicant": {
+        "submission": {
+          "title": "Bewerbung eingereicht",
+          "description": "Erhalte eine Bestätigung, wenn du eine Bewerbung einreichst oder zurückziehst."
+        },
+        "outcome": {
+          "title": "Bewerbungsergebnis",
+          "description": "Werde benachrichtigt, wenn deine Bewerbung angenommen oder abgelehnt wurde."
+        }
+      },
+      "professor": {
+        "new": {
+          "title": "Neue Bewerbungen",
+          "description": "Werde benachrichtigt, wenn eine neue Bewerbung für deine Stelle eingeht."
+        },
+        "accepted": {
+          "title": "Bewerbung angenommen (BCC)",
+          "description": "Erhalte eine Kopie, wenn eine Bewerbung für deine Stelle angenommen wird."
+        }
+      }
     }
   }
 }
