@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, computed, effect, input, model, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
@@ -128,5 +128,5 @@ export class EditorComponent extends BaseInputDirective<string> {
   }
 }
 
-//TODO: add rows
-//TODO: implement placeholder text as HTML
+// TODO: add rows
+// TODO: implement placeholder text as HTML
