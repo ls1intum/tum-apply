@@ -60,7 +60,7 @@ Each upload slot is labeled clearly and supports **PDF files up to 1 MB**.
 
 ---
 
-## 🚫 Upload Errors
+## Upload Errors
 
 If an error occurs:
 
@@ -100,19 +100,6 @@ If an error occurs:
 
 - Documents are tracked using `DocumentInformationHolderDTO`.
 - Uploaded files are stored via backend REST endpoints.
-
----
-
-## Example Use in a Template
-
-```html
-<jhi-upload-button
-  uploadKey="entity.upload.upload_instruction.CV"
-  documentType="CV"
-  [applicationId]="applicationId"
-  [documentIds]="cvDocumentIds"
-/>
-```
 
 ---
 
