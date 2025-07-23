@@ -1,0 +1,11 @@
+meta {
+  name: Get Templates for RG
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/email-templates
+  body: none
+  auth: inherit
+}
