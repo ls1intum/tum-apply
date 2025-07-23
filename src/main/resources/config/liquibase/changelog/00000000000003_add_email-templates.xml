@@ -59,12 +59,10 @@
       <column name="research_group_id"/>
     </createIndex>
 
-    <createIndex indexName="idx_email_templates_type_group_lang_case" tableName="email_templates">
-      <column name="email_type"/>
-      <column name="research_group_id"/>
-      <column name="language"/>
-      <column name="email_case"/>
-    </createIndex>
+    <sql>
+      CREATE INDEX idx_email_templates_type_group_lang_case
+        ON email_templates(email_type, research_group_id, language, email_case(191));
+    </sql>
 
     <sql>
       ALTER TABLE email_templates

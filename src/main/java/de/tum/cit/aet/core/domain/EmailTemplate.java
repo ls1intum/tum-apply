@@ -21,7 +21,7 @@ public class EmailTemplate extends AbstractAuditingEntity {
     private UUID emailTemplateId;
 
     @ManyToOne
-    @JoinColumn(name = "research_group", nullable = false)
+    @JoinColumn(name = "research_group_id", nullable = false)
     private ResearchGroup researchGroup;
 
     @Column(name = "template_name")
