@@ -26,6 +26,20 @@ export class EditorComponent extends BaseInputDirective<string> {
   isOverCharLimit = signal(false);
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
 
+  constructor() {
+    super();
+
+    effect(() => {
+      const count = this.characterCount();
+      const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
+
+      this.isOverCharLimit.set(count - limit >= STANDARD_CHARACTER_BUFFER);
+    });
+  }
+
+  private htmlValue = signal('');
+  private hasFormControl = computed(() => !!this.formControl());
+
   errorMessage = computed(() => {
     this.langChange();
 
@@ -90,20 +104,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
     this.isTouched.set(true);
   }
-
-  constructor() {
-    super();
-
-    effect(() => {
-      const count = this.characterCount();
-      const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
-
-      this.isOverCharLimit.set(count - limit >= STANDARD_CHARACTER_BUFFER);
-    });
-  }
-
-  private htmlValue = signal('');
-  private hasFormControl = computed(() => !!this.formControl());
 
   // Extract plain text from HTML
   private extractTextFromHtml(htmlText: string): string {
