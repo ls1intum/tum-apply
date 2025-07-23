@@ -225,8 +225,8 @@ dependencies {
     implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter-cache"
-    implementation "com.github.ben-manes.caffeine:caffeine:3.2.0"
-    implementation "com.github.ben-manes.caffeine:jcache:3.2.0"
+    implementation "com.github.ben-manes.caffeine:caffeine:3.2.2"
+    implementation "com.github.ben-manes.caffeine:jcache:3.2.2"
     implementation "javax.cache:cache-api"
     implementation "org.hibernate.orm:hibernate-jcache"
 
@@ -255,6 +255,10 @@ dependencies {
 
     // Jsoup for sanitizing HTML
     implementation 'org.jsoup:jsoup:1.21.1'
+
+    // Spring Retry
+    implementation 'org.springframework.retry:spring-retry:2.0.12'
+    implementation 'org.springframework:spring-aspects'
 }
 
 tasks.register("cleanResources", Delete) {
