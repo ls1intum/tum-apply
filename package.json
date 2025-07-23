@@ -14,9 +14,9 @@
     "build": "npm run webapp:prod --",
     "clean-www": "rimraf build/resources/main/static/",
     "cleanup": "rimraf build/",
-    "postinstall": "husky",
     "compile:ts": "npm run prebuild && tsc --project tsconfig.app.json",
     "compile:ts:tests": "npm run prebuild && tsc --project tsconfig.spec.json",
+    "postinstall": "husky",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prettier:check": "prettier --check \"{,src/**/,webpack/,.blueprint/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java,html,css,scss}\"",
@@ -41,6 +41,25 @@
     "default_environment": "prod",
     "packaging": "jar",
     "server_port": 8080
+  },
+  "overrides": {
+    "braces": "3.0.3",
+    "cookie": "1.0.2",
+    "critters": "0.0.25",
+    "debug": "4.4.1",
+    "esbuild": "0.25.5",
+    "express": "5.1.0",
+    "jsdom": "26.1.0",
+    "rimraf": "6.0.1",
+    "semver": "7.7.1",
+    "tough-cookie": "5.1.2",
+    "vite": "7.0.5",
+    "webpack": "5.100.2",
+    "webpack-dev-middleware": "7.4.2",
+    "webpack-dev-server": "5.2.2",
+    "word-wrap": "1.2.5",
+    "ws": "8.18.3",
+    "yargs-parser": "22.0.0"
   },
   "dependencies": {
     "@angular/animations": "20.1.2",
@@ -126,24 +145,5 @@
   },
   "cacheDirectories": [
     "node_modules"
-  ],
-  "overrides": {
-    "braces": "3.0.3",
-    "cookie": "1.0.2",
-    "critters": "0.0.25",
-    "debug": "4.4.1",
-    "esbuild": "0.25.5",
-    "express": "5.1.0",
-    "jsdom": "26.1.0",
-    "rimraf": "6.0.1",
-    "semver": "7.7.1",
-    "tough-cookie": "5.1.2",
-    "vite": "7.0.5",
-    "webpack": "5.100.2",
-    "webpack-dev-middleware": "7.4.2",
-    "webpack-dev-server": "5.2.2",
-    "word-wrap": "1.2.5",
-    "ws": "8.18.3",
-    "yargs-parser": "22.0.0"
-  }
+  ]
 }

@@ -19,10 +19,7 @@
     "target": "es2024",
     "module": "es2022",
     "types": [],
-    "lib": [
-      "es2024",
-      "dom"
-    ],
+    "lib": ["es2024", "dom"],
     "skipLibCheck": true
   },
   "references": [
