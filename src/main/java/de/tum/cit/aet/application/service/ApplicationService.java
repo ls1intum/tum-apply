@@ -23,8 +23,6 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +49,6 @@ public class ApplicationService {
     private final DocumentDictionaryService documentDictionaryService;
     private final CurrentUserService currentUserService;
     private final EmailService emailService;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     /**
      * Creates a new job application for the given applicant and job.
