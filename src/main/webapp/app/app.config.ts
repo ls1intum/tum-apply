@@ -2,8 +2,9 @@ import {
   ApplicationConfig,
   LOCALE_ID,
   importProvidersFrom,
+  inject,
+  provideAppInitializer,
   provideZonelessChangeDetection,
-  APP_INITIALIZER
 } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
@@ -31,13 +32,14 @@ import { NotificationInterceptor } from './core/interceptor/notification.interce
 import { KeycloakService } from './core/auth/keycloak.service';
 import { AccountService } from './core/auth/account.service';
 
-export function initializeKeycloak(keycloakService: KeycloakService, accountService: AccountService) {
-  return async () => {
-    const success = await keycloakService.init();
-    if (success) {
-      await accountService.loadUser();
-    }
-  };
+export async function initializeKeycloak(): Promise<void> {
+  const keycloakService = inject(KeycloakService);
+  const accountService = inject(AccountService);
+
+  const success = await keycloakService.init();
+  if (success) {
+    await accountService.loadUser();
+  }
 }
 
 export function apiConfigFactory(): Configuration {
@@ -48,13 +50,7 @@ export function apiConfigFactory(): Configuration {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // TODO: use provideAppInitializer
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeKeycloak,
-      deps: [KeycloakService, AccountService],
-      multi: true,
-    },
+    provideAppInitializer(initializeKeycloak),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
