@@ -226,3 +226,25 @@ input:disabled {
   color: var(--p-text-disabled);
   background-color: var(--p-background-disabled);
 }
+
+/* Loader */
+.fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+.saved_color {
+  color: green;
+}
+
+.unsaved_color {
+  color: orange;
+}
