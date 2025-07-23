@@ -1682,12 +1682,8 @@
           }
         }
       },
-      "CustomFieldDTO": {
-        "type": "object"
-      },
-      "DocumentDTO": {
-        "type": "object"
-      },
+      "CustomFieldDTO": {},
+      "DocumentDTO": {},
       "JobCardDTO": {
         "type": "object",
         "properties": {
@@ -1767,10 +1763,12 @@
         "type": "object",
         "properties": {
           "email": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "required": [
@@ -2047,10 +2045,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -2186,9 +2184,7 @@
           "applicant": {
             "$ref": "#/components/schemas/Applicant"
           },
-          "job": {
-            "$ref": "#/components/schemas/Job"
-          },
+          "job": {},
           "state": {
             "type": "string",
             "enum": [
@@ -2336,9 +2332,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "application": {
-            "$ref": "#/components/schemas/Application"
-          },
+          "application": {},
           "createdBy": {
             "$ref": "#/components/schemas/User"
           },
