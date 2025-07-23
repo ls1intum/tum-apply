@@ -26,17 +26,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   isOverCharLimit = signal(false);
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
 
-  constructor() {
-    super();
-
-    effect(() => {
-      const count = this.characterCount();
-      const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
-
-      this.isOverCharLimit.set(count - limit >= STANDARD_CHARACTER_BUFFER);
-    });
-  }
-
   errorMessage = computed(() => {
     this.langChange();
 
@@ -100,6 +89,17 @@ export class EditorComponent extends BaseInputDirective<string> {
       this.modelChange.emit(html);
     }
     this.isTouched.set(true);
+  }
+
+  constructor() {
+    super();
+
+    effect(() => {
+      const count = this.characterCount();
+      const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
+
+      this.isOverCharLimit.set(count - limit >= STANDARD_CHARACTER_BUFFER);
+    });
   }
 
   private htmlValue = signal('');
