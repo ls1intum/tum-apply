@@ -12,6 +12,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -104,6 +105,17 @@ public class CurrentUserService {
         return getCurrentUser()
             .getResearchGroupIdIfProfessor()
             .orElseThrow(() -> new IllegalStateException("Current User does not have a research group"));
+    }
+
+    /**
+     * Returns the research group if the current user is a professor.
+     *
+     * @return the research group ID if user is a professor, or throws IllegalStateException
+     */
+    public ResearchGroup getResearchGroupIfProfessor() {
+        return Optional.ofNullable(getUser().getResearchGroup()).orElseThrow(() ->
+            new IllegalStateException("Current User does not have a research group")
+        );
     }
 
     /**
