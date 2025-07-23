@@ -13,7 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
 
-import ApplicationCreationPage1Component, { ApplicationCreationPage1Data, dropdownLanguage } from './application-creation-page1.component';
+import ApplicationCreationPage1Component, { ApplicationCreationPage1Data, selectLanguage } from './application-creation-page1.component';
 
 const mockData: ApplicationCreationPage1Data = {
   firstName: 'Anna',
@@ -22,7 +22,7 @@ const mockData: ApplicationCreationPage1Data = {
   phoneNumber: '+49 170 1234567',
   gender: { value: 'female', name: 'female' },
   nationality: { value: 'german', name: 'German' },
-  language: dropdownLanguage.find(v => v.value === 'de'),
+  language: selectLanguage.find(v => v.value === 'de'),
   dateOfBirth: '1990-05-15',
   website: 'https://annaschmidt.dev',
   linkedIn: 'https://www.linkedin.com/in/annaschmidt',
