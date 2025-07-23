@@ -12,9 +12,9 @@
 export interface JobCardDTO { 
     jobId: string;
     title: string;
-    fieldOfStudies?: string;
-    location?: string;
-    professorName?: string;
+    fieldOfStudies: string;
+    location: string;
+    professorName: string;
     workload?: number;
     startDate?: string;
     relativeTime?: string;
