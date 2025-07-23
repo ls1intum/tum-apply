@@ -25,6 +25,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   isTouched = signal(false);
   isOverCharLimit = signal(false);
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
+  isInitialized = signal(false);
 
   errorMessage = computed(() => {
     this.langChange();
@@ -70,6 +71,12 @@ export class EditorComponent extends BaseInputDirective<string> {
       const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
 
       this.isOverCharLimit.set(count - limit >= STANDARD_CHARACTER_BUFFER);
+    });
+    effect(() => {
+      if (!this.isInitialized()) {
+        this.htmlValue.set(this.editorValue());
+        this.isInitialized.set(true);
+      }
     });
   }
 

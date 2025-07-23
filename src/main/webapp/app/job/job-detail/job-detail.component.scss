@@ -131,6 +131,10 @@
   margin-bottom: 1rem;
 }
 
+.description-text {
+  overflow-wrap: anywhere; // Allow words that are too long to break and wrap onto the next line
+}
+
 .contact-info {
   background: var(--p-background-surface);
   border-radius: 0.9rem;

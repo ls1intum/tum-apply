@@ -26,7 +26,7 @@
 
     <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()" #editorElem>
       <quill-editor
-        [styles]="{ height: '200px' }"
+        class="custom-quill-editor"
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
         [placeholder]="shouldTranslate() && placeholder() ? (placeholder()! | translate) : placeholder()"
