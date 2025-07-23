@@ -12,7 +12,7 @@
 export interface JobFormDTO { 
     title: string;
     researchArea?: string;
-    fieldOfStudies?: string;
+    fieldOfStudies: string;
     supervisingProfessor: string;
     location: JobFormDTO.LocationEnum;
     startDate?: string;

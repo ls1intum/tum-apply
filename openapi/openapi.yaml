@@ -313,6 +313,29 @@
         }
       }
     },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "email-login-resource"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications/upload-documents/{applicationId}/{documentType}": {
       "post": {
         "tags": [
@@ -1413,6 +1436,7 @@
           }
         },
         "required": [
+          "fieldOfStudies",
           "fundingType",
           "location",
           "state",
@@ -1687,7 +1711,10 @@
           }
         },
         "required": [
+          "fieldOfStudies",
           "jobId",
+          "location",
+          "professorName",
           "title"
         ]
       },
@@ -1726,6 +1753,21 @@
             "type": "boolean"
           }
         }
+      },
+      "LoginRequestDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "MultipartUploadRequest": {
         "type": "object",
@@ -1952,12 +1994,21 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
@@ -1977,11 +2028,11 @@
           "unpaged": {
             "type": "boolean"
           },
-          "pageSize": {
+          "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "pageNumber": {
+          "pageSize": {
             "type": "integer",
             "format": "int32"
           },
@@ -2653,12 +2704,21 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
