@@ -141,7 +141,7 @@
     "tough-cookie": "5.1.2",
     "vite": "6.2.3",
     "webpack-dev-middleware": "7.4.2",
-    "webpack-dev-server": "5.2.0",
+    "webpack-dev-server": "5.2.1",
     "word-wrap": "1.2.5",
     "ws": "8.18.1",
     "yargs-parser": "21.1.1"
