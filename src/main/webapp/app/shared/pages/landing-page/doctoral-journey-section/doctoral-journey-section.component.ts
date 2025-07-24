@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -12,7 +12,7 @@ import TranslateDirective from '../../../language/translate.directive';
   styleUrl: './doctoral-journey-section.component.scss',
 })
 export class DoctoralJourneySectionComponent {
-  private translate = inject(TranslateService);
+  constructor(private translate: TranslateService) {}
 
   buttons(): ButtonGroupData {
     return {

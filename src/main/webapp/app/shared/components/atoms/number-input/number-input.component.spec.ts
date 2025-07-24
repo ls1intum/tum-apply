@@ -73,8 +73,8 @@ describe('NumberInputComponent', () => {
     fixture.detectChanges();
 
     const inputNumber = fixture.debugElement.query(By.css('p-inputnumber')).componentInstance;
-    expect(inputNumber.min()).toBe(0);
-    expect(inputNumber.max()).toBe(5);
+    expect(inputNumber.min).toBe(0);
+    expect(inputNumber.max).toBe(5);
   });
 
   it('should allow setting min/max fraction digits', () => {

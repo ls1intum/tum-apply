@@ -31,7 +31,7 @@ describe('SidebarButtonComponent', () => {
 
     const icon = fixture.nativeElement.querySelector('fa-icon');
     expect(icon).toBeTruthy();
-    expect(icon.classList.contains('icon')).toBe(true);
+    expect(icon.getAttribute('ng-reflect-icon')).toContain('home');
   });
 
   it('should render the correct text', () => {

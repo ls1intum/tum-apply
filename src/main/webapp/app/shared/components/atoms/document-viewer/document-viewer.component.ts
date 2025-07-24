@@ -16,9 +16,8 @@ export class DocumentViewerComponent {
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
   private documentService = inject(DocumentResourceService);
-  private sanitizer = inject(DomSanitizer);
 
-  constructor() {
+  constructor(private sanitizer: DomSanitizer) {
     effect(() => {
       this.initDocument();
     });

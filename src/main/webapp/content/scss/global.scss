@@ -1,4 +1,4 @@
-@use 'tailwindcss' as *;
+@import 'tailwindcss';
 
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
@@ -214,7 +214,6 @@
 .p-editor .ql-snow.ql-toolbar .ql-fill {
   fill: var(--p-text-primary);
 }
-
 .p-editor .ql-snow.ql-toolbar .ql-stroke {
   stroke: var(--p-text-primary);
 }
@@ -305,7 +304,6 @@
   .p-datatable-thead > tr > th:first-child {
     padding-left: 0;
   }
-
   .p-datatable-tbody > tr > td:last-child {
     padding-right: 0;
   }

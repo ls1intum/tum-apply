@@ -27,7 +27,6 @@ export class HeaderComponent {
   isDarkMode = toSignal(this.bodyClassChanges$, {
     initialValue: document.body.classList.contains('tum-apply-dark-mode'),
   });
-  translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
     initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
   });
@@ -35,7 +34,10 @@ export class HeaderComponent {
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
 
-  private router = inject(Router);
+  constructor(
+    private translateService: TranslateService,
+    private router: Router,
+  ) {}
 
   navigateToHome(): void {
     void this.router.navigate(['/']);
@@ -53,9 +55,9 @@ export class HeaderComponent {
   }
 
   /*  toggleColorScheme(): void {
-          const className = 'tum-apply-dark-mode';
-          document.body.classList.toggle(className);
-        }*/
+        const className = 'tum-apply-dark-mode';
+        document.body.classList.toggle(className);
+      }*/
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {

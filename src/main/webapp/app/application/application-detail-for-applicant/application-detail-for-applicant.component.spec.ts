@@ -15,8 +15,6 @@ import {
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { MissingTranslationHandler, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { missingTranslationHandler } from 'app/config/translation.config';
-import { MessageService } from 'primeng/api';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 
@@ -41,7 +39,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationDetailForApplicantComponent, NoopAnimationsModule],
+      imports: [ApplicationDetailForApplicantComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -60,7 +58,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
         },
-        MessageService,
       ],
     }).compileComponents();
 
