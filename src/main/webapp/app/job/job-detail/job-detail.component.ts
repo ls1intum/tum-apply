@@ -143,7 +143,7 @@ export class JobDetailComponent {
   private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   private location = inject(Location);
 
-  constructor(private route: ActivatedRoute) {
+  constructor() {
     this.init();
   }
 
