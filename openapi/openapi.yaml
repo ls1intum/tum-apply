@@ -396,7 +396,7 @@
         }
       }
     },
-    "/api/applications/create/{jobId}/applicant/{applicantId}": {
+    "/api/applications/create/{jobId}": {
       "post": {
         "tags": [
           "application-resource"
@@ -405,15 +405,6 @@
         "parameters": [
           {
             "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "applicantId",
             "in": "path",
             "required": true,
             "schema": {
@@ -2008,6 +1999,15 @@
             "type": "integer",
             "format": "int32"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -2023,7 +2023,7 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "paged": {
+          "unpaged": {
             "type": "boolean"
           },
           "pageNumber": {
@@ -2034,7 +2034,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "unpaged": {
+          "paged": {
             "type": "boolean"
           }
         }
@@ -2704,6 +2704,15 @@
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "empty": {
             "type": "boolean"

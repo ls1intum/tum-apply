@@ -47,19 +47,15 @@ export class ApplicationResourceService extends BaseService {
 
     /**
      * @param jobId 
-     * @param applicantId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createApplication(jobId: string, applicantId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationForApplicantDTO>;
-    public createApplication(jobId: string, applicantId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationForApplicantDTO>>;
-    public createApplication(jobId: string, applicantId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationForApplicantDTO>>;
-    public createApplication(jobId: string, applicantId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createApplication(jobId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationForApplicantDTO>;
+    public createApplication(jobId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationForApplicantDTO>>;
+    public createApplication(jobId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationForApplicantDTO>>;
+    public createApplication(jobId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (jobId === null || jobId === undefined) {
             throw new Error('Required parameter jobId was null or undefined when calling createApplication.');
-        }
-        if (applicantId === null || applicantId === undefined) {
-            throw new Error('Required parameter applicantId was null or undefined when calling createApplication.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -87,13 +83,12 @@ export class ApplicationResourceService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/applications/create/${this.configuration.encodeParam({name: "jobId", value: jobId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/applicant/${this.configuration.encodeParam({name: "applicantId", value: applicantId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<ApplicationForApplicantDTO>('post', `${basePath}${localVarPath}`,
+        let localVarPath = `/api/applications/create/${this.configuration.encodeParam({name: "jobId", value: jobId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        return this.httpClient.request<ApplicationForApplicantDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -140,12 +135,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -196,12 +190,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/batch-delete-document/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/${this.configuration.encodeParam({name: "documentType", value: documentType, in: "path", style: "simple", explode: false, dataType: "'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM'", dataFormat: undefined})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -248,12 +241,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/delete-document/${this.configuration.encodeParam({name: "documentDictionaryId", value: documentDictionaryId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -301,12 +293,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/applicant/${this.configuration.encodeParam({name: "applicantId", value: applicantId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<ApplicationForApplicantDTO>>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<Array<ApplicationForApplicantDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -354,12 +345,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/job/${this.configuration.encodeParam({name: "jobId", value: jobId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<ApplicationForApplicantDTO>>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<Array<ApplicationForApplicantDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -407,12 +397,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<ApplicationForApplicantDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<ApplicationForApplicantDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -460,12 +449,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/detail`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<ApplicationDetailDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<ApplicationDetailDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -517,13 +505,12 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/pages`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<ApplicationOverviewDTO>>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<Array<ApplicationOverviewDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -571,12 +558,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/pages/length/${this.configuration.encodeParam({name: "applicantId", value: applicantId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<number>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<number>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -624,12 +610,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/getDocumentIds/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<ApplicationDocumentIdsDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<ApplicationDocumentIdsDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -684,13 +669,12 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/rename-document/${this.configuration.encodeParam({name: "documentDictionaryId", value: documentDictionaryId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('put', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -747,13 +731,12 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<ApplicationForApplicantDTO>('put', `${basePath}${localVarPath}`,
+        return this.httpClient.request<ApplicationForApplicantDTO>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: updateApplicationDTO,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -835,13 +818,12 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/upload-documents/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/${this.configuration.encodeParam({name: "documentType", value: documentType, in: "path", style: "simple", explode: false, dataType: "'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM'", dataFormat: undefined})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<DocumentInformationHolderDTO>>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<Array<DocumentInformationHolderDTO>>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -888,12 +870,11 @@ export class ApplicationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/withdraw/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('put', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,

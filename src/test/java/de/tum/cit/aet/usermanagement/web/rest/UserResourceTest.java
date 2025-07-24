@@ -22,7 +22,7 @@ class UserResourceTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private AuthenticationService authenticationService; // now a Spring bean
+    private AuthenticationService authenticationService;
 
     @MockitoBean
     private UserRepository userRepository;
