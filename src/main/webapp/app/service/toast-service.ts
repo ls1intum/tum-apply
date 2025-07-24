@@ -14,23 +14,23 @@ type ToastMessageInput = {
 export class ToastService {
   constructor(private messageService: MessageService) {}
 
-  private show(message: ToastMessageInput, severity: ToastSeverity) {
-    this.messageService.add({ severity, ...message });
-  }
-
-  showSuccess(message: ToastMessageInput) {
+  showSuccess(message: ToastMessageInput): void {
     this.show(message, 'success');
   }
 
-  showError(message: ToastMessageInput) {
+  showError(message: ToastMessageInput): void {
     this.show(message, 'error');
   }
 
-  showInfo(message: ToastMessageInput) {
+  showInfo(message: ToastMessageInput): void {
     this.show(message, 'info');
   }
 
-  showWarn(message: ToastMessageInput) {
+  showWarn(message: ToastMessageInput): void {
     this.show(message, 'warn');
+  }
+
+  private show(message: ToastMessageInput, severity: ToastSeverity): void {
+    this.messageService.add({ severity, ...message });
   }
 }
