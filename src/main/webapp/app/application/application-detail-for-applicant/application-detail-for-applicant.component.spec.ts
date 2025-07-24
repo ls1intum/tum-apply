@@ -18,6 +18,7 @@ import { missingTranslationHandler } from 'app/config/translation.config';
 
 import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 import { MessageService } from 'primeng/api';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 class MockApplicationResourceService {
   getApplicationForDetailPage = jest.fn().mockReturnValue(of({ id: '123', jobTitle: 'DNS Testing and Molecular Structure Matrices' }));
@@ -40,7 +41,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationDetailForApplicantComponent],
+      imports: [ApplicationDetailForApplicantComponent, NoopAnimationsModule],
       providers: [
         {
           provide: ActivatedRoute,
