@@ -50,7 +50,7 @@
           </div>
 
           <div class="form-field">
-            <jhi-dropdown
+            <jhi-select
               [(selected)]="basicInfoForm.controls['fieldOfStudies'].value"
               (selectedChange)="onSelectionChange(basicInfoForm, 'fieldOfStudies', $event)"
               [iconField]="'icon'"
@@ -75,7 +75,7 @@
           </div>
 
           <div class="form-field">
-            <jhi-dropdown
+            <jhi-select
               [(selected)]="basicInfoForm.controls['location'].value"
               (selectedChange)="onSelectionChange(basicInfoForm, 'location', $event)"
               [iconField]="'icon'"
@@ -110,7 +110,7 @@
         </div>
 
         <div class="form-field">
-          <jhi-dropdown
+          <jhi-select
             [(selected)]="basicInfoForm.controls['workload'].value"
             (selectedChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
             [iconField]="'icon'"
@@ -123,7 +123,7 @@
 
         <div class="form-row">
           <div class="form-field">
-            <jhi-dropdown
+            <jhi-select
               [(selected)]="basicInfoForm.controls['contractDuration'].value"
               (selectedChange)="onSelectionChange(basicInfoForm, 'contractDuration', $event)"
               [iconField]="'icon'"
@@ -134,7 +134,7 @@
             />
           </div>
           <div class="form-field">
-            <jhi-dropdown
+            <jhi-select
               [(selected)]="basicInfoForm.controls['fundingType'].value"
               (selectedChange)="onSelectionChange(basicInfoForm, 'fundingType', $event)"
               [iconField]="'icon'"
@@ -263,12 +263,7 @@
           <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
           <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
           <!--        Not implemented yet-->
-          <!--        <div class="custom-questions-dropdown">-->
-          <!--          <div class="dropdown-header">-->
-          <!--            <span>Custom Questions</span>-->
-          <!--            <span class="dropdown-icon">▼</span>-->
-          <!--          </div>-->
-          <!--        </div>-->
+          <!--        Custom Questions Selection-->
           <div class="data-privacy-notice">
             <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
           </div>

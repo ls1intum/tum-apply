@@ -7,28 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ResearchGroup } from './researchGroup';
-import { UserResearchGroupRole } from './userResearchGroupRole';
+import { User } from './user';
 import { Application } from './application';
 
 
 export interface Applicant { 
-    createdAt?: string;
-    lastModifiedAt?: string;
     userId?: string;
-    researchGroup?: ResearchGroup;
-    email?: string;
-    avatar?: string;
-    firstName?: string;
-    lastName?: string;
-    gender?: string;
-    nationality?: string;
-    birthday?: string;
-    phoneNumber?: string;
-    website?: string;
-    linkedinUrl?: string;
-    selectedLanguage?: string;
-    researchGroupRoles?: Array<UserResearchGroupRole>;
+    user?: User;
     submittedApplications?: Array<Application>;
     street?: string;
     postalCode?: string;

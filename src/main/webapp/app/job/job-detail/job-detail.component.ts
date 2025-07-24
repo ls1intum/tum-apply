@@ -4,6 +4,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -46,7 +48,7 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ToastComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
@@ -58,6 +60,8 @@ export class JobDetailComponent {
 
   dataLoaded = signal<boolean>(false);
 
+  translate = inject(TranslateService);
+  langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   noData = computed<string>(() => {
     this.langChange();
     return this.translate.instant('jobDetailPage.noData');
@@ -142,11 +146,11 @@ export class JobDetailComponent {
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
-  private translate = inject(TranslateService);
-  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   private location = inject(Location);
+  private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
-  constructor(private route: ActivatedRoute) {
+  constructor() {
     this.init();
   }
 
@@ -171,29 +175,28 @@ export class JobDetailComponent {
     if (confirmClose) {
       try {
         await firstValueFrom(this.jobResourceService.changeJobState(this.jobId(), 'CLOSED'));
-        alert('Job successfully closed');
+        this.toastService.showSuccess({ detail: 'Job successfully closed' });
         this.location.back();
       } catch (error) {
         if (error instanceof Error) {
-          alert(`Error closing job: ${error.message}`);
+          this.toastService.showError({ detail: `Error closing job: ${error.message}` });
         }
       }
     }
   }
 
   async onDeleteJob(): Promise<void> {
-    // TO-DO: adjust confirmation
-    const confirmDelete = confirm('Do you really want to delete this job?');
-    if (confirmDelete) {
-      try {
-        await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
-        alert('Job successfully deleted');
-        this.location.back();
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(`Error deleting job: ${error.message}`);
-        }
+    // TO-DO: adjust confirmation, add dialog
+    // if (confirmDelete) {
+    try {
+      await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
+      this.toastService.showSuccess({ detail: 'Job successfully deleted' });
+      this.location.back();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
+      //  }
     }
   }
 
@@ -215,9 +218,9 @@ export class JobDetailComponent {
       this.dataLoaded.set(true);
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
-        alert(`Error loading job details: ${error.status} ${error.statusText}`);
+        this.toastService.showError({ detail: `Error loading job details: ${error.status} ${error.statusText}` });
       } else if (error instanceof Error) {
-        alert(`Error loading job details: ${error.message}`);
+        this.toastService.showError({ detail: `Error loading job details: ${error.message}` });
       }
       this.location.back();
     }
