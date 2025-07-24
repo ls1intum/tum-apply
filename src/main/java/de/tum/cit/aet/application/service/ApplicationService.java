@@ -416,10 +416,7 @@ public class ApplicationService {
      */
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
-        return existingEntries
-            .stream()
-            .map(e -> DocumentInformationHolderDTO.getFromDocumentDictionary(e))
-            .collect(Collectors.toSet());
+        return existingEntries.stream().map(e -> DocumentInformationHolderDTO.getFromDocumentDictionary(e)).collect(Collectors.toSet());
     }
 
     /**

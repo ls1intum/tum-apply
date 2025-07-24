@@ -43,10 +43,7 @@ public class DocumentDictionaryService {
         DocumentType type,
         DocumentDictionaryOwnerSetter ownerSetter
     ) {
-        Set<UUID> existingDocumentIds = existingEntries
-            .stream()
-            .map(dd -> dd.getDocument().getDocumentId())
-            .collect(Collectors.toSet());
+        Set<UUID> existingDocumentIds = existingEntries.stream().map(dd -> dd.getDocument().getDocumentId()).collect(Collectors.toSet());
 
         // Add new entries
         for (Pair<Document, String> doc : newDocuments) {
