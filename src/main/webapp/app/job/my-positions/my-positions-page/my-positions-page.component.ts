@@ -91,8 +91,7 @@ export class MyPositionsPageComponent {
   private jobService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
-
-  constructor(private toastService: ToastService) {}
+  private toastService = inject(ToastService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -130,7 +129,7 @@ export class MyPositionsPageComponent {
 
   async onDeleteJob(jobId: string): Promise<void> {
     // TO-DO: adjust confirmation, add dialog
-    //if (confirmDelete) {
+    // if (confirmDelete) {
     try {
       await firstValueFrom(this.jobService.deleteJob(jobId));
       this.toastService.showError({ detail: 'Job successfully deleted' });
@@ -139,13 +138,13 @@ export class MyPositionsPageComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
-      //}
+      // }
     }
   }
 
   async onCloseJob(jobId: string): Promise<void> {
     // TO-DO: adjust confirmation, add dialog
-    //if (confirmClose) {
+    // if (confirmClose) {
     try {
       await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
@@ -154,7 +153,7 @@ export class MyPositionsPageComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error closing job: ${error.message}` });
       }
-      //}
+      // }
     }
   }
 

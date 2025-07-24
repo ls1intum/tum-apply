@@ -21,8 +21,9 @@ export default class ApplicationDetailForApplicantComponent {
 
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
-  constructor(private toastService: ToastService) {
+  constructor() {
     this.init();
   }
 

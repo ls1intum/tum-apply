@@ -82,10 +82,11 @@ export class ApplicationDetailComponent {
   private readonly applicationResourceService = inject(ApplicationResourceService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private toastService = inject(ToastService);
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
-  constructor(private toastService: ToastService) {
+  constructor() {
     void this.init();
   }
 

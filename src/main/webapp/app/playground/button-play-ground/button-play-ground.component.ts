@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
@@ -71,5 +71,5 @@ export class ButtonPlayGroundComponent {
     ],
   };
 
-  constructor(private toastService: ToastService) {}
+  private toastService = inject(ToastService);
 }

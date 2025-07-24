@@ -78,6 +78,7 @@ export default class ApplicationOverviewForApplicantComponent {
   });
 
   private readonly router = inject(Router);
+  private toastService = inject(ToastService);
 
   private readonly applicationService = inject(ApplicationResourceService);
   private readonly accountService = inject(AccountService);
@@ -85,7 +86,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private applicantId = signal<string>('');
 
-  constructor(private toastService: ToastService) {
+  constructor() {
     effect(() => {
       this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
       this.loadTotal();
@@ -132,7 +133,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
   onDeleteApplication(applicationId: string): void {
     // TODO nicer looking confirm, add dialog
-    //if (confirmDelete) {
+    // if (confirmDelete) {
     this.applicationService.deleteApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });

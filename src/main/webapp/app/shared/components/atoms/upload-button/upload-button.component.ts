@@ -56,8 +56,7 @@ export class UploadButtonComponent {
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
 
   private applicationService = inject(ApplicationResourceService);
-
-  constructor(private toastService: ToastService) {}
+  private toastService = inject(ToastService);
 
   async onFileSelected(event: any): Promise<void> {
     const files: File[] = event.currentFiles;

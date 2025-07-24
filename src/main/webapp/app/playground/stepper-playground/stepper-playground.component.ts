@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
@@ -18,7 +18,7 @@ export class StepperPlaygroundComponent implements OnInit {
 
   data: StepData[] = [];
 
-  constructor(private toastService: ToastService) {}
+  private toastService = inject(ToastService);
 
   ngOnInit(): void {
     this.data = [

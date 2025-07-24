@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, inject } from '@angular/core';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
@@ -11,5 +11,5 @@ import { MessageService } from 'primeng/api';
   encapsulation: ViewEncapsulation.None,
 })
 export class ToastComponent {
-  constructor(private messageService: MessageService) {}
+  private MessageService = inject(MessageService);
 }
