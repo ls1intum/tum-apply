@@ -13,8 +13,6 @@ import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/m
   standalone: true,
 })
 export class ButtonPlayGroundComponent {
-  constructor(private toastService: ToastService) {}
-
   buttonGroupVertical: ButtonGroupData = {
     direction: 'vertical',
     buttons: [
@@ -72,4 +70,6 @@ export class ButtonPlayGroundComponent {
       },
     ],
   };
+
+  constructor(private toastService: ToastService) {}
 }

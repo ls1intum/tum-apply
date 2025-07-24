@@ -41,8 +41,6 @@ export class MyPositionsPageComponent {
   sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  constructor(private toastService: ToastService) {}
-
   readonly sortableFields: SortOption[] = [
     { displayName: 'myPositionsPage.sortingOptions.lastModified', field: 'lastModifiedAt', type: 'NUMBER' },
     { displayName: 'myPositionsPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
@@ -93,6 +91,8 @@ export class MyPositionsPageComponent {
   private jobService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
+
+  constructor(private toastService: ToastService) {}
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));

@@ -17,9 +17,9 @@ import {
 import { HttpResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
+import { MessageService } from 'primeng/api';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
-import { MessageService } from 'primeng/api';
 
 class MockApplicationResourceService {
   getApplicationById = jest.fn().mockReturnValue(

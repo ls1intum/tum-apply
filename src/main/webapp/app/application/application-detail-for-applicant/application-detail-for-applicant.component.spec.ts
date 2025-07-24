@@ -15,10 +15,10 @@ import {
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { MissingTranslationHandler, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { missingTranslationHandler } from 'app/config/translation.config';
-
-import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 import { MessageService } from 'primeng/api';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 
 class MockApplicationResourceService {
   getApplicationForDetailPage = jest.fn().mockReturnValue(of({ id: '123', jobTitle: 'DNS Testing and Molecular Structure Matrices' }));
