@@ -7,13 +7,28 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { User } from './user';
+import { ResearchGroup } from './researchGroup';
+import { UserResearchGroupRole } from './userResearchGroupRole';
 import { Application } from './application';
 
 
 export interface Applicant { 
+    createdAt?: string;
+    lastModifiedAt?: string;
     userId?: string;
-    user?: User;
+    researchGroup?: ResearchGroup;
+    email?: string;
+    avatar?: string;
+    firstName?: string;
+    lastName?: string;
+    gender?: string;
+    nationality?: string;
+    birthday?: string;
+    phoneNumber?: string;
+    website?: string;
+    linkedinUrl?: string;
+    selectedLanguage?: string;
+    researchGroupRoles?: Array<UserResearchGroupRole>;
     submittedApplications?: Array<Application>;
     street?: string;
     postalCode?: string;
@@ -29,14 +44,14 @@ export interface Applicant {
     masterUniversity?: string;
 }
 export namespace Applicant {
+    export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
     export const BachelorGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR'
-    } as const;
-    export type BachelorGradingScaleEnum = typeof BachelorGradingScaleEnum[keyof typeof BachelorGradingScaleEnum];
+        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
+    };
+    export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
     export const MasterGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR'
-    } as const;
-    export type MasterGradingScaleEnum = typeof MasterGradingScaleEnum[keyof typeof MasterGradingScaleEnum];
+        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
+    };
 }
 
 

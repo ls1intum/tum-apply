@@ -34,10 +34,10 @@ the [Environment Configuration Guide](environment-variables.md).
 
 ## Initial Setup
 
-Install npm dependencies:
+Install npm dependencies via the wrapper:
 
 ```bash
-npm install
+./npmw install
 ```
 
 Start the server and client development servers in two separate terminals:
@@ -54,23 +54,23 @@ npm run start
 
 ## Managing Dependencies
 
-Use `npm` for consistent dependency management:
+Use `./npmw` for consistent dependency management:
 
 - Install a new package:
 
   ```bash
-  npm install --save --save-exact <package-name>
+  ./npmw install --save --save-exact <package-name>
   ```
 
 - Install TypeScript types:
 
   ```bash
-  npm install --save-dev --save-exact @types/<package>
+  ./npmw install --save-dev --save-exact @types/<package>
   ```
 
 - Update dependencies:
   ```bash
-  npm run update
+  ./npmw update
   ```
 
 ---
@@ -121,5 +121,5 @@ We use:
 
 ## Notes
 
-- Only run `npm install` when dependencies change
-- You can run `npm help` to get more info about available commands
+- Only run `./npmw install` when dependencies change
+- You can run `./npmw help` to get more info about available commands
