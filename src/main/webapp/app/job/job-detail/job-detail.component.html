@@ -82,10 +82,6 @@
             <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.startDate"></span>
             <span class="detail-value">{{ jobDetails()?.startDate || noData() }}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.endDate"></span>
-            <span class="detail-value">{{ jobDetails()?.endDate || noData() }}</span>
-          </div>
         </section>
 
         <section class="detail-group">
@@ -98,6 +94,15 @@
             <span class="detail-value">{{ jobDetails()?.lastModifiedAt || noData() }}</span>
           </div>
         </section>
+
+        @if (jobDetails()?.endDate) {
+          <section class="detail-group">
+            <div class="detail-row">
+              <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.endDate"></span>
+              <span class="detail-value end-date">{{ jobDetails()?.endDate }}</span>
+            </div>
+          </section>
+        }
       </main>
 
       <aside class="research-group">
