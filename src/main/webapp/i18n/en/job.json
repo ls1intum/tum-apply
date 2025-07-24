@@ -89,7 +89,8 @@
       "location": "Location",
       "professor": "Professor",
       "workload": "Workload"
-    }
+    },
+    "hoursPerWeek": "{{workload}} h/week"
   },
   "myPositionsPage": {
     "header": {

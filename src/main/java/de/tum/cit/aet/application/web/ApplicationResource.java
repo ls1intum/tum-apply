@@ -38,15 +38,14 @@ public class ApplicationResource {
     /**
      *
      * @param jobId The UUID of the Job
-     * @param applicantId Temporarily the id of the applicant (to be removed with serverside user handling)
      * @return ApplicationForApplicantDTO as Responseentity, or 400 Bad Request if
      *         the createApplicationDTO is invalid
      */
-    @PostMapping("/create/{jobId}/applicant/{applicantId}")
-    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@PathVariable UUID jobId, @PathVariable UUID applicantId) {
+    @PostMapping("/create/{jobId}")
+    public ResponseEntity<ApplicationForApplicantDTO> createApplication(@PathVariable UUID jobId) {
         // TODO check authorization
 
-        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(jobId, applicantId);
+        ApplicationForApplicantDTO applicationForApplicantDTO = applicationService.createApplication(jobId);
         return ResponseEntity.ok(applicationForApplicantDTO);
     }
 

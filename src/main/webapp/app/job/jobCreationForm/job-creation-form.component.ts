@@ -9,7 +9,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Location } from '@angular/common';
 
 import SharedModule from '../../shared/shared.module';
-import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
+import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { JobDTO, JobFormDTO } from '../../generated';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
@@ -41,7 +41,7 @@ type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
     SharedModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    DropdownComponent,
+    SelectComponent,
     DatePickerComponent,
     ButtonComponent,
     ButtonGroupComponent,
@@ -62,7 +62,7 @@ export class JobCreationFormComponent {
   additionalInformationForm: FormGroup = this.fb.group({});
 
   /**
-   * Dropdown options used in the form
+   * Select options used in the form
    */
   locations = [
     { name: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
@@ -108,11 +108,11 @@ export class JobCreationFormComponent {
     { name: 'Urban Planning', value: 'Urban Planning' },
   ];
   workloadOptions = [
-    { name: '100% (Full-time)', value: 40 },
-    { name: '60%', value: 24 },
-    { name: '40%', value: 16 },
-    { name: '20%', value: 8 },
-    { name: '10%', value: 4 },
+    { name: '40 hours/week (Full-time)', value: 40 },
+    { name: '24 hours/week', value: 24 },
+    { name: '16 hours/week', value: 16 },
+    { name: '8 hours/week', value: 8 },
+    { name: '4 hours/week', value: 4 },
   ];
   contractDurations = [
     { name: '1 year', value: 1 },
@@ -217,14 +217,14 @@ export class JobCreationFormComponent {
    */
   initForms(job?: JobDTO): void {
     /**
-     * Updates the specified form control with a selected dropdown option value.
-     * The value can be a string, number, or enum used in dropdown selections.
+     * Updates the specified form control with a selected option value.
+     * The value can be a string, number, or enum used in selections.
      */
     const findOption = <T>(options: T[], value: any, valueField: keyof T): T | null => {
       return job ? (options.find(opt => opt[valueField] === value) ?? null) : null;
     };
 
-    // Initialize dropdown options
+    // Initialize select options
     const locationOption = findOption(this.locations, job?.location, 'value');
     const fieldOfStudiesOption = findOption(this.fieldsOfStudies, job?.fieldOfStudies, 'value');
     const workloadOption = findOption(this.workloadOptions, job?.workload, 'value');

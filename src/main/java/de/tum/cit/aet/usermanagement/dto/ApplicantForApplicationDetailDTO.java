@@ -26,7 +26,7 @@ public record ApplicantForApplicationDetailDTO(
             throw new EntityNotFoundException("Applicant Entity should not be null");
         }
         return new ApplicantForApplicationDetailDTO(
-            UserForApplicationDetailDTO.getFromEntity(applicant),
+            UserForApplicationDetailDTO.getFromEntity(applicant.getUser()),
             applicant.getBachelorDegreeName(),
             applicant.getBachelorGradingScale(),
             applicant.getBachelorGrade(),

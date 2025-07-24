@@ -29,8 +29,8 @@ public record ApplicationEvaluationOverviewDTO(
 
         return new ApplicationEvaluationOverviewDTO(
             application.getApplicationId(),
-            applicant.getAvatar(),
-            applicant.getFirstName() + " " + applicant.getLastName(),
+            applicant.getUser().getAvatar(),
+            applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName(),
             application.getState(),
             job.getTitle(),
             application.getRating(),
