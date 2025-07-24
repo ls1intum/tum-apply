@@ -93,17 +93,28 @@ export default class ApplicationCreationFormComponent {
     skills: '',
     experiences: '',
   });
-
-  savingBadgeCalculatedClass = computed<string>(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
-  );
-
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
-
+  title = signal<string>('');
+  jobId = signal<string>('');
+  applicantId = signal<string>('');
+  applicationId = signal<string>('');
+  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
+  savingState = signal<SavingState>(SavingStates.SAVED);
+  savingBadgeCalculatedClass = computed<string>(
+    () =>
+      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
+  );
+  mode: ApplicationFormMode = 'create';
+  page1Valid = signal<boolean>(false);
+  page2Valid = signal<boolean>(false);
+  page3Valid = signal<boolean>(false);
+  savingTick = signal<number>(0);
+  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
+  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  location = inject(Location);
   stepData = computed<StepData[]>(() => {
     const sendData = (state: ApplicationState): void => {
       this.sendCreateApplicationData(state, true);
@@ -231,36 +242,13 @@ export default class ApplicationCreationFormComponent {
     return steps;
   });
 
-  title = signal<string>('');
-
-  jobId = signal<string>('');
-  applicantId = signal<string>('');
-  applicationId = signal<string>('');
-
-  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
-
-  savingState = signal<SavingState>(SavingStates.SAVED);
-
-  mode: ApplicationFormMode = 'create';
-
-  page1Valid = signal<boolean>(false);
-  page2Valid = signal<boolean>(false);
-  page3Valid = signal<boolean>(false);
-
-  savingTick = signal<number>(0);
-
-  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
-
-  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-
   private applicationResourceService = inject(ApplicationResourceService);
   private accountService = inject(AccountService);
-
-  private location = inject(Location);
   private translate = inject(TranslateService);
+  private route = inject(ActivatedRoute);
 
-  constructor(private route: ActivatedRoute) {
-    this.init(route);
+  constructor() {
+    this.init(this.route);
 
     effect(() => {
       const intervalId = setInterval(() => {
@@ -283,7 +271,7 @@ export default class ApplicationCreationFormComponent {
       } else {
         this.jobId.set(jobId);
       }
-      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId(), this.applicantId()));
+      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
     } else if (firstSegment === ApplicationFormModes.EDIT) {
       this.mode = ApplicationFormModes.EDIT;
       const applicationId = this.route.snapshot.paramMap.get('application_id');

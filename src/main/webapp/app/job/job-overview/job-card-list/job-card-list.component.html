@@ -11,12 +11,12 @@
     @for (job of jobs(); track job.jobId) {
       <jhi-job-card
         [jobId]="job.jobId"
-        [jobTitle]="job.title || 'No Title specified'"
-        [fieldOfStudies]="job.fieldOfStudies || 'No Field of Studies specified'"
-        [location]="job.location?.toString() || 'No Location specified'"
-        [professor]="job.professorName || 'No Professor specified'"
-        [workload]="job.workload?.toString() + '%' || '0'"
-        [startDate]="job.startDate?.toString() || 'No Start Date specified'"
+        [jobTitle]="job.title"
+        [fieldOfStudies]="job.fieldOfStudies"
+        [location]="job.location.toString()"
+        [professor]="job.professorName"
+        [workload]="job.workload || undefined"
+        [startDate]="job.startDate?.toString() || undefined"
         [relativeTime]="job.relativeTime || ''"
       />
     }
@@ -31,6 +31,5 @@
   [totalRecords]="totalRecords()"
   [lazy]="true"
   (onLazyLoad)="loadOnTableEmit($event)"
-  [autoLayout]="true"
   [tableStyle]="{ width: '100%' }"
 />

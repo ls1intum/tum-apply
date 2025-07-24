@@ -57,11 +57,12 @@ export class JobDetailComponent {
 
   dataLoaded = signal<boolean>(false);
 
+  translate = inject(TranslateService);
+  langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   noData = computed<string>(() => {
     this.langChange();
     return this.translate.instant('jobDetailPage.noData');
   });
-
   readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
     const job = this.jobDetails();
     if (!job) return null;
@@ -123,29 +124,25 @@ export class JobDetailComponent {
     // Else → no buttons
     return null;
   });
-
   readonly stateTextMap = computed<Record<string, string>>(() => ({
     DRAFT: 'jobState.draft',
     PUBLISHED: 'jobState.published',
     CLOSED: 'jobState.closed',
     APPLICANT_FOUND: 'jobState.applicantFound',
   }));
-
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     DRAFT: 'info',
     PUBLISHED: 'success',
     CLOSED: 'danger',
     APPLICANT_FOUND: 'warn',
   });
-
+  private route = inject(ActivatedRoute);
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
-  private translate = inject(TranslateService);
-  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   private location = inject(Location);
 
-  constructor(private route: ActivatedRoute) {
+  constructor() {
     this.init();
   }
 

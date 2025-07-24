@@ -313,6 +313,29 @@
         }
       }
     },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "email-login-resource"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications/upload-documents/{applicationId}/{documentType}": {
       "post": {
         "tags": [
@@ -373,7 +396,7 @@
         }
       }
     },
-    "/api/applications/create/{jobId}/applicant/{applicantId}": {
+    "/api/applications/create/{jobId}": {
       "post": {
         "tags": [
           "application-resource"
@@ -382,15 +405,6 @@
         "parameters": [
           {
             "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "applicantId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1422,6 +1436,7 @@
           }
         },
         "required": [
+          "fieldOfStudies",
           "fundingType",
           "location",
           "state",
@@ -1658,12 +1673,8 @@
           }
         }
       },
-      "CustomFieldDTO": {
-        "type": "object"
-      },
-      "DocumentDTO": {
-        "type": "object"
-      },
+      "CustomFieldDTO": {},
+      "DocumentDTO": {},
       "JobCardDTO": {
         "type": "object",
         "properties": {
@@ -1696,7 +1707,10 @@
           }
         },
         "required": [
+          "fieldOfStudies",
           "jobId",
+          "location",
+          "professorName",
           "title"
         ]
       },
@@ -1735,6 +1749,23 @@
             "type": "boolean"
           }
         }
+      },
+      "LoginRequestDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "MultipartUploadRequest": {
         "type": "object",
@@ -1930,13 +1961,19 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1955,18 +1992,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
           },
           "empty": {
             "type": "boolean"
@@ -1983,19 +2014,19 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "paged": {
+          "unpaged": {
             "type": "boolean"
           },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
+          "paged": {
+            "type": "boolean"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "unpaged": {
-            "type": "boolean"
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -2005,10 +2036,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -2016,61 +2047,12 @@
       "Applicant": {
         "type": "object",
         "properties": {
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastModifiedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
           "userId": {
             "type": "string",
             "format": "uuid"
           },
-          "researchGroup": {
-            "$ref": "#/components/schemas/ResearchGroup"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          },
-          "selectedLanguage": {
-            "type": "string"
-          },
-          "researchGroupRoles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserResearchGroupRole"
-            },
-            "uniqueItems": true
+          "user": {
+            "$ref": "#/components/schemas/User"
           },
           "submittedApplications": {
             "type": "array",
@@ -2144,9 +2126,7 @@
           "applicant": {
             "$ref": "#/components/schemas/Applicant"
           },
-          "job": {
-            "$ref": "#/components/schemas/Job"
-          },
+          "job": {},
           "state": {
             "type": "string",
             "enum": [
@@ -2294,9 +2274,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "application": {
-            "$ref": "#/components/schemas/Application"
-          },
+          "application": {},
           "createdBy": {
             "$ref": "#/components/schemas/User"
           },
@@ -2631,13 +2609,19 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -2656,18 +2640,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
           },
           "empty": {
             "type": "boolean"

@@ -16,12 +16,28 @@ Make sure you have the following installed:
 
 ---
 
+## Environment Variables
+
+Environment-specific values are stored in a `.env.local` file in the root of the project.
+
+- Copy `.env.example` to `.env.local`:
+  ```bash
+  cp .env.example .env.local
+  ```
+- Fill in the required secrets or configuration values. Please ask your team lead for the necessary secrets if needed.
+- Never commit your `.env.local` file – it may contain sensitive information.
+
+For details on each variable and how environments are handled in development, test, and production, refer to
+the [Environment Configuration Guide](environment-variables.md).
+
+---
+
 ## Initial Setup
 
-Install npm dependencies via the wrapper:
+Install npm dependencies:
 
 ```bash
-./npmw install
+npm install
 ```
 
 Start the server and client development servers in two separate terminals:
@@ -38,23 +54,23 @@ npm run start
 
 ## Managing Dependencies
 
-Use `./npmw` for consistent dependency management:
+Use `npm` for consistent dependency management:
 
 - Install a new package:
 
   ```bash
-  ./npmw install --save --save-exact <package-name>
+  npm install --save --save-exact <package-name>
   ```
 
 - Install TypeScript types:
 
   ```bash
-  ./npmw install --save-dev --save-exact @types/<package>
+  npm install --save-dev --save-exact @types/<package>
   ```
 
 - Update dependencies:
   ```bash
-  ./npmw update
+  npm run update
   ```
 
 ---
@@ -105,5 +121,5 @@ We use:
 
 ## Notes
 
-- Only run `./npmw install` when dependencies change
-- You can run `./npmw help` to get more info about available commands
+- Only run `npm install` when dependencies change
+- You can run `npm help` to get more info about available commands

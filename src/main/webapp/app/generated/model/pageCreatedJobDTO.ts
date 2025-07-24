@@ -17,12 +17,12 @@ export interface PageCreatedJobDTO {
     totalElements?: number;
     first?: boolean;
     last?: boolean;
+    pageable?: PageableObject;
+    numberOfElements?: number;
     size?: number;
     content?: Array<CreatedJobDTO>;
     number?: number;
     sort?: SortObject;
-    pageable?: PageableObject;
-    numberOfElements?: number;
     empty?: boolean;
 }
 
