@@ -11,8 +11,8 @@
 
 export interface CustomFieldAnswerDTO { 
     customFieldAnswerId?: string;
-    customField?: object;
+    customField?: any | null;
     answers?: Array<string>;
-    documents?: Array<object>;
+    documents?: Array<any>;
 }
 
