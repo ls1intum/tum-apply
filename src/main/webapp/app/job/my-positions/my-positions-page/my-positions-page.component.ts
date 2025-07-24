@@ -129,34 +129,32 @@ export class MyPositionsPageComponent {
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation
-    const confirmDelete = confirm('Do you really want to delete this job?');
-    if (confirmDelete) {
-      try {
-        await firstValueFrom(this.jobService.deleteJob(jobId));
-        this.toastService.showError({ detail: 'Job successfully deleted' });
-        await this.loadJobs();
-      } catch (error) {
-        if (error instanceof Error) {
-          this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
-        }
+    // TO-DO: adjust confirmation, add dialog
+    //if (confirmDelete) {
+    try {
+      await firstValueFrom(this.jobService.deleteJob(jobId));
+      this.toastService.showError({ detail: 'Job successfully deleted' });
+      await this.loadJobs();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
+      //}
     }
   }
 
   async onCloseJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation
-    const confirmClose = confirm('Do you really want to close this job?');
-    if (confirmClose) {
-      try {
-        await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
-        this.toastService.showSuccess({ detail: 'Job successfully closed' });
-        await this.loadJobs();
-      } catch (error) {
-        if (error instanceof Error) {
-          this.toastService.showError({ detail: `Error closing job: ${error.message}` });
-        }
+    // TO-DO: adjust confirmation, add dialog
+    //if (confirmClose) {
+    try {
+      await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
+      this.toastService.showSuccess({ detail: 'Job successfully closed' });
+      await this.loadJobs();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showError({ detail: `Error closing job: ${error.message}` });
       }
+      //}
     }
   }
 

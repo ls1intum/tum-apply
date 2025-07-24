@@ -131,21 +131,20 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onDeleteApplication(applicationId: string): void {
-    // TODO nicer looking confirm
-    const confirmDelete = confirm('Do you really want to delete this application?');
-    if (confirmDelete) {
-      this.applicationService.deleteApplication(applicationId).subscribe({
-        next: () => {
-          this.toastService.showSuccess({ detail: 'Application successfully deleted' });
-          const event = this.lastLazyLoadEvent();
-          if (event) this.loadPage(event);
-        },
-        error: err => {
-          this.toastService.showError({ detail: 'Error withdrawing the application' });
-          console.error('Delete failed', err);
-        },
-      });
-    }
+    // TODO nicer looking confirm, add dialog
+    //if (confirmDelete) {
+    this.applicationService.deleteApplication(applicationId).subscribe({
+      next: () => {
+        this.toastService.showSuccess({ detail: 'Application successfully deleted' });
+        const event = this.lastLazyLoadEvent();
+        if (event) this.loadPage(event);
+      },
+      error: err => {
+        this.toastService.showError({ detail: 'Error withdrawing the application' });
+        console.error('Delete failed', err);
+      },
+    });
+    // }
   }
 
   onWithdrawApplication(applicationId: string): void {

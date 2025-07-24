@@ -186,18 +186,17 @@ export class JobDetailComponent {
   }
 
   async onDeleteJob(): Promise<void> {
-    // TO-DO: adjust confirmation
-    const confirmDelete = confirm('Do you really want to delete this job?');
-    if (confirmDelete) {
-      try {
-        await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
-        this.toastService.showSuccess({ detail: 'Job successfully deleted' });
-        this.location.back();
-      } catch (error) {
-        if (error instanceof Error) {
-          this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
-        }
+    // TO-DO: adjust confirmation, add dialog
+    //if (confirmDelete) {
+    try {
+      await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
+      this.toastService.showSuccess({ detail: 'Job successfully deleted' });
+      this.location.back();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
+      //  }
     }
   }
 
