@@ -8,7 +8,6 @@ import locale from '@angular/common/locales/en';
 import dayjs from 'dayjs';
 import { SessionStorageService } from 'ngx-webstorage';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { MessageService } from 'primeng/api';
 
 import { DEBUG_INFO_ENABLED } from './app/app.constants';
 import AppComponent from './app/app.component';
@@ -23,7 +22,7 @@ if (!DEBUG_INFO_ENABLED) {
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
-  providers: [...appConfig.providers, provideAnimations(), MessageService],
+  providers: [...appConfig.providers, provideAnimations()],
 })
   .then(app => {
     const dpConfig = app.injector.get(NgbDatepickerConfig);
