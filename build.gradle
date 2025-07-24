@@ -224,7 +224,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.security:spring-security-data"
     implementation "com.mysql:mysql-connector-j:9.3.0"
-    implementation "com.zaxxer:HikariCP:6.3.0"
+    implementation "com.zaxxer:HikariCP:6.3.2"
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
     implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
