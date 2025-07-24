@@ -59,6 +59,8 @@ export class JobDetailComponent {
 
   dataLoaded = signal<boolean>(false);
 
+  translate = inject(TranslateService);
+  langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   noData = computed<string>(() => {
     this.langChange();
     return this.translate.instant('jobDetailPage.noData');
@@ -143,14 +145,11 @@ export class JobDetailComponent {
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
-  private translate = inject(TranslateService);
-  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   private location = inject(Location);
+  private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private toastService: ToastService,
-  ) {
+  constructor() {
     this.init();
   }
 
@@ -187,7 +186,7 @@ export class JobDetailComponent {
 
   async onDeleteJob(): Promise<void> {
     // TO-DO: adjust confirmation, add dialog
-    //if (confirmDelete) {
+    // if (confirmDelete) {
     try {
       await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });

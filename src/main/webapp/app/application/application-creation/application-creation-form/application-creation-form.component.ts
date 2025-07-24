@@ -9,7 +9,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -97,17 +97,28 @@ export default class ApplicationCreationFormComponent {
     skills: '',
     experiences: '',
   });
-
-  savingBadgeCalculatedClass = computed<string>(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
-  );
-
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
-
+  title = signal<string>('');
+  jobId = signal<string>('');
+  applicantId = signal<string>('');
+  applicationId = signal<string>('');
+  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
+  savingState = signal<SavingState>(SavingStates.SAVED);
+  savingBadgeCalculatedClass = computed<string>(
+    () =>
+      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
+  );
+  mode: ApplicationFormMode = 'create';
+  page1Valid = signal<boolean>(false);
+  page2Valid = signal<boolean>(false);
+  page3Valid = signal<boolean>(false);
+  savingTick = signal<number>(0);
+  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
+  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  location = inject(Location);
   stepData = computed<StepData[]>(() => {
     const sendData = (state: ApplicationState): void => {
       this.sendCreateApplicationData(state, true);
@@ -235,39 +246,13 @@ export default class ApplicationCreationFormComponent {
     return steps;
   });
 
-  title = signal<string>('');
-
-  jobId = signal<string>('');
-  applicantId = signal<string>('');
-  applicationId = signal<string>('');
-
-  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
-
-  savingState = signal<SavingState>(SavingStates.SAVED);
-
-  mode: ApplicationFormMode = 'create';
-
-  page1Valid = signal<boolean>(false);
-  page2Valid = signal<boolean>(false);
-  page3Valid = signal<boolean>(false);
-
-  savingTick = signal<number>(0);
-
-  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
-
-  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-
   private applicationResourceService = inject(ApplicationResourceService);
   private accountService = inject(AccountService);
+  private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
-  private location = inject(Location);
-  private translate = inject(TranslateService);
-
-  constructor(
-    private route: ActivatedRoute,
-    private toastService: ToastService,
-  ) {
-    this.init(route);
+  constructor() {
+    this.init();
 
     effect(() => {
       const intervalId = setInterval(() => {
@@ -277,9 +262,9 @@ export default class ApplicationCreationFormComponent {
     });
   }
 
-  async init(route: ActivatedRoute): Promise<void> {
+  async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-    const segments = await firstValueFrom(route.url);
+    const segments = await firstValueFrom(this.route.url);
     const firstSegment = segments[1]?.path;
     let application;
     if (firstSegment === ApplicationFormModes.CREATE) {

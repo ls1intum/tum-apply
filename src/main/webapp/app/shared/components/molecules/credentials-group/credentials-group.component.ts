@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { PasswordModule } from 'primeng/password';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -31,7 +31,9 @@ export class CredentialsGroupComponent {
   form: FormGroup;
   formSubmitted = false;
 
-  constructor(private fb: FormBuilder) {
+  private fb = inject(FormBuilder);
+
+  constructor() {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
