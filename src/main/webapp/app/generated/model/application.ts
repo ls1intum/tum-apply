@@ -8,7 +8,6 @@
  * Do not edit the class manually.
  */
 import { InternalComment } from './internalComment';
-import { Job } from './job';
 import { Applicant } from './applicant';
 import { ApplicationReview } from './applicationReview';
 import { CustomFieldAnswer } from './customFieldAnswer';
@@ -20,7 +19,7 @@ export interface Application {
     applicationId?: string;
     applicationReview?: ApplicationReview;
     applicant?: Applicant;
-    job?: Job;
+    job?: any | null;
     state?: Application.StateEnum;
     desiredStartDate?: string;
     projects?: string;
@@ -31,16 +30,16 @@ export interface Application {
     internalComments?: Array<InternalComment>;
 }
 export namespace Application {
-    export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
     export const StateEnum = {
-        Saved: 'SAVED' as StateEnum,
-        Sent: 'SENT' as StateEnum,
-        Accepted: 'ACCEPTED' as StateEnum,
-        InReview: 'IN_REVIEW' as StateEnum,
-        Rejected: 'REJECTED' as StateEnum,
-        Withdrawn: 'WITHDRAWN' as StateEnum,
-        JobClosed: 'JOB_CLOSED' as StateEnum
-    };
+        Saved: 'SAVED',
+        Sent: 'SENT',
+        Accepted: 'ACCEPTED',
+        InReview: 'IN_REVIEW',
+        Rejected: 'REJECTED',
+        Withdrawn: 'WITHDRAWN',
+        JobClosed: 'JOB_CLOSED'
+    } as const;
+    export type StateEnum = typeof StateEnum[keyof typeof StateEnum];
 }
 
 
