@@ -8,12 +8,12 @@ import locale from '@angular/common/locales/en';
 import dayjs from 'dayjs';
 import { SessionStorageService } from 'ngx-webstorage';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { MessageService } from 'primeng/api';
 
 import { DEBUG_INFO_ENABLED } from './app/app.constants';
 import AppComponent from './app/app.component';
 import { appConfig } from './app/app.config';
 import { JhiLanguageHelper } from './app/config/language.helper';
-import { MessageService } from 'primeng/api';
 
 // disable debug data on prod profile to improve performance
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
