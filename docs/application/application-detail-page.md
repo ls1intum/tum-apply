@@ -55,13 +55,11 @@ Each of these is rendered in a **card** format using reusable templates for clea
 Two additional cards provide details for:
 
 - **Bachelor's Degree**
-
   - Name of the degree
   - Grade (with icon indicator)
   - University
 
 - **Master's Degree** (if present)
-
   - Name of the degree
   - Grade
   - University
@@ -94,12 +92,10 @@ The `documentIds` object passed to this component is fetched via the backend cal
 
 - The component fetches data based on the route param `application_id`.
 - It retrieves:
-
   - **Application content**: via `getApplicationForDetailPage(...)`
   - **Document references**: via `getDocumentDictionaryIds(...)`
 
 - The layout is composed of:
-
   - `ApplicationDetailCardComponent` - defines the left and middle content
   - `DocumentGroupComponent` - handles file display and download
 

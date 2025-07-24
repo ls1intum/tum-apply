@@ -1,9 +1,10 @@
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   LOCALE_ID,
   importProvidersFrom,
-  provideExperimentalZonelessChangeDetection,
+  inject,
+  provideAppInitializer,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
@@ -12,7 +13,6 @@ import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromD
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import './config/dayjs';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -32,13 +32,14 @@ import { NotificationInterceptor } from './core/interceptor/notification.interce
 import { KeycloakService } from './core/auth/keycloak.service';
 import { AccountService } from './core/auth/account.service';
 
-export function initializeKeycloak(keycloakService: KeycloakService, accountService: AccountService) {
-  return async () => {
-    const success = await keycloakService.init();
-    if (success) {
-      await accountService.loadUser();
-    }
-  };
+export async function initializeKeycloak(): Promise<void> {
+  const keycloakService = inject(KeycloakService);
+  const accountService = inject(AccountService);
+
+  const success = await keycloakService.init();
+  if (success) {
+    await accountService.loadUser();
+  }
 }
 
 export function apiConfigFactory(): Configuration {
@@ -49,13 +50,8 @@ export function apiConfigFactory(): Configuration {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeKeycloak,
-      deps: [KeycloakService, AccountService],
-      multi: true,
-    },
-    provideExperimentalZonelessChangeDetection(),
+    provideAppInitializer(initializeKeycloak),
+    provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
     providePrimeNG({
@@ -87,14 +83,6 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withInterceptorsFromDi()),
-    provideNgxWebstorage(
-      withNgxWebstorageConfig({
-        prefix: 'jhi',
-        separator: '-',
-      }),
-      withLocalStorage(),
-      withSessionStorage(),
-    ),
     Title,
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
