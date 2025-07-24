@@ -609,6 +609,52 @@
         }
       }
     },
+    "/management/prometheus": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027prometheus\u0027",
+        "operationId": "scrape",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CONTENT_TYPE_004",
+                "CONTENT_TYPE_OPENMETRICS_100"
+              ]
+            }
+          },
+          {
+            "name": "includedNames",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain;version\u003d0.0.4;charset\u003dutf-8": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/openmetrics-text;version\u003d1.0.0;charset\u003dutf-8": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/management/loggers": {
       "get": {
         "tags": [
@@ -2329,8 +2375,12 @@
           }
         }
       },
-      "CustomFieldDTO": {},
-      "DocumentDTO": {},
+      "CustomFieldDTO": {
+        "type": "object"
+      },
+      "DocumentDTO": {
+        "type": "object"
+      },
       "JobCardDTO": {
         "type": "object",
         "properties": {
@@ -2410,12 +2460,10 @@
         "type": "object",
         "properties": {
           "email": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           }
         },
         "required": [
@@ -2685,6 +2733,9 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "unpaged": {
+            "type": "boolean"
+          },
           "paged": {
             "type": "boolean"
           },
@@ -2695,9 +2746,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
@@ -2707,10 +2755,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }
@@ -2797,7 +2845,9 @@
           "applicant": {
             "$ref": "#/components/schemas/Applicant"
           },
-          "job": {},
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
           "state": {
             "type": "string",
             "enum": [
@@ -2945,7 +2995,9 @@
             "type": "string",
             "format": "uuid"
           },
-          "application": {},
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
           "createdBy": {
             "$ref": "#/components/schemas/User"
           },

@@ -8,13 +8,14 @@
  * Do not edit the class manually.
  */
 import { User } from './user';
+import { Application } from './application';
 
 
 export interface InternalComment { 
     createdAt?: string;
     lastModifiedAt?: string;
     internalCommentId?: string;
-    application?: any | null;
+    application?: Application;
     createdBy?: User;
     message?: string;
 }

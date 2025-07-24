@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { InternalComment } from './internalComment';
+import { Job } from './job';
 import { Applicant } from './applicant';
 import { ApplicationReview } from './applicationReview';
 import { CustomFieldAnswer } from './customFieldAnswer';
@@ -19,7 +20,7 @@ export interface Application {
     applicationId?: string;
     applicationReview?: ApplicationReview;
     applicant?: Applicant;
-    job?: any | null;
+    job?: Job;
     state?: Application.StateEnum;
     desiredStartDate?: string;
     projects?: string;

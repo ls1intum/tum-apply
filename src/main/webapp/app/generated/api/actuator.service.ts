@@ -947,6 +947,65 @@ export class ActuatorService extends BaseService {
     }
 
     /**
+     * Actuator web endpoint \&#39;prometheus\&#39;
+     * @param format 
+     * @param includedNames 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public scrape(format?: 'CONTENT_TYPE_004' | 'CONTENT_TYPE_OPENMETRICS_100', includedNames?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain;version=0.0.4;charset=utf-8' | 'application/openmetrics-text;version=1.0.0;charset=utf-8', context?: HttpContext, transferCache?: boolean}): Observable<object>;
+    public scrape(format?: 'CONTENT_TYPE_004' | 'CONTENT_TYPE_OPENMETRICS_100', includedNames?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain;version=0.0.4;charset=utf-8' | 'application/openmetrics-text;version=1.0.0;charset=utf-8', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
+    public scrape(format?: 'CONTENT_TYPE_004' | 'CONTENT_TYPE_OPENMETRICS_100', includedNames?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain;version=0.0.4;charset=utf-8' | 'application/openmetrics-text;version=1.0.0;charset=utf-8', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
+    public scrape(format?: 'CONTENT_TYPE_004' | 'CONTENT_TYPE_OPENMETRICS_100', includedNames?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain;version=0.0.4;charset=utf-8' | 'application/openmetrics-text;version=1.0.0;charset=utf-8', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>format, 'format');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>includedNames, 'includedNames');
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'text/plain;version=0.0.4;charset=utf-8',
+            'application/openmetrics-text;version=1.0.0;charset=utf-8'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/management/prometheus`;
+        return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Actuator web endpoint \&#39;threaddump\&#39;
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
