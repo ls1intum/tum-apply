@@ -30,7 +30,6 @@ Each upload slot is labeled clearly and supports **PDF files up to 1 MB**.
 
 3. **Review Pending Files**
    Once selected, your file(s) will be shown in a table as _pending upload_, marked with a yellow cloud icon. as long as the upload is taking.
-
    - You can rename the file after uploading.
    - Click the **X** button to remove it from the pending list.
 
@@ -47,7 +46,6 @@ Each upload slot is labeled clearly and supports **PDF files up to 1 MB**.
 
 5. **Uploaded Document Actions**
    Once uploaded, you can:
-
    - **Rename** the document (press Enter or click away to save).
    - **Delete** it using the trash icon.
 
@@ -67,7 +65,6 @@ If an error occurs:
 - An alert message will appear.
 - The file will not be listed in the table.
 - Common reasons:
-
   - File is larger than the upload limit
   - Incorrect file format (only `.pdf` is accepted)
   - Network or server issues
