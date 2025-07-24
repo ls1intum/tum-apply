@@ -26,7 +26,8 @@ export class SortByDirective {
         if (predicate === this.jhiSortBy() && order !== undefined) {
           icon = order === 'asc' ? this.sortAscIcon : this.sortDescIcon;
         }
-        this.iconComponent()!.icon.set(icon.iconName);
+        this.iconComponent()!.icon = icon.iconName;
+        this.iconComponent()!.render();
       }
     });
   }

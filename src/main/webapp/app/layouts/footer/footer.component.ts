@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, inject } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { VERSION } from 'app/app.constants';
 
@@ -14,10 +14,7 @@ import TranslateDirective from '../../shared/language/translate.directive';
 })
 export default class FooterComponent {
   version: string;
-
-  private router = inject(Router);
-
-  constructor() {
+  constructor(private router: Router) {
     this.version = VERSION;
   }
 

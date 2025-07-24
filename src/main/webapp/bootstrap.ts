@@ -4,7 +4,9 @@ import { NgbDatepickerConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstra
 import { TranslateService } from '@ngx-translate/core';
 import { registerLocaleData } from '@angular/common';
 import locale from '@angular/common/locales/en';
-import dayjs from 'dayjs/esm';
+// eslint-disable-next-line no-restricted-imports
+import dayjs from 'dayjs';
+import { SessionStorageService } from 'ngx-webstorage';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 
@@ -28,12 +30,13 @@ bootstrapApplication(AppComponent, {
     const tooltipConfig = app.injector.get(NgbTooltipConfig);
     const translateService = app.injector.get(TranslateService);
     const languageHelper = app.injector.get(JhiLanguageHelper);
+    const sessionStorageService = app.injector.get(SessionStorageService);
 
     // Perform initialization logic
     registerLocaleData(locale);
     dpConfig.minDate = { year: dayjs().subtract(100, 'year').year(), month: 1, day: 1 };
     translateService.setDefaultLang('en');
-    const languageKey = sessionStorage.getItem('locale') ?? languageHelper.determinePreferredLanguage();
+    const languageKey = sessionStorageService.retrieve('locale') ?? languageHelper.determinePreferredLanguage();
     translateService.use(languageKey);
     tooltipConfig.container = 'body';
 
@@ -47,7 +50,7 @@ bootstrapApplication(AppComponent, {
                  document.body.classList.remove(className);
                }
              };
-
+    
         // Initialize and listen for changes
         updateDarkModeClass(darkModeMediaQuery.matches);
         darkModeMediaQuery.addEventListener('change', event => {

@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable, Injector, inject } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { KeycloakService } from '../auth/keycloak.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private injector = inject(Injector);
+  constructor(private injector: Injector) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const keycloakService = this.injector.get(KeycloakService);

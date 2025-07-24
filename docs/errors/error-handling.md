@@ -69,6 +69,7 @@ All handled exceptions in TUMApply return a structured JSON object like this:
 
 ```java
 User user = getOrThrow(userRepository.findById(id), () -> EntityNotFoundException.forId("User", id));
+
 ```
 
 ### Manual input validation
@@ -100,6 +101,7 @@ public enum ErrorCode {
   UPLOAD_FAILED,
   VALIDATION_ERROR,
 }
+
 ```
 
 These are included in the `ApiError` to help the client differentiate and react accordingly.

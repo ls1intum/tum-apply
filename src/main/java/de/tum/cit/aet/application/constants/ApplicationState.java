@@ -23,8 +23,6 @@ public enum ApplicationState {
     private final Set<UserRole> UserRoles;
 
     public static Set<ApplicationState> getPermittedStatesByUserRole(UserRole group) {
-        return Arrays.stream(values())
-            .filter(status -> status.getUserRoles().contains(group))
-            .collect(Collectors.toSet());
+        return Arrays.stream(values()).filter(status -> status.getUserRoles().contains(group)).collect(Collectors.toSet());
     }
 }

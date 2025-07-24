@@ -1,4 +1,4 @@
-<p-dialog [(visible)]="visible" [header]="'entity.filters.filter' | translate" [modal]="true" class="filter-dialog">
+<p-dialog [header]="'entity.filters.filter' | translate" [modal]="true" [(visible)]="visible" styleClass="filter-dialog">
   @for (filterField of draftFields(); track i; let i = $index) {
     <div class="filter-row">
       <div class="label-reset">
@@ -22,8 +22,8 @@
   }
   <ng-template #footer>
     <div class="actions">
-      <jhi-button (click)="resetAll()" [disabled]="!canResetAll()" [label]="'entity.filters.clearAll' | translate" variant="outlined" />
-      <jhi-button (click)="applyAndClose()" [label]="'entity.filters.apply' | translate" />
+      <jhi-button variant="outlined" [label]="'entity.filters.clearAll' | translate" (click)="resetAll()" [disabled]="!canResetAll()" />
+      <jhi-button [label]="'entity.filters.apply' | translate" (click)="applyAndClose()" />
     </div>
   </ng-template>
 </p-dialog>

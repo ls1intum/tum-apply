@@ -59,7 +59,7 @@ describe('Directive: SortByDirective', () => {
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
-    expect(sortByDirective.iconComponent()?.icon()).toEqual(faSort.iconName);
+    expect(sortByDirective.iconComponent()?.icon).toEqual(faSort.iconName);
   });
 
   it('should have an asc state for predicate column and true asc value', () => {
@@ -72,7 +72,7 @@ describe('Directive: SortByDirective', () => {
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
-    expect(sortByDirective.iconComponent()?.icon()).toEqual(faSortUp.iconName);
+    expect(sortByDirective.iconComponent()?.icon).toEqual(faSortUp.iconName);
   });
 
   it('should have a desc state for predicate column and desc value', () => {
@@ -85,7 +85,7 @@ describe('Directive: SortByDirective', () => {
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
-    expect(sortByDirective.iconComponent()?.icon()).toEqual(faSortDown.iconName);
+    expect(sortByDirective.iconComponent()?.icon).toEqual(faSortDown.iconName);
   });
 
   it('should have a neutral state for non-predicate column', () => {
@@ -98,7 +98,7 @@ describe('Directive: SortByDirective', () => {
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
-    expect(sortByDirective.iconComponent()?.icon()).toEqual(faSort.iconName);
+    expect(sortByDirective.iconComponent()?.icon).toEqual(faSort.iconName);
   });
 
   it('multiple clicks at same component, should call SortDirective sort', () => {

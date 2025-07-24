@@ -1,6 +1,6 @@
 <div class="relative">
   @if (numberOfFavorites()) {
-    <p-overlaybadge [value]="numberOfFavorites()" class="button-overlay">
+    <p-overlaybadge [value]="numberOfFavorites()" styleClass="button-overlay">
       <ng-container [ngTemplateOutlet]="button" />
     </p-overlaybadge>
   } @else {

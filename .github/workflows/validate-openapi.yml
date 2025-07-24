@@ -128,7 +128,7 @@ jobs:
         if: env.CHANGE_DETECTED == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'
 
       - name: Enable Corepack
         if: env.CHANGE_DETECTED == 'true'

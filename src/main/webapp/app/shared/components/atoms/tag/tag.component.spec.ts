@@ -35,8 +35,7 @@ describe('TagComponent', () => {
     fixture.detectChanges();
 
     const tagDebug = fixture.debugElement.query(By.css('p-tag'));
-    const tagDebugInstance = tagDebug.componentInstance;
-    expect(tagDebugInstance.severity).toBe('success');
+    expect(tagDebug.attributes['ng-reflect-severity']).toBe('success');
   });
 
   it('shows a left icon when icon is set and iconRight is false', () => {

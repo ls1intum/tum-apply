@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, effect, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
@@ -83,9 +83,7 @@ export class ApplicationCarouselComponent {
     return Math.floor(this.cardsVisible() / 2);
   });
 
-  private readonly bp = inject(BreakpointObserver);
-
-  constructor() {
+  constructor(private readonly bp: BreakpointObserver) {
     const breakpoint = toSignal<BreakpointState | null>(this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]), {
       initialValue: null,
     });
