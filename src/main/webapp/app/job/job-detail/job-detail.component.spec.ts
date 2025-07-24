@@ -12,6 +12,7 @@ import { JobDetailDTO, JobResourceService } from '../../generated';
 import { AccountService } from '../../core/auth/account.service';
 
 import { JobDetailComponent } from './job-detail.component';
+import { MessageService } from 'primeng/api';
 
 describe('JobDetailComponent', () => {
   let component: JobDetailComponent;
@@ -72,6 +73,7 @@ describe('JobDetailComponent', () => {
         { provide: JobResourceService, useValue: mockJobService },
         { provide: AccountService, useValue: mockAccountService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        MessageService,
       ],
     }).compileComponents();
 

@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
+import { MessageService } from 'primeng/api';
 
 class MockApplicationResourceService {
   getApplicationById = jest.fn().mockReturnValue(
@@ -79,6 +80,7 @@ describe('ApplicationCreationFormComponent create', () => {
             loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
           },
         },
+        MessageService,
       ],
     }).compileComponents();
 

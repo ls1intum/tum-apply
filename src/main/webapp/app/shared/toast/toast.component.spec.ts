@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ToastComponent } from './toast.component';
+import { MessageService } from 'primeng/api';
 
 describe('ToastComponent', () => {
   let component: ToastComponent;
@@ -9,6 +10,7 @@ describe('ToastComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ToastComponent],
+      providers: [MessageService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ToastComponent);

@@ -15,6 +15,7 @@ import {
 } from '@ngx-translate/core';
 
 import { UploadButtonComponent } from './upload-button.component';
+import { MessageService } from 'primeng/api';
 
 class MockApplicationResourceService {
   uploadDocuments(): Observable<DocumentInformationHolderDTO[]> {
@@ -45,6 +46,7 @@ describe('UploadButtonComponent', () => {
         },
         TranslateService,
         provideHttpClient(),
+        MessageService,
       ],
     }).compileComponents();
 

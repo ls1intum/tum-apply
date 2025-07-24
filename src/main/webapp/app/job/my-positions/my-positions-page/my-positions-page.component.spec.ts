@@ -10,6 +10,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { JobResourceService } from '../../../generated';
 
 import { MyPositionsPageComponent } from './my-positions-page.component';
+import { MessageService } from 'primeng/api';
 
 const mockJobs = [
   {
@@ -71,6 +72,7 @@ describe('MyPositionsPageComponent', () => {
         { provide: JobResourceService, useClass: MockJobResourceService },
         { provide: AccountService, useClass: MockAccountService },
         { provide: TranslateService, useClass: MockTranslateService },
+        MessageService,
       ],
     }).compileComponents();
 

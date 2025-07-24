@@ -14,6 +14,7 @@ import {
 import { AccountService } from 'app/core/auth/account.service';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
+import { MessageService } from 'primeng/api';
 
 class MockApplicationResourceService {
   deleteApplication = jest.fn().mockReturnValue(of(undefined));
@@ -128,6 +129,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
           useValue: { handle: jest.fn() },
         },
         { provide: TranslateService, useClass: MockTranslateService },
+        MessageService,
       ],
     }).compileComponents();
 

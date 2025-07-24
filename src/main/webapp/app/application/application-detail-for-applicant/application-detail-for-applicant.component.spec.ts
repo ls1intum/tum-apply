@@ -17,6 +17,7 @@ import { MissingTranslationHandler, TranslateModule, TranslateService } from '@n
 import { missingTranslationHandler } from 'app/config/translation.config';
 
 import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
+import { MessageService } from 'primeng/api';
 
 class MockApplicationResourceService {
   getApplicationForDetailPage = jest.fn().mockReturnValue(of({ id: '123', jobTitle: 'DNS Testing and Molecular Structure Matrices' }));
@@ -58,6 +59,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
         },
+        MessageService,
       ],
     }).compileComponents();
 
