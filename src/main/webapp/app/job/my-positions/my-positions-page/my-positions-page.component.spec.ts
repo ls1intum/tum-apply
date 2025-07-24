@@ -6,7 +6,6 @@ import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { MessageService } from 'primeng/api';
 
 import { JobResourceService } from '../../../generated';
 
@@ -72,7 +71,6 @@ describe('MyPositionsPageComponent', () => {
         { provide: JobResourceService, useClass: MockJobResourceService },
         { provide: AccountService, useClass: MockAccountService },
         { provide: TranslateService, useClass: MockTranslateService },
-        MessageService,
       ],
     }).compileComponents();
 

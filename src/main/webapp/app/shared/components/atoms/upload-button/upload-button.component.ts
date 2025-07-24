@@ -2,8 +2,6 @@ import { Component, computed, inject, input, model, output, signal, viewChild } 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import SharedModule from 'app/shared/shared.module';
-import { ToastComponent } from 'app/shared/toast/toast.component';
-import { ToastService } from 'app/service/toast-service';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -25,17 +23,7 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
-  imports: [
-    FontAwesomeModule,
-    FormsModule,
-    SharedModule,
-    FileUpload,
-    ButtonComponent,
-    TooltipModule,
-    TranslateModule,
-    TranslateDirective,
-    ToastComponent,
-  ],
+  imports: [FontAwesomeModule, FormsModule, SharedModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
   standalone: true,
@@ -56,7 +44,6 @@ export class UploadButtonComponent {
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
 
   private applicationService = inject(ApplicationResourceService);
-  private toastService = inject(ToastService);
 
   async onFileSelected(event: any): Promise<void> {
     const files: File[] = event.currentFiles;
@@ -68,7 +55,7 @@ export class UploadButtonComponent {
     }
     const totalSize = files.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > this.maxUploadSizeInMb * 1024 * 1024) {
-      this.toastService.showError({ summary: 'Error', detail: 'Files are too large' });
+      alert('Files are too large');
       this.selectedFiles.set(undefined);
     }
     this.fileUploadComponent()?.clear();
@@ -88,7 +75,7 @@ export class UploadButtonComponent {
       this.selectedFiles.set([]);
     } catch (err) {
       console.error('Upload failed', err);
-      this.toastService.showError({ summary: 'Error', detail: 'Upload failed' });
+      alert('Upload failed');
     } finally {
       this.isUploading.set(false);
     }
@@ -102,7 +89,7 @@ export class UploadButtonComponent {
       this.documentIds.set(updatedList);
     } catch (err) {
       console.error('Failed to delete document', err);
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to delete document' });
+      alert('Failed to delete document');
     }
   }
 
@@ -116,7 +103,7 @@ export class UploadButtonComponent {
       this.selectedFiles.set([]);
     } catch (err) {
       console.error('Failed to delete documents', err);
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to delete documents' });
+      alert('Failed to delete documents');
     }
   }
 
@@ -133,7 +120,7 @@ export class UploadButtonComponent {
       this.documentIds.set(updatedDocs);
     } catch (err) {
       console.error('Failed to rename document', err);
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to rename document' });
+      alert('Failed to rename document');
     }
   }
 
