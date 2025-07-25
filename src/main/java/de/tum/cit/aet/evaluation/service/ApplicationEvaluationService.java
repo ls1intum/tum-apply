@@ -7,8 +7,8 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.EmailService;
+import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
@@ -20,14 +20,15 @@ import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
