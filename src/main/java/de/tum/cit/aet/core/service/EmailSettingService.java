@@ -28,7 +28,7 @@ public class EmailSettingService {
      * Updates user email settings before checking to ensure all required settings exist.
      *
      * @param emailType the type of email to check notification permission for
-     * @param user the user to check notification settings for
+     * @param user      the user to check notification settings for
      * @return true if the user has enabled notifications for this email type, false otherwise
      * @throws IllegalStateException if the user doesn't have the required role to receive this email type
      */
@@ -62,7 +62,7 @@ public class EmailSettingService {
      * Validates that the user has permission to modify each email type before updating.
      *
      * @param settingDTOs a set of EmailSettingDTO objects containing the new email preferences
-     * @param user the user whose email settings should be updated
+     * @param user        the user whose email settings should be updated
      * @return a set of updated EmailSettingDTO objects after successful persistence
      * @throws IllegalStateException if the user attempts to modify an email type they're not allowed to receive
      */

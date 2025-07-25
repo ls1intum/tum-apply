@@ -16,7 +16,6 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -115,18 +114,18 @@ public class JobService {
 
     private void notifyApplicants(Set<Application> applications, String jobTitle, String researchGroupName, RejectReason reason) {
         for (Application application : applications) {
-            Applicant applicant = application.getApplicant();
+            User user = application.getApplicant().getUser();
             Email email = Email.builder()
-                .to(applicant.getUser())
+                .to(user)
                 .template("application_rejected")
                 .emailType(EmailType.APPLICATION_REJECTED)
-                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
+                .language(Language.fromCode(user.getSelectedLanguage()))
                 .content(
                     Map.of(
                         "applicantFirstName",
-                        applicant.getUser().getFirstName(),
+                        user.getFirstName(),
                         "applicantLastName",
-                        applicant.getUser().getLastName(),
+                        user.getLastName(),
                         "jobTitle",
                         jobTitle,
                         "researchGroupName",

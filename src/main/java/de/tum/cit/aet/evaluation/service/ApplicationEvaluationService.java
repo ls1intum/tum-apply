@@ -3,6 +3,7 @@ package de.tum.cit.aet.evaluation.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.EmailType;
+import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -85,8 +86,8 @@ public class ApplicationEvaluationService {
             Email email = Email.builder()
                 .to(applicant.getUser())
                 .bcc(supervisingProfessor)
-                .emailType(EmailType.APPLICATION_ACCEPTED)
                 .htmlBody(acceptDTO.message())
+                .emailType(EmailType.APPLICATION_ACCEPTED)
                 .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 // template and content are only set for the subject
                 .template("application_accepted")

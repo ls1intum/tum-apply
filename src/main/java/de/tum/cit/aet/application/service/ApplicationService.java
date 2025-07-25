@@ -253,8 +253,8 @@ public class ApplicationService {
 
         Email email = Email.builder()
             .to(applicant.getUser())
-            .template("application_withdrawn")
             .emailType(EmailType.APPLICATION_WITHDRAWN)
+            .template("application_withdrawn")
             .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
             .content(
                 Map.of(
