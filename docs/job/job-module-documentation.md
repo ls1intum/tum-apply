@@ -192,17 +192,14 @@ Comprehensive multi-step form allowing professors to create detailed doctorate p
 ##### Required Fields
 
 - **Job Title**:
-
   - Input type: Text field
   - Validation: Required field (indicated by red asterisk)
 
 - **Field of Studies**:
-
   - Input type: Dropdown selection
   - Validation: Required field
 
 - **Location**:
-
   - Input type: Dropdown selection
   - Validation: Required field
 
@@ -213,7 +210,6 @@ Comprehensive multi-step form allowing professors to create detailed doctorate p
 ##### Research Details
 
 - **Research Area**:
-
   - Input type: Text field
   - Validation: Optional field with informational tooltip
 
@@ -224,11 +220,9 @@ Comprehensive multi-step form allowing professors to create detailed doctorate p
 ##### Timeline and Workload
 
 - **Start Date**:
-
   - Input type: Date picker
 
 - **Workload**:
-
   - Input type: Dropdown selection
   - Values: in percentage (%)
 

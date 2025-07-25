@@ -89,7 +89,8 @@
       "location": "Standort",
       "professor": "Betreuer/in",
       "workload": "Arbeitsaufwand"
-    }
+    },
+    "hoursPerWeek": "{{workload}} h/Woche"
   },
   "myPositionsPage": {
     "header": {

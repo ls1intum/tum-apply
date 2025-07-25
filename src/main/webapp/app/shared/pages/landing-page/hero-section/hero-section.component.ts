@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Carousel } from 'primeng/carousel';
 import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
@@ -20,7 +20,7 @@ export class HeroSectionComponent {
     { image: 'landing-page-hero-section-3', backgroundClass: 'hero-background-landing-page-hero-section-3' },
   ];
 
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   navigateToJobOverview(): void {
     this.router.navigate(['/job-overview']);

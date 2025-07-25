@@ -1,15 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { Location } from '@angular/common';
 
 import SharedModule from '../../shared/shared.module';
-import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
+import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { JobDTO, JobFormDTO } from '../../generated';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
@@ -41,7 +40,7 @@ type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
     SharedModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    DropdownComponent,
+    SelectComponent,
     DatePickerComponent,
     ButtonComponent,
     ButtonGroupComponent,
@@ -56,13 +55,14 @@ export class JobCreationFormComponent {
   currentStep = 1;
   isLoading = signal<boolean>(true);
 
+  fb = inject(FormBuilder);
   // Reactive form groups for each step of the wizard
   basicInfoForm: FormGroup = this.fb.group({});
   positionDetailsForm: FormGroup = this.fb.group({});
   additionalInformationForm: FormGroup = this.fb.group({});
 
   /**
-   * Dropdown options used in the form
+   * Select options used in the form
    */
   locations = [
     { name: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
@@ -108,11 +108,11 @@ export class JobCreationFormComponent {
     { name: 'Urban Planning', value: 'Urban Planning' },
   ];
   workloadOptions = [
-    { name: '100% (Full-time)', value: 40 },
-    { name: '60%', value: 24 },
-    { name: '40%', value: 16 },
-    { name: '20%', value: 8 },
-    { name: '10%', value: 4 },
+    { name: '40 hours/week (Full-time)', value: 40 },
+    { name: '24 hours/week', value: 24 },
+    { name: '16 hours/week', value: 16 },
+    { name: '8 hours/week', value: 8 },
+    { name: '4 hours/week', value: 4 },
   ];
   contractDurations = [
     { name: '1 year', value: 1 },
@@ -137,13 +137,29 @@ export class JobCreationFormComponent {
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private location = inject(Location);
 
-  constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-  ) {
+  constructor() {
+    const route = this.route;
+
     this.init(route);
+  }
+
+  /**
+   * Calculates the current length of the input fields with a character limit.
+   * Used for character count feedback.
+   */
+  get descriptionLength(): number {
+    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
+  }
+
+  get tasksLength(): number {
+    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
+  }
+
+  get requirementsLength(): number {
+    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
   }
 
   // Button Group Data consisting of 'Next' and 'Save Draft' Buttons
@@ -170,6 +186,7 @@ export class JobCreationFormComponent {
       ],
     };
   }
+
   // Button Group Data consisting of 'Publish Job' and 'Save Draft' Buttons
   publishAndSaveButtons(): ButtonGroupData {
     return {
@@ -196,35 +213,19 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Calculates the current length of the input fields with a character limit.
-   * Used for character count feedback.
-   */
-  get descriptionLength(): number {
-    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
-  }
-
-  get tasksLength(): number {
-    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
-  }
-
-  get requirementsLength(): number {
-    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
-  }
-
-  /**
    * Initializes all three form groups used in the form wizard.
    * Sets up validators, default values, and disabled controls.
    */
   initForms(job?: JobDTO): void {
     /**
-     * Updates the specified form control with a selected dropdown option value.
-     * The value can be a string, number, or enum used in dropdown selections.
+     * Updates the specified form control with a selected option value.
+     * The value can be a string, number, or enum used in selections.
      */
     const findOption = <T>(options: T[], value: any, valueField: keyof T): T | null => {
       return job ? (options.find(opt => opt[valueField] === value) ?? null) : null;
     };
 
-    // Initialize dropdown options
+    // Initialize select options
     const locationOption = findOption(this.locations, job?.location, 'value');
     const fieldOfStudiesOption = findOption(this.fieldsOfStudies, job?.fieldOfStudies, 'value');
     const workloadOption = findOption(this.workloadOptions, job?.workload, 'value');
