@@ -1,12 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { Location } from '@angular/common';
 
 import SharedModule from '../../shared/shared.module';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
@@ -58,6 +57,7 @@ export class JobCreationFormComponent {
   currentStep = 1;
   isLoading = signal<boolean>(true);
 
+  fb = inject(FormBuilder);
   // Reactive form groups for each step of the wizard
   basicInfoForm: FormGroup = this.fb.group({});
   positionDetailsForm: FormGroup = this.fb.group({});
@@ -139,13 +139,29 @@ export class JobCreationFormComponent {
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private location = inject(Location);
 
-  constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-  ) {
+  constructor() {
+    const route = this.route;
+
     this.init(route);
+  }
+
+  /**
+   * Calculates the current length of the input fields with a character limit.
+   * Used for character count feedback.
+   */
+  get descriptionLength(): number {
+    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
+  }
+
+  get tasksLength(): number {
+    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
+  }
+
+  get requirementsLength(): number {
+    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
   }
 
   // Button Group Data consisting of 'Next' and 'Save Draft' Buttons
@@ -172,6 +188,7 @@ export class JobCreationFormComponent {
       ],
     };
   }
+
   // Button Group Data consisting of 'Publish Job' and 'Save Draft' Buttons
   publishAndSaveButtons(): ButtonGroupData {
     return {
