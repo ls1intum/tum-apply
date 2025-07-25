@@ -12,9 +12,11 @@ import { JobCardComponent } from './job-card.component';
 @Component({ template: '' })
 class DummyComponent {}
 
-class FakeLoader implements TranslateLoader {
+class MockTranslationLoader implements TranslateLoader {
   getTranslation(): Observable<{}> {
-    return of({}); // return an empty object or mock translations
+    return of({
+      'jobOverviewPage.hoursPerWeek': '{{workload}} h/week',
+    });
   }
 }
 
@@ -29,7 +31,7 @@ describe('JobCardComponent', () => {
       imports: [
         JobCardComponent,
         TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: FakeLoader },
+          loader: { provide: TranslateLoader, useClass: MockTranslationLoader },
           defaultLanguage: 'en',
           useDefaultLang: true,
         }),
@@ -59,7 +61,7 @@ describe('JobCardComponent', () => {
     fixture.componentRef.setInput('fieldOfStudies', 'Computer Science');
     fixture.componentRef.setInput('location', 'Munich');
     fixture.componentRef.setInput('professor', 'Prof. John Doe');
-    fixture.componentRef.setInput('workload', '20%');
+    fixture.componentRef.setInput('workload', '20');
     fixture.componentRef.setInput('startDate', '2025-10-01');
     fixture.componentRef.setInput('relativeTime', 'Today');
 
@@ -80,8 +82,8 @@ describe('JobCardComponent', () => {
     expect(compiled.textContent).toContain('Computer Science');
     expect(compiled.textContent).toContain('Munich');
     expect(compiled.textContent).toContain('Prof. John Doe');
-    expect(compiled.textContent).toContain('20%');
-    expect(compiled.textContent).toContain('Start: 01.10.2025');
+    expect(compiled.textContent).toContain('20 h/week');
+    expect(compiled.textContent).toContain('Start:  01.10.2025');
     expect(compiled.textContent).toContain('Today');
   });
 

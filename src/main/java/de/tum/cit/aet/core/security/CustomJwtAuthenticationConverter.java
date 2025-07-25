@@ -30,7 +30,11 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
         // Create user if missing and fetch database entity
         User user = authenticationService.provisionUserIfMissing(jwt);
 
-        List<String> roles = user.getResearchGroupRoles().stream().map(r -> r.getRole().name()).toList();
+        List<String> roles = user
+            .getResearchGroupRoles()
+            .stream()
+            .map(r -> r.getRole().name())
+            .toList();
 
         Collection<GrantedAuthority> authorities = roles
             .stream()

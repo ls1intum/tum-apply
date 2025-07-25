@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Router } from '@angular/router';
 
@@ -15,7 +15,7 @@ export class SidebarButtonComponent {
   isActive = input<boolean>(false);
   link = input<string>('/');
 
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   navigate(): void {
     this.router.navigate([this.link()]).catch((err: unknown) => {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
@@ -18,6 +18,9 @@ type SidebarCategory = { title: string; buttons: SidebarButton[] };
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
+  private accountService = inject(AccountService);
+  private router = inject(Router);
+
   /**
    * Custom groups for sidebar links that have multiple paths.
    * This allows for more flexible matching of active links.
@@ -27,11 +30,6 @@ export class SidebarComponent {
     '/job-overview': ['/job/detail', '/application/create'],
     '/my-positions': ['/job/detail', '/job/edit'],
   };
-
-  constructor(
-    private accountService: AccountService,
-    private router: Router,
-  ) {}
 
   /**
    * Returns the categories for the sidebar based on the user's roles.

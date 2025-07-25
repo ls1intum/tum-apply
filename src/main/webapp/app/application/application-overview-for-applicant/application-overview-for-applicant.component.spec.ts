@@ -12,6 +12,7 @@ import {
   TranslateStore,
 } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
+import { MessageService } from 'primeng/api';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
@@ -128,6 +129,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
           useValue: { handle: jest.fn() },
         },
         { provide: TranslateService, useClass: MockTranslateService },
+        MessageService,
       ],
     }).compileComponents();
 

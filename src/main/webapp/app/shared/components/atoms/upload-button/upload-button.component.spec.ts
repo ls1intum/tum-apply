@@ -13,6 +13,7 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 
 import { UploadButtonComponent } from './upload-button.component';
 
@@ -45,6 +46,7 @@ describe('UploadButtonComponent', () => {
         },
         TranslateService,
         provideHttpClient(),
+        MessageService,
       ],
     }).compileComponents();
 

@@ -58,11 +58,11 @@ describe('HeaderComponent', () => {
   });
 
   /* it('should toggle color scheme when the first jhi-button is clicked', () => {
-      const toggleColorSchemeSpy = jest.spyOn(component, 'toggleColorScheme');
-      const colorSchemeButton = fixture.nativeElement.querySelector('jhi-button');
-      colorSchemeButton.click();
-      expect(toggleColorSchemeSpy).toHaveBeenCalledTimes(1);
-    });*/
+        const toggleColorSchemeSpy = jest.spyOn(component, 'toggleColorScheme');
+        const colorSchemeButton = fixture.nativeElement.querySelector('jhi-button');
+        colorSchemeButton.click();
+        expect(toggleColorSchemeSpy).toHaveBeenCalledTimes(1);
+      });*/
 
   it('should display user name if user is logged in', () => {
     component.user.set({
@@ -85,7 +85,7 @@ describe('HeaderComponent', () => {
     });
     fixture.detectChanges();
     const logoutSpy = jest.spyOn(component, 'logout');
-    const logoutButton = fixture.nativeElement.querySelector('jhi-button[ng-reflect-label="header.logout"]');
+    const logoutButton = fixture.nativeElement.querySelector('jhi-button');
     logoutButton.click();
     expect(logoutSpy).toHaveBeenCalledTimes(1);
   });
