@@ -19,12 +19,13 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class JobService {
@@ -116,16 +117,16 @@ public class JobService {
         for (Application application : applications) {
             Applicant applicant = application.getApplicant();
             Email email = Email.builder()
-                .to(applicant)
+                .to(applicant.getUser())
                 .template("application_rejected")
                 .emailType(EmailType.APPLICATION_REJECTED)
-                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 .content(
                     Map.of(
                         "applicantFirstName",
-                        applicant.getFirstName(),
+                        applicant.getUser().getFirstName(),
                         "applicantLastName",
-                        applicant.getLastName(),
+                        applicant.getUser().getLastName(),
                         "jobTitle",
                         jobTitle,
                         "researchGroupName",

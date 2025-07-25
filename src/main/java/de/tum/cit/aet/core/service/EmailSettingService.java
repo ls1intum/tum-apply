@@ -7,18 +7,21 @@ import de.tum.cit.aet.core.repository.EmailSettingRepository;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
-import java.util.*;
-import java.util.stream.Collectors;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class EmailSettingService {
 
     private final EmailSettingRepository emailSettingRepository;
+    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
     /**
      * Checks if a user can be notified for a specific email type based on their settings.
@@ -126,7 +129,8 @@ public class EmailSettingService {
      * @return a set of EmailType values that the user is eligible to receive based on their roles
      */
     private Set<EmailType> getAvailableEmailTypesForUser(@NonNull User user) {
-        Set<UserRole> userRoles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).collect(Collectors.toSet());
+        Set<UserRole> userRoles = userResearchGroupRoleRepository
+            .findAllByUser(user).stream().map(UserResearchGroupRole::getRole).collect(Collectors.toSet());
 
         return Arrays.stream(EmailType.values())
             .filter(emailType -> !Collections.disjoint(userRoles, emailType.getRoles()))

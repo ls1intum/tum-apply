@@ -24,18 +24,14 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -258,6 +254,7 @@ public class ApplicationService {
         Email email = Email.builder()
             .to(applicant.getUser())
             .template("application_withdrawn")
+            .emailType(EmailType.APPLICATION_WITHDRAWN)
             .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
             .content(
                 Map.of(
