@@ -7,23 +7,17 @@ import de.tum.cit.aet.core.dto.EmailTemplateDTO;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.repository.EmailTemplateRepository;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
+import de.tum.cit.aet.core.util.TemplateUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.*;
-import org.jsoup.select.NodeVisitor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -134,7 +128,6 @@ public class TemplateService {
         dataModel.put("url", url);
     }
 
-    @Transactional
     public List<EmailTemplateDTO> getTemplates(ResearchGroup researchGroup) {
         List<EmailTemplate> emailTemplates = emailTemplateRepository.findAllByResearchGroup(researchGroup);
 
@@ -143,13 +136,12 @@ public class TemplateService {
         }
 
         for (EmailTemplate emailTemplate : emailTemplates) {
-            emailTemplate.setBodyHtml(convertFreemarkerToQuillMentions(emailTemplate.getBodyHtml()));
+            emailTemplate.setBodyHtml(TemplateUtil.convertFreemarkerToQuillMentions(emailTemplate.getBodyHtml()));
         }
 
         return emailTemplates.stream().map(EmailTemplateDTO::from).collect(Collectors.toList());
     }
 
-    @Transactional
     protected List<EmailTemplate> createDefaultTemplates(ResearchGroup researchGroup) {
         Set<EmailTemplate> emailTemplatesToSave = new HashSet<>();
 
@@ -159,7 +151,7 @@ public class TemplateService {
             for (Language language : Language.values()) {
                 if (emailType.equals(EmailType.APPLICATION_REJECTED)) {
                     for (RejectReason reason : RejectReason.values()) {
-                        EmailTemplate emailTemplate = createEmailTemplate(
+                        EmailTemplate emailTemplate = createDefaultTemplate(
                             researchGroup,
                             templateName,
                             language,
@@ -169,7 +161,7 @@ public class TemplateService {
                         emailTemplatesToSave.add(emailTemplate);
                     }
                 } else {
-                    EmailTemplate emailTemplate = createEmailTemplate(researchGroup, templateName, language, emailType, null);
+                    EmailTemplate emailTemplate = createDefaultTemplate(researchGroup, templateName, language, emailType, null);
                     emailTemplatesToSave.add(emailTemplate);
                 }
             }
@@ -177,7 +169,7 @@ public class TemplateService {
         return emailTemplateRepository.saveAll(emailTemplatesToSave);
     }
 
-    private EmailTemplate createEmailTemplate(
+    private EmailTemplate createDefaultTemplate(
         ResearchGroup researchGroup,
         String templateName,
         Language language,
@@ -215,82 +207,5 @@ public class TemplateService {
         } catch (IOException e) {
             throw new TemplateProcessingException("Failed to read template file: " + templatePath, e);
         }
-    }
-
-    private static final Pattern FREEMARKER_VAR_PATTERN = Pattern.compile("\\$\\{\\s*([a-zA-Z0-9_]+)!?}");
-
-    public String convertFreemarkerToQuillMentions(String html) {
-        Document doc = Jsoup.parse(html);
-        doc.outputSettings().prettyPrint(false); // Keep original formatting
-
-        doc
-            .body()
-            .traverse(
-                new NodeVisitor() {
-                    public void head(@NotNull Node node, int depth) {
-                        if (node instanceof TextNode textNode) {
-                            Element parent = (Element) textNode.parent();
-
-                            // Skip if inside existing <span class="mention"> or any <a> attributes
-                            if (parent != null && (parent.hasClass("mention") || parent.tagName().equals("a"))) return;
-
-                            // Replace freemarker vars in visible text
-                            String text = textNode.getWholeText();
-                            Matcher matcher = FREEMARKER_VAR_PATTERN.matcher(text);
-                            StringBuilder sb = new StringBuilder();
-
-                            while (matcher.find()) {
-                                String variable = matcher.group(1);
-                                String displayValue = getDisplayName(variable);
-
-                                String mentionSpan = String.format(
-                                    "<span class=\"mention\" data-id=\"%s\" data-value=\"%s\" contenteditable=\"false\">%s</span>",
-                                    variable,
-                                    displayValue,
-                                    displayValue
-                                );
-
-                                matcher.appendReplacement(sb, Matcher.quoteReplacement(mentionSpan));
-                            }
-
-                            matcher.appendTail(sb);
-
-                            // Replace original text node with spanified version
-                            if (!sb.toString().equals(text)) {
-                                List<Node> nodes = Jsoup.parse(sb.toString()).body().childNodes();
-                                for (Node n : nodes) {
-                                    textNode.before(n);
-                                }
-                                textNode.remove();
-                            }
-                        }
-
-                        // Skip freemarker vars in attribute values
-                        if (node instanceof Element element) {
-                            for (Attribute attr : element.attributes()) {
-                                // Skip replacements inside attributes
-                                if (FREEMARKER_VAR_PATTERN.matcher(attr.getValue()).find()) {
-                                    // Optionally log or warn
-                                    // System.out.println("Skipped var in attribute: " + attr.getValue());
-                                }
-                            }
-                        }
-                    }
-
-                    public void tail(Node node, int depth) {}
-                }
-            );
-
-        return doc.body().html();
-    }
-
-    private String getDisplayName(String key) {
-        return switch (key) {
-            case "applicantFirstName" -> "First Name";
-            case "applicantLastName" -> "Last Name";
-            case "jobTitle" -> "Job Title";
-            case "researchGroupName" -> "Group Name";
-            default -> key;
-        };
     }
 }
