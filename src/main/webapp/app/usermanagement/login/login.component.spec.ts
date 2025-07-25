@@ -77,9 +77,12 @@ describe('LoginComponent', () => {
   });
 
   it('should pass login mode to auth-card component', () => {
-    const authCardComponent = fixture.debugElement.query(By.css('jhi-auth-card'));
-    expect(authCardComponent).toBeTruthy();
-    expect(authCardComponent.attributes['ng-reflect-mode']).toBe('login');
+    fixture.detectChanges();
+    const authCardDebugEl = fixture.debugElement.query(By.css('jhi-auth-card'));
+    expect(authCardDebugEl).toBeTruthy();
+
+    const authCardInstance = authCardDebugEl.componentInstance;
+    expect(authCardInstance.mode()).toBe('login');
   });
 
   it('should render the component within the login-page-wrapper', () => {
