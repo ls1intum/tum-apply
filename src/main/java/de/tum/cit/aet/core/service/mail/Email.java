@@ -3,14 +3,13 @@ package de.tum.cit.aet.core.service.mail;
 import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.usermanagement.domain.User;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Singular;
-
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @Getter
 @Builder
