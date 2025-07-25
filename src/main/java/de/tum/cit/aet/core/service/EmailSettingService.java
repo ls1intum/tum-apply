@@ -8,13 +8,12 @@ import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -130,7 +129,10 @@ public class EmailSettingService {
      */
     private Set<EmailType> getAvailableEmailTypesForUser(@NonNull User user) {
         Set<UserRole> userRoles = userResearchGroupRoleRepository
-            .findAllByUser(user).stream().map(UserResearchGroupRole::getRole).collect(Collectors.toSet());
+            .findAllByUser(user)
+            .stream()
+            .map(UserResearchGroupRole::getRole)
+            .collect(Collectors.toSet());
 
         return Arrays.stream(EmailType.values())
             .filter(emailType -> !Collections.disjoint(userRoles, emailType.getRoles()))

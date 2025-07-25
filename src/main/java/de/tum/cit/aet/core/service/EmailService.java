@@ -3,8 +3,8 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
-import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;

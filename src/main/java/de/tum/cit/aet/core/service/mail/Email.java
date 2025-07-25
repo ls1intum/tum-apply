@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.notification;
+package de.tum.cit.aet.core.service.mail;
 
 import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
