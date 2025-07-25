@@ -120,5 +120,4 @@ export class EditorComponent extends BaseInputDirective<string> {
   }
 }
 
-// TODO: add rows
 // TODO: implement placeholder text as HTML
