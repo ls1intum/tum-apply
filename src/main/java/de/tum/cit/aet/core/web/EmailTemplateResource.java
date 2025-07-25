@@ -6,9 +6,7 @@ import de.tum.cit.aet.core.service.TemplateService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/email-templates")
@@ -21,5 +19,10 @@ public class EmailTemplateResource {
     @GetMapping
     public ResponseEntity<List<EmailTemplateDTO>> getAll() {
         return ResponseEntity.ok(templateService.getTemplates(currentUserService.getResearchGroupIfProfessor()));
+    }
+
+    @PutMapping
+    public ResponseEntity<List<EmailTemplateDTO>> update(@RequestBody List<EmailTemplateDTO> emailTemplateDTOs) {
+        return ResponseEntity.ok(templateService.updateTemplates(emailTemplateDTOs));
     }
 }

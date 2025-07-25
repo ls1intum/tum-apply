@@ -1,0 +1,11 @@
+meta {
+  name: Update Templates
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/email-templates
+  body: json
+  auth: inherit
+}

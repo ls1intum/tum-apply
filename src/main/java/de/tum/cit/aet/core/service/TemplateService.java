@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.EmailTemplate;
 import de.tum.cit.aet.core.dto.EmailTemplateDTO;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.repository.EmailTemplateRepository;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
@@ -142,6 +143,22 @@ public class TemplateService {
         return emailTemplates.stream().map(EmailTemplateDTO::from).collect(Collectors.toList());
     }
 
+    public List<EmailTemplateDTO> updateTemplates(List<EmailTemplateDTO> emailTemplateDTOs) {
+        for (EmailTemplateDTO emailTemplateDTO : emailTemplateDTOs) {
+            EmailTemplate emailTemplate = emailTemplateRepository
+                .findById(emailTemplateDTO.emailTemplateId())
+                .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", emailTemplateDTO.emailTemplateId()));
+
+            if (!emailTemplate.getEmailType().isTemplateEditable()) {
+                throw new IllegalArgumentException("EmailTemplate " + emailTemplateDTO.emailTemplateId() + " is not editable");
+            }
+            emailTemplate.setTemplateName(emailTemplateDTO.templateName());
+            emailTemplate.setSubject(emailTemplateDTO.subject());
+            emailTemplate.setBodyHtml(TemplateUtil.convertQuillMentionsToFreemarker(emailTemplateDTO.htmlBody()));
+        }
+        return emailTemplateDTOs;
+    }
+
     protected List<EmailTemplate> createDefaultTemplates(ResearchGroup researchGroup) {
         Set<EmailTemplate> emailTemplatesToSave = new HashSet<>();
 
@@ -183,7 +200,7 @@ public class TemplateService {
         emailTemplate.setEmailType(emailType);
         emailTemplate.setEmailCase(emailCase);
         emailTemplate.setDefault(true);
-        emailTemplate.setLastModifiedBy(null); // Default templates have no modifier
+        emailTemplate.setCreatedBy(null);
 
         // Read subject from template file
         String subject = readTemplateContent(language.getCode() + "/" + templateName + "_subject.html");

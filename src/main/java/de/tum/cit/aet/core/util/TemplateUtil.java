@@ -42,7 +42,6 @@ public class TemplateUtil {
 
     /**
      * Converts Quill mention span HTML back to Freemarker-style variables like ${APPLICANT_FIRST_NAME!},
-     * using Jsoup for safe and robust HTML parsing.
      */
     public static String convertQuillMentionsToFreemarker(String html) {
         Document document = Jsoup.parseBodyFragment(html);
