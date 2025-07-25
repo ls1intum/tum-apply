@@ -8,11 +8,6 @@ import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -72,7 +67,7 @@ public class EmailService {
      * @return empty CompletableFuture
      */
     @Async
-    @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
+    @Retryable(retryFor = {MailingException.class}, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
     public CompletableFuture<Void> send(Email email) {
         try {
             email.validate();
@@ -141,13 +136,13 @@ public class EmailService {
     private void simulateEmail(Email email, String subject, String body) {
         log.info(
             """
-            >>>> Sending Simulated Email <<<<
-              To: {}
-              CC: {}
-              BCC: {}
-              Subject: {}
-              Parsed Body: {}
-            """,
+                >>>> Sending Simulated Email <<<<
+                  To: {}
+                  CC: {}
+                  BCC: {}
+                  Subject: {}
+                  Parsed Body: {}
+                """,
             getRecipientsToNotify(email.getTo(), email),
             getRecipientsToNotify(email.getCc(), email),
             getRecipientsToNotify(email.getBcc(), email),
