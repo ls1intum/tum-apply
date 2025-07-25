@@ -10,7 +10,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "email_templates")
+@Table(
+    name = "email_templates",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_email_template_name_lang_group_case",
+        columnNames = { "template_name", "language", "research_group_id", "email_case" }
+    )
+)
 @Getter
 @Setter
 public class EmailTemplate extends AbstractAuditingEntity {
@@ -45,9 +51,9 @@ public class EmailTemplate extends AbstractAuditingEntity {
     private String bodyHtml;
 
     @Column(name = "is_default")
-    private boolean isDefault; // relevant for accepted only
+    private boolean isDefault; //default template -> can not be deleted
 
     @ManyToOne
-    @JoinColumn(name = "last_modified_by")
-    private User lastModifiedBy;
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 }

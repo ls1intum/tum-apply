@@ -32,7 +32,7 @@
 
       <column name="is_default" type="BOOLEAN" defaultValueBoolean="false"/>
 
-      <column name="last_modified_by" type="CHAR(36)"/>
+      <column name="created_by" type="CHAR(36)"/>
 
       <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
@@ -50,10 +50,10 @@
                              constraintName="fk_email_templates_research_group"/>
 
     <addForeignKeyConstraint baseTableName="email_templates"
-                             baseColumnNames="last_modified_by"
+                             baseColumnNames="created_by"
                              referencedTableName="users"
                              referencedColumnNames="user_id"
-                             constraintName="fk_email_templates_last_modified_by"/>
+                             constraintName="fk_email_templates_created_by"/>
 
     <createIndex indexName="idx_email_templates_research_group" tableName="email_templates">
       <column name="research_group_id"/>
@@ -70,5 +70,12 @@
         DEFAULT CURRENT_TIMESTAMP(3)
         ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
+
+    <sql>
+      CREATE UNIQUE INDEX uk_email_template_name_lang_group_case
+        ON email_templates(template_name, language, research_group_id, email_case(191));
+    </sql>
+
   </changeSet>
+
 </databaseChangeLog>
