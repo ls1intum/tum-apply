@@ -87,7 +87,7 @@
     "bootstrap": "5.3.7",
     "dayjs": "1.11.13",
     "keycloak-js": "26.2.0",
-    "ngx-quill": "^27.1.2",
+    "ngx-quill": "28.0.1",
     "primeicons": "7.0.0",
     "primeng": "20.0.0",
     "quill": "^2.0.3",
