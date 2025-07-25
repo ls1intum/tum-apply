@@ -24,8 +24,6 @@
         <constraints nullable="false"/>
       </column>
 
-      <column name="email_case" type="TEXT"/>
-
       <column name="subject" type="TEXT"/>
 
       <column name="body_html" type="LONGTEXT"/>
@@ -60,11 +58,6 @@
     </createIndex>
 
     <sql>
-      CREATE INDEX idx_email_templates_type_group_lang_case
-        ON email_templates(email_type, research_group_id, language, email_case(191));
-    </sql>
-
-    <sql>
       ALTER TABLE email_templates
         MODIFY last_modified_at DATETIME(3) NOT NULL
         DEFAULT CURRENT_TIMESTAMP(3)
@@ -72,8 +65,8 @@
     </sql>
 
     <sql>
-      CREATE UNIQUE INDEX uk_email_template_name_lang_group_case
-        ON email_templates(template_name, language, research_group_id, email_case(191));
+      CREATE UNIQUE INDEX uk_email_type_template_name_lang_group
+        ON email_templates(email_type, template_name, language, research_group_id);
     </sql>
 
   </changeSet>

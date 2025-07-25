@@ -14,7 +14,7 @@ import lombok.Setter;
     name = "email_templates",
     uniqueConstraints = @UniqueConstraint(
         name = "uk_email_template_name_lang_group_case",
-        columnNames = { "template_name", "language", "research_group_id", "email_case" }
+        columnNames = { "email_type", "template_name", "language", "research_group_id" }
     )
 )
 @Getter
@@ -40,9 +40,6 @@ public class EmailTemplate extends AbstractAuditingEntity {
     @Column(name = "email_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private EmailType emailType;
-
-    @Column(name = "email_case") // only for rejection
-    private String emailCase;
 
     @Column(name = "subject", nullable = false)
     private String subject;
