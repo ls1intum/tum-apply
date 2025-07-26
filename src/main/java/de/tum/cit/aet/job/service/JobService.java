@@ -117,8 +117,8 @@ public class JobService {
             Applicant applicant = application.getApplicant();
             Email email = Email.builder()
                 .to(applicant)
-                .template("application_rejected")
                 .emailType(EmailType.APPLICATION_REJECTED)
+                .templateName(reason.getValue())
                 .language(Language.fromCode(applicant.getSelectedLanguage()))
                 .content(
                     Map.of(

@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.EmailTemplate;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.notification.Email;
@@ -27,11 +28,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmailService {
 
-    private final TemplateService templateService;
+    private final EmailTemplateRenderService emailTemplateRenderService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final DocumentService documentService;
     private final DocumentRepository documentRepository;
     private final EmailSettingService emailSettingService;
+    private final EmailTemplateService emailTemplateService;
 
     @Value("${aet.email.enabled:false}")
     private boolean emailEnabled;
@@ -40,17 +42,19 @@ public class EmailService {
     private String from;
 
     public EmailService(
-        TemplateService templateService,
+        EmailTemplateRenderService emailTemplateRenderService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
         DocumentService documentService,
         DocumentRepository documentRepository,
-        EmailSettingService emailSettingService
+        EmailSettingService emailSettingService,
+        EmailTemplateService emailTemplateService
     ) {
-        this.templateService = templateService;
+        this.emailTemplateRenderService = emailTemplateRenderService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
         this.documentRepository = documentRepository;
         this.emailSettingService = emailSettingService;
+        this.emailTemplateService = emailTemplateService;
     }
 
     /**
@@ -61,8 +65,10 @@ public class EmailService {
     public void send(Email email) {
         email.validate();
 
-        String subject = renderSubject(email);
-        String body = renderBody(email);
+        EmailTemplate emailTemplate = getEmailTemplate(email);
+
+        String subject = renderSubject(emailTemplate);
+        String body = renderBody(email, emailTemplate);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
@@ -75,24 +81,25 @@ public class EmailService {
     /**
      * Renders the subject of the email using a localized template.
      *
-     * @param email the email to process
+     * @param emailTemplate containing the subject
      * @return rendered subject line
      */
-    private String renderSubject(Email email) {
-        return templateService.renderSubject(email.getTemplate(), email.getLanguage(), email.getContent());
+    private String renderSubject(EmailTemplate emailTemplate) {
+        return emailTemplateRenderService.renderSubject(emailTemplate);
     }
 
     /**
      * Renders the HTML body of the email based on raw content or template.
      *
      * @param email the email to process
+     * @param emailTemplate emailTemplate containing the body
      * @return rendered HTML body
      */
-    private String renderBody(Email email) {
+    private String renderBody(Email email, EmailTemplate emailTemplate) {
         if (StringUtils.isNotEmpty(email.getHtmlBody())) {
-            return templateService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
+            return emailTemplateRenderService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
         }
-        return templateService.renderTemplate(email.getTemplate(), email.getLanguage(), email.getContent());
+        return emailTemplateRenderService.renderTemplate(emailTemplate, email.getContent());
     }
 
     /**
@@ -157,6 +164,15 @@ public class EmailService {
         } catch (MessagingException | IOException e) {
             throw new MailingException(String.format("Failed to send email %s to %s", subject, email.getTo()));
         }
+    }
+
+    private EmailTemplate getEmailTemplate(Email email) {
+        return emailTemplateService.getTemplate(
+            email.getResearchGroup(),
+            email.getLanguage(),
+            email.getTemplateName(),
+            email.getEmailType()
+        );
     }
 
     private Set<String> getRecipientsToNotify(Set<User> users, Email email) {

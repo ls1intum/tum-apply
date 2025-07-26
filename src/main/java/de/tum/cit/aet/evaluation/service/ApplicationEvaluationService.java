@@ -87,9 +87,6 @@ public class ApplicationEvaluationService {
                 .htmlBody(acceptDTO.message())
                 .emailType(EmailType.APPLICATION_ACCEPTED)
                 .language(Language.fromCode(applicant.getSelectedLanguage()))
-                // template and content are only set for the subject
-                .template("application_accepted")
-                .content(Map.of("jobTitle", job.getTitle()))
                 .build();
             emailService.send(email);
         }
@@ -125,22 +122,10 @@ public class ApplicationEvaluationService {
             Email email = Email.builder()
                 .to(applicant)
                 .language(Language.fromCode(applicant.getSelectedLanguage()))
-                .template("application_rejected")
                 .emailType(EmailType.APPLICATION_REJECTED)
-                .content(
-                    Map.of(
-                        "applicantFirstName",
-                        applicant.getFirstName(),
-                        "applicantLastName",
-                        applicant.getLastName(),
-                        "jobTitle",
-                        job.getTitle(),
-                        "researchGroupName",
-                        researchGroup.getName(),
-                        "reason",
-                        rejectDTO.reason()
-                    )
-                )
+                .researchGroup(researchGroup)
+                .templateName(rejectDTO.reason().getValue())
+                .content(application)
                 .build();
             emailService.send(email);
         }

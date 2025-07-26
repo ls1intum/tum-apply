@@ -10,7 +10,6 @@ public record EmailTemplateDTO(
     String templateName,
     Language language,
     EmailType emailType,
-    String emailCase,
     String subject,
     String htmlBody,
     boolean isDefault
@@ -21,7 +20,6 @@ public record EmailTemplateDTO(
             emailTemplate.getTemplateName(),
             emailTemplate.getLanguage(),
             emailTemplate.getEmailType(),
-            emailTemplate.getEmailCase(),
             emailTemplate.getSubject(),
             emailTemplate.getBodyHtml(),
             emailTemplate.isDefault()

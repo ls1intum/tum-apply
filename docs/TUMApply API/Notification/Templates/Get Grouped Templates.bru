@@ -1,0 +1,16 @@
+meta {
+  name: Get Grouped Templates
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/email-templates?pageNumber=0&pageSize=100
+  body: none
+  auth: inherit
+}
+
+params:query {
+  pageNumber: 0
+  pageSize: 100
+}

@@ -181,20 +181,8 @@ public class ApplicationService {
         Email email = Email.builder()
             .to(applicant)
             .language(Language.fromCode(selectedLanguage))
-            .template("application_confirmation")
             .emailType(EmailType.APPLICATION_SENT)
-            .content(
-                Map.of(
-                    "applicantFirstName",
-                    application.applicant().user().firstName(),
-                    "applicantLastName",
-                    application.applicant().user().lastName(),
-                    "jobTitle",
-                    job.getTitle(),
-                    "researchGroupName",
-                    job.getResearchGroup().getName()
-                )
-            )
+            //TODO add content and researchGroup
             .build();
         emailService.send(email);
     }
@@ -208,22 +196,8 @@ public class ApplicationService {
         Email email = Email.builder()
             .to(supervisingProfessor)
             .language(Language.fromCode(selectedLanguage))
-            .template("application_received")
             .emailType(EmailType.APPLICATION_RECEIVED)
-            .content(
-                Map.of(
-                    "professorLastName",
-                    application.job().professorName(),
-                    "jobTitle",
-                    job.getTitle(),
-                    "applicantFirstName",
-                    application.applicant().user().firstName(),
-                    "applicantLastName",
-                    application.applicant().user().lastName(),
-                    "applicationId",
-                    application.applicationId()
-                )
-            )
+            //TODO add content and researchGroup
             .build();
         emailService.send(email);
     }
@@ -246,20 +220,9 @@ public class ApplicationService {
         Email email = Email.builder()
             .to(applicant)
             .emailType(EmailType.APPLICATION_WITHDRAWN)
-            .template("application_withdrawn")
             .language(Language.fromCode(applicant.getSelectedLanguage()))
-            .content(
-                Map.of(
-                    "applicantFirstName",
-                    applicant.getFirstName(),
-                    "applicantLastName",
-                    applicant.getLastName(),
-                    "jobTitle",
-                    job.getTitle(),
-                    "researchGroupName",
-                    job.getResearchGroup().getName()
-                )
-            )
+            .researchGroup(job.getResearchGroup())
+            .content(application)
             .build();
 
         emailService.send(email);
