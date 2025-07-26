@@ -242,9 +242,15 @@ input:disabled {
 }
 
 .saved_color {
-  color: green;
+  color: var(--p-success-color);
+  .ng-fa-icon {
+    color: inherit;
+  }
 }
 
 .unsaved_color {
-  color: orange;
+  color: var(--p-warn-color);
+  .ng-fa-icon {
+    color: inherit;
+  }
 }

@@ -46,10 +46,6 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
-  // Icons
-  faSave = faSave;
-  faSpinner = faSpinner;
-
   // Signals
   mode = signal<JobFormMode>('create');
   jobId = signal<string>('');
@@ -58,11 +54,12 @@ export class JobCreationFormComponent {
   savingState = signal<SavingState>(SavingStates.SAVED);
   formData = signal<JobFormDTO | undefined>(undefined);
   lastSavedJobData = signal<JobFormDTO | undefined>(undefined);
+  formsInitialized = signal<boolean>(false);
 
   // Forms
-  basicInfoForm!: FormGroup;
-  positionDetailsForm!: FormGroup;
-  additionalInformationForm!: FormGroup;
+  basicInfoForm: FormGroup;
+  positionDetailsForm: FormGroup;
+  additionalInformationForm: FormGroup;
 
   // Template references
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
@@ -80,6 +77,16 @@ export class JobCreationFormComponent {
       `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
   );
 
+  // Character counters
+  readonly descriptionLength = computed(() => this.positionDetailsForm?.get('description')?.value?.length ?? 0);
+  readonly tasksLength = computed(() => this.positionDetailsForm?.get('tasks')?.value?.length ?? 0);
+  readonly requirementsLength = computed(() => this.positionDetailsForm?.get('requirements')?.value?.length ?? 0);
+
+  // Step configuration
+  readonly stepData = computed<StepData[]>(() => this.buildStepData());
+
+  readonly DropdownOptions = DropdownOptions;
+
   // Form validation
   private stepper = viewChild.required<ProgressStepperComponent>('stepper');
   private readonly isBasicInfoValid = computed(() => this.validateBasicInfo());
@@ -88,14 +95,6 @@ export class JobCreationFormComponent {
   private readonly isAllFormsValid = computed(
     () => this.isBasicInfoValid() && this.isPositionDetailsValid() && this.isAdditionalInfoValid(),
   );
-
-  // Character counters
-  readonly descriptionLength = computed(() => this.positionDetailsForm?.get('description')?.value?.length ?? 0);
-  readonly tasksLength = computed(() => this.positionDetailsForm?.get('tasks')?.value?.length ?? 0);
-  readonly requirementsLength = computed(() => this.positionDetailsForm?.get('requirements')?.value?.length ?? 0);
-
-  // Step configuration
-  readonly stepData = computed<StepData[]>(() => this.buildStepData());
 
   // Services
   private readonly fb = inject(FormBuilder);
@@ -107,12 +106,17 @@ export class JobCreationFormComponent {
   // Auto-save
   private autoSaveTimer: number | undefined = undefined;
 
-  readonly DropdownOptions = DropdownOptions;
-
   constructor(private route: ActivatedRoute) {
+    // Initialize forms
+    this.basicInfoForm = this.fb.group({});
+    this.positionDetailsForm = this.fb.group({});
+    this.additionalInformationForm = this.fb.group({});
+
     this.init(route);
     this.setupAutoSave();
   }
+
+  private currentSavePromise: Promise<void> | null = null;
 
   private setupAutoSave(): void {
     effect(() => {
@@ -120,7 +124,16 @@ export class JobCreationFormComponent {
       const lastSaved = this.lastSavedJobData();
 
       if (formData && JSON.stringify(formData) !== JSON.stringify(lastSaved)) {
-        this.scheduleAutoSave();
+        if (this.autoSaveTimer) {
+          clearTimeout(this.autoSaveTimer);
+        }
+        // Only wait 3 seconds before auto-saving if the form is not in the process of saving
+        this.autoSaveTimer = window.setTimeout(() => {
+          if (!this.currentSavePromise) {
+            this.savingState.set(SavingStates.SAVING);
+          }
+          this.performAutoSave();
+        }, 3000);
       }
     });
   }
@@ -277,16 +290,6 @@ export class JobCreationFormComponent {
     };
   }
 
-  private scheduleAutoSave(): void {
-    if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
-
-    const currentData = this.getCurrentJobFormDto();
-    if (JSON.stringify(currentData) !== JSON.stringify(this.lastSavedJobData())) {
-      this.savingState.set(SavingStates.SAVING);
-      this.autoSaveTimer = window.setTimeout(() => this.performAutoSave(), 3000);
-    }
-  }
-
   private async performAutoSave(): Promise<void> {
     const currentData = this.getCurrentJobFormDto();
 
@@ -299,10 +302,13 @@ export class JobCreationFormComponent {
       }
 
       this.lastSavedJobData.set(currentData);
-      this.savingState.set(SavingStates.SAVED);
     } catch (err) {
       console.error('Auto-save failed:', err);
-      this.savingState.set(SavingStates.SAVED);
+    } finally {
+      // Wait 3 seconds before changing the state to SAVED
+      this.autoSaveTimer = window.setTimeout(() => {
+        this.savingState.set(SavingStates.SAVED);
+      }, 3000);
     }
   }
 
@@ -389,17 +395,16 @@ export class JobCreationFormComponent {
     // Initialize additional info form
     this.additionalInformationForm = this.fb.group({});
 
-    if (job) {
-      this.lastSavedJobData.set(this.getCurrentJobFormDto());
-    }
+    // Mark forms as initialized before setting form data
+    this.formsInitialized.set(true);
+
+    // Set initial data
+    //this.lastSavedJobData.set(this.getCurrentJobFormDto());
+    const initialData = this.getCurrentJobFormDto();
+    this.formData.set(initialData);
+    this.lastSavedJobData.set(initialData);
 
     this.setupFormSubscriptions();
-
-    // Force update formData after forms are initialized
-    setTimeout(() => {
-      this.formData.set(this.getCurrentJobFormDto());
-      console.log('Form initialized, formData updated:', this.formData());
-    }, 0);
   }
 
   async publishJob(): Promise<void> {
@@ -423,11 +428,6 @@ export class JobCreationFormComponent {
 
   onBack(): void {
     this.location.back();
-  }
-
-  onDropdownChange(controlName: string, value: any): void {
-    this.basicInfoForm.get(controlName)?.setValue(value);
-    this.basicInfoForm.get(controlName)?.markAsTouched();
   }
 
   onSelectionChange(form: FormGroup, controlName: string, value: unknown): void {
