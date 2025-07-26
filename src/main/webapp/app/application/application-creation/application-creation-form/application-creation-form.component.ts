@@ -6,8 +6,10 @@ import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -53,9 +55,11 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
+    ToastComponent,
     FontAwesomeModule,
     TranslateModule,
   ],
+
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
   standalone: true,
@@ -93,17 +97,28 @@ export default class ApplicationCreationFormComponent {
     skills: '',
     experiences: '',
   });
-
-  savingBadgeCalculatedClass = computed<string>(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
-  );
-
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
-
+  title = signal<string>('');
+  jobId = signal<string>('');
+  applicantId = signal<string>('');
+  applicationId = signal<string>('');
+  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
+  savingState = signal<SavingState>(SavingStates.SAVED);
+  savingBadgeCalculatedClass = computed<string>(
+    () =>
+      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
+  );
+  mode: ApplicationFormMode = 'create';
+  page1Valid = signal<boolean>(false);
+  page2Valid = signal<boolean>(false);
+  page3Valid = signal<boolean>(false);
+  savingTick = signal<number>(0);
+  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
+  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  location = inject(Location);
   stepData = computed<StepData[]>(() => {
     const sendData = (state: ApplicationState): void => {
       this.sendCreateApplicationData(state, true);
@@ -231,36 +246,13 @@ export default class ApplicationCreationFormComponent {
     return steps;
   });
 
-  title = signal<string>('');
-
-  jobId = signal<string>('');
-  applicantId = signal<string>('');
-  applicationId = signal<string>('');
-
-  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
-
-  savingState = signal<SavingState>(SavingStates.SAVED);
-
-  mode: ApplicationFormMode = 'create';
-
-  page1Valid = signal<boolean>(false);
-  page2Valid = signal<boolean>(false);
-  page3Valid = signal<boolean>(false);
-
-  savingTick = signal<number>(0);
-
-  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
-
-  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-
   private applicationResourceService = inject(ApplicationResourceService);
   private accountService = inject(AccountService);
+  private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
-  private location = inject(Location);
-  private translate = inject(TranslateService);
-
-  constructor(private route: ActivatedRoute) {
-    this.init(route);
+  constructor() {
+    this.init();
 
     effect(() => {
       const intervalId = setInterval(() => {
@@ -270,30 +262,30 @@ export default class ApplicationCreationFormComponent {
     });
   }
 
-  async init(route: ActivatedRoute): Promise<void> {
+  async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-    const segments = await firstValueFrom(route.url);
+    const segments = await firstValueFrom(this.route.url);
     const firstSegment = segments[1]?.path;
     let application;
     if (firstSegment === ApplicationFormModes.CREATE) {
       this.mode = ApplicationFormModes.CREATE;
       const jobId = this.route.snapshot.paramMap.get('job_id');
       if (jobId === null) {
-        alert('Error: this is no valid jobId');
+        this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
       } else {
         this.jobId.set(jobId);
       }
-      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId(), this.applicantId()));
+      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
     } else if (firstSegment === ApplicationFormModes.EDIT) {
       this.mode = ApplicationFormModes.EDIT;
       const applicationId = this.route.snapshot.paramMap.get('application_id');
       if (applicationId === null) {
-        alert('Error: this is no valid applicationId');
+        this.toastService.showError({ summary: 'Error', detail: 'This is no valid applicationId' });
         return;
       }
       application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
     } else {
-      alert('Error: this is no valid application page link');
+      this.toastService.showError({ summary: 'Error', detail: 'This is no valid application page link' });
       return;
     }
     this.jobId.set(application.job.jobId);
@@ -320,7 +312,7 @@ export default class ApplicationCreationFormComponent {
     const location = this.location;
     const applicationId = this.applicationId();
     if (applicationId === '') {
-      alert('There is an error with the applicationId');
+      this.toastService.showError({ detail: 'There is an error with the applicationId' });
       return;
     }
     const updateApplication: UpdateApplicationDTO = {
@@ -362,12 +354,12 @@ export default class ApplicationCreationFormComponent {
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
       if (rerouteToOtherPage) {
-        alert('Successfully saved application');
+        this.toastService.showSuccess({ detail: 'Successfully saved application' });
         location.back();
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
-      alert('Failed to save application: ' + httpError.statusText);
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
       console.error('Failed to save application:', err);
     }
   }
@@ -377,7 +369,7 @@ export default class ApplicationCreationFormComponent {
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() => alert('Error: fetching the document ids for this application'));
+      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }
 
   onValueChanged(): void {

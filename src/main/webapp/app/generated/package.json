@@ -1,6 +1,6 @@
 {
   "name": "@tumapply/api-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenAPI client for @tumapply/api-client",
   "author": "OpenAPI-Generator Contributors",
   "repository": {

@@ -7,6 +7,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faEnvelope, faGlobe, faLocationDot, faMicroscope, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import { of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 import { JobDetailDTO, JobResourceService } from '../../generated';
 import { AccountService } from '../../core/auth/account.service';
@@ -72,6 +73,7 @@ describe('JobDetailComponent', () => {
         { provide: JobResourceService, useValue: mockJobService },
         { provide: AccountService, useValue: mockAccountService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        MessageService,
       ],
     }).compileComponents();
 

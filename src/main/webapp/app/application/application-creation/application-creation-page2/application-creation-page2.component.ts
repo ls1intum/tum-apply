@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApplicantDTO, ApplicationForApplicantDTO, DocumentInformationHolderDTO } from 'app/generated';
-import { DropdownComponent, DropdownOption } from 'app/shared/components/atoms/dropdown/dropdown.component';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
@@ -12,22 +12,22 @@ import { StringInputComponent } from '../../../shared/components/atoms/string-in
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradingScale: DropdownOption;
+  bachelorGradingScale: SelectOption;
   bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
-  masterGradingScale: DropdownOption;
+  masterGradingScale: SelectOption;
   masterGrade: string;
 };
 
-export const bachelorGradingScale: DropdownOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
+export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
   value: v,
   name: v
     .replace(/_/g, ' ')
     .toLowerCase()
     .replace(/\b\w/g, c => c.toUpperCase()),
 }));
-export const masterGradingScale: DropdownOption[] = Object.values(ApplicantDTO.MasterGradingScaleEnum).map(v => ({
+export const masterGradingScale: SelectOption[] = Object.values(ApplicantDTO.MasterGradingScaleEnum).map(v => ({
   value: v,
   name: v
     .replace(/_/g, ' ')
@@ -53,7 +53,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   imports: [
     CommonModule,
     DividerModule,
-    DropdownComponent,
+    SelectComponent,
     UploadButtonComponent,
     ReactiveFormsModule,
     StringInputComponent,

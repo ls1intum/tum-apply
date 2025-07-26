@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.EmailService;
+import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
@@ -82,7 +83,7 @@ public class ApplicationEvaluationService {
             User supervisingProfessor = job.getSupervisingProfessor();
 
             Email email = Email.builder()
-                .to(applicant)
+                .to(applicant.getUser())
                 .bcc(supervisingProfessor)
                 .htmlBody(acceptDTO.message())
                 .emailType(EmailType.APPLICATION_ACCEPTED)
@@ -120,8 +121,9 @@ public class ApplicationEvaluationService {
             ResearchGroup researchGroup = job.getResearchGroup();
 
             Email email = Email.builder()
-                .to(applicant)
-                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .to(applicant.getUser())
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
+                .template("application_rejected")
                 .emailType(EmailType.APPLICATION_REJECTED)
                 .researchGroup(researchGroup)
                 .templateName(rejectDTO.reason().getValue())

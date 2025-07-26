@@ -10,13 +10,13 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.EmailService;
+import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.Map;
@@ -114,18 +114,19 @@ public class JobService {
 
     private void notifyApplicants(Set<Application> applications, String jobTitle, String researchGroupName, RejectReason reason) {
         for (Application application : applications) {
-            Applicant applicant = application.getApplicant();
+            User user = application.getApplicant().getUser();
             Email email = Email.builder()
-                .to(applicant)
+                .to(user)
                 .emailType(EmailType.APPLICATION_REJECTED)
+                .language(Language.fromCode(user.getSelectedLanguage()))
                 .templateName(reason.getValue())
-                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .language(Language.fromCode(user.getSelectedLanguage()))
                 .content(
                     Map.of(
                         "applicantFirstName",
-                        applicant.getFirstName(),
+                        user.getFirstName(),
                         "applicantLastName",
-                        applicant.getLastName(),
+                        user.getLastName(),
                         "jobTitle",
                         jobTitle,
                         "researchGroupName",

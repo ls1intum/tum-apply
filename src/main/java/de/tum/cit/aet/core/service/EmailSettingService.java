@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.repository.EmailSettingRepository;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -19,13 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmailSettingService {
 
     private final EmailSettingRepository emailSettingRepository;
+    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
     /**
      * Checks if a user can be notified for a specific email type based on their settings.
      * Updates user email settings before checking to ensure all required settings exist.
      *
      * @param emailType the type of email to check notification permission for
-     * @param user the user to check notification settings for
+     * @param user      the user to check notification settings for
      * @return true if the user has enabled notifications for this email type, false otherwise
      * @throws IllegalStateException if the user doesn't have the required role to receive this email type
      */
@@ -59,7 +61,7 @@ public class EmailSettingService {
      * Validates that the user has permission to modify each email type before updating.
      *
      * @param settingDTOs a set of EmailSettingDTO objects containing the new email preferences
-     * @param user the user whose email settings should be updated
+     * @param user        the user whose email settings should be updated
      * @return a set of updated EmailSettingDTO objects after successful persistence
      * @throws IllegalStateException if the user attempts to modify an email type they're not allowed to receive
      */
@@ -126,7 +128,11 @@ public class EmailSettingService {
      * @return a set of EmailType values that the user is eligible to receive based on their roles
      */
     private Set<EmailType> getAvailableEmailTypesForUser(@NonNull User user) {
-        Set<UserRole> userRoles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).collect(Collectors.toSet());
+        Set<UserRole> userRoles = userResearchGroupRoleRepository
+            .findAllByUser(user)
+            .stream()
+            .map(UserResearchGroupRole::getRole)
+            .collect(Collectors.toSet());
 
         return Arrays.stream(EmailType.values())
             .filter(emailType -> !Collections.disjoint(userRoles, emailType.getRoles()))
