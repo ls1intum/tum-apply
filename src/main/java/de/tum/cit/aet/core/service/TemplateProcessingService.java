@@ -5,33 +5,35 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.constants.TemplateVariable;
 import de.tum.cit.aet.core.domain.EmailTemplate;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
-import de.tum.cit.aet.core.repository.EmailTemplateRepository;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
-public class EmailTemplateRenderService {
+public class TemplateProcessingService {
 
     private final Configuration freemarkerConfig;
+
+    private static final String BASE_RAW_TEMPLATE = "base/raw.ftl";
+
 
     @Value("${aet.client.url}")
     private String url;
 
-    public EmailTemplateRenderService(Configuration freemarkerConfig, EmailTemplateRepository emailTemplateRepository) {
+    public TemplateProcessingService(Configuration freemarkerConfig) {
         this.freemarkerConfig = freemarkerConfig;
     }
 
@@ -39,68 +41,78 @@ public class EmailTemplateRenderService {
         return "TUMApply - " + emailTemplate.getSubject();
     }
 
+    /**
+     * Renders a DB-backed FreeMarker template and wraps it in the base layout.
+     * No sanitization is applied to the inner HTML (trusted source).
+     * Metadata is added to both the inner rendering and the outer layout.
+     */
     public String renderTemplate(@NonNull EmailTemplate emailTemplate, @NonNull Object content) {
         try {
-            StringTemplateLoader stringLoader = new StringTemplateLoader();
-            String templateName = "dynamicTemplate"; // unique key for the template
-            stringLoader.putTemplate(templateName, emailTemplate.getBodyHtml());
-
-            Configuration stringBasedConfig = new Configuration(Configuration.VERSION_2_3_32);
-            stringBasedConfig.setDefaultEncoding("UTF-8");
-            stringBasedConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-            stringBasedConfig.setTemplateLoader(stringLoader);
-
-            Template template = stringBasedConfig.getTemplate(templateName);
-
             Map<String, Object> dataModel = createDataModel(content);
-            String htmlBody = render(template, dataModel);
+            addMetaData(emailTemplate.getLanguage(), dataModel);
 
-            return renderRawTemplate(emailTemplate.getLanguage(), htmlBody);
+            String templateName = emailTemplate.getTemplateName() != null
+                ? emailTemplate.getTemplateName()
+                : "inline";
+            Template inlineTemplate = new Template(
+                templateName,
+                new StringReader(emailTemplate.getBodyHtml()),
+                freemarkerConfig
+            );
+
+            String htmlBody = render(inlineTemplate, dataModel);
+
+            return renderLayout(emailTemplate.getLanguage(), htmlBody,false);
         } catch (IOException ex) {
             throw new TemplateProcessingException(
                 "Failed to process inline FreeMarker template: " +
-                emailTemplate.getTemplateName() +
-                " for language: " +
-                emailTemplate.getLanguage(),
+                    emailTemplate.getTemplateName() +
+                    " for language: " +
+                    emailTemplate.getLanguage(),
                 ex
             );
         }
     }
 
     /**
-     * Wraps raw HTML content into the styled email layout using the "raw" template.
-     *
-     * @param language language to use for layout/footer
-     * @param html     sanitized raw HTML content
-     * @return rendered HTML string
+     * Wraps raw HTML into the styled email layout.
+     * This variant sanitizes by default (useful for untrusted HTML).
+     * Metadata is always added.
      */
     public String renderRawTemplate(@NonNull Language language, String html) {
+        return renderLayout(language, html, /*sanitize*/ true);
+    }
+
+    /**
+     * Centralized layout rendering to ensure consistent behavior.
+     */
+    private String renderLayout(@NonNull Language language, String html, boolean sanitize) {
         try {
-            Template template = freemarkerConfig.getTemplate("base/raw.ftl");
+            Template layout = freemarkerConfig.getTemplate(BASE_RAW_TEMPLATE);
 
-            Map<String, Object> dataModel = new HashMap<>();
-            dataModel.put("bodyHtml", HtmlSanitizer.sanitize(html));
+            Map<String, Object> model = new HashMap<>();
+            model.put("bodyHtml", sanitize ? HtmlSanitizer.sanitize(html) : html);
 
-            addMetaData(language, dataModel);
-            return render(template, dataModel);
+            // Always add metadata to the outer layout as well.
+            addMetaData(language, model);
+
+            return render(layout, model);
         } catch (IOException ex) {
             throw new TemplateProcessingException("Failed to load raw FreeMarker template", ex);
         }
     }
 
     /**
-     * Processes the FreeMarker template with the given data model.
-     *
-     * @param template  the FreeMarker template
-     * @param dataModel data model for template rendering
-     * @return rendered template as string
+     * Processes a FreeMarker template with the given data model.
      */
     private String render(Template template, Map<String, Object> dataModel) {
         try (StringWriter writer = new StringWriter()) {
             template.process(dataModel, writer);
             return writer.toString();
         } catch (IOException | TemplateException ex) {
-            throw new TemplateProcessingException("Failed to render FreeMarker template '" + template.getName() + "'", ex);
+            throw new TemplateProcessingException(
+                "Failed to render FreeMarker template '" + template.getName() + "'", ex
+            );
         }
     }
 
@@ -112,14 +124,14 @@ public class EmailTemplateRenderService {
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
             case null, default -> {
                 assert content != null;
-                throw new IllegalStateException("Unsupported content type: " + content.getClass().getName());
+                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
             }
         }
         return dataModel;
     }
 
     private void addApplicationData(Map<String, Object> dataModel, Application application) {
-        User applicant = application.getApplicant();
+        User applicant = application.getApplicant().getUser();
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), applicant.getFirstName());
         dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), applicant.getLastName());
 
@@ -128,6 +140,10 @@ public class EmailTemplateRenderService {
 
     private void addJobData(Map<String, Object> dataModel, Job job) {
         dataModel.put(TemplateVariable.JOB_TITLE.getValue(), job.getTitle());
+
+        User supervisingProfessor = job.getSupervisingProfessor();
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_FIRST_NAME.getValue(), supervisingProfessor.getFirstName());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_LAST_NAME.getValue(), supervisingProfessor.getLastName());
 
         addResearchGroupData(dataModel, job.getResearchGroup());
     }
