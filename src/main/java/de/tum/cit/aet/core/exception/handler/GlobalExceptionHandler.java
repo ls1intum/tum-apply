@@ -6,9 +6,6 @@ import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.exception.errors.ValidationFieldError;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -22,6 +19,10 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Global exception handler for all unhandled runtime and validation exceptions in the application.
@@ -121,6 +122,10 @@ public class GlobalExceptionHandler {
         if (ex instanceof MailingException me) {
             log.warn("Handled mailing exception: {} - Path: {}", me.getClass().getSimpleName(), request.getRequestURI(), ex);
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR, ex, request.getRequestURI(), null);
+        }
+        if (ex instanceof EmailTemplateException ete) {
+            log.warn("Handled email template exception: {} - Path: {}", ete.getClass().getSimpleName(), request.getRequestURI(), ex);
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.EMAIL_TEMPLATE_ERROR, ex, request.getRequestURI(), null);
         }
         ExceptionMetadata metadata = EXCEPTION_METADATA.getOrDefault(
             ex.getClass(),

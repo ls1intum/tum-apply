@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.domain.EmailTemplate_;
 import de.tum.cit.aet.core.dto.EmailTemplateDTO;
 import de.tum.cit.aet.core.dto.EmailTemplateGroupDTO;
 import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.exception.EmailTemplateException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.repository.EmailTemplateRepository;
@@ -15,17 +16,18 @@ import de.tum.cit.aet.core.util.TemplateUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
@@ -102,7 +104,7 @@ public class EmailTemplateService {
                 .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", emailTemplateDTO.emailTemplateId()));
 
             if (!emailTemplate.getEmailType().isTemplateEditable()) {
-                throw new IllegalArgumentException("EmailTemplate " + emailTemplateDTO.emailTemplateId() + " is not editable");
+                throw new EmailTemplateException("EmailTemplate " + emailTemplateDTO.emailTemplateId() + " is not editable");
             }
             applyUpdates(emailTemplateDTO, emailTemplate);
             templatesToSave.add(emailTemplate);
@@ -123,7 +125,7 @@ public class EmailTemplateService {
         );
         templatesToDelete.forEach(emailTemplate -> {
             if (emailTemplate.isDefault()) {
-                throw new IllegalArgumentException("Default templates can not be deleted");
+                throw new EmailTemplateException("Default templates can not be deleted");
             }
         });
         emailTemplateRepository.deleteAll(templatesToDelete);
