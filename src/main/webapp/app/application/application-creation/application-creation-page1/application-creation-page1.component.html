@@ -39,20 +39,20 @@
 
   <div class="form-row">
     <div class="w-1/2 pr-4">
-      <jhi-dropdown
+      <jhi-select
         width="100%"
         label="{{ 'entity.applicationPage1.label.gender' | translate }}"
-        [items]="dropdownGenderLocal"
+        [items]="selectGenderLocal"
         id="gender"
         [(selected)]="data().gender"
         (selectedChange)="emitChanged()"
       />
     </div>
     <div class="w-1/2 pr-4">
-      <jhi-dropdown
+      <jhi-select
         width="100%"
         label="{{ 'entity.applicationPage1.label.nationality' | translate }}"
-        [items]="dropdownNationalityLocal"
+        [items]="selectNationalityLocal"
         id="nationality"
         [(selected)]="data().nationality"
         (selectedChange)="emitChanged()"
@@ -62,10 +62,10 @@
 
   <div class="form-row">
     <div class="w-1/2 pr-4">
-      <jhi-dropdown
+      <jhi-select
         width="100%"
         label="{{ 'entity.applicationPage1.label.language' | translate }}"
-        [items]="dropdownLanguageLocal"
+        [items]="selectLanguageLocal"
         id="language"
         [(selected)]="data().language"
         (selectedChange)="emitChanged()"

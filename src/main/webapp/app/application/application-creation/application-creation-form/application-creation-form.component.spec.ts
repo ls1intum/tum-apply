@@ -17,6 +17,7 @@ import {
 import { HttpResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
+import { MessageService } from 'primeng/api';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
 
@@ -79,6 +80,7 @@ describe('ApplicationCreationFormComponent create', () => {
             loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
           },
         },
+        MessageService,
       ],
     }).compileComponents();
 

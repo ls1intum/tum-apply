@@ -6,6 +6,7 @@ api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
 api/documentResource.service.ts
+api/emailLoginResource.service.ts
 api/jobResource.service.ts
 api/userResource.service.ts
 configuration.ts
@@ -38,6 +39,7 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFilterOptionDTO.ts
 model/jobFormDTO.ts
+model/loginRequestDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts

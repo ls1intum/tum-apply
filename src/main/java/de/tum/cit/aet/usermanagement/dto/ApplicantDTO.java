@@ -29,7 +29,7 @@ public record ApplicantDTO(
             return null;
         }
         return new ApplicantDTO(
-            UserDTO.getFromEntity(applicant),
+            UserDTO.getFromEntity(applicant.getUser()),
             applicant.getStreet(),
             applicant.getPostalCode(),
             applicant.getCity(),
