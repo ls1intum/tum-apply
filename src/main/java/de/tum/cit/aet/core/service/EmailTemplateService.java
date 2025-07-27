@@ -6,7 +6,7 @@ import de.tum.cit.aet.core.domain.EmailTemplate;
 import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.domain.EmailTemplate_;
 import de.tum.cit.aet.core.dto.EmailTemplateDTO;
-import de.tum.cit.aet.core.dto.EmailTemplateGroupDTO;
+import de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.core.dto.EmailTemplateTranslationDTO;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.EmailTemplateException;
@@ -35,6 +35,8 @@ public class EmailTemplateService {
 
     private final EmailTemplateRepository emailTemplateRepository;
 
+    private final Set<EmailType> editableEmailTypes = EmailType.getEditableEmailTypes();
+
 
     private EmailTemplate get(ResearchGroup researchGroup,
                               String templateName,
@@ -61,7 +63,7 @@ public class EmailTemplateService {
         return getTranslation(emailTemplate, language);
     }
 
-    public List<EmailTemplateGroupDTO> getGroupedTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
+    public List<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
         addMissingTemplates(researchGroup);
 
         Pageable pageable = PageRequest.of(
@@ -70,16 +72,16 @@ public class EmailTemplateService {
                 Sort.by(EmailTemplate_.IS_DEFAULT).ascending()
                         .and(Sort.by(EmailTemplate_.TEMPLATE_NAME).ascending())
         );
-        return emailTemplateRepository.findAllByResearchGroup(researchGroup, pageable).toList();
+        return emailTemplateRepository.findAllByResearchGroup(researchGroup, editableEmailTypes, pageable).toList();
     }
 
     public EmailTemplateDTO getTemplate(UUID templateId) {
         return toDTOWithQuillMentions(get(templateId));
     }
 
-    public EmailTemplateDTO createTemplates(EmailTemplateDTO dto,
-                                            ResearchGroup researchGroup,
-                                            User createdBy) {
+    public EmailTemplateDTO createTemplate(EmailTemplateDTO dto,
+                                           ResearchGroup researchGroup,
+                                           User createdBy) {
 
         if (!dto.emailType().isMultipleTemplates()) {
             // Creating another logical template for a single-template type is not allowed

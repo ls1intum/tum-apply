@@ -5,11 +5,11 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/email-templates?templateId=
+  url: {{baseUrl}}/api/email-templates/:templateId
   body: none
   auth: inherit
 }
 
-params:query {
+params:path {
   templateId: 
 }

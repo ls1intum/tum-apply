@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.dto.EmailTemplateDTO;
-import de.tum.cit.aet.core.dto.EmailTemplateGroupDTO;
+import de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.EmailTemplateService;
@@ -23,13 +23,13 @@ public class EmailTemplateResource {
     private final EmailTemplateService emailTemplateService;
     private final CurrentUserService currentUserService;
 
-    @GetMapping("/overview")
-    public ResponseEntity<List<EmailTemplateGroupDTO>> getGroupedTemplate(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
-        return ResponseEntity.ok(emailTemplateService.getGroupedTemplates(currentUserService.getResearchGroupIfProfessor(), pageDTO));
+    @GetMapping
+    public ResponseEntity<List<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+        return ResponseEntity.ok(emailTemplateService.getTemplates(currentUserService.getResearchGroupIfProfessor(), pageDTO));
     }
 
-    @GetMapping
-    public ResponseEntity<EmailTemplateDTO> getTemplate(@RequestParam UUID templateId) {
+    @GetMapping("/{templateId}")
+    public ResponseEntity<EmailTemplateDTO> getTemplate(@PathVariable UUID templateId) {
         return ResponseEntity.ok(
             emailTemplateService.getTemplate(templateId)
         );
@@ -42,7 +42,7 @@ public class EmailTemplateResource {
 
     @PostMapping
     ResponseEntity<EmailTemplateDTO> createTemplate(@RequestBody EmailTemplateDTO emailTemplateDTO) {
-        EmailTemplateDTO createdTemplates = emailTemplateService.createTemplates(
+        EmailTemplateDTO createdTemplates = emailTemplateService.createTemplate(
             emailTemplateDTO,
             currentUserService.getResearchGroupIfProfessor(),
             currentUserService.getUser()
@@ -51,8 +51,8 @@ public class EmailTemplateResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTemplates);
     }
 
-    @DeleteMapping
-    ResponseEntity<Void> deleteTemplate(@RequestParam UUID templateId) {
+    @DeleteMapping("/{templateId}")
+    ResponseEntity<Void> deleteTemplate(@PathVariable UUID templateId) {
         emailTemplateService.deleteTemplate(templateId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
