@@ -6,6 +6,29 @@ meta {
 
 post {
   url: {{baseUrl}}/api/email-templates
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  [
+    {
+      "emailTemplateId": null,
+      "templateName": "Mein eigenes Template",
+      "language": "ENGLISH",
+      "emailType": "APPLICATION_ACCEPTED",
+      "subject": "Custom Template",
+      "htmlBody": "<p>Custom Template</p>",
+      "isDefault": false
+    },
+    {
+      "emailTemplateId": null,
+      "templateName": "Mein eigenes Template",
+      "language": "GERMAN",
+      "emailType": "APPLICATION_ACCEPTED",
+      "subject": "Individuelles Template",
+      "htmlBody": "<p>Individuelles Template</p>",
+      "isDefault": false
+    }
+  ]
 }
