@@ -7,7 +7,6 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.core.service.mail.Email;
@@ -19,12 +18,12 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class JobService {
@@ -90,51 +89,33 @@ public class JobService {
         if (targetState == JobState.CLOSED) {
             // send emails stating that the job has been closed, to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
-            String jobTitle = job.getTitle();
-            String researchGroupName = job.getResearchGroup().getName();
 
             // update the state of all submitted and unsubmitted applications to 'JOB_CLOSED'
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
 
-            notifyApplicants(applicationsToNotify, jobTitle, researchGroupName, RejectReason.JOB_OUTDATED);
+            notifyApplicants(applicationsToNotify, RejectReason.JOB_OUTDATED);
         } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
             // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
-            String jobTitle = job.getTitle();
-            String researchGroupName = job.getResearchGroup().getName();
 
             // update the state of all submitted applications to 'REJECTED', all unsubmitted applications to 'JOB_CLOSED'
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
 
-            notifyApplicants(applicationsToNotify, jobTitle, researchGroupName, RejectReason.JOB_FILLED);
+            notifyApplicants(applicationsToNotify, RejectReason.JOB_FILLED);
         }
 
         return JobFormDTO.getFromEntity(jobRepository.save(job));
     }
 
-    private void notifyApplicants(Set<Application> applications, String jobTitle, String researchGroupName, RejectReason reason) {
+    private void notifyApplicants(Set<Application> applications, RejectReason reason) {
         for (Application application : applications) {
             User user = application.getApplicant().getUser();
             Email email = Email.builder()
                 .to(user)
+                .language(Language.fromCode(user.getSelectedLanguage()))
                 .emailType(EmailType.APPLICATION_REJECTED)
-                .language(Language.fromCode(user.getSelectedLanguage()))
                 .templateName(reason.getValue())
-                .language(Language.fromCode(user.getSelectedLanguage()))
-                .content(
-                    Map.of(
-                        "applicantFirstName",
-                        user.getFirstName(),
-                        "applicantLastName",
-                        user.getLastName(),
-                        "jobTitle",
-                        jobTitle,
-                        "researchGroupName",
-                        researchGroupName,
-                        "reason",
-                        reason
-                    )
-                )
+                .content(application)
                 .build();
             emailService.send(email);
         }

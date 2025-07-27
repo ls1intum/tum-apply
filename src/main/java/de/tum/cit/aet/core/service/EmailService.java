@@ -9,11 +9,6 @@ import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -30,11 +25,17 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 public class EmailService {
 
-    private final EmailTemplateRenderService emailTemplateRenderService;
+    private final TemplateProcessingService templateProcessingService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final DocumentService documentService;
     private final DocumentRepository documentRepository;
@@ -48,14 +49,14 @@ public class EmailService {
     private String from;
 
     public EmailService(
-        EmailTemplateRenderService emailTemplateRenderService,
+        TemplateProcessingService templateProcessingService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
         DocumentService documentService,
         DocumentRepository documentRepository,
         EmailSettingService emailSettingService,
         EmailTemplateService emailTemplateService
     ) {
-        this.emailTemplateRenderService = emailTemplateRenderService;
+        this.templateProcessingService = templateProcessingService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
         this.documentRepository = documentRepository;
@@ -114,7 +115,7 @@ public class EmailService {
      * @return rendered subject line
      */
     private String renderSubject(EmailTemplate emailTemplate) {
-        return emailTemplateRenderService.renderSubject(emailTemplate);
+        return templateProcessingService.renderSubject(emailTemplate);
     }
 
     /**
@@ -126,9 +127,9 @@ public class EmailService {
      */
     private String renderBody(Email email, EmailTemplate emailTemplate) {
         if (StringUtils.isNotEmpty(email.getHtmlBody())) {
-            return emailTemplateRenderService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
+            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
         }
-        return emailTemplateRenderService.renderTemplate(emailTemplate, email.getContent());
+        return templateProcessingService.renderTemplate(emailTemplate, email.getContent());
     }
 
     /**

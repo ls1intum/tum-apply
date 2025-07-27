@@ -24,13 +24,14 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -169,37 +170,34 @@ public class ApplicationService {
         ApplicationForApplicantDTO application = applicationRepository.findDtoById(updateApplicationDTO.applicationId());
 
         if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
-            UUID jobId = application.job().jobId();
-            Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
-            User supervisingProfessor = job.getSupervisingProfessor();
+            Application app = applicationRepository.findById(application.applicationId()).orElseThrow(() -> EntityNotFoundException.forId("Application", application.applicationId()));
 
-            confirmApplicationToApplicant(applicant.getUser(), applicant.getUser().getSelectedLanguage(), application, job);
-            confirmApplicationToProfessor(supervisingProfessor, supervisingProfessor.getSelectedLanguage(), application, job);
+            confirmApplicationToApplicant(app);
+            confirmApplicationToProfessor(app);
         }
         return application;
     }
 
-    private void confirmApplicationToApplicant(User user, String selectedLanguage, ApplicationForApplicantDTO application, Job job) {
+    private void confirmApplicationToApplicant(Application application) {
+        User user = application.getApplicant().getUser();
         Email email = Email.builder()
             .to(user)
-            .language(Language.fromCode(selectedLanguage))
+            .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_SENT)
-            //TODO add content and researchGroup
+            .content(application)
+            .researchGroup(application.getJob().getResearchGroup())
             .build();
         emailService.send(email);
     }
 
-    private void confirmApplicationToProfessor(
-        User supervisingProfessor,
-        String selectedLanguage,
-        ApplicationForApplicantDTO application,
-        Job job
-    ) {
+    private void confirmApplicationToProfessor(Application application) {
+        User supervisingProfessor = application.getJob().getSupervisingProfessor();
         Email email = Email.builder()
             .to(supervisingProfessor)
-            .language(Language.fromCode(selectedLanguage))
+            .language(Language.fromCode(supervisingProfessor.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_RECEIVED)
-            //TODO add content and researchGroup
+            .content(application)
+            .researchGroup(application.getJob().getResearchGroup())
             .build();
         emailService.send(email);
     }
@@ -216,15 +214,15 @@ public class ApplicationService {
         if (application == null) {
             return;
         }
-        Applicant applicant = application.getApplicant();
+        User user = application.getApplicant().getUser();
         Job job = application.getJob();
 
         Email email = Email.builder()
-            .to(applicant.getUser())
+            .to(user)
+            .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_WITHDRAWN)
-            .language(Language.fromCode(applicant.getSelectedLanguage()))
-            .researchGroup(job.getResearchGroup())
             .content(application)
+            .researchGroup(job.getResearchGroup())
             .build();
 
         emailService.send(email);
