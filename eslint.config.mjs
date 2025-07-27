@@ -50,6 +50,7 @@ export default [
         'build/resources/main/static/',
         'prebuild.mjs',
         'src/main/webapp/app/generated/',
+        'src/main/resources/templates/**/*.html',
       ],
       languageOptions: {
         globals: {
