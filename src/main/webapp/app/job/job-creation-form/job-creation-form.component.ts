@@ -1,13 +1,11 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSave, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { Location } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 
@@ -18,6 +16,7 @@ import { DatePickerComponent } from '../../shared/components/atoms/datepicker/da
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
 import * as DropdownOptions from '.././dropdown-options';
+import { DropdownOption } from '../../shared/components/atoms/dropdown/dropdown.component';
 
 // Constants
 const JobFormModes = { CREATE: 'create', EDIT: 'edit' } as const;
@@ -25,6 +24,37 @@ const SavingStates = { SAVED: 'SAVED', SAVING: 'SAVING' } as const;
 
 type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
+
+/**
+ * Data structure for basic job information including title, research area, and dropdown selections
+ */
+export type JobBasicInfoData = {
+  title: string;
+  researchArea: string;
+  fieldOfStudies?: DropdownOption;
+  location?: DropdownOption;
+  startDate: string;
+  workload?: DropdownOption;
+  contractDuration?: DropdownOption;
+  fundingType?: DropdownOption;
+  supervisingProfessor: string;
+};
+
+/**
+ * Data structure for job position details including description, tasks, and requirements
+ */
+export type JobPositionDetailsData = {
+  description: string;
+  tasks: string;
+  requirements: string;
+};
+
+/**
+ * Data structure for additional job information (extensible for future fields)
+ */
+export type JobAdditionalInfoData = {
+  // Add additional fields here in the future
+};
 
 @Component({
   selector: 'jhi-job-creation-form',
@@ -46,17 +76,43 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
-  // Signals
+  /** Signal containing all basic job information form fields */
+  basicInfo = signal<JobBasicInfoData>({
+    title: '',
+    researchArea: '',
+    fieldOfStudies: undefined,
+    location: undefined,
+    startDate: '',
+    workload: undefined,
+    contractDuration: undefined,
+    fundingType: undefined,
+    supervisingProfessor: '',
+  });
+
+  /** Signal containing position details form fields */
+  positionDetails = signal<JobPositionDetailsData>({
+    description: '',
+    tasks: '',
+    requirements: '',
+  });
+
+  /** Signal containing additional information form fields */
+  additionalInfo = signal<JobAdditionalInfoData>({});
+
+  // State Signals
   mode = signal<JobFormMode>('create');
   jobId = signal<string>('');
   userId = signal<string>('');
   isLoading = signal<boolean>(true);
   savingState = signal<SavingState>(SavingStates.SAVED);
-  formData = signal<JobFormDTO | undefined>(undefined);
-  lastSavedJobData = signal<JobFormDTO | undefined>(undefined);
-  formsInitialized = signal<boolean>(false);
+  lastSavedData = signal<JobFormDTO | undefined>(undefined);
 
-  // Forms
+  // Validation Signals
+  basicInfoValid = signal<boolean>(false);
+  positionDetailsValid = signal<boolean>(false);
+  additionalInfoValid = signal<boolean>(true);
+
+  // Forms for validation
   basicInfoForm: FormGroup;
   positionDetailsForm: FormGroup;
   additionalInformationForm: FormGroup;
@@ -67,34 +123,48 @@ export class JobCreationFormComponent {
   panel3 = viewChild<TemplateRef<HTMLDivElement>>('panel3');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
 
-  // Computed properties
+  /** Computed page title based on current mode (create/edit) */
   readonly pageTitle = computed(() =>
     this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
   );
 
+  /** Computed CSS classes for saving badge based on current saving state */
   readonly savingBadgeCalculatedClass = computed(
     () =>
       `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
   );
 
-  // Character counters
-  readonly descriptionLength = computed(() => this.positionDetailsForm?.get('description')?.value?.length ?? 0);
-  readonly tasksLength = computed(() => this.positionDetailsForm?.get('tasks')?.value?.length ?? 0);
-  readonly requirementsLength = computed(() => this.positionDetailsForm?.get('requirements')?.value?.length ?? 0);
+  readonly allValid = computed(() => this.basicInfoValid() && this.positionDetailsValid() && this.additionalInfoValid());
+
+  /**
+   * Computed current job data by combining all form signals into JobFormDTO format
+   * Handles type conversion from DropdownOption values to expected DTO types
+   */
+  readonly currentJobData = computed<JobFormDTO>(() => ({
+    title: this.basicInfo().title,
+    researchArea: this.basicInfo().researchArea,
+    fieldOfStudies: String(this.basicInfo().fieldOfStudies?.value),
+    supervisingProfessor: this.userId(),
+    location: this.basicInfo().location?.value as JobFormDTO.LocationEnum,
+    startDate: this.basicInfo().startDate,
+    workload: Number(this.basicInfo().workload?.value),
+    contractDuration: Number(this.basicInfo().contractDuration?.value),
+    fundingType: this.basicInfo().fundingType?.value as JobFormDTO.FundingTypeEnum,
+    description: this.positionDetails().description,
+    tasks: this.positionDetails().tasks,
+    requirements: this.positionDetails().requirements,
+    state: JobFormDTO.StateEnum.Draft,
+  }));
+
+  // Character counters (will be removed after Editor integration)
+  readonly descriptionLength = computed(() => this.positionDetails().description.length);
+  readonly tasksLength = computed(() => this.positionDetails().tasks.length);
+  readonly requirementsLength = computed(() => this.positionDetails().requirements.length);
 
   // Step configuration
   readonly stepData = computed<StepData[]>(() => this.buildStepData());
 
   readonly DropdownOptions = DropdownOptions;
-
-  // Form validation
-  private stepper = viewChild.required<ProgressStepperComponent>('stepper');
-  private readonly isBasicInfoValid = computed(() => this.validateBasicInfo());
-  private readonly isPositionDetailsValid = computed(() => this.validatePositionDetails());
-  private readonly isAdditionalInfoValid = computed(() => true);
-  private readonly isAllFormsValid = computed(
-    () => this.isBasicInfoValid() && this.isPositionDetailsValid() && this.isAdditionalInfoValid(),
-  );
 
   // Services
   private readonly fb = inject(FormBuilder);
@@ -114,245 +184,33 @@ export class JobCreationFormComponent {
 
     this.init(route);
     this.setupAutoSave();
+    this.setupValidation();
+    this.setupFormEffects();
   }
 
-  private currentSavePromise: Promise<void> | null = null;
-
-  private setupAutoSave(): void {
-    effect(() => {
-      const formData = this.formData();
-      const lastSaved = this.lastSavedJobData();
-
-      if (formData && JSON.stringify(formData) !== JSON.stringify(lastSaved)) {
-        if (this.autoSaveTimer) {
-          clearTimeout(this.autoSaveTimer);
-        }
-        // Only wait 3 seconds before auto-saving if the form is not in the process of saving
-        this.autoSaveTimer = window.setTimeout(() => {
-          if (!this.currentSavePromise) {
-            this.savingState.set(SavingStates.SAVING);
-          }
-          this.performAutoSave();
-        }, 3000);
-      }
-    });
-  }
-
-  private validateBasicInfo(): boolean {
-    const formData = this.formData();
-    if (!formData || !this.basicInfoForm || !this.userId()) {
-      console.log('Basic validation failed - missing dependencies');
-      return false;
-    }
-
-    const isFormValid = this.basicInfoForm.valid;
-    const hasTitle = !!formData.title?.trim();
-    const hasResearchArea = !!formData.researchArea?.trim();
-    const hasFieldOfStudies = this.hasValue(formData.fieldOfStudies);
-    const hasLocation = this.hasValue(formData.location);
-    const hasFundingType = this.hasValue(formData.fundingType);
-
-    return isFormValid && hasTitle && hasResearchArea && hasFieldOfStudies && hasLocation && hasFundingType;
-  }
-
-  private validatePositionDetails(): boolean {
-    const formData = this.formData();
-    if (!formData || !this.positionDetailsForm) return false;
-
-    return (
-      this.positionDetailsForm.valid &&
-      !!formData.description?.trim() &&
-      this.hasValue(formData.tasks) &&
-      this.hasValue(formData.requirements)
-    );
-  }
-
-  private hasValue(value: any): boolean {
-    if (value === undefined) return false;
-    return typeof value === 'object' && 'value' in value ? !!value.value : !!value;
-  }
-
-  private buildStepData(): StepData[] {
-    const steps: StepData[] = [];
-    const templates = {
-      panel1: this.panel1(),
-      panel2: this.panel2(),
-      panel3: this.panel3(),
-      status: this.savingStatePanel(),
-    };
-
-    if (templates.panel1) {
-      steps.push(
-        this.createStepConfig(
-          'jobCreationForm.header.steps.basicInfo',
-          templates.panel1,
-          templates.status,
-          !this.isBasicInfoValid(),
-          'jobActionButton.next',
-          () => this.onBack(),
-        ),
-      );
-    }
-
-    if (templates.panel2) {
-      steps.push(
-        this.createStepConfig(
-          'jobCreationForm.header.steps.positionDetails',
-          templates.panel2,
-          templates.status,
-          !this.isPositionDetailsValid(),
-          'jobActionButton.next',
-          () => this.stepper().goToStep(1), // Go to step 1
-          () => this.stepper().goToStep(3), // Go to step 3
-        ),
-      );
-    }
-
-    if (templates.panel3) {
-      steps.push(
-        this.createStepConfig(
-          'jobCreationForm.header.steps.additionalInfo',
-          templates.panel3,
-          templates.status,
-          !this.isAllFormsValid(),
-          'jobActionButton.publish',
-          () => this.stepper().goToStep(2), // Go to step 2
-          () => void this.publishJob(),
-          false,
-        ),
-      );
-    }
-
-    return steps;
-  }
-
-  private createStepConfig(
-    name: string,
-    panel: TemplateRef<HTMLDivElement>,
-    status: TemplateRef<HTMLDivElement> | undefined,
-    disabled: boolean,
-    buttonLabel: string,
-    backAction?: () => void,
-    nextAction?: () => void,
-    changePanel = true,
-  ): StepData {
-    return {
-      name,
-      panelTemplate: panel,
-      shouldTranslate: true,
-      buttonGroupPrev: backAction
-        ? [
-            {
-              variant: 'outlined',
-              severity: 'primary',
-              icon: 'chevron-left',
-              onClick: backAction,
-              disabled: false,
-              label: 'jobActionButton.back',
-              changePanel: false,
-              shouldTranslate: true,
-            },
-          ]
-        : [],
-      buttonGroupNext: [
-        {
-          severity: 'primary',
-          icon: undefined,
-          onClick: nextAction || (() => {}),
-          disabled,
-          label: buttonLabel,
-          shouldTranslate: true,
-          changePanel,
-        },
-      ],
-      status,
-    };
-  }
-
-  private getCurrentJobFormDto(): JobFormDTO {
-    const basic = this.basicInfoForm?.value || {};
-    const position = this.positionDetailsForm?.value || {};
-
-    return {
-      title: basic.title || '',
-      researchArea: basic.researchArea || '',
-      fieldOfStudies: basic.fieldOfStudies?.value,
-      supervisingProfessor: this.userId() || '',
-      location: basic.location?.value,
-      startDate: basic.startDate,
-      workload: basic.workload?.value,
-      contractDuration: basic.contractDuration?.value,
-      fundingType: basic.fundingType?.value,
-      description: position.description || '',
-      tasks: position.tasks || '',
-      requirements: position.requirements || '',
-      state: JobFormDTO.StateEnum.Draft,
-    };
-  }
-
-  private async performAutoSave(): Promise<void> {
-    const currentData = this.getCurrentJobFormDto();
-
-    try {
-      if (this.jobId()) {
-        await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), currentData));
-      } else {
-        const createdJob = await firstValueFrom(this.jobResourceService.createJob(currentData));
-        this.jobId.set(createdJob.jobId ?? '');
-      }
-
-      this.lastSavedJobData.set(currentData);
-    } catch (err) {
-      console.error('Auto-save failed:', err);
-    } finally {
-      // Wait 3 seconds before changing the state to SAVED
-      this.autoSaveTimer = window.setTimeout(() => {
-        this.savingState.set(SavingStates.SAVED);
-      }, 3000);
-    }
-  }
-
-  private findDropdownOption<T>(options: T[], value: any, valueField: keyof T): T | undefined {
-    return options.find(opt => opt[valueField] === value);
-  }
-
-  private setupFormSubscriptions(): void {
-    const updateFormData = () => {
-      const currentData = this.getCurrentJobFormDto();
-      this.formData.set(currentData);
-    };
-
-    // Initial update
-    updateFormData();
-
-    [this.basicInfoForm, this.positionDetailsForm, this.additionalInformationForm].forEach(form =>
-      form?.valueChanges.subscribe(() => {
-        this.basicInfoForm.markAllAsTouched();
-        updateFormData();
-      }),
-    );
-  }
-
+  /**
+   * Initializes the component by determining mode (create/edit) and loading existing data if needed
+   */
   async init(route: ActivatedRoute): Promise<void> {
     try {
-      const user = this.accountService.loadedUser();
-      if (!user?.id) {
+      this.userId.set(this.accountService.loadedUser()?.id ?? '');
+      if (this.userId() === '') {
+        console.error('User not authenticated');
         this.router.navigate(['/login']);
         return;
       }
 
-      this.userId.set(user.id);
       const segments = await firstValueFrom(route.url);
-      const mode = segments[1]?.path as JobFormMode;
+      const mode = segments[1]?.path;
 
       if (mode === JobFormModes.CREATE) {
         this.mode.set(JobFormModes.CREATE);
         this.initForms();
       } else if (mode === JobFormModes.EDIT) {
         this.mode.set(JobFormModes.EDIT);
-        const jobId = route.snapshot.paramMap.get('job_id');
+        const jobId = route.snapshot.paramMap.get('job_id') ?? '';
 
-        if (!jobId) {
+        if (jobId === '') {
           this.router.navigate(['/my-positions']);
           return;
         }
@@ -369,6 +227,10 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Initializes reactive forms and sets initial signal values
+   * Handles both create mode (empty forms) and edit mode (pre-populated with job data)
+   */
   initForms(job?: JobDTO): void {
     const user = this.accountService.loadedUser();
 
@@ -376,12 +238,14 @@ export class JobCreationFormComponent {
     this.basicInfoForm = this.fb.group({
       title: [job?.title ?? '', Validators.required],
       researchArea: [job?.researchArea ?? '', Validators.required],
+      /* removed this
       fieldOfStudies: [this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies, 'value'), Validators.required],
       location: [this.findDropdownOption(DropdownOptions.locations, job?.location, 'value'), Validators.required],
       startDate: [job?.startDate ?? ''],
       workload: [this.findDropdownOption(DropdownOptions.workloadOptions, job?.workload, 'value')],
       contractDuration: [this.findDropdownOption(DropdownOptions.contractDurations, job?.contractDuration, 'value')],
       fundingType: [this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType, 'value'), Validators.required],
+      to this */
       supervisingProfessor: [{ value: user?.name ?? '', disabled: true }],
     });
 
@@ -395,31 +259,37 @@ export class JobCreationFormComponent {
     // Initialize additional info form
     this.additionalInformationForm = this.fb.group({});
 
-    // Mark forms as initialized before setting form data
-    this.formsInitialized.set(true);
+    // Set signal data
+    this.basicInfo.set({
+      title: job?.title ?? '',
+      researchArea: job?.researchArea ?? '',
+      fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies, 'value'),
+      location: this.findDropdownOption(DropdownOptions.locations, job?.location, 'value'),
+      startDate: job?.startDate ?? '',
+      workload: this.findDropdownOption(DropdownOptions.workloadOptions, job?.workload, 'value'),
+      contractDuration: this.findDropdownOption(DropdownOptions.contractDurations, job?.contractDuration, 'value'),
+      fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType, 'value'),
+      supervisingProfessor: user?.name ?? '',
+    });
 
-    // Set initial data
-    //this.lastSavedJobData.set(this.getCurrentJobFormDto());
-    const initialData = this.getCurrentJobFormDto();
-    this.formData.set(initialData);
-    this.lastSavedJobData.set(initialData);
+    this.positionDetails.set({
+      description: job?.description ?? '',
+      tasks: job?.tasks ?? '',
+      requirements: job?.requirements ?? '',
+    });
 
-    this.setupFormSubscriptions();
+    // Set initial saved data
+    this.lastSavedData.set(this.currentJobData());
   }
 
   async publishJob(): Promise<void> {
     const jobFormDto: JobFormDTO = {
-      ...this.getCurrentJobFormDto(),
+      ...this.currentJobData(),
       state: JobFormDTO.StateEnum.Published,
     };
 
     try {
-      if (this.jobId()) {
-        await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobFormDto));
-      } else {
-        const createdJob = await firstValueFrom(this.jobResourceService.createJob(jobFormDto));
-        this.jobId.set(createdJob.jobId ?? '');
-      }
+      await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobFormDto));
       this.router.navigate(['/my-positions']);
     } catch (error) {
       console.error('Failed to publish job:', error);
@@ -430,7 +300,259 @@ export class JobCreationFormComponent {
     this.location.back();
   }
 
-  onSelectionChange(form: FormGroup, controlName: string, value: unknown): void {
-    form.patchValue({ [controlName]: value });
+  onValueChanged(): void {
+    // Clear existing timer
+    if (this.autoSaveTimer) {
+      clearTimeout(this.autoSaveTimer);
+    }
+
+    // Set saving state after 3 seconds delay
+    this.autoSaveTimer = window.setTimeout(() => {
+      this.savingState.set(SavingStates.SAVING);
+    }, 1000);
+  }
+
+  onBasicInfoInputChange(field: keyof JobBasicInfoData, value: unknown): void {
+    this.basicInfo.update(current => ({
+      ...current,
+      [field]: value,
+    }));
+    this.onValueChanged();
+  }
+
+  onPositionDetailsInputChange(field: keyof JobPositionDetailsData, event: Event): void {
+    const target = event.target as HTMLTextAreaElement;
+    const value = target.value;
+
+    this.positionDetails.update(current => ({
+      ...current,
+      [field]: value,
+    }));
+
+    this.onValueChanged();
+  }
+
+  /**
+   * Sets up reactive validation for form sections using effects
+   */
+  /* TODO: clean up this method if possible */
+  private setupValidation(): void {
+    // Basic Info Validation
+    effect(() => {
+      const data = this.basicInfo();
+      const isValid =
+        !!data.title.trim() &&
+        !!data.researchArea.trim() &&
+        !!data.fieldOfStudies &&
+        !!data.location &&
+        !!data.fundingType &&
+        this.basicInfoForm.valid;
+      this.basicInfoValid.set(isValid);
+    });
+
+    // Position Details Validation
+    effect(() => {
+      const data = this.positionDetails();
+      const isValid = !!data.description.trim() && !!data.tasks.trim() && !!data.requirements.trim() && this.positionDetailsForm.valid;
+      this.positionDetailsValid.set(isValid);
+    });
+  }
+
+  /**
+   * Sets up form synchronization effects to keep reactive forms in sync with signals
+   */
+  /* TODO: clean up this method if possibe*/
+  private setupFormEffects(): void {
+    // Effect for basic info form changes
+    effect(() => {
+      const basicInfoData = this.basicInfo();
+
+      // Update form values when signal changes
+      if (this.basicInfoForm.get('title')?.value !== basicInfoData.title) {
+        this.basicInfoForm.get('title')?.setValue(basicInfoData.title, { emitEvent: false });
+      }
+      if (this.basicInfoForm.get('researchArea')?.value !== basicInfoData.researchArea) {
+        this.basicInfoForm.get('researchArea')?.setValue(basicInfoData.researchArea, { emitEvent: false });
+      }
+    });
+
+    // Effect for position details form changes
+    effect(() => {
+      const positionDetailsData = this.positionDetails();
+
+      // Update form values when signal changes
+      if (this.positionDetailsForm.get('description')?.value !== positionDetailsData.description) {
+        this.positionDetailsForm.get('description')?.setValue(positionDetailsData.description, { emitEvent: false });
+      }
+      if (this.positionDetailsForm.get('tasks')?.value !== positionDetailsData.tasks) {
+        this.positionDetailsForm.get('tasks')?.setValue(positionDetailsData.tasks, { emitEvent: false });
+      }
+      if (this.positionDetailsForm.get('requirements')?.value !== positionDetailsData.requirements) {
+        this.positionDetailsForm.get('requirements')?.setValue(positionDetailsData.requirements, { emitEvent: false });
+      }
+    });
+  }
+
+  /**
+   * Builds step configuration data for the progress stepper component
+   */
+  private buildStepData(): StepData[] {
+    const steps: StepData[] = [];
+    const templates = {
+      panel1: this.panel1(),
+      panel2: this.panel2(),
+      panel3: this.panel3(),
+      status: this.savingStatePanel(),
+    };
+
+    if (templates.panel1) {
+      steps.push({
+        name: 'jobCreationForm.header.steps.basicInfo',
+        panelTemplate: templates.panel1,
+        shouldTranslate: true,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'chevron-left',
+            onClick: () => this.onBack(),
+            disabled: false,
+            label: 'jobActionButton.back',
+            changePanel: false,
+            shouldTranslate: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'arrow-right',
+            onClick: () => {},
+            disabled: !this.basicInfoValid(),
+            label: 'jobActionButton.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        status: templates.status,
+      });
+    }
+
+    if (templates.panel2) {
+      steps.push({
+        name: 'jobCreationForm.header.steps.positionDetails',
+        panelTemplate: templates.panel2,
+        shouldTranslate: true,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick: () => {},
+            disabled: false,
+            label: 'jobActionButton.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'arrow-right',
+            onClick: () => {},
+            disabled: !this.positionDetailsValid(),
+            label: 'jobActionButton.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        status: templates.status,
+      });
+    }
+
+    if (templates.panel3) {
+      steps.push({
+        name: 'jobCreationForm.header.steps.additionalInfo',
+        panelTemplate: templates.panel3,
+        shouldTranslate: true,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick: () => {},
+            disabled: false,
+            label: 'jobActionButton.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'paper-plane',
+            onClick: () => void this.publishJob(),
+            disabled: !this.allValid(),
+            label: 'jobActionButton.publish',
+            shouldTranslate: true,
+            changePanel: false,
+          },
+        ],
+        status: templates.status,
+      });
+    }
+
+    return steps;
+  }
+
+  /**
+   * Sets up auto-save functionality using effects to detect changes in form data
+   * Debounces save operations with a 3-second delay
+   */
+  private setupAutoSave(): void {
+    effect(() => {
+      const currentData = this.currentJobData();
+      const lastSaved = this.lastSavedData();
+
+      if (JSON.stringify(currentData) !== JSON.stringify(lastSaved)) {
+        if (this.autoSaveTimer) {
+          clearTimeout(this.autoSaveTimer);
+        }
+
+        this.autoSaveTimer = window.setTimeout(() => {
+          this.savingState.set(SavingStates.SAVING);
+          this.performAutoSave();
+        }, 3000);
+      }
+    });
+  }
+
+  /**
+   * Performs the actual auto-save operation by calling the appropriate API endpoint
+   * Handles both create and update scenarios based on existing job ID
+   */
+  private async performAutoSave(): Promise<void> {
+    const currentData = this.currentJobData();
+
+    try {
+      if (this.jobId()) {
+        await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), currentData));
+      } else {
+        const createdJob = await firstValueFrom(this.jobResourceService.createJob(currentData));
+        this.jobId.set(createdJob.jobId ?? '');
+      }
+
+      this.lastSavedData.set(currentData);
+    } catch (err) {
+      console.error('Auto-save failed:', err);
+    } finally {
+      // Wait 3 seconds before changing the state to SAVED
+      this.autoSaveTimer = window.setTimeout(() => {
+        this.savingState.set(SavingStates.SAVED);
+      }, 3000);
+    }
+  }
+
+  private findDropdownOption<T>(options: T[], value: any, valueField: keyof T): T | undefined {
+    return options.find(opt => opt[valueField] === value);
   }
 }

@@ -61,7 +61,7 @@ export const contractDurations = [
   { name: '5+ years', value: 5 },
 ];
 export const fundingTypes = [
-  { name: 'University Budget', value: JobFormDTO.FundingTypeEnum.FullyFunded },
+  { name: 'Fully Funded', value: JobFormDTO.FundingTypeEnum.FullyFunded },
   { name: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
   { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
   { name: 'Industry Sponsored', value: JobFormDTO.FundingTypeEnum.IndustrySponsored },
