@@ -1,0 +1,28 @@
+meta {
+  name: Update Template
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/email-templates
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "emailTemplateId": "",
+    "templateName": "",
+    "emailType": "",
+    "isDefault": true,
+    "english": {
+      "subject": "",
+      "body": ""
+    },
+    "german": {
+      "subject": "",
+      "body": ""
+    }
+  }
+}

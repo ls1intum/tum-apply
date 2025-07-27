@@ -3,7 +3,7 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.constants.TemplateVariable;
-import de.tum.cit.aet.core.domain.EmailTemplate;
+import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;
@@ -37,8 +37,8 @@ public class TemplateProcessingService {
         this.freemarkerConfig = freemarkerConfig;
     }
 
-    public String renderSubject(EmailTemplate emailTemplate) {
-        return "TUMApply - " + emailTemplate.getSubject();
+    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
+        return "TUMApply - " + emailTemplateTranslation.getSubject();
     }
 
     /**
@@ -46,29 +46,29 @@ public class TemplateProcessingService {
      * No sanitization is applied to the inner HTML (trusted source).
      * Metadata is added to both the inner rendering and the outer layout.
      */
-    public String renderTemplate(@NonNull EmailTemplate emailTemplate, @NonNull Object content) {
+    public String renderTemplate(@NonNull EmailTemplateTranslation emailTemplateTranslation, @NonNull Object content) {
         try {
             Map<String, Object> dataModel = createDataModel(content);
-            addMetaData(emailTemplate.getLanguage(), dataModel);
+            addMetaData(emailTemplateTranslation.getLanguage(), dataModel);
 
-            String templateName = emailTemplate.getTemplateName() != null
-                ? emailTemplate.getTemplateName()
+            String templateName = emailTemplateTranslation.getEmailTemplate().getTemplateName() != null
+                ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
                 : "inline";
             Template inlineTemplate = new Template(
                 templateName,
-                new StringReader(emailTemplate.getBodyHtml()),
+                new StringReader(emailTemplateTranslation.getBodyHtml()),
                 freemarkerConfig
             );
 
             String htmlBody = render(inlineTemplate, dataModel);
 
-            return renderLayout(emailTemplate.getLanguage(), htmlBody,false);
+            return renderLayout(emailTemplateTranslation.getLanguage(), htmlBody,false);
         } catch (IOException ex) {
             throw new TemplateProcessingException(
                 "Failed to process inline FreeMarker template: " +
-                    emailTemplate.getTemplateName() +
+                        emailTemplateTranslation.getEmailTemplate().getTemplateName() +
                     " for language: " +
-                    emailTemplate.getLanguage(),
+                        emailTemplateTranslation.getLanguage(),
                 ex
             );
         }

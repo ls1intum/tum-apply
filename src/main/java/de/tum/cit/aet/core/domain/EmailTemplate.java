@@ -1,21 +1,23 @@
 package de.tum.cit.aet.core.domain;
 
 import de.tum.cit.aet.core.constants.EmailType;
-import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 @Entity
 @Table(
-    name = "email_templates",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uk_email_template_name_lang_group_case",
-        columnNames = { "email_type", "template_name", "language", "research_group_id" }
-    )
+        name = "email_templates",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_email_template_name_group_type",
+                columnNames = { "template_name", "research_group_id", "email_type" }
+        )
 )
 @Getter
 @Setter
@@ -26,29 +28,22 @@ public class EmailTemplate extends AbstractAuditingEntity {
     @Column(name = "email_template_id", nullable = false, updatable = false)
     private UUID emailTemplateId;
 
+    @Column(name = "template_name", nullable = false)
+    private String templateName;
+
     @ManyToOne
     @JoinColumn(name = "research_group_id", nullable = false)
     private ResearchGroup researchGroup;
-
-    @Column(name = "template_name")
-    private String templateName; // relevant for APPLICATION_ACCEPTED
-
-    @Column(name = "language", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Language language;
 
     @Column(name = "email_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private EmailType emailType;
 
-    @Column(name = "subject", nullable = false)
-    private String subject;
+    @Column(name = "is_default", nullable = false)
+    private boolean isDefault;
 
-    @Column(name = "body_html", nullable = false)
-    private String bodyHtml;
-
-    @Column(name = "is_default")
-    private boolean isDefault; //default template -> can not be deleted
+    @OneToMany(mappedBy = "emailTemplate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<EmailTemplateTranslation> translations = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "created_by")

@@ -5,6 +5,8 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
   <changeSet id="016_create-email-templates" author="moritz-schmidt">
+
+    <!-- Logical template table -->
     <createTable tableName="email_templates">
       <column name="email_template_id" type="CHAR(36)">
         <constraints primaryKey="true" nullable="false"/>
@@ -14,19 +16,11 @@
         <constraints nullable="false"/>
       </column>
 
-      <column name="template_name" type="VARCHAR(255)"/>
-
-      <column name="language" type="VARCHAR(10)">
-        <constraints nullable="false"/>
-      </column>
+      <column name="template_name" type="VARCHAR(255)" />
 
       <column name="email_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-
-      <column name="subject" type="TEXT"/>
-
-      <column name="body_html" type="LONGTEXT"/>
 
       <column name="is_default" type="BOOLEAN" defaultValueBoolean="false"/>
 
@@ -41,6 +35,30 @@
       </column>
     </createTable>
 
+    <!-- Translations table -->
+    <createTable tableName="email_template_translations">
+      <column name="email_template_translation_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="email_template_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="language" type="VARCHAR(10)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="subject" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="body_html" type="LONGTEXT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <!-- Foreign key constraints -->
     <addForeignKeyConstraint baseTableName="email_templates"
                              baseColumnNames="research_group_id"
                              referencedTableName="research_groups"
@@ -53,10 +71,33 @@
                              referencedColumnNames="user_id"
                              constraintName="fk_email_templates_created_by"/>
 
+    <addForeignKeyConstraint baseTableName="email_template_translations"
+                             baseColumnNames="email_template_id"
+                             referencedTableName="email_templates"
+                             referencedColumnNames="email_template_id"
+                             constraintName="fk_template_translations_template"/>
+
+    <!-- Indexes -->
     <createIndex indexName="idx_email_templates_research_group" tableName="email_templates">
       <column name="research_group_id"/>
     </createIndex>
 
+    <createIndex indexName="idx_template_translations_template" tableName="email_template_translations">
+      <column name="email_template_id"/>
+    </createIndex>
+
+    <!-- Unique constraints -->
+    <sql>
+      CREATE UNIQUE INDEX uk_email_templates_type_name_group
+        ON email_templates(email_type, template_name, research_group_id);
+    </sql>
+
+    <sql>
+      CREATE UNIQUE INDEX uk_template_translations_template_lang
+        ON email_template_translations(email_template_id, language);
+    </sql>
+
+    <!-- Trigger for auto-updating timestamps -->
     <sql>
       ALTER TABLE email_templates
         MODIFY last_modified_at DATETIME(3) NOT NULL
@@ -64,11 +105,5 @@
         ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
 
-    <sql>
-      CREATE UNIQUE INDEX uk_email_type_template_name_lang_group
-        ON email_templates(email_type, template_name, language, research_group_id);
-    </sql>
-
   </changeSet>
-
 </databaseChangeLog>

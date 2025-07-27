@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.domain.EmailTemplate;
+import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
@@ -80,10 +80,10 @@ public class EmailService {
             return CompletableFuture.completedFuture(null);
         }
 
-        EmailTemplate emailTemplate = getEmailTemplate(email);
+        EmailTemplateTranslation emailTemplateTranslation = getEmailTemplateTranslation(email);
 
-        String subject = renderSubject(emailTemplate);
-        String body = renderBody(email, emailTemplate);
+        String subject = renderSubject(emailTemplateTranslation);
+        String body = renderBody(email, emailTemplateTranslation);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
@@ -108,28 +108,17 @@ public class EmailService {
         return CompletableFuture.completedFuture(null);
     }
 
-    /**
-     * Renders the subject of the email using a localized template.
-     *
-     * @param emailTemplate containing the subject
-     * @return rendered subject line
-     */
-    private String renderSubject(EmailTemplate emailTemplate) {
-        return templateProcessingService.renderSubject(emailTemplate);
+
+    private String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
+        return templateProcessingService.renderSubject(emailTemplateTranslation);
     }
 
-    /**
-     * Renders the HTML body of the email based on raw content or template.
-     *
-     * @param email the email to process
-     * @param emailTemplate emailTemplate containing the body
-     * @return rendered HTML body
-     */
-    private String renderBody(Email email, EmailTemplate emailTemplate) {
+
+    private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
         if (StringUtils.isNotEmpty(email.getHtmlBody())) {
             return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
         }
-        return templateProcessingService.renderTemplate(emailTemplate, email.getContent());
+        return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
     }
 
     /**
@@ -198,13 +187,13 @@ public class EmailService {
         }
     }
 
-    private EmailTemplate getEmailTemplate(Email email) {
-        return emailTemplateService.getTemplate(
+    private EmailTemplateTranslation getEmailTemplateTranslation(Email email) {
+        return emailTemplateService.getTemplateTranslation(
             email.getResearchGroup(),
-            email.getLanguage(),
             email.getTemplateName(),
-            email.getEmailType()
-        );
+            email.getEmailType(),
+            email.getLanguage()
+            );
     }
 
     private Set<String> getRecipientsToNotify(Set<User> users, Email email) {
