@@ -50,6 +50,7 @@ model/loginRequestDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
+model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageableObject.ts
 model/professorDTO.ts
 model/rejectDTO.ts

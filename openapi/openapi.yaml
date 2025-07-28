@@ -223,10 +223,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmailTemplateOverviewDTO"
-                  }
+                  "$ref": "#/components/schemas/PageResponseDTOEmailTemplateOverviewDTO"
                 }
               }
             }
@@ -3248,6 +3245,21 @@
           },
           "isDefault": {
             "type": "boolean"
+          }
+        }
+      },
+      "PageResponseDTOEmailTemplateOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailTemplateOverviewDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },

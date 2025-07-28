@@ -32,6 +32,7 @@ export * from './jobFormDTO';
 export * from './loginRequestDTO';
 export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
+export * from './pageResponseDTOEmailTemplateOverviewDTO';
 export * from './pageableObject';
 export * from './professorDTO';
 export * from './rejectDTO';
