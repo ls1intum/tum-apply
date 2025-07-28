@@ -15,6 +15,7 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
+import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
 
 const JobFormModes = {
   CREATE: 'create',
@@ -45,6 +46,7 @@ type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
     ButtonComponent,
     ButtonGroupComponent,
     StringInputComponent,
+    EditorComponent,
   ],
   providers: [JobResourceService],
 })

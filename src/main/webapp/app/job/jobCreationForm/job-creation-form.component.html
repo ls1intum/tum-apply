@@ -161,73 +161,49 @@
         <h2 jhiTranslate="jobCreationForm.header.steps.positionDetails"></h2>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <div class="form-field">
-          <label for="description" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.label"> </label>
-          <span class="required">*</span>
-          <fa-icon
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.toolTipText' | translate"
-            tooltipPosition="top"
+          <jhi-editor
+            label="jobCreationForm.positionDetailsSection.jobDescription.label"
+            placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
+            helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+            tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
+            [required]="true"
+            [characterLimit]="1000"
+            [model]="positionDetailsForm.get('description')?.value"
+            (modelChange)="onSelectionChange(positionDetailsForm, 'description', $event)"
+            [control]="positionDetailsForm.get('description') ?? undefined"
+            icon="circle-info"
+            [shouldTranslate]="true"
           />
-          <div class="input-with-icon">
-            <textarea
-              formControlName="description"
-              maxlength="1000"
-              id="description"
-              [placeholder]="'jobCreationForm.positionDetailsSection.jobDescription.placeholder' | translate"
-              rows="10"
-            ></textarea>
-          </div>
-          <div class="form-footer">
-            <small
-              class="description-helper"
-              jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
-            ></small>
-            <small class="char-counter"> {{ descriptionLength }}/1000 </small>
-          </div>
         </div>
         <div class="form-field">
-          <label for="tasks" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.label"> </label>
-          <span class="required">*</span>
-          <fa-icon
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'jobCreationForm.positionDetailsSection.tasks.toolTipText' | translate"
-            tooltipPosition="top"
+          <jhi-editor
+            label="jobCreationForm.positionDetailsSection.tasks.label"
+            placeholder="jobCreationForm.positionDetailsSection.tasks.placeholder"
+            helperText="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"
+            tooltipText="jobCreationForm.positionDetailsSection.tasks.toolTipText"
+            [required]="true"
+            [characterLimit]="1000"
+            [model]="positionDetailsForm.get('tasks')?.value"
+            (modelChange)="onSelectionChange(positionDetailsForm, 'tasks', $event)"
+            [control]="positionDetailsForm.get('tasks') ?? undefined"
+            icon="circle-info"
+            [shouldTranslate]="true"
           />
-          <div class="input-with-icon">
-            <textarea
-              formControlName="tasks"
-              maxlength="1000"
-              id="tasks"
-              [placeholder]="'jobCreationForm.positionDetailsSection.tasks.placeholder' | translate"
-              rows="8"
-            ></textarea>
-          </div>
-          <div class="form-footer">
-            <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
-            <small class="char-counter"> {{ tasksLength }}/1000 </small>
-          </div>
         </div>
         <div class="form-field">
-          <label for="requirements" jhiTranslate="jobCreationForm.positionDetailsSection.requirements.label"> </label>
-          <span class="required">*</span>
-          <fa-icon
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'jobCreationForm.positionDetailsSection.requirements.toolTipText' | translate"
-            tooltipPosition="top"
+          <jhi-editor
+            label="jobCreationForm.positionDetailsSection.requirements.label"
+            placeholder="jobCreationForm.positionDetailsSection.requirements.placeholder"
+            helperText="jobCreationForm.positionDetailsSection.requirements.descriptionHelper"
+            tooltipText="jobCreationForm.positionDetailsSection.requirements.toolTipText"
+            [required]="true"
+            [characterLimit]="1000"
+            [model]="positionDetailsForm.get('requirements')?.value"
+            (modelChange)="onSelectionChange(positionDetailsForm, 'requirements', $event)"
+            [control]="positionDetailsForm.get('requirements') ?? undefined"
+            icon="circle-info"
+            [shouldTranslate]="true"
           />
-          <div class="input-with-icon">
-            <textarea
-              formControlName="requirements"
-              maxlength="1000"
-              id="requirements"
-              [placeholder]="'jobCreationForm.positionDetailsSection.requirements.placeholder' | translate"
-              rows="10"
-            ></textarea>
-          </div>
-          <div class="form-footer">
-            <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
-            <small class="char-counter"> {{ requirementsLength }}/1000 </small>
-          </div>
         </div>
       </form>
       <div class="form-actions">
