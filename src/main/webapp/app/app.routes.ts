@@ -179,6 +179,17 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Research Group
+  // ======================================================================================
+  {
+    path: 'research-group/templates',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-templates/research-group-templates').then(m => m.ResearchGroupTemplates),
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,

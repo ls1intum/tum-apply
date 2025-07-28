@@ -111,6 +111,10 @@ export class SidebarComponent {
             },
           ],
         },
+        {
+          title: 'sidebar.researchgroup.researchgroup',
+          buttons: [{ icon: 'people-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/templates' }],
+        },
       ],
       ADMIN: [
         {
