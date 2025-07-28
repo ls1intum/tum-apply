@@ -21,7 +21,7 @@ services:
     ports:
       - '5432:5432'
   tumapply:
-    image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
+    image: 'ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}'
     env_file:
       - .env
     expose:
