@@ -3,16 +3,17 @@ package de.tum.cit.aet.core.web;
 import de.tum.cit.aet.core.dto.EmailTemplateDTO;
 import de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.EmailTemplateService;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/email-templates")
@@ -26,10 +27,10 @@ public class EmailTemplateResource {
      * Returns a paginated list of email templates for the current user's research group.
      *
      * @param pageDTO pagination parameters including page number and size
-     * @return a list of {@link EmailTemplateOverviewDTO} wrapped in a {@link ResponseEntity}
+     * @return a PageResponseDTO of {@link EmailTemplateOverviewDTO} wrapped in a {@link ResponseEntity}
      */
     @GetMapping
-    public ResponseEntity<List<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+    public ResponseEntity<PageResponseDTO<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         return ResponseEntity.ok(emailTemplateService.getTemplates(currentUserService.getResearchGroupIfProfessor(), pageDTO));
     }
 
