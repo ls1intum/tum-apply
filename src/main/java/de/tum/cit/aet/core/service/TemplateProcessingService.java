@@ -26,9 +26,7 @@ import java.util.Map;
 public class TemplateProcessingService {
 
     private final Configuration freemarkerConfig;
-
     private static final String BASE_RAW_TEMPLATE = "base/raw.ftl";
-
 
     @Value("${aet.client.url}")
     private String url;
@@ -37,14 +35,23 @@ public class TemplateProcessingService {
         this.freemarkerConfig = freemarkerConfig;
     }
 
+    /**
+     * Renders the email subject line for display in the final email.
+     *
+     * @param emailTemplateTranslation the email template translation
+     * @return the prefixed subject line
+     */
     public String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
         return "TUMApply - " + emailTemplateTranslation.getSubject();
     }
 
     /**
-     * Renders a DB-backed FreeMarker template and wraps it in the base layout.
-     * No sanitization is applied to the inner HTML (trusted source).
-     * Metadata is added to both the inner rendering and the outer layout.
+     * Renders the HTML email body using FreeMarker and applies layout formatting.
+     *
+     * @param emailTemplateTranslation the template translation containing raw HTML and language
+     * @param content                  the domain object (e.g. Application, Job) for variable binding
+     * @return the fully rendered HTML email body
+     * @throws TemplateProcessingException if template parsing or rendering fails
      */
     public String renderTemplate(@NonNull EmailTemplateTranslation emailTemplateTranslation, @NonNull Object content) {
         try {
@@ -52,39 +59,44 @@ public class TemplateProcessingService {
             addMetaData(emailTemplateTranslation.getLanguage(), dataModel);
 
             String templateName = emailTemplateTranslation.getEmailTemplate().getTemplateName() != null
-                ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
-                : "inline";
+                    ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
+                    : "inline";
+
             Template inlineTemplate = new Template(
-                templateName,
-                new StringReader(emailTemplateTranslation.getBodyHtml()),
-                freemarkerConfig
+                    templateName,
+                    new StringReader(emailTemplateTranslation.getBodyHtml()),
+                    freemarkerConfig
             );
 
             String htmlBody = render(inlineTemplate, dataModel);
-
-            return renderLayout(emailTemplateTranslation.getLanguage(), htmlBody,false);
+            return renderLayout(emailTemplateTranslation.getLanguage(), htmlBody, false);
         } catch (IOException ex) {
             throw new TemplateProcessingException(
-                "Failed to process inline FreeMarker template: " +
-                        emailTemplateTranslation.getEmailTemplate().getTemplateName() +
-                    " for language: " +
-                        emailTemplateTranslation.getLanguage(),
-                ex
-            );
+                    "Failed to process inline FreeMarker template: " +
+                            emailTemplateTranslation.getEmailTemplate().getTemplateName() +
+                            " for language: " + emailTemplateTranslation.getLanguage(), ex);
         }
     }
 
     /**
-     * Wraps raw HTML into the styled email layout.
-     * This variant sanitizes by default (useful for untrusted HTML).
-     * Metadata is always added.
+     * Wraps raw HTML content in the base layout template.
+     *
+     * @param language the language for metadata injection
+     * @param html     the raw HTML to wrap
+     * @return the wrapped and optionally sanitized HTML
      */
     public String renderRawTemplate(@NonNull Language language, String html) {
-        return renderLayout(language, html, /*sanitize*/ true);
+        return renderLayout(language, html, true);
     }
 
     /**
-     * Centralized layout rendering to ensure consistent behavior.
+     * Renders HTML inside the base layout template, with optional sanitization.
+     *
+     * @param language the email language
+     * @param html     the raw body HTML
+     * @param sanitize whether to sanitize the HTML
+     * @return fully rendered HTML including layout
+     * @throws TemplateProcessingException if layout template rendering fails
      */
     private String renderLayout(@NonNull Language language, String html, boolean sanitize) {
         try {
@@ -92,8 +104,6 @@ public class TemplateProcessingService {
 
             Map<String, Object> model = new HashMap<>();
             model.put("bodyHtml", sanitize ? HtmlSanitizer.sanitize(html) : html);
-
-            // Always add metadata to the outer layout as well.
             addMetaData(language, model);
 
             return render(layout, model);
@@ -103,19 +113,29 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Processes a FreeMarker template with the given data model.
+     * Processes a FreeMarker template using the given data model.
+     *
+     * @param template  the FreeMarker template
+     * @param dataModel the data model used for rendering
+     * @return the rendered HTML as a string
+     * @throws TemplateProcessingException if rendering fails
      */
     private String render(Template template, Map<String, Object> dataModel) {
         try (StringWriter writer = new StringWriter()) {
             template.process(dataModel, writer);
             return writer.toString();
         } catch (IOException | TemplateException ex) {
-            throw new TemplateProcessingException(
-                "Failed to render FreeMarker template '" + template.getName() + "'", ex
-            );
+            throw new TemplateProcessingException("Failed to render FreeMarker template '" + template.getName() + "'", ex);
         }
     }
 
+    /**
+     * Builds the data model used in templates from the provided domain object.
+     *
+     * @param content the object to extract data from (Application, Job, or ResearchGroup)
+     * @return a data model for template binding
+     * @throws TemplateProcessingException if the content type is unsupported
+     */
     private Map<String, Object> createDataModel(Object content) {
         Map<String, Object> dataModel = new HashMap<>();
         switch (content) {
@@ -130,6 +150,12 @@ public class TemplateProcessingService {
         return dataModel;
     }
 
+    /**
+     * Adds application-related variables to the template data model.
+     *
+     * @param dataModel   the data model map
+     * @param application the application object
+     */
     private void addApplicationData(Map<String, Object> dataModel, Application application) {
         User applicant = application.getApplicant().getUser();
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), applicant.getFirstName());
@@ -138,6 +164,12 @@ public class TemplateProcessingService {
         addJobData(dataModel, application.getJob());
     }
 
+    /**
+     * Adds job-related variables to the template data model.
+     *
+     * @param dataModel the data model map
+     * @param job       the job object
+     */
     private void addJobData(Map<String, Object> dataModel, Job job) {
         dataModel.put(TemplateVariable.JOB_TITLE.getValue(), job.getTitle());
 
@@ -148,15 +180,21 @@ public class TemplateProcessingService {
         addResearchGroupData(dataModel, job.getResearchGroup());
     }
 
+    /**
+     * Adds research group-related variables to the template data model.
+     *
+     * @param dataModel     the data model map
+     * @param researchGroup the research group object
+     */
     private void addResearchGroupData(Map<String, Object> dataModel, ResearchGroup researchGroup) {
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), researchGroup.getName());
     }
 
     /**
-     * Adds the language code and other metadata to the data model.
+     * Adds language metadata and application URL to the data model.
      *
-     * @param language  language enum
-     * @param dataModel model to which the language is added
+     * @param language  the language used for rendering
+     * @param dataModel the data model map
      */
     private void addMetaData(Language language, Map<String, Object> dataModel) {
         dataModel.put("language", language.getCode());

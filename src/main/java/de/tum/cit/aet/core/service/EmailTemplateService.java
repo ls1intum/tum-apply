@@ -337,7 +337,9 @@ public class EmailTemplateService {
      * @return a copy of the translation with Quill mentions in its body
      */
     private EmailTemplateTranslation translationWithQuillMentions(EmailTemplateTranslation tr) {
-        if (tr == null) return null;
+        if (tr == null) {
+            return null;
+        }
         EmailTemplateTranslation copy = new EmailTemplateTranslation();
         copy.setLanguage(tr.getLanguage());
         copy.setSubject(tr.getSubject());
