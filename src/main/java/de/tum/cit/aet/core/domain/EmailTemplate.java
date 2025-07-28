@@ -4,20 +4,19 @@ import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(
-        name = "email_templates",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_email_template_name_group_type",
-                columnNames = { "template_name", "research_group_id", "email_type" }
-        )
+    name = "email_templates",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_email_template_name_group_type",
+        columnNames = { "template_name", "research_group_id", "email_type" }
+    )
 )
 @Getter
 @Setter

@@ -4,17 +4,16 @@ import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Singular;
-
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Singular;
 
 @Getter
 @Builder

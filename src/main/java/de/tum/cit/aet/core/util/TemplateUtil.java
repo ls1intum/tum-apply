@@ -1,15 +1,14 @@
 package de.tum.cit.aet.core.util;
 
 import de.tum.cit.aet.core.constants.TemplateVariable;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
-
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TemplateUtil {
 
@@ -21,8 +20,8 @@ public class TemplateUtil {
      */
     private static final String MENTION_HTML_TEMPLATE =
         "<span class=\"mention\" data-index=\"0\" data-denotation-char=\"\" data-id=\"%s\" data-value=\"%s\">" +
-            "<span contenteditable=\"false\">" +
-            "<span class=\"ql-mention-denotation-char\">$</span>%s</span></span>";
+        "<span contenteditable=\"false\">" +
+        "<span class=\"ql-mention-denotation-char\">$</span>%s</span></span>";
 
     private static final Set<String> validVariables = TemplateVariable.getTemplateVariables();
 

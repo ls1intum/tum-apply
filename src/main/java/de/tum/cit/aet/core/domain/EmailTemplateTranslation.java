@@ -2,17 +2,14 @@ package de.tum.cit.aet.core.domain;
 
 import de.tum.cit.aet.core.constants.Language;
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Entity
-@Table(name = "email_template_translations",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uk_template_language",
-        columnNames = {"email_template_id", "language"}
-    )
+@Table(
+    name = "email_template_translations",
+    uniqueConstraints = @UniqueConstraint(name = "uk_template_language", columnNames = { "email_template_id", "language" })
 )
 @Getter
 @Setter

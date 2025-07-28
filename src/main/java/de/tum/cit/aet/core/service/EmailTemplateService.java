@@ -19,16 +19,14 @@ import de.tum.cit.aet.core.util.TemplateUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import java.io.IOException;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.*;
-
 
 @Service
 @AllArgsConstructor
@@ -50,7 +48,9 @@ public class EmailTemplateService {
     private EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
         addMissingTemplates(researchGroup);
 
-        return emailTemplateRepository.findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType).orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", researchGroup.getResearchGroupId(), templateName, emailType));
+        return emailTemplateRepository
+            .findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType)
+            .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", researchGroup.getResearchGroupId(), templateName, emailType));
     }
 
     /**
@@ -61,7 +61,9 @@ public class EmailTemplateService {
      * @throws EntityNotFoundException if no template is found for the given ID
      */
     private EmailTemplate get(UUID emailTemplateId) {
-        return emailTemplateRepository.findById(emailTemplateId).orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", emailTemplateId));
+        return emailTemplateRepository
+            .findById(emailTemplateId)
+            .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", emailTemplateId));
     }
 
     /**
@@ -74,7 +76,12 @@ public class EmailTemplateService {
      * @param language      the translation language
      * @return the matching {@link EmailTemplateTranslation}
      */
-    public EmailTemplateTranslation getTemplateTranslation(ResearchGroup researchGroup, String templateName, EmailType emailType, Language language) {
+    public EmailTemplateTranslation getTemplateTranslation(
+        ResearchGroup researchGroup,
+        String templateName,
+        EmailType emailType,
+        Language language
+    ) {
         EmailTemplate emailTemplate = get(researchGroup, templateName, emailType);
         return getTranslation(emailTemplate, language);
     }
@@ -90,8 +97,11 @@ public class EmailTemplateService {
     public List<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
         addMissingTemplates(researchGroup);
 
-        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), Sort.by(EmailTemplate_.IS_DEFAULT)
-                .ascending().and(Sort.by(EmailTemplate_.TEMPLATE_NAME).ascending()));
+        Pageable pageable = PageRequest.of(
+            pageDTO.pageNumber(),
+            pageDTO.pageSize(),
+            Sort.by(EmailTemplate_.IS_DEFAULT).ascending().and(Sort.by(EmailTemplate_.TEMPLATE_NAME).ascending())
+        );
         return emailTemplateRepository.findAllByResearchGroup(researchGroup, editableEmailTypes, pageable).toList();
     }
 
@@ -116,7 +126,6 @@ public class EmailTemplateService {
      * @throws ResourceAlreadyExistsException if a template with the same name already exists
      */
     public EmailTemplateDTO createTemplate(EmailTemplateDTO dto, ResearchGroup researchGroup, User createdBy) {
-
         if (!dto.emailType().isMultipleTemplates()) {
             throw new IllegalArgumentException("Cannot create another template of type: " + dto.emailType());
         }
@@ -152,8 +161,8 @@ public class EmailTemplateService {
      */
     public EmailTemplateDTO updateTemplate(EmailTemplateDTO dto) {
         EmailTemplate template = emailTemplateRepository
-                .findById(dto.emailTemplateId())
-                .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", dto.emailTemplateId()));
+            .findById(dto.emailTemplateId())
+            .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", dto.emailTemplateId()));
 
         if (!template.getEmailType().isTemplateEditable()) {
             throw new EmailTemplateException("EmailTemplate " + dto.emailTemplateId() + " is not editable");
@@ -199,19 +208,13 @@ public class EmailTemplateService {
             if (emailType.equals(EmailType.APPLICATION_REJECTED)) {
                 for (RejectReason reason : RejectReason.values()) {
                     String name = reason.getValue();
-                    if (!emailTemplateRepository.existsByResearchGroupAndTemplateNameAndEmailType(
-                            researchGroup,
-                            name,
-                            emailType)) {
+                    if (!emailTemplateRepository.existsByResearchGroupAndTemplateNameAndEmailType(researchGroup, name, emailType)) {
                         EmailTemplate template = createDefaultTemplate(researchGroup, name, emailType);
                         toSave.add(template);
                     }
                 }
             } else {
-                if (!emailTemplateRepository.existsByResearchGroupAndTemplateNameAndEmailType(
-                        researchGroup,
-                        null,
-                        emailType)) {
+                if (!emailTemplateRepository.existsByResearchGroupAndTemplateNameAndEmailType(researchGroup, null, emailType)) {
                     EmailTemplate template = createDefaultTemplate(researchGroup, null, emailType);
                     toSave.add(template);
                 }
@@ -277,12 +280,12 @@ public class EmailTemplateService {
         EmailTemplateTranslation de = translationWithQuillMentions(getTranslation(template, Language.GERMAN));
 
         return new EmailTemplateDTO(
-                template.getEmailTemplateId(),
-                template.getTemplateName(),
-                template.getEmailType(),
-                template.isDefault(),
-                en != null ? new EmailTemplateTranslationDTO(en.getSubject(), en.getBodyHtml()) : null,
-                de != null ? new EmailTemplateTranslationDTO(de.getSubject(), de.getBodyHtml()) : null
+            template.getEmailTemplateId(),
+            template.getTemplateName(),
+            template.getEmailType(),
+            template.isDefault(),
+            en != null ? new EmailTemplateTranslationDTO(en.getSubject(), en.getBodyHtml()) : null,
+            de != null ? new EmailTemplateTranslationDTO(de.getSubject(), de.getBodyHtml()) : null
         );
     }
 
@@ -355,10 +358,12 @@ public class EmailTemplateService {
      * @return the matching translation or null if not found
      */
     private EmailTemplateTranslation getTranslation(EmailTemplate template, Language language) {
-        return template.getTranslations().stream()
-                .filter(t -> t.getLanguage() == language)
-                .findFirst()
-                .orElse(null);
+        return template
+            .getTranslations()
+            .stream()
+            .filter(t -> t.getLanguage() == language)
+            .findFirst()
+            .orElse(null);
     }
 
     /**
@@ -381,8 +386,9 @@ public class EmailTemplateService {
      */
     private String readTemplateContent(String templatePath) {
         try {
-            return new String(Objects.requireNonNull(
-                    getClass().getClassLoader().getResourceAsStream("templates/" + templatePath)).readAllBytes());
+            return new String(
+                Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("templates/" + templatePath)).readAllBytes()
+            );
         } catch (IOException e) {
             throw new TemplateProcessingException("Failed to read template file: " + templatePath, e);
         }

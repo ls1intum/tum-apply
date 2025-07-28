@@ -24,14 +24,13 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -170,7 +169,9 @@ public class ApplicationService {
         ApplicationForApplicantDTO application = applicationRepository.findDtoById(updateApplicationDTO.applicationId());
 
         if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
-            Application app = applicationRepository.findById(application.applicationId()).orElseThrow(() -> EntityNotFoundException.forId("Application", application.applicationId()));
+            Application app = applicationRepository
+                .findById(application.applicationId())
+                .orElseThrow(() -> EntityNotFoundException.forId("Application", application.applicationId()));
 
             confirmApplicationToApplicant(app);
             confirmApplicationToProfessor(app);
