@@ -1,1 +1,28 @@
-<jhi-dynamic-table />
+<div class="content">
+  <div class="header">
+    <h1 jhiTranslate="researchGroup.header">Applications - Overview</h1>
+  </div>
+
+  <div class="table-wrapper">
+    <div class="actions">
+      <jhi-button label="Add Layout" icon="plus" />
+      <jhi-button label="Signature" variant="outlined" icon="pen-nib" />
+    </div>
+
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      [rows]="pageSize()"
+      (lazyLoad)="onTableEmit($event)"
+    />
+
+    <ng-template #editTemplate let-template>
+      <jhi-button variant="text" icon="pen" />
+    </ng-template>
+    <ng-template #deleteTemplate let-template>
+      <jhi-button variant="text" icon="trash-alt" [disabled]="template.isDefault" (click)="delete(template.emailTemplateId)" />
+    </ng-template>
+  </div>
+</div>

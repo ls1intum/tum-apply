@@ -1,0 +1,21 @@
+{
+  "researchGroup": {
+    "header": "Meine Gruppe",
+
+    "emailTemplates": {
+      "tableColumns": {
+        "templateName": "Vorlage",
+        "createdBy": "Erstellt von"
+      },
+
+      "default": {
+        "APPLICATION_ACCEPTED": "Bewerbung angenommen",
+        "APPLICATION_SENT": "Bewerbungseingang Bestätigung",
+        "APPLICATION_REJECTED-JOB_FILLED": "Bewerbung abgelehnt - Position bereits besetzt",
+        "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung abgelehnt - Position nicht mehr aktuell",
+        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
+        "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund"
+      }
+    }
+  }
+}

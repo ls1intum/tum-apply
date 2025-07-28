@@ -1,0 +1,21 @@
+{
+  "researchGroup": {
+    "header": "My Group",
+
+    "emailTemplates": {
+      "tableColumns": {
+        "templateName": "Template",
+        "createdBy": "Created by"
+      },
+
+      "default": {
+        "APPLICATION_ACCEPTED": "Application accepted",
+        "APPLICATION_SENT": "Application received confirmation",
+        "APPLICATION_REJECTED-JOB_FILLED": "Application rejected - Job already filled",
+        "APPLICATION_REJECTED-JOB_OUTDATED": "Application rejected - Job outdated",
+        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
+        "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason"
+      }
+    }
+  }
+}
