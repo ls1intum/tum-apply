@@ -30,7 +30,6 @@ This component allows applicants to:
 
 - Uses a **three-step progress stepper** (via `jhi-progress-stepper`), integrating each page as a templated panel.
 - Custom step buttons:
-
   - **Next** / **Prev**: navigate with validation checks.
   - **Cancel** (on Step 1): automatically autosaves and returns.
   - **Send** (on Step 3): final submission.

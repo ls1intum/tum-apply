@@ -13,17 +13,15 @@
       // maven and gradle wrappers are used by default, we don't need them installed globally
       // "INSTALL_MAVEN": "false",
       // "INSTALL_GRADLE": "true",
-      "NODE_VERSION": "22.13.1"
+      "NODE_VERSION": "24.2.0"
     }
   },
-
   "customizations": {
     "vscode": {
       // Set *default* container specific settings.json values on container create.
       "settings": {
         "java.jdt.ls.java.home": "/docker-java-home"
       },
-
       // Add the IDs of extensions you want installed when the container is created.
       "extensions": [
         "angular.ng-template",
@@ -37,10 +35,8 @@
       ]
     }
   },
-
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [4200, 3001, 9000, 8080],
-
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "java -version",
 

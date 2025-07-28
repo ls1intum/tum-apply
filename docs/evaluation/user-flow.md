@@ -18,7 +18,6 @@ This document outlines key workflows supported by the Application Evaluation Mod
 
 1. Navigate to the **Applications - Overview Page**.
 2. Use the **filter bar** to apply one or more of the following:
-
    - Job position
    - Application state (e.g., "In Review", "Unopened", "Accepted", "Rejected")
 
@@ -36,7 +35,6 @@ This document outlines key workflows supported by the Application Evaluation Mod
 
 1. From the table, click an application to open the **Applications - Review Page**.
 2. Review the following:
-
    - Applicant profile (name, documents, etc.)
    - Submitted motivation and project interests
 
@@ -55,7 +53,6 @@ This document outlines key workflows supported by the Application Evaluation Mod
 1. On the **Applications - Review Page**, click **Accept**.
 2. Enter a personalized acceptance message using the rich-text editor.
 3. Optionally enable/disable the checkbox to:
-
    - Do not notify the applicant
    - Automatically reject all other pending applications for the same job.
 

@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
@@ -13,7 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule],
+  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule, ToastComponent],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
@@ -76,6 +78,7 @@ export default class ApplicationOverviewForApplicantComponent {
   });
 
   private readonly router = inject(Router);
+  private toastService = inject(ToastService);
 
   private readonly applicationService = inject(ApplicationResourceService);
   private readonly accountService = inject(AccountService);
@@ -129,21 +132,20 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onDeleteApplication(applicationId: string): void {
-    // TODO nicer looking confirm
-    const confirmDelete = confirm('Do you really want to delete this application?');
-    if (confirmDelete) {
-      this.applicationService.deleteApplication(applicationId).subscribe({
-        next: () => {
-          alert('Application successfully deleted');
-          const event = this.lastLazyLoadEvent();
-          if (event) this.loadPage(event);
-        },
-        error(err) {
-          alert('Error withdrawing the application');
-          console.error('Delete failed', err);
-        },
-      });
-    }
+    // TODO nicer looking confirm, add dialog
+    // if (confirmDelete) {
+    this.applicationService.deleteApplication(applicationId).subscribe({
+      next: () => {
+        this.toastService.showSuccess({ detail: 'Application successfully deleted' });
+        const event = this.lastLazyLoadEvent();
+        if (event) this.loadPage(event);
+      },
+      error: err => {
+        this.toastService.showError({ detail: 'Error withdrawing the application' });
+        console.error('Delete failed', err);
+      },
+    });
+    // }
   }
 
   onWithdrawApplication(applicationId: string): void {
@@ -152,12 +154,12 @@ export default class ApplicationOverviewForApplicantComponent {
     if (confirmWithdraw) {
       this.applicationService.withdrawApplication(applicationId).subscribe({
         next: () => {
-          alert('Application successfully withdrawn');
+          this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
           const event = this.lastLazyLoadEvent();
           if (event) this.loadPage(event);
         },
-        error(err) {
-          alert('Error withdrawing the application');
+        error: err => {
+          this.toastService.showError({ detail: 'Error withdrawing the application' });
           console.error('Withdraw failed', err);
         },
       });

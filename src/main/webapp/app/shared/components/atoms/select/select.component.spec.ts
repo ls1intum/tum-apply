@@ -58,7 +58,13 @@ describe('SelectComponent', () => {
     component.isOpen = true;
     fixture.detectChanges();
 
-    const icon = fixture.nativeElement.querySelector('fa-icon');
-    expect(icon.getAttribute('ng-reflect-icon')).toContain('chevron-up');
+    let icon = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
+    expect(icon.icon()).toEqual(['fas', 'chevron-up']);
+
+    component.isOpen = false;
+    fixture.detectChanges();
+
+    icon = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
+    expect(icon.icon()).toEqual(['fas', 'chevron-down']);
   });
 });
