@@ -1,10 +1,5 @@
 package de.tum.cit.aet.core.web.rest.errors;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import de.tum.cit.aet.core.exception.handler.GlobalExceptionHandler;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import org.junit.jupiter.api.Test;
@@ -16,6 +11,11 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = TestExceptionController.class)
 @Import({ GlobalExceptionHandler.class, GlobalExceptionHandlerTest.TestConfig.class })
@@ -32,7 +32,7 @@ class GlobalExceptionHandlerTest {
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.errorCode").value("ENTITY_NOT_FOUND"))
             .andExpect(jsonPath("$.status").value(404))
-            .andExpect(jsonPath("$.message").value("User with id '42' does not exist"));
+            .andExpect(jsonPath("$.message").value("User with Ids '[42]' does not exist"));
     }
 
     @Test
