@@ -50,7 +50,6 @@ export default [
         'build/resources/main/static/',
         'prebuild.mjs',
         'src/main/webapp/app/generated/',
-        'src/main/resources/templates/**/*.html',
       ],
       languageOptions: {
         globals: {
@@ -245,7 +244,7 @@ export default [
     },
 
     {
-      files: ['**/*.html'],
+      files: ['src/main/webapp/**/*.html'], // only Angular html files
       languageOptions: {
         parser: angularTemplateParser,
       },
