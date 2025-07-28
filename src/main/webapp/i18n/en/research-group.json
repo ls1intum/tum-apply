@@ -3,6 +3,11 @@
     "header": "My Group",
 
     "emailTemplates": {
+      "newTemplate": "New Template",
+      "signature": "Signature",
+
+      "systemDefault": "System default",
+
       "tableColumns": {
         "templateName": "Template",
         "createdBy": "Created by"

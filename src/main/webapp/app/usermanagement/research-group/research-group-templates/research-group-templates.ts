@@ -45,17 +45,16 @@ export class ResearchGroupTemplates {
     this.currentLang();
     return this.responseData().map(template => {
       let displayName = template.templateName;
+      let createdBy = (template.firstName ?? '') + ' ' + (template.lastName ?? '');
 
       if (template.isDefault === true) {
+        createdBy = this.translate.instant(`${this.translationKey}.systemDefault`);
         if (template.templateName != null) {
-          const key = `${this.translationKey}.default.${template.emailType}-${template.templateName}`;
-          displayName = this.translate.instant(key);
+          displayName = this.translate.instant(`${this.translationKey}.default.${template.emailType}-${template.templateName}`);
         } else {
-          const key = `${this.translationKey}.default.${template.emailType}`;
-          displayName = this.translate.instant(key);
+          displayName = this.translate.instant(`${this.translationKey}.default.${template.emailType}`);
         }
       }
-      const createdBy = (template.firstName ?? '') + ' ' + (template.lastName ?? '');
 
       return {
         ...template,
