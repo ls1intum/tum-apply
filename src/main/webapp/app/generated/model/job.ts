@@ -29,6 +29,7 @@ export interface Job {
   tasks?: string;
   requirements?: string;
   state?: Job.StateEnum;
+  endDate?: string;
   startDate?: string;
   customFields?: Array<CustomField>;
   applications?: Array<Application>;
