@@ -15,9 +15,10 @@ export interface JobFormDTO {
   supervisingProfessor: string;
   location: JobFormDTO.LocationEnum;
   startDate?: string;
+  endDate?: string;
   workload?: number;
   contractDuration?: number;
-  fundingType: JobFormDTO.FundingTypeEnum;
+  fundingType?: JobFormDTO.FundingTypeEnum;
   description?: string;
   tasks?: string;
   requirements?: string;
