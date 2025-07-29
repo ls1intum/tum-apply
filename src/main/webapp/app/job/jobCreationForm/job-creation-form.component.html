@@ -99,16 +99,26 @@
             />
           </div>
           <div class="form-field">
-            <jhi-select
-              [(selected)]="basicInfoForm.controls['workload'].value"
-              (selectedChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
-              [iconField]="'icon'"
-              [items]="workloadOptions"
-              [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
-              [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+            <jhi-datepicker
+              [selectedDate]="basicInfoForm.get('endDate')?.value"
+              (selectedDateChange)="onSelectionChange(basicInfoForm, 'endDate', $event)"
+              [label]="'jobCreationForm.basicInformationSection.endDate.label' | translate"
+              [placeholder]="'jobCreationForm.basicInformationSection.endDate.placeholder' | translate"
               [width]="'100%'"
             />
           </div>
+        </div>
+
+        <div class="form-field">
+          <jhi-select
+            [(selected)]="basicInfoForm.controls['workload'].value"
+            (selectedChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
+            [iconField]="'icon'"
+            [items]="workloadOptions"
+            [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
+            [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+            [width]="'100%'"
+          />
         </div>
 
         <div class="form-row">
@@ -131,7 +141,6 @@
               [items]="fundingTypes"
               [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
               [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
-              [required]="true"
               [width]="'100%'"
             />
           </div>

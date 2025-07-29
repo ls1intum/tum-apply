@@ -1396,6 +1396,10 @@
             "type": "string",
             "format": "date"
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "workload": {
             "type": "integer",
             "format": "int32"
@@ -1437,7 +1441,6 @@
         },
         "required": [
           "fieldOfStudies",
-          "fundingType",
           "location",
           "state",
           "supervisingProfessor",
@@ -1869,6 +1872,10 @@
             "type": "string",
             "format": "date"
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "workload": {
             "type": "integer",
             "format": "int32"
@@ -2014,9 +2021,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "paged": {
             "type": "boolean"
           },
@@ -2027,6 +2031,9 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -2363,6 +2370,10 @@
               "APPLICANT_FOUND"
             ]
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "startDate": {
             "type": "string",
             "format": "date"
@@ -2428,6 +2439,10 @@
             "type": "string"
           },
           "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
             "type": "string",
             "format": "date"
           },
