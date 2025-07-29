@@ -27,6 +27,7 @@ public record JobDetailDTO(
     String tasks,
     String requirements,
     LocalDate startDate,
+    LocalDate endDate,
     @NotNull LocalDateTime createdAt,
     @NotNull LocalDateTime lastModifiedAt,
     JobState state
@@ -48,6 +49,7 @@ public record JobDetailDTO(
         String tasks,
         String requirements,
         LocalDate startDate,
+        LocalDate endDate,
         @NotNull LocalDateTime createdAt,
         @NotNull LocalDateTime lastModifiedAt,
         JobState state
@@ -67,6 +69,7 @@ public record JobDetailDTO(
             tasks,
             requirements,
             startDate,
+            endDate,
             createdAt,
             lastModifiedAt,
             state
