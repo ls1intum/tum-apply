@@ -24,6 +24,7 @@ export interface JobDetailDTO {
   tasks?: string;
   requirements?: string;
   startDate?: string;
+  endDate?: string;
   createdAt: string;
   lastModifiedAt: string;
   state?: JobDetailDTO.StateEnum;
