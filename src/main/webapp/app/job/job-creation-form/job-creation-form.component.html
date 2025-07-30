@@ -39,7 +39,7 @@
         </div>
 
         <div class="form-field">
-          <jhi-dropdown
+          <jhi-select
             [selected]="basicInfoForm.get('fieldOfStudies')?.value"
             (selectedChange)="basicInfoForm.get('fieldOfStudies')?.setValue($event)"
             [items]="DropdownOptions.fieldsOfStudies"
@@ -63,7 +63,7 @@
         </div>
 
         <div class="form-field">
-          <jhi-dropdown
+          <jhi-select
             [selected]="basicInfoForm.get('location')?.value"
             (selectedChange)="basicInfoForm.get('location')?.setValue($event)"
             [items]="DropdownOptions.locations"
@@ -86,20 +86,30 @@
           />
         </div>
         <div class="form-field">
-          <jhi-dropdown
-            [selected]="basicInfoForm.get('workload')?.value"
-            (selectedChange)="basicInfoForm.get('workload')?.setValue($event)"
-            [items]="DropdownOptions.workloadOptions"
-            [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+          <jhi-datepicker
+            [selectedDate]="basicInfoForm.get('endDate')?.value"
+            (selectedDateChange)="basicInfoForm.get('endDate')?.setValue($event)"
+            [label]="'jobCreationForm.basicInformationSection.endDate.label' | translate"
+            [placeholder]="'jobCreationForm.basicInformationSection.endDate.placeholder' | translate"
             [width]="'100%'"
           />
         </div>
       </div>
 
+      <div class="form-field">
+        <jhi-select
+          [selected]="basicInfoForm.get('workload')?.value"
+          (selectedChange)="basicInfoForm.get('workload')?.setValue($event)"
+          [items]="DropdownOptions.workloadOptions"
+          [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
+          [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+          [width]="'100%'"
+        />
+      </div>
+
       <div class="form-row">
         <div class="form-field">
-          <jhi-dropdown
+          <jhi-select
             [selected]="basicInfoForm.get('contractDuration')?.value"
             (selectedChange)="basicInfoForm.get('contractDuration')?.setValue($event)"
             [items]="DropdownOptions.contractDurations"
@@ -109,13 +119,12 @@
           />
         </div>
         <div class="form-field">
-          <jhi-dropdown
+          <jhi-select
             [selected]="basicInfoForm.get('fundingType')?.value"
             (selectedChange)="basicInfoForm.get('fundingType')?.setValue($event)"
             [items]="DropdownOptions.fundingTypes"
             [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
-            [required]="true"
             [width]="'100%'"
           />
         </div>
@@ -148,7 +157,7 @@
         </div>
         <div class="form-footer">
           <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"></small>
-          <small class="char-counter">{{ descriptionLength() }}/1000</small>
+          <small class="char-counter">{{ descriptionLength }}/1000</small>
         </div>
       </div>
 
@@ -171,7 +180,7 @@
         </div>
         <div class="form-footer">
           <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
-          <small class="char-counter">{{ tasksLength() }}/1000</small>
+          <small class="char-counter">{{ tasksLength }}/1000</small>
         </div>
       </div>
 
@@ -194,7 +203,7 @@
         </div>
         <div class="form-footer">
           <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
-          <small class="char-counter">{{ requirementsLength() }}/1000</small>
+          <small class="char-counter">{{ requirementsLength }}/1000</small>
         </div>
       </div>
     </form>
@@ -206,6 +215,8 @@
       <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
       <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
       <br />
+      <!--        Not implemented yet-->
+      <!--        Custom Questions Selection-->
       <div class="data-privacy-notice">
         <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
       </div>

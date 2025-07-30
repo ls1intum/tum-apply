@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { FilterDialogComponent } from '../filter-dialog/filter-dialog.component';
-import { DropdownComponent, DropdownOption } from '../../atoms/dropdown/dropdown.component';
+import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { FilterField } from '../../../filter';
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -16,7 +16,7 @@ export interface SortOption {
 
 @Component({
   selector: 'jhi-filter-sort-bar',
-  imports: [ButtonComponent, FilterDialogComponent, DropdownComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
+  imports: [ButtonComponent, FilterDialogComponent, SelectComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
   templateUrl: './filter-sort-bar.component.html',
   styleUrl: './filter-sort-bar.component.scss',
 })
@@ -42,8 +42,8 @@ export class FilterSortBarComponent {
     return this.filterFields().filter(f => f.selected.length > 0).length;
   });
 
-  // Determines the selected sort option for the dropdown
-  readonly selectedSortDropdownOption = computed<DropdownOption>(() => {
+  // Determines the selected sort option for the select component
+  readonly selectedSortSelectOption = computed<SelectOption>(() => {
     let cur: SortOption | undefined;
 
     if (this.currentSortOption()) {
@@ -59,8 +59,8 @@ export class FilterSortBarComponent {
     return { name: '', value: '' };
   });
 
-  // Generates dropdown options from sort options
-  readonly sortDropdownOptions = computed<DropdownOption[]>(
+  // Generates selection options from sort options
+  readonly sortSelectOptions = computed<SelectOption[]>(
     () =>
       this.sortOptions()?.map(opt => ({
         name: opt.displayName,
@@ -84,8 +84,8 @@ export class FilterSortBarComponent {
     this.filterChange.emit(this.filterFields());
   }
 
-  updateSort(opt: DropdownOption): void {
-    // Decodes dropdown option and finds matching SortOption
+  updateSort(opt: SelectOption): void {
+    // Decodes select option and finds matching SortOption
     const match = this.sortOptions()?.find(so => {
       const sortOption = this.decodeSortValue(opt.value as string);
       return so.field === sortOption?.field && so.direction === sortOption.direction;
@@ -98,12 +98,12 @@ export class FilterSortBarComponent {
     }
   }
 
-  // Encodes SortOption into string for dropdown value
+  // Encodes SortOption into string for select value
   encodeSortValue(option: SortOption): string {
     return option.field + '|' + option.direction;
   }
 
-  // Decodes dropdown string value back to SortOption
+  // Decodes select string value back to SortOption
   decodeSortValue(value: string): SortOption | undefined {
     const parts = value.split('|');
 

@@ -11,12 +11,12 @@ import { ProgressStepperComponent, StepData } from 'app/shared/components/molecu
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import SharedModule from '../../shared/shared.module';
-import { DropdownComponent } from '../../shared/components/atoms/dropdown/dropdown.component';
 import { JobDTO, JobFormDTO } from '../../generated';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
 import * as DropdownOptions from '.././dropdown-options';
+import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -32,11 +32,11 @@ type SavingState = 'SAVED' | 'SAVING';
     SharedModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    DropdownComponent,
     DatePickerComponent,
     StringInputComponent,
     ProgressStepperComponent,
     TranslateModule,
+    SelectComponent,
   ],
   providers: [JobResourceService],
 })
@@ -106,9 +106,15 @@ export class JobCreationFormComponent {
 
   // Character counters
   // TODO will be removed after Editor Component Integration
-  readonly descriptionLength = computed(() => this.positionDetailsForm.get('description')?.value.length);
-  readonly tasksLength = computed(() => this.positionDetailsForm.get('tasks')?.value.length);
-  readonly requirementsLength = computed(() => this.positionDetailsForm.get('requirements')?.value.length);
+  get descriptionLength(): number {
+    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
+  }
+  get tasksLength(): number {
+    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
+  }
+  get requirementsLength(): number {
+    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
+  }
 
   // Step configuration
   readonly stepData = computed<StepData[]>(() => this.buildStepData());
@@ -266,9 +272,10 @@ export class JobCreationFormComponent {
       researchArea: ['', [Validators.required]],
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
-      fundingType: [undefined, [Validators.required]],
+      fundingType: [undefined],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
       startDate: [''],
+      endDate: [''],
       workload: [undefined],
       contractDuration: [undefined],
     });
@@ -294,6 +301,7 @@ export class JobCreationFormComponent {
       supervisingProfessor: this.userId(),
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
       startDate: basicInfoValue.startDate ?? '',
+      endDate: basicInfoValue.endDate ?? '',
       workload: basicInfoValue.workload?.value !== undefined ? Number(basicInfoValue.workload.value) : undefined,
       contractDuration: basicInfoValue.contractDuration?.value !== undefined ? Number(basicInfoValue.contractDuration.value) : undefined,
       fundingType: basicInfoValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
@@ -353,6 +361,7 @@ export class JobCreationFormComponent {
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       startDate: job?.startDate ?? '',
+      endDate: job?.endDate ?? '',
       workload: this.findDropdownOption(DropdownOptions.workloadOptions, job?.workload),
       contractDuration: this.findDropdownOption(DropdownOptions.contractDurations, job?.contractDuration),
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),

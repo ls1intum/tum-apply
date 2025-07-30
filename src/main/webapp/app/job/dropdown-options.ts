@@ -47,11 +47,11 @@ export const fieldsOfStudies = [
   { name: 'Urban Planning', value: 'Urban Planning' },
 ];
 export const workloadOptions = [
-  { name: '100% (Full-time)', value: 40 },
-  { name: '60%', value: 24 },
-  { name: '40%', value: 16 },
-  { name: '20%', value: 8 },
-  { name: '10%', value: 4 },
+  { name: '40 hours/week (Full-time)', value: 40 },
+  { name: '24 hours/week', value: 24 },
+  { name: '16 hours/week', value: 16 },
+  { name: '8 hours/week', value: 8 },
+  { name: '4 hours/week', value: 4 },
 ];
 export const contractDurations = [
   { name: '1 year', value: 1 },

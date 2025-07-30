@@ -12,7 +12,7 @@ plugins {
     id "idea"
     id "java"
     id "jacoco"
-    id "com.diffplug.spotless" version "7.1.0"
+    id "com.diffplug.spotless" version "7.2.1"
     id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
     id "com.github.ben-manes.versions" version "0.52.0"
     id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
@@ -27,7 +27,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "0.1.0"
+version = "0.1.1"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
@@ -181,17 +181,26 @@ dependencies {
 
     implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
 
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    // Defines low-level streaming API, and includes JSON-specific implementations
+    implementation "com.fasterxml.jackson.core:jackson-core:${fasterxml_version}"
+    // Contains standard Jackson annotations
+    implementation "com.fasterxml.jackson.core:jackson-annotations:${fasterxml_version}"
+    // Implements data-binding (and object serialization) support
+    implementation "com.fasterxml.jackson.core:jackson-databind:${fasterxml_version}"
+    // Support for "Java 8 Dates"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${fasterxml_version}"
+    // Support JSON serialization and deserialization of Hibernate (https://hibernate.org) specific data types and properties; especially lazy-loading aspects
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:${fasterxml_version}"
+
     testImplementation("com.tngtech.archunit:archunit-junit5-api:${archunitJunit5Version}") {
         exclude group: "org.slf4j", module: "slf4j-api"
     }
     testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
         exclude group: "org.slf4j", module: "slf4j-api"
     }
-    implementation "io.micrometer:micrometer-registry-prometheus-simpleclient"
+    implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.2"
     implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
-    implementation "org.apache.commons:commons-lang3"
+    implementation "org.apache.commons:commons-lang3:3.18.0"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -214,10 +223,10 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.security:spring-security-data"
+    implementation "com.mysql:mysql-connector-j:9.3.0"
+    implementation "com.zaxxer:HikariCP:7.0.0"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
-    implementation "com.mysql:mysql-connector-j"
-    implementation "com.zaxxer:HikariCP:6.3.0"
     implementation "org.hibernate.orm:hibernate-core"
     implementation "org.hibernate.validator:hibernate-validator"
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
@@ -225,14 +234,16 @@ dependencies {
     implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter-cache"
-    implementation "com.github.ben-manes.caffeine:caffeine:3.2.0"
-    implementation "com.github.ben-manes.caffeine:jcache:3.2.0"
+    implementation "com.github.ben-manes.caffeine:caffeine:3.2.2"
+    implementation "com.github.ben-manes.caffeine:jcache:3.2.2"
     implementation "javax.cache:cache-api"
-    implementation "org.hibernate.orm:hibernate-jcache"
+    implementation "org.hibernate.orm:hibernate-jcache:${hibernateVersion}"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateVersion}"
+    implementation "org.hibernate.validator:hibernate-validator:9.0.1.Final"
 
 
     // needed for OpenAPI generation
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
     runtimeOnly "com.h2database:h2"
 
 
@@ -241,7 +252,7 @@ dependencies {
     testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
     testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
     annotationProcessor "org.glassfish.jaxb:jaxb-runtime"
-    annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"
+    annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen:${hibernateVersion}"
     developmentOnly "org.springframework.boot:spring-boot-docker-compose"
     developmentOnly "org.springframework.boot:spring-boot-devtools"
     compileOnly("org.projectlombok:lombok:1.18.38")
@@ -255,6 +266,10 @@ dependencies {
 
     // Jsoup for sanitizing HTML
     implementation 'org.jsoup:jsoup:1.21.1'
+
+    // Spring Retry
+    implementation 'org.springframework.retry:spring-retry:2.0.12'
+    implementation 'org.springframework:spring-aspects'
 }
 
 tasks.register("cleanResources", Delete) {

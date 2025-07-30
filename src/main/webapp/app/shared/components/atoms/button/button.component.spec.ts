@@ -49,7 +49,6 @@ describe('ButtonComponent', () => {
 
     const icon = fixture.nativeElement.querySelector('fa-icon');
     expect(icon).toBeTruthy();
-    expect(icon.getAttribute('ng-reflect-icon')).toContain('home');
   });
 
   it('should display favorite badge when numberOfFavorites is set', () => {

@@ -3,24 +3,24 @@ import { By } from '@angular/platform-browser';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
-import { DropdownComponent, DropdownOption } from './dropdown.component';
+import { SelectComponent, SelectOption } from './select.component';
 
-describe('DropdownComponent', () => {
-  let component: DropdownComponent;
-  let fixture: ComponentFixture<DropdownComponent>;
+describe('SelectComponent', () => {
+  let component: SelectComponent;
+  let fixture: ComponentFixture<SelectComponent>;
   let library: FaIconLibrary;
 
-  const optionsMock: DropdownOption[] = [
+  const optionsMock: SelectOption[] = [
     { name: 'Option A', value: 'a' },
     { name: 'Option B', value: 'b' },
   ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DropdownComponent],
+      imports: [SelectComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DropdownComponent);
+    fixture = TestBed.createComponent(SelectComponent);
     component = fixture.componentInstance;
 
     library = TestBed.inject(FaIconLibrary);
@@ -40,12 +40,12 @@ describe('DropdownComponent', () => {
     expect(label.textContent).toContain('Choose Option');
   });
 
-  it('should disable dropdown when disabled input is true', () => {
+  it('should disable select when disabled input is true', () => {
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
-    const dropdown = fixture.debugElement.query(By.css('p-dropdown'));
-    expect(dropdown.componentInstance.disabled);
+    const select = fixture.debugElement.query(By.css('p-select'));
+    expect(select.componentInstance.disabled);
   });
 
   it('should emit selectedChange when an option is selected', () => {
@@ -58,7 +58,13 @@ describe('DropdownComponent', () => {
     component.isOpen = true;
     fixture.detectChanges();
 
-    const icon = fixture.nativeElement.querySelector('fa-icon');
-    expect(icon.getAttribute('ng-reflect-icon')).toContain('chevron-up');
+    let icon = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
+    expect(icon.icon()).toEqual(['fas', 'chevron-up']);
+
+    component.isOpen = false;
+    fixture.detectChanges();
+
+    icon = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
+    expect(icon.icon()).toEqual(['fas', 'chevron-down']);
   });
 });

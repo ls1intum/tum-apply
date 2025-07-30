@@ -493,7 +493,7 @@
         }
       }
     },
-    "/api/applications/create/{jobId}/applicant/{applicantId}": {
+    "/api/applications/create/{jobId}": {
       "post": {
         "tags": [
           "application-resource"
@@ -502,15 +502,6 @@
         "parameters": [
           {
             "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "applicantId",
             "in": "path",
             "required": true,
             "schema": {
@@ -2108,6 +2099,10 @@
             "type": "string",
             "format": "date"
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "workload": {
             "type": "integer",
             "format": "int32"
@@ -2148,7 +2143,7 @@
           }
         },
         "required": [
-          "fundingType",
+          "fieldOfStudies",
           "location",
           "state",
           "supervisingProfessor",
@@ -2422,7 +2417,10 @@
           }
         },
         "required": [
+          "fieldOfStudies",
           "jobId",
+          "location",
+          "professorName",
           "title"
         ]
       },
@@ -2590,6 +2588,10 @@
             "type": "string",
             "format": "date"
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "workload": {
             "type": "integer",
             "format": "int32"
@@ -2682,13 +2684,13 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
@@ -2713,12 +2715,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -2735,9 +2737,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "paged": {
             "type": "boolean"
           },
@@ -2748,6 +2747,9 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -2757,10 +2759,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
@@ -2768,61 +2770,12 @@
       "Applicant": {
         "type": "object",
         "properties": {
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastModifiedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
           "userId": {
             "type": "string",
             "format": "uuid"
           },
-          "researchGroup": {
-            "$ref": "#/components/schemas/ResearchGroup"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatar": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "gender": {
-            "type": "string"
-          },
-          "nationality": {
-            "type": "string"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "linkedinUrl": {
-            "type": "string"
-          },
-          "selectedLanguage": {
-            "type": "string"
-          },
-          "researchGroupRoles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserResearchGroupRole"
-            },
-            "uniqueItems": true
+          "user": {
+            "$ref": "#/components/schemas/User"
           },
           "submittedApplications": {
             "type": "array",
@@ -3137,6 +3090,10 @@
               "APPLICANT_FOUND"
             ]
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "startDate": {
             "type": "string",
             "format": "date"
@@ -3202,6 +3159,10 @@
             "type": "string"
           },
           "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
             "type": "string",
             "format": "date"
           },
@@ -3383,13 +3344,13 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
@@ -3414,12 +3375,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
