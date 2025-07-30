@@ -14,14 +14,13 @@
     <form [formGroup]="basicInfoForm">
       <h2 jhiTranslate="jobCreationForm.header.steps.basicInfo"></h2>
       <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
-
+      <br />
       <div class="form-field">
         <jhi-string-input
           [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
           [placeholder]="'jobCreationForm.basicInformationSection.jobTitle.placeholder' | translate"
           [required]="true"
-          [model]="basicInfo().title"
-          (modelChange)="onBasicInfoInputChange('title', $event)"
+          [model]="basicInfoForm.get('title')?.value"
           [control]="basicInfoForm.get('title') ?? undefined"
         />
       </div>
@@ -33,8 +32,7 @@
             [placeholder]="'jobCreationForm.basicInformationSection.researchArea.placeholder' | translate"
             [required]="true"
             icon="circle-info"
-            [model]="basicInfo().researchArea"
-            (modelChange)="onBasicInfoInputChange('researchArea', $event)"
+            [model]="basicInfoForm.get('researchArea')?.value"
             [control]="basicInfoForm.get('researchArea') ?? undefined"
             [tooltipText]="'jobCreationForm.basicInformationSection.researchArea.toolTipText' | translate"
           />
@@ -42,8 +40,8 @@
 
         <div class="form-field">
           <jhi-dropdown
-            [selected]="basicInfo().fieldOfStudies ?? undefined"
-            (selectedChange)="onBasicInfoInputChange('fieldOfStudies', $event)"
+            [selected]="basicInfoForm.get('fieldOfStudies')?.value"
+            (selectedChange)="basicInfoForm.get('fieldOfStudies')?.setValue($event)"
             [items]="DropdownOptions.fieldsOfStudies"
             [label]="'jobCreationForm.basicInformationSection.fieldOfStudies.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
@@ -60,14 +58,14 @@
           </label>
           <div class="icon-input-wrapper">
             <fa-icon [icon]="['fas', 'user']" class="input-icon" />
-            <input [disabled]="true" [value]="basicInfo().supervisingProfessor" id="supervisingProfessor" type="text" />
+            <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
           </div>
         </div>
 
         <div class="form-field">
           <jhi-dropdown
-            [selected]="basicInfo().location ?? undefined"
-            (selectedChange)="onBasicInfoInputChange('location', $event)"
+            [selected]="basicInfoForm.get('location')?.value"
+            (selectedChange)="basicInfoForm.get('location')?.setValue($event)"
             [items]="DropdownOptions.locations"
             [label]="'jobCreationForm.basicInformationSection.location.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
@@ -80,8 +78,8 @@
       <div class="form-row">
         <div class="form-field">
           <jhi-datepicker
-            [selectedDate]="basicInfo().startDate"
-            (selectedDateChange)="onBasicInfoInputChange('startDate', $event)"
+            [selectedDate]="basicInfoForm.get('startDate')?.value"
+            (selectedDateChange)="basicInfoForm.get('startDate')?.setValue($event)"
             [label]="'jobCreationForm.basicInformationSection.startDate.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder' | translate"
             [width]="'100%'"
@@ -89,8 +87,8 @@
         </div>
         <div class="form-field">
           <jhi-dropdown
-            [selected]="basicInfo().workload ?? undefined"
-            (selectedChange)="onBasicInfoInputChange('workload', $event)"
+            [selected]="basicInfoForm.get('workload')?.value"
+            (selectedChange)="basicInfoForm.get('workload')?.setValue($event)"
             [items]="DropdownOptions.workloadOptions"
             [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
@@ -102,8 +100,8 @@
       <div class="form-row">
         <div class="form-field">
           <jhi-dropdown
-            [selected]="basicInfo().contractDuration ?? undefined"
-            (selectedChange)="onBasicInfoInputChange('contractDuration', $event)"
+            [selected]="basicInfoForm.get('contractDuration')?.value"
+            (selectedChange)="basicInfoForm.get('contractDuration')?.setValue($event)"
             [items]="DropdownOptions.contractDurations"
             [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.contractDuration.placeholder' | translate"
@@ -112,8 +110,8 @@
         </div>
         <div class="form-field">
           <jhi-dropdown
-            [selected]="basicInfo().fundingType ?? undefined"
-            (selectedChange)="onBasicInfoInputChange('fundingType', $event)"
+            [selected]="basicInfoForm.get('fundingType')?.value"
+            (selectedChange)="basicInfoForm.get('fundingType')?.setValue($event)"
             [items]="DropdownOptions.fundingTypes"
             [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
@@ -130,7 +128,7 @@
     <form [formGroup]="positionDetailsForm">
       <h2 jhiTranslate="jobCreationForm.header.steps.positionDetails"></h2>
       <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
-
+      <br />
       <div class="form-field">
         <label for="description" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.label"></label>
         <span class="required">*</span>
@@ -146,7 +144,6 @@
             id="description"
             [placeholder]="'jobCreationForm.positionDetailsSection.jobDescription.placeholder' | translate"
             rows="10"
-            (input)="onPositionDetailsInputChange('description', $event)"
           ></textarea>
         </div>
         <div class="form-footer">
@@ -170,7 +167,6 @@
             id="tasks"
             [placeholder]="'jobCreationForm.positionDetailsSection.tasks.placeholder' | translate"
             rows="8"
-            (input)="onPositionDetailsInputChange('tasks', $event)"
           ></textarea>
         </div>
         <div class="form-footer">
@@ -194,7 +190,6 @@
             id="requirements"
             [placeholder]="'jobCreationForm.positionDetailsSection.requirements.placeholder' | translate"
             rows="10"
-            (input)="onPositionDetailsInputChange('requirements', $event)"
           ></textarea>
         </div>
         <div class="form-footer">
@@ -207,15 +202,14 @@
 
   <!-- Step 3: Additional Information -->
   <ng-template #panel3>
-    <form [formGroup]="additionalInformationForm">
-      <section class="extras-section">
-        <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
-        <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
-        <div class="data-privacy-notice">
-          <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-        </div>
-      </section>
-    </form>
+    <section class="extras-section">
+      <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
+      <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
+      <br />
+      <div class="data-privacy-notice">
+        <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
+      </div>
+    </section>
   </ng-template>
 
   <!-- Saving State Panel -->
