@@ -1474,6 +1474,10 @@
             "type": "string",
             "format": "date"
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "workload": {
             "type": "integer",
             "format": "int32"
@@ -1515,7 +1519,6 @@
         },
         "required": [
           "fieldOfStudies",
-          "fundingType",
           "location",
           "state",
           "supervisingProfessor",
@@ -1944,6 +1947,10 @@
             ]
           },
           "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
             "type": "string",
             "format": "date"
           },
@@ -2466,6 +2473,10 @@
               "APPLICANT_FOUND"
             ]
           },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
           "startDate": {
             "type": "string",
             "format": "date"
@@ -2531,6 +2542,10 @@
             "type": "string"
           },
           "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
             "type": "string",
             "format": "date"
           },

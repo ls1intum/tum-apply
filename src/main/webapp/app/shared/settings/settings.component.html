@@ -1,0 +1,20 @@
+<div class="content">
+  <div class="header">
+    <h1 jhiTranslate="settings.header">Settings</h1>
+  </div>
+
+  <div class="notifications">
+    <div class="settings-sub-heading">
+      <fa-icon class="icon" [icon]="['fas', 'bell']" />
+      <h2 jhiTranslate="settings.notifications.header"></h2>
+    </div>
+    @switch (role) {
+      @case ('PROFESSOR') {
+        <jhi-professor-notifications />
+      }
+      @case ('APPLICANT') {
+        <jhi-applicant-notifications />
+      }
+    }
+  </div>
+</div>
