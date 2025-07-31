@@ -370,7 +370,7 @@ public class ApplicationService {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(application, DocumentType.CV, Set.of(Pair.of(document, cv.getName())));
+        updateDocumentDictionaries(application, DocumentType.CV, Set.of(Pair.of(document, cv.getOriginalFilename())));
     }
 
     /**
