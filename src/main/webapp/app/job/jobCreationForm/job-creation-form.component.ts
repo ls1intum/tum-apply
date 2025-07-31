@@ -15,6 +15,7 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
+import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
 
 const JobFormModes = {
   CREATE: 'create',
@@ -45,6 +46,7 @@ type JobFormMode = (typeof JobFormModes)[keyof typeof JobFormModes];
     ButtonComponent,
     ButtonGroupComponent,
     StringInputComponent,
+    NumberInputComponent,
   ],
   providers: [JobResourceService],
 })
@@ -106,20 +108,6 @@ export class JobCreationFormComponent {
     { name: 'Sports Science', value: 'Sports Science' },
     { name: 'Telecommunications', value: 'Telecommunications' },
     { name: 'Urban Planning', value: 'Urban Planning' },
-  ];
-  workloadOptions = [
-    { name: '40 hours/week (Full-time)', value: 40 },
-    { name: '24 hours/week', value: 24 },
-    { name: '16 hours/week', value: 16 },
-    { name: '8 hours/week', value: 8 },
-    { name: '4 hours/week', value: 4 },
-  ];
-  contractDurations = [
-    { name: '1 year', value: 1 },
-    { name: '2 years', value: 2 },
-    { name: '3 years', value: 3 },
-    { name: '4 years', value: 4 },
-    { name: '5+ years', value: 5 },
   ];
   fundingTypes = [
     { name: 'University Budget', value: JobFormDTO.FundingTypeEnum.FullyFunded },
@@ -221,15 +209,13 @@ export class JobCreationFormComponent {
      * Updates the specified form control with a selected option value.
      * The value can be a string, number, or enum used in selections.
      */
-    const findOption = <T>(options: T[], value: any, valueField: keyof T): T | null => {
-      return job ? (options.find(opt => opt[valueField] === value) ?? null) : null;
+    const findOption = <T>(options: T[], value: any, valueField: keyof T): T | undefined => {
+      return job ? (options.find(opt => opt[valueField] === value) ?? undefined) : undefined;
     };
 
     // Initialize select options
     const locationOption = findOption(this.locations, job?.location, 'value');
     const fieldOfStudiesOption = findOption(this.fieldsOfStudies, job?.fieldOfStudies, 'value');
-    const workloadOption = findOption(this.workloadOptions, job?.workload, 'value');
-    const contractDurationOption = findOption(this.contractDurations, job?.contractDuration, 'value');
     const fundingTypeOption = findOption(this.fundingTypes, job?.fundingType, 'value');
 
     // Basic Information form
@@ -247,8 +233,8 @@ export class JobCreationFormComponent {
       location: [locationOption, Validators.required],
       startDate: [job?.startDate ?? ''],
       endDate: [job?.endDate ?? ''],
-      workload: [workloadOption],
-      contractDuration: [contractDurationOption],
+      workload: [job?.workload ?? undefined],
+      contractDuration: [job?.contractDuration ?? undefined],
       fundingType: [fundingTypeOption],
     });
 
@@ -333,14 +319,14 @@ export class JobCreationFormComponent {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
-      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies?.value ?? null,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies?.value ?? undefined,
       supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.value.location?.value ?? null,
+      location: this.basicInfoForm.value.location?.value ?? undefined,
       startDate: this.basicInfoForm.value.startDate,
       endDate: this.basicInfoForm.value.endDate,
-      workload: this.basicInfoForm.value.workload?.value ?? null,
-      contractDuration: this.basicInfoForm.value.contractDuration?.value ?? null,
-      fundingType: this.basicInfoForm.value.fundingType?.value ?? null,
+      workload: this.basicInfoForm.value.workload,
+      contractDuration: this.basicInfoForm.value.contractDuration,
+      fundingType: this.basicInfoForm.value.fundingType?.value ?? undefined,
       description: this.positionDetailsForm.value.description,
       tasks: this.positionDetailsForm.value.tasks,
       requirements: this.positionDetailsForm.value.requirements,
@@ -365,14 +351,14 @@ export class JobCreationFormComponent {
     const jobFormDto: JobFormDTO = {
       title: this.basicInfoForm.value.title,
       researchArea: this.basicInfoForm.value.researchArea,
-      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies?.value ?? null,
+      fieldOfStudies: this.basicInfoForm.value.fieldOfStudies?.value ?? undefined,
       supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.value.location?.value ?? null,
+      location: this.basicInfoForm.value.location?.value ?? undefined,
       startDate: this.basicInfoForm.value.startDate,
       endDate: this.basicInfoForm.value.endDate,
-      workload: this.basicInfoForm.value.workload?.value ?? null,
-      contractDuration: this.basicInfoForm.value.contractDuration?.value ?? null,
-      fundingType: this.basicInfoForm.value.fundingType?.value ?? null,
+      workload: this.basicInfoForm.value.workload,
+      contractDuration: this.basicInfoForm.value.contractDuration,
+      fundingType: this.basicInfoForm.value.fundingType?.value ?? undefined,
       description: this.positionDetailsForm.value.description,
       tasks: this.positionDetailsForm.value.tasks,
       requirements: this.positionDetailsForm.value.requirements,

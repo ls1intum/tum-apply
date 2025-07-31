@@ -59,6 +59,7 @@
               [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
               [required]="true"
               [width]="'100%'"
+              [filter]="true"
             />
           </div>
         </div>
@@ -84,6 +85,7 @@
               [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
               [required]="true"
               [width]="'100%'"
+              [filter]="true"
             />
           </div>
         </div>
@@ -110,27 +112,31 @@
         </div>
 
         <div class="form-field">
-          <jhi-select
-            [(selected)]="basicInfoForm.controls['workload'].value"
-            (selectedChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
-            [iconField]="'icon'"
-            [items]="workloadOptions"
+          <jhi-number-input
             [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
-            [width]="'100%'"
+            [model]="basicInfoForm.get('workload')?.value"
+            (modelChange)="onSelectionChange(basicInfoForm, 'workload', $event)"
+            [control]="basicInfoForm.get('workload') ?? undefined"
+            [min]="1"
+            [max]="40"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="0"
           />
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <jhi-select
-              [(selected)]="basicInfoForm.controls['contractDuration'].value"
-              (selectedChange)="onSelectionChange(basicInfoForm, 'contractDuration', $event)"
-              [iconField]="'icon'"
-              [items]="contractDurations"
+            <jhi-number-input
               [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
               [placeholder]="'jobCreationForm.basicInformationSection.contractDuration.placeholder' | translate"
-              [width]="'100%'"
+              [model]="basicInfoForm.get('contractDuration')?.value"
+              (modelChange)="onSelectionChange(basicInfoForm, 'contractDuration', $event)"
+              [control]="basicInfoForm.get('contractDuration') ?? undefined"
+              [min]="1"
+              [max]="100"
+              [minFractionDigits]="0"
+              [maxFractionDigits]="0"
             />
           </div>
           <div class="form-field">
@@ -142,6 +148,7 @@
               [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
               [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
               [width]="'100%'"
+              [filter]="true"
             />
           </div>
         </div>
