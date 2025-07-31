@@ -1,6 +1,8 @@
-package de.tum.cit.aet.core.notification;
+package de.tum.cit.aet.core.service.mail;
 
+import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -15,13 +17,16 @@ public class Email {
 
     @NonNull
     @Singular("to")
-    private Set<String> to;
+    private Set<User> to;
 
     @Singular("cc")
-    private Set<String> cc;
+    private Set<User> cc;
 
     @Singular("bcc")
-    private Set<String> bcc;
+    private Set<User> bcc;
+
+    @NonNull
+    private EmailType emailType;
 
     /**
      * Name of the email template file (without .ftl suffix).
@@ -68,9 +73,9 @@ public class Email {
         Stream.of(to, cc, bcc)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
-            .forEach(address -> {
-                if (!EMAIL_PATTERN.matcher(address).matches()) {
-                    throw new IllegalArgumentException("Invalid email address: " + address);
+            .forEach(user -> {
+                if (!EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
+                    throw new IllegalArgumentException("Invalid email address: " + user.getEmail());
                 }
             });
     }
