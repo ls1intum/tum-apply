@@ -17,6 +17,8 @@ export * from './customField';
 export * from './customFieldAnswer';
 export * from './customFieldAnswerDTO';
 export * from './documentInformationHolderDTO';
+export * from './emailSetting';
+export * from './emailSettingDTO';
 export * from './internalComment';
 export * from './job';
 export * from './jobCardDTO';
