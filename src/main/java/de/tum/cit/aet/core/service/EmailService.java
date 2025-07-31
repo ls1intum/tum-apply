@@ -199,6 +199,7 @@ public class EmailService {
         }
     }
 
+
     /**
      * Loads the appropriate template translation based on email metadata.
      *

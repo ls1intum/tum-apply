@@ -5,6 +5,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
   <include file="changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000001_alter_jobs_add_end_date.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000002_add_email-settings.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000003_add_email-templates.xml" relativeToChangelogFile="true"/>
 

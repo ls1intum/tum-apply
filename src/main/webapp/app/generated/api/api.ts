@@ -6,12 +6,18 @@ export * from './documentResource.service';
 import { DocumentResourceService } from './documentResource.service';
 export * from './emailLoginResource.service';
 import { EmailLoginResourceService } from './emailLoginResource.service';
-export * from './emailSettingResource.service';
-import { EmailSettingResourceService } from './emailSettingResource.service';
-export * from './emailTemplateResource.service';
-import { EmailTemplateResourceService } from './emailTemplateResource.service';
 export * from './jobResource.service';
+import { EmailSettingResourceService } from './emailSettingResource.service';
+export * from './emailSettingResource.service';
 import { JobResourceService } from './jobResource.service';
 export * from './userResource.service';
 import { UserResourceService } from './userResource.service';
-export const APIS = [ApplicationEvaluationResourceService, ApplicationResourceService, DocumentResourceService, EmailLoginResourceService, EmailSettingResourceService, EmailTemplateResourceService, JobResourceService, UserResourceService];
+export const APIS = [
+  ApplicationEvaluationResourceService,
+  ApplicationResourceService,
+  DocumentResourceService,
+  EmailLoginResourceService,
+  EmailSettingResourceService,
+  JobResourceService,
+  UserResourceService,
+];

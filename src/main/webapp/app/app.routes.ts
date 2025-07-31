@@ -179,6 +179,17 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Settings Page
+  // ======================================================================================
+  {
+    path: 'settings',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
+    title: 'Settings',
+  },
+
+  // ======================================================================================
   // Research Group
   // ======================================================================================
   {

@@ -1,0 +1,21 @@
+.notification-settings {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+
+  .setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .setting-label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--p-text-secondary);
+    }
+  }
+
+  .tight-divider {
+    margin: 0.7rem 0;
+  }
+}
