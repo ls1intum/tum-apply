@@ -84,8 +84,9 @@ public class ApplicationEvaluationService {
             Email email = Email.builder()
                 .to(applicant.getUser())
                 .bcc(supervisingProfessor)
-                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
+                .htmlBody(acceptDTO.message())
                 .emailType(EmailType.APPLICATION_ACCEPTED)
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 .htmlBody(acceptDTO.message())
                 .build();
             emailService.send(email);
