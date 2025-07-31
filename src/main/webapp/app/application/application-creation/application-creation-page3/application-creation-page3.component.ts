@@ -72,7 +72,7 @@ export default class ApplicationCreationPage3Component {
       experiences: [currentData.experiences, Validators.required],
       motivation: [currentData.motivation, Validators.required],
       skills: [currentData.skills, Validators.required],
-      desiredStartDate: [currentData.desiredStartDate, Validators.required],
+      desiredStartDate: [currentData.desiredStartDate],
     });
   });
 
