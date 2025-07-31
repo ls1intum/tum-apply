@@ -37,6 +37,10 @@
         "label": "Startdatum",
         "placeholder": "Wählen Sie ein Startdatum..."
       },
+      "endDate": {
+        "label": "Bewerbungsfrist",
+        "placeholder": "Wählen Sie ein Fristdatum..."
+      },
       "workload": {
         "label": "Arbeitsaufwand",
         "placeholder": "Wählen Sie einen Arbeitsaufwand..."
@@ -129,6 +133,7 @@
       "years": "{{years}} Jahre",
       "fundingType": "Finanzierungsart:",
       "startDate": "Startdatum:",
+      "endDate": "Bewerbungsfrist:",
       "created": "Erstellt am:",
       "lastModified": "Zuletzt geändert:"
     },

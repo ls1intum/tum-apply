@@ -10,4 +10,11 @@ export * from './jobResource.service';
 import { JobResourceService } from './jobResource.service';
 export * from './userResource.service';
 import { UserResourceService } from './userResource.service';
-export const APIS = [ApplicationEvaluationResourceService, ApplicationResourceService, DocumentResourceService, EmailLoginResourceService, JobResourceService, UserResourceService];
+export const APIS = [
+  ApplicationEvaluationResourceService,
+  ApplicationResourceService,
+  DocumentResourceService,
+  EmailLoginResourceService,
+  JobResourceService,
+  UserResourceService,
+];
