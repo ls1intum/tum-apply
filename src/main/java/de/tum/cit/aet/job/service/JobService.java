@@ -167,6 +167,7 @@ public class JobService {
             job.getSupervisingProfessor().getUserId(),
             job.getLocation(),
             job.getStartDate(),
+            job.getEndDate(),
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
@@ -201,6 +202,7 @@ public class JobService {
             job.getTasks(),
             job.getRequirements(),
             job.getStartDate(),
+            job.getEndDate(),
             job.getCreatedAt(),
             job.getLastModifiedAt(),
             job.getState()
@@ -271,6 +273,7 @@ public class JobService {
         job.setFieldOfStudies(dto.fieldOfStudies());
         job.setLocation(dto.location());
         job.setStartDate(dto.startDate());
+        job.setEndDate(dto.endDate());
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());

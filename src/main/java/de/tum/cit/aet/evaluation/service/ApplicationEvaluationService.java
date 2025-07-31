@@ -3,7 +3,6 @@ package de.tum.cit.aet.evaluation.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.EmailType;
-import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
