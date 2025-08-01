@@ -1,4 +1,4 @@
-import { Component, Signal, ViewEncapsulation, inject, signal } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -32,6 +32,7 @@ import { EmailLoginResourceService } from '../../../../generated/api/emailLoginR
 })
 export class AuthCardComponent {
   mode = signal<'login' | 'register'>('login');
+  readonly isRegister = computed(() => this.mode() === 'register');
 
   authTabService = inject(AuthTabService);
   value: Signal<number> = this.authTabService.getSelectedTab();
