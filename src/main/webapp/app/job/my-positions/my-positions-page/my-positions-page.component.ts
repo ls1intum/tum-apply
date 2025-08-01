@@ -132,7 +132,7 @@ export class MyPositionsPageComponent {
     // if (confirmDelete) {
     try {
       await firstValueFrom(this.jobService.deleteJob(jobId));
-      this.toastService.showError({ detail: 'Job successfully deleted' });
+      this.toastService.showSuccess({ detail: 'Job successfully deleted' });
       await this.loadJobs();
     } catch (error) {
       if (error instanceof Error) {
