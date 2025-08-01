@@ -6,7 +6,8 @@
   border-radius: 0.75rem;
   border: var(--p-border-default);
   background: var(--p-background-surface);
-  width: 28rem;
+  width: auto;
+  max-width: 35rem;
 
   .p-divider-content {
     background-color: var(--p-background-surface);
