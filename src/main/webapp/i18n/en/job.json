@@ -95,11 +95,11 @@
       "workload": "Workload"
     },
     "tooltips": {
-      "studyField": "Field of Studies",
+      "fieldOfStudies": "Field of Studies",
       "location": "Location",
       "supervisor": "Supervisor",
       "workload": "Workload",
-      "date": "Start Date"
+      "startDate": "Start Date"
     },
     "hoursPerWeek": "{{workload}} h/week"
   },

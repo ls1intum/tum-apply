@@ -95,11 +95,11 @@
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {
-      "studyField": "Studienrichtung",
+      "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
       "supervisor": "Betreuer/in",
       "workload": "Arbeitsaufwand",
-      "date": "Startdatum"
+      "startDate": "Startdatum"
     },
     "hoursPerWeek": "{{workload}} h/Woche"
   },
