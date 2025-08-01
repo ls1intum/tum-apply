@@ -7,6 +7,8 @@ import { DocumentResourceService } from './documentResource.service';
 export * from './emailLoginResource.service';
 import { EmailLoginResourceService } from './emailLoginResource.service';
 export * from './jobResource.service';
+import { EmailSettingResourceService } from './emailSettingResource.service';
+export * from './emailSettingResource.service';
 import { JobResourceService } from './jobResource.service';
 export * from './userResource.service';
 import { UserResourceService } from './userResource.service';
@@ -15,6 +17,7 @@ export const APIS = [
   ApplicationResourceService,
   DocumentResourceService,
   EmailLoginResourceService,
+  EmailSettingResourceService,
   JobResourceService,
   UserResourceService,
 ];
