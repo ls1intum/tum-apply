@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
 
 import SharedModule from '../../../shared/shared.module';
