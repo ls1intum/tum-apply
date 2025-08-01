@@ -13,7 +13,7 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
   templateUrl: './job-card.component.html',
   styleUrls: ['./job-card.component.scss'],
   standalone: true,
-  imports: [FontAwesomeModule, CardModule, ButtonComponent, CommonModule, SharedModule],
+  imports: [FontAwesomeModule, CardModule, ButtonComponent, CommonModule, SharedModule, TooltipModule],
 })
 export class JobCardComponent {
   jobId = input<string>('');
