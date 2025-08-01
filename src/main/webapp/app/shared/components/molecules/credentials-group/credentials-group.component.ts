@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 
 @Component({
   selector: 'jhi-credentials-group',
@@ -19,6 +20,7 @@ import TranslateDirective from '../../../language/translate.directive';
     ButtonComponent,
     PasswordModule,
     InputTextModule,
+    StringInputComponent,
     PasswordModule,
     MessageModule,
     FormsModule,
