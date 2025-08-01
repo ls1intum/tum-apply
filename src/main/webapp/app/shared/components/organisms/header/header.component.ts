@@ -48,10 +48,17 @@ export class HeaderComponent {
 
   openLoginDialog(): void {
     this.ref = this.dialogService.open(AuthCardComponent, {
-      style: { width: 'auto', 'max-width': '95vw', height: 'auto' },
+      style: {
+        border: 'none',
+        overflow: 'auto',
+        background: 'transparent',
+        boxShadow: 'none',
+      },
       data: { mode: 'login', redirectUri: this.router.url },
       modal: true,
-      contentStyle: { padding: '0', border: 'none' },
+      contentStyle: {
+        padding: '0',
+      },
       dismissableMask: true,
       closeOnEscape: true,
       focusOnShow: true,
@@ -64,9 +71,9 @@ export class HeaderComponent {
   }
 
   /*  toggleColorScheme(): void {
-          const className = 'tum-apply-dark-mode';
-          document.body.classList.toggle(className);
-        }*/
+            const className = 'tum-apply-dark-mode';
+            document.body.classList.toggle(className);
+          }*/
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {
