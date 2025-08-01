@@ -5,6 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
+import { TranslateService } from '@ngx-translate/core';
 
 import SharedModule from '../../../shared/shared.module';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
@@ -31,6 +32,7 @@ export class JobCardComponent {
   icon = input<string>('flask-vial');
 
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
+  translate = inject(TranslateService);
 
   private router = inject(Router);
 
@@ -40,5 +42,21 @@ export class JobCardComponent {
 
   onApply(): void {
     this.router.navigate([`/application/create/${this.jobId()}`]);
+  }
+  getTooltip(type: string): string {
+    switch (type) {
+      case 'studyField':
+        return this.translate.instant('jobOverviewPage.tooltips.studyField');
+      case 'location':
+        return this.translate.instant('jobOverviewPage.tooltips.location');
+      case 'supervisor':
+        return this.translate.instant('jobOverviewPage.tooltips.supervisor');
+      case 'workload':
+        return this.translate.instant('jobOverviewPage.tooltips.workload');
+      case 'date':
+        return this.translate.instant('jobOverviewPage.tooltips.date');
+      default:
+        return '';
+    }
   }
 }

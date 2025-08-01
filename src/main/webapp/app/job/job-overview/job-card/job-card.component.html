@@ -14,9 +14,9 @@
 
   <div class="card-body">
     <ul class="card-info">
-      <ng-template #infoItem let-icon="icon" let-value="value">
+      <ng-template #infoItem let-icon="icon" let-value="value" let-type="type">
         <li class="info-item">
-          <fa-icon [icon]="['fas', icon]" />
+          <fa-icon [icon]="['fas', icon]" [pTooltip]="getTooltip(type)" tooltipPosition="top" />
           @if (value) {
             @if (icon === 'calendar') {
               Start:
@@ -34,11 +34,20 @@
           }
         </li>
       </ng-template>
-      <ng-container [ngTemplateOutletContext]="{ icon: 'graduation-cap', value: fieldOfStudies() }" [ngTemplateOutlet]="infoItem" />
-      <ng-container [ngTemplateOutletContext]="{ icon: 'location-dot', value: location() }" [ngTemplateOutlet]="infoItem" />
-      <ng-container [ngTemplateOutletContext]="{ icon: 'user', value: professor() }" [ngTemplateOutlet]="infoItem" />
-      <ng-container [ngTemplateOutletContext]="{ icon: 'clock', value: workload() }" [ngTemplateOutlet]="infoItem" />
-      <ng-container [ngTemplateOutletContext]="{ icon: 'calendar', value: formattedStartDate() }" [ngTemplateOutlet]="infoItem" />
+      <ng-container
+        [ngTemplateOutletContext]="{ icon: 'graduation-cap', value: fieldOfStudies(), type: 'studyField' }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container
+        [ngTemplateOutletContext]="{ icon: 'location-dot', value: location(), type: 'location' }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container [ngTemplateOutletContext]="{ icon: 'user', value: professor(), type: 'supervisor' }" [ngTemplateOutlet]="infoItem" />
+      <ng-container [ngTemplateOutletContext]="{ icon: 'clock', value: workload(), type: 'workload' }" [ngTemplateOutlet]="infoItem" />
+      <ng-container
+        [ngTemplateOutletContext]="{ icon: 'calendar', value: formattedStartDate(), type: 'date' }"
+        [ngTemplateOutlet]="infoItem"
+      />
     </ul>
 
     <div class="card-actions">
