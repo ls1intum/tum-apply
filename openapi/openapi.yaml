@@ -11,6 +11,66 @@
     }
   ],
   "paths": {
+    "/api/settings/emails": {
+      "get": {
+        "tags": [
+          "email-setting-resource"
+        ],
+        "operationId": "getEmailSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmailSettingDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "email-setting-resource"
+        ],
+        "operationId": "updateEmailSettings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EmailSettingDTO"
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmailSettingDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/update/{jobId}": {
       "put": {
         "tags": [
@@ -1364,6 +1424,24 @@
   },
   "components": {
     "schemas": {
+      "EmailSettingDTO": {
+        "type": "object",
+        "properties": {
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
       "JobFormDTO": {
         "type": "object",
         "properties": {
@@ -1968,19 +2046,13 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           },
           "size": {
             "type": "integer",
@@ -2006,6 +2078,12 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -2021,19 +2099,19 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "paged": {
-            "type": "boolean"
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
           }
         }
       },
@@ -2263,6 +2341,31 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "EmailSetting": {
+        "type": "object",
+        "properties": {
+          "emailSettingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
           }
         }
       },
@@ -2595,6 +2698,13 @@
               "$ref": "#/components/schemas/UserResearchGroupRole"
             },
             "uniqueItems": true
+          },
+          "emailSettings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailSetting"
+            },
+            "uniqueItems": true
           }
         }
       },
@@ -2624,19 +2734,13 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           },
           "size": {
             "type": "integer",
@@ -2661,6 +2765,12 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
