@@ -103,22 +103,23 @@ export class EmailSettingsComponent {
         newMap.set(role, updatedGroups);
         this.roleSettings.set(newMap);
       }
-      this.loaded.set(true);
     } catch (err) {
       console.error('Failed to load email settings:', err);
+    } finally {
+      this.loaded.set(true);
     }
   }
 
   onToggleChanged(group: NotificationGroup): void {
-    const updatedSettings: EmailSetting[] = group.emailTypes.map(emailType => ({
-      emailType,
-      enabled: group.enabled,
-    }));
+    try {
+      const updatedSettings: EmailSetting[] = group.emailTypes.map(emailType => ({
+        emailType,
+        enabled: group.enabled,
+      }));
 
-    this.emailSettingService.updateEmailSettings(updatedSettings).subscribe({
-      error(err) {
-        console.error('Failed to update email settings:', err);
-      },
-    });
+      void firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings));
+    } catch (err) {
+      console.error('Failed to update email settings:', err);
+    }
   }
 }
