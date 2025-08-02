@@ -5,6 +5,7 @@ services:
     image: mysql:9.3.0
     volumes:
       - ./config/mysql:/etc/mysql/conf.d
+      - ./clearflask/mysql/clearflask-init.sql:/docker-entrypoint-initdb.d/clearflask-init.sql:ro
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_DATABASE=tumapply
