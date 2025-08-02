@@ -1,0 +1,27 @@
+.editor-footer {
+  display: flex;
+  justify-content: space-between;
+  min-height: 4rem;
+
+  .char-counter-normal {
+    color: var(--p-text-primary);
+  }
+  .char-counter-warning {
+    color: var(--p-warn-color);
+  }
+  .char-counter-danger {
+    color: var(--p-danger-color);
+  }
+  .helper-text {
+    color: var(--p-text-primary);
+    font-size: 0.8rem;
+  }
+  .error-text {
+    display: flex;
+    flex-direction: column;
+  }
+}
+.custom-quill-editor {
+  height: 12.5rem;
+  width: 100%;
+}

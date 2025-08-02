@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EditorModule } from 'primeng/editor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { EditorComponent } from './editor.component';
 
@@ -12,8 +11,11 @@ describe('EditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditorComponent, FormsModule, ReactiveFormsModule, EditorModule, FontAwesomeModule, TranslateModule.forRoot()],
+      imports: [EditorComponent, FormsModule, ReactiveFormsModule, FontAwesomeModule, TranslateModule.forRoot()],
     }).compileComponents();
+
+    const translate = TestBed.inject(TranslateService);
+    jest.spyOn(translate, 'instant').mockImplementation((key: string | string[]) => key);
 
     fixture = TestBed.createComponent(EditorComponent);
     component = fixture.componentInstance;
@@ -22,20 +24,6 @@ describe('EditorComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should emit modelChange and update the form control on input change', () => {
-    const control = new FormControl('');
-    fixture.componentRef.setInput('control', control);
-
-    jest.spyOn(component.modelChange, 'emit');
-    const event = { htmlValue: '<p>Test</p>' } as any;
-
-    component.onInputChange(event);
-
-    expect(component.modelChange.emit).toHaveBeenCalledWith('<p>Test</p>');
-    expect(control.value).toBe('<p>Test</p>');
-    expect(control.dirty).toBe(true);
   });
 
   it('should set isTouched and isFocused on blur', () => {
@@ -74,14 +62,43 @@ describe('EditorComponent', () => {
     expect(component.inputState()).toBe('valid');
   });
 
-  it('should return appropriate error message', () => {
-    const control = new FormControl('', Validators.required);
-    fixture.componentRef.setInput('control', control);
-    control.markAsTouched();
-    control.updateValueAndValidity();
-
+  it('should return warning color when character count exceeds limit slightly', () => {
+    fixture.componentRef.setInput('characterLimit', 10);
     fixture.detectChanges();
 
-    expect(component.errorMessage()).toBe('global.input.error.required');
+    component['htmlValue'].set('<p>This is long</p>'); // >10 chars
+    fixture.detectChanges();
+
+    expect(component.charCounterColor()).toBe('char-counter-warning');
+  });
+
+  it('should update form control on content change', () => {
+    const control = new FormControl('');
+    fixture.componentRef.setInput('control', control);
+    fixture.detectChanges();
+
+    const mockEditor = {
+      root: { innerHTML: '<p>Hello world</p>' },
+      getSelection: jest.fn().mockReturnValue(null),
+      setContents: jest.fn(),
+      setSelection: jest.fn(),
+    };
+
+    const mockEvent = {
+      source: 'user',
+      oldDelta: { ops: [] },
+      editor: mockEditor,
+    };
+
+    component.textChanged(mockEvent as any);
+    expect(control.value).toBe('<p>Hello world</p>');
+  });
+
+  it('should mark input as empty when no text and blurred', () => {
+    component['htmlValue'].set('');
+    component.onBlur(); // triggers isTouched
+    fixture.detectChanges();
+
+    expect(component.isEmpty()).toBe(true);
   });
 });

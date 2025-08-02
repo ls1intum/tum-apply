@@ -2,8 +2,12 @@ package de.tum.cit.aet.core.service.mail;
 
 import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import lombok.Builder;
@@ -25,36 +29,27 @@ public class Email {
     @Singular("bcc")
     private Set<User> bcc;
 
+    /**
+     * To load corresponding template
+     */
+    @NonNull
+    private ResearchGroup researchGroup;
+
     @NonNull
     private EmailType emailType;
 
-    /**
-     * Name of the email template file (without .ftl suffix).
-     *
-     * Templates must be stored in 'src/main/resources/en/' and 'src/main/resources/de/' folders
-     * depending on the selected language. This field is required if you want to use a predefined template.
-     *
-     * Use this field together with 'content' to render a dynamic HTML email.
-     * Leave this null if you're using 'htmlBody' directly.
-     */
-    private String template;
+    @Builder.Default
+    private String templateName = null;
 
     /**
-     * Dynamic content for the email template.
-     *
-     * This map provides key-value pairs that will replace placeholders within the Freemarker template.
-     * Only used when 'template' is defined.
-     *
-     * Leave this empty or null if you're not using a template.
+     * Must be an instance of ResearchGroup, Job or Application
+     * Must be present if no htmlBody is set
      */
-    @Builder.Default
-    private Map<String, Object> content = new HashMap<>();
+    private Object content;
 
     /**
      * Raw HTML body of the email.
-     *
-     * Use this field if you want to send a fully rendered HTML string without using a template or content variables.
-     *
+     * Use this field if you want to send a fully rendered HTML string without using a template.
      * If this is set, it will be used as-is and the 'template' and 'content' fields will be ignored.
      */
     private String htmlBody;
