@@ -29,6 +29,7 @@
         class="custom-quill-editor"
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
+        [ngModel]="editorValue()"
         [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
         (onContentChanged)="textChanged($event)"
       >
