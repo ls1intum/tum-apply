@@ -9,3 +9,22 @@ services:
     extends:
       file: ./keycloak.yml
       service: keycloak
+  clearflask-server:
+    extends:
+      file: ./clearflask.yml
+      service: clearflask-server
+  clearflask-connect:
+    extends:
+      file: ./clearflask.yml
+      service: clearflask-connect
+  localstack:
+    extends:
+      file: ./clearflask.yml
+      service: localstack
+volumes:
+  clearflask-data:
+    driver: local
+  clearflask-connect-data:
+    driver: local
+  localstack-data:
+    driver: local
