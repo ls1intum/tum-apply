@@ -5,7 +5,7 @@
 
   <div class="table-wrapper">
     <div class="actions">
-      <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" />
+      <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
       <jhi-button label="researchGroup.emailTemplates.signature" variant="outlined" icon="pen-nib" [shouldTranslate]="true" />
     </div>
 
@@ -19,7 +19,7 @@
     />
 
     <ng-template #editTemplate let-template>
-      <jhi-button variant="text" icon="pen" />
+      <jhi-button variant="text" icon="pen" (click)="navigateToEdit(template.emailTemplateId)" />
     </ng-template>
     <ng-template #deleteTemplate let-template>
       <jhi-button variant="text" icon="trash-alt" [disabled]="template.isDefault" (click)="delete(template.emailTemplateId)" />

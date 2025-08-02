@@ -1,0 +1,148 @@
+/**
+  Layout
+ */
+
+.content {
+  padding: 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 3rem;
+
+  .meta-info {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+
+    .template-name-input {
+      min-width: 65%;
+    }
+
+    .template-type-select {
+      width: 100%;
+    }
+  }
+
+  .tab-list {
+    margin-bottom: 2rem;
+  }
+
+  .tab-panel {
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    label {
+      display: block;
+      color: var(--p-text-color);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .subject-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+
+    .subject-prefix {
+      white-space: nowrap;
+    }
+
+    .subject-input {
+      width: 100%;
+    }
+  }
+
+  .actions {
+    padding: 0 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    gap: 2rem;
+  }
+}
+
+/**
+  Quill Mention styling
+  Will be moved once adapted to <jhi-editor>
+ */
+.ql-mention-list-container {
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 12px 0 rgba(30, 30, 30, 0.08);
+  z-index: 9001;
+  overflow: auto;
+}
+
+.ql-mention-loading {
+  line-height: 44px;
+  padding: 0 20px;
+  vertical-align: middle;
+  font-size: 16px;
+}
+
+.ql-mention-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ql-mention-list-item {
+  cursor: pointer;
+  line-height: 44px;
+  font-size: 16px;
+  padding: 0 20px;
+  vertical-align: middle;
+}
+
+.ql-mention-list-item.disabled {
+  cursor: auto;
+}
+
+.ql-mention-list-item.selected {
+  background-color: var(--p-primary-color);
+  color: var(--p-text-on-primary);
+  text-decoration: none;
+}
+
+.mention {
+  height: 24px;
+  width: 65px;
+  border-radius: 4px;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-400);
+  padding: 3px 3px;
+  margin-right: 2px;
+  user-select: all;
+}
+
+.mention > span {
+  margin: 0 3px;
+}
+
+.custom-quill-editor {
+  height: 24rem;
+  width: 100%;
+  border-radius: 20rem;
+
+  .ql-toolbar {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .ql-container {
+    border-radius: 0 0 0.5rem 0.5rem;
+
+    .ql-editor {
+      font-size: 1rem;
+      line-height: 1.8rem;
+    }
+  }
+}

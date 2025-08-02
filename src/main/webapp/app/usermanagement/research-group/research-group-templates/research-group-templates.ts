@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom, map } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { EmailTemplateOverviewDTO, EmailTemplateResourceService } from '../../../generated';
@@ -22,6 +23,7 @@ export class ResearchGroupTemplates {
 
   protected readonly emailTemplateService = inject(EmailTemplateResourceService);
   protected readonly translate = inject(TranslateService);
+  protected readonly router = inject(Router);
 
   protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
 
@@ -81,6 +83,16 @@ export class ResearchGroupTemplates {
   async delete(templateId: string): Promise<void> {
     await firstValueFrom(this.emailTemplateService.deleteTemplate(templateId));
     void this.loadPage();
+  }
+
+  // Navigate to create
+  protected navigateToCreate(): void {
+    void this.router.navigate(['/research-group/template/new']);
+  }
+
+  // Navigate to edit
+  protected navigateToEdit(templateId: string): void {
+    void this.router.navigate(['/research-group/template', templateId, 'edit']);
   }
 
   private async loadPage(): Promise<void> {
