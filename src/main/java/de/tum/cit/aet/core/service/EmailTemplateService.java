@@ -20,8 +20,6 @@ import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.transaction.Transactional;
-import java.io.IOException;
-import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
@@ -29,11 +27,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.*;
+
 @Service
 @AllArgsConstructor
 public class EmailTemplateService {
 
     private final EmailTemplateRepository emailTemplateRepository;
+    private final CurrentUserService currentUserService;
+
     private final Set<EmailType> editableEmailTypes = EmailType.getEditableEmailTypes();
 
     /**
@@ -168,6 +171,9 @@ public class EmailTemplateService {
             .findWithTranslationsById(dto.emailTemplateId())
             .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", dto.emailTemplateId()));
 
+        // authorize if current user can update template
+        currentUserService.assertAccessTo(template);
+
         if (!template.getEmailType().isTemplateEditable()) {
             throw new EmailTemplateException("EmailTemplate " + dto.emailTemplateId() + " is not editable");
         }
@@ -192,6 +198,9 @@ public class EmailTemplateService {
      */
     public void deleteTemplate(UUID templateId) {
         EmailTemplate toDelete = get(templateId);
+
+        // authorize if current user can delete template
+        currentUserService.assertAccessTo(toDelete);
 
         if (toDelete.isDefault()) {
             throw new EmailTemplateException("Default templates cannot be deleted");
