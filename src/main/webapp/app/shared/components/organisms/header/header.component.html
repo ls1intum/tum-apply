@@ -16,15 +16,15 @@
       }
     </div>
     <!--<jhi-button
-		  class="theme-toggle-button"
-		  (click)="toggleColorScheme()"
-		  [icon]="isDarkMode() ? 'moon' : 'sun'"
-		  severity="primary"
-		  variant="text"
-		/>-->
+			  class="theme-toggle-button"
+			  (click)="toggleColorScheme()"
+			  [icon]="isDarkMode() ? 'moon' : 'sun'"
+			  severity="primary"
+			  variant="text"
+			/>-->
 
     @if (user() === undefined) {
-      <jhi-button class="fixed-width-button" (click)="navigateToLogin()" label="{{ 'header.login' | translate }}" severity="primary" />
+      <jhi-button class="fixed-width-button" (click)="openLoginDialog()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
       <div class="profile">
         <fa-icon class="profile-icon" icon="user" />

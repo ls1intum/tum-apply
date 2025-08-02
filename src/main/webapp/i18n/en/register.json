@@ -1,20 +1,20 @@
 {
   "register": {
     "header": "Create your TUMApply Account",
-    "tabs": {
-      "student": "Student / Applicant",
-      "professor": "Professor / Supervisor"
-    },
     "buttons": {
       "microsoft": "Register with Microsoft",
       "apple": "Register with Apple",
       "google": "Register with Google",
-      "tum": "Register with TUM SSO"
+      "tum": "Register with TUM",
+      "email": "Register with Email"
     },
     "texts": {
-      "professor": "TUM Single Sign-On is required for professors and supervisors.",
-      "professorcreate": "As a TUM professor or supervisor, you can simply use your TUM login credentials.",
-      "accountmissing": "Already have a TUMApply account? <a href=\"/register\">Sign in here</a>."
+      "applicant": "Create an account to start your application journey.",
+      "professor": "As a TUM professor or supervisor, please register with your TUM login credentials.",
+      "accountmissing": {
+        "prefix": "You already have a TUMApply account?",
+        "link": "Sign in here."
+      }
     },
     "messages": {
       "error": {

@@ -3,10 +3,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 4rem;
+  border-radius: 0.75rem;
   border: var(--p-border-default);
   background: var(--p-background-surface);
-  width: 28rem;
+  width: auto;
+  max-width: 35rem;
 
   .p-divider-content {
     background-color: var(--p-background-surface);
@@ -15,25 +16,29 @@
 
 .login-header {
   display: flex;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   align-self: stretch;
   background: var(--p-primary-color);
   color: var(--p-text-on-primary);
   font-weight: 600;
   font-size: 1.25rem;
-  border-radius: 4rem 4rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
+
+  .tum-logo {
+    height: 3rem;
+  }
 }
 
 .login-content {
   display: flex;
-  padding: 2rem;
+  padding: 1rem;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.25rem;
   align-self: stretch;
 }
 
@@ -42,7 +47,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
+  align-self: stretch;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   align-self: stretch;
 }
 
@@ -61,17 +74,6 @@
   color: var(--p-text-primary);
 }
 
-.login-hint {
-  max-width: 100%;
-  width: 100%;
-  word-break: break-word;
-  box-sizing: border-box;
-  text-align: center;
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: var(--p-text-primary);
-}
-
 .login-footer {
   padding: 1rem;
   text-align: center;
@@ -83,6 +85,7 @@
 .login-footer a {
   color: var(--p-primary-color);
   font-weight: 700;
+  cursor: pointer;
 
   &:hover {
     color: var(--p-primary-hover);
