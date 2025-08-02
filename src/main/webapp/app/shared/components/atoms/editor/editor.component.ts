@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, input, signal } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
@@ -13,7 +12,7 @@ const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, ReactiveFormsModule, TranslateModule, TooltipModule],
+  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, TranslateModule, TooltipModule],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })

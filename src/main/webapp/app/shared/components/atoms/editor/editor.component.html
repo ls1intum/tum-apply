@@ -29,7 +29,7 @@
         class="custom-quill-editor"
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
-        [placeholder]="shouldTranslate() && placeholder() ? (placeholder()! | translate) : placeholder()"
+        [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
         [ngModel]="editorValue()"
         (onContentChanged)="textChanged($event)"
       >
@@ -64,7 +64,7 @@
         @if (helperText()) {
           <!-- Translation Pipe is necessary here since the translation of the ql headers is not working with the jhiTranslate directive -->
           <!--            <span class="helper-text" jhiTranslate="{{ helperText() }}"></span>-->
-          <span class="helper-text">{{ helperText()! | translate }}</span>
+          <span class="helper-text">{{ helperText() ?? '' | translate }}</span>
         }
         @if (isEmpty() || isOverCharLimit()) {
           {{ errorMessage() }}
