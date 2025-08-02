@@ -9,6 +9,7 @@
  */
 
 export interface JobFormDTO {
+  jobId?: string;
   title: string;
   researchArea?: string;
   fieldOfStudies: string;
