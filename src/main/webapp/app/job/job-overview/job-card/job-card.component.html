@@ -14,9 +14,9 @@
 
   <div class="card-body">
     <ul class="card-info">
-      <ng-template #infoItem let-icon="icon" let-value="value" let-type="type">
+      <ng-template #infoItem let-icon="icon" let-value="value" let-tooltip="tooltip">
         <li class="info-item">
-          <fa-icon [icon]="['fas', icon]" [pTooltip]="getTooltip(type)" tooltipPosition="top" />
+          <fa-icon [icon]="['fas', icon]" [pTooltip]="tooltip" tooltipPosition="top" />
           @if (value) {
             @if (icon === 'calendar') {
               Start:
@@ -35,17 +35,31 @@
         </li>
       </ng-template>
       <ng-container
-        [ngTemplateOutletContext]="{ icon: 'graduation-cap', value: fieldOfStudies(), type: 'studyField' }"
+        [ngTemplateOutletContext]="{
+          icon: 'graduation-cap',
+          value: fieldOfStudies(),
+          tooltip: ('jobOverviewPage.tooltips.fieldOfStudies' | translate),
+        }"
         [ngTemplateOutlet]="infoItem"
       />
       <ng-container
-        [ngTemplateOutletContext]="{ icon: 'location-dot', value: location(), type: 'location' }"
+        [ngTemplateOutletContext]="{ icon: 'location-dot', value: location(), tooltip: ('jobOverviewPage.tooltips.location' | translate) }"
         [ngTemplateOutlet]="infoItem"
       />
-      <ng-container [ngTemplateOutletContext]="{ icon: 'user', value: professor(), type: 'supervisor' }" [ngTemplateOutlet]="infoItem" />
-      <ng-container [ngTemplateOutletContext]="{ icon: 'clock', value: workload(), type: 'workload' }" [ngTemplateOutlet]="infoItem" />
       <ng-container
-        [ngTemplateOutletContext]="{ icon: 'calendar', value: formattedStartDate(), type: 'date' }"
+        [ngTemplateOutletContext]="{ icon: 'user', value: professor(), tooltip: ('jobOverviewPage.tooltips.supervisor' | translate) }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container
+        [ngTemplateOutletContext]="{ icon: 'clock', value: workload(), tooltip: ('jobOverviewPage.tooltips.workload' | translate) }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container
+        [ngTemplateOutletContext]="{
+          icon: 'calendar',
+          value: formattedStartDate(),
+          tooltip: ('jobOverviewPage.tooltips.startDate' | translate),
+        }"
         [ngTemplateOutlet]="infoItem"
       />
     </ul>

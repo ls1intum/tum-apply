@@ -43,20 +43,4 @@ export class JobCardComponent {
   onApply(): void {
     this.router.navigate([`/application/create/${this.jobId()}`]);
   }
-  getTooltip(type: string): string {
-    switch (type) {
-      case 'studyField':
-        return this.translate.instant('jobOverviewPage.tooltips.studyField');
-      case 'location':
-        return this.translate.instant('jobOverviewPage.tooltips.location');
-      case 'supervisor':
-        return this.translate.instant('jobOverviewPage.tooltips.supervisor');
-      case 'workload':
-        return this.translate.instant('jobOverviewPage.tooltips.workload');
-      case 'date':
-        return this.translate.instant('jobOverviewPage.tooltips.date');
-      default:
-        return '';
-    }
-  }
 }
