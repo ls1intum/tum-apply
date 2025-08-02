@@ -2,12 +2,12 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
 api/documentResource.service.ts
 api/emailLoginResource.service.ts
+api/emailSettingResource.service.ts
 api/jobResource.service.ts
 api/userResource.service.ts
 configuration.ts
@@ -33,6 +33,8 @@ model/customField.ts
 model/customFieldAnswer.ts
 model/customFieldAnswerDTO.ts
 model/documentInformationHolderDTO.ts
+model/emailSetting.ts
+model/emailSettingDTO.ts
 model/internalComment.ts
 model/job.ts
 model/jobCardDTO.ts
@@ -40,7 +42,6 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFilterOptionDTO.ts
 model/jobFormDTO.ts
-model/link.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
