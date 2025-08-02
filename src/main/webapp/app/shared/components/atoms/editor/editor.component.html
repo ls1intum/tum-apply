@@ -30,7 +30,6 @@
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
         [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
-        [ngModel]="editorValue()"
         (onContentChanged)="textChanged($event)"
       >
         <div quill-editor-toolbar>

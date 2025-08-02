@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -13,7 +13,7 @@ const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, TranslateModule, TooltipModule],
+  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, ReactiveFormsModule, TranslateModule, TooltipModule],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
@@ -30,7 +30,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     return count - limit >= STANDARD_CHARACTER_BUFFER;
   });
   isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
-  isInitialized = signal(false);
 
   errorMessage = computed(() => {
     this.langChange();
@@ -66,16 +65,12 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   private htmlValue = signal('');
-  private hasFormControl = computed(() => !!this.formControl());
+  private hasFormControl = computed(() => this.control() instanceof FormControl);
 
   constructor() {
     super();
-    effect(() => {
-      if (!this.isInitialized()) {
-        this.htmlValue.set(this.editorValue());
-        this.isInitialized.set(true);
-      }
-    });
+
+    this.htmlValue.set(this.editorValue());
   }
 
   textChanged(event: ContentChange): void {
@@ -97,8 +92,8 @@ export class EditorComponent extends BaseInputDirective<string> {
     const html = editor.root.innerHTML;
     this.htmlValue.set(html);
 
-    const ctrl = this.formControl();
     if (this.hasFormControl()) {
+      const ctrl = this.formControl();
       if (ctrl.value !== html) {
         ctrl.patchValue(html, { emitEvent: false });
       }
