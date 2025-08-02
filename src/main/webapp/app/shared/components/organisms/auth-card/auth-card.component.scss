@@ -85,6 +85,7 @@
 .login-footer a {
   color: var(--p-primary-color);
   font-weight: 700;
+  cursor: pointer;
 
   &:hover {
     color: var(--p-primary-hover);

@@ -1,4 +1,7 @@
-import { Component, Signal, ViewEncapsulation, computed, inject, signal } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, computed, effect, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -39,6 +42,37 @@ export class AuthCardComponent {
   accountService = inject(AccountService);
   keycloakService = inject(KeycloakService);
   emailLoginResourceService = inject(EmailLoginResourceService);
+
+  private credentials = signal<{ email: string; password: string } | null>(null);
+  private loginResponse = toSignal(
+    toObservable(this.credentials).pipe(
+      switchMap(credentials => (credentials ? this.emailLoginResourceService.login(credentials, 'response') : of(null))),
+    ),
+    { initialValue: null },
+  );
+
+  constructor() {
+    effect(() => {
+      const response = this.loginResponse();
+      if (response) {
+        this.credentials.set(null);
+        this.accountService.loadUser().then(() => {
+          const loadedUser = this.accountService.user();
+          if (loadedUser) {
+            this.keycloakService.profile = {
+              sub: loadedUser.id,
+              email: loadedUser.email,
+              given_name: loadedUser.name.split(' ')[0] ?? '',
+              family_name: loadedUser.name.split(' ').slice(1).join(' '),
+              token: loadedUser.bearer,
+            };
+          }
+          const redirectUri = this.redirectUri();
+          window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+        });
+      }
+    });
+  }
 
   onTabChange(newValue: string | number): void {
     this.authTabService.setSelectedTab(Number(newValue));
@@ -97,33 +131,7 @@ export class AuthCardComponent {
   }
 
   onEmailLogin = (credentials: { email: string; password: string }): void => {
-    const { email, password } = credentials;
-    this.emailLoginResourceService
-      .login(
-        {
-          email,
-          password,
-        },
-        'response',
-      )
-      .subscribe({
-        next: () => {
-          this.accountService.loadUser().then(() => {
-            const loadedUser = this.accountService.user();
-            if (loadedUser) {
-              this.keycloakService.profile = {
-                sub: loadedUser.id,
-                email: loadedUser.email,
-                given_name: loadedUser.name.split(' ')[0] ?? '',
-                family_name: loadedUser.name.split(' ').slice(1).join(' '),
-                token: loadedUser.bearer,
-              };
-            }
-            const redirectUri = this.redirectUri();
-            window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
-          });
-        },
-      });
+    this.credentials.set(credentials);
   };
 
   toggleMode(): void {
