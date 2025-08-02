@@ -1,12 +1,21 @@
 <div class="content">
   <div class="meta-info">
-    <jhi-string-input class="template-name-input" [required]="true" label="Template Name" [disabled]="formModel().isDefault ?? false" />
+    <jhi-string-input
+      class="template-name-input"
+      [model]="templateDisplayName()"
+      [required]="true"
+      label="Template Name"
+      [disabled]="formModel().isDefault ?? true"
+      (modelChange)="setTemplateName($event)"
+    />
     <jhi-select
       class="template-type-select"
       label="Send when"
-      [items]="isUpdate() ? allSelectOptions : allowedSelectOptions"
+      [items]="selectOptions()"
+      [selected]="preselectedEmailType()"
       [required]="true"
-      [disabled]="formModel().isDefault ?? false"
+      [disabled]="formModel().isDefault ?? true"
+      (selectedChange)="setSelectedEmailType($event)"
     />
   </div>
 

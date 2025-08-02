@@ -1,10 +1,11 @@
 import { Component, ViewEncapsulation, computed, effect, inject, model, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { TabsModule } from 'primeng/tabs';
+import { TranslateService } from '@ngx-translate/core';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { EmailTemplateDTO, EmailTemplateResourceService } from '../../../generated';
@@ -23,10 +24,13 @@ export class ResearchGroupTemplateEdit {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   readonly emailTemplateService = inject(EmailTemplateResourceService);
+  readonly translate = inject(TranslateService);
 
   readonly paramMapSignal = toSignal(this.route.paramMap, {
     initialValue: convertToParamMap({}),
   });
+
+  readonly currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
 
   readonly templateId = computed(() => this.paramMapSignal().get('templateId') ?? undefined);
 
@@ -37,11 +41,9 @@ export class ResearchGroupTemplateEdit {
     }
   });
 
-  readonly isUpdate = computed(() => this.formModel().emailTemplateId);
-
   readonly formModel = model<EmailTemplateDTO>({
     templateName: '',
-    emailType: undefined!,
+    emailType: undefined,
     english: {
       subject: '',
       body: '',
@@ -53,10 +55,29 @@ export class ResearchGroupTemplateEdit {
     isDefault: false,
   });
 
+  readonly translationKey: string = 'researchGroup.emailTemplates';
+
+  readonly templateDisplayName = computed(() => {
+    this.currentLang();
+
+    const templateName = this.formModel().templateName;
+    const emailType = this.formModel().emailType;
+
+    if (this.formModel().isDefault === true) {
+      if (templateName != null) {
+        return this.translate.instant(`${this.translationKey}.default.${emailType}-${templateName}`);
+      } else {
+        return this.translate.instant(`${this.translationKey}.default.${emailType}`);
+      }
+    }
+    return this.formModel().templateName;
+  });
+
   readonly english = computed(() => this.formModel().english ?? { subject: '', body: '' });
   readonly german = computed(() => this.formModel().german ?? { subject: '', body: '' });
 
   preselectedEmailType = signal<SelectOption | undefined>(undefined);
+  selectOptions = computed(() => (this.formModel().isDefault === true ? this.allSelectOptions : this.allowedSelectOptions));
 
   readonly modules = {
     toolbar: [
@@ -72,7 +93,7 @@ export class ResearchGroupTemplateEdit {
       showDenotationChar: false,
       spaceAfterInsert: false,
       source: (searchTerm: string, renderList: (values: any[], searchTerm: string) => void) => {
-        const items = this.TEMPLATE_VARIABLES.map(v => ({ id: v, value: v + 'some text' }));
+        const items = this.TEMPLATE_VARIABLES.map(v => ({ id: v, value: v }));
         const matches = searchTerm.length ? items.filter(item => item.value.toLowerCase().includes(searchTerm.toLowerCase())) : items;
 
         renderList(matches, searchTerm);
@@ -120,6 +141,20 @@ export class ResearchGroupTemplateEdit {
     }
   }
 
+  setSelectedEmailType(selection: SelectOption): void {
+    const form = this.formModel();
+    form.emailType = selection.value as EmailTemplateDTO.EmailTypeEnum;
+
+    this.formModel.set(form);
+  }
+
+  setTemplateName(templateName: string): void {
+    const form = this.formModel();
+    form.templateName = templateName;
+
+    this.formModel.set(form);
+  }
+
   private updateValues(): void {
     const form = this.formModel();
 
@@ -147,11 +182,11 @@ export class ResearchGroupTemplateEdit {
   private async load(templateId: string): Promise<void> {
     const res = await firstValueFrom(this.emailTemplateService.getTemplate(templateId));
     const safeTemplate: EmailTemplateDTO = {
-      templateName: res.templateName,
+      ...res,
       english: res.english ?? { subject: '', body: '' },
       german: res.german ?? { subject: '', body: '' },
     };
-
+    this.preselectedEmailType.set(this.getSelectedEmailTypeSelectOption(res.emailType ?? ''));
     this.formModel.set(safeTemplate);
   }
 
