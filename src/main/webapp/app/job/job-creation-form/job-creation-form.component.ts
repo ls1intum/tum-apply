@@ -47,6 +47,15 @@ export class JobCreationFormComponent {
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
+  private autoSaveTimer: number | undefined;
+  private router = inject(Router);
+  private location = inject(Location);
+  private route = inject(ActivatedRoute);
+
+  constructor() {
+    this.init();
+    this.setupAutoSave();
+  }
 
   // State signals
   mode = signal<JobFormMode>('create');
@@ -238,16 +247,6 @@ export class JobCreationFormComponent {
   positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
     initialValue: this.positionDetailsForm.getRawValue(),
   });
-
-  private autoSaveTimer: number | undefined;
-  private router = inject(Router);
-  private location = inject(Location);
-  private route = inject(ActivatedRoute);
-
-  constructor() {
-    this.init();
-    this.setupAutoSave();
-  }
 
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
