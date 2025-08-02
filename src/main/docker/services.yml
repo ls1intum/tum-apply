@@ -17,6 +17,10 @@ services:
     extends:
       file: ./clearflask.yml
       service: clearflask-connect
+  clearflask-db:
+    extends:
+      file: ./clearflask.yml
+      service: clearflask-db
   localstack:
     extends:
       file: ./clearflask.yml
@@ -25,6 +29,8 @@ volumes:
   clearflask-data:
     driver: local
   clearflask-connect-data:
+    driver: local
+  clearflask-db:
     driver: local
   localstack-data:
     driver: local

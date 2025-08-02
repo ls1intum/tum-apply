@@ -16,7 +16,7 @@ com.smotana.clearflask.store.dynamo.DefaultDynamoDbProvider$Config.productionReg
 
 com.smotana.clearflask.store.elastic.DefaultElasticSearchProvider$Config.serviceEndpoint=http://elasticsearch:9200
 
-com.smotana.clearflask.store.mysql.DefaultMysqlProvider$Config.host=mysql
+com.smotana.clearflask.store.mysql.DefaultMysqlProvider$Config.host=clearflask-db
 com.smotana.clearflask.store.mysql.DefaultMysqlProvider$Config.user=${MYSQL_CLEARFLASK_USER}
 com.smotana.clearflask.store.mysql.DefaultMysqlProvider$Config.pass=${MYSQL_CLEARFLASK_PASSWORD}
 

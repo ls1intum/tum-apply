@@ -4,9 +4,28 @@ volumes:
     driver: local
   clearflask-connect-data:
     driver: local
+  clearflask-db:
+    driver: local
   localstack-data:
     driver: local
 services:
+  clearflask-db:
+    image: mysql:5.7
+    platform: linux/amd64
+    command:
+      - 'mysqld'
+      - '--port=3306'
+      - '--sql-mode=IGNORE_SPACE'
+      - '--explicit-defaults-for-timestamp'
+      - '--secure-file-priv=/tmp'
+    volumes:
+      - clearflask-db:/var/lib/mysql
+    ports:
+      - 3307:3306
+    env_file:
+      - ../../../.env.local
+    environment:
+      - MYSQL_DATABASE=clearflask
   clearflask-server:
     image: ghcr.io/clearflask/clearflask-server:2.2.0
     entrypoint: ['sh', '/opt/clearflask/entrypoint.sh']
@@ -21,7 +40,7 @@ services:
       - CLEARFLASK_ENVIRONMENT=PRODUCTION_SELF_HOST
       - CLEARFLASK_CREATE_SERVER_CONFIG_IF_MISSING=1
       - CLEARFLASK_DB_TYPE=mysql
-      - CLEARFLASK_DB_HOST=mysql
+      - CLEARFLASK_DB_HOST=clearflask-db
       - CLEARFLASK_DB_PORT=3306
       - CLEARFLASK_DB_DATABASE=clearflask
     volumes:
@@ -34,7 +53,7 @@ services:
       timeout: 15s
       retries: 2
     depends_on:
-      - mysql
+      - clearflask-db
       - localstack
   clearflask-connect:
     image: ghcr.io/clearflask/clearflask-connect:2.2.0
