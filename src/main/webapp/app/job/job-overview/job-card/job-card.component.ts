@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
+import { TranslateService } from '@ngx-translate/core';
 
 import SharedModule from '../../../shared/shared.module';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
@@ -13,7 +15,7 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
   templateUrl: './job-card.component.html',
   styleUrls: ['./job-card.component.scss'],
   standalone: true,
-  imports: [FontAwesomeModule, CardModule, ButtonComponent, CommonModule, SharedModule],
+  imports: [FontAwesomeModule, CardModule, ButtonComponent, CommonModule, SharedModule, TooltipModule],
 })
 export class JobCardComponent {
   jobId = input<string>('');
@@ -30,6 +32,7 @@ export class JobCardComponent {
   icon = input<string>('flask-vial');
 
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
+  translate = inject(TranslateService);
 
   private router = inject(Router);
 

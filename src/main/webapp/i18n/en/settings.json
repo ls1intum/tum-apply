@@ -3,7 +3,28 @@
     "header": "Settings",
 
     "notifications": {
-      "header": "Notifications"
+      "header": "Notifications",
+
+      "applicant": {
+        "submission": {
+          "title": "Application Submission",
+          "description": "Receive confirmation when you submit or withdraw an application."
+        },
+        "outcome": {
+          "title": "Application Outcome",
+          "description": "Be notified when your application is accepted or rejected."
+        }
+      },
+      "professor": {
+        "new": {
+          "title": "New Applications",
+          "description": "Get notified when a new application is received for your job posting."
+        },
+        "accepted": {
+          "title": "Application Accepted (BCC)",
+          "description": "Receive a copy when an applicant for your job is accepted."
+        }
+      }
     }
   }
 }

@@ -94,6 +94,13 @@
       "professor": "Professor",
       "workload": "Workload"
     },
+    "tooltips": {
+      "fieldOfStudies": "Field of Studies",
+      "location": "Location",
+      "supervisor": "Supervisor",
+      "workload": "Workload",
+      "startDate": "Start Date"
+    },
     "hoursPerWeek": "{{workload}} h/week"
   },
   "myPositionsPage": {
