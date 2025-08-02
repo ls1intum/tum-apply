@@ -9,6 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { EmailSetting, EmailSettingResourceService, UserShortDTO } from '../../../generated';
 import TranslateDirective from '../../language/translate.directive';
+import { ToastService } from '../../../service/toast-service';
 
 import EmailTypeEnum = EmailSetting.EmailTypeEnum;
 import RolesEnum = UserShortDTO.RolesEnum;
@@ -30,9 +31,18 @@ export class EmailSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
   protected emailSettingService = inject(EmailSettingResourceService);
+  protected toastService = inject(ToastService);
 
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);
+
+  protected readonly roleEffect = effect(() => {
+    const role = this.currentRole();
+    if (!role) return;
+
+    // Only run once
+    void this.loadSettings(role);
+  });
 
   protected roleSettings: WritableSignal<Map<RolesEnum, NotificationGroup[]>> = signal(
     new Map<RolesEnum, NotificationGroup[]>([
@@ -73,16 +83,6 @@ export class EmailSettingsComponent {
     ]),
   );
 
-  constructor() {
-    effect(() => {
-      const role = this.currentRole();
-      if (!role) return;
-
-      // Only run once
-      void this.loadSettings(role);
-    });
-  }
-
   async loadSettings(role: RolesEnum): Promise<void> {
     try {
       const settings = await firstValueFrom(this.emailSettingService.getEmailSettings());
@@ -103,8 +103,8 @@ export class EmailSettingsComponent {
         newMap.set(role, updatedGroups);
         this.roleSettings.set(newMap);
       }
-    } catch (err) {
-      console.error('Failed to load email settings:', err);
+    } catch {
+      this.toastService.showError({ summary: 'Error', detail: 'loading the notification settings' });
     } finally {
       this.loaded.set(true);
     }
@@ -118,8 +118,8 @@ export class EmailSettingsComponent {
       }));
 
       void firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings));
-    } catch (err) {
-      console.error('Failed to update email settings:', err);
+    } catch {
+      this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
     }
   }
 }
