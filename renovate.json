@@ -1,4 +1,48 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"]
+  "extends": [
+    "config:recommended"
+  ],
+  "prConcurrentLimit": 2,
+  "prHourlyLimit": 1,
+  "schedule": [
+    "every weekend"
+  ],
+  "packageRules": [
+    {
+      "groupName": "Weekly Dependency Updates",
+      "groupSlug": "weekly-updates",
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "digest",
+        "pin",
+        "lockFileMaintenance"
+      ],
+      "schedule": [
+        "every weekend"
+      ]
+    },
+    {
+      "groupName": "Security Updates",
+      "groupSlug": "security-updates",
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "matchConfidenceLevels": [
+        "high"
+      ],
+      "labels": [
+        "security"
+      ],
+      "prPriority": 10,
+      "separateMultipleMajor": false,
+      "schedule": [
+        "at any time"
+      ]
+    }
+  ]
 }

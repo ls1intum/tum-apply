@@ -37,6 +37,10 @@
         "label": "Start Date",
         "placeholder": "Select a Start Date..."
       },
+      "endDate": {
+        "label": "End Date",
+        "placeholder": "Select the final listing date..."
+      },
       "workload": {
         "label": "Workload",
         "placeholder": "Select a Workload..."
@@ -90,6 +94,13 @@
       "professor": "Professor",
       "workload": "Workload"
     },
+    "tooltips": {
+      "fieldOfStudies": "Field of Studies",
+      "location": "Location",
+      "supervisor": "Supervisor",
+      "workload": "Workload",
+      "startDate": "Start Date"
+    },
     "hoursPerWeek": "{{workload}} h/week"
   },
   "myPositionsPage": {
@@ -129,6 +140,7 @@
       "years": "{{years}} years",
       "fundingType": "Funding Type:",
       "startDate": "Start Date:",
+      "endDate": "Application End Date:",
       "created": "Created:",
       "lastModified": "Last Modified:"
     },

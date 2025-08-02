@@ -5,16 +5,17 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
-import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.EmailService;
+import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
@@ -23,12 +24,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -177,22 +173,18 @@ public class ApplicationService {
             Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
             User supervisingProfessor = job.getSupervisingProfessor();
 
-            confirmApplicationToApplicant(applicant.getUser().getEmail(), applicant.getUser().getSelectedLanguage(), application, job);
-            confirmApplicationToProfessor(supervisingProfessor.getEmail(), supervisingProfessor.getSelectedLanguage(), application, job);
+            confirmApplicationToApplicant(applicant.getUser(), applicant.getUser().getSelectedLanguage(), application, job);
+            confirmApplicationToProfessor(supervisingProfessor, supervisingProfessor.getSelectedLanguage(), application, job);
         }
         return application;
     }
 
-    private void confirmApplicationToApplicant(
-        String applicantEmail,
-        String selectedLanguage,
-        ApplicationForApplicantDTO application,
-        Job job
-    ) {
+    private void confirmApplicationToApplicant(User user, String selectedLanguage, ApplicationForApplicantDTO application, Job job) {
         Email email = Email.builder()
-            .to(applicantEmail)
+            .to(user)
             .language(Language.fromCode(selectedLanguage))
             .template("application_confirmation")
+            .emailType(EmailType.APPLICATION_SENT)
             .content(
                 Map.of(
                     "applicantFirstName",
@@ -210,15 +202,16 @@ public class ApplicationService {
     }
 
     private void confirmApplicationToProfessor(
-        String professorEmail,
+        User supervisingProfessor,
         String selectedLanguage,
         ApplicationForApplicantDTO application,
         Job job
     ) {
         Email email = Email.builder()
-            .to(professorEmail)
+            .to(supervisingProfessor)
             .language(Language.fromCode(selectedLanguage))
             .template("application_received")
+            .emailType(EmailType.APPLICATION_RECEIVED)
             .content(
                 Map.of(
                     "professorLastName",
@@ -253,7 +246,8 @@ public class ApplicationService {
         Job job = application.getJob();
 
         Email email = Email.builder()
-            .to(applicant.getUser().getEmail())
+            .to(applicant.getUser())
+            .emailType(EmailType.APPLICATION_WITHDRAWN)
             .template("application_withdrawn")
             .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
             .content(
