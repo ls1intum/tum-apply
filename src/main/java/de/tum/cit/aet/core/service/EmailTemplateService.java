@@ -19,6 +19,7 @@ import de.tum.cit.aet.core.util.TemplateUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
 import lombok.AllArgsConstructor;
@@ -45,7 +46,8 @@ public class EmailTemplateService {
      * @return the matching {@link EmailTemplate}
      * @throws EntityNotFoundException if no matching template is found
      */
-    private EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
+    @Transactional // for write -> read
+    protected EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
         addMissingTemplates(researchGroup);
 
         return emailTemplateRepository
@@ -62,7 +64,7 @@ public class EmailTemplateService {
      */
     private EmailTemplate get(UUID emailTemplateId) {
         return emailTemplateRepository
-            .findById(emailTemplateId)
+            .findWithTranslationsById(emailTemplateId)
             .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", emailTemplateId));
     }
 
@@ -76,6 +78,7 @@ public class EmailTemplateService {
      * @param language      the translation language
      * @return the matching {@link EmailTemplateTranslation}
      */
+    @Transactional // for write -> read
     public EmailTemplateTranslation getTemplateTranslation(
         ResearchGroup researchGroup,
         String templateName,
@@ -94,6 +97,7 @@ public class EmailTemplateService {
      * @param pageDTO       the pagination settings
      * @return a list of {@link EmailTemplateOverviewDTO}
      */
+    @Transactional // for write -> read
     public List<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
         addMissingTemplates(researchGroup);
 
@@ -102,7 +106,7 @@ public class EmailTemplateService {
             pageDTO.pageSize(),
             Sort.by(EmailTemplate_.IS_DEFAULT).ascending().and(Sort.by(EmailTemplate_.TEMPLATE_NAME).ascending())
         );
-        return emailTemplateRepository.findAllByResearchGroup(researchGroup, editableEmailTypes, pageable).toList();
+        return emailTemplateRepository.findOverviewByResearchGroupAndEmailTypeIn(researchGroup, editableEmailTypes, pageable).toList();
     }
 
     /**
@@ -161,7 +165,7 @@ public class EmailTemplateService {
      */
     public EmailTemplateDTO updateTemplate(EmailTemplateDTO dto) {
         EmailTemplate template = emailTemplateRepository
-            .findById(dto.emailTemplateId())
+            .findWithTranslationsById(dto.emailTemplateId())
             .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", dto.emailTemplateId()));
 
         if (!template.getEmailType().isTemplateEditable()) {
@@ -201,23 +205,30 @@ public class EmailTemplateService {
      *
      * @param researchGroup the research group
      */
-    private void addMissingTemplates(ResearchGroup researchGroup) {
+    @Transactional // for write -> read
+    protected void addMissingTemplates(ResearchGroup researchGroup) {
         Set<EmailTemplate> toSave = new HashSet<>();
 
+        // Fetch existing EmailTypes already defined for the group
+        Set<EmailType> existingEmailTypes = emailTemplateRepository.findAllEmailTypesByResearchGroup(researchGroup);
+
+        // Only iterate over types that are missing
         for (EmailType emailType : EmailType.values()) {
+            if (existingEmailTypes.contains(emailType)) {
+                continue; // Skip already existing templates
+            }
+
             if (emailType.equals(EmailType.APPLICATION_REJECTED)) {
+                // Add one template for each reject reason
                 for (RejectReason reason : RejectReason.values()) {
                     String name = reason.getValue();
-                    if (!emailTemplateRepository.existsByResearchGroupAndTemplateNameAndEmailType(researchGroup, name, emailType)) {
-                        EmailTemplate template = createDefaultTemplate(researchGroup, name, emailType);
-                        toSave.add(template);
-                    }
-                }
-            } else {
-                if (!emailTemplateRepository.existsByResearchGroupAndTemplateNameAndEmailType(researchGroup, null, emailType)) {
-                    EmailTemplate template = createDefaultTemplate(researchGroup, null, emailType);
+                    EmailTemplate template = createDefaultTemplate(researchGroup, name, emailType);
                     toSave.add(template);
                 }
+            } else {
+                // Create a single default template
+                EmailTemplate template = createDefaultTemplate(researchGroup, null, emailType);
+                toSave.add(template);
             }
         }
 

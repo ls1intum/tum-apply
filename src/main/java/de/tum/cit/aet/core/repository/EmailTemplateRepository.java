@@ -23,9 +23,14 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
      * @param id the unique identifier of the email template; must not be null
      * @return an {@link Optional} containing the email template if found, or empty otherwise
      */
-    @NotNull
-    @EntityGraph(attributePaths = "translations")
-    Optional<EmailTemplate> findById(@NotNull UUID id);
+    @Query(
+        """
+            SELECT et FROM EmailTemplate et
+            LEFT JOIN FETCH et.translations t
+            WHERE et.emailTemplateId = :id
+        """
+    )
+    Optional<EmailTemplate> findWithTranslationsById(@Param("id") @NotNull UUID id);
 
     /**
      * Finds an {@link EmailTemplate} by research group, template name, and email type,
@@ -42,17 +47,6 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
         String templateName,
         EmailType emailType
     );
-
-    /**
-     * Checks whether an {@link EmailTemplate} exists for the given research group,
-     * template name, and email type.
-     *
-     * @param researchGroup the research group to check against
-     * @param templateName  the name of the template
-     * @param emailType     the type of email
-     * @return {@code true} if a matching template exists, {@code false} otherwise
-     */
-    boolean existsByResearchGroupAndTemplateNameAndEmailType(ResearchGroup researchGroup, String templateName, EmailType emailType);
 
     /**
      * Retrieves a paginated list of {@link EmailTemplateOverviewDTO} projections for the given research group,
@@ -78,9 +72,25 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
             WHERE et.researchGroup = :researchGroup AND et.emailType IN (:editableEmailTypes)
         """
     )
-    Page<EmailTemplateOverviewDTO> findAllByResearchGroup(
+    Page<EmailTemplateOverviewDTO> findOverviewByResearchGroupAndEmailTypeIn(
         @Param("researchGroup") ResearchGroup researchGroup,
         @Param("editableEmailTypes") Set<EmailType> editableEmailTypes,
         Pageable pageable
     );
+
+    /**
+     * Retrieves all distinct {@link EmailType} values for which email templates
+     * exist within a given {@link ResearchGroup}.
+     *
+     * @param researchGroup the research group to search templates for; must not be {@code null}
+     * @return a {@link Set} of {@link EmailType} values for which templates already exist
+     */
+    @Query(
+        """
+            SELECT DISTINCT et.emailType
+            FROM EmailTemplate et
+            WHERE et.researchGroup = :researchGroup
+        """
+    )
+    Set<EmailType> findAllEmailTypesByResearchGroup(@Param("researchGroup") ResearchGroup researchGroup);
 }
