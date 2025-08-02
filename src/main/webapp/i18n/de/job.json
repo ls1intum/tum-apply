@@ -94,6 +94,13 @@
       "professor": "Betreuer/in",
       "workload": "Arbeitsaufwand"
     },
+    "tooltips": {
+      "fieldOfStudies": "Studienrichtung",
+      "location": "Standort",
+      "supervisor": "Betreuer/in",
+      "workload": "Arbeitsaufwand",
+      "startDate": "Startdatum"
+    },
     "hoursPerWeek": "{{workload}} h/Woche"
   },
   "myPositionsPage": {
