@@ -8,10 +8,17 @@
     justify-content: space-between;
     align-items: center;
 
-    .setting-label {
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--p-text-secondary);
+    .label {
+      .icon {
+        color: var(--p-primary-color);
+        font-size: 0.9rem;
+      }
+
+      .setting-label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--p-text-secondary);
+      }
     }
   }
 
