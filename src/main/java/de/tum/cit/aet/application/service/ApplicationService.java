@@ -169,63 +169,36 @@ public class ApplicationService {
         ApplicationForApplicantDTO application = applicationRepository.findDtoById(updateApplicationDTO.applicationId());
 
         if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
-            UUID jobId = application.job().jobId();
-            Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("job", jobId));
-            User supervisingProfessor = job.getSupervisingProfessor();
+            Application app = applicationRepository
+                .findById(application.applicationId())
+                .orElseThrow(() -> EntityNotFoundException.forId("Application", application.applicationId()));
 
-            confirmApplicationToApplicant(applicant.getUser(), applicant.getUser().getSelectedLanguage(), application, job);
-            confirmApplicationToProfessor(supervisingProfessor, supervisingProfessor.getSelectedLanguage(), application, job);
+            confirmApplicationToApplicant(app);
+            confirmApplicationToProfessor(app);
         }
         return application;
     }
 
-    private void confirmApplicationToApplicant(User user, String selectedLanguage, ApplicationForApplicantDTO application, Job job) {
+    private void confirmApplicationToApplicant(Application application) {
+        User user = application.getApplicant().getUser();
         Email email = Email.builder()
             .to(user)
-            .language(Language.fromCode(selectedLanguage))
-            .template("application_confirmation")
+            .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_SENT)
-            .content(
-                Map.of(
-                    "applicantFirstName",
-                    application.applicant().user().firstName(),
-                    "applicantLastName",
-                    application.applicant().user().lastName(),
-                    "jobTitle",
-                    job.getTitle(),
-                    "researchGroupName",
-                    job.getResearchGroup().getName()
-                )
-            )
+            .content(application)
+            .researchGroup(application.getJob().getResearchGroup())
             .build();
         emailService.send(email);
     }
 
-    private void confirmApplicationToProfessor(
-        User supervisingProfessor,
-        String selectedLanguage,
-        ApplicationForApplicantDTO application,
-        Job job
-    ) {
+    private void confirmApplicationToProfessor(Application application) {
+        User supervisingProfessor = application.getJob().getSupervisingProfessor();
         Email email = Email.builder()
             .to(supervisingProfessor)
-            .language(Language.fromCode(selectedLanguage))
-            .template("application_received")
+            .language(Language.fromCode(supervisingProfessor.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_RECEIVED)
-            .content(
-                Map.of(
-                    "professorLastName",
-                    application.job().professorName(),
-                    "jobTitle",
-                    job.getTitle(),
-                    "applicantFirstName",
-                    application.applicant().user().firstName(),
-                    "applicantLastName",
-                    application.applicant().user().lastName(),
-                    "applicationId",
-                    application.applicationId()
-                )
-            )
+            .content(application)
+            .researchGroup(application.getJob().getResearchGroup())
             .build();
         emailService.send(email);
     }
@@ -242,26 +215,15 @@ public class ApplicationService {
         if (application == null) {
             return;
         }
-        Applicant applicant = application.getApplicant();
+        User user = application.getApplicant().getUser();
         Job job = application.getJob();
 
         Email email = Email.builder()
-            .to(applicant.getUser())
+            .to(user)
+            .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_WITHDRAWN)
-            .template("application_withdrawn")
-            .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
-            .content(
-                Map.of(
-                    "applicantFirstName",
-                    applicant.getUser().getFirstName(),
-                    "applicantLastName",
-                    applicant.getUser().getLastName(),
-                    "jobTitle",
-                    job.getTitle(),
-                    "researchGroupName",
-                    job.getResearchGroup().getName()
-                )
-            )
+            .content(application)
+            .researchGroup(job.getResearchGroup())
             .build();
 
         emailService.send(email);

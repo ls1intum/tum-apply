@@ -244,7 +244,7 @@ export default [
     },
 
     {
-      files: ['**/*.html'],
+      files: ['src/main/webapp/**/*.html'], // only Angular html files
       languageOptions: {
         parser: angularTemplateParser,
       },

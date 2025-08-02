@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
@@ -33,11 +34,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmailService {
 
-    private final TemplateService templateService;
+    private final TemplateProcessingService templateProcessingService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final DocumentService documentService;
     private final DocumentRepository documentRepository;
     private final EmailSettingService emailSettingService;
+    private final EmailTemplateService emailTemplateService;
 
     @Value("${aet.email.enabled:false}")
     private boolean emailEnabled;
@@ -46,24 +48,27 @@ public class EmailService {
     private String from;
 
     public EmailService(
-        TemplateService templateService,
+        TemplateProcessingService templateProcessingService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
         DocumentService documentService,
         DocumentRepository documentRepository,
-        EmailSettingService emailSettingService
+        EmailSettingService emailSettingService,
+        EmailTemplateService emailTemplateService
     ) {
-        this.templateService = templateService;
+        this.templateProcessingService = templateProcessingService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
         this.documentRepository = documentRepository;
         this.emailSettingService = emailSettingService;
+        this.emailTemplateService = emailTemplateService;
     }
 
     /**
-     * Sends an email asynchronously with retry logic for transient mailing errors.
+     * Sends an email asynchronously. Includes retry logic for transient mailing errors.
+     * If email sending is disabled, it will log the email contents instead.
      *
      * @param email the email to be sent
-     * @return empty CompletableFuture
+     * @return a completed {@link CompletableFuture}
      */
     @Async
     @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
@@ -75,8 +80,9 @@ public class EmailService {
             return CompletableFuture.completedFuture(null);
         }
 
-        String subject = renderSubject(email);
-        String body = renderBody(email);
+        EmailTemplateTranslation emailTemplateTranslation = getEmailTemplateTranslation(email);
+        String subject = renderSubject(emailTemplateTranslation);
+        String body = renderBody(email, emailTemplateTranslation);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
@@ -91,9 +97,9 @@ public class EmailService {
     /**
      * Recovery method called when all retry attempts for sending an email fail.
      *
-     * @param ex    the exception that caused the failure
+     * @param ex    the cause of the failure
      * @param email the email that failed to send
-     * @return empty CompletableFuture
+     * @return a completed {@link CompletableFuture}
      */
     @Recover
     public CompletableFuture<Void> recoverMailingException(MailingException ex, Email email) {
@@ -102,33 +108,34 @@ public class EmailService {
     }
 
     /**
-     * Renders the subject of the email using a localized template.
+     * Renders the email subject using the template processor.
      *
-     * @param email the email to process
-     * @return rendered subject line
+     * @param emailTemplateTranslation the template translation
+     * @return the rendered subject
      */
-    private String renderSubject(Email email) {
-        return templateService.renderSubject(email.getTemplate(), email.getLanguage(), email.getContent());
+    private String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
+        return templateProcessingService.renderSubject(emailTemplateTranslation);
     }
 
     /**
-     * Renders the HTML body of the email based on raw content or template.
+     * Renders the email body. If an HTML body is already present in the email,
+     * it will be rendered as-is. Otherwise, the body is rendered using the template.
      *
-     * @param email the email to process
-     * @return rendered HTML body
+     * @param email                    the email to render
+     * @param emailTemplateTranslation the template translation
+     * @return the rendered HTML body
      */
-    private String renderBody(Email email) {
+    private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
         if (StringUtils.isNotEmpty(email.getHtmlBody())) {
-            return templateService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
+            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
         }
-        return templateService.renderTemplate(email.getTemplate(), email.getLanguage(), email.getContent());
+        return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
     }
 
     /**
-     * Logs the email contents instead of sending them.
-     * Used when email sending is disabled in configuration.
+     * Logs the email instead of sending it. Used for local testing or when sending is disabled.
      *
-     * @param email   the email object
+     * @param email   the email
      * @param subject the rendered subject
      * @param body    the rendered HTML body
      */
@@ -151,29 +158,30 @@ public class EmailService {
     }
 
     /**
-     * Sends the email using JavaMailSender with optional attachments.
+     * Sends a fully constructed email using JavaMailSender.
+     * Includes optional CC, BCC, and file attachments.
      *
-     * @param email   the email object
+     * @param email   the email
      * @param subject the rendered subject
      * @param body    the rendered HTML body
+     * @throws MailingException if sending fails
      */
     private void sendEmail(Email email, String subject, String body) {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
             if (mailSender == null) {
-                log.error("Mail sender not configured but email sending is enabled. Could not sent email to {}", email.getTo());
-                throw new IllegalStateException("Mail sender not configured but email sending is enabled");
+                log.error("Mail sender not configured but email sending is enabled. Could not send email to {}", email.getTo());
+                throw new IllegalStateException("Mail sender not configured");
             }
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             Set<String> to = getRecipientsToNotify(email.getTo(), email);
-
-            // do not send email when to is empty
             if (to.isEmpty()) {
                 return;
             }
+
             helper.setTo(to.toArray(new String[0]));
             helper.setCc(getRecipientsToNotify(email.getCc(), email).toArray(new String[0]));
             helper.setBcc(getRecipientsToNotify(email.getBcc(), email).toArray(new String[0]));
@@ -183,6 +191,7 @@ public class EmailService {
             helper.setText(body, true);
 
             attachDocuments(email, helper);
+
             mailSender.send(message);
         } catch (MessagingException | IOException e) {
             log.error("Failed to send email to: {}. Reason: {}", email.getTo(), e.getMessage());
@@ -190,6 +199,28 @@ public class EmailService {
         }
     }
 
+    /**
+     * Loads the appropriate template translation based on email metadata.
+     *
+     * @param email the email
+     * @return the corresponding {@link EmailTemplateTranslation}
+     */
+    private EmailTemplateTranslation getEmailTemplateTranslation(Email email) {
+        return emailTemplateService.getTemplateTranslation(
+            email.getResearchGroup(),
+            email.getTemplateName(),
+            email.getEmailType(),
+            email.getLanguage()
+        );
+    }
+
+    /**
+     * Filters a list of users to those who have notification enabled for a given email type.
+     *
+     * @param users the users to filter
+     * @param email the email context
+     * @return a set of email addresses to notify
+     */
     private Set<String> getRecipientsToNotify(Set<User> users, Email email) {
         if (users == null || users.isEmpty()) {
             return Set.of();
@@ -202,12 +233,12 @@ public class EmailService {
     }
 
     /**
-     * Attaches documents to the email.
+     * Attaches documents to the outgoing email message.
      *
      * @param email  the email containing document references
-     * @param helper the message helper used for attachment
-     * @throws IOException        if document content cannot be read
-     * @throws MessagingException if attachment fails
+     * @param helper the message helper
+     * @throws IOException        if reading document content fails
+     * @throws MessagingException if attaching documents fails
      */
     private void attachDocuments(Email email, MimeMessageHelper helper) throws IOException, MessagingException {
         if (email.getDocumentIds() == null) {
@@ -219,6 +250,7 @@ public class EmailService {
             Document document = documentRepository
                 .findById(documentId)
                 .orElseThrow(() -> EntityNotFoundException.forId("document", documentId));
+
             Resource content = documentService.download(document);
             InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
             helper.addAttachment("document_" + count, attachment);

@@ -1,0 +1,28 @@
+meta {
+  name: Create Template
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/email-templates
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "emailTemplateId": null,
+    "templateName": "",
+    "emailType": "",
+    "isDefault": false,
+    "english": {
+      "subject": "",
+      "body": ""
+    },
+    "german": {
+      "subject": "",
+      "body": ""
+    }
+  }
+}
