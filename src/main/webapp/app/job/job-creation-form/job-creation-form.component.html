@@ -47,6 +47,7 @@
             [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
             [required]="true"
             [width]="'100%'"
+            [filter]="true"
           />
         </div>
       </div>
@@ -71,6 +72,7 @@
             [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
             [required]="true"
             [width]="'100%'"
+            [filter]="true"
           />
         </div>
       </div>
@@ -97,25 +99,29 @@
       </div>
 
       <div class="form-field">
-        <jhi-select
-          [selected]="basicInfoForm.get('workload')?.value"
-          (selectedChange)="basicInfoForm.get('workload')?.setValue($event)"
-          [items]="DropdownOptions.workloadOptions"
+        <jhi-number-input
           [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
           [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
-          [width]="'100%'"
+          [model]="basicInfoForm.get('workload')?.value"
+          [control]="basicInfoForm.get('workload') ?? undefined"
+          [min]="1"
+          [max]="40"
+          [minFractionDigits]="0"
+          [maxFractionDigits]="0"
         />
       </div>
 
       <div class="form-row">
         <div class="form-field">
-          <jhi-select
-            [selected]="basicInfoForm.get('contractDuration')?.value"
-            (selectedChange)="basicInfoForm.get('contractDuration')?.setValue($event)"
-            [items]="DropdownOptions.contractDurations"
+          <jhi-number-input
             [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.contractDuration.placeholder' | translate"
-            [width]="'100%'"
+            [model]="basicInfoForm.get('contractDuration')?.value"
+            [control]="basicInfoForm.get('contractDuration') ?? undefined"
+            [min]="1"
+            [max]="100"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="0"
           />
         </div>
         <div class="form-field">
@@ -126,6 +132,7 @@
             [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
             [width]="'100%'"
+            [filter]="true"
           />
         </div>
       </div>

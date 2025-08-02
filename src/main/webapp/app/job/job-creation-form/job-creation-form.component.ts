@@ -17,6 +17,7 @@ import { StringInputComponent } from '../../shared/components/atoms/string-input
 import { AccountService } from '../../core/auth/account.service';
 import * as DropdownOptions from '.././dropdown-options';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
+import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -37,6 +38,7 @@ type SavingState = 'SAVED' | 'SAVING';
     ProgressStepperComponent,
     TranslateModule,
     SelectComponent,
+    NumberInputComponent,
   ],
   providers: [JobResourceService],
 })
@@ -301,8 +303,8 @@ export class JobCreationFormComponent {
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
       startDate: basicInfoValue.startDate ?? '',
       endDate: basicInfoValue.endDate ?? '',
-      workload: basicInfoValue.workload?.value !== undefined ? Number(basicInfoValue.workload.value) : undefined,
-      contractDuration: basicInfoValue.contractDuration?.value !== undefined ? Number(basicInfoValue.contractDuration.value) : undefined,
+      workload: basicInfoValue.workload,
+      contractDuration: basicInfoValue.contractDuration,
       fundingType: basicInfoValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       description: positionDetailsValue.description?.trim() ?? '',
       tasks: positionDetailsValue.tasks?.trim() ?? '',
@@ -361,8 +363,8 @@ export class JobCreationFormComponent {
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       startDate: job?.startDate ?? '',
       endDate: job?.endDate ?? '',
-      workload: this.findDropdownOption(DropdownOptions.workloadOptions, job?.workload),
-      contractDuration: this.findDropdownOption(DropdownOptions.contractDurations, job?.contractDuration),
+      workload: job?.workload ?? undefined,
+      contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
     });
 

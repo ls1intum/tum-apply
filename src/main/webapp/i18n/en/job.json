@@ -43,11 +43,11 @@
       },
       "workload": {
         "label": "Workload",
-        "placeholder": "Select a Workload..."
+        "placeholder": "Specify the Workload (in h/week)..."
       },
       "contractDuration": {
         "label": "Contract Duration",
-        "placeholder": "Select a Contract Duration..."
+        "placeholder": "Specify the Contract Duration (in years)..."
       },
       "fundingType": {
         "label": "Funding Type",

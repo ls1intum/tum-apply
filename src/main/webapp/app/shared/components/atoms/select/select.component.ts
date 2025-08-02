@@ -36,6 +36,7 @@ export class SelectComponent {
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
   translateItems = input<boolean>(false);
+  filter = input<boolean>(false);
 
   selectedChange = output<SelectOption>();
 
