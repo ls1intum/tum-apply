@@ -1,0 +1,145 @@
+###
+## Self-host config
+#
+
+# Captcha via Google's ReCaptcha
+# Setup keys at https://www.google.com/recaptcha/admin
+com.smotana.clearflask.security.limiter.challenge.CaptchaChallenger$Config.enabled=false
+#com.smotana.clearflask.security.limiter.challenge.CaptchaChallenger$Config.siteKey=<FILL_OUT>
+#com.smotana.clearflask.security.limiter.challenge.CaptchaChallenger$Config.secretKey=<FILL_OUT>
+
+# DynamoDB or equivalent service
+# If using real DynamoDB, comment out serviceEndpoint and signingRegion
+com.smotana.clearflask.store.dynamo.DefaultDynamoDbProvider$Config.serviceEndpoint=http://localstack:4566
+com.smotana.clearflask.store.dynamo.DefaultDynamoDbProvider$Config.signingRegion=us-east-1
+com.smotana.clearflask.store.dynamo.DefaultDynamoDbProvider$Config.productionRegion=us-east-1
+
+com.smotana.clearflask.store.elastic.DefaultElasticSearchProvider$Config.serviceEndpoint=http://elasticsearch:9200
+
+com.smotana.clearflask.store.mysql.DefaultMysqlProvider$Config.host=mysql
+com.smotana.clearflask.store.mysql.DefaultMysqlProvider$Config.user=${MYSQL_CLEARFLASK_USER}
+com.smotana.clearflask.store.mysql.DefaultMysqlProvider$Config.pass=${MYSQL_CLEARFLASK_PASSWORD}
+
+# Browser Push keys
+# Generate new VAPID keys
+# https://github.com/zivver/web-push/blob/master/README.md#generating-vapid-keys
+# $ npx web-push generate-vapid-keys
+com.smotana.clearflask.core.push.provider.BrowserPushServiceImpl$Config.publicKey=${VAPID_PUBLIC_KEY}
+com.smotana.clearflask.core.push.provider.BrowserPushServiceImpl$Config.privateKey=${VAPID_PRIVATE_KEY}
+
+# Generate secret key
+# Mainly used for encrypting search cursors sent to/from client
+# $ openssl rand -base64 16
+com.smotana.clearflask.util.DefaultServerSecret$Config.sharedKey:cursor=${CURSOR_SECRET}
+
+# Generate another secret key
+# Used for JWT tokens for magical sign-in email link
+# $ openssl rand -base64 172 | tr -d '\n'
+com.smotana.clearflask.store.impl.DynamoElasticUserStore$Config.tokenSignerPrivKey=${TOKEN_SIGNER_PRIVATE_KEY}
+
+# Type in your domain
+com.smotana.clearflask.web.Application$Config.domain=localhost
+
+# Choice whether to use MySQL or ElasticSearch for searching/filtering posts
+# See README.md "Migration between ElasticSearch/MySQL" for migration instructions
+com.smotana.clearflask.web.Application$Config.defaultSearchEngine=READWRITE_MYSQL
+
+# If you are using HTTPS, set this to true to use secure auth cookies
+com.smotana.clearflask.web.security.AuthCookieImpl$Config.authCookieSecure=false
+
+# Whether to wait until dependencies are up before starting
+# Useful when starting up dependencies at the same time as ClearFlask, ie using docker compose.
+com.smotana.clearflask.web.Application$Config.startupWaitUntilDeps=true
+
+# Create all indexes in ElasticSearch/Mysql on startup
+com.smotana.clearflask.web.Application$Config.createIndexesOnStartup=true
+
+# Generate SSO private key
+# $ uuidgen
+com.smotana.clearflask.security.ClearFlaskSso$Config.secretKey=${SSO_SECRET_KEY}
+
+# You will be able to create an account using only this email
+com.smotana.clearflask.web.security.SuperAdminPredicate$Config.superAdminEmailRegex=^admin@localhost$
+# IMPORTANT: after you signup, it's recommended to disable further signups here
+com.smotana.clearflask.web.resource.AccountResource$Config.signupEnabled=true
+
+# Generate secret key for communication between ClearFlask Connect and Server
+# IMPORTANT: Also copy the same value into connect.config.json as well
+# $ uuidgen
+com.smotana.clearflask.web.security.AuthenticationFilter$Config.connectToken=${CONNECT_TOKEN}
+
+# Email sending
+# Select generic SMTP ('smtp') or Amazon SES ('ses')
+com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.useService=ses
+# For Amazon SES
+com.smotana.clearflask.core.email.AmazonSimpleEmailServiceProvider$Config.region=us-east-1
+com.smotana.clearflask.core.email.AmazonSimpleEmailServiceProvider$Config.serviceEndpoint=http://localstack:4566
+# For SMTP
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.smtpStrategy=<SMTP_TLS, SMTPS, SMTP>
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.smtpHost=<FILL_OUT, e.g. smtp.gmail.com>
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.smtpPort=<FILL_OUT, 587 for SMTP_TLS, 465 for SMTPS, 25 for SMTP>
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.smtpUser=<FILL_OUT, e.g. example@gmail.com>
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.smtpPassword=<FILL_OUT, e.g. GMail app password>
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.emailDisplayName=<FILL_OUT, e.g. 'ClearFlask for MyCompany'>
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.fromEmailLocalPart=<FILL_OUT, first part of your email, typically 'support'>
+#com.smotana.clearflask.core.push.provider.EmailServiceImpl$Config.fromEmailDomainOverride=<FILL_OUT, e.g. gmail.com>
+
+# S3 object storage or equivalent
+# If using real S3, comment out serviceEndpoint, signingRegion, proxyEnabled and proxyResolveTo
+com.smotana.clearflask.store.s3.DefaultS3ClientProvider$Config.serviceEndpoint=http://s3.localhost.localstack.cloud:4566
+com.smotana.clearflask.store.s3.DefaultS3ClientProvider$Config.signingRegion=us-east-1
+com.smotana.clearflask.store.s3.DefaultS3ClientProvider$Config.dnsResolverTo=localstack
+com.smotana.clearflask.store.s3.DefaultS3ClientProvider$Config.productionRegion=us-east-1
+# For real S3, use this value as hostname: <bucket_name>.s3.amazonaws.com
+com.smotana.clearflask.store.impl.S3ContentStore$Config.hostname=local-upload.s3.localhost.localstack.cloud:4566
+com.smotana.clearflask.store.impl.S3ContentStore$Config.bucketName=local-upload
+com.smotana.clearflask.store.impl.S3ContentStore$Config.scheme=http
+com.smotana.clearflask.store.impl.S3ContentStore$Config.createBucket=true
+# Set to true if your S3 service is publicly accessible for pre-signed urls
+# as in, if you are using real S3, set to false, if you are using localstack, set to true
+com.smotana.clearflask.store.impl.S3ContentStore$Config.proxyEnabled=true
+com.smotana.clearflask.store.impl.S3ContentStore$Config.proxyResolveTo=localstack
+
+# AWS credentials can be specified here or comment it out and specify anywhere else:
+# - Environment Variables - AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY or AWS_ACCESS_KEY,AWS_SECRET_KEY
+# - Java System Properties - aws.accessKeyId and aws.secretKey
+# - Credential profiles file at the default location (~/.aws/credentials) shared by all AWS SDKs and the AWS CLI
+# - Credentials delivered through the Amazon EC2 container service if AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"
+# - Instance profile credentials delivered through the Amazon EC2 metadata service
+# - Web Identity Token credentials from the environment or container.
+com.smotana.clearflask.store.ConfigAwsCredentialsProvider$Config.awsAccessKeyId=${AWS_ACCESS_KEY_ID}
+com.smotana.clearflask.store.ConfigAwsCredentialsProvider$Config.awsSecretKey=${AWS_SECRET_ACCESS_KEY}
+
+# GitHub integration
+# To enable, follow these steps:
+# - Create your own GitHub App
+# - Check app ID and fill out here
+# - Set read/write permission for Issues and Webhooks
+# - Set webhook url to https://yoursite.com/api/v1/webhook/github
+# - Check client id and fill out here
+# - Check client id and fill out in oauthUtil.ts -> GitHubAppProvider -> clientId (TODO: Make this configurable)
+# - Generate a client secret and fill out here
+# - Generate a private key and fill out here
+# - Create a private key:
+#   - Convert to PKCS8: openssl pkcs8 -topk8 -inform PEM -outform PEM -in private-key.pem -out private-key.pem.pkcs8 -nocrypt
+#   - Replace all newlines into ""\n":  awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' private-key.pem.pkcs8
+#   - Fill out here
+# - Set enabled to true here
+# - Provide
+com.smotana.clearflask.store.github.GitHubStoreImpl$Config.enabled=false
+#com.smotana.clearflask.store.github.GitHubClientProviderImplImpl$Config.appId=<FILL_OUT>
+#com.smotana.clearflask.store.github.GitHubClientProviderImplImpl$Config.privateKeyPem=-----BEGIN RSA PRIVATE KEY-----\nAAAAAA\nBBBBBBB...\n-----END RSA PRIVATE KEY-----
+#com.smotana.clearflask.web.resource.GitHubResource$Config.webhookSecret=<FILL_OUT>
+#com.smotana.clearflask.store.github.GitHubStoreImpl$Config.clientSecret=<FILL_OUT>
+
+# AI via LangChain
+# ClearFlask AI is using LangChain which means theoretically it can work with a handful of Language Models:
+# https://docs.langchain4j.dev/integrations/language-models/
+# Although only OpenAI is fully supported at the moment, you may have luck with other models.
+# To enable, create an account with OpenAI and fill out api key below
+#com.smotana.clearflask.store.impl.LangChainLlmAgentStore$Config.openAiApiKey=none
+# To try other features or other models, feel free to uncomment the below and adjust to your needs:
+#com.smotana.clearflask.store.impl.LangChainLlmAgentStore$Config.openAiModelName=GPT_4_O_MINI
+#com.smotana.clearflask.store.impl.LangChainLlmAgentStore$Config.openAiBaseUrl=https://api.openai.com/v1
+#com.smotana.clearflask.store.impl.LangChainLlmAgentStore$Config.temperature=0.7
+#com.smotana.clearflask.store.impl.DynamoLlmMemoryStore$Config.memoryMaxTokens=10000
