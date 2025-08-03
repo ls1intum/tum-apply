@@ -5,9 +5,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-import TranslateDirective from '../../../language/translate.directive';
+import { StringInputComponent } from '../../atoms/string-input/string-input.component';
+import { PasswordInputComponent } from '../../atoms/password-input/password-input';
 
 @Component({
   selector: 'jhi-credentials-group',
@@ -19,10 +21,12 @@ import TranslateDirective from '../../../language/translate.directive';
     ButtonComponent,
     PasswordModule,
     InputTextModule,
+    StringInputComponent,
     PasswordModule,
     MessageModule,
     FormsModule,
-    TranslateDirective,
+    PasswordInputComponent,
+    TranslateModule,
   ],
   templateUrl: './credentials-group.component.html',
   styleUrl: './credentials-group.component.scss',

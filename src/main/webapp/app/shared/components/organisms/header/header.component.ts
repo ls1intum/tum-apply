@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fromEventPattern, map } from 'rxjs';
-import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { AuthCardComponent } from '../auth-card/auth-card.component';
@@ -37,6 +37,7 @@ export class HeaderComponent {
   languages = LANGUAGES.map(lang => lang.toUpperCase());
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
+  ref: DynamicDialogRef | undefined;
 
   private router = inject(Router);
   private dialogService = inject(DialogService);
@@ -46,10 +47,18 @@ export class HeaderComponent {
   }
 
   openLoginDialog(): void {
-    this.dialogService.open(AuthCardComponent, {
+    this.ref = this.dialogService.open(AuthCardComponent, {
+      style: {
+        border: 'none',
+        overflow: 'auto',
+        background: 'transparent',
+        boxShadow: 'none',
+      },
       data: { mode: 'login', redirectUri: this.router.url },
       modal: true,
-      contentStyle: { padding: '0', border: '0' },
+      contentStyle: {
+        padding: '0',
+      },
       dismissableMask: true,
       closeOnEscape: true,
       focusOnShow: true,

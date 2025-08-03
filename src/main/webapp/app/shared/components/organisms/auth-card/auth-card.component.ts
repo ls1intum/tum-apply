@@ -1,4 +1,4 @@
-import { Component, Signal, ViewEncapsulation, inject, signal } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -32,6 +32,7 @@ import { EmailLoginResourceService } from '../../../../generated/api/emailLoginR
 })
 export class AuthCardComponent {
   mode = signal<'login' | 'register'>('login');
+  readonly isRegister = computed(() => this.mode() === 'register');
 
   authTabService = inject(AuthTabService);
   value: Signal<number> = this.authTabService.getSelectedTab();
@@ -95,34 +96,21 @@ export class AuthCardComponent {
     this.keycloakService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
   }
 
-  onEmailLogin = (credentials: { email: string; password: string }): void => {
-    const { email, password } = credentials;
-    this.emailLoginResourceService
-      .login(
-        {
-          email,
-          password,
-        },
-        'response',
-      )
-      .subscribe({
-        next: () => {
-          this.accountService.loadUser().then(() => {
-            const loadedUser = this.accountService.user();
-            if (loadedUser) {
-              this.keycloakService.profile = {
-                sub: loadedUser.id,
-                email: loadedUser.email,
-                given_name: loadedUser.name.split(' ')[0] ?? '',
-                family_name: loadedUser.name.split(' ').slice(1).join(' '),
-                token: loadedUser.bearer,
-              };
-            }
-            const redirectUri = this.redirectUri();
-            window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
-          });
-        },
-      });
+  onEmailLogin = async (credentials: { email: string; password: string }): Promise<void> => {
+    this.emailLoginResourceService.login(credentials, 'response');
+    await this.accountService.loadUser();
+    const loadedUser = this.accountService.user();
+    if (loadedUser) {
+      this.keycloakService.profile = {
+        sub: loadedUser.id,
+        email: loadedUser.email,
+        given_name: loadedUser.name.split(' ')[0] ?? '',
+        family_name: loadedUser.name.split(' ').slice(1).join(' '),
+        token: loadedUser.bearer,
+      };
+    }
+    const redirectUri = this.redirectUri();
+    window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
   };
 
   toggleMode(): void {

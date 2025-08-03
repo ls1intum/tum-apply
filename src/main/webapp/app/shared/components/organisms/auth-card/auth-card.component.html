@@ -1,7 +1,7 @@
 <div class="login-card">
   <div class="login-header">
     <img alt="TUM Logo" class="tum-logo" src="/content/images/tum-logo/tum-logo.gif" />
-    <h1 jhiTranslate="{{ mode() === 'register' ? 'register.header' : 'login.header' }}"></h1>
+    <h1 jhiTranslate="{{ isRegister() ? 'register.header' : 'login.header' }}"></h1>
   </div>
 
   <p-tabs (valueChange)="onTabChange($event)" [value]="value()" class="login-content">
@@ -12,7 +12,7 @@
     <p-tabpanels>
       <!-- Students / Applicants -->
       <p-tabpanel [value]="0" class="login-panel">
-        @if (mode() === 'register') {
+        @if (isRegister()) {
           <p class="login-description" jhiTranslate="register.texts.applicant"></p>
         }
         <div class="login-buttons">
@@ -26,26 +26,23 @@
 
       <!-- Professors / Supervisors -->
       <p-tabpanel [value]="1" class="login-panel">
-        <p class="login-description" jhiTranslate="{{ mode() === 'register' ? 'register.texts.professor' : 'login.texts.professor' }}"></p>
+        <p class="login-description" jhiTranslate="{{ isRegister() ? 'register.texts.professor' : 'login.texts.professor' }}"></p>
         <div class="login-providers">
           <jhi-button
             (click)="onTUMSSOLogin()"
             [disabled]="false"
             [fullWidth]="true"
-            [label]="mode() === 'register' ? 'register.buttons.tum' : 'login.buttons.tum'"
+            [label]="isRegister() ? 'register.buttons.tum' : 'login.buttons.tum'"
             [shouldTranslate]="true"
           />
         </div>
       </p-tabpanel>
     </p-tabpanels>
     <p class="login-footer">
-      <span
-        jhiTranslate="{{ mode() === 'register' ? 'register.texts.accountmissing.prefix' : 'login.texts.accountmissing.prefix' }}"
-      ></span>
+      <span jhiTranslate="{{ isRegister() ? 'register.texts.accountmissing.prefix' : 'login.texts.accountmissing.prefix' }}"></span>
       <a
         (click)="toggleMode()"
-        jhiTranslate="{{ mode() === 'register' ? 'register.texts.accountmissing.link' : 'login.texts.accountmissing.link' }}"
-        style="cursor: pointer"
+        jhiTranslate="{{ isRegister() ? 'register.texts.accountmissing.link' : 'login.texts.accountmissing.link' }}"
       ></a>
     </p>
   </p-tabs>

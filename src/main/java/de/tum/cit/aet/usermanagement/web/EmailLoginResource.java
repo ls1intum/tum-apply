@@ -46,7 +46,7 @@ public class EmailLoginResource {
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.refreshToken())
             .httpOnly(true)
             .secure(true)
-            .sameSite("Strict")
+            .sameSite("Lax")
             .path("/")
             .maxAge(Duration.ofSeconds(tokens.refreshExpiresIn()))
             .build();
