@@ -60,6 +60,51 @@ public class AuthenticationResource {
     }
 
     /**
+     * Logs out the user by invalidating the refresh token at Keycloak and clearing authentication cookies.
+     *
+     * @param request  the HTTP servlet request containing the refresh_token cookie
+     * @param response the HTTP servlet response used to clear authentication cookies
+     * @return HTTP 200 OK if logout is successful
+     * @throws UnauthorizedException if the refresh token is missing or logout fails
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("refresh_token".equals(c.getName())) {
+                    refreshToken = c.getValue();
+                    break;
+                }
+            }
+        }
+        if (refreshToken == null) {
+            throw new UnauthorizedException("Refresh token is missing for logout");
+        }
+        keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
+
+        // Clear cookies by setting maxAge=0
+        ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Strict")
+            .path("/")
+            .maxAge(0)
+            .build();
+        ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Lax")
+            .path("/")
+            .maxAge(0)
+            .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * Refreshes authentication cookies using the refresh token cookie.
      *
      * @param request  the HTTP servlet request containing the refresh_token cookie

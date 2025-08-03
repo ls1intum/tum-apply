@@ -69,6 +69,33 @@ public class KeycloakAuthenticationService {
     }
 
     /**
+     * Invalidates the user's refresh token by calling Keycloak's logout endpoint.
+     *
+     * @param refreshToken the refresh token to invalidate
+     * @throws UnauthorizedException if logout fails
+     */
+    public void invalidateRefreshToken(String refreshToken) {
+        String logoutUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/logout";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("refresh_token", refreshToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        try {
+            // Keycloak returns 204 No Content on successful logout
+            restTemplate.exchange(logoutUrl, HttpMethod.POST, request, Void.class);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Failed to logout user", e);
+        }
+    }
+
+    /**
      * Refreshes the user's tokens using the provided refresh token.
      *
      * @param refreshToken the refresh token provided in the cookie
