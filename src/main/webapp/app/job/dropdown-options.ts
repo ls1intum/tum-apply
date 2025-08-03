@@ -46,20 +46,6 @@ export const fieldsOfStudies = [
   { name: 'Telecommunications', value: 'Telecommunications' },
   { name: 'Urban Planning', value: 'Urban Planning' },
 ];
-export const workloadOptions = [
-  { name: '40 hours/week (Full-time)', value: 40 },
-  { name: '24 hours/week', value: 24 },
-  { name: '16 hours/week', value: 16 },
-  { name: '8 hours/week', value: 8 },
-  { name: '4 hours/week', value: 4 },
-];
-export const contractDurations = [
-  { name: '1 year', value: 1 },
-  { name: '2 years', value: 2 },
-  { name: '3 years', value: 3 },
-  { name: '4 years', value: 4 },
-  { name: '5+ years', value: 5 },
-];
 export const fundingTypes = [
   { name: 'Fully Funded', value: JobFormDTO.FundingTypeEnum.FullyFunded },
   { name: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
