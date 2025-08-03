@@ -7,13 +7,14 @@ import { Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fromEventPattern, map } from 'rxjs';
+import { Popover } from 'primeng/popover';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, Popover],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,

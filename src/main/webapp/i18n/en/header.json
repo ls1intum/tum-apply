@@ -1,6 +1,7 @@
 {
   "header": {
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "bug": "Report a bug"
   }
 }

@@ -1,6 +1,7 @@
 {
   "header": {
     "login": "Anmelden",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "bug": "Fehler melden"
   }
 }
