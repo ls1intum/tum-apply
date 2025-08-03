@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, computed, effect, inject, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, signal, untracked } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -95,13 +95,19 @@ export class ResearchGroupTemplateEdit {
       ['link'],
     ],
     mention: {
-      allowedChars: /^[A-Z_]*$/,
+      allowedChars: /^[A-Za-z_]*$/,
       mentionDenotationChars: ['$'],
       showDenotationChar: false,
       spaceAfterInsert: false,
+
       source: (searchTerm: string, renderList: (values: any[], searchTerm: string) => void) => {
-        const items = this.TEMPLATE_VARIABLES.map(v => ({ id: v, value: v }));
-        const matches = searchTerm.length ? items.filter(item => item.value.toLowerCase().includes(searchTerm.toLowerCase())) : items;
+        const items = this.TEMPLATE_VARIABLES.map(v => ({
+          id: v,
+          value: this.translate.instant(`researchGroup.emailTemplates.variables.${v}`),
+        }));
+        const matches = searchTerm.length
+          ? items.filter((item): boolean => item.value.toLowerCase().includes(searchTerm.toLowerCase()))
+          : items;
         renderList(matches, searchTerm);
       },
     },
@@ -131,8 +137,15 @@ export class ResearchGroupTemplateEdit {
     }
   });
 
+  readonly translateVariablesEffect = effect(() => {
+    this.currentLang();
+    const form = untracked(() => this.formModel());
+    console.warn('Translating');
+
+    this.formModel.set(this.translateMentionsInTemplate(form));
+  });
+
   readonly formChangeEffect = effect(() => {
-    this.formModel();
     const form = this.formModel();
 
     if (this.skipNextAutosave) {
@@ -224,6 +237,43 @@ export class ResearchGroupTemplateEdit {
     void this.router.navigate(['/research-group/templates']);
   }
 
+  private translateMentionsInTemplate(form: EmailTemplateDTO): EmailTemplateDTO {
+    const updateMentionValues = (html: string): string => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const mentionElements = doc.querySelectorAll('.mention');
+      mentionElements.forEach(el => {
+        const id = el.getAttribute('data-id');
+        if (!id) return;
+
+        const translationKey = `researchGroup.emailTemplates.variables.${id}`;
+        const translatedValue = this.translate.instant(translationKey);
+
+        el.setAttribute('data-value', translatedValue);
+
+        const innerSpan = el.querySelector('span[contenteditable="false"]');
+        if (innerSpan) {
+          innerSpan.innerHTML = `<span class="ql-mention-denotation-char">$</span>${translatedValue}`;
+        }
+      });
+
+      return doc.body.innerHTML;
+    };
+
+    return {
+      ...form,
+      english: {
+        ...form.english,
+        body: updateMentionValues(form.english?.body ?? ''),
+      },
+      german: {
+        ...form.german,
+        body: updateMentionValues(form.german?.body ?? ''),
+      },
+    };
+  }
+
   private clearAutoSaveTimer(): void {
     if (this.autoSaveTimer !== undefined) {
       clearTimeout(this.autoSaveTimer);
@@ -266,10 +316,12 @@ export class ResearchGroupTemplateEdit {
       english: res.english ?? { subject: '', body: '' },
       german: res.german ?? { subject: '', body: '' },
     };
+
+    const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
     this.preselectedEmailType.set(this.getSelectedEmailTypeSelectOption(res.emailType ?? ''));
-    this.skipNextAutosave = true; // to not directly save
-    this.formModel.set(safeTemplate);
-    this.lastSavedSnapshot.set(safeTemplate);
+    this.skipNextAutosave = true; // to not directly send update request
+    this.formModel.set(translatedTemplate);
+    this.lastSavedSnapshot.set(translatedTemplate);
     this.savingState.set('SAVED');
   }
 

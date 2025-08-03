@@ -20,6 +20,15 @@
         "APPLICATION_REJECTED-JOB_OUTDATED": "Application rejected - Job outdated",
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
         "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason"
+      },
+
+      "variables": {
+        "APPLICANT_FIRST_NAME": "Applicant First Name",
+        "APPLICANT_LAST_NAME": "Applicant Last Name",
+        "SUPERVISING_PROFESSOR_FIRST_NAME": "Supervising Professor First Name",
+        "SUPERVISING_PROFESSOR_LAST_NAME": "Supervising Professor Last Name",
+        "JOB_TITLE": "Job Title",
+        "RESEARCH_GROUP_NAME": "Research Group Name"
       }
     }
   }
