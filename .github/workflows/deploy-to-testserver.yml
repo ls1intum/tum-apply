@@ -28,38 +28,12 @@ env:
   RAW_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.inputs.branch_name }}
 
 jobs:
-  check-build:
-    runs-on: ubuntu-latest
-    outputs:
-      passed: ${{ steps.check.outputs.passed }}
-    steps:
-      - name: Check latest “Build and Push Docker Image” status
-        id: check
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { data: runs } = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build.yml',
-              branch: '${{ github.event.inputs.branch_name }}',
-              per_page: 1
-            });
-            const latest = runs.workflow_runs[0];
-            core.setOutput(
-              'passed',
-              latest && latest.conclusion === 'success' ? 'true' : 'false'
-            );
-
   deploy:
-    needs: check-build
-    if: needs.check-build.outputs.passed == 'true'
     uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
     with:
-      environment:       ${{ inputs.environment_name }}
+      environment: ${{ inputs.environment_name }}
       docker-compose-file: './docker/compose.yaml'
-      main-image-name:   ls1intum/tum-apply
-      image-tag:         ${{ inputs.image-tag }}
+      main-image-name: ls1intum/tum-apply
+      image-tag: ${{ inputs.image-tag }}
       deployment-base-path: '/opt/tum-apply'
     secrets: inherit
