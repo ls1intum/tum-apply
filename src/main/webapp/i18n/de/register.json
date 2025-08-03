@@ -1,20 +1,20 @@
 {
   "register": {
     "header": "Erstellen Sie Ihr TUMApply-Konto",
-    "tabs": {
-      "student": "Student / Bewerber",
-      "professor": "Professor / Betreuer"
-    },
     "buttons": {
       "microsoft": "Registrieren mit Microsoft",
       "apple": "Registrieren mit Apple",
       "google": "Registrieren mit Google",
-      "tum": "Registrieren mit TUM SSO"
+      "tum": "Registrieren mit TUM",
+      "email": "Registrieren mit E-Mail"
     },
     "texts": {
-      "professor": "TUM Single Sign-On ist für Professoren und Betreuer erforderlich.",
-      "professorcreate": "Als TUM-Professor oder Betreuer können Sie einfach ihre TUM Anmeldedaten nutzen.",
-      "accountmissing": "Sie haben bereits ein TUMApply-Konto? <a href=\"/register\">Melden Sie sich hier</a>."
+      "applicant": "Erstellen Sie ein Konto, um mit Ihrer Bewerbung zu beginnen.",
+      "professor": "Als TUM-Professor*in oder Betreuer*in registrieren Sie sich bitte mit Ihren TUM-Zugangsdaten.",
+      "accountmissing": {
+        "prefix": "Sie haben bereits ein TUMApply-Konto?",
+        "link": "Hier anmelden."
+      }
     },
     "messages": {
       "error": {
