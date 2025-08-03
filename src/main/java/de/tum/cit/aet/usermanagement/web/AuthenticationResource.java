@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,7 +36,7 @@ public class AuthenticationResource {
      * @throws UnauthorizedException if login credentials are invalid
      */
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Long>> login(@Valid @RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
         AuthResponseDTO tokens = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
 
         ResponseCookie accessCookie = ResponseCookie.from("access_token", tokens.accessToken())
@@ -55,8 +56,8 @@ public class AuthenticationResource {
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-
-        return ResponseEntity.ok().build();
+        // Return the token expiry durations to the client
+        return ResponseEntity.ok(Map.of("expiresIn", tokens.expiresIn(), "refreshExpiresIn", tokens.refreshExpiresIn()));
     }
 
     /**
