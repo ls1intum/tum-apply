@@ -16,6 +16,8 @@ export abstract class BaseInputDirective<T> {
   required = input<boolean>(false);
   width = input<string>('100%');
   id = input<string | undefined>(undefined);
+  shouldTranslate = input<boolean>(false); // Whether to translate the label and placeholder
+  tooltipText = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
   isTouched = signal(false);
@@ -50,8 +52,8 @@ export abstract class BaseInputDirective<T> {
     return defaults[key] ?? `Invalid: ${key}`;
   });
 
-  private translate = inject(TranslateService);
-  private langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
+  protected translate = inject(TranslateService);
+  protected langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
 
   constructor() {
     effect(onCleanup => {
@@ -70,4 +72,6 @@ export abstract class BaseInputDirective<T> {
   onFocus(): void {
     this.isFocused.set(true);
   }
+
+  // TODO: Add optional tooltip handling
 }

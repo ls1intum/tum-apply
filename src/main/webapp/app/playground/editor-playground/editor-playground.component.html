@@ -1,20 +1,43 @@
-<form [formGroup]="form()">
-  <div class="w-150 max-w-150 flex flex-col justify-center items-center">
-    <div class="m-2">
-      <jhi-editor
-        label="Motivation"
-        id="motivation"
-        [required]="true"
-        placeholder="Placeholder for motivation..."
-        [(model)]="motivation"
-        [control]="form().controls.motivation"
-        icon="house"
-      />
+<form [formGroup]="form">
+  <div class="w-full h-full flex justify-center items-center flex-col">
+    <div class="w-150 max-w-150 flex flex-col justify-center items-center">
+      <div class="m-2">
+        <jhi-editor
+          label="Motivation"
+          id="motivation"
+          [required]="true"
+          placeholder="Placeholder for motivation..."
+          [control]="form.controls.motivation"
+          icon="house"
+          [characterLimit]="30"
+          helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+        />
+      </div>
+      <div class="m-2">
+        <p class="block"><b>Html value:</b></p>
+        <div class="border rounded p-1 min-h-6 w-100 text-wrap break-all">
+          {{ motivation() }}
+        </div>
+      </div>
     </div>
-    <div class="m-2">
-      <p class="block"><b>Html value:</b></p>
-      <div class="border rounded p-1 min-h-6 w-100 text-wrap break-all">
-        {{ motivation() }}
+    <div class="w-150 max-w-150 flex flex-col justify-center items-center">
+      <div class="m-2">
+        <jhi-editor
+          label="Motivation2"
+          id="motivation2"
+          [required]="true"
+          placeholder="Placeholder for motivation..."
+          [(model)]="motivation2"
+          icon="house"
+          [characterLimit]="30"
+          helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+        />
+      </div>
+      <div class="m-2">
+        <p class="block"><b>Html value:</b></p>
+        <div class="border rounded p-1 min-h-6 w-100 text-wrap break-all">
+          {{ motivation2() }}
+        </div>
       </div>
     </div>
   </div>
