@@ -1,11 +1,11 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
+import de.tum.cit.aet.usermanagement.dto.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.LoginRequestDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.time.Duration;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,17 +34,25 @@ public class EmailLoginResource {
      */
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
-        String token = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
+        AuthResponseDTO tokens = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
 
-        ResponseCookie cookie = ResponseCookie.from("access_token", token)
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", tokens.accessToken())
             .httpOnly(true)
             .secure(true)
-            .sameSite("Lax")
+            .sameSite("Strict")
             .path("/")
-            .maxAge(Duration.ofHours(1))
+            .maxAge(Duration.ofSeconds(tokens.expiresIn()))
+            .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.refreshToken())
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Strict")
+            .path("/")
+            .maxAge(Duration.ofSeconds(tokens.refreshExpiresIn()))
             .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         return ResponseEntity.ok().build();
     }
