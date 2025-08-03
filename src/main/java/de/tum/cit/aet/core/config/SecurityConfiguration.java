@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.config;
 
 import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
+import jakarta.servlet.http.Cookie;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -9,11 +10,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.util.WebUtils;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -115,7 +119,27 @@ public class SecurityConfiguration {
                     .requestMatchers("/swagger-ui/**")
                     .permitAll()
             )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter)));
+            .oauth2ResourceServer(oauth2 ->
+                oauth2
+                    .bearerTokenResolver(bearerTokenResolver())
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter))
+            );
         return http.build();
+    }
+
+    /**
+     * Extracts the bearer token from the 'access_token' cookie, falling back to the Authorization header.
+     *
+     * @return a BearerTokenResolver that reads from cookie or header
+     */
+    private BearerTokenResolver bearerTokenResolver() {
+        DefaultBearerTokenResolver defaultResolver = new DefaultBearerTokenResolver();
+        return request -> {
+            Cookie cookie = WebUtils.getCookie(request, "access_token");
+            if (cookie != null && cookie.getValue() != null) {
+                return cookie.getValue();
+            }
+            return defaultResolver.resolve(request);
+        };
     }
 }
