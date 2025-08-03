@@ -13,9 +13,19 @@ import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule, ToastComponent],
+  imports: [
+    DynamicTableComponent,
+    ButtonComponent,
+    BadgeModule,
+    SharedModule,
+    TranslateModule,
+    ToastComponent,
+    ApplicationStateForApplicantsComponent,
+  ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
