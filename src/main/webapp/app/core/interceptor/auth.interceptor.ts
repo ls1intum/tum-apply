@@ -1,18 +1,16 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable, Injector, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
 
 import { KeycloakService } from '../auth/keycloak.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private injector = inject(Injector);
+  private keycloakService = inject(KeycloakService);
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const keycloakService = this.injector.get(KeycloakService);
-    const token = keycloakService.getToken();
+    const token = this.keycloakService.getToken();
 
     if (token != null) {
       request = request.clone({
@@ -25,12 +23,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          console.warn('Unauthorized - redirecting to login...');
-          const router = this.injector.get(Router);
-          const currentUrl = router.url;
-          void router.navigate(['/login'], {
-            queryParams: { redirect: currentUrl },
-          });
+          console.warn('Unauthorized - please login again...');
         }
         return throwError(() => error);
       }),
