@@ -4,6 +4,8 @@ import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.usermanagement.dto.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.LoginRequestDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,7 +22,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/api/auth")
 @AllArgsConstructor
-public class EmailLoginResource {
+public class AuthenticationResource {
 
     private final KeycloakAuthenticationService keycloakAuthenticationService;
 
@@ -54,6 +56,50 @@ public class EmailLoginResource {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Refreshes authentication cookies using the refresh token cookie.
+     *
+     * @param request  the HTTP servlet request containing the refresh_token cookie
+     * @param response the HTTP servlet response used to set new authentication cookies
+     * @return HTTP 200 OK if refresh is successful
+     * @throws UnauthorizedException if the refresh token is missing or invalid
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refresh(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("refresh_token".equals(c.getName())) {
+                    refreshToken = c.getValue();
+                    break;
+                }
+            }
+        }
+        if (refreshToken == null) {
+            throw new UnauthorizedException("Refresh token is missing");
+        }
+        AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(refreshToken);
+
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", tokens.accessToken())
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Strict")
+            .path("/")
+            .maxAge(Duration.ofSeconds(tokens.expiresIn()))
+            .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.refreshToken())
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Lax")
+            .path("/")
+            .maxAge(Duration.ofSeconds(tokens.refreshExpiresIn()))
+            .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
         return ResponseEntity.ok().build();
     }
 }

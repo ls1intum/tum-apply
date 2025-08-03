@@ -67,4 +67,41 @@ public class KeycloakAuthenticationService {
             throw new UnauthorizedException("Invalid username or password", e);
         }
     }
+
+    /**
+     * Refreshes the user's tokens using the provided refresh token.
+     *
+     * @param refreshToken the refresh token provided in the cookie
+     * @return a new AuthResponseDTO containing fresh access and refresh tokens
+     * @throws UnauthorizedException if refreshing fails or the token response is invalid
+     */
+    public AuthResponseDTO refreshTokens(String refreshToken) {
+        String tokenUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("grant_type", "refresh_token");
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("refresh_token", refreshToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        try {
+            ResponseEntity<JsonNode> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, JsonNode.class);
+            JsonNode body = response.getBody();
+            if (body == null || body.get("access_token") == null) {
+                throw new UnauthorizedException("Refresh token response is invalid");
+            }
+            String accessToken = body.get("access_token").asText();
+            long expiresIn = body.has("expires_in") ? body.get("expires_in").asLong() : 0L;
+            String newRefreshToken = body.has("refresh_token") ? body.get("refresh_token").asText() : "";
+            long refreshExpiresIn = body.has("refresh_expires_in") ? body.get("refresh_expires_in").asLong() : 0L;
+            return new AuthResponseDTO(accessToken, newRefreshToken, expiresIn, refreshExpiresIn);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Failed to refresh token", e);
+        }
+    }
 }
