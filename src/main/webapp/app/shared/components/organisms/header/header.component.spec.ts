@@ -69,7 +69,6 @@ describe('HeaderComponent', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      bearer: 'token',
     });
     fixture.detectChanges();
     const userNameElement = fixture.nativeElement.querySelector('.font-medium');
@@ -81,7 +80,6 @@ describe('HeaderComponent', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      bearer: 'token',
     });
     fixture.detectChanges();
     const logoutSpy = jest.spyOn(component, 'logout');

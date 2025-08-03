@@ -25,12 +25,12 @@ export type ParamLocation = 'query' | 'header' | 'path' | 'cookie';
  * Standard types as defined in <a href="https://swagger.io/specification/#data-types">OpenAPI Specification: Data Types</a>
  */
 export type StandardDataType =
-  | 'integer'
-  | 'number'
-  | 'boolean'
-  | 'string'
-  | 'object'
-  | 'array'
+  | "integer"
+  | "number"
+  | "boolean"
+  | "string"
+  | "object"
+  | "array"
   ;
 
 /**
@@ -42,15 +42,15 @@ export type DataType = StandardDataType | string;
  * Standard formats as defined in <a href="https://swagger.io/specification/#data-types">OpenAPI Specification: Data Types</a>
  */
 export type StandardDataFormat =
-  | 'int32'
-  | 'int64'
-  | 'float'
-  | 'double'
-  | 'byte'
-  | 'binary'
-  | 'date'
-  | 'date-time'
-  | 'password'
+  | "int32"
+  | "int64"
+  | "float"
+  | "double"
+  | "byte"
+  | "binary"
+  | "date"
+  | "date-time"
+  | "password"
   ;
 
 export type DataFormat = StandardDataFormat | string;

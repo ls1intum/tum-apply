@@ -23,13 +23,13 @@ import { BaseService } from '../api.base.service';
 
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ActuatorService extends BaseService {
   constructor(
     protected httpClient: HttpClient,
     @Optional() @Inject(BASE_PATH) basePath: string | string[],
-    @Optional() configuration?: Configuration,
+    @Optional() configuration?: Configuration
   ) {
     super(basePath, configuration);
   }
@@ -49,7 +49,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public allMetrics(
     observe?: 'response',
@@ -61,7 +61,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public allMetrics(
     observe?: 'events',
@@ -73,7 +73,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public allMetrics(
     observe: any = 'body',
@@ -85,7 +85,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -123,7 +123,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -142,7 +142,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-      ,
+    }
   ): Observable<object>;
   public allOpenApi(
     observe?: 'response',
@@ -154,7 +154,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-      ,
+    }
   ): Observable<HttpResponse<object>>;
   public allOpenApi(
     observe?: 'events',
@@ -166,7 +166,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-      ,
+    }
   ): Observable<HttpEvent<object>>;
   public allOpenApi(
     observe: any = 'body',
@@ -178,7 +178,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-      ,
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
