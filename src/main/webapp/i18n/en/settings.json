@@ -1,30 +1,28 @@
 {
   "settings": {
-    "title": "User settings for [<strong>{{username}}</strong>]",
-    "form": {
-      "firstname": "First Name",
-      "firstname.placeholder": "Your first name",
-      "lastname": "Last Name",
-      "lastname.placeholder": "Your last name",
-      "language": "Language",
-      "button": "Save"
-    },
-    "messages": {
-      "error": {
-        "fail": "<strong>An error has occurred!</strong> Settings could not be saved.",
-        "emailexists": "<strong>Email is already in use!</strong> Please choose another one."
-      },
-      "success": "<strong>Settings saved!</strong>",
-      "validate": {
-        "firstname": {
-          "required": "Your first name is required.",
-          "minlength": "Your first name is required to be at least 1 character",
-          "maxlength": "Your first name cannot be longer than 50 characters"
+    "header": "Settings",
+
+    "notifications": {
+      "header": "Notifications",
+
+      "applicant": {
+        "submission": {
+          "title": "Application Submission",
+          "description": "Receive confirmation when you submit or withdraw an application."
         },
-        "lastname": {
-          "required": "Your last name is required.",
-          "minlength": "Your last name is required to be at least 1 character",
-          "maxlength": "Your last name cannot be longer than 50 characters"
+        "outcome": {
+          "title": "Application Outcome",
+          "description": "Be notified when your application is accepted or rejected."
+        }
+      },
+      "professor": {
+        "new": {
+          "title": "New Applications",
+          "description": "Get notified when a new application is received for your job posting."
+        },
+        "accepted": {
+          "title": "Application Accepted (BCC)",
+          "description": "Receive a copy when an applicant for your job is accepted."
         }
       }
     }

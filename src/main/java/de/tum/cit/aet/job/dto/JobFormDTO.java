@@ -12,15 +12,17 @@ import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record JobFormDTO(
+    UUID jobId,
     @NotNull String title,
     String researchArea,
-    String fieldOfStudies,
+    @NotNull String fieldOfStudies,
     @NotNull UUID supervisingProfessor,
     @NotNull Campus location,
     LocalDate startDate,
+    LocalDate endDate,
     Integer workload,
     Integer contractDuration,
-    @NotNull FundingType fundingType,
+    FundingType fundingType,
     String description,
     String tasks,
     String requirements,
@@ -35,12 +37,14 @@ public record JobFormDTO(
             throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
         }
         return new JobFormDTO(
+            job.getJobId(),
             job.getTitle(),
             job.getResearchArea(),
             job.getFieldOfStudies(),
             job.getSupervisingProfessor().getUserId(),
             job.getLocation(),
             job.getStartDate(),
+            job.getEndDate(),
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),

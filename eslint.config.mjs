@@ -159,7 +159,7 @@ export default [
         '@typescript-eslint/no-explicit-any': 'warn',
         '@typescript-eslint/strict-boolean-expressions': 'warn',
         '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-
+        '@typescript-eslint/no-deprecated': 'warn',
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-unsafe-return': 'off',
         '@typescript-eslint/ban-ts-comment': 'warn',

@@ -1,6 +1,6 @@
-<p-card styleClass="job-card">
+<p-card class="job-card">
   <ng-template #header>
-    <div class="card-header" [style.--header-color]="headerColor()">
+    <div [style.--header-color]="headerColor()" class="card-header">
       <div class="card-icon">
         <fa-icon [icon]="['fas', icon()]" />
       </div>
@@ -14,23 +14,69 @@
 
   <div class="card-body">
     <ul class="card-info">
-      <li class="info-item"><fa-icon [icon]="['fas', 'graduation-cap']" /> {{ fieldOfStudies() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'location-dot']" /> {{ location() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'user']" /> {{ professor() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'clock']" /> {{ workload() }}</li>
-      <li class="info-item"><fa-icon [icon]="['fas', 'calendar']" /> Start: {{ formattedStartDate() }}</li>
+      <ng-template #infoItem let-icon="icon" let-value="value" let-tooltip="tooltip">
+        <li class="info-item">
+          <fa-icon [icon]="['fas', icon]" [pTooltip]="tooltip" tooltipPosition="top" />
+          @if (value) {
+            @if (icon === 'calendar') {
+              Start:
+            }
+            @if (icon === 'user') {
+              Prof. Dr.
+            }
+            @if (icon === 'clock') {
+              <span jhiTranslate="jobOverviewPage.hoursPerWeek" [translateValues]="{ workload: value }"></span>
+            } @else {
+              {{ value }}
+            }
+          } @else {
+            @if (icon === 'calendar') {
+              Start:&nbsp;
+            }
+            <span jhiTranslate="jobDetailPage.noData"></span>
+          }
+        </li>
+      </ng-template>
+      <ng-container
+        [ngTemplateOutletContext]="{
+          icon: 'graduation-cap',
+          value: fieldOfStudies(),
+          tooltip: ('jobOverviewPage.tooltips.fieldOfStudies' | translate),
+        }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container
+        [ngTemplateOutletContext]="{ icon: 'location-dot', value: location(), tooltip: ('jobOverviewPage.tooltips.location' | translate) }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container
+        [ngTemplateOutletContext]="{ icon: 'user', value: professor(), tooltip: ('jobOverviewPage.tooltips.supervisor' | translate) }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container
+        [ngTemplateOutletContext]="{ icon: 'clock', value: workload(), tooltip: ('jobOverviewPage.tooltips.workload' | translate) }"
+        [ngTemplateOutlet]="infoItem"
+      />
+      <ng-container
+        [ngTemplateOutletContext]="{
+          icon: 'calendar',
+          value: formattedStartDate(),
+          tooltip: ('jobOverviewPage.tooltips.startDate' | translate),
+        }"
+        [ngTemplateOutlet]="infoItem"
+      />
     </ul>
 
     <div class="card-actions">
       <jhi-button
+        (click)="onViewDetails()"
+        [shouldTranslate]="true"
+        class="view-button"
+        label="jobActionButton.view"
         severity="primary"
         variant="outlined"
-        label="jobActionButton.view"
-        (click)="onViewDetails()"
-        class="view-button"
-        [shouldTranslate]="true"
       />
-      <jhi-button severity="primary" label="jobActionButton.apply" (click)="onApply()" class="apply-button" [shouldTranslate]="true" />
+      <jhi-button (click)="onApply()" [shouldTranslate]="true" class="apply-button" label="jobActionButton.apply" severity="primary" />
     </div>
   </div>
 </p-card>

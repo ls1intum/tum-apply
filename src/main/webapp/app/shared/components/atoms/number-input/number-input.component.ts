@@ -14,13 +14,13 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   imports: [CommonModule, FormsModule, FontAwesomeModule, InputNumberModule, ReactiveFormsModule, InputNumberModule],
 })
 export class NumberInputComponent extends BaseInputDirective<number | undefined> {
-  // Optional min and max values
-  min = input<number | undefined>(undefined);
-  max = input<number | undefined>(undefined);
+  // Min and max values
+  min = input<number>(0);
+  max = input<number>(100);
 
-  // Optional min and max fraction digits
-  minFractionDigits = input<number | undefined>(undefined);
-  maxFractionDigits = input<number | undefined>(undefined);
+  // Min and max fraction digits
+  minFractionDigits = input<number>(0);
+  maxFractionDigits = input<number>(3);
 
   onInputChange(value: number): void {
     this.modelChange.emit(value);

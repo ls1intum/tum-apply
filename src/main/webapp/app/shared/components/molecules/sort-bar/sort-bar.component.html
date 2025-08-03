@@ -9,10 +9,10 @@
 
   <div class="sort-bar__controls">
     <span jhiTranslate="entity.sortBy"></span>
-    <jhi-dropdown
+    <jhi-select
       width="11rem"
-      [items]="dropdownOptions()"
-      [selected]="selectedDropdownOption()"
+      [items]="selectOptions()"
+      [selected]="selectedSelectOption()"
       (selectedChange)="onSortFieldChange($event)"
       [translateItems]="shouldTranslate()"
     />
