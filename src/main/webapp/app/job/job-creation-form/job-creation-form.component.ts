@@ -18,6 +18,7 @@ import { AccountService } from '../../core/auth/account.service';
 import * as DropdownOptions from '.././dropdown-options';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
+import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -39,6 +40,7 @@ type SavingState = 'SAVED' | 'SAVING';
     TranslateModule,
     SelectComponent,
     NumberInputComponent,
+    EditorComponent,
   ],
   providers: [JobResourceService],
 })
@@ -114,18 +116,6 @@ export class JobCreationFormComponent {
   readonly savingBadgeCalculatedClass = computed(
     () => `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === 'SAVED' ? 'saved_color' : 'saving_color'}`,
   );
-
-  // Character counters
-  // TODO will be removed after Editor Component Integration
-  get descriptionLength(): number {
-    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
-  }
-  get tasksLength(): number {
-    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
-  }
-  get requirementsLength(): number {
-    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
-  }
 
   // Step configuration
   readonly stepData = computed<StepData[]>(() => this.buildStepData());
