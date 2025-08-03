@@ -31,14 +31,24 @@
 
         <div class="subject-wrapper">
           <span class="subject-prefix">TUMApply -</span>
-          <jhi-string-input class="subject-input" [(model)]="english().subject" [errorEnabled]="false" />
+          <jhi-string-input
+            class="subject-input"
+            [model]="english().subject"
+            [errorEnabled]="false"
+            (modelChange)="updateEnglishSubject($event)"
+          />
         </div>
       </div>
 
       <div>
         <label>Message</label>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
-        <quill-editor class="custom-quill-editor" [modules]="modules" [(ngModel)]="english().body" />
+        <quill-editor
+          class="custom-quill-editor"
+          [modules]="modules"
+          [(ngModel)]="english().body"
+          (ngModelChange)="updateEnglishBody($event)"
+        />
       </div>
     </p-tabpanel>
 
@@ -47,20 +57,34 @@
         <label>Subject</label>
         <div class="subject-wrapper">
           <span class="subject-prefix">TUMApply -</span>
-          <jhi-string-input class="subject-input" [(model)]="german().subject" [errorEnabled]="false" />
+          <jhi-string-input
+            class="subject-input"
+            [model]="german().subject"
+            [errorEnabled]="false"
+            (modelChange)="updateGermanSubject($event)"
+          />
         </div>
       </div>
 
       <div>
         <label class="custom-label">Message</label>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
-        <quill-editor class="custom-quill-editor" [modules]="modules" [(ngModel)]="german().body" />
+
+        <quill-editor
+          class="custom-quill-editor"
+          [modules]="modules"
+          [(ngModel)]="german().body"
+          (ngModelChange)="updateGermanBody($event)"
+        />
       </div>
     </p-tabpanel>
   </p-tabs>
 
   <div class="actions">
-    <jhi-button label="Cancel" variant="text" />
-    <jhi-button label="Save" severity="success" (click)="saveCurrent()" />
+    <jhi-button label="Back" icon="chevron-left" variant="outlined" (click)="navigateBack()" />
+    <div class="saving-state" [ngClass]="savingState().toLowerCase()">
+      <fa-icon icon="floppy-disk" />
+      <span>{{ savingState() }}</span>
+    </div>
   </div>
 </div>

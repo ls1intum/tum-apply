@@ -1,9 +1,11 @@
-import { Component, ViewEncapsulation, computed, effect, inject, model, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, signal } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,7 +17,16 @@ import { SelectComponent, SelectOption } from '../../../shared/components/atoms/
 
 @Component({
   selector: 'jhi-research-group-template-edit',
-  imports: [FormsModule, StringInputComponent, TabsModule, QuillEditorComponent, ButtonComponent, SelectComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FontAwesomeModule,
+    StringInputComponent,
+    TabsModule,
+    QuillEditorComponent,
+    ButtonComponent,
+    SelectComponent,
+  ],
   templateUrl: './research-group-template-edit.html',
   styleUrl: './research-group-template-edit.scss',
   encapsulation: ViewEncapsulation.None,
@@ -26,6 +37,11 @@ export class ResearchGroupTemplateEdit {
   readonly emailTemplateService = inject(EmailTemplateResourceService);
   readonly translate = inject(TranslateService);
 
+  autoSaveTimer: number | undefined;
+
+  readonly savingState = signal<'SAVED' | 'SAVING' | 'UNSAVED'>('UNSAVED');
+  readonly lastSavedSnapshot = signal<EmailTemplateDTO | undefined>(undefined);
+
   readonly paramMapSignal = toSignal(this.route.paramMap, {
     initialValue: convertToParamMap({}),
   });
@@ -34,28 +50,19 @@ export class ResearchGroupTemplateEdit {
 
   readonly templateId = computed(() => this.paramMapSignal().get('templateId') ?? undefined);
 
-  readonly loadEffect = effect(() => {
-    const templateId = this.templateId();
-    if (templateId != null) {
-      void this.load(templateId);
-    }
-  });
-
-  readonly formModel = model<EmailTemplateDTO>({
+  readonly formModel = signal<EmailTemplateDTO>({
     templateName: '',
     emailType: undefined,
-    english: {
-      subject: '',
-      body: '',
-    },
-    german: {
-      subject: '',
-      body: '',
-    },
+    english: { subject: '', body: '' },
+    german: { subject: '', body: '' },
     isDefault: false,
   });
 
-  readonly translationKey: string = 'researchGroup.emailTemplates';
+  readonly currentSnapshot = computed(() => this.formModel());
+
+  readonly hasUnsavedChanges = computed(() => JSON.stringify(this.currentSnapshot()) !== JSON.stringify(this.lastSavedSnapshot()));
+
+  readonly translationKey = 'researchGroup.emailTemplates';
 
   readonly templateDisplayName = computed(() => {
     this.currentLang();
@@ -95,32 +102,17 @@ export class ResearchGroupTemplateEdit {
       source: (searchTerm: string, renderList: (values: any[], searchTerm: string) => void) => {
         const items = this.TEMPLATE_VARIABLES.map(v => ({ id: v, value: v }));
         const matches = searchTerm.length ? items.filter(item => item.value.toLowerCase().includes(searchTerm.toLowerCase())) : items;
-
         renderList(matches, searchTerm);
       },
     },
   };
 
-  readonly allowedSelectOptions: SelectOption[] = [
-    {
-      name: 'Application accepted',
-      value: 'APPLICATION_ACCEPTED',
-    },
-  ];
+  readonly allowedSelectOptions: SelectOption[] = [{ name: 'Application accepted', value: 'APPLICATION_ACCEPTED' }];
 
   readonly allSelectOptions: SelectOption[] = [
-    {
-      name: 'Application accepted',
-      value: 'APPLICATION_ACCEPTED',
-    },
-    {
-      name: 'Application rejected',
-      value: 'APPLICATION_REJECTED',
-    },
-    {
-      name: 'Application Received',
-      value: 'APPLICATION_SENT',
-    },
+    { name: 'Application accepted', value: 'APPLICATION_ACCEPTED' },
+    { name: 'Application rejected', value: 'APPLICATION_REJECTED' },
+    { name: 'Application Received', value: 'APPLICATION_SENT' },
   ];
 
   readonly TEMPLATE_VARIABLES = [
@@ -132,51 +124,139 @@ export class ResearchGroupTemplateEdit {
     'RESEARCH_GROUP_NAME',
   ];
 
-  saveCurrent(): void {
-    this.updateValues();
-    if (this.formModel().emailTemplateId != null) {
-      void this.update().then(() => this.navigateBack());
-    } else {
-      void this.create().then(() => this.navigateBack());
+  readonly loadEffect = effect(() => {
+    const templateId = this.templateId();
+    if (templateId != null) {
+      void this.load(templateId);
     }
+  });
+
+  readonly formChangeEffect = effect(() => {
+    this.formModel();
+    const form = this.formModel();
+
+    if (this.skipNextAutosave) {
+      this.skipNextAutosave = false;
+      return;
+    }
+
+    const isNonDefault = form.isDefault === false;
+    const nameMissing = form.templateName?.trim() == null;
+    const typeMissing = !form.emailType;
+
+    if (isNonDefault && (nameMissing || typeMissing)) return;
+
+    this.savingState.set('SAVING');
+    this.clearAutoSaveTimer();
+
+    this.autoSaveTimer = window.setTimeout(() => {
+      void this.performAutoSave();
+    }, 3000);
+  });
+
+  private skipNextAutosave = false;
+
+  constructor() {
+    window.addEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
-  setSelectedEmailType(selection: SelectOption): void {
-    const form = this.formModel();
-    form.emailType = selection.value as EmailTemplateDTO.EmailTypeEnum;
+  readonly beforeUnloadHandler = (): void => {
+    if (this.hasUnsavedChanges()) {
+      void this.performAutoSave();
+    }
+  };
 
-    this.formModel.set(form);
+  setSelectedEmailType(selection: SelectOption): void {
+    this.formModel.update(prev => ({
+      ...prev,
+      emailType: selection.value as EmailTemplateDTO.EmailTypeEnum,
+    }));
   }
 
   setTemplateName(templateName: string): void {
+    this.formModel.update(prev => ({
+      ...prev,
+      templateName,
+    }));
+  }
+
+  updateEnglishSubject(subject: string): void {
+    this.formModel.update(prev => ({
+      ...prev,
+      english: {
+        ...prev.english,
+        subject,
+      },
+    }));
+  }
+
+  updateEnglishBody(body: string): void {
+    this.formModel.update(prev => ({
+      ...prev,
+      english: {
+        ...prev.english,
+        body,
+      },
+    }));
+  }
+
+  updateGermanSubject(subject: string): void {
+    this.formModel.update(prev => ({
+      ...prev,
+      german: {
+        ...prev.german,
+        subject,
+      },
+    }));
+  }
+
+  updateGermanBody(body: string): void {
+    this.formModel.update(prev => ({
+      ...prev,
+      german: {
+        ...prev.german,
+        body,
+      },
+    }));
+  }
+
+  protected navigateBack(): void {
+    void this.router.navigate(['/research-group/templates']);
+  }
+
+  private clearAutoSaveTimer(): void {
+    if (this.autoSaveTimer !== undefined) {
+      clearTimeout(this.autoSaveTimer);
+      this.autoSaveTimer = undefined;
+    }
+  }
+
+  private async performAutoSave(): Promise<void> {
     const form = this.formModel();
-    form.templateName = templateName;
 
-    this.formModel.set(form);
-  }
+    const isNonDefault = form.isDefault === false;
+    const nameMissing = form.templateName?.trim() == null;
+    const typeMissing = !form.emailType;
 
-  private updateValues(): void {
-    const form = this.formModel();
+    if (isNonDefault && (nameMissing || typeMissing)) {
+      this.savingState.set('SAVED');
+      return;
+    }
 
-    form.english = {
-      subject: this.english().subject,
-      body: this.english().body,
-    };
+    try {
+      if (form.emailTemplateId != null) {
+        await firstValueFrom(this.emailTemplateService.updateTemplate(form));
+      } else {
+        const created = await firstValueFrom(this.emailTemplateService.createTemplate(form));
+        this.formModel.set({ ...form, emailTemplateId: created.emailTemplateId });
+      }
 
-    form.german = {
-      subject: this.german().subject,
-      body: this.german().body,
-    };
-
-    this.formModel.set(form);
-  }
-
-  private async update(): Promise<void> {
-    await firstValueFrom(this.emailTemplateService.updateTemplate(this.formModel()));
-  }
-
-  private async create(): Promise<void> {
-    await firstValueFrom(this.emailTemplateService.createTemplate(this.formModel()));
+      this.lastSavedSnapshot.set(this.formModel());
+    } catch (error) {
+      console.error('Autosave failed:', error);
+    } finally {
+      this.savingState.set('SAVED');
+    }
   }
 
   private async load(templateId: string): Promise<void> {
@@ -187,14 +267,13 @@ export class ResearchGroupTemplateEdit {
       german: res.german ?? { subject: '', body: '' },
     };
     this.preselectedEmailType.set(this.getSelectedEmailTypeSelectOption(res.emailType ?? ''));
+    this.skipNextAutosave = true; // to not directly save
     this.formModel.set(safeTemplate);
+    this.lastSavedSnapshot.set(safeTemplate);
+    this.savingState.set('SAVED');
   }
 
   private getSelectedEmailTypeSelectOption(emailType: string): SelectOption {
-    return this.allSelectOptions.filter(selectOption => selectOption.value === emailType)[0];
-  }
-
-  private navigateBack(): void {
-    void this.router.navigate(['/research-group/templates']);
+    return this.allSelectOptions.find(selectOption => selectOption.value === emailType)!;
   }
 }

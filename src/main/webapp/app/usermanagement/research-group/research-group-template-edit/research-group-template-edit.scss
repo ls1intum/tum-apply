@@ -63,8 +63,26 @@
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: right;
-    gap: 2rem;
+    justify-content: space-between;
+    align-items: center;
+
+    .saving-state {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+
+      &.saved {
+        color: var(--p-success-color);
+      }
+
+      &.saving {
+        color: var(--p-warn-color);
+      }
+
+      &.unsaved {
+        color: var(--p-danger-color);
+      }
+    }
   }
 }
 
