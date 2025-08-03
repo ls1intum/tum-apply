@@ -21,7 +21,6 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   ],
   imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
 })
-
 export class StringInputComponent extends BaseInputDirective<string> implements ControlValueAccessor {
   tooltipText = input<string | undefined>(undefined);
   type = input<string>('text');
