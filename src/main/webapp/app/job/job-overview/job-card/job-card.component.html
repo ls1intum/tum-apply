@@ -21,6 +21,9 @@
             @if (icon === 'calendar') {
               Start:
             }
+            @if (icon === 'user') {
+              Prof. Dr.
+            }
             @if (icon === 'clock') {
               <span jhiTranslate="jobOverviewPage.hoursPerWeek" [translateValues]="{ workload: value }"></span>
             } @else {
