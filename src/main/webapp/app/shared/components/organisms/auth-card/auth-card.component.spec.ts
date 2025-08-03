@@ -61,14 +61,14 @@ describe('AuthCardComponent', () => {
   it('should show correct Google label in login mode', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'login' });
     fixture.detectChanges();
-    const btnData = component.identityProvider().buttons[1];
+    const btnData = component.idpButtons().buttons[1];
     expect(btnData.label).toBe('login.buttons.apple');
   });
 
   it('should show correct Google label in register mode', () => {
     Object.defineProperty(component, 'mode', { get: () => () => 'register' });
     fixture.detectChanges();
-    const btnData = component.identityProvider().buttons[1];
+    const btnData = component.idpButtons().buttons[1];
     expect(btnData.label).toBe('register.buttons.apple');
   });
 
