@@ -20,15 +20,14 @@ import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.*;
 
 @Service
 @AllArgsConstructor
