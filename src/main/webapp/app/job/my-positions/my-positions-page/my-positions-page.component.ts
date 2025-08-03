@@ -5,6 +5,8 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
@@ -16,7 +18,16 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
-  imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent, TranslateDirective, TranslateModule, SortBarComponent],
+  imports: [
+    CommonModule,
+    TagComponent,
+    ButtonComponent,
+    DynamicTableComponent,
+    TranslateDirective,
+    TranslateModule,
+    SortBarComponent,
+    ToastComponent,
+  ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
 })
@@ -80,6 +91,7 @@ export class MyPositionsPageComponent {
   private jobService = inject(JobResourceService);
   private accountService = inject(AccountService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -116,34 +128,32 @@ export class MyPositionsPageComponent {
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation
-    const confirmDelete = confirm('Do you really want to delete this job?');
-    if (confirmDelete) {
-      try {
-        await firstValueFrom(this.jobService.deleteJob(jobId));
-        alert('Job successfully deleted');
-        await this.loadJobs();
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(`Error deleting job: ${error.message}`);
-        }
+    // TO-DO: adjust confirmation, add dialog
+    // if (confirmDelete) {
+    try {
+      await firstValueFrom(this.jobService.deleteJob(jobId));
+      this.toastService.showSuccess({ detail: 'Job successfully deleted' });
+      await this.loadJobs();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
+      // }
     }
   }
 
   async onCloseJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation
-    const confirmClose = confirm('Do you really want to close this job?');
-    if (confirmClose) {
-      try {
-        await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
-        alert('Job successfully closed');
-        await this.loadJobs();
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(`Error closing job: ${error.message}`);
-        }
+    // TO-DO: adjust confirmation, add dialog
+    // if (confirmClose) {
+    try {
+      await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
+      this.toastService.showSuccess({ detail: 'Job successfully closed' });
+      await this.loadJobs();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showError({ detail: `Error closing job: ${error.message}` });
       }
+      // }
     }
   }
 

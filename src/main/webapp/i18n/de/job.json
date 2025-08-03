@@ -37,13 +37,17 @@
         "label": "Startdatum",
         "placeholder": "Wählen Sie ein Startdatum..."
       },
+      "endDate": {
+        "label": "Bewerbungsfrist",
+        "placeholder": "Wählen Sie ein Fristdatum..."
+      },
       "workload": {
         "label": "Arbeitsaufwand",
-        "placeholder": "Wählen Sie einen Arbeitsaufwand..."
+        "placeholder": "Geben Sie einen Arbeitsaufwand an (in h/Woche)..."
       },
       "contractDuration": {
         "label": "Vertragslaufzeit",
-        "placeholder": "Wählen Sie eine Vertragslaufzeit..."
+        "placeholder": "Geben Sie eine Vertragslaufzeit an (in Jahren)..."
       },
       "fundingType": {
         "label": "Finanzierungsart",
@@ -89,7 +93,15 @@
       "location": "Standort",
       "professor": "Betreuer/in",
       "workload": "Arbeitsaufwand"
-    }
+    },
+    "tooltips": {
+      "fieldOfStudies": "Studienrichtung",
+      "location": "Standort",
+      "supervisor": "Betreuer/in",
+      "workload": "Arbeitsaufwand",
+      "startDate": "Startdatum"
+    },
+    "hoursPerWeek": "{{workload}} h/Woche"
   },
   "myPositionsPage": {
     "header": {
@@ -128,6 +140,7 @@
       "years": "{{years}} Jahre",
       "fundingType": "Finanzierungsart:",
       "startDate": "Startdatum:",
+      "endDate": "Bewerbungsfrist:",
       "created": "Erstellt am:",
       "lastModified": "Zuletzt geändert:"
     },

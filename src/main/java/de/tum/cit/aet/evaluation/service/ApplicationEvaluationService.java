@@ -2,12 +2,13 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.notification.Email;
 import de.tum.cit.aet.core.service.EmailService;
+import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
@@ -81,10 +82,11 @@ public class ApplicationEvaluationService {
             User supervisingProfessor = job.getSupervisingProfessor();
 
             Email email = Email.builder()
-                .to(applicant.getEmail())
-                .bcc(supervisingProfessor.getEmail())
+                .to(applicant.getUser())
+                .bcc(supervisingProfessor)
                 .htmlBody(acceptDTO.message())
-                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .emailType(EmailType.APPLICATION_ACCEPTED)
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 // template and content are only set for the subject
                 .template("application_accepted")
                 .content(Map.of("jobTitle", job.getTitle()))
@@ -121,15 +123,16 @@ public class ApplicationEvaluationService {
             ResearchGroup researchGroup = job.getResearchGroup();
 
             Email email = Email.builder()
-                .to(applicant.getEmail())
-                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .to(applicant.getUser())
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 .template("application_rejected")
+                .emailType(EmailType.APPLICATION_REJECTED)
                 .content(
                     Map.of(
                         "applicantFirstName",
-                        applicant.getFirstName(),
+                        applicant.getUser().getFirstName(),
                         "applicantLastName",
-                        applicant.getLastName(),
+                        applicant.getUser().getLastName(),
                         "jobTitle",
                         job.getTitle(),
                         "researchGroupName",

@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { DividerModule } from 'primeng/divider';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 
@@ -12,11 +13,14 @@ type SidebarCategory = { title: string; buttons: SidebarButton[] };
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [PanelModule, SidebarButtonComponent, TranslateModule],
+  imports: [DividerModule, PanelModule, SidebarButtonComponent, TranslateModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
+  private accountService = inject(AccountService);
+  private router = inject(Router);
+
   /**
    * Custom groups for sidebar links that have multiple paths.
    * This allows for more flexible matching of active links.
@@ -26,11 +30,6 @@ export class SidebarComponent {
     '/job-overview': ['/job/detail', '/application/create'],
     '/my-positions': ['/job/detail', '/job/edit'],
   };
-
-  constructor(
-    private accountService: AccountService,
-    private router: Router,
-  ) {}
 
   /**
    * Returns the categories for the sidebar based on the user's roles.
@@ -138,7 +137,7 @@ export class SidebarComponent {
         },
         {
           title: 'sidebar.system.system',
-          buttons: [{ icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/settings' }],
+          buttons: [{ icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/system-settings' }],
         },
       ],
     };

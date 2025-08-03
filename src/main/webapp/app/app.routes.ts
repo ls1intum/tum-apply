@@ -61,20 +61,6 @@ const routes: Routes = [
   // User Management
   // ======================================================================================
   {
-    path: 'login',
-    loadComponent: () => import('./usermanagement/login/login.component').then(m => m.LoginComponent),
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [] },
-    title: 'login',
-  },
-  {
-    path: 'register',
-    loadComponent: () => import('./usermanagement/register/register.component').then(m => m.RegisterComponent),
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [] },
-    title: 'register',
-  },
-  {
     path: 'admin',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
@@ -94,13 +80,13 @@ const routes: Routes = [
     path: 'job/create',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
-    loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
+    loadComponent: () => import('./job/job-creation-form/job-creation-form.component').then(m => m.JobCreationFormComponent),
   },
   {
     path: 'job/edit/:job_id',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
-    loadComponent: () => import('./job/jobCreationForm/job-creation-form.component').then(m => m.JobCreationFormComponent),
+    loadComponent: () => import('./job/job-creation-form/job-creation-form.component').then(m => m.JobCreationFormComponent),
   },
   {
     path: 'job-overview',
@@ -176,6 +162,17 @@ const routes: Routes = [
     data: { authorities: [] },
     loadComponent: () => import('./shared/pages/privacy-page/privacy-page.component').then(m => m.PrivacyPageComponent),
     title: 'privacy',
+  },
+
+  // ======================================================================================
+  // Settings Page
+  // ======================================================================================
+  {
+    path: 'settings',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
+    title: 'Settings',
   },
 
   // ======================================================================================

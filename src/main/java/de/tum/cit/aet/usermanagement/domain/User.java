@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.EmailSetting;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -19,7 +20,6 @@ import org.hibernate.type.SqlTypes;
 @Setter
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class User extends AbstractAuditingEntity {
 
     @Id
@@ -70,4 +70,7 @@ public class User extends AbstractAuditingEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserResearchGroupRole> researchGroupRoles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EmailSetting> emailSettings = new HashSet<>();
 }

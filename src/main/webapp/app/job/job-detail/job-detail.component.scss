@@ -124,11 +124,19 @@
   color: var(--p-text-primary);
 }
 
+.end-date {
+  color: var(--p-danger-color);
+}
+
 .data-text-section,
 .description-text {
   color: var(--p-text-primary);
   line-height: 1.7;
   margin-bottom: 1rem;
+}
+
+.description-text {
+  overflow-wrap: anywhere; // Allow words that are too long to break and wrap onto the next line
 }
 
 .contact-info {

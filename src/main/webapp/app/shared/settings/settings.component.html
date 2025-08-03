@@ -1,0 +1,13 @@
+<div class="content">
+  <div class="header">
+    <h1 jhiTranslate="settings.header">Settings</h1>
+  </div>
+
+  <div class="notifications">
+    <div class="settings-sub-heading">
+      <fa-icon class="icon" [icon]="['fas', 'bell']" />
+      <h2 jhiTranslate="settings.notifications.header"></h2>
+    </div>
+    <jhi-email-settings [currentRole]="role()" />
+  </div>
+</div>

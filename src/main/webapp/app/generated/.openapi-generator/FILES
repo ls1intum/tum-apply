@@ -8,6 +8,7 @@ api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
 api/documentResource.service.ts
 api/emailLoginResource.service.ts
+api/emailSettingResource.service.ts
 api/jobResource.service.ts
 api/userResource.service.ts
 configuration.ts
@@ -33,6 +34,8 @@ model/customField.ts
 model/customFieldAnswer.ts
 model/customFieldAnswerDTO.ts
 model/documentInformationHolderDTO.ts
+model/emailSetting.ts
+model/emailSettingDTO.ts
 model/internalComment.ts
 model/job.ts
 model/jobCardDTO.ts
@@ -60,6 +63,5 @@ model/userShortDTO.ts
 ng-package.json
 package.json
 param.ts
-provide-api.ts
 tsconfig.json
 variables.ts

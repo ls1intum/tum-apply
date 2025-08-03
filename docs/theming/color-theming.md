@@ -15,7 +15,7 @@ The theming system is structured as follows:
 
 ---
 
-## 🌞 Light and 🌚 Dark Mode
+## 🌞 Light and 🌚 Dark Mode (Currently disabled)
 
 Theme switching is controlled through the `toggleTheme()` method in the `NavbarComponent`:
 

@@ -37,7 +37,7 @@ public class EmailLoginResource {
         ResponseCookie cookie = ResponseCookie.from("access_token", token)
             .httpOnly(true)
             .secure(true)
-            .sameSite("Strict")
+            .sameSite("Lax")
             .path("/")
             .maxAge(Duration.ofHours(1))
             .build();
