@@ -10,9 +10,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
