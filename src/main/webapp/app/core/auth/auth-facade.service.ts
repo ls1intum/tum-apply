@@ -33,8 +33,8 @@ export class AuthFacadeService {
     }
 
     // 2) Keycloak-Flow
-    const keycloak = await this.keycloakService.init();
-    if (keycloak) {
+    const keycloakInitialized = await this.keycloakService.init();
+    if (keycloakInitialized) {
       await this.accountService.loadUser();
       return true;
     }
