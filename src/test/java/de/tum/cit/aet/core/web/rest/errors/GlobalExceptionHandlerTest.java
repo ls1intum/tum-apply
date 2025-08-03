@@ -32,7 +32,7 @@ class GlobalExceptionHandlerTest {
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.errorCode").value("ENTITY_NOT_FOUND"))
             .andExpect(jsonPath("$.status").value(404))
-            .andExpect(jsonPath("$.message").value("User with id '42' does not exist"));
+            .andExpect(jsonPath("$.message").value("User with Ids '[42]' does not exist"));
     }
 
     @Test

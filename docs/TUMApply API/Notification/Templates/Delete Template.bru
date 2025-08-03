@@ -1,0 +1,15 @@
+meta {
+  name: Delete Template
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/email-templates/:templateId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  templateId: 
+}
