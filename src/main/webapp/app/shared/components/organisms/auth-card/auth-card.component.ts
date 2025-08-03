@@ -84,9 +84,9 @@ export class AuthCardComponent {
     this.authFacadeService.loginWithTUM(this.redirectUri());
   }
 
-  onEmailLogin(credentials: { email: string; password: string }): void {
+  onEmailLogin = (credentials: { email: string; password: string }): void => {
     this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
-  }
+  };
 
   toggleMode(): void {
     this.mode.set(this.mode() === 'register' ? 'login' : 'register');
