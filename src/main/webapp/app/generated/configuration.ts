@@ -1,4 +1,4 @@
-import { HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
+import { HttpHeaders, HttpParameterCodec, HttpParams } from '@angular/common/http';
 import { Param } from './param';
 
 export interface ConfigurationParameters {
@@ -141,17 +141,23 @@ export class Configuration {
 
   public lookupCredential(key: string): string | undefined {
     const value = this.credentials[key];
-    return typeof value === 'function' ? value() : value;
+    return typeof value === 'function'
+      ? value()
+      : value;
   }
 
   public addCredentialToHeaders(credentialKey: string, headerName: string, headers: HttpHeaders, prefix?: string): HttpHeaders {
     const value = this.lookupCredential(credentialKey);
-    return value ? headers.set(headerName, (prefix ?? '') + value) : headers;
+    return value
+      ? headers.set(headerName, (prefix ?? '') + value)
+      : headers;
   }
 
   public addCredentialToQuery(credentialKey: string, paramName: string, query: HttpParams): HttpParams {
     const value = this.lookupCredential(credentialKey);
-    return value ? query.set(paramName, value) : query;
+    return value
+      ? query.set(paramName, value)
+      : query;
   }
 
   private defaultEncodeParam(param: Param): string {
@@ -163,7 +169,9 @@ export class Configuration {
     //
     // But: if that's all you need (i.e.: the most common use-case): no need for customization!
 
-    const value = param.dataFormat === 'date-time' && param.value instanceof Date ? (param.value as Date).toISOString() : param.value;
+    const value = param.dataFormat === 'date-time' && param.value instanceof Date
+      ? (param.value as Date).toISOString()
+      : param.value;
 
     return encodeURIComponent(String(value));
   }

@@ -9,6 +9,7 @@
  */
 import { ResearchGroupShortDTO } from './researchGroupShortDTO';
 
+
 export interface UserDTO {
   userId?: string;
   email?: string;
@@ -24,3 +25,4 @@ export interface UserDTO {
   selectedLanguage?: string;
   researchGroupShortDTO?: ResearchGroupShortDTO;
 }
+

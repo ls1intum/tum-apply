@@ -10,6 +10,7 @@
 import { User } from './user';
 import { Application } from './application';
 
+
 export interface ApplicationReview {
   applicationReviewId?: string;
   application?: Application;
@@ -17,3 +18,4 @@ export interface ApplicationReview {
   reason?: string;
   reviewedAt?: string;
 }
+

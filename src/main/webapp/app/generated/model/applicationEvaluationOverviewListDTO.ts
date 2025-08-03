@@ -9,7 +9,9 @@
  */
 import { ApplicationEvaluationOverviewDTO } from './applicationEvaluationOverviewDTO';
 
+
 export interface ApplicationEvaluationOverviewListDTO {
   applications?: Array<ApplicationEvaluationOverviewDTO>;
   totalRecords?: number;
 }
+

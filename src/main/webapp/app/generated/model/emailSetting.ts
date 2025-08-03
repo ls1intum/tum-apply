@@ -9,15 +9,17 @@
  */
 import { User } from './user';
 
+
 export interface EmailSetting {
   emailSettingId?: string;
   user?: User;
   emailType?: EmailSetting.EmailTypeEnum;
   enabled?: boolean;
 }
+
 export namespace EmailSetting {
   export type EmailTypeEnum =
-    | 'APPLICATION_ACCEPTED'
+    'APPLICATION_ACCEPTED'
     | 'APPLICATION_REJECTED'
     | 'APPLICATION_RECEIVED'
     | 'APPLICATION_SENT'
@@ -27,6 +29,8 @@ export namespace EmailSetting {
     ApplicationRejected: 'APPLICATION_REJECTED' as EmailTypeEnum,
     ApplicationReceived: 'APPLICATION_RECEIVED' as EmailTypeEnum,
     ApplicationSent: 'APPLICATION_SENT' as EmailTypeEnum,
-    ApplicationWithdrawn: 'APPLICATION_WITHDRAWN' as EmailTypeEnum,
+    ApplicationWithdrawn: 'APPLICATION_WITHDRAWN' as EmailTypeEnum
   };
 }
+
+

@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface CreatedJobDTO {
   jobId: string;
   avatar?: string;
@@ -18,12 +19,15 @@ export interface CreatedJobDTO {
   createdAt?: string;
   lastModifiedAt?: string;
 }
+
 export namespace CreatedJobDTO {
   export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
   export const StateEnum = {
     Draft: 'DRAFT' as StateEnum,
     Published: 'PUBLISHED' as StateEnum,
     Closed: 'CLOSED' as StateEnum,
-    ApplicantFound: 'APPLICANT_FOUND' as StateEnum,
+    ApplicantFound: 'APPLICANT_FOUND' as StateEnum
   };
 }
+
+

@@ -11,16 +11,18 @@ import { PageableObject } from './pageableObject';
 import { CreatedJobDTO } from './createdJobDTO';
 import { SortObject } from './sortObject';
 
+
 export interface PageCreatedJobDTO {
-  totalPages?: number;
   totalElements?: number;
+  totalPages?: number;
   first?: boolean;
   last?: boolean;
   size?: number;
   content?: Array<CreatedJobDTO>;
   number?: number;
   sort?: SortObject;
-  pageable?: PageableObject;
   numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
+

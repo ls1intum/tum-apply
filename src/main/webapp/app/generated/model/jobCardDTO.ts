@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface JobCardDTO {
   jobId: string;
   title: string;
@@ -18,3 +19,4 @@ export interface JobCardDTO {
   startDate?: string;
   relativeTime?: string;
 }
+

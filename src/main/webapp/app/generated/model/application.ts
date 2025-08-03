@@ -12,6 +12,7 @@ import { Applicant } from './applicant';
 import { ApplicationReview } from './applicationReview';
 import { CustomFieldAnswer } from './customFieldAnswer';
 
+
 export interface Application {
   createdAt?: string;
   lastModifiedAt?: string;
@@ -28,6 +29,7 @@ export interface Application {
   customFieldAnswers?: Array<CustomFieldAnswer>;
   internalComments?: Array<InternalComment>;
 }
+
 export namespace Application {
   export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
   export const StateEnum = {
@@ -37,6 +39,8 @@ export namespace Application {
     InReview: 'IN_REVIEW' as StateEnum,
     Rejected: 'REJECTED' as StateEnum,
     Withdrawn: 'WITHDRAWN' as StateEnum,
-    JobClosed: 'JOB_CLOSED' as StateEnum,
+    JobClosed: 'JOB_CLOSED' as StateEnum
   };
 }
+
+

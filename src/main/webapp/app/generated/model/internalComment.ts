@@ -9,6 +9,7 @@
  */
 import { User } from './user';
 
+
 export interface InternalComment {
   createdAt?: string;
   lastModifiedAt?: string;
@@ -17,3 +18,4 @@ export interface InternalComment {
   createdBy?: User;
   message?: string;
 }
+

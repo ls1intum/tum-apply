@@ -8,9 +8,11 @@
  * Do not edit the class manually.
  */
 
+
 export interface CustomFieldAnswerDTO {
   customFieldAnswerId?: string;
   customField?: any | null;
   answers?: Array<string>;
   documents?: Array<any>;
 }
+

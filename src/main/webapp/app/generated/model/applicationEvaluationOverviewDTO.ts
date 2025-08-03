@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface ApplicationEvaluationOverviewDTO {
   applicationId?: string;
   avatar?: string;
@@ -17,6 +18,7 @@ export interface ApplicationEvaluationOverviewDTO {
   rating?: number;
   appliedAt?: string;
 }
+
 export namespace ApplicationEvaluationOverviewDTO {
   export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
   export const StateEnum = {
@@ -26,6 +28,8 @@ export namespace ApplicationEvaluationOverviewDTO {
     InReview: 'IN_REVIEW' as StateEnum,
     Rejected: 'REJECTED' as StateEnum,
     Withdrawn: 'WITHDRAWN' as StateEnum,
-    JobClosed: 'JOB_CLOSED' as StateEnum,
+    JobClosed: 'JOB_CLOSED' as StateEnum
   };
 }
+
+

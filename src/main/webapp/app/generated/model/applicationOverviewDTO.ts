@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface ApplicationOverviewDTO {
   applicationId?: string;
   jobTitle?: string;
@@ -15,8 +16,16 @@ export interface ApplicationOverviewDTO {
   applicationState?: ApplicationOverviewDTO.ApplicationStateEnum;
   timeSinceCreation?: string;
 }
+
 export namespace ApplicationOverviewDTO {
-  export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
+  export type ApplicationStateEnum =
+    'SAVED'
+    | 'SENT'
+    | 'ACCEPTED'
+    | 'IN_REVIEW'
+    | 'REJECTED'
+    | 'WITHDRAWN'
+    | 'JOB_CLOSED';
   export const ApplicationStateEnum = {
     Saved: 'SAVED' as ApplicationStateEnum,
     Sent: 'SENT' as ApplicationStateEnum,
@@ -24,6 +33,8 @@ export namespace ApplicationOverviewDTO {
     InReview: 'IN_REVIEW' as ApplicationStateEnum,
     Rejected: 'REJECTED' as ApplicationStateEnum,
     Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
-    JobClosed: 'JOB_CLOSED' as ApplicationStateEnum,
+    JobClosed: 'JOB_CLOSED' as ApplicationStateEnum
   };
 }
+
+

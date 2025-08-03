@@ -12,6 +12,7 @@ import { User } from './user';
 import { CustomField } from './customField';
 import { Application } from './application';
 
+
 export interface Job {
   createdAt?: string;
   lastModifiedAt?: string;
@@ -34,8 +35,16 @@ export interface Job {
   customFields?: Array<CustomField>;
   applications?: Array<Application>;
 }
+
 export namespace Job {
-  export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
+  export type LocationEnum =
+    'GARCHING'
+    | 'GARCHING_HOCHBRUECK'
+    | 'HEILBRONN'
+    | 'MUNICH'
+    | 'STRAUBING'
+    | 'WEIHENSTEPHAN'
+    | 'SINGAPORE';
   export const LocationEnum = {
     Garching: 'GARCHING' as LocationEnum,
     GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
@@ -43,10 +52,10 @@ export namespace Job {
     Munich: 'MUNICH' as LocationEnum,
     Straubing: 'STRAUBING' as LocationEnum,
     Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
-    Singapore: 'SINGAPORE' as LocationEnum,
+    Singapore: 'SINGAPORE' as LocationEnum
   };
   export type FundingTypeEnum =
-    | 'FULLY_FUNDED'
+    'FULLY_FUNDED'
     | 'PARTIALLY_FUNDED'
     | 'SCHOLARSHIP'
     | 'SELF_FUNDED'
@@ -60,13 +69,15 @@ export namespace Job {
     SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
     IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
     GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
-    ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum,
+    ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
   };
   export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
   export const StateEnum = {
     Draft: 'DRAFT' as StateEnum,
     Published: 'PUBLISHED' as StateEnum,
     Closed: 'CLOSED' as StateEnum,
-    ApplicantFound: 'APPLICANT_FOUND' as StateEnum,
+    ApplicantFound: 'APPLICANT_FOUND' as StateEnum
   };
 }
+
+

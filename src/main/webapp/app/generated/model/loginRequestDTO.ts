@@ -8,7 +8,9 @@
  * Do not edit the class manually.
  */
 
+
 export interface LoginRequestDTO {
   email: string;
   password: string;
 }
+

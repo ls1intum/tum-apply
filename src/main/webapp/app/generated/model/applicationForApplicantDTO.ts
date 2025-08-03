@@ -11,6 +11,7 @@ import { JobCardDTO } from './jobCardDTO';
 import { CustomFieldAnswerDTO } from './customFieldAnswerDTO';
 import { ApplicantDTO } from './applicantDTO';
 
+
 export interface ApplicationForApplicantDTO {
   applicationId: string;
   applicant?: ApplicantDTO;
@@ -22,8 +23,16 @@ export interface ApplicationForApplicantDTO {
   motivation?: string;
   customFields?: Array<CustomFieldAnswerDTO>;
 }
+
 export namespace ApplicationForApplicantDTO {
-  export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
+  export type ApplicationStateEnum =
+    'SAVED'
+    | 'SENT'
+    | 'ACCEPTED'
+    | 'IN_REVIEW'
+    | 'REJECTED'
+    | 'WITHDRAWN'
+    | 'JOB_CLOSED';
   export const ApplicationStateEnum = {
     Saved: 'SAVED' as ApplicationStateEnum,
     Sent: 'SENT' as ApplicationStateEnum,
@@ -31,6 +40,8 @@ export namespace ApplicationForApplicantDTO {
     InReview: 'IN_REVIEW' as ApplicationStateEnum,
     Rejected: 'REJECTED' as ApplicationStateEnum,
     Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
-    JobClosed: 'JOB_CLOSED' as ApplicationStateEnum,
+    JobClosed: 'JOB_CLOSED' as ApplicationStateEnum
   };
 }
+
+

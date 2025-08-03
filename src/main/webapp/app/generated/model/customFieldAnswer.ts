@@ -10,9 +10,11 @@
 import { CustomField } from './customField';
 import { Application } from './application';
 
+
 export interface CustomFieldAnswer {
   customFieldAnswerId?: string;
   customField?: CustomField;
   application?: Application;
   answers?: Array<string>;
 }
+

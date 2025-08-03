@@ -9,9 +9,11 @@
  */
 import { DocumentInformationHolderDTO } from './documentInformationHolderDTO';
 
+
 export interface ApplicationDocumentIdsDTO {
   bachelorDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
   masterDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
   referenceDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
   cvDocumentDictionaryId?: DocumentInformationHolderDTO;
 }
+

@@ -9,6 +9,7 @@
  */
 import { ApplicantDTO } from './applicantDTO';
 
+
 export interface UpdateApplicationDTO {
   applicationId: string;
   applicant: ApplicantDTO;
@@ -18,8 +19,16 @@ export interface UpdateApplicationDTO {
   specialSkills?: string;
   motivation?: string;
 }
+
 export namespace UpdateApplicationDTO {
-  export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
+  export type ApplicationStateEnum =
+    'SAVED'
+    | 'SENT'
+    | 'ACCEPTED'
+    | 'IN_REVIEW'
+    | 'REJECTED'
+    | 'WITHDRAWN'
+    | 'JOB_CLOSED';
   export const ApplicationStateEnum = {
     Saved: 'SAVED' as ApplicationStateEnum,
     Sent: 'SENT' as ApplicationStateEnum,
@@ -27,6 +36,8 @@ export namespace UpdateApplicationDTO {
     InReview: 'IN_REVIEW' as ApplicationStateEnum,
     Rejected: 'REJECTED' as ApplicationStateEnum,
     Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
-    JobClosed: 'JOB_CLOSED' as ApplicationStateEnum,
+    JobClosed: 'JOB_CLOSED' as ApplicationStateEnum
   };
 }
+
+

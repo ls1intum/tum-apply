@@ -10,17 +10,21 @@
 import { ResearchGroup } from './researchGroup';
 import { User } from './user';
 
+
 export interface UserResearchGroupRole {
   userResearchGroupRoleId?: string;
   user?: User;
   researchGroup?: ResearchGroup;
   role?: UserResearchGroupRole.RoleEnum;
 }
+
 export namespace UserResearchGroupRole {
   export type RoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';
   export const RoleEnum = {
     Applicant: 'APPLICANT' as RoleEnum,
     Professor: 'PROFESSOR' as RoleEnum,
-    Admin: 'ADMIN' as RoleEnum,
+    Admin: 'ADMIN' as RoleEnum
   };
 }
+
+

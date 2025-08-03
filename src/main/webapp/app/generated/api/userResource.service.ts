@@ -10,8 +10,7 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext } from '@angular/common/http';
-import { CustomHttpParameterCodec } from '../encoder';
+import { HttpClient, HttpContext, HttpEvent, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
@@ -22,15 +21,13 @@ import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
 import { BaseService } from '../api.base.service';
 
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class UserResourceService extends BaseService {
-  constructor(
-    protected httpClient: HttpClient,
-    @Optional() @Inject(BASE_PATH) basePath: string | string[],
-    @Optional() configuration?: Configuration,
-  ) {
+
+  constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string | string[], @Optional() configuration?: Configuration) {
     super(basePath, configuration);
   }
 
@@ -38,30 +35,32 @@ export class UserResourceService extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getCurrentUser(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
-  ): Observable<UserShortDTO>;
-  public getCurrentUser(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<UserShortDTO>>;
-  public getCurrentUser(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<UserShortDTO>>;
-  public getCurrentUser(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: 'application/json'; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
+  public getCurrentUser(observe?: 'body', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: 'application/json',
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<UserShortDTO>;
+  public getCurrentUser(observe?: 'response', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: 'application/json',
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpResponse<UserShortDTO>>;
+  public getCurrentUser(observe?: 'events', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: 'application/json',
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpEvent<UserShortDTO>>;
+  public getCurrentUser(observe: any = 'body', reportProgress: boolean = false, options?: {
+    httpHeaderAccept?: 'application/json',
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<any> {
+
     let localVarHeaders = this.defaultHeaders;
 
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+      'application/json'
+    ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
@@ -69,6 +68,7 @@ export class UserResourceService extends BaseService {
     const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
 
     const localVarTransferCache: boolean = options?.transferCache ?? true;
+
 
     let responseType_: 'text' | 'json' | 'blob' = 'json';
     if (localVarHttpHeaderAcceptSelected) {
@@ -82,14 +82,17 @@ export class UserResourceService extends BaseService {
     }
 
     let localVarPath = `/api/users/me`;
-    return this.httpClient.request<UserShortDTO>('get', `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: <any>responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<UserShortDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        withCredentials: this.configuration.withCredentials,
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress
+      }
+    );
   }
+
 }

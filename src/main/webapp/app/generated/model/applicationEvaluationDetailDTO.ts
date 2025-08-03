@@ -10,6 +10,7 @@
 import { ProfessorDTO } from './professorDTO';
 import { ApplicationDetailDTO } from './applicationDetailDTO';
 
+
 export interface ApplicationEvaluationDetailDTO {
   applicationDetailDTO: ApplicationDetailDTO;
   professor?: ProfessorDTO;
@@ -17,3 +18,4 @@ export interface ApplicationEvaluationDetailDTO {
   rating?: number;
   appliedAt?: string;
 }
+

@@ -10,8 +10,7 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext } from '@angular/common/http';
-import { CustomHttpParameterCodec } from '../encoder';
+import { HttpClient, HttpContext, HttpEvent, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
@@ -22,15 +21,13 @@ import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
 import { BaseService } from '../api.base.service';
 
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthenticationResourceService extends BaseService {
-  constructor(
-    protected httpClient: HttpClient,
-    @Optional() @Inject(BASE_PATH) basePath: string | string[],
-    @Optional() configuration?: Configuration,
-  ) {
+
+  constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string | string[], @Optional() configuration?: Configuration) {
     super(basePath, configuration);
   }
 
@@ -39,30 +36,26 @@ export class AuthenticationResourceService extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public login(
-    loginRequestDTO: LoginRequestDTO,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public login(
-    loginRequestDTO: LoginRequestDTO,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public login(
-    loginRequestDTO: LoginRequestDTO,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public login(
-    loginRequestDTO: LoginRequestDTO,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
+  public login(loginRequestDTO: LoginRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<any>;
+  public login(loginRequestDTO: LoginRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpResponse<any>>;
+  public login(loginRequestDTO: LoginRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpEvent<any>>;
+  public login(loginRequestDTO: LoginRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<any> {
     if (loginRequestDTO === null || loginRequestDTO === undefined) {
       throw new Error('Required parameter loginRequestDTO was null or undefined when calling login.');
     }
@@ -78,8 +71,11 @@ export class AuthenticationResourceService extends BaseService {
 
     const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
     // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
+    const consumes: string[] = [
+      'application/json'
+    ];
     const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
     if (httpContentTypeSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
@@ -97,42 +93,45 @@ export class AuthenticationResourceService extends BaseService {
     }
 
     let localVarPath = `/api/auth/login`;
-    return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: loginRequestDTO,
-      responseType: <any>responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: loginRequestDTO,
+        responseType: <any>responseType_,
+        withCredentials: this.configuration.withCredentials,
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public refresh(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public refresh(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public refresh(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public refresh(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
+  public logout(observe?: 'body', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<any>;
+  public logout(observe?: 'response', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpResponse<any>>;
+  public logout(observe?: 'events', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpEvent<any>>;
+  public logout(observe: any = 'body', reportProgress: boolean = false, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<any> {
+
     let localVarHeaders = this.defaultHeaders;
 
     const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
@@ -143,6 +142,69 @@ export class AuthenticationResourceService extends BaseService {
     const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
 
     const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/api/auth/logout`;
+    return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        withCredentials: this.configuration.withCredentials,
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public refresh(observe?: 'body', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<any>;
+  public refresh(observe?: 'response', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpResponse<any>>;
+  public refresh(observe?: 'events', reportProgress?: boolean, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<HttpEvent<any>>;
+  public refresh(observe: any = 'body', reportProgress: boolean = false, options?: {
+    httpHeaderAccept?: undefined,
+    context?: HttpContext,
+    transferCache?: boolean
+  }): Observable<any> {
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
 
     let responseType_: 'text' | 'json' | 'blob' = 'json';
     if (localVarHttpHeaderAcceptSelected) {
@@ -156,14 +218,17 @@ export class AuthenticationResourceService extends BaseService {
     }
 
     let localVarPath = `/api/auth/refresh`;
-    return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: <any>responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        withCredentials: this.configuration.withCredentials,
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress
+      }
+    );
   }
+
 }

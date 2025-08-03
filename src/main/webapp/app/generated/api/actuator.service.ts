@@ -10,8 +10,7 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext } from '@angular/common/http';
-import { CustomHttpParameterCodec } from '../encoder';
+import { HttpClient, HttpContext, HttpEvent, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
@@ -21,6 +20,7 @@ import { Link } from '../model/link';
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
 import { BaseService } from '../api.base.service';
+
 
 @Injectable({
   providedIn: 'root',
@@ -94,7 +94,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/jon'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -142,7 +142,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+      ,
   ): Observable<object>;
   public allOpenApi(
     observe?: 'response',
@@ -154,7 +154,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+      ,
   ): Observable<HttpResponse<object>>;
   public allOpenApi(
     observe?: 'events',
@@ -166,7 +166,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+      ,
   ): Observable<HttpEvent<object>>;
   public allOpenApi(
     observe: any = 'body',
@@ -178,7 +178,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+      ,
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -187,7 +187,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -216,7 +216,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -239,7 +239,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public cache(
     cache: string,
@@ -253,7 +253,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public cache(
     cache: string,
@@ -267,7 +267,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public cache(
     cache: string,
@@ -281,7 +281,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     if (cache === null || cache === undefined) {
       throw new Error('Required parameter cache was null or undefined when calling cache.');
@@ -297,7 +297,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -318,7 +318,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/caches/${this.configuration.encodeParam({ name: 'cache', value: cache, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/caches/${this.configuration.encodeParam({
+      name: 'cache',
+      value: cache,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters,
@@ -327,7 +335,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -346,7 +354,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public caches(
     observe?: 'response',
@@ -358,7 +366,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public caches(
     observe?: 'events',
@@ -370,7 +378,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public caches(
     observe: any = 'body',
@@ -382,7 +390,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -391,7 +399,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -420,7 +428,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -436,28 +444,44 @@ export class ActuatorService extends BaseService {
     cacheManager?: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<any>;
   public clearCache(
     cache: string,
     cacheManager?: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<HttpResponse<any>>;
   public clearCache(
     cache: string,
     cacheManager?: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<HttpEvent<any>>;
   public clearCache(
     cache: string,
     cacheManager?: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<any> {
     if (cache === null || cache === undefined) {
       throw new Error('Required parameter cache was null or undefined when calling clearCache.');
@@ -488,7 +512,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/caches/${this.configuration.encodeParam({ name: 'cache', value: cache, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/caches/${this.configuration.encodeParam({
+      name: 'cache',
+      value: cache,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined
+    })}`;
     return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters,
@@ -497,7 +529,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -509,22 +541,38 @@ export class ActuatorService extends BaseService {
   public clearCaches(
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<any>;
   public clearCaches(
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<HttpResponse<any>>;
   public clearCaches(
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<HttpEvent<any>>;
   public clearCaches(
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -556,7 +604,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -575,7 +623,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public configurationProperties(
     observe?: 'response',
@@ -587,7 +635,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public configurationProperties(
     observe?: 'events',
@@ -599,7 +647,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public configurationProperties(
     observe: any = 'body',
@@ -611,7 +659,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -620,7 +668,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -649,7 +697,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -670,7 +718,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public configurationPropertiesWithPrefix(
     prefix: string,
@@ -683,7 +731,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public configurationPropertiesWithPrefix(
     prefix: string,
@@ -696,7 +744,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public configurationPropertiesWithPrefix(
     prefix: string,
@@ -709,7 +757,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     if (prefix === null || prefix === undefined) {
       throw new Error('Required parameter prefix was null or undefined when calling configurationPropertiesWithPrefix.');
@@ -722,7 +770,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -743,7 +791,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/configprops/${this.configuration.encodeParam({ name: 'prefix', value: prefix, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/configprops/${this.configuration.encodeParam({
+      name: 'prefix',
+      value: prefix,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -751,7 +807,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -767,28 +823,44 @@ export class ActuatorService extends BaseService {
     body?: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<any>;
   public configureLogLevel(
     name: string,
     body?: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<HttpResponse<any>>;
   public configureLogLevel(
     name: string,
     body?: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<HttpEvent<any>>;
   public configureLogLevel(
     name: string,
     body?: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: undefined;
+      context?: HttpContext;
+      transferCache?: boolean;
+    }
   ): Observable<any> {
     if (name === null || name === undefined) {
       throw new Error('Required parameter name was null or undefined when calling configureLogLevel.');
@@ -823,7 +895,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/loggers/${this.configuration.encodeParam({ name: 'name', value: name, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/loggers/${this.configuration.encodeParam({
+      name: 'name',
+      value: name,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined
+    })}`;
     return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: body,
@@ -832,7 +912,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -853,7 +933,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public environment(
     pattern?: string,
@@ -866,7 +946,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public environment(
     pattern?: string,
@@ -879,7 +959,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public environment(
     pattern?: string,
@@ -892,7 +972,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>pattern, 'pattern');
@@ -904,7 +984,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -934,7 +1014,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -955,7 +1035,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public environmentEntry(
     toMatch: string,
@@ -968,7 +1048,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public environmentEntry(
     toMatch: string,
@@ -981,7 +1061,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public environmentEntry(
     toMatch: string,
@@ -994,7 +1074,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     if (toMatch === null || toMatch === undefined) {
       throw new Error('Required parameter toMatch was null or undefined when calling environmentEntry.');
@@ -1007,7 +1087,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1028,7 +1108,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/env/${this.configuration.encodeParam({ name: 'toMatch', value: toMatch, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/env/${this.configuration.encodeParam({
+      name: 'toMatch',
+      value: toMatch,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -1036,7 +1124,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -1055,7 +1143,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public health(
     observe?: 'response',
@@ -1067,7 +1155,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public health(
     observe?: 'events',
@@ -1079,7 +1167,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public health(
     observe: any = 'body',
@@ -1091,7 +1179,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -1100,7 +1188,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1129,7 +1217,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -1148,7 +1236,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public info(
     observe?: 'response',
@@ -1160,7 +1248,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public info(
     observe?: 'events',
@@ -1172,7 +1260,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public info(
     observe: any = 'body',
@@ -1184,7 +1272,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -1193,7 +1281,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1222,7 +1310,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -1241,7 +1329,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<{ [key: string]: { [key: string]: Link } }>;
   public links(
     observe?: 'response',
@@ -1253,7 +1341,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<{ [key: string]: { [key: string]: Link } }>>;
   public links(
     observe?: 'events',
@@ -1265,7 +1353,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<{ [key: string]: { [key: string]: Link } }>>;
   public links(
     observe: any = 'body',
@@ -1277,7 +1365,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -1286,7 +1374,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1308,14 +1396,16 @@ export class ActuatorService extends BaseService {
     }
 
     let localVarPath = `/management`;
-    return this.httpClient.request<{ [key: string]: { [key: string]: Link } }>('get', `${this.configuration.basePath}${localVarPath}`, {
+    return this.httpClient.request<{
+      [key: string]: { [key: string]: Link };
+    }>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       withCredentials: this.configuration.withCredentials,
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -1334,7 +1424,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public liquibaseBeans(
     observe?: 'response',
@@ -1346,7 +1436,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public liquibaseBeans(
     observe?: 'events',
@@ -1358,7 +1448,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public liquibaseBeans(
     observe: any = 'body',
@@ -1370,7 +1460,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -1379,7 +1469,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1408,7 +1498,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -1429,7 +1519,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public loggerLevels(
     name: string,
@@ -1442,7 +1532,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public loggerLevels(
     name: string,
@@ -1455,7 +1545,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public loggerLevels(
     name: string,
@@ -1468,7 +1558,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     if (name === null || name === undefined) {
       throw new Error('Required parameter name was null or undefined when calling loggerLevels.');
@@ -1481,7 +1571,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1502,7 +1592,15 @@ export class ActuatorService extends BaseService {
       }
     }
 
-    let localVarPath = `/management/loggers/${this.configuration.encodeParam({ name: 'name', value: name, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/management/loggers/${this.configuration.encodeParam({
+      name: 'name',
+      value: name,
+      in: 'path',
+      style: 'simple',
+      explode: false,
+      dataType: 'string',
+      dataFormat: undefined
+    })}`;
     return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
@@ -1510,7 +1608,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -1529,7 +1627,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public loggers(
     observe?: 'response',
@@ -1541,7 +1639,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public loggers(
     observe?: 'events',
@@ -1553,7 +1651,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public loggers(
     observe: any = 'body',
@@ -1565,7 +1663,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -1574,7 +1672,7 @@ export class ActuatorService extends BaseService {
       this.configuration.selectHeaderAccept([
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1603,7 +1701,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 
@@ -1623,7 +1721,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<object>;
   public threadDump(
     observe?: 'response',
@@ -1636,7 +1734,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpResponse<object>>;
   public threadDump(
     observe?: 'events',
@@ -1649,7 +1747,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<HttpEvent<object>>;
   public threadDump(
     observe: any = 'body',
@@ -1662,7 +1760,7 @@ export class ActuatorService extends BaseService {
         | 'application/json';
       context?: HttpContext;
       transferCache?: boolean;
-    },
+    }
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
 
@@ -1672,7 +1770,7 @@ export class ActuatorService extends BaseService {
         'text/plain;charset=UTF-8',
         'application/vnd.spring-boot.actuator.v3+json',
         'application/vnd.spring-boot.actuator.v2+json',
-        'application/json',
+        'application/json'
       ]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1701,7 +1799,7 @@ export class ActuatorService extends BaseService {
       headers: localVarHeaders,
       observe: observe,
       transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
+      reportProgress: reportProgress
     });
   }
 }

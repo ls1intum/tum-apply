@@ -8,7 +8,9 @@
  * Do not edit the class manually.
  */
 
+
 export interface JobFilterOptionDTO {
   jobName?: string;
   jobId?: string;
 }
+

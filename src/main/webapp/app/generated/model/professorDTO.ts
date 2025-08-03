@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface ProfessorDTO {
   firstName?: string;
   lastName?: string;
@@ -15,3 +16,4 @@ export interface ProfessorDTO {
   researchGroupName?: string;
   researchGroupWebsite?: string;
 }
+

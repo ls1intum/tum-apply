@@ -8,8 +8,10 @@
  * Do not edit the class manually.
  */
 
+
 export interface AcceptDTO {
   message?: string;
   notifyApplicant?: boolean;
   closeJob?: boolean;
 }
+

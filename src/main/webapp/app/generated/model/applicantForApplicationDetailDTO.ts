@@ -9,6 +9,7 @@
  */
 import { UserForApplicationDetailDTO } from './userForApplicationDetailDTO';
 
+
 export interface ApplicantForApplicationDetailDTO {
   user: UserForApplicationDetailDTO;
   bachelorDegreeName?: string;
@@ -20,13 +21,16 @@ export interface ApplicantForApplicationDetailDTO {
   masterGrade?: string;
   masterUniversity?: string;
 }
+
 export namespace ApplicantForApplicationDetailDTO {
   export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
   export const BachelorGradingScaleEnum = {
-    OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum,
+    OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
   };
   export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
   export const MasterGradingScaleEnum = {
-    OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum,
+    OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
   };
 }
+
+

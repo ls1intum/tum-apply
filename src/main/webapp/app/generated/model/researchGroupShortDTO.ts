@@ -8,7 +8,9 @@
  * Do not edit the class manually.
  */
 
+
 export interface ResearchGroupShortDTO {
   researchGroupId?: string;
   name?: string;
 }
+

@@ -9,6 +9,7 @@
  */
 import { ResearchGroup } from './researchGroup';
 
+
 export interface JobDetailDTO {
   jobId: string;
   supervisingProfessorName: string;
@@ -29,12 +30,15 @@ export interface JobDetailDTO {
   lastModifiedAt: string;
   state?: JobDetailDTO.StateEnum;
 }
+
 export namespace JobDetailDTO {
   export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
   export const StateEnum = {
     Draft: 'DRAFT' as StateEnum,
     Published: 'PUBLISHED' as StateEnum,
     Closed: 'CLOSED' as StateEnum,
-    ApplicantFound: 'APPLICANT_FOUND' as StateEnum,
+    ApplicantFound: 'APPLICANT_FOUND' as StateEnum
   };
 }
+
+

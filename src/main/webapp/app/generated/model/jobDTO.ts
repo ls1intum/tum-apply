@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface JobDTO {
   jobId: string;
   title: string;
@@ -25,8 +26,16 @@ export interface JobDTO {
   requirements?: string;
   state: JobDTO.StateEnum;
 }
+
 export namespace JobDTO {
-  export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
+  export type LocationEnum =
+    'GARCHING'
+    | 'GARCHING_HOCHBRUECK'
+    | 'HEILBRONN'
+    | 'MUNICH'
+    | 'STRAUBING'
+    | 'WEIHENSTEPHAN'
+    | 'SINGAPORE';
   export const LocationEnum = {
     Garching: 'GARCHING' as LocationEnum,
     GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
@@ -34,10 +43,10 @@ export namespace JobDTO {
     Munich: 'MUNICH' as LocationEnum,
     Straubing: 'STRAUBING' as LocationEnum,
     Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
-    Singapore: 'SINGAPORE' as LocationEnum,
+    Singapore: 'SINGAPORE' as LocationEnum
   };
   export type FundingTypeEnum =
-    | 'FULLY_FUNDED'
+    'FULLY_FUNDED'
     | 'PARTIALLY_FUNDED'
     | 'SCHOLARSHIP'
     | 'SELF_FUNDED'
@@ -51,13 +60,15 @@ export namespace JobDTO {
     SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
     IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
     GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
-    ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum,
+    ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
   };
   export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
   export const StateEnum = {
     Draft: 'DRAFT' as StateEnum,
     Published: 'PUBLISHED' as StateEnum,
     Closed: 'CLOSED' as StateEnum,
-    ApplicantFound: 'APPLICANT_FOUND' as StateEnum,
+    ApplicantFound: 'APPLICANT_FOUND' as StateEnum
   };
 }
+
+

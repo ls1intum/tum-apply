@@ -9,6 +9,7 @@
  */
 import { ResearchGroupShortDTO } from './researchGroupShortDTO';
 
+
 export interface UserShortDTO {
   userId?: string;
   email?: string;
@@ -17,11 +18,14 @@ export interface UserShortDTO {
   roles?: Array<UserShortDTO.RolesEnum>;
   researchGroup?: ResearchGroupShortDTO;
 }
+
 export namespace UserShortDTO {
   export type RolesEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';
   export const RolesEnum = {
     Applicant: 'APPLICANT' as RolesEnum,
     Professor: 'PROFESSOR' as RolesEnum,
-    Admin: 'ADMIN' as RolesEnum,
+    Admin: 'ADMIN' as RolesEnum
   };
 }
+
+

@@ -8,8 +8,10 @@
  * Do not edit the class manually.
  */
 
+
 export interface DocumentInformationHolderDTO {
   id: string;
   size: number;
   name?: string;
 }
+

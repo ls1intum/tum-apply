@@ -10,6 +10,7 @@
 import { Job } from './job';
 import { CustomFieldAnswer } from './customFieldAnswer';
 
+
 export interface CustomField {
   customFieldId?: string;
   job?: Job;
@@ -20,12 +21,15 @@ export interface CustomField {
   customFieldAnswers?: Array<CustomFieldAnswer>;
   required?: boolean;
 }
+
 export namespace CustomField {
   export type CustomFieldTypeEnum = 'FREE_TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILE_UPLOAD';
   export const CustomFieldTypeEnum = {
     FreeText: 'FREE_TEXT' as CustomFieldTypeEnum,
     SingleChoice: 'SINGLE_CHOICE' as CustomFieldTypeEnum,
     MultipleChoice: 'MULTIPLE_CHOICE' as CustomFieldTypeEnum,
-    FileUpload: 'FILE_UPLOAD' as CustomFieldTypeEnum,
+    FileUpload: 'FILE_UPLOAD' as CustomFieldTypeEnum
   };
 }
+
+

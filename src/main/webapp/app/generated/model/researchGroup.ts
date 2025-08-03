@@ -9,6 +9,7 @@
  */
 import { UserResearchGroupRole } from './userResearchGroupRole';
 
+
 export interface ResearchGroup {
   createdAt?: string;
   lastModifiedAt?: string;
@@ -26,3 +27,4 @@ export interface ResearchGroup {
   city?: string;
   userRoles?: Array<UserResearchGroupRole>;
 }
+

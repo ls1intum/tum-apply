@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface UserForApplicationDetailDTO {
   userId: string;
   email?: string;
@@ -21,3 +22,4 @@ export interface UserForApplicationDetailDTO {
   website?: string;
   linkedinUrl?: string;
 }
+
