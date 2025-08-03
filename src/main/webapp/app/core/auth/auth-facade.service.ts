@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { AuthenticationService } from './authentication.service';
 import { IdpProvider, KeycloakService } from './keycloak.service';
@@ -9,6 +10,7 @@ export class AuthFacadeService {
   private readonly emailAuthenticationService = inject(AuthenticationService);
   private readonly keycloakService = inject(KeycloakService);
   private readonly accountService = inject(AccountService);
+  private readonly router = inject(Router);
 
   // True if either Email- or Keycloak-session is active
   get isAuthenticated(): boolean {
@@ -51,7 +53,7 @@ export class AuthFacadeService {
     await this.emailAuthenticationService.login(email, password);
     await this.accountService.loadUser();
     // If a redirect URI is provided, navigate to it
-    if (redirectUri) {
+    if (redirectUri !== undefined) {
       window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
     }
     return true;
@@ -89,5 +91,8 @@ export class AuthFacadeService {
     // reset account state
     this.accountService.user.set(undefined);
     this.accountService.loaded.set(true);
+
+    // redirect to start page after logout
+    this.router.navigate(['/']);
   }
 }
