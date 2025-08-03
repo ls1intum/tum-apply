@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="016_create-email-templates" author="moritz-schmidt">
+
+    <!-- Logical template table -->
+    <createTable tableName="email_templates">
+      <column name="email_template_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="research_group_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+
+      <!-- Can be nullable -->
+      <column name="template_name" type="VARCHAR(255)" >
+      </column>
+
+      <column name="email_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="is_default" type="BOOLEAN" defaultValueBoolean="false"/>
+
+      <column name="created_by" type="CHAR(36)"/>
+
+      <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="last_modified_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <!-- Translations table -->
+    <createTable tableName="email_template_translations">
+      <column name="email_template_translation_id" type="CHAR(36)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="email_template_id" type="CHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="language" type="VARCHAR(10)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="subject" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="body_html" type="LONGTEXT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <!-- Foreign key constraints -->
+    <addForeignKeyConstraint baseTableName="email_templates"
+                             baseColumnNames="research_group_id"
+                             referencedTableName="research_groups"
+                             referencedColumnNames="research_group_id"
+                             constraintName="fk_email_templates_research_group"
+                             onDelete="CASCADE" />
+
+    <addForeignKeyConstraint baseTableName="email_templates"
+                             baseColumnNames="created_by"
+                             referencedTableName="users"
+                             referencedColumnNames="user_id"
+                             constraintName="fk_email_templates_created_by"/>
+
+    <addForeignKeyConstraint baseTableName="email_template_translations"
+                             baseColumnNames="email_template_id"
+                             referencedTableName="email_templates"
+                             referencedColumnNames="email_template_id"
+                             constraintName="fk_template_translations_template"
+                             onDelete="CASCADE" />
+
+    <!-- Indexes -->
+    <createIndex indexName="idx_email_templates_research_group" tableName="email_templates">
+      <column name="research_group_id"/>
+    </createIndex>
+
+    <createIndex indexName="idx_template_translations_template" tableName="email_template_translations">
+      <column name="email_template_id"/>
+    </createIndex>
+
+    <!-- Unique constraints -->
+    <addUniqueConstraint
+      tableName="email_templates"
+      columnNames="email_type, template_name, research_group_id"
+      constraintName="uk_email_templates_type_name_group" />
+
+    <addUniqueConstraint
+      tableName="email_template_translations"
+      columnNames="email_template_id, language"
+      constraintName="uk_template_translations_template_lang" />
+
+    <!-- Trigger for auto-updating timestamps -->
+    <sql>
+      ALTER TABLE email_templates
+        MODIFY last_modified_at DATETIME(3) NOT NULL
+        DEFAULT CURRENT_TIMESTAMP(3)
+        ON UPDATE CURRENT_TIMESTAMP(3);
+    </sql>
+
+  </changeSet>
+</databaseChangeLog>
