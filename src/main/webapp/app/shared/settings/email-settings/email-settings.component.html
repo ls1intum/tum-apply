@@ -1,0 +1,20 @@
+<div class="notification-settings">
+  @if (loaded() && currentRole(); as role) {
+    @if (roleSettings().get(role); as groups) {
+      @for (group of groups; let isLast = $last; track group.groupKey) {
+        <div class="setting-row">
+          <div class="label">
+            <span class="setting-label" [jhiTranslate]="group.groupKey"></span>
+            <fa-icon class="icon" [icon]="['fas', 'circle-info']" [pTooltip]="group.descriptionKey | translate" tooltipPosition="top" />
+          </div>
+
+          <p-toggleSwitch [(ngModel)]="group.enabled" (ngModelChange)="onToggleChanged(group)" />
+        </div>
+
+        @if (!isLast) {
+          <p-divider styleClass="tight-divider" />
+        }
+      }
+    }
+  }
+</div>

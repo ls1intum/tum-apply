@@ -43,11 +43,11 @@
       },
       "workload": {
         "label": "Workload",
-        "placeholder": "Select a Workload..."
+        "placeholder": "Specify the Workload (in h/week)..."
       },
       "contractDuration": {
         "label": "Contract Duration",
-        "placeholder": "Select a Contract Duration..."
+        "placeholder": "Specify the Contract Duration (in years)..."
       },
       "fundingType": {
         "label": "Funding Type",
@@ -93,6 +93,13 @@
       "location": "Location",
       "professor": "Professor",
       "workload": "Workload"
+    },
+    "tooltips": {
+      "fieldOfStudies": "Field of Studies",
+      "location": "Location",
+      "supervisor": "Supervisor",
+      "workload": "Workload",
+      "startDate": "Start Date"
     },
     "hoursPerWeek": "{{workload}} h/week"
   },
