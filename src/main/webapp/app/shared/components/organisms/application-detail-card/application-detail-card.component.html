@@ -127,9 +127,7 @@
       <fa-icon [icon]="icon" class="icon" />
       <div class="flex-1 justify-start text-base">{{ name }}</div>
     </div>
-    <div class="w-full justify-start">
-      {{ text }}
-    </div>
+    <div class="w-full justify-start" [innerHTML]="text"></div>
   </div>
 </ng-template>
 

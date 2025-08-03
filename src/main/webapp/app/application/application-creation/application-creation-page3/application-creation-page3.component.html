@@ -1,4 +1,4 @@
-@if (page3Form(); as form) {
+@if (page3Form; as form) {
   <form [formGroup]="form">
     <div class="flex flex-col w-1/2">
       <label>
@@ -47,36 +47,36 @@
     <div class="form-row">
       <jhi-editor
         [label]="'entity.applicationPage3.label.motivation' | translate"
-        [control]="page3Form().controls.motivation"
-        [(model)]="data().motivation"
+        [control]="page3Form.controls.motivation"
         [required]="true"
         [pTooltip]="'entity.applicationPage3.sublabel.motivation' | translate"
         [placeholder]="'entity.applicationPage3.tooltip.motivation' | translate"
       />
+      <!-- [(model)]="data().motivation" -->
       <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.motivation"></label>
     </div>
 
     <div class="form-row">
       <jhi-editor
         [label]="'entity.applicationPage3.label.skills' | translate"
-        [control]="page3Form().controls.skills"
-        [(model)]="data().skills"
+        [control]="page3Form.controls.skills"
         [required]="true"
         [pTooltip]="'entity.applicationPage3.sublabel.skills' | translate"
         [placeholder]="'entity.applicationPage3.tooltip.skills' | translate"
       />
+      <!-- [(model)]="data().skills" -->
       <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.skills"></label>
     </div>
 
     <div class="form-row">
       <jhi-editor
         [label]="'entity.applicationPage3.label.experiences' | translate"
-        [control]="page3Form().controls.experiences"
-        [(model)]="data().experiences"
+        [control]="page3Form.controls.experiences"
         [required]="true"
         [pTooltip]="'entity.applicationPage3.sublabel.experiences' | translate"
         [placeholder]="'entity.applicationPage3.tooltip.experiences' | translate"
       />
+      <!-- [(model)]="data().experiences" -->
       <label class="pl-1 textarea-sublabel" jhiTranslate="entity.applicationPage3.sublabel.experiences"></label>
     </div>
 

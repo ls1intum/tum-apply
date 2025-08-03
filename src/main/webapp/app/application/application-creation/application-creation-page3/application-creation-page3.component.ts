@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, model, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ApplicationForApplicantDTO, DocumentInformationHolderDTO } from 'app/generated';
@@ -68,19 +68,27 @@ export default class ApplicationCreationPage3Component {
   changed = output<boolean>();
 
   fb = inject(FormBuilder);
-  page3Form = computed(() => {
-    const currentData = this.data();
-    return this.fb.group({
-      experiences: [currentData.experiences, Validators.required],
-      motivation: [currentData.motivation, Validators.required],
-      skills: [currentData.skills, Validators.required],
-      desiredStartDate: [currentData.desiredStartDate, Validators.required],
-    });
-  });
+  page3Form: FormGroup = this.fb.group({});
+
+  initialized = signal(false);
 
   constructor() {
+    effect(() => {
+      const data = this.data();
+
+      if (!this.initialized()) {
+        this.page3Form = this.fb.group({
+          experiences: [data.experiences, Validators.required],
+          motivation: [data.motivation, Validators.required],
+          skills: [data.skills, Validators.required],
+          desiredStartDate: [data.desiredStartDate, Validators.required],
+        });
+        this.initialized.set(true);
+      }
+    });
+
     effect(onCleanup => {
-      const form = this.page3Form();
+      const form = this.page3Form;
       const valueSubscription = form.valueChanges.subscribe(value => {
         const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
         this.data.set({
