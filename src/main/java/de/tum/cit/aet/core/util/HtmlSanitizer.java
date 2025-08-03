@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 
@@ -12,6 +13,9 @@ public class HtmlSanitizer {
      * @return sanitized HTML with unsafe elements and attributes removed
      */
     public static String sanitize(String html) {
+        if (StringUtils.isBlank(html)) {
+            return "";
+        }
         return Jsoup.clean(html, BASE_SAFE_LIST());
     }
 
@@ -22,6 +26,10 @@ public class HtmlSanitizer {
      * @return sanitized HTML preserving valid mention tags
      */
     public static String sanitizeQuillMentions(String html) {
+        if (StringUtils.isBlank(html)) {
+            return "";
+        }
+
         Safelist quillMentionsSafelist = BASE_SAFE_LIST()
             .addAttributes("span", "class", "data-index", "data-denotation-char", "data-id", "data-value", "contenteditable")
             .addAttributes("p", "class")

@@ -16,7 +16,9 @@
         <constraints nullable="false"/>
       </column>
 
-      <column name="template_name" type="VARCHAR(255)" />
+      <!-- Can be nullable -->
+      <column name="template_name" type="VARCHAR(255)" >
+      </column>
 
       <column name="email_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
@@ -63,7 +65,8 @@
                              baseColumnNames="research_group_id"
                              referencedTableName="research_groups"
                              referencedColumnNames="research_group_id"
-                             constraintName="fk_email_templates_research_group"/>
+                             constraintName="fk_email_templates_research_group"
+                             onDelete="CASCADE" />
 
     <addForeignKeyConstraint baseTableName="email_templates"
                              baseColumnNames="created_by"
@@ -75,7 +78,8 @@
                              baseColumnNames="email_template_id"
                              referencedTableName="email_templates"
                              referencedColumnNames="email_template_id"
-                             constraintName="fk_template_translations_template"/>
+                             constraintName="fk_template_translations_template"
+                             onDelete="CASCADE" />
 
     <!-- Indexes -->
     <createIndex indexName="idx_email_templates_research_group" tableName="email_templates">
@@ -87,15 +91,15 @@
     </createIndex>
 
     <!-- Unique constraints -->
-    <sql>
-      CREATE UNIQUE INDEX uk_email_templates_type_name_group
-        ON email_templates(email_type, template_name, research_group_id);
-    </sql>
+    <addUniqueConstraint
+      tableName="email_templates"
+      columnNames="email_type, template_name, research_group_id"
+      constraintName="uk_email_templates_type_name_group" />
 
-    <sql>
-      CREATE UNIQUE INDEX uk_template_translations_template_lang
-        ON email_template_translations(email_template_id, language);
-    </sql>
+    <addUniqueConstraint
+      tableName="email_template_translations"
+      columnNames="email_template_id, language"
+      constraintName="uk_template_translations_template_lang" />
 
     <!-- Trigger for auto-updating timestamps -->
     <sql>

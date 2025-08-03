@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.domain.CurrentUser;
+import de.tum.cit.aet.core.domain.EmailTemplate;
 import de.tum.cit.aet.core.domain.ResearchGroupRole;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
@@ -180,6 +181,7 @@ public class CurrentUserService {
             case ResearchGroup group -> hasAccessTo(group);
             case Job job -> hasAccessTo(job);
             case InternalComment comment -> hasAccessTo(comment);
+            case EmailTemplate emailTemplate -> hasAccessTo(emailTemplate);
             default -> false;
         };
 
@@ -256,5 +258,16 @@ public class CurrentUserService {
      */
     private boolean hasAccessTo(InternalComment comment) {
         return isAdminOrProfessorOf(comment.getApplication().getJob().getResearchGroup().getResearchGroupId());
+    }
+
+    /**
+     * Checks if the current user has access to the given internal email template.
+     * The user must be an admin or professor of the associated research group.
+     *
+     * @param emailTemplate the email template to check
+     * @return true if access is granted, false otherwise
+     */
+    private boolean hasAccessTo(EmailTemplate emailTemplate) {
+        return isAdminOrProfessorOf(emailTemplate.getResearchGroup().getResearchGroupId());
     }
 }
