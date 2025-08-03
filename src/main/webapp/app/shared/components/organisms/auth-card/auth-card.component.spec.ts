@@ -2,13 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { ActivatedRoute } from '@angular/router';
-import { signal } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { AccountService, User } from 'app/core/auth/account.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { KeycloakService } from '../../../../core/auth/keycloak.service';
 import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
+import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 import { AuthCardComponent } from './auth-card.component';
 
@@ -28,11 +26,12 @@ describe('AuthCardComponent', () => {
           useValue: {},
         },
         {
-          provide: AccountService,
+          provide: AuthFacadeService,
           useValue: {
-            user: signal<User | undefined>(undefined),
-            loaded: signal(true),
-            signIn: jest.fn(),
+            isAuthenticated: false,
+            logout: jest.fn(),
+            loginWithTUM: jest.fn(),
+            loginWithEmail: jest.fn(),
           },
         },
         {
@@ -59,14 +58,13 @@ describe('AuthCardComponent', () => {
   });
 
   it('should show correct Google label in login mode', () => {
-    Object.defineProperty(component, 'mode', { get: () => () => 'login' });
     fixture.detectChanges();
     const btnData = component.idpButtons().buttons[1];
     expect(btnData.label).toBe('login.buttons.apple');
   });
 
   it('should show correct Google label in register mode', () => {
-    Object.defineProperty(component, 'mode', { get: () => () => 'register' });
+    component.mode.set('register');
     fixture.detectChanges();
     const btnData = component.idpButtons().buttons[1];
     expect(btnData.label).toBe('register.buttons.apple');
@@ -79,9 +77,10 @@ describe('AuthCardComponent', () => {
     expect(authTabServiceSpy).toHaveBeenCalledWith(1);
   });
 
-  it('should call AccountService.signIn when onTUMSSOLogin is called', () => {
-    const signInSpy = jest.spyOn(fixture.debugElement.injector.get(KeycloakService), 'login');
+  it('should call AuthFacadeService.loginWithTUM when onTUMSSOLogin is called', () => {
+    const authFacadeService = fixture.debugElement.injector.get(AuthFacadeService);
+    const loginWithTUMSpy = jest.spyOn(authFacadeService, 'loginWithTUM');
     component.onTUMSSOLogin();
-    expect(signInSpy).toHaveBeenCalledTimes(1);
+    expect(loginWithTUMSpy).toHaveBeenCalledTimes(1);
   });
 });

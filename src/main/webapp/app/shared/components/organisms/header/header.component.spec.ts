@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { signal } from '@angular/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -24,6 +25,15 @@ describe('HeaderComponent', () => {
           useValue: {
             user: signal<User | undefined>(undefined),
             loaded: signal(true),
+          },
+        },
+        {
+          provide: AuthFacadeService,
+          useValue: {
+            isAuthenticated: false,
+            logout: jest.fn(),
+            loginWithTUM: jest.fn(),
+            loginWithEmail: jest.fn(),
           },
         },
       ],
