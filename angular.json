@@ -47,7 +47,12 @@
                 "output": "/assets/"
               }
             ],
-            "styles": ["node_modules/primeicons/primeicons.css", "src/main/webapp/content/scss/global.scss"],
+            "styles": [
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.snow.css",
+              "src/main/webapp/content/scss/global.scss"
+            ],
             "scripts": []
           },
           "configurations": {
