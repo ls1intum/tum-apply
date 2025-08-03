@@ -470,10 +470,23 @@
         }
       }
     },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/auth/login": {
       "post": {
         "tags": [
-          "email-login-resource"
+          "authentication-resource"
         ],
         "operationId": "login",
         "requestBody": {
@@ -2789,10 +2802,10 @@
           "empty": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           }
         }

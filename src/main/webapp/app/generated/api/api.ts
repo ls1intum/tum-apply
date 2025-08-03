@@ -4,10 +4,10 @@ export * from './applicationEvaluationResource.service';
 import { ApplicationEvaluationResourceService } from './applicationEvaluationResource.service';
 export * from './applicationResource.service';
 import { ApplicationResourceService } from './applicationResource.service';
+export * from './authenticationResource.service';
+import { AuthenticationResourceService } from './authenticationResource.service';
 export * from './documentResource.service';
 import { DocumentResourceService } from './documentResource.service';
-export * from './emailLoginResource.service';
-import { EmailLoginResourceService } from './emailLoginResource.service';
 export * from './emailSettingResource.service';
 import { EmailSettingResourceService } from './emailSettingResource.service';
 export * from './jobResource.service';
@@ -18,8 +18,8 @@ export const APIS = [
   ActuatorService,
   ApplicationEvaluationResourceService,
   ApplicationResourceService,
+  AuthenticationResourceService,
   DocumentResourceService,
-  EmailLoginResourceService,
   EmailSettingResourceService,
   JobResourceService,
   UserResourceService,

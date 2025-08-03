@@ -6,8 +6,8 @@ api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
+api/authenticationResource.service.ts
 api/documentResource.service.ts
-api/emailLoginResource.service.ts
 api/emailSettingResource.service.ts
 api/jobResource.service.ts
 api/userResource.service.ts
