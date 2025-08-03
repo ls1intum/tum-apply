@@ -61,20 +61,6 @@ const routes: Routes = [
   // User Management
   // ======================================================================================
   {
-    path: 'login',
-    loadComponent: () => import('./usermanagement/login/login.component').then(m => m.LoginComponent),
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [] },
-    title: 'login',
-  },
-  {
-    path: 'register',
-    loadComponent: () => import('./usermanagement/register/register.component').then(m => m.RegisterComponent),
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [] },
-    title: 'register',
-  },
-  {
     path: 'admin',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
