@@ -5,6 +5,18 @@
   </div>
 
   <div class="actions-section">
+    <jhi-button
+      (click)="op.toggle($event)"
+      [shouldTranslate]="true"
+      class="fixed-width-button"
+      label="header.bug"
+      severity="secondary"
+      variant="outlined"
+    />
+    <p-popover #op>
+      <iframe height="500" src="http://localhost:18081/embed/" title="Clearflask" width="400"></iframe>
+    </p-popover>
+
     <div class="language-switch">
       @for (language of languages; track language; let isLast = $last) {
         <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage() === language }" class="language-button">

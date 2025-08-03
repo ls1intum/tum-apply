@@ -913,5 +913,10 @@ export const TUMApplyPreset = definePreset(Lara, {
         color: '{background.default}',
       },
     },
+    popover: {
+      content: {
+        padding: '0',
+      },
+    },
   },
 });
