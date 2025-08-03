@@ -5,9 +5,10 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
-import { EmailTemplateOverviewDTO, EmailTemplateResourceService } from '../../../generated';
+import { EmailTemplateOverviewDTO } from '../../../generated';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { EmailTemplateResourceService } from '../../../generated/api/emailTemplateResource.service';
 
 @Component({
   selector: 'jhi-research-group-templates',
