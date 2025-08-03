@@ -17,8 +17,6 @@ export class AuthenticationService {
     const resp = await firstValueFrom(this.authenticationResourceService.login({ email, password }));
     // Schedule a refresh 60 seconds before the access token expires
     this.scheduleRefresh(resp.expiresIn);
-    // Load the user profile after successful login
-    await this.accountService.loadUser();
   }
 
   // Refreshes the access token

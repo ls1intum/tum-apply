@@ -28,7 +28,7 @@ export class AuthFacadeService {
     // 1) Email-Authentication-Flow
     try {
       await this.emailAuthenticationService.refresh();
-      await this.accountService.loadUser();
+      await this.loadUser();
       return true;
     } catch {
       // no valid email session, continue with Keycloak
@@ -37,7 +37,7 @@ export class AuthFacadeService {
     // 2) Keycloak-Flow
     const keycloakInitialized = await this.keycloakService.init();
     if (keycloakInitialized) {
-      await this.accountService.loadUser();
+      await this.loadUser();
       return true;
     }
 
@@ -51,7 +51,6 @@ export class AuthFacadeService {
    */
   async loginWithEmail(email: string, password: string, redirectUri?: string): Promise<boolean> {
     await this.emailAuthenticationService.login(email, password);
-    await this.accountService.loadUser();
     // If a redirect URI is provided, navigate to it
     if (redirectUri !== undefined) {
       window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
@@ -94,5 +93,12 @@ export class AuthFacadeService {
 
     // redirect to start page after logout
     this.router.navigate(['/']);
+  }
+
+  /**
+   * Loads the current user profile via AccountService.
+   */
+  private async loadUser(): Promise<void> {
+    await this.accountService.loadUser();
   }
 }
