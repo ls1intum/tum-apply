@@ -1,24 +1,24 @@
 <div class="input-container">
   <div class="label-top label-input-wrapper">
-    @if (label()) {
+    @if (label(); as label) {
       <label class="custom-label" [for]="id()">
         @if (shouldTranslate()) {
-          {{ label() | translate }}
+          {{ label | translate }}
         } @else {
-          {{ label() }}
+          {{ label }}
         }
         @if (required()) {
           <span class="required">*</span>
         }
-        @if (icon()) {
-          @if (icon() === 'circle-info' && tooltipText()) {
+        @if (icon(); as icon) {
+          @if (icon === 'circle-info' && tooltipText()) {
             @if (shouldTranslate()) {
-              <fa-icon class="icon" [icon]="['fas', icon() ?? '']" [pTooltip]="tooltipText() | translate" tooltipPosition="top" />
+              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
             } @else {
-              <fa-icon class="icon" [icon]="['fas', icon() ?? '']" [pTooltip]="tooltipText()" tooltipPosition="top" />
+              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
             }
           } @else {
-            <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+            <fa-icon class="icon" [icon]="['fas', icon]" />
           }
         }
       </label>
@@ -61,10 +61,10 @@
     </div>
     <div class="editor-footer">
       <div class="error-text">
-        @if (helperText()) {
+        @if (helperText(); as helperText) {
           <!-- Translation Pipe is necessary here since the translation of the ql headers is not working with the jhiTranslate directive -->
           <!--            <span class="helper-text" jhiTranslate="{{ helperText() }}"></span>-->
-          <span class="helper-text">{{ helperText() ?? '' | translate }}</span>
+          <span class="helper-text">{{ helperText | translate }}</span>
         }
         @if (isEmpty() || isOverCharLimit()) {
           {{ errorMessage() }}
