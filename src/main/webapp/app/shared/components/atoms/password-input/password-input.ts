@@ -1,30 +1,29 @@
-import { CommonModule } from '@angular/common';
 import { Component, forwardRef, input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
+import { Password } from 'primeng/password';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
 @Component({
-  selector: 'jhi-string-input',
-  templateUrl: './string-input.component.html',
-  styleUrls: ['./string-input.component.scss'],
-  standalone: true,
+  selector: 'jhi-password-input',
+  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule, Password],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => StringInputComponent),
+      useExisting: forwardRef(() => PasswordInputComponent),
       multi: true,
     },
   ],
-  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
+  templateUrl: './password-input.html',
+  styleUrl: './password-input.scss',
+  standalone: true,
 })
-
-export class StringInputComponent extends BaseInputDirective<string> implements ControlValueAccessor {
+export class PasswordInputComponent extends BaseInputDirective<string> implements ControlValueAccessor {
   tooltipText = input<string | undefined>(undefined);
-  type = input<string>('text');
 
   onInputChange(value: string): void {
     this.modelChange.emit(value);
