@@ -13,6 +13,33 @@
         "createdBy": "Erstellt von"
       },
 
+      "english": "Englisch",
+      "german": "Deutsch",
+
+      "templateName": "Vorlage",
+      "addTemplateName": "Name der Vorlage ein...",
+
+      "sendWhen": "Wird gesendet wenn",
+      "selectSendWhen": "Nachricht der Vorlage...",
+
+      "subject": "Betreff",
+      "addSubject": "Betreff der Email...",
+
+      "addVariable": "Pressen Sie '$' um eine Variable einzufügen",
+
+      "message": "Nachricht",
+
+      "back": "Zurück",
+      "saved": "Gespeichert",
+      "saving": "Änderungen werden gespeichert",
+      "unsaved": "Änderungen nicht gespeichert",
+
+      "messageType": {
+        "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
+        "APPLICATION_SENT": "Bewerbung empfangen",
+        "APPLICATION_REJECTED": "Bewerbung abgelehnt"
+      },
+
       "default": {
         "APPLICATION_ACCEPTED": "Bewerbung angenommen",
         "APPLICATION_SENT": "Bewerbungseingang Bestätigung",

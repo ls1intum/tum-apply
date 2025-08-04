@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, computed, effect, inject, signal, untracked } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -7,13 +7,14 @@ import { QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { EmailTemplateDTO, EmailTemplateResourceService } from '../../../generated';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
+import TranslateDirective from '../../../shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -26,6 +27,8 @@ import { SelectComponent, SelectOption } from '../../../shared/components/atoms/
     QuillEditorComponent,
     ButtonComponent,
     SelectComponent,
+    TranslateModule,
+    TranslateDirective,
   ],
   templateUrl: './research-group-template-edit.html',
   styleUrl: './research-group-template-edit.scss',
@@ -70,7 +73,7 @@ export class ResearchGroupTemplateEdit {
     const templateName = this.formModel().templateName;
     const emailType = this.formModel().emailType;
 
-    if (this.formModel().isDefault === true) {
+    if (this.formModel().isDefault) {
       if (templateName != null) {
         return this.translate.instant(`${this.translationKey}.default.${emailType}-${templateName}`);
       } else {
@@ -83,8 +86,17 @@ export class ResearchGroupTemplateEdit {
   readonly english = computed(() => this.formModel().english ?? { subject: '', body: '' });
   readonly german = computed(() => this.formModel().german ?? { subject: '', body: '' });
 
-  preselectedEmailType = signal<SelectOption | undefined>(undefined);
-  selectOptions = computed(() => (this.formModel().isDefault === true ? this.allSelectOptions : this.allowedSelectOptions));
+  selectOptions: Signal<SelectOption[]> = computed(() =>
+    (this.formModel().isDefault ? this.allSelectOptions : this.allowedSelectOptions).map(v => {
+      return {
+        name: `researchGroup.emailTemplates.messageType.${v}`,
+        value: v,
+      };
+    }),
+  );
+  preselectedEmailType = computed(() => {
+    return this.selectOptions().filter(selectOption => selectOption.value === (this.formModel().emailType ?? ''))[0] ?? undefined;
+  });
 
   readonly modules = {
     toolbar: [
@@ -113,13 +125,9 @@ export class ResearchGroupTemplateEdit {
     },
   };
 
-  readonly allowedSelectOptions: SelectOption[] = [{ name: 'Application accepted', value: 'APPLICATION_ACCEPTED' }];
+  readonly allowedSelectOptions = ['APPLICATION_ACCEPTED'];
 
-  readonly allSelectOptions: SelectOption[] = [
-    { name: 'Application accepted', value: 'APPLICATION_ACCEPTED' },
-    { name: 'Application rejected', value: 'APPLICATION_REJECTED' },
-    { name: 'Application Received', value: 'APPLICATION_SENT' },
-  ];
+  readonly allSelectOptions = ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED', 'APPLICATION_SENT'];
 
   readonly TEMPLATE_VARIABLES = [
     'APPLICANT_FIRST_NAME',
@@ -129,6 +137,14 @@ export class ResearchGroupTemplateEdit {
     'JOB_TITLE',
     'RESEARCH_GROUP_NAME',
   ];
+
+  // Will be used for a dropdown to insert variables
+  readonly templateVariables: SelectOption[] = this.TEMPLATE_VARIABLES.map(v => {
+    return {
+      name: `researchGroup.emailTemplates.variables.${v}`,
+      value: v,
+    };
+  });
 
   readonly loadEffect = effect(() => {
     const templateId = this.templateId();
@@ -140,8 +156,7 @@ export class ResearchGroupTemplateEdit {
   readonly translateVariablesEffect = effect(() => {
     this.currentLang();
     const form = untracked(() => this.formModel());
-    console.warn('Translating');
-
+    this.skipNextAutosave = true;
     this.formModel.set(this.translateMentionsInTemplate(form));
   });
 
@@ -318,14 +333,9 @@ export class ResearchGroupTemplateEdit {
     };
 
     const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
-    this.preselectedEmailType.set(this.getSelectedEmailTypeSelectOption(res.emailType ?? ''));
-    this.skipNextAutosave = true; // to not directly send update request
+    this.skipNextAutosave = true; // prevent sending update request after loading
     this.formModel.set(translatedTemplate);
     this.lastSavedSnapshot.set(translatedTemplate);
     this.savingState.set('SAVED');
-  }
-
-  private getSelectedEmailTypeSelectOption(emailType: string): SelectOption {
-    return this.allSelectOptions.find(selectOption => selectOption.value === emailType)!;
   }
 }
