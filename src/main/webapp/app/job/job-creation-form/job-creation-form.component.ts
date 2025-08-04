@@ -18,6 +18,7 @@ import { AccountService } from '../../core/auth/account.service';
 import * as DropdownOptions from '.././dropdown-options';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -39,6 +40,7 @@ type SavingState = 'SAVED' | 'SAVING';
     TranslateModule,
     SelectComponent,
     NumberInputComponent,
+    ButtonComponent,
   ],
   providers: [JobResourceService],
 })
@@ -180,13 +182,24 @@ export class JobCreationFormComponent {
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [
+          /*
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick: () => this.onBack(),
+            disabled: false,
+            label: 'jobActionButton.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },*/
           {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
             onClick() {},
             disabled: false,
-            label: 'jobActionButton.back',
+            label: 'jobActionButton.step1',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -212,13 +225,24 @@ export class JobCreationFormComponent {
         panelTemplate: templates.panel3,
         shouldTranslate: true,
         buttonGroupPrev: [
+          /*
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick: () => this.onBack(),
+            disabled: false,
+            label: 'jobActionButton.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },*/
           {
             variant: 'outlined',
             severity: 'primary',
             icon: 'arrow-left',
             onClick() {},
             disabled: false,
-            label: 'jobActionButton.back',
+            label: 'jobActionButton.step2',
             shouldTranslate: true,
             changePanel: true,
           },
