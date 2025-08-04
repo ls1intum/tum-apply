@@ -21,7 +21,8 @@ export class AuthenticationService {
 
   // Refreshes the access token
   async refresh(): Promise<void> {
-    await firstValueFrom(this.authenticationResourceService.refresh());
+    const resp = await firstValueFrom(this.authenticationResourceService.refresh());
+    this.scheduleRefresh(resp.expiresIn);
   }
 
   // Logs out the user
