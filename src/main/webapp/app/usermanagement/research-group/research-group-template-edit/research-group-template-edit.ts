@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ToastComponent } from 'app/shared/toast/toast.component';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { EmailTemplateDTO } from '../../../generated';
@@ -26,6 +27,7 @@ import { ToastService } from '../../../service/toast-service';
     FontAwesomeModule,
     StringInputComponent,
     TabsModule,
+    ToastComponent,
     QuillEditorComponent,
     ButtonComponent,
     SelectComponent,
@@ -45,17 +47,20 @@ export class ResearchGroupTemplateEdit {
 
   autoSaveTimer: number | undefined;
 
+  // === Autosave + Snapshot Logic ===
   readonly savingState = signal<'SAVED' | 'SAVING' | 'UNSAVED'>('UNSAVED');
   readonly lastSavedSnapshot = signal<EmailTemplateDTO | undefined>(undefined);
+  skipNextAutosave = false;
 
+  // === Routing + Translation ===
   readonly paramMapSignal = toSignal(this.route.paramMap, {
     initialValue: convertToParamMap({}),
   });
 
   readonly currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
-
   readonly templateId = computed(() => this.paramMapSignal().get('templateId') ?? undefined);
 
+  // === Form State ===
   readonly formModel = signal<EmailTemplateDTO>({
     templateName: '',
     emailType: undefined,
@@ -65,18 +70,17 @@ export class ResearchGroupTemplateEdit {
   });
 
   readonly currentSnapshot = computed(() => this.formModel());
-
   readonly hasUnsavedChanges = computed(() => JSON.stringify(this.currentSnapshot()) !== JSON.stringify(this.lastSavedSnapshot()));
-
   readonly translationKey = 'researchGroup.emailTemplates';
 
   readonly templateDisplayName = computed(() => {
-    this.currentLang();
+    this.currentLang(); // Re-evaluate when language changes
 
     const templateName = this.formModel().templateName;
     const emailType = this.formModel().emailType;
 
     if (this.formModel().isDefault) {
+      // Re-evaluate when language changes
       if (templateName != null) {
         return this.translate.instant(`${this.translationKey}.default.${emailType}-${templateName}`);
       } else {
@@ -185,8 +189,6 @@ export class ResearchGroupTemplateEdit {
     }, 3000);
   });
 
-  private skipNextAutosave = false;
-
   constructor() {
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
   }
@@ -255,6 +257,7 @@ export class ResearchGroupTemplateEdit {
     void this.router.navigate(['/research-group/templates']);
   }
 
+  // Replace mention labels in the Quill HTML with translated versions
   private translateMentionsInTemplate(form: EmailTemplateDTO): EmailTemplateDTO {
     const updateMentionValues = (html: string): string => {
       const parser = new DOMParser();
@@ -299,6 +302,7 @@ export class ResearchGroupTemplateEdit {
     }
   }
 
+  // Persist form changes; distinguishes between create and update; validates required fields
   private async performAutoSave(): Promise<void> {
     const form = this.formModel();
 
@@ -317,20 +321,22 @@ export class ResearchGroupTemplateEdit {
       } else {
         const created = await firstValueFrom(this.emailTemplateService.createTemplate(form));
         this.formModel.set({ ...form, emailTemplateId: created.emailTemplateId });
+        this.skipNextAutosave = true;
       }
-
       this.lastSavedSnapshot.set(this.formModel());
+
+      this.savingState.set('SAVED');
     } catch (error: any) {
       if (error?.status === 409) {
         this.toastService.showError({ detail: 'Template name already exists.' });
+        this.savingState.set('UNSAVED');
       } else {
         this.toastService.showError({ detail: 'Autosave failed' });
       }
-    } finally {
-      this.savingState.set('SAVED');
     }
   }
 
+  // Load and sanitize template data from server
   private async load(templateId: string): Promise<void> {
     try {
       const res = await firstValueFrom(this.emailTemplateService.getTemplate(templateId));

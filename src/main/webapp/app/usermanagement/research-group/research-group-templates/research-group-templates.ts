@@ -11,10 +11,11 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { EmailTemplateResourceService } from '../../../generated/api/emailTemplateResource.service';
 import { ToastService } from '../../../service/toast-service';
+import { ToastComponent } from '../../../shared/toast/toast.component';
 
 @Component({
   selector: 'jhi-research-group-templates',
-  imports: [DynamicTableComponent, ButtonComponent, TranslateDirective],
+  imports: [DynamicTableComponent, ButtonComponent, TranslateDirective, ToastComponent],
   templateUrl: './research-group-templates.html',
   styleUrl: './research-group-templates.scss',
 })

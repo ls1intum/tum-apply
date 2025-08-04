@@ -88,22 +88,23 @@
 
 /**
   Quill Mention styling
-  Will be moved once adapted to <jhi-editor>
+  TODO: Will be moved once adapted to <jhi-editor>
+  Copied and adapted from https://github.com/quill-mention/quill-mention/blob/master/src/quill.mention.css
  */
 .ql-mention-list-container {
-  border: 1px solid #f0f0f0;
-  border-radius: 4px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 12px 0 rgba(30, 30, 30, 0.08);
+  border: 0.0625rem solid var(--p-border-default);
+  border-radius: 0.25rem;
+  background-color: var(--p-background-default);
+  box-shadow: 0 0.125rem 0.75rem 0 rgba(30, 30, 30, 0.08);
   z-index: 9001;
   overflow: auto;
 }
 
 .ql-mention-loading {
-  line-height: 44px;
-  padding: 0 20px;
+  line-height: 2.75rem;
+  padding: 0 1.25rem;
   vertical-align: middle;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .ql-mention-list {
@@ -115,9 +116,9 @@
 
 .ql-mention-list-item {
   cursor: pointer;
-  line-height: 44px;
-  font-size: 16px;
-  padding: 0 20px;
+  line-height: 2.75rem;
+  font-size: 1rem;
+  padding: 0 1.25rem;
   vertical-align: middle;
 }
 
@@ -132,18 +133,18 @@
 }
 
 .mention {
-  height: 24px;
-  width: 65px;
-  border-radius: 4px;
+  height: 1.5rem;
+  width: 4.0625rem;
+  border-radius: 0.25rem;
   background-color: var(--p-primary-50);
   color: var(--p-primary-400);
-  padding: 3px 3px;
-  margin-right: 2px;
+  padding: 0.1875rem 0.1875rem;
+  margin-right: 0.125rem;
   user-select: all;
 }
 
 .mention > span {
-  margin: 0 3px;
+  margin: 0 0.1875rem;
 }
 
 /**
@@ -153,6 +154,10 @@
   border-radius: 0.5rem 0.5rem 0 0 !important;
 }
 
+/**
+  Quill editor custom styling
+  TODO: Will be removed as well
+ */
 .custom-quill-editor {
   height: 24rem;
   width: 100%;
