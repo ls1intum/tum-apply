@@ -10,11 +10,12 @@ import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { EmailTemplateDTO, EmailTemplateResourceService } from '../../../generated';
+import { EmailTemplateDTO } from '../../../generated';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { EmailTemplateResourceService } from '../../../generated/api/emailTemplateResource.service';
 
 @Component({
   selector: 'jhi-research-group-template-edit',
