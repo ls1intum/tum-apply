@@ -76,27 +76,24 @@ export class AccountService {
   }
 
   async loadUser(): Promise<void> {
-    const isLoggedIn = this.keycloakService.isLoggedIn();
-    if (isLoggedIn) {
-      const token = this.keycloakService.getToken();
-      const userShortDTO: UserShortDTO | null = await this.getCurrentUser();
+    const token = this.keycloakService.getToken();
+    const userShortDTO: UserShortDTO | null = await this.getCurrentUser();
 
-      if (userShortDTO?.userId != null && token != null) {
-        const user: User = {
-          id: userShortDTO.userId,
-          email: userShortDTO.email ?? '',
-          name: `${userShortDTO.firstName} ${userShortDTO.lastName}`.trim() || 'User',
-          researchGroup: userShortDTO.researchGroup ?? undefined,
-          bearer: token,
-          authorities: userShortDTO.roles,
-        };
+    if (userShortDTO?.userId != null && token != null) {
+      const user: User = {
+        id: userShortDTO.userId,
+        email: userShortDTO.email ?? '',
+        name: `${userShortDTO.firstName} ${userShortDTO.lastName}`.trim() || 'User',
+        researchGroup: userShortDTO.researchGroup ?? undefined,
+        bearer: token,
+        authorities: userShortDTO.roles,
+      };
 
-        this.user.set(user);
-        this.loaded.set(true);
-      } else {
-        this.user.set(undefined);
-        this.loaded.set(true);
-      }
+      this.user.set(user);
+      this.loaded.set(true);
+    } else {
+      this.user.set(undefined);
+      this.loaded.set(true);
     }
   }
 

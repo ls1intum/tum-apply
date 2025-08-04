@@ -4,15 +4,18 @@ import de.tum.cit.aet.core.constants.TemplateVariable;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
+@Slf4j
 public class TemplateUtil {
 
-    private static final Pattern FREEMARKER_VAR_PATTERN = Pattern.compile("\\$\\{\\s*([a-zA-Z0-9_]+)!?}");
+    // match FreeMarker variables of format: {VARIABLE_NAME!}
+    private static final Pattern FREEMARKER_VAR_PATTERN = Pattern.compile("\\$\\{\\s*([a-zA-Z0-9_]+)!}");
 
     /**
      * HTML structure used to represent a Quill mention. Injects the variable ID
@@ -34,19 +37,26 @@ public class TemplateUtil {
      * @return the HTML with mentions rendered for Quill
      */
     public static String convertFreemarkerToQuillMentions(String html) {
-        Matcher matcher = FREEMARKER_VAR_PATTERN.matcher(html);
-        StringBuilder result = new StringBuilder();
+        try {
+            Matcher matcher = FREEMARKER_VAR_PATTERN.matcher(html);
+            StringBuilder result = new StringBuilder();
 
-        while (matcher.find()) {
-            String variable = matcher.group(1);
-            if (!validVariables.contains(variable)) {
-                continue; // Skip unknown variables
+            while (matcher.find()) {
+                String variable = matcher.group(1);
+                if (!validVariables.contains(variable)) {
+                    log.warn("Unknown template variable '{}'; skipping.", variable);
+                    continue;
+                }
+                String mentionHtml = String.format(MENTION_HTML_TEMPLATE, variable, variable, variable);
+                matcher.appendReplacement(result, Matcher.quoteReplacement(mentionHtml));
             }
-            String mentionHtml = String.format(MENTION_HTML_TEMPLATE, variable, variable, variable);
-            matcher.appendReplacement(result, Matcher.quoteReplacement(mentionHtml));
+
+            matcher.appendTail(result);
+            return result.toString();
+        } catch (Exception e) {
+            log.error("Failed to convert FreeMarker variables to Quill mentions.", e);
+            return html;
         }
-        matcher.appendTail(result);
-        return result.toString();
     }
 
     /**
@@ -57,19 +67,25 @@ public class TemplateUtil {
      * @return HTML containing standard FreeMarker variable syntax
      */
     public static String convertQuillMentionsToFreemarker(String html) {
-        Document document = Jsoup.parseBodyFragment(html);
-        Elements mentionElements = document.select("span.mention");
+        try {
+            Document document = Jsoup.parseBodyFragment(html);
+            Elements mentionElements = document.select("span.mention");
 
-        for (Element mention : mentionElements) {
-            String variable = mention.attr("data-id");
-            if (!validVariables.contains(variable)) {
-                continue; // Ignore unknown variables
+            for (Element mention : mentionElements) {
+                String variable = mention.attr("data-id");
+                if (!validVariables.contains(variable)) {
+                    log.warn("Unknown Quill mention data-id '{}'; skipping.", variable);
+                    continue;
+                }
+
+                String freemarkerVar = "${" + variable + "!}";
+                mention.replaceWith(new TextNode(freemarkerVar));
             }
 
-            String freemarkerVar = "${" + variable + "!}";
-            mention.replaceWith(new TextNode(freemarkerVar));
+            return document.body().html();
+        } catch (Exception e) {
+            log.error("Failed to convert Quill mentions to FreeMarker variables.", e);
+            return html;
         }
-
-        return document.body().html();
     }
 }

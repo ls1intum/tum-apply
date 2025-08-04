@@ -4,6 +4,7 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { DividerModule } from 'primeng/divider';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 
@@ -12,7 +13,7 @@ type SidebarCategory = { title: string; buttons: SidebarButton[] };
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [PanelModule, SidebarButtonComponent, TranslateModule],
+  imports: [DividerModule, PanelModule, SidebarButtonComponent, TranslateModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
@@ -140,7 +141,7 @@ export class SidebarComponent {
         },
         {
           title: 'sidebar.system.system',
-          buttons: [{ icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/settings' }],
+          buttons: [{ icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/system-settings' }],
         },
       ],
     };

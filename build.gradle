@@ -12,7 +12,7 @@ plugins {
     id "idea"
     id "java"
     id "jacoco"
-    id "com.diffplug.spotless" version "7.1.0"
+    id "com.diffplug.spotless" version "7.2.1"
     id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
     id "com.github.ben-manes.versions" version "0.52.0"
     id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
@@ -136,8 +136,8 @@ openApi {
     customBootRun {
         jvmArgs = [
                 "-Dspring.profiles.active=dev,no-liquibase",
-                "-Dspringdoc.packages-to-scan=de.tum.cit.aet.application.web, de.tum.cit.aet.evaluation.web, de.tum.cit.aet." +
-                        "job.web, de.tum.cit.aet.usermanagement.web, de.tum.cit.aet.core.web",
+                "-Dspringdoc.packages-to-scan=de.tum.cit.aet", // all packages inside of de.tum.cit.aet will be scanned
+                "-Dspringdoc.paths-to-match=/api/**", // paths must start with '/api' to be scanned
                 "-Dspring.docker.compose.enabled=false",
                 "-Dspring.docker.compose.lifecycle-management=none"
         ]
@@ -223,8 +223,12 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.security:spring-security-data"
-    implementation "com.mysql:mysql-connector-j:9.3.0"
-    implementation "com.zaxxer:HikariCP:6.3.0"
+    implementation "com.mysql:mysql-connector-j:9.4.0"
+    implementation "com.zaxxer:HikariCP:7.0.0"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
+    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
+    implementation "org.hibernate.orm:hibernate-core"
+    implementation "org.hibernate.validator:hibernate-validator"
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
     implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"

@@ -65,7 +65,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.contractDuration"></span>
-            @if (jobDetails()?.workload !== '') {
+            @if (jobDetails()?.contractDuration !== '') {
               <span
                 class="detail-value"
                 jhiTranslate="jobDetailPage.positionOverview.years"
@@ -95,6 +95,15 @@
             <span class="detail-value">{{ jobDetails()?.lastModifiedAt || noData() }}</span>
           </div>
         </section>
+
+        @if (jobDetails()?.endDate) {
+          <section class="detail-group">
+            <div class="detail-row">
+              <span class="detail-label" jhiTranslate="jobDetailPage.positionOverview.endDate"></span>
+              <span class="detail-value end-date">{{ jobDetails()?.endDate }}</span>
+            </div>
+          </section>
+        }
       </main>
 
       <aside class="research-group">

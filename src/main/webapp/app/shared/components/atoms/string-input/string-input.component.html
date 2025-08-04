@@ -16,21 +16,21 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="inputState() === 'invalid'">
+    <div [class.error]="inputState() === 'invalid'" class="input-wrapper">
       <input
-        [id]="id()"
-        type="text"
-        [placeholder]="placeholder() ?? ''"
-        [disabled]="disabled()"
-        [ngModel]="model()"
-        (ngModelChange)="onInputChange($event)"
         (blur)="onBlur()"
         (focus)="onFocus()"
+        (ngModelChange)="onInputChange($event)"
+        [disabled]="disabled()"
+        [id]="id()"
+        [ngModel]="model()"
+        [placeholder]="placeholder() ?? ''"
         [required]="required()"
         [style]="{ width: width() }"
+        [type]="type()"
         autocomplete="off"
-        pInputText
         class="custom-input"
+        pInputText
       />
 
       @if (formControl()) {
