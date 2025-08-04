@@ -10,6 +10,7 @@ import { EmailTemplateOverviewDTO } from '../../../generated';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { EmailTemplateResourceService } from '../../../generated/api/emailTemplateResource.service';
+import { ToastService } from '../../../service/toast-service';
 
 @Component({
   selector: 'jhi-research-group-templates',
@@ -23,6 +24,7 @@ export class ResearchGroupTemplates {
   protected total = signal<number>(0);
 
   protected readonly emailTemplateService = inject(EmailTemplateResourceService);
+  protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
   protected readonly router = inject(Router);
 
@@ -82,8 +84,14 @@ export class ResearchGroupTemplates {
   }
 
   async delete(templateId: string): Promise<void> {
-    await firstValueFrom(this.emailTemplateService.deleteTemplate(templateId));
-    void this.loadPage();
+    try {
+      await firstValueFrom(this.emailTemplateService.deleteTemplate(templateId));
+      this.toastService.showSuccess({ detail: 'Successfully deleted template' });
+    } catch {
+      this.toastService.showError({ detail: 'Failed to delete template' });
+    } finally {
+      void this.loadPage();
+    }
   }
 
   // Navigate to create
@@ -97,9 +105,13 @@ export class ResearchGroupTemplates {
   }
 
   private async loadPage(): Promise<void> {
-    const res = await firstValueFrom(this.emailTemplateService.getTemplates(this.pageSize(), this.pageNumber()));
+    try {
+      const res = await firstValueFrom(this.emailTemplateService.getTemplates(this.pageSize(), this.pageNumber()));
 
-    this.responseData.set(res.content ?? []);
-    this.total.set(res.totalElements ?? 0);
+      this.responseData.set(res.content ?? []);
+      this.total.set(res.totalElements ?? 0);
+    } catch {
+      this.toastService.showError({ detail: 'Failed to load templates' });
+    }
   }
 }

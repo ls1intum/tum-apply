@@ -16,6 +16,7 @@ import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { EmailTemplateResourceService } from '../../../generated/api/emailTemplateResource.service';
+import { ToastService } from '../../../service/toast-service';
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -40,6 +41,7 @@ export class ResearchGroupTemplateEdit {
   readonly router = inject(Router);
   readonly emailTemplateService = inject(EmailTemplateResourceService);
   readonly translate = inject(TranslateService);
+  readonly toastService = inject(ToastService);
 
   autoSaveTimer: number | undefined;
 
@@ -318,25 +320,35 @@ export class ResearchGroupTemplateEdit {
       }
 
       this.lastSavedSnapshot.set(this.formModel());
-    } catch (error) {
-      console.error('Autosave failed:', error);
+    } catch (error: any) {
+      if (error?.status === 409) {
+        this.toastService.showError({ detail: 'Template name already exists.' });
+      } else {
+        this.toastService.showError({ detail: 'Autosave failed' });
+      }
     } finally {
       this.savingState.set('SAVED');
     }
   }
 
   private async load(templateId: string): Promise<void> {
-    const res = await firstValueFrom(this.emailTemplateService.getTemplate(templateId));
-    const safeTemplate: EmailTemplateDTO = {
-      ...res,
-      english: res.english ?? { subject: '', body: '' },
-      german: res.german ?? { subject: '', body: '' },
-    };
+    try {
+      const res = await firstValueFrom(this.emailTemplateService.getTemplate(templateId));
+      const safeTemplate: EmailTemplateDTO = {
+        ...res,
+        english: res.english ?? { subject: '', body: '' },
+        german: res.german ?? { subject: '', body: '' },
+      };
 
-    const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
-    this.skipNextAutosave = true; // prevent sending update request after loading
-    this.formModel.set(translatedTemplate);
-    this.lastSavedSnapshot.set(translatedTemplate);
-    this.savingState.set('SAVED');
+      const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
+      this.skipNextAutosave = true; // prevent sending update request after loading
+      this.formModel.set(translatedTemplate);
+      this.lastSavedSnapshot.set(translatedTemplate);
+      this.savingState.set('SAVED');
+    } catch {
+      this.toastService.showError({
+        detail: 'Failed to load template',
+      });
+    }
   }
 }
