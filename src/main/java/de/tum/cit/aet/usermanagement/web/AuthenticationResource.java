@@ -8,8 +8,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.time.Duration;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,12 +17,60 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
+import java.util.Map;
+
+/**
+ * Sets authentication cookies based on tokens.
+ */
 @RestController
 @RequestMapping("/api/auth")
 @AllArgsConstructor
 public class AuthenticationResource {
 
     private final KeycloakAuthenticationService keycloakAuthenticationService;
+
+    /**
+     * Sets or clears authentication cookies.
+     * If tokens is non-null, sets cookies; if null, clears them.
+     */
+    private void setAuthCookies(HttpServletResponse response, AuthResponseDTO tokens) {
+        if (tokens != null) {
+            ResponseCookie accessCookie = ResponseCookie.from("access_token", tokens.accessToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofSeconds(tokens.expiresIn()))
+                .build();
+            ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofSeconds(tokens.refreshExpiresIn()))
+                .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        } else {
+            ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0)
+                .build();
+            ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+        }
+    }
 
     /**
      * Authenticates a user via email and password and sets an access token as an HttpOnly cookie.
@@ -38,23 +84,8 @@ public class AuthenticationResource {
     public ResponseEntity<Map<String, Long>> login(@Valid @RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
         AuthResponseDTO tokens = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
 
-        ResponseCookie accessCookie = ResponseCookie.from("access_token", tokens.accessToken())
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
-            .path("/")
-            .maxAge(Duration.ofSeconds(tokens.expiresIn()))
-            .build();
-        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.refreshToken())
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Lax")
-            .path("/")
-            .maxAge(Duration.ofSeconds(tokens.refreshExpiresIn()))
-            .build();
+        setAuthCookies(response, tokens);
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
         // Return the token expiry durations to the client
         return ResponseEntity.ok(Map.of("expiresIn", tokens.expiresIn(), "refreshExpiresIn", tokens.refreshExpiresIn()));
     }
@@ -83,24 +114,7 @@ public class AuthenticationResource {
         }
         keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
 
-        // Clear cookies by setting maxAge=0
-        ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
-            .path("/")
-            .maxAge(0)
-            .build();
-        ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Lax")
-            .path("/")
-            .maxAge(0)
-            .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+        setAuthCookies(response, null);
         return ResponseEntity.ok().build();
     }
 
@@ -128,23 +142,7 @@ public class AuthenticationResource {
         }
         AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(refreshToken);
 
-        ResponseCookie accessCookie = ResponseCookie.from("access_token", tokens.accessToken())
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
-            .path("/")
-            .maxAge(Duration.ofSeconds(tokens.expiresIn()))
-            .build();
-        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.refreshToken())
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Lax")
-            .path("/")
-            .maxAge(Duration.ofSeconds(tokens.refreshExpiresIn()))
-            .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        setAuthCookies(response, tokens);
         return ResponseEntity.ok(Map.of("expiresIn", tokens.expiresIn(), "refreshExpiresIn", tokens.refreshExpiresIn()));
     }
 }
