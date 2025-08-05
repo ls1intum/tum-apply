@@ -199,6 +199,104 @@
         }
       }
     },
+    "/api/email-templates": {
+      "get": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "getTemplates",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOEmailTemplateOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "updateTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailTemplateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTemplateDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "createTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailTemplateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTemplateDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications": {
       "put": {
         "tags": [
@@ -1715,6 +1813,59 @@
         }
       }
     },
+    "/api/email-templates/{templateId}": {
+      "get": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "getTemplate",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTemplateDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "deleteTemplate",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/documents/{documentDictionaryId}": {
       "get": {
         "tags": [
@@ -2181,6 +2332,48 @@
           "supervisingProfessor",
           "title"
         ]
+      },
+      "EmailTemplateDTO": {
+        "type": "object",
+        "properties": {
+          "emailTemplateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "templateName": {
+            "type": "string"
+          },
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "english": {
+            "$ref": "#/components/schemas/EmailTemplateTranslationDTO"
+          },
+          "german": {
+            "$ref": "#/components/schemas/EmailTemplateTranslationDTO"
+          }
+        }
+      },
+      "EmailTemplateTranslationDTO": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
       },
       "ApplicantDTO": {
         "type": "object",
@@ -3706,6 +3899,52 @@
         "required": [
           "userId"
         ]
+      },
+      "EmailTemplateOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "emailTemplateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "templateName": {
+            "type": "string"
+          },
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageResponseDTOEmailTemplateOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailTemplateOverviewDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
       },
       "ApplicationOverviewDTO": {
         "type": "object",

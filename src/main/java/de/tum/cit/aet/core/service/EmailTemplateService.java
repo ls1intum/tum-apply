@@ -5,10 +5,7 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.EmailTemplate;
 import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.domain.EmailTemplate_;
-import de.tum.cit.aet.core.dto.EmailTemplateDTO;
-import de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO;
-import de.tum.cit.aet.core.dto.EmailTemplateTranslationDTO;
-import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.*;
 import de.tum.cit.aet.core.exception.EmailTemplateException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
@@ -21,9 +18,13 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -97,10 +98,10 @@ public class EmailTemplateService {
      *
      * @param researchGroup the research group
      * @param pageDTO       the pagination settings
-     * @return a list of {@link EmailTemplateOverviewDTO}
+     * @return a PageResponseDTO of {@link EmailTemplateOverviewDTO}
      */
     @Transactional // for write -> read
-    public List<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
+    public PageResponseDTO<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
         addMissingTemplates(researchGroup);
 
         Pageable pageable = PageRequest.of(
@@ -108,7 +109,12 @@ public class EmailTemplateService {
             pageDTO.pageSize(),
             Sort.by(EmailTemplate_.IS_DEFAULT).ascending().and(Sort.by(EmailTemplate_.TEMPLATE_NAME).ascending())
         );
-        return emailTemplateRepository.findOverviewByResearchGroupAndEmailTypeIn(researchGroup, editableEmailTypes, pageable).toList();
+        Page<EmailTemplateOverviewDTO> page = emailTemplateRepository.findOverviewByResearchGroupAndEmailTypeIn(
+            researchGroup,
+            editableEmailTypes,
+            pageable
+        );
+        return new PageResponseDTO<>(page.get().toList(), page.getTotalElements());
     }
 
     /**
