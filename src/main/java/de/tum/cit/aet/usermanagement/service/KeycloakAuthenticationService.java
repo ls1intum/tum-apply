@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.core.exception.UnauthorizedException;
+import de.tum.cit.aet.usermanagement.dto.AuthResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -36,7 +37,7 @@ public class KeycloakAuthenticationService {
      * @return a valid access token as a String if authentication is successful
      * @throws UnauthorizedException if authentication fails or the token response is invalid
      */
-    public String loginWithCredentials(String email, String password) {
+    public AuthResponseDTO loginWithCredentials(String email, String password) {
         String tokenUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -57,9 +58,77 @@ public class KeycloakAuthenticationService {
             if (body == null || body.get("access_token") == null) {
                 throw new UnauthorizedException("Token response is invalid");
             }
-            return body.get("access_token").asText();
+            String accessToken = body.get("access_token").asText();
+            long expiresIn = body.has("expires_in") ? body.get("expires_in").asLong() : 0L;
+            String refreshToken = body.has("refresh_token") ? body.get("refresh_token").asText() : "";
+            long refreshExpiresIn = body.has("refresh_expires_in") ? body.get("refresh_expires_in").asLong() : 0L;
+            return new AuthResponseDTO(accessToken, refreshToken, expiresIn, refreshExpiresIn);
         } catch (Exception e) {
             throw new UnauthorizedException("Invalid username or password", e);
+        }
+    }
+
+    /**
+     * Invalidates the user's refresh token by calling Keycloak's logout endpoint.
+     *
+     * @param refreshToken the refresh token to invalidate
+     * @throws UnauthorizedException if logout fails
+     */
+    public void invalidateRefreshToken(String refreshToken) {
+        String logoutUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/logout";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("refresh_token", refreshToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        try {
+            // Keycloak returns 204 No Content on successful logout
+            restTemplate.exchange(logoutUrl, HttpMethod.POST, request, Void.class);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Failed to logout user", e);
+        }
+    }
+
+    /**
+     * Refreshes the user's tokens using the provided refresh token.
+     *
+     * @param refreshToken the refresh token provided in the cookie
+     * @return a new AuthResponseDTO containing fresh access and refresh tokens
+     * @throws UnauthorizedException if refreshing fails or the token response is invalid
+     */
+    public AuthResponseDTO refreshTokens(String refreshToken) {
+        String tokenUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("grant_type", "refresh_token");
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("refresh_token", refreshToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        try {
+            ResponseEntity<JsonNode> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, JsonNode.class);
+            JsonNode body = response.getBody();
+            if (body == null || body.get("access_token") == null) {
+                throw new UnauthorizedException("Refresh token response is invalid");
+            }
+            String accessToken = body.get("access_token").asText();
+            long expiresIn = body.has("expires_in") ? body.get("expires_in").asLong() : 0L;
+            String newRefreshToken = body.has("refresh_token") ? body.get("refresh_token").asText() : "";
+            long refreshExpiresIn = body.has("refresh_expires_in") ? body.get("refresh_expires_in").asLong() : 0L;
+            return new AuthResponseDTO(accessToken, newRefreshToken, expiresIn, refreshExpiresIn);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Failed to refresh token", e);
         }
     }
 }

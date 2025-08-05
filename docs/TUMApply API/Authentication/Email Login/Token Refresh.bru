@@ -1,0 +1,18 @@
+meta {
+  name: Token Refresh
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/auth/refresh
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "email": "applicant1@tumapply.local",
+    "password": "applicant"
+  }
+}

@@ -29,7 +29,6 @@ export * from './jobDTO';
 export * from './jobDetailDTO';
 export * from './jobFilterOptionDTO';
 export * from './jobFormDTO';
-export * from './link';
 export * from './loginRequestDTO';
 export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
