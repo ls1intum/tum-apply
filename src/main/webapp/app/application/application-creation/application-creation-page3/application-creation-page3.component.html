@@ -1,24 +1,25 @@
 @if (page3Form; as form) {
   <form [formGroup]="form">
-    <div class="flex flex-col w-1/2">
-      <label>
-        <span [jhiTranslate]="'entity.applicationPage3.label.desiredStartDate'"></span><span class="text-red-600">*</span>
-        <fa-icon
-          class="icon"
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'entity.applicationPage3.tooltip.desiredStartDate' | translate"
-          tooltipPosition="top"
+    @if (data(); as data) {
+      <div class="flex flex-col w-1/2">
+        <label>
+          <span [jhiTranslate]="'entity.applicationPage3.label.desiredStartDate'"></span><span class="text-red-600">*</span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage3.tooltip.desiredStartDate' | translate"
+            tooltipPosition="top"
+          />
+        </label>
+        <jhi-datepicker
+          [selectedDate]="data.desiredStartDate"
+          label=""
+          [placeholder]="'entity.applicationPage3.placeholder.selectStartDate' | translate"
+          width="100%"
+          (selectedDateChange)="setDesiredStartDate($event)"
         />
-      </label>
-      <jhi-datepicker
-        [selectedDate]="data().desiredStartDate"
-        label=""
-        [placeholder]="'entity.applicationPage3.placeholder.selectStartDate' | translate"
-        width="100%"
-        (selectedDateChange)="setDesiredStartDate($event)"
-      />
-    </div>
-
+      </div>
+    }
     <p-divider layout="horizontal">
       <span jhiTranslate="entity.applicationPage3.section.uploads"></span>
     </p-divider>
@@ -43,47 +44,48 @@
         </div>
       </div>
     }
+    @if (hasInitialized()) {
+      <div class="form-row">
+        <jhi-editor
+          label="entity.applicationPage3.label.motivation"
+          [control]="page3Form.controls.motivation"
+          [required]="true"
+          helperText="entity.applicationPage3.sublabel.motivation"
+          tooltipText="entity.applicationPage3.tooltip.motivation"
+          placeholder="entity.applicationPage3.floatlabel.motivation"
+          [characterLimit]="1000"
+          icon="circle-info"
+          [shouldTranslate]="true"
+        />
+      </div>
 
-    <div class="form-row">
-      <jhi-editor
-        label="entity.applicationPage3.label.motivation"
-        [control]="page3Form.controls.motivation"
-        [required]="true"
-        helperText="entity.applicationPage3.sublabel.motivation"
-        tooltipText="entity.applicationPage3.tooltip.motivation"
-        placeholder="entity.applicationPage3.floatlabel.motivation"
-        [characterLimit]="1000"
-        icon="circle-info"
-        [shouldTranslate]="true"
-      />
-    </div>
+      <div class="form-row">
+        <jhi-editor
+          label="entity.applicationPage3.label.skills"
+          [control]="page3Form.controls.skills"
+          [required]="true"
+          helperText="entity.applicationPage3.sublabel.skills"
+          tooltipText="entity.applicationPage3.tooltip.skills"
+          placeholder="entity.applicationPage3.floatlabel.skills"
+          [characterLimit]="1000"
+          icon="circle-info"
+          [shouldTranslate]="true"
+        />
+      </div>
 
-    <div class="form-row">
-      <jhi-editor
-        label="entity.applicationPage3.label.skills"
-        [control]="page3Form.controls.skills"
-        [required]="true"
-        helperText="entity.applicationPage3.sublabel.skills"
-        tooltipText="entity.applicationPage3.tooltip.skills"
-        placeholder="entity.applicationPage3.floatlabel.skills"
-        [characterLimit]="1000"
-        icon="circle-info"
-        [shouldTranslate]="true"
-      />
-    </div>
-
-    <div class="form-row">
-      <jhi-editor
-        label="entity.applicationPage3.label.experiences"
-        [control]="page3Form.controls.experiences"
-        [required]="true"
-        helperText="entity.applicationPage3.sublabel.experiences"
-        tooltipText="entity.applicationPage3.tooltip.experiences"
-        placeholder="entity.applicationPage3.floatlabel.experiences"
-        [characterLimit]="1000"
-        icon="circle-info"
-        [shouldTranslate]="true"
-      />
-    </div>
+      <div class="form-row">
+        <jhi-editor
+          label="entity.applicationPage3.label.experiences"
+          [control]="page3Form.controls.experiences"
+          [required]="true"
+          helperText="entity.applicationPage3.sublabel.experiences"
+          tooltipText="entity.applicationPage3.tooltip.experiences"
+          placeholder="entity.applicationPage3.floatlabel.experiences"
+          [characterLimit]="1000"
+          icon="circle-info"
+          [shouldTranslate]="true"
+        />
+      </div>
+    }
   </form>
 }
