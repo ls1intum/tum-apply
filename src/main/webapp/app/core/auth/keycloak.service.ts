@@ -51,7 +51,6 @@ export class KeycloakService {
       }
       this.profile = (await this.keycloak.loadUserInfo()) as unknown as UserProfile;
       this.profile.token = this.keycloak.token ?? '';
-      this.startTokenRefresh();
       return authenticated;
     } catch (err) {
       console.error('🔁 Keycloak init failed:', err);
@@ -70,6 +69,7 @@ export class KeycloakService {
       await this.keycloak.login({
         redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
       });
+      this.startTokenRefresh();
     } catch (err) {
       console.error('Login failed:', err);
     }
@@ -88,6 +88,7 @@ export class KeycloakService {
         redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
         idpHint: provider,
       });
+      this.startTokenRefresh();
     } catch (err) {
       console.error(`Login with provider ${provider} failed:`, err);
     }

@@ -1,0 +1,26 @@
+@switch (state()) {
+  @case ('SAVED') {
+    <p-badge [value]="'entity.applicationOverview.state.draft' | translate" severity="secondary" />
+  }
+  @case ('SENT') {
+    <p-badge [value]="'entity.applicationOverview.state.submitted' | translate" />
+  }
+  @case ('ACCEPTED') {
+    <p-badge [value]="'entity.applicationOverview.state.accepted' | translate" severity="success" />
+  }
+  @case ('IN_REVIEW') {
+    <p-badge [value]="'entity.applicationOverview.state.submitted' | translate" />
+  }
+  @case ('REJECTED') {
+    <p-badge [value]="'entity.applicationOverview.state.rejected' | translate" severity="danger" />
+  }
+  @case ('WITHDRAWN') {
+    <p-badge [value]="'entity.applicationOverview.state.withdrawn' | translate" severity="contrast" />
+  }
+  @case ('JOB_CLOSED') {
+    <p-badge [value]="'entity.applicationOverview.state.closed' | translate" severity="contrast" />
+  }
+  @default {
+    <p-badge [value]="state()" severity="warn" />
+  }
+}
