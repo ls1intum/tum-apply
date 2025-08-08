@@ -52,7 +52,7 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for status badge display
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
-  // Template reference for status badge display
+  // Template reference for job title display
   readonly jobNameTemplate = viewChild.required<TemplateRef<unknown>>('jobNameTemplate');
 
   // Computed table column definitions including custom templates
