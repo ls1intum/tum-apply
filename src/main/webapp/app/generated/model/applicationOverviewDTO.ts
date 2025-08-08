@@ -11,6 +11,7 @@
 
 export interface ApplicationOverviewDTO { 
     applicationId?: string;
+    jobId?: string;
     jobTitle?: string;
     researchGroup?: string;
     applicationState?: ApplicationOverviewDTO.ApplicationStateEnum;
