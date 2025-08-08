@@ -51,4 +51,10 @@
       }
     </div>
   </ng-template>
+  <ng-template #jobNameTemplate let-row>
+    <div class="w-full h-full flex justify-between items-center">
+      <span>{{ row.jobTitle }}</span>
+      <jhi-button icon="arrow-up-right-from-square" variant="text" (click)="onViewJob(row.jobId)" />
+    </div>
+  </ng-template>
 </div>

@@ -12,6 +12,7 @@ import lombok.Setter;
 public class ApplicationOverviewDTO {
 
     private UUID applicationId;
+    private UUID jobId;
     private String jobTitle;
     private String researchGroup;
     private ApplicationState applicationState;
@@ -19,12 +20,14 @@ public class ApplicationOverviewDTO {
 
     public ApplicationOverviewDTO(
         UUID applicationId,
+        UUID jobId,
         String jobTitle,
         String researchGroup,
         ApplicationState applicationState,
         LocalDateTime createdAt
     ) {
         this.applicationId = applicationId;
+        this.jobId = jobId;
         this.jobTitle = jobTitle;
         this.researchGroup = researchGroup;
         this.applicationState = applicationState;

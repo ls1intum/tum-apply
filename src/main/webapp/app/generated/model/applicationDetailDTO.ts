@@ -14,6 +14,7 @@ export interface ApplicationDetailDTO {
     applicationId: string;
     applicant?: ApplicantForApplicationDetailDTO;
     applicationState: ApplicationDetailDTO.ApplicationStateEnum;
+    jobId: string;
     jobTitle?: string;
     desiredDate?: string;
     projects?: string;

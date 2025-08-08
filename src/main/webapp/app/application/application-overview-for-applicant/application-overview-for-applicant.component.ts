@@ -52,15 +52,20 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for status badge display
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  // Template reference for status badge display
+  readonly jobNameTemplate = viewChild.required<TemplateRef<unknown>>('jobNameTemplate');
+
   // Computed table column definitions including custom templates
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
+    const jobNameTemplate = this.jobNameTemplate();
     return [
       {
         field: 'jobTitle',
         header: 'entity.applicationOverview.columns.positionTitle',
         width: '34rem',
+        template: jobNameTemplate,
       },
       {
         field: 'researchGroup',
@@ -139,6 +144,10 @@ export default class ApplicationOverviewForApplicantComponent {
 
   onUpdateApplication(applicationId: string): void {
     this.router.navigate([`/application/edit/${applicationId}`]);
+  }
+
+  onViewJob(jobId: string): void {
+    this.router.navigate([`/job/detail/${jobId}`]);
   }
 
   onDeleteApplication(applicationId: string): void {
