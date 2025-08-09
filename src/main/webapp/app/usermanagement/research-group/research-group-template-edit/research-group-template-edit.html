@@ -1,0 +1,103 @@
+<jhi-toast />
+<div class="content">
+  <div class="meta-info">
+    <jhi-string-input
+      class="template-name-input"
+      [model]="templateDisplayName()"
+      [required]="true"
+      [label]="'researchGroup.emailTemplates.templateName' | translate"
+      [placeholder]="'researchGroup.emailTemplates.addTemplateName' | translate"
+      [disabled]="formModel().isDefault ?? true"
+      (modelChange)="setTemplateName($event)"
+    />
+    <jhi-select
+      class="template-type-select"
+      [label]="'researchGroup.emailTemplates.sendWhen' | translate"
+      [placeholder]="'researchGroup.emailTemplates.selectSendWhen' | translate"
+      [items]="selectOptions()"
+      [translateItems]="true"
+      [selected]="preselectedEmailType()"
+      [required]="true"
+      [disabled]="formModel().isDefault ?? true"
+      (selectedChange)="setSelectedEmailType($event)"
+    />
+  </div>
+
+  <p-tabs value="0" class="basic-tabs">
+    <p-tablist class="tab-list">
+      <p-tab value="0" class="basic-tab" jhiTranslate="researchGroup.emailTemplates.english" />
+      <p-tab value="1" class="basic-tab" jhiTranslate="researchGroup.emailTemplates.german" />
+    </p-tablist>
+
+    <p-tabpanel value="0" class="tab-panel">
+      <div>
+        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
+
+        <div class="subject-wrapper">
+          <span class="subject-prefix">TUMApply -</span>
+          <jhi-string-input
+            class="subject-input"
+            [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
+            [model]="english().subject"
+            [errorEnabled]="false"
+            (modelChange)="updateEnglishSubject($event)"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
+        <!-- TODO: adapt to jhi-editor when preset input is enabled -->
+        <quill-editor
+          class="custom-quill-editor"
+          [modules]="modules"
+          [(ngModel)]="english().body"
+          (ngModelChange)="updateEnglishBody($event)"
+        />
+        <p jhiTranslate="researchGroup.emailTemplates.addVariable"></p>
+      </div>
+    </p-tabpanel>
+
+    <p-tabpanel value="1" class="tab-panel">
+      <div>
+        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
+        <div class="subject-wrapper">
+          <span class="subject-prefix">TUMApply -</span>
+          <jhi-string-input
+            class="subject-input"
+            [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
+            [model]="german().subject"
+            [errorEnabled]="false"
+            (modelChange)="updateGermanSubject($event)"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
+        <!-- TODO: adapt to jhi-editor when preset input is enabled -->
+        <quill-editor
+          class="custom-quill-editor"
+          [modules]="modules"
+          [(ngModel)]="german().body"
+          (ngModelChange)="updateGermanBody($event)"
+        />
+        <p jhiTranslate="researchGroup.emailTemplates.addVariable"></p>
+      </div>
+    </p-tabpanel>
+  </p-tabs>
+
+  <div class="actions">
+    <jhi-button
+      label="researchGroup.emailTemplates.back"
+      [shouldTranslate]="true"
+      icon="chevron-left"
+      variant="outlined"
+      (click)="navigateBack()"
+    />
+    <div class="saving-state" [ngClass]="savingState().toLowerCase()">
+      <fa-icon icon="floppy-disk" />
+      <span [jhiTranslate]="'researchGroup.emailTemplates.' + savingState().toLocaleLowerCase()"></span>
+    </div>
+  </div>
+</div>

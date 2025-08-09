@@ -13,6 +13,33 @@
         "createdBy": "Erstellt von"
       },
 
+      "english": "Englisch",
+      "german": "Deutsch",
+
+      "templateName": "Vorlage",
+      "addTemplateName": "Name der Vorlage ein...",
+
+      "sendWhen": "Wird gesendet wenn",
+      "selectSendWhen": "Nachricht der Vorlage...",
+
+      "subject": "Betreff",
+      "addSubject": "Betreff der Email...",
+
+      "addVariable": "Drücken Sie '$', um eine Variable einzufügen",
+
+      "message": "Nachricht",
+
+      "back": "Zurück",
+      "saved": "Gespeichert",
+      "saving": "Änderungen werden gespeichert",
+      "unsaved": "Änderungen nicht gespeichert",
+
+      "messageType": {
+        "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
+        "APPLICATION_SENT": "Bewerbung empfangen",
+        "APPLICATION_REJECTED": "Bewerbung abgelehnt"
+      },
+
       "default": {
         "APPLICATION_ACCEPTED": "Bewerbung angenommen",
         "APPLICATION_SENT": "Bewerbungseingang Bestätigung",
@@ -20,6 +47,15 @@
         "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung abgelehnt - Position nicht mehr aktuell",
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
         "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund"
+      },
+
+      "variables": {
+        "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",
+        "APPLICANT_LAST_NAME": "Nachname Bewerber:in",
+        "SUPERVISING_PROFESSOR_FIRST_NAME": "Vorname Professor:in",
+        "SUPERVISING_PROFESSOR_LAST_NAME": "Nachname Professor:in",
+        "JOB_TITLE": "Stellen Titel",
+        "RESEARCH_GROUP_NAME": "Name Forschungsgruppe"
       }
     }
   }

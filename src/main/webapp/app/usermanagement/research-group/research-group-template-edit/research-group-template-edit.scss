@@ -1,0 +1,179 @@
+/**
+  Layout
+ */
+
+.content {
+  padding: 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 3rem;
+
+  .meta-info {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+
+    .template-name-input {
+      min-width: 65%;
+    }
+
+    .template-type-select {
+      width: 100%;
+    }
+  }
+
+  .tab-list {
+    margin-bottom: 2rem;
+  }
+
+  .tab-panel {
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    .subject-label,
+    .message-label {
+      display: block;
+      color: var(--p-text-color);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .subject-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+
+    .subject-prefix {
+      white-space: nowrap;
+    }
+
+    .subject-input {
+      width: 100%;
+    }
+  }
+
+  .actions {
+    padding: 0 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .saving-state {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+
+      &.saved {
+        color: var(--p-success-color);
+      }
+
+      &.saving {
+        color: var(--p-warn-color);
+      }
+
+      &.unsaved {
+        color: var(--p-danger-color);
+      }
+    }
+  }
+}
+
+/**
+  Quill Mention styling
+  TODO: Will be moved once adapted to <jhi-editor>
+  Copied and adapted from https://github.com/quill-mention/quill-mention/blob/master/src/quill.mention.css
+ */
+.ql-mention-list-container {
+  border: 0.06rem solid var(--p-border-default);
+  border-radius: 0.25rem;
+  background-color: var(--p-background-default);
+  box-shadow: 0 0.1rem 0.75rem 0 rgba(30, 30, 30, 0.08);
+  z-index: 9001;
+  overflow: auto;
+}
+
+.ql-mention-loading {
+  line-height: 2.75rem;
+  padding: 0 1.25rem;
+  vertical-align: middle;
+  font-size: 1rem;
+}
+
+.ql-mention-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ql-mention-list-item {
+  cursor: pointer;
+  line-height: 2.75rem;
+  font-size: 1rem;
+  padding: 0 1.25rem;
+  vertical-align: middle;
+}
+
+.ql-mention-list-item.disabled {
+  cursor: auto;
+}
+
+.ql-mention-list-item.selected {
+  background-color: var(--p-primary-color);
+  color: var(--p-text-on-primary);
+  text-decoration: none;
+}
+
+.mention {
+  height: 1.5rem;
+  width: 4.1rem;
+  border-radius: 0.25rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-400);
+  padding: 0.19rem 0.19rem;
+  margin-right: 0.12rem;
+  user-select: all;
+}
+
+.mention > span {
+  margin: 0 0.2rem;
+}
+
+/**
+  Styling for Quill editor
+ */
+.template-variable-select .custom-select {
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+/**
+  Quill editor custom styling
+  TODO: Will be removed as well
+ */
+.custom-quill-editor {
+  height: 24rem;
+  width: 100%;
+
+  .ql-toolbar {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .ql-container {
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+
+    .ql-editor {
+      font-size: 1rem;
+      line-height: 1.8rem;
+    }
+  }
+}
