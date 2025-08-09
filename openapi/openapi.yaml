@@ -568,10 +568,36 @@
         }
       }
     },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/auth/login": {
       "post": {
         "tags": [
-          "email-login-resource"
+          "authentication-resource"
         ],
         "operationId": "login",
         "requestBody": {
@@ -586,7 +612,18 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2960,9 +2997,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "paged": {
             "type": "boolean"
           },
@@ -2973,6 +3007,9 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },

@@ -10,6 +10,8 @@ import { SelectComponent, SelectOption } from '../../../shared/components/atoms/
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
+import { selectNationality } from './nationalities';
+
 export type ApplicationCreationPage1Data = {
   firstName: string;
   lastName: string;
@@ -36,59 +38,6 @@ export const selectGender: SelectOption[] = [
 export const selectLanguage: SelectOption[] = [
   { value: 'de', name: 'German' },
   { value: 'en', name: 'English' },
-];
-
-export const selectNationality: SelectOption[] = [
-  { value: 'al', name: 'Albanian' },
-  { value: 'ad', name: 'Andorran' },
-  { value: 'am', name: 'Armenian' },
-  { value: 'at', name: 'Austrian' },
-  { value: 'az', name: 'Azerbaijani' },
-  { value: 'by', name: 'Belarusian' },
-  { value: 'be', name: 'Belgian' },
-  { value: 'ba', name: 'Bosnian' },
-  { value: 'bg', name: 'Bulgarian' },
-  { value: 'hr', name: 'Croatian' },
-  { value: 'cy', name: 'Cypriot' },
-  { value: 'cz', name: 'Czech' },
-  { value: 'dk', name: 'Danish' },
-  { value: 'nl', name: 'Dutch' },
-  { value: 'ee', name: 'Estonian' },
-  { value: 'fi', name: 'Finnish' },
-  { value: 'fr', name: 'French' },
-  { value: 'ge', name: 'Georgian' },
-  { value: 'de', name: 'German' },
-  { value: 'gr', name: 'Greek' },
-  { value: 'hu', name: 'Hungarian' },
-  { value: 'is', name: 'Icelandic' },
-  { value: 'ie', name: 'Irish' },
-  { value: 'it', name: 'Italian' },
-  { value: 'kz', name: 'Kazakh' },
-  { value: 'xk', name: 'Kosovar' },
-  { value: 'lv', name: 'Latvian' },
-  { value: 'li', name: 'Liechtensteiner' },
-  { value: 'lt', name: 'Lithuanian' },
-  { value: 'lu', name: 'Luxembourgish' },
-  { value: 'mt', name: 'Maltese' },
-  { value: 'md', name: 'Moldovan' },
-  { value: 'mc', name: 'Monégasque' },
-  { value: 'me', name: 'Montenegrin' },
-  { value: 'mk', name: 'North Macedonian' },
-  { value: 'no', name: 'Norwegian' },
-  { value: 'pl', name: 'Polish' },
-  { value: 'pt', name: 'Portuguese' },
-  { value: 'ro', name: 'Romanian' },
-  { value: 'ru', name: 'Russian' },
-  { value: 'sm', name: 'San Marinese' },
-  { value: 'rs', name: 'Serbian' },
-  { value: 'sk', name: 'Slovak' },
-  { value: 'si', name: 'Slovenian' },
-  { value: 'es', name: 'Spanish' },
-  { value: 'se', name: 'Swedish' },
-  { value: 'ch', name: 'Swiss' },
-  { value: 'tr', name: 'Turkish' },
-  { value: 'ua', name: 'Ukrainian' },
-  { value: 'va', name: 'Vatican' },
 ];
 
 export const getPage1FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage1Data => {
