@@ -34,7 +34,8 @@
     flex-direction: column;
     gap: 3rem;
 
-    label {
+    .subject-label,
+    .message-label {
       display: block;
       color: var(--p-text-color);
       font-weight: 500;
@@ -92,10 +93,10 @@
   Copied and adapted from https://github.com/quill-mention/quill-mention/blob/master/src/quill.mention.css
  */
 .ql-mention-list-container {
-  border: 0.0625rem solid var(--p-border-default);
+  border: 0.06rem solid var(--p-border-default);
   border-radius: 0.25rem;
   background-color: var(--p-background-default);
-  box-shadow: 0 0.125rem 0.75rem 0 rgba(30, 30, 30, 0.08);
+  box-shadow: 0 0.1rem 0.75rem 0 rgba(30, 30, 30, 0.08);
   z-index: 9001;
   overflow: auto;
 }
@@ -134,17 +135,17 @@
 
 .mention {
   height: 1.5rem;
-  width: 4.0625rem;
+  width: 4.1rem;
   border-radius: 0.25rem;
   background-color: var(--p-primary-50);
   color: var(--p-primary-400);
-  padding: 0.1875rem 0.1875rem;
-  margin-right: 0.125rem;
+  padding: 0.19rem 0.19rem;
+  margin-right: 0.12rem;
   user-select: all;
 }
 
 .mention > span {
-  margin: 0 0.1875rem;
+  margin: 0 0.2rem;
 }
 
 /**

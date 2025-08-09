@@ -95,12 +95,10 @@ export class ResearchGroupTemplates {
     }
   }
 
-  // Navigate to create
   protected navigateToCreate(): void {
     void this.router.navigate(['/research-group/template/new']);
   }
 
-  // Navigate to edit
   protected navigateToEdit(templateId: string): void {
     void this.router.navigate(['/research-group/template', templateId, 'edit']);
   }

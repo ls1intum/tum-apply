@@ -31,7 +31,7 @@
 
     <p-tabpanel value="0" class="tab-panel">
       <div>
-        <label jhiTranslate="researchGroup.emailTemplates.subject"></label>
+        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
 
         <div class="subject-wrapper">
           <span class="subject-prefix">TUMApply -</span>
@@ -46,7 +46,7 @@
       </div>
 
       <div>
-        <label jhiTranslate="researchGroup.emailTemplates.message"></label>
+        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"
@@ -60,7 +60,7 @@
 
     <p-tabpanel value="1" class="tab-panel">
       <div>
-        <label jhiTranslate="researchGroup.emailTemplates.subject"></label>
+        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
         <div class="subject-wrapper">
           <span class="subject-prefix">TUMApply -</span>
           <jhi-string-input
@@ -74,7 +74,7 @@
       </div>
 
       <div>
-        <label jhiTranslate="researchGroup.emailTemplates.message"></label>
+        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"
@@ -88,7 +88,13 @@
   </p-tabs>
 
   <div class="actions">
-    <jhi-button [label]="'researchGroup.emailTemplates.back' | translate" icon="chevron-left" variant="outlined" (click)="navigateBack()" />
+    <jhi-button
+      label="researchGroup.emailTemplates.back"
+      [shouldTranslate]="true"
+      icon="chevron-left"
+      variant="outlined"
+      (click)="navigateBack()"
+    />
     <div class="saving-state" [ngClass]="savingState().toLowerCase()">
       <fa-icon icon="floppy-disk" />
       <span [jhiTranslate]="'researchGroup.emailTemplates.' + savingState().toLocaleLowerCase()"></span>
