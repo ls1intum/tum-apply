@@ -3,7 +3,7 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
-import { ButtonColor, ButtonComponent } from '../button/button.component';
+import { ButtonColor, ButtonComponent, ButtonVariant } from '../button/button.component';
 
 @Component({
   selector: 'jhi-confirm-dialog',
@@ -18,6 +18,7 @@ export class ConfirmDialog {
   header = input<string | undefined>(undefined);
   message = input<string | undefined>(undefined);
   severity = input<ButtonColor>('primary');
+  variant = input<ButtonVariant>();
 
   data = input<string | undefined>(undefined);
 
