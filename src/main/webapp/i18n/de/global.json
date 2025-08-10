@@ -83,7 +83,8 @@
         "required": "Dieses Feld ist ein Pflichtfeld.",
         "minLength": "Dieses Feld muss mindestens {{min}} Zeichen lang sein.",
         "maxLength": "Dieses Feld darf höchstens {{max}} Zeichen lang sein.",
-        "pattern": "Ungültiges Format."
+        "pattern": "Ungültiges Format.",
+        "email": "Ungültige Email-Adresse."
       }
     },
     "editor": {

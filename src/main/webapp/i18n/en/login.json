@@ -7,10 +7,8 @@
     },
     "emailLogin": {
       "email": "Email",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email",
+      "emailPlaceholder": "name@beispiel.de",
       "password": "Password",
-      "passwordRequired": "Password is required",
       "login": "Login",
       "register": "Register"
     },
