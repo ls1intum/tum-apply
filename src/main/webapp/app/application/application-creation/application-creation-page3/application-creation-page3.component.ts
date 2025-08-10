@@ -109,7 +109,7 @@ export default class ApplicationCreationPage3Component {
     const normalized = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v ?? ''])) as ApplicationCreationPage3Data;
 
     const newData = { ...this.data(), ...normalized };
-    if (deepEqual(newData, this.data())) {
+    if (!deepEqual(newData, this.data())) {
       this.data.set(newData);
       this.changed.emit(true);
     }
