@@ -318,6 +318,10 @@
         "researchGroup": "Forschungsgruppe",
         "status": "Status",
         "created": "Erstellt"
+      },
+      "dialogs": {
+        "withdrawHeader": "Zurückziehen bestätigen",
+        "withdrawMessage": "Sind Sie sicher, dass Sie diese Bewerbung zurückziehen möchten? Sobald sie zurückgezogen wurde, ist sie für den Professor nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!"
       }
     },
     "applicationDetail": {

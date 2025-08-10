@@ -12,6 +12,8 @@ import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
@@ -25,6 +27,8 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     TranslateModule,
     ToastComponent,
     ApplicationStateForApplicantsComponent,
+    ConfirmDialogModule,
+    ConfirmDialog,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
@@ -159,20 +163,16 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onWithdrawApplication(applicationId: string): void {
-    // TODO nicer looking confirm
-    const confirmWithdraw = confirm('Do you really want to withdraw this application?');
-    if (confirmWithdraw) {
-      this.applicationService.withdrawApplication(applicationId).subscribe({
-        next: () => {
-          this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
-          const event = this.lastLazyLoadEvent();
-          if (event) this.loadPage(event);
-        },
-        error: err => {
-          this.toastService.showError({ detail: 'Error withdrawing the application' });
-          console.error('Withdraw failed', err);
-        },
-      });
-    }
+    this.applicationService.withdrawApplication(applicationId).subscribe({
+      next: () => {
+        this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
+        const event = this.lastLazyLoadEvent();
+        if (event) this.loadPage(event);
+      },
+      error: err => {
+        this.toastService.showError({ detail: 'Error withdrawing the application' });
+        console.error('Withdraw failed', err);
+      },
+    });
   }
 }

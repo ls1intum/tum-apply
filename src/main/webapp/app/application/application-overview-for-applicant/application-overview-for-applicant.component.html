@@ -25,11 +25,14 @@
         (click)="onViewApplication(row.applicationId)"
       />
       @if (['SENT', 'IN_REVIEW'].includes(row.applicationState)) {
-        <jhi-button
+        <jhi-confirm-dialog
           [label]="'entity.applicationOverview.actions.withdraw' | translate"
+          [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
+          [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
+          [data]="row.applicationId"
+          (confirmed)="onWithdrawApplication(row.applicationId)"
           severity="danger"
           variant="outlined"
-          (click)="onWithdrawApplication(row.applicationId)"
         />
       }
 
