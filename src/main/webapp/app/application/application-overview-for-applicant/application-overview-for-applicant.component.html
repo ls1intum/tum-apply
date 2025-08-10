@@ -46,10 +46,13 @@
       }
 
       @if (['SAVED'].includes(row.applicationState)) {
-        <jhi-button
+        <jhi-confirm-dialog
           [label]="'entity.applicationOverview.actions.delete' | translate"
+          [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
+          [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
+          [data]="row.applicationId"
+          (confirmed)="onDeleteApplication(row.applicationId)"
           severity="danger"
-          (click)="onDeleteApplication(row.applicationId)"
         />
       }
     </div>

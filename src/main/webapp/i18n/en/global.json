@@ -321,7 +321,9 @@
       },
       "dialogs": {
         "withdrawHeader": "Confirm Withdrawal",
-        "withdrawMessage": "Are you sure you want to withdraw this application? Once withdrawn, it will no longer be visible to the professor. This action can NOT be undone!"
+        "withdrawMessage": "Are you sure you want to withdraw this application? Once withdrawn, it will no longer be visible to the professor. This action can NOT be undone!",
+        "deleteHeader": "Confirm Delete Operation",
+        "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!"
       }
     },
     "applicationDetail": {
