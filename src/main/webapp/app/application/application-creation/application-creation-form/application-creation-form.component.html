@@ -1,7 +1,14 @@
 <jhi-toast />
 <ng-template #panel1>
   <div class="panel">
-    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
+    @if (page1()) {
+      <jhi-application-creation-page1
+        class="w-full"
+        [(data)]="page1"
+        (valid)="onPage1ValidityChanged($event)"
+        (changed)="onValueChanged()"
+      />
+    }
   </div>
 </ng-template>
 <ng-template #panel2>
@@ -19,17 +26,15 @@
 </ng-template>
 <ng-template #panel3>
   <div class="panel">
-    @if (page3()) {
-      <jhi-application-creation-page3
-        class="w-full"
-        [(data)]="page3"
-        (changed)="onValueChanged()"
-        (valid)="onPage3ValidityChanged($event)"
-        [applicationIdForDocuments]="applicationId()"
-        [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
-        [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
-      />
-    }
+    <jhi-application-creation-page3
+      class="w-full"
+      [(data)]="page3"
+      (changed)="onValueChanged()"
+      (valid)="onPage3ValidityChanged($event)"
+      [applicationIdForDocuments]="applicationId()"
+      [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
+      [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
+    />
   </div>
 </ng-template>
 

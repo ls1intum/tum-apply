@@ -88,6 +88,7 @@
     "dayjs": "1.11.13",
     "keycloak-js": "26.2.0",
     "ngx-quill": "28.0.1",
+    "postal-codes-js": "^2.5.2",
     "primeicons": "7.0.0",
     "primeng": "20.0.1",
     "quill": "^2.0.2",
