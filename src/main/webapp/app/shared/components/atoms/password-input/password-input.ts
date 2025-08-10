@@ -1,7 +1,7 @@
 import { Component, forwardRef, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { Password } from 'primeng/password';
@@ -22,40 +22,14 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   styleUrl: './password-input.scss',
   standalone: true,
 })
-export class PasswordInputComponent extends BaseInputDirective<string> implements ControlValueAccessor {
+export class PasswordInputComponent extends BaseInputDirective<string> {
   tooltipText = input<string | undefined>(undefined);
 
   onInputChange(value: string): void {
     this.modelChange.emit(value);
-    this.onChange(value);
     const ctrl = this.formControl();
     ctrl.setValue(value);
     ctrl.markAsDirty();
     ctrl.updateValueAndValidity();
   }
-
-  writeValue(value: string): void {
-    this.modelChange.emit(value);
-  }
-
-  registerOnChange(fn: () => void): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
-
-  setDisabledState?(isDisabled: boolean): void {
-    const ctrl = this.formControl();
-    if (isDisabled) {
-      ctrl.disable({ emitEvent: false });
-    } else {
-      ctrl.enable({ emitEvent: false });
-    }
-  }
-
-  private onChange: (value: string) => void = () => {};
-
-  private onTouched: () => void = () => {};
 }
