@@ -155,7 +155,7 @@ export default class ApplicationOverviewForApplicantComponent {
         if (event) this.loadPage(event);
       },
       error: err => {
-        this.toastService.showError({ detail: 'Error withdrawing the application' });
+        this.toastService.showError({ detail: 'Error deleting the application' });
         console.error('Delete failed', err);
       },
     });
