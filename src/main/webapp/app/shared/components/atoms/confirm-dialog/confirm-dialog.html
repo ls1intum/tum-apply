@@ -11,10 +11,10 @@
 
       <div class="confirm-buttons">
         <jhi-button class="cancel" label="Cancel" (click)="onReject()" variant="outlined" />
-        <jhi-button class="confirm" [label]="label()" (click)="onAccept()" />
+        <jhi-button class="confirm" [label]="label()" (click)="onAccept()" [severity]="severity()" />
       </div>
     </div>
   </ng-template>
 </p-confirmdialog>
 
-<jhi-button [label]="label()" (click)="confirm()" severity="danger" />
+<jhi-button [label]="label()" (click)="confirm()" [severity]="severity()" />
