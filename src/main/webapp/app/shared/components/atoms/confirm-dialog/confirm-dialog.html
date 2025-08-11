@@ -17,4 +17,6 @@
   </ng-template>
 </p-confirmdialog>
 
-<jhi-button [label]="label()" (click)="confirm()" [severity]="severity()" [variant]="variant()" />
+@if (showOpenButton()) {
+  <jhi-button [label]="label()" (click)="confirm()" [severity]="severity()" [variant]="variant()" />
+}
