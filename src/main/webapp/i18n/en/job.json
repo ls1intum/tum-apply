@@ -81,6 +81,10 @@
         "description": "Add custom questions that applicants will see in the application form."
       },
       "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>."
+    },
+    "confirmDialog": {
+      "header": "Publish Doctorate Position",
+      "message": "Are you sure you want to publish your doctorate position? Once published, further edits will NOT be possible."
     }
   },
   "jobOverviewPage": {

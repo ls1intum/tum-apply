@@ -9,6 +9,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import SharedModule from '../../shared/shared.module';
 import { JobDTO, JobFormDTO } from '../../generated';
@@ -39,12 +41,15 @@ type SavingState = 'SAVED' | 'SAVING';
     TranslateModule,
     SelectComponent,
     NumberInputComponent,
+    ConfirmDialog,
   ],
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
 
+  readonly publishButtonLabel = 'jobActionButton.publish';
+  readonly publishButtonSeverity = 'primary' as ButtonColor;
   // Services
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceService);
@@ -76,6 +81,7 @@ export class JobCreationFormComponent {
   panel2 = viewChild<TemplateRef<HTMLDivElement>>('panel2');
   panel3 = viewChild<TemplateRef<HTMLDivElement>>('panel3');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
+  sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
 
   // Tracks form validity
   basicInfoValid = signal(false);
@@ -225,11 +231,13 @@ export class JobCreationFormComponent {
         ],
         buttonGroupNext: [
           {
-            severity: 'primary',
+            severity: this.publishButtonSeverity,
             icon: 'paper-plane',
-            onClick: () => void this.publishJob(),
+            onClick: () => {
+              this.sendPublishDialog()?.confirm();
+            },
             disabled: !this.allFormsValid(),
-            label: 'jobActionButton.publish',
+            label: this.publishButtonLabel,
             shouldTranslate: true,
             changePanel: false,
           },
