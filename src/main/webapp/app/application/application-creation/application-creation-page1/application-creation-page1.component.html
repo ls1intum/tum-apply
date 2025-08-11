@@ -2,18 +2,20 @@
   @if (data(); as data) {
     <div class="form-row">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.firstName' | translate }}"
+        label="entity.applicationPage1.label.firstName"
         id="firstName"
         [required]="true"
         [(model)]="data.firstName"
         [control]="page1Form.controls.firstName"
+        [shouldTranslate]="true"
       />
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.lastName' | translate }}"
+        label="entity.applicationPage1.label.lastName"
         id="lastName"
         [required]="true"
         [(model)]="data.lastName"
         [control]="page1Form.controls.lastName"
+        [shouldTranslate]="true"
       />
     </div>
 
@@ -21,20 +23,22 @@
 
     <div class="form-row">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.email' | translate }}"
+        label="entity.applicationPage1.label.email"
         icon="envelope"
         [disabled]="true"
         id="email"
         [required]="true"
         [(model)]="data.email"
         [control]="page1Form.controls.email"
+        [shouldTranslate]="true"
       />
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.phoneNumber' | translate }}"
+        label="entity.applicationPage1.label.phoneNumber"
         id="phoneNumber"
         [required]="true"
         [(model)]="data.phoneNumber"
         [control]="page1Form.controls.phoneNumber"
+        [shouldTranslate]="true"
       />
     </div>
 
@@ -82,18 +86,20 @@
     <div class="form-row">
       <div class="w-1/2 pr-4">
         <jhi-string-input
-          label="{{ 'entity.applicationPage1.label.website' | translate }}"
+          label="entity.applicationPage1.label.website"
           id="website"
           [(model)]="data.website"
           [control]="page1Form.controls.website"
+          [shouldTranslate]="true"
         />
       </div>
       <div class="w-1/2 pr-4">
         <jhi-string-input
-          label="{{ 'entity.applicationPage1.label.linkedIn' | translate }}"
+          label="entity.applicationPage1.label.linkedIn"
           id="linkedIn"
           [(model)]="data.linkedIn"
           [control]="page1Form.controls.linkedIn"
+          [shouldTranslate]="true"
         />
       </div>
     </div>
@@ -103,11 +109,12 @@
     <div class="form-row">
       <div class="w-full pr-4">
         <jhi-string-input
-          label="{{ 'entity.applicationPage1.label.street' | translate }}"
+          label="entity.applicationPage1.label.street"
           id="street"
           [required]="true"
           [(model)]="data.street"
           [control]="page1Form.controls.street"
+          [shouldTranslate]="true"
         />
       </div>
     </div>
@@ -137,11 +144,12 @@
       </div>
       <div class="w-1/2 pr-4">
         <jhi-string-input
-          label="{{ 'entity.applicationPage1.label.postcode' | translate }}"
+          label="entity.applicationPage1.label.postcode"
           id="postcode"
           [required]="true"
           [(model)]="data.postcode"
           [control]="page1Form.controls.postcode"
+          [shouldTranslate]="true"
         />
       </div>
     </div>

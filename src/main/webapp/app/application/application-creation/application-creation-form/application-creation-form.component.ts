@@ -21,9 +21,7 @@ import ApplicationCreationPage3Component, {
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
-  bachelorGradingScale,
   getPage2FromApplication,
-  masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
 const ApplicationFormModes = {
@@ -66,16 +64,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
 })
 export default class ApplicationCreationFormComponent {
   page1 = signal<ApplicationCreationPage1Data | undefined>(undefined);
-  page2 = signal<ApplicationCreationPage2Data>({
-    bachelorDegreeName: '',
-    bachelorDegreeUniversity: '',
-    bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: '',
-    masterDegreeName: '',
-    masterDegreeUniversity: '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: '',
-  });
+  page2 = signal<ApplicationCreationPage2Data | undefined>(undefined);
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
@@ -311,18 +300,18 @@ export default class ApplicationCreationFormComponent {
           selectedLanguage: this.page1()?.language?.value as string,
           userId: this.applicantId(),
         },
-        bachelorDegreeName: this.page2().bachelorDegreeName,
-        masterDegreeName: this.page2().masterDegreeName,
-        bachelorGrade: this.page2().bachelorGrade,
-        masterGrade: this.page2().masterGrade,
+        bachelorDegreeName: this.page2()?.bachelorDegreeName,
+        masterDegreeName: this.page2()?.masterDegreeName,
+        bachelorGrade: this.page2()?.bachelorGrade,
+        masterGrade: this.page2()?.masterGrade,
         bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
         masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
         city: this.page1()?.city,
         country: this.page1()?.country?.value as string,
         postalCode: this.page1()?.postcode,
         street: this.page1()?.street,
-        bachelorUniversity: this.page2().bachelorDegreeUniversity,
-        masterUniversity: this.page2().masterDegreeUniversity,
+        bachelorUniversity: this.page2()?.bachelorDegreeUniversity,
+        masterUniversity: this.page2()?.masterDegreeUniversity,
       },
       applicationState: state,
       desiredDate: this.page3()?.desiredStartDate ?? '',

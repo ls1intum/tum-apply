@@ -13,15 +13,17 @@
 </ng-template>
 <ng-template #panel2>
   <div class="panel">
-    <jhi-application-creation-page2
-      class="w-full"
-      [(data)]="page2"
-      (valid)="onPage2ValidityChanged($event)"
-      (changed)="onValueChanged()"
-      [applicationIdForDocuments]="applicationId()"
-      [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
-      [documentIdsMasterTranscript]="documentIds()?.masterDocumentDictionaryIds"
-    />
+    @if (page2()) {
+      <jhi-application-creation-page2
+        class="w-full"
+        [(data)]="page2"
+        (valid)="onPage2ValidityChanged($event)"
+        (changed)="onValueChanged()"
+        [applicationIdForDocuments]="applicationId()"
+        [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
+        [documentIdsMasterTranscript]="documentIds()?.masterDocumentDictionaryIds"
+      />
+    }
   </div>
 </ng-template>
 <ng-template #panel3>

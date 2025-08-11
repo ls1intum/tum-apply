@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, model, output, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, Signal, effect } from '@angular/core';
+import { AbstractControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 import * as postalCodes from 'postal-codes-js';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ApplicationForApplicantDTO } from 'app/generated';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
+import { ApplicationCreationPageBaseComponent } from '../application-creation-page.component';
 
 import { selectCountries, selectNationality } from './nationalities';
 
@@ -72,18 +72,6 @@ function postalCodeValidator(getCountryFn: () => string): ValidatorFn {
   };
 }
 
-function deepEqual(obj1: any, obj2: any): boolean {
-  if (obj1 === obj2) return true;
-  if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 == null || obj2 == null) return false;
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
-  if (keys1.length !== keys2.length) return false;
-  for (const key of keys1) {
-    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) return false;
-  }
-  return true;
-}
-
 @Component({
   selector: 'jhi-application-creation-page1',
   imports: [
@@ -100,15 +88,7 @@ function deepEqual(obj1: any, obj2: any): boolean {
   styleUrl: './application-creation-page1.component.scss',
   standalone: true,
 })
-export default class ApplicationCreationPage1Component {
-  data = model<ApplicationCreationPage1Data>();
-
-  valid = output<boolean>();
-  changed = output<boolean>();
-
-  fb = inject(FormBuilder);
-  hasInitialized = signal(false);
-
+export default class ApplicationCreationPage1Component extends ApplicationCreationPageBaseComponent<ApplicationCreationPage1Data> {
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
@@ -117,7 +97,7 @@ export default class ApplicationCreationPage1Component {
   page1Form: FormGroup = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    email: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', Validators.required],
     street: ['', Validators.required],
     city: ['', Validators.required],
@@ -127,43 +107,14 @@ export default class ApplicationCreationPage1Component {
     linkedIn: [''],
   });
 
-  formValue = toSignal(this.page1Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
-    initialValue: this.page1Form.value,
-  });
+  get pageForm(): FormGroup {
+    return this.page1Form;
+  }
 
-  formStatus = toSignal(this.page1Form.statusChanges, {
-    initialValue: this.page1Form.status,
-  });
+  formValue: Signal<ApplicationCreationPage1Data> = toSignal(this.formValue$(), { initialValue: this.pageForm.value });
 
-  private updateEffect = effect(() => {
-    if (!this.hasInitialized()) return;
-
-    const data = this.data();
-    if (!data) return;
-
-    const raw = this.formValue();
-    const normalized = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v ?? ''])) as Partial<ApplicationCreationPage1Data>;
-
-    const selectFields = {
-      gender: data.gender,
-      nationality: data.nationality,
-      language: data.language,
-      country: data.country,
-      dateOfBirth: data.dateOfBirth,
-    };
-
-    const newData = { ...data, ...selectFields, ...normalized };
-    if (!deepEqual(newData, this.data())) {
-      this.data.set(newData);
-      this.changed.emit(true);
-    }
-
-    this.valid.emit(this.page1Form.valid);
-  });
-
-  private initializeFormEffect = effect(() => {
+  initializeFormEffect = effect(() => {
     if (this.hasInitialized()) return;
-
     const data = this.data();
     if (!data) return;
 
@@ -179,18 +130,13 @@ export default class ApplicationCreationPage1Component {
       website: data.website,
       linkedIn: data.linkedIn,
     });
-
     const postcodeControl = this.page1Form.get('postcode');
-
-    postcodeControl?.addValidators(postalCodeValidator(() => this.data()?.country?.value as string));
+    if (postcodeControl) {
+      postcodeControl.addValidators([Validators.required, postalCodeValidator(() => this.data()?.country?.value as string)]);
+    }
 
     this.hasInitialized.set(true);
   });
-
-  emitChanged(): void {
-    this.changed.emit(true);
-    this.page1Form.updateValueAndValidity();
-  }
 
   setDateOfBirth($event: string | undefined): void {
     const currentData = this.data();
@@ -200,6 +146,17 @@ export default class ApplicationCreationPage1Component {
         dateOfBirth: $event ?? '',
       });
     }
-    this.emitChanged();
+    this.changed.emit(true);
+  }
+
+  updateSelectField(field: keyof ApplicationCreationPage1Data, value: any): void {
+    const currentData = this.data();
+    if (currentData !== undefined) {
+      this.data.set({
+        ...currentData,
+        [field]: value,
+      });
+    }
+    this.changed.emit(true);
   }
 }
