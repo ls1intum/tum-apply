@@ -216,7 +216,7 @@
       },
       "confirmDialog": {
         "header": "Submit Application",
-        "message": "Are you sure you want to submit your application? You will NOT be able to make any changes afterwards."
+        "message": "Are you sure you want to submit your application? Once published, further edits will NOT be possible."
       },
       "status": {
         "SAVING": "Saving changes...",
