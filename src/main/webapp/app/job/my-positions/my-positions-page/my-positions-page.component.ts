@@ -145,8 +145,6 @@ export class MyPositionsPageComponent {
   }
 
   async onCloseJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation, add dialog
-    // if (confirmClose) {
     try {
       await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
@@ -155,7 +153,6 @@ export class MyPositionsPageComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error closing job: ${error.message}` });
       }
-      // }
     }
   }
 
