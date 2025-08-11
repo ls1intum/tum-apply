@@ -8,6 +8,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -27,6 +28,7 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
     TranslateModule,
     SortBarComponent,
     ToastComponent,
+    ConfirmDialog,
   ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',

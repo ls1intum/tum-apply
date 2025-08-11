@@ -214,6 +214,10 @@
         "prev": "Zurück",
         "send": "Senden"
       },
+      "confirmDialog": {
+        "header": "Bewerbung abschicken",
+        "message": "Sind Sie sicher, dass Sie Ihre Bewerbung absenden möchten? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+      },
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
         "SAVED": "Änderungen gespeichert"

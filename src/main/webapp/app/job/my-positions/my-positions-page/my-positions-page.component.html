@@ -55,13 +55,14 @@
           />
         }
         @if (job.state === 'PUBLISHED') {
-          <jhi-button
-            label="jobActionButton.close"
+          <jhi-confirm-dialog
+            [label]="'jobActionButton.close' | translate"
             severity="danger"
             variant="outlined"
-            (click)="onCloseJob(job.jobId)"
+            [header]="'myPositionsPage.confirmDialog.header' | translate"
+            [message]="'myPositionsPage.confirmDialog.message' | translate"
+            (confirmed)="onCloseJob(job.jobId)"
             data-testid="delete"
-            [shouldTranslate]="true"
           />
         }
       </div>

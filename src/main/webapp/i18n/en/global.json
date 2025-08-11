@@ -214,6 +214,10 @@
         "prev": "Previous",
         "send": "Send"
       },
+      "confirmDialog": {
+        "header": "Submit Application",
+        "message": "Are you sure you want to submit your application? You will NOT be able to make any changes afterwards."
+      },
       "status": {
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved"

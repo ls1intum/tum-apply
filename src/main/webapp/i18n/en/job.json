@@ -122,6 +122,10 @@
       "status": "Status",
       "startDate": "Start Date",
       "created": "Created"
+    },
+    "confirmDialog": {
+      "header": "Confirm Position Closure",
+      "message": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone."
     }
   },
   "jobDetailPage": {
