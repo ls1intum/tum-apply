@@ -125,7 +125,9 @@
     },
     "confirmDialog": {
       "closeHeader": "Schließung der Position bestätigen",
-      "closeMessage": "Sind Sie sicher, dass Sie diese Position schließen möchten? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden."
+      "closeMessage": "Sind Sie sicher, dass Sie diese Position schließen möchten? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
+      "deleteHeader": "Löschvorgang bestätigen",
+      "deleteMessage": "Sind Sie sicher, dass Sie diesen Entwurf dauerhaft löschen möchten? Diese Aktion kann NICHT rückgängig gemacht werden!"
     }
   },
   "jobDetailPage": {

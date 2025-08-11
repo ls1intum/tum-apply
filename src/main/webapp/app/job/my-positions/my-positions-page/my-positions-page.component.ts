@@ -130,8 +130,6 @@ export class MyPositionsPageComponent {
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation, add dialog
-    // if (confirmDelete) {
     try {
       await firstValueFrom(this.jobService.deleteJob(jobId));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });
@@ -140,7 +138,6 @@ export class MyPositionsPageComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
-      // }
     }
   }
 

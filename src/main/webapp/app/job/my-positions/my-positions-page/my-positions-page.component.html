@@ -46,12 +46,13 @@
           [shouldTranslate]="true"
         />
         @if (job.state === 'DRAFT') {
-          <jhi-button
-            label="jobActionButton.delete"
+          <jhi-confirm-dialog
+            [label]="'jobActionButton.delete' | translate"
             severity="danger"
-            (click)="onDeleteJob(job.jobId)"
+            [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
+            [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+            (confirmed)="onDeleteJob(job.jobId)"
             data-testid="delete"
-            [shouldTranslate]="true"
           />
         }
         @if (job.state === 'PUBLISHED') {
