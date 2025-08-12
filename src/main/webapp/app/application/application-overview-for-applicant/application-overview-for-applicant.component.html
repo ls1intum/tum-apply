@@ -52,6 +52,7 @@
           [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
           [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
           [data]="row.applicationId"
+          confirmIcon="trash"
           (confirmed)="onDeleteApplication(row.applicationId)"
           severity="danger"
         />
