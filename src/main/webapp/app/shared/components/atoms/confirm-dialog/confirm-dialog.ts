@@ -17,6 +17,7 @@ export class ConfirmDialog {
   label = input<string | undefined>(undefined);
   header = input<string | undefined>(undefined);
   message = input<string | undefined>(undefined);
+  confirmIcon = input<string | undefined>(undefined);
   severity = input<ButtonColor>('primary');
   variant = input<ButtonVariant>();
   showOpenButton = input<boolean>(true);
