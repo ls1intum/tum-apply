@@ -347,3 +347,18 @@
 .p-fileupload-header {
   background: var(--p-background-default);
 }
+
+/* ---------------------------
+ Style primeNg tab component. Must have class="basic-tabs"
+------------------------------- */
+.basic-tabs {
+  background: var(--p-background-default);
+
+  .p-tab-active {
+    border-top: transparent;
+    border-bottom: 0.17rem solid var(--p-primary-color);
+  }
+}
+.basic-tab {
+  background: var(--p-background-default);
+}
