@@ -36,27 +36,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 class JobResourceTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private JobRepository jobRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ResearchGroupRepository researchGroupRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Autowired MockMvc mockMvc;
+    @Autowired JobRepository jobRepository;
+    @Autowired UserRepository userRepository;
+    @Autowired ResearchGroupRepository researchGroupRepository;
+    @Autowired ObjectMapper objectMapper;
 
     private UUID professorId;
+    private ResearchGroup rg;
 
     @BeforeEach
-    void cleanDatabaseAndSeedUser() {
-        // 1) create & save the research group (ID generated, entity stays managed)
-        ResearchGroup rg = new ResearchGroup();
+    void setup() {
+        // keep FK order to avoid constraint issues
+        jobRepository.deleteAll();
+        userRepository.deleteAll();
+        researchGroupRepository.deleteAll();
+
+        // research group
+        rg = new ResearchGroup();
         rg.setHead("Alice");
         rg.setName("Test Group");
         rg.setAbbreviation("TG");
@@ -70,58 +67,43 @@ class JobResourceTest {
         rg.setWebsite("http://example.com");
         rg = researchGroupRepository.save(rg);
 
-        // 2) create & save the professor (pointing at the *same* managed RG)
-        UUID id = UUID.randomUUID();
+        // professor
         User prof = new User();
-        prof.setUserId(id);
+        prof.setUserId(UUID.randomUUID());
         prof.setFirstName("Alice");
         prof.setLastName("Smith");
         prof.setEmail("alice.smith@example.com");
         prof.setSelectedLanguage("en");
         prof.setResearchGroup(rg);
         userRepository.save(prof);
-
         professorId = prof.getUserId();
+
+        // seed jobs used by the GET test
+        jobRepository.save(buildJob("Published Role", JobState.PUBLISHED, prof, rg, LocalDate.of(2025, 9, 1)));
+        jobRepository.save(buildJob("Draft Role", JobState.DRAFT, prof, rg, LocalDate.of(2025,10, 1)));
+    }
+
+    private Job buildJob(String title, JobState state, User prof, ResearchGroup rg, LocalDate start) {
+        Job j = new Job();
+        j.setTitle(title);
+        j.setResearchArea("ML");
+        j.setFieldOfStudies("CS");
+        j.setLocation(Campus.GARCHING);
+        j.setWorkload(20);
+        j.setStartDate(start);
+        j.setState(state);
+        j.setSupervisingProfessor(prof);
+        j.setResearchGroup(rg); // important for the NOT NULL FK
+        return j;
     }
 
     @Test
     @DisplayName("GET /api/jobs/available → only PUBLISHED jobs are returned")
-    @WithMockUser(roles = "USER")
     void getAvailableJobs_onlyPublished() throws Exception {
-        var prof = userRepository.findById(professorId).get();
-        var rg   = prof.getResearchGroup();
-        // given: one published job
-        Job published = new Job();
-        published.setSupervisingProfessor(userRepository.findById(professorId).get());
-        published.setTitle("Published Role");
-        published.setFieldOfStudies("CS");
-        published.setResearchArea("ML");
-        published.setLocation(Campus.GARCHING);
-        published.setWorkload(20);
-        published.setStartDate(LocalDate.of(2025,  9, 1));
-        published.setState(JobState.PUBLISHED);
-        published.setResearchGroup(rg);
-        jobRepository.save(published);
-
-        // ...and one draft job
-        Job draft = new Job();
-        draft.setSupervisingProfessor(userRepository.findById(professorId).get());
-        draft.setTitle("Draft Role");
-        draft.setFieldOfStudies("CS");
-        draft.setResearchArea("ML");
-        draft.setLocation(Campus.GARCHING);
-        draft.setWorkload(20);
-        draft.setStartDate(LocalDate.of(2025, 10, 1));
-        draft.setState(JobState.DRAFT);
-        draft.setResearchGroup(rg);
-        jobRepository.save(draft);
-
-        // when / then: only the published one comes back
         mockMvc.perform(get("/api/jobs/available")
                 .param("pageNumber", "0")
                 .param("pageSize", "10")
-                .accept(MediaType.APPLICATION_JSON)
-            )
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].title").value("Published Role"));
@@ -129,18 +111,17 @@ class JobResourceTest {
 
     @Test
     @DisplayName("POST /api/jobs/create → persists and returns a JobFormDTO")
-    @WithMockUser(roles = "INSTRUCTOR")
+    @WithMockUser()
     void createJob_persistsAndReturnsIt() throws Exception {
-        // prepare payload
         JobFormDTO payload = new JobFormDTO(
-            null,                      // no ID yet
-            String.valueOf(professorId),
+            null,
             "ML Engineer",
             "Machine Learning",
+            "CS",
             professorId,
             Campus.GARCHING,
             LocalDate.of(2025, 11, 1),
-            LocalDate.of(2026,  5, 31),
+            LocalDate.of(2026, 5, 31),
             40,
             12,
             FundingType.FULLY_FUNDED,
@@ -150,19 +131,15 @@ class JobResourceTest {
             JobState.PUBLISHED
         );
 
-        // when: call the POST endpoint
         var mvcResult = mockMvc.perform(post("/api/jobs/create")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(payload))
-            )
+                .content(objectMapper.writeValueAsString(payload)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.jobId").exists())
             .andExpect(jsonPath("$.title").value("ML Engineer"))
             .andReturn();
 
-        // then: the returned ID really exists in the DB
-        String responseJson = mvcResult.getResponse().getContentAsString();
-        JobFormDTO returned = objectMapper.readValue(responseJson, JobFormDTO.class);
+        var returned = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), JobFormDTO.class);
 
         assertThat(jobRepository.findById(returned.jobId()))
             .isPresent()
