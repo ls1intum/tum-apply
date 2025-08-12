@@ -52,6 +52,7 @@
             [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
             [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
             (confirmed)="onDeleteJob(job.jobId)"
+            confirmIcon="trash"
             data-testid="delete"
           />
         }
@@ -63,6 +64,7 @@
             [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
             [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
             (confirmed)="onCloseJob(job.jobId)"
+            confirmIcon="xmark"
             data-testid="delete"
           />
         }

@@ -70,6 +70,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
 export default class ApplicationCreationFormComponent {
   readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
   readonly sendButtonSeverity = 'primary' as ButtonColor;
+  readonly sendButtonIcon = 'paper-plane';
   page1 = signal<ApplicationCreationPage1Data>({
     firstName: '',
     lastName: '',
@@ -232,7 +233,7 @@ export default class ApplicationCreationFormComponent {
         buttonGroupNext: [
           {
             severity: this.sendButtonSeverity,
-            icon: 'paper-plane',
+            icon: this.sendButtonIcon,
             onClick: () => {
               this.sendConfirmDialog()?.confirm();
             },

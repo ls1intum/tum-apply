@@ -50,6 +50,7 @@ export class JobCreationFormComponent {
 
   readonly publishButtonLabel = 'jobActionButton.publish';
   readonly publishButtonSeverity = 'primary' as ButtonColor;
+  readonly publishButtonIcon = 'paper-plane';
   // Services
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceService);
@@ -232,7 +233,7 @@ export class JobCreationFormComponent {
         buttonGroupNext: [
           {
             severity: this.publishButtonSeverity,
-            icon: 'paper-plane',
+            icon: this.publishButtonIcon,
             onClick: () => {
               this.sendPublishDialog()?.confirm();
             },
