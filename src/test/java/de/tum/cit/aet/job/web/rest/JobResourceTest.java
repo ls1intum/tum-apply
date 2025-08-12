@@ -18,6 +18,10 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.UUID;
+
+import de.tum.cit.aet.utility.JobTestData;
+import de.tum.cit.aet.utility.ResearchGroupTestData;
+import de.tum.cit.aet.utility.UserTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,64 +41,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 class JobResourceTest {
 
     @Autowired MockMvc mockMvc;
+    @Autowired ObjectMapper objectMapper;
     @Autowired JobRepository jobRepository;
     @Autowired UserRepository userRepository;
     @Autowired ResearchGroupRepository researchGroupRepository;
-    @Autowired ObjectMapper objectMapper;
 
-    private UUID professorId;
     private ResearchGroup rg;
+    private User prof;
 
     @BeforeEach
     void setup() {
-        // keep FK order to avoid constraint issues
+        // clean in FK order
         jobRepository.deleteAll();
         userRepository.deleteAll();
         researchGroupRepository.deleteAll();
 
-        // research group
-        rg = new ResearchGroup();
-        rg.setHead("Alice");
-        rg.setName("Test Group");
-        rg.setAbbreviation("TG");
-        rg.setCity("Testville");
-        rg.setDefaultFieldOfStudies("CS");
-        rg.setDescription("A test research group");
-        rg.setEmail("tg@example.com");
-        rg.setPostalCode("12345");
-        rg.setSchool("Test University");
-        rg.setStreet("123 Main St");
-        rg.setWebsite("http://example.com");
-        rg = researchGroupRepository.save(rg);
+        rg = ResearchGroupTestData.saved(researchGroupRepository);
+        prof = UserTestData.savedProfessor(userRepository, rg);
 
-        // professor
-        User prof = new User();
-        prof.setUserId(UUID.randomUUID());
-        prof.setFirstName("Alice");
-        prof.setLastName("Smith");
-        prof.setEmail("alice.smith@example.com");
-        prof.setSelectedLanguage("en");
-        prof.setResearchGroup(rg);
-        userRepository.save(prof);
-        professorId = prof.getUserId();
-
-        // seed jobs used by the GET test
-        jobRepository.save(buildJob("Published Role", JobState.PUBLISHED, prof, rg, LocalDate.of(2025, 9, 1)));
-        jobRepository.save(buildJob("Draft Role", JobState.DRAFT, prof, rg, LocalDate.of(2025,10, 1)));
-    }
-
-    private Job buildJob(String title, JobState state, User prof, ResearchGroup rg, LocalDate start) {
-        Job j = new Job();
-        j.setTitle(title);
-        j.setResearchArea("ML");
-        j.setFieldOfStudies("CS");
-        j.setLocation(Campus.GARCHING);
-        j.setWorkload(20);
-        j.setStartDate(start);
-        j.setState(state);
-        j.setSupervisingProfessor(prof);
-        j.setResearchGroup(rg); // important for the NOT NULL FK
-        return j;
+        JobTestData.saved(jobRepository, prof, rg, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
+        JobTestData.saved(jobRepository, prof, rg, "Draft Role",     JobState.DRAFT,     LocalDate.of(2025,10, 1));
     }
 
     @Test
@@ -111,14 +77,14 @@ class JobResourceTest {
 
     @Test
     @DisplayName("POST /api/jobs/create → persists and returns a JobFormDTO")
-    @WithMockUser()
+    @WithMockUser // no role needed for your setup
     void createJob_persistsAndReturnsIt() throws Exception {
         JobFormDTO payload = new JobFormDTO(
             null,
             "ML Engineer",
             "Machine Learning",
             "CS",
-            professorId,
+            prof.getUserId(),
             Campus.GARCHING,
             LocalDate.of(2025, 11, 1),
             LocalDate.of(2026, 5, 31),
