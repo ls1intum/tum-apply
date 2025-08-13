@@ -13,16 +13,28 @@ scalable, secure, and transparent recruitment processes.
 
 ### For Applicants
 
-- Browse doctoral openings across TUM
-- Apply with your documents (CV, transcripts, motivation letter, etc.)
-- Track your application status for multiple positions
+- Browse doctoral openings across TUM ([Video](https://live.rbg.tum.de/w/artemisintro/61799))
+- View job details and requirements ([Video](https://live.rbg.tum.de/w/artemisintro/61798))
+- Apply with your documents (CV, transcripts, motivation letter,
+  etc.) ([Video](https://live.rbg.tum.de/w/artemisintro/61803))
+- Save, submit and delete application drafts ([Save](https://live.rbg.tum.de/w/artemisintro/61806)) ([
+  Submit](https://live.rbg.tum.de/w/artemisintro/61805)) ([
+  Delete](https://live.rbg.tum.de/w/artemisintro/61804))
+- Track your application status for multiple positions ([Video](https://live.rbg.tum.de/w/artemisintro/61807))
+- Withdraw applications ([Video](https://live.rbg.tum.de/w/artemisintro/61808))
 - Get notified when a decision is made
 
 ### For Professors & Research Groups
 
-- Create and publish doctoral positions
-- Manage incoming applications
-- Evaluate candidates and assign status
+- Create and publish doctoral positions ([Video](https://live.rbg.tum.de/w/artemisintro/61801))
+- View published positions ([Video](https://live.rbg.tum.de/w/artemisintro/61796))
+- View position details ([Video](https://live.rbg.tum.de/w/artemisintro/61797))
+- Edit jobs ([Video](https://live.rbg.tum.de/w/artemisintro/61800))
+- Close and delete job positions ([Video](https://live.rbg.tum.de/w/artemisintro/61802))
+- Manage incoming applications ([Video](https://live.rbg.tum.de/w/artemisintro/61812))
+- Evaluate candidates and assign
+  status ([Review](https://live.rbg.tum.de/w/artemisintro/61811)) ([Accept](https://live.rbg.tum.de/w/artemisintro/61809))
+  ([Reject](https://live.rbg.tum.de/w/artemisintro/61810))
 - Notify applicants directly via the system
 
 ## 🧭 How to Get Started
@@ -36,9 +48,9 @@ scalable, secure, and transparent recruitment processes.
 
 TUMApply supports **secure login** via:
 
-- TUM Single Sign-On (SSO)
-- Google and Microsoft accounts
-- Email and password
+- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/61794))
+- Apple, Google and Microsoft ([Video](https://live.rbg.tum.de/w/artemisintro/61813))
+- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/61814))
 
 ## 🧱 Architecture Overview
 
