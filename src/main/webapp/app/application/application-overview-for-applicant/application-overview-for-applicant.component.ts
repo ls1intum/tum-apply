@@ -1,5 +1,5 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -25,6 +25,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     TranslateModule,
     ToastComponent,
     ApplicationStateForApplicantsComponent,
+    RouterModule,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
@@ -144,10 +145,6 @@ export default class ApplicationOverviewForApplicantComponent {
 
   onUpdateApplication(applicationId: string): void {
     this.router.navigate([`/application/edit/${applicationId}`]);
-  }
-
-  onViewJob(jobId: string): void {
-    this.router.navigate([`/job/detail/${jobId}`]);
   }
 
   onDeleteApplication(applicationId: string): void {
