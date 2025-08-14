@@ -1,19 +1,19 @@
-.bar {
-  position: relative;
+.rating {
+  display: flex;
+  gap: 2%;
   width: 100%;
-  min-width: 10rem;
-  max-width: 15rem;
-  height: 1.25rem;
-  border-radius: 0.625rem;
-  border: 0.02rem solid var(--p-text-primary);
-  background: var(--p-background-surface-alt);
-  cursor: help;
-}
+  max-width: 21rem;
+  height: 1rem;
 
-.marker {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  height: 80%;
-  border-radius: 1rem;
+  border-radius: 2rem;
+  overflow: hidden;
+
+  .section {
+    flex: 1;
+    transition: background-color 0.2s ease;
+
+    &.selectable:hover {
+      filter: brightness(0.8);
+    }
+  }
 }
