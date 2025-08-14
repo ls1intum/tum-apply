@@ -3,6 +3,7 @@ import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
@@ -35,6 +36,7 @@ export class AuthCardComponent {
 
   authFacadeService = inject(AuthFacadeService);
   authTabService = inject(AuthTabService);
+  config = inject(DynamicDialogConfig);
 
   value: Signal<number> = this.authTabService.getSelectedTab();
 
@@ -93,6 +95,6 @@ export class AuthCardComponent {
   }
 
   private redirectUri(): string {
-    return window.location.origin;
+    return this.config.data?.redirectUri ? `${window.location.origin}${this.config.data.redirectUri}` : window.location.origin;
   }
 }
