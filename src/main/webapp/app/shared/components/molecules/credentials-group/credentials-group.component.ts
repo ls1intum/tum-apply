@@ -32,13 +32,14 @@ import { PasswordInputComponent } from '../../atoms/password-input/password-inpu
   styleUrl: './credentials-group.component.scss',
 })
 export class CredentialsGroupComponent {
-  @Input() submitHandler?: (credentials: { email: string; password: string }) => void;
+  @Input() submitHandler?: (credentials: { email: string; password: string }) => Promise<boolean>;
 
   form = new FormGroup({
     email: new FormControl<string>('', [Validators.required, Validators.email]),
     password: new FormControl<string>('', Validators.required),
   });
   formSubmitted = false;
+  isSubmitting = false;
 
   emailInvalid = computed(() => {
     const control = this.form.controls['email'];
@@ -52,10 +53,23 @@ export class CredentialsGroupComponent {
 
   onSubmit(): void {
     this.formSubmitted = true;
-    if (this.form.valid && this.submitHandler) {
-      this.submitHandler(this.form.value as { email: string; password: string });
-      this.form.reset();
+    if (this.form.invalid || !this.submitHandler) {
+      return;
+    }
+
+    const creds = this.form.value as { email: string; password: string };
+    this.isSubmitting = true;
+
+    this.submitHandler(creds)
+      .then(success => this.afterSubmit(success))
+      .catch(() => this.afterSubmit(false));
+  }
+
+  private afterSubmit(success: boolean): void {
+    if (success) {
+      this.form.reset({ email: '', password: '' });
       this.formSubmitted = false;
     }
+    this.isSubmitting = false;
   }
 }

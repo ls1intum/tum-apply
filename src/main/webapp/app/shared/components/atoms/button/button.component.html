@@ -11,6 +11,7 @@
   <p-button
     [ariaLabel]="label() === undefined ? icon() : undefined"
     [disabled]="disabled()"
+    [loading]="loading()"
     [rounded]="label() === undefined"
     [severity]="severity()"
     [styleClass]="(label() === undefined ? 'rounded-full w-14 h-14' : '') + (fullWidth() ? ' w-full' : '')"

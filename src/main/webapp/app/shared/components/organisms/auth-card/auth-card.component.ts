@@ -84,8 +84,8 @@ export class AuthCardComponent {
     this.authFacadeService.loginWithTUM(this.redirectUri());
   }
 
-  onEmailLogin = (credentials: { email: string; password: string }): void => {
-    this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+  onEmailLogin = (credentials: { email: string; password: string }): Promise<boolean> => {
+    return this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
   };
 
   toggleMode(): void {
