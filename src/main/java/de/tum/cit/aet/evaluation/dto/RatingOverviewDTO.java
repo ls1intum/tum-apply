@@ -1,7 +1,6 @@
 package de.tum.cit.aet.evaluation.dto;
 
 import de.tum.cit.aet.evaluation.domain.Rating;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,7 +10,6 @@ import java.util.stream.Collectors;
  * @param otherRatings ratings from other users
  */
 public record RatingOverviewDTO(Integer currentUserRating, Set<RatingDTO> otherRatings) {
-
     /**
      * Creates a {@link RatingOverviewDTO} containing the current user's rating and
      * a collection of all ratings as {@link RatingDTO} objects.

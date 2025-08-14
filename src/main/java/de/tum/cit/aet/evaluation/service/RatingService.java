@@ -8,14 +8,13 @@ import de.tum.cit.aet.evaluation.dto.RatingOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -36,7 +35,6 @@ public class RatingService {
         Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(applicationId);
         return constructRatingOverviewDTO(ratings);
     }
-
 
     /**
      * Creates, updates, or deletes the current user's rating for the specified application,
@@ -68,7 +66,9 @@ public class RatingService {
                 Rating newRating = new Rating();
                 newRating.setFrom(user);
                 newRating.setRating(rating);
-                Application application = applicationEvaluationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+                Application application = applicationEvaluationRepository
+                    .findById(applicationId)
+                    .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
                 newRating.setApplication(application);
                 ratingRepository.save(newRating);
             }
@@ -108,7 +108,9 @@ public class RatingService {
      * @throws jakarta.persistence.EntityNotFoundException if the application does not exist
      */
     private void checkReviewRights(UUID applicationId) {
-        Application application = applicationEvaluationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        Application application = applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         currentUserService.canReview(application);
     }
 }

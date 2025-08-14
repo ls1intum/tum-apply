@@ -1,23 +1,19 @@
 package de.tum.cit.aet.evaluation.domain;
 
-
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Entity
 @Table(
     name = "ratings",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uc_ratings_application_user",
-        columnNames = { "application_id", "user_id" }
-    )
-)@Getter
+    uniqueConstraints = @UniqueConstraint(name = "uc_ratings_application_user", columnNames = { "application_id", "user_id" })
+)
+@Getter
 @Setter
 public class Rating extends AbstractAuditingEntity {
 

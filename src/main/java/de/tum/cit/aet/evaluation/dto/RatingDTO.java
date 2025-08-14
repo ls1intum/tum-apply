@@ -3,7 +3,6 @@ package de.tum.cit.aet.evaluation.dto;
 import de.tum.cit.aet.evaluation.domain.Rating;
 
 public record RatingDTO(String from, int rating) {
-
     /**
      * Creates a {@link RatingDTO} from a given {@link Rating} entity.
      *

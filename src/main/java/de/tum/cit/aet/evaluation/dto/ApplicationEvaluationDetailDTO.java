@@ -6,7 +6,6 @@ import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.dto.ProfessorDTO;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
