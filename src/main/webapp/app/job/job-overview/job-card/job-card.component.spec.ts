@@ -6,6 +6,7 @@ import { Router, provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
 
 import { JobCardComponent } from './job-card.component';
 
@@ -37,6 +38,7 @@ describe('JobCardComponent', () => {
         }),
       ],
       providers: [
+        provideHttpClient(),
         provideRouter([
           { path: 'job/detail/:id', component: DummyComponent },
           { path: 'application/create/:id', component: DummyComponent },
