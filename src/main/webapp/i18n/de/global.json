@@ -325,7 +325,7 @@
       },
       "dialogs": {
         "withdrawHeader": "Zurückziehen bestätigen",
-        "withdrawMessage": "Sind Sie sicher, dass Sie diese Bewerbung zurückziehen möchten? Sobald sie zurückgezogen wurde, ist sie für den Professor nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
+        "withdrawMessage": "Sind Sie sicher, dass Sie diese Bewerbung zurückziehen möchten? Sobald sie zurückgezogen wurde, ist sie für den Professor/die Professorin nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
         "deleteHeader": "Löschvorgang bestätigen",
         "deleteMessage": "Sind Sie sicher, dass Sie diesen Entwurf dauerhaft löschen möchten? Diese Aktion kann NICHT rückgängig gemacht werden!"
       }
