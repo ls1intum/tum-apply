@@ -41,10 +41,12 @@
         <input type="hidden" [formControl]="formControl()" />
       }
     </div>
-    <div class="error-text">
-      @if (inputState() === 'invalid' && !isFocused()) {
-        {{ errorMessage() }}
-      }
-    </div>
+    @if (errorEnabled()) {
+      <div class="error-text">
+        @if (inputState() === 'invalid' && !isFocused()) {
+          {{ errorMessage() }}
+        }
+      </div>
+    }
   </div>
 </div>
