@@ -20,7 +20,6 @@ REPLACE INTO applications (application_id,
                            projects,
                            special_skills,
                            motivation,
-                           rating,
                            created_at,
                            last_modified_at)
 VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-000000000001',
@@ -29,7 +28,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Developed a quiz platform with gamification features for a university course. Built a dashboard analyzing online learning data. Prototyped an AI teaching assistant.</p>',
         '<p>Python, React, SQL, Figma, UX Testing</p>',
         '<p>I am passionate about educational technology and have experience designing engaging learning experiences. This position aligns perfectly with my skills and interests.</p>',
-        NULL, '2025-02-01 14:30:00', '2025-02-01 14:30:00'),
+        '2025-02-01 14:30:00', '2025-02-01 14:30:00'),
 
        ('00000000-0000-0000-0000-300000023331', '11111111-0000-0000-0000-000000000023',
         '00000000-0000-0000-0000-000000020001',
@@ -37,7 +36,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Developed a quiz platform with gamification features for a university course. Built a dashboard analyzing online learning data. Prototyped an AI teaching assistant.</p>',
         '<p>Python, React, SQL, Figma, UX Testing</p>',
         '<p>I am passionate about educational technology and have experience designing engaging learning experiences. This position aligns perfectly with my skills and interests.</p>',
-        NULL, '2025-02-01 14:30:00', '2025-02-01 14:30:00'),
+        '2025-02-01 14:30:00', '2025-02-01 14:30:00'),
 
        ('00000000-0000-0000-0000-300000020002', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020001',
@@ -45,7 +44,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Conducted user research on educational apps. Designed interfaces for learning management systems. Published paper on motivation in digital learning.</p>',
         '<p>User Research, Psychology, Statistics, Qualtrics</p>',
         '<p>My psychology background gives me unique insights into motivation systems for learning. I want to apply this knowledge to improve educational technology.</p>',
-        NULL, '2025-02-05 10:15:00', '2025-02-05 10:15:00'),
+        '2025-02-05 10:15:00', '2025-02-05 10:15:00'),
 
        ('00000000-0000-0000-0000-300000020003', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020002',
@@ -53,7 +52,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Built recommendation systems for e-learning platforms. Published paper on collaborative filtering in education. Developed ML models for personalized learning.</p>',
         '<p>Python, Machine Learning, Recommender Systems, Pandas</p>',
         '<p>I have worked on similar recommendation problems in education and would love to contribute to research that improves learning personalization.</p>',
-        3, '2025-02-10 11:20:00', '2025-02-20 15:00:00'),
+        '2025-02-10 11:20:00', '2025-02-20 15:00:00'),
 
        ('00000000-0000-0000-0000-300000020123', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020004',
@@ -61,7 +60,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Research on approximation algorithms for network problems. Implemented several graph algorithms in Python. Coursework in advanced algorithms.</p>',
         '<p>Python, C++, Algorithms, Complexity Theory</p>',
         '<p>I am fascinated by theoretical computer science and want to gain research experience in algorithms before applying to PhD programs.</p>',
-        NULL, '2025-02-12 09:45:00', '2025-02-12 09:45:00'),
+        '2025-02-12 09:45:00', '2025-02-12 09:45:00'),
 
        ('00000000-0000-0000-0000-300000020111', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020005',
@@ -69,7 +68,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Coursework in quantum mechanics and quantum computing. Developed quantum simulation software. Research internship in quantum information.</p>',
         '<p>Python, Physics, Quantum Mechanics, Numerical Methods</p>',
         '<p>While my background is more in physics than CS, I have strong quantum mechanics knowledge and programming skills that would benefit this research.</p>',
-        NULL, '2025-02-18 15:20:00', '2025-03-02 10:15:00'),
+        '2025-02-18 15:20:00', '2025-03-02 10:15:00'),
 
        ('00000000-0000-0000-0000-300000020837', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020006',
@@ -77,7 +76,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Designed analog circuits for sensor interfaces. Course projects on amplifier design. Internship at semiconductor company.</p>',
         '<p>Cadence, Analog Design, SPICE, Lab Equipment</p>',
         '<p>I have hands-on experience with analog design and want to apply these skills to research with practical applications.</p>',
-        1, '2025-02-05 10:15:00', '2025-02-05 10:15:00'),
+        '2025-02-05 10:15:00', '2025-02-05 10:15:00'),
 
        ('00000000-0000-0000-0000-300000020313', '00000000-0000-0000-0000-000000000103',
         '00000000-0000-0000-0000-000000020010',
@@ -85,7 +84,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         NULL,
         NULL,
         '<p>My experience with material characterization aligns well with this position. I am excited about contributing to climate solutions.</p>',
-        NULL, '2025-02-12 09:45:00', '2025-02-12 09:45:00'),
+        '2025-02-12 09:45:00', '2025-02-12 09:45:00'),
 
        ('00000000-0000-0000-0000-300000020004', '11111111-0000-0000-0000-000000000023',
         '00000000-0000-0000-0000-000000020002',
@@ -93,7 +92,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Built recommendation systems for e-learning platforms. Published paper on collaborative filtering in education. Developed ML models for personalized learning.</p>',
         '<p>Python, Machine Learning, Recommender Systems, Pandas</p>',
         '<p>I have worked on similar recommendation problems in education and would love to contribute to research that improves learning personalization.</p>',
-        NULL, '2025-06-15 13:45:00', '2025-06-15 13:45:00'),
+        '2025-06-15 13:45:00', '2025-06-15 13:45:00'),
 
        ('00000000-0000-0000-0000-300000020005', '11111111-0000-0000-0000-000000000006',
         '00000000-0000-0000-0000-000000020004',
@@ -101,7 +100,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Research on approximation algorithms for network problems. Implemented several graph algorithms in Python. Coursework in advanced algorithms.</p>',
         '<p>Python, C++, Algorithms, Complexity Theory</p>',
         '<p>I am fascinated by theoretical computer science and want to gain research experience in algorithms before applying to PhD programs.</p>',
-        NULL, '2025-02-12 09:45:00', '2025-02-12 09:45:00'),
+        '2025-02-12 09:45:00', '2025-02-12 09:45:00'),
 
        ('00000000-0000-0000-0000-300000020006', '11111111-0000-0000-0000-000000000007',
         '00000000-0000-0000-0000-000000020004',
@@ -109,7 +108,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Developed optimization algorithms for scheduling problems. Published paper on parallel algorithms. Teaching assistant for algorithms course.</p>',
         '<p>Java, Algorithm Design, Mathematical Proofs, LaTeX</p>',
         '<p>My background in discrete mathematics and algorithm design makes me well-suited for this research position. I enjoy both theoretical and practical aspects of algorithms.</p>',
-        NULL, '2025-02-18 15:20:00', '2025-02-18 15:20:00'),
+        '2025-02-18 15:20:00', '2025-02-18 15:20:00'),
 
        ('00000000-0000-0000-0000-300000020007', '11111111-0000-0000-0000-000000000030',
         '00000000-0000-0000-0000-000000020005',
@@ -117,7 +116,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Research on quantum algorithms for machine learning. Implemented quantum circuits for optimization problems. Published paper on quantum error correction.</p>',
         '<p>Qiskit, Python, Quantum Computing, Linear Algebra</p>',
         '<p>I have experience with quantum algorithms and want to contribute to research that pushes the boundaries of quantum computing applications.</p>',
-        4, '2025-02-15 13:45:00', '2025-03-01 11:30:00'),
+        '2025-02-15 13:45:00', '2025-03-01 11:30:00'),
 
        ('00000000-0000-0000-0000-300000020008', '11111111-0000-0000-0000-000000000027',
         '00000000-0000-0000-0000-000000020005',
@@ -125,7 +124,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Coursework in quantum mechanics and quantum computing. Developed quantum simulation software. Research internship in quantum information.</p>',
         '<p>Python, Physics, Quantum Mechanics, Numerical Methods</p>',
         '<p>While my background is more in physics than CS, I have strong quantum mechanics knowledge and programming skills that would benefit this research.</p>',
-        2, '2025-02-18 15:20:00', '2025-03-02 10:15:00'),
+        '2025-02-18 15:20:00', '2025-03-02 10:15:00'),
 
        ('00000000-0000-0000-0000-300000020009', '11111111-0000-0000-0000-000000000021',
         '00000000-0000-0000-0000-000000020006',
@@ -133,7 +132,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Designed analog circuits for sensor interfaces. Course projects on amplifier design. Internship at semiconductor company.</p>',
         '<p>Cadence, Analog Design, SPICE, Lab Equipment</p>',
         '<p>I have hands-on experience with analog design and want to apply these skills to research with practical applications.</p>',
-        NULL, '2025-06-01 10:00:00', '2025-06-01 10:00:00'),
+        '2025-06-01 10:00:00', '2025-06-01 10:00:00'),
 
        ('00000000-0000-0000-0000-300000020010', '11111111-0000-0000-0000-000000000011',
         '00000000-0000-0000-0000-000000020007',
@@ -141,7 +140,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Undergraduate research in molecular biology. Lab work on DNA extraction and analysis. Coursework in genetics and biochemistry.</p>',
         '<p>PCR, Gel Electrophoresis, DNA Sequencing, Lab Safety</p>',
         '<p>I am excited about genetics research and want to gain more lab experience before applying to graduate programs.</p>',
-        NULL, '2025-02-05 14:30:00', '2025-02-05 14:30:00'),
+        '2025-02-05 14:30:00', '2025-02-05 14:30:00'),
 
        ('00000000-0000-0000-0000-300000020011', '11111111-0000-0000-0000-000000000012',
         '00000000-0000-0000-0000-000000020007',
@@ -149,7 +148,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Research assistant in plant genetics lab. Conducted DNA barcoding project. Presented at undergraduate research symposium.</p>',
         '<p>Molecular Biology Techniques, Data Analysis, Scientific Writing</p>',
         '<p>My experience in genetics research makes me well-prepared for this position. I am particularly interested in applications to agriculture.</p>',
-        NULL, '2025-02-10 10:15:00', '2025-02-10 10:15:00'),
+        '2025-02-10 10:15:00', '2025-02-10 10:15:00'),
 
        ('00000000-0000-0000-0000-300000020012', '11111111-0000-0000-0000-000000000013',
         '00000000-0000-0000-0000-000000020009',
@@ -157,7 +156,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Urban design projects focusing on sustainability. GIS analysis of green spaces. Community engagement for park redesign.</p>',
         '<p>GIS, AutoCAD, SketchUp, Community Engagement</p>',
         '<p>I am passionate about creating sustainable urban spaces and have both technical and social skills for this position.</p>',
-        NULL, '2025-06-15 13:45:00', '2025-06-15 13:45:00'),
+        '2025-06-15 13:45:00', '2025-06-15 13:45:00'),
 
        ('00000000-0000-0000-0000-300000020013', '11111111-0000-0000-0000-000000000014',
         '00000000-0000-0000-0000-000000020010',
@@ -165,4 +164,4 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
         '<p>Research on porous materials for gas storage. Characterization of adsorbent materials. Published paper on MOF synthesis.</p>',
         '<p>Material Synthesis, XRD, BET, Gas Adsorption</p>',
         '<p>My experience with material characterization aligns well with this position. I am excited about contributing to climate solutions.</p>',
-        NULL, '2025-02-12 09:45:00', '2025-02-12 09:45:00');
+        '2025-02-12 09:45:00', '2025-02-12 09:45:00');

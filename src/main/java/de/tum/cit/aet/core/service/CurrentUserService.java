@@ -270,4 +270,16 @@ public class CurrentUserService {
     private boolean hasAccessTo(EmailTemplate emailTemplate) {
         return isAdminOrProfessorOf(emailTemplate.getResearchGroup().getResearchGroupId());
     }
+
+    /**
+     * Checks if the current professor can review the specified application.
+     * A professor can review the application if they belong to the same research group
+     * as the job associated with the application.
+     *
+     * @param application the {@link Application} to check; must not be {@code null}
+     * @return {@code true} if the current professor can review the application, {@code false} otherwise
+     */
+    public boolean canReview(Application application) {
+        return getResearchGroupIfProfessor().getResearchGroupId().equals(application.getJob().getResearchGroup().getResearchGroupId());
+    }
 }

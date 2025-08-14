@@ -14,7 +14,6 @@ public record ApplicationEvaluationDetailDTO(
     @NotNull ApplicationDetailDTO applicationDetailDTO,
     ProfessorDTO professor,
     UUID jobId,
-    Integer rating,
     LocalDateTime appliedAt
 ) {
     /**
@@ -29,7 +28,6 @@ public record ApplicationEvaluationDetailDTO(
             ApplicationDetailDTO.getFromEntity(application, job),
             ProfessorDTO.fromEntity(job.getSupervisingProfessor()),
             job.getJobId(),
-            application.getRating(),
             application.getCreatedAt()
         );
     }

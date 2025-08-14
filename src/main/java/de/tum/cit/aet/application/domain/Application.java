@@ -55,9 +55,6 @@ public class Application extends AbstractAuditingEntity {
     @Column(name = "motivation")
     private String motivation;
 
-    @Column(name = "rating")
-    private Integer rating;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<CustomFieldAnswer> customFieldAnswers;
 

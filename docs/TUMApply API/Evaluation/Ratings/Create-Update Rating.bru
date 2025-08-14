@@ -1,0 +1,19 @@
+meta {
+  name: Create/Update Rating
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/applications/:applicationId/ratings?rating=1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  rating: 1
+}
+
+params:path {
+  applicationId: 00000000-0000-0000-0000-300000020001
+}

@@ -3,11 +3,13 @@
     "overviewHeader": "Applications - Overview",
     "reviewHeader": "Applications - Review",
 
-    "ratingToolTip": "Rating: {{value}} on a {{total}}-Likert scale ({{label}})",
-    "positive": "Positive",
-    "negative": "Negative",
-    "neutral": "Neutral",
-    "noRating": "No rating available",
+    "ratings": {
+      "very_bad": "Poor",
+      "bad": "Fair",
+      "neutral": "Satisfactory",
+      "good": "Good",
+      "very_good": "Excellent"
+    },
 
     "accept": "Accept",
     "reject": "Reject",
