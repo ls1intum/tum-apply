@@ -7,13 +7,14 @@ import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -54,9 +55,6 @@ public class Application extends AbstractAuditingEntity {
 
     @Column(name = "motivation")
     private String motivation;
-
-    @Column(name = "rating")
-    private Integer rating;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<CustomFieldAnswer> customFieldAnswers;

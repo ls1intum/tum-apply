@@ -12,9 +12,6 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -23,6 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -269,5 +270,17 @@ public class CurrentUserService {
      */
     private boolean hasAccessTo(EmailTemplate emailTemplate) {
         return isAdminOrProfessorOf(emailTemplate.getResearchGroup().getResearchGroupId());
+    }
+
+    /**
+     * Checks if the current professor can review the specified application.
+     * A professor can review the application if they belong to the same research group
+     * as the job associated with the application.
+     *
+     * @param application the {@link Application} to check; must not be {@code null}
+     * @return {@code true} if the current professor can review the application, {@code false} otherwise
+     */
+    public boolean canReview(Application application) {
+        return getResearchGroupIfProfessor().getResearchGroupId().equals(application.getJob().getResearchGroup().getResearchGroupId());
     }
 }

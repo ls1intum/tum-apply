@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,7 +14,6 @@ public record ApplicationEvaluationOverviewDTO(
     String name,
     ApplicationState state,
     String jobName,
-    Integer rating,
     LocalDateTime appliedAt
 ) {
     /**
@@ -33,7 +33,6 @@ public record ApplicationEvaluationOverviewDTO(
             applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName(),
             application.getState(),
             job.getTitle(),
-            application.getRating(),
             application.getCreatedAt()
         );
     }
