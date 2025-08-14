@@ -1,4 +1,27 @@
 <jhi-toast />
+<jhi-confirm-dialog
+  #closeConfirmDialog
+  class="confirm-dialog"
+  [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
+  [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
+  [label]="closeButtonLabel | translate"
+  variant="outlined"
+  [severity]="closeButtonSeverity"
+  [confirmIcon]="closeButtonIcon"
+  [showOpenButton]="false"
+  (confirmed)="onCloseJob()"
+/>
+<jhi-confirm-dialog
+  #deleteConfirmDialog
+  class="confirm-dialog"
+  [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
+  [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+  [label]="deleteButtonLabel | translate"
+  [severity]="deleteButtonSeverity"
+  [confirmIcon]="deleteButtonIcon"
+  [showOpenButton]="false"
+  (confirmed)="onDeleteJob()"
+/>
 @if (dataLoaded()) {
   <div class="container">
     <header class="page-header">

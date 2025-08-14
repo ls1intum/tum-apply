@@ -1,0 +1,33 @@
+.confirm-dialog {
+  background-color: var(--p-background-default);
+  border-radius: var(--p-button-border-radius);
+  padding: 1.5rem;
+
+  .confirm-title {
+    color: var(--p-text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: left;
+  }
+
+  .confirm-message {
+    color: var(--p-text-primary);
+    text-align: left;
+    margin-bottom: 1.5rem;
+  }
+
+  .confirm-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+}
+
+.p-dialog {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  max-width: 45rem;
+  width: 100%;
+}

@@ -1,3 +1,14 @@
+<jhi-confirm-dialog
+  #sendPublishDialog
+  class="confirm-dialog"
+  [header]="'jobCreationForm.confirmDialog.header' | translate"
+  [message]="'jobCreationForm.confirmDialog.message' | translate"
+  [label]="publishButtonLabel | translate"
+  [severity]="publishButtonSeverity"
+  [confirmIcon]="publishButtonIcon"
+  [showOpenButton]="false"
+  (confirmed)="publishJob()"
+/>
 @if (!isLoading()) {
   <div class="doctorate-form-container">
     <header>
