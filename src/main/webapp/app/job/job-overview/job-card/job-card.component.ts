@@ -6,9 +6,12 @@ import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
 import { TranslateService } from '@ngx-translate/core';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { AuthCardComponent } from 'app/shared/components/organisms/auth-card/auth-card.component';
+import { AccountService } from 'app/core/auth/account.service';
 
-import SharedModule from '../../../shared/shared.module';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
+import SharedModule from '../../../shared/shared.module';
 
 @Component({
   selector: 'jhi-job-card',
@@ -30,17 +33,39 @@ export class JobCardComponent {
   headerColor = input<string>('var(--p-secondary-color)');
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
   icon = input<string>('flask-vial');
+  ref: DynamicDialogRef | undefined;
 
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
   translate = inject(TranslateService);
 
   private router = inject(Router);
+  private dialogService = inject(DialogService);
+  private accountService = inject(AccountService);
 
   onViewDetails(): void {
     this.router.navigate([`/job/detail/${this.jobId()}`]);
   }
 
   onApply(): void {
-    this.router.navigate([`/application/create/${this.jobId()}`]);
+    if (this.accountService.signedIn()) {
+      this.router.navigate([`/application/create/${this.jobId()}`]);
+      return;
+    }
+
+    this.ref = this.dialogService.open(AuthCardComponent, {
+      style: {
+        border: 'none',
+        overflow: 'auto',
+        background: 'transparent',
+        boxShadow: 'none',
+      },
+      data: { redirectUri: `/application/create/${this.jobId()}` },
+      modal: true,
+      contentStyle: { padding: '0' },
+      dismissableMask: true,
+      closeOnEscape: true,
+      focusOnShow: true,
+      showHeader: false,
+    });
   }
 }

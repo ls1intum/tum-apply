@@ -75,6 +75,10 @@
           "invalid": "Your email is invalid.",
           "minlength": "Your email is required to be at least 5 characters.",
           "maxlength": "Your email cannot be longer than 50 characters."
+        },
+        "error": {
+          "header": "Login failed",
+          "message": "Invalid email or password"
         }
       }
     },
