@@ -1,6 +1,6 @@
-package de.tum.cit.aet.core.service.mail;
+package de.tum.cit.aet.notification.service.mail;
 
-import de.tum.cit.aet.core.constants.EmailType;
+import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;

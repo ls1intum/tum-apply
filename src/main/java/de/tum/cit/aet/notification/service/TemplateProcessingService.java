@@ -1,9 +1,9 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.notification.service;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.constants.TemplateVariable;
-import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.constants.TemplateVariable;
+import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;

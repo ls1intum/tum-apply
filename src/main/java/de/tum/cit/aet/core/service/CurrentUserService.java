@@ -3,7 +3,7 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.domain.CurrentUser;
-import de.tum.cit.aet.core.domain.EmailTemplate;
+import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.core.domain.ResearchGroupRole;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;

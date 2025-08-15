@@ -1,11 +1,11 @@
-package de.tum.cit.aet.core.web;
+package de.tum.cit.aet.notification.web;
 
-import de.tum.cit.aet.core.dto.EmailTemplateDTO;
-import de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO;
+import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
+import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.EmailTemplateService;
+import de.tum.cit.aet.notification.service.EmailTemplateService;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.AllArgsConstructor;

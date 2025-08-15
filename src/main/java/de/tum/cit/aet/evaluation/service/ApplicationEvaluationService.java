@@ -2,13 +2,13 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.constants.EmailType;
+import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.service.EmailService;
-import de.tum.cit.aet.core.service.mail.Email;
+import de.tum.cit.aet.notification.service.EmailService;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;

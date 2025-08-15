@@ -1,6 +1,6 @@
-package de.tum.cit.aet.core.domain;
+package de.tum.cit.aet.notification.domain;
 
-import de.tum.cit.aet.core.constants.EmailType;
+import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.util.UUID;

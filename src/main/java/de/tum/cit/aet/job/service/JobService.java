@@ -2,14 +2,14 @@ package de.tum.cit.aet.job.service;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.constants.EmailType;
+import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.EmailService;
-import de.tum.cit.aet.core.service.mail.Email;
+import de.tum.cit.aet.notification.service.EmailService;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.job.constants.JobState;
