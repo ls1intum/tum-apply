@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, model, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ApplicationForApplicantDTO, DocumentInformationHolderDTO } from 'app/generated';
@@ -10,6 +10,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 
@@ -29,6 +32,23 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
   };
 };
 
+function deepEqual(obj1: any, obj2: any): boolean {
+  if (obj1 === obj2) return true;
+
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 == null || obj2 == null) return false;
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) return false;
+  }
+
+  return true;
+}
+
 @Component({
   selector: 'jhi-application-creation-page3',
   imports: [
@@ -43,75 +63,84 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
     TooltipModule,
     TranslateModule,
     SharedModule,
+    EditorComponent,
   ],
   templateUrl: './application-creation-page3.component.html',
   styleUrl: './application-creation-page3.component.scss',
   standalone: true,
 })
 export default class ApplicationCreationPage3Component {
-  data = model.required<ApplicationCreationPage3Data>();
+  data = model<ApplicationCreationPage3Data>();
 
-  applicationIdForDocuments = input<string | undefined>(undefined);
-  documentIdsCv = input<DocumentInformationHolderDTO | undefined>(undefined);
-  computedDocumentIdsCvSet = computed<DocumentInformationHolderDTO[] | undefined>(() => {
-    const documentIdsCv = this.documentIdsCv();
-    if (documentIdsCv) {
-      return [documentIdsCv];
-    }
-    return undefined;
-  });
-  documentIdsReferences = input<DocumentInformationHolderDTO[] | undefined>(undefined);
+  applicationIdForDocuments = input<string | undefined>();
+  documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
+  documentIdsReferences = input<DocumentInformationHolderDTO[] | undefined>();
 
   valid = output<boolean>();
   changed = output<boolean>();
 
   fb = inject(FormBuilder);
-  page3Form = computed(() => {
-    const currentData = this.data();
-    return this.fb.group({
-      experiences: [currentData.experiences, Validators.required],
-      motivation: [currentData.motivation, Validators.required],
-      skills: [currentData.skills, Validators.required],
-      desiredStartDate: [currentData.desiredStartDate, Validators.required],
-    });
+
+  hasInitialized = signal(false);
+
+  page3Form: FormGroup = this.fb.group({
+    experiences: [this.data()?.experiences ?? '', Validators.required],
+    motivation: [this.data()?.motivation ?? '', Validators.required],
+    skills: [this.data()?.skills ?? '', Validators.required],
+    desiredStartDate: [this.data()?.desiredStartDate ?? ''],
   });
 
-  constructor() {
-    effect(onCleanup => {
-      const form = this.page3Form();
-      const valueSubscription = form.valueChanges.subscribe(value => {
-        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-        this.data.set({
-          ...this.data(),
-          ...normalizedValue,
-        });
+  formValue = toSignal(this.page3Form.valueChanges.pipe(debounceTime(100)).pipe(distinctUntilChanged(deepEqual)), {
+    initialValue: this.page3Form.value,
+  });
 
-        this.valid.emit(form.valid);
-        this.changed.emit(true);
-      });
+  formStatus = toSignal(this.page3Form.statusChanges, {
+    initialValue: this.page3Form.status,
+  });
 
-      const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(form.valid);
-      });
+  computedDocumentIdsCvSet = computed(() => {
+    const doc = this.documentIdsCv();
+    return doc ? [doc] : undefined;
+  });
 
-      this.valid.emit(form.valid);
+  private updateEffect = effect(() => {
+    if (!this.hasInitialized()) return;
+    const raw = this.formValue();
+    const normalized = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v ?? ''])) as ApplicationCreationPage3Data;
 
-      onCleanup(() => {
-        valueSubscription.unsubscribe();
-        statusSubscription.unsubscribe();
-      });
+    const newData = { ...this.data(), ...normalized };
+    if (!deepEqual(newData, this.data())) {
+      this.data.set(newData);
+      this.changed.emit(true);
+    }
+    this.valid.emit(this.page3Form.valid);
+  });
+
+  private initializeFormEffect = effect(() => {
+    if (this.hasInitialized()) return;
+    const data = this.data();
+    if (!data) return;
+    this.page3Form.patchValue({
+      experiences: data.experiences,
+      motivation: data.motivation,
+      skills: data.skills,
+      desiredStartDate: data.desiredStartDate,
     });
-  }
+    this.hasInitialized.set(true);
+  });
 
   emitChanged(): void {
     this.changed.emit(true);
   }
 
   setDesiredStartDate($event: string | undefined): void {
-    this.data.set({
-      ...this.data(),
-      desiredStartDate: $event ?? '',
-    });
+    const currentData = this.data();
+    if (currentData !== undefined) {
+      this.data.set({
+        ...currentData,
+        desiredStartDate: $event ?? '',
+      });
+    }
     this.emitChanged();
   }
 }

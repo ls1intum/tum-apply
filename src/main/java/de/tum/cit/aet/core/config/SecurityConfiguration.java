@@ -2,6 +2,9 @@ package de.tum.cit.aet.core.config;
 
 import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
+import de.tum.cit.aet.usermanagement.dto.AuthResponseDTO;
+import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
+import jakarta.servlet.http.Cookie;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -9,11 +12,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.util.WebUtils;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -21,10 +27,16 @@ public class SecurityConfiguration {
 
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
     private final CorsFilter corsFilter;
+    private final KeycloakAuthenticationService keycloakAuthenticationService;
 
-    public SecurityConfiguration(CustomJwtAuthenticationConverter customJwtAuthenticationConverter, CorsFilter corsFilter) {
+    public SecurityConfiguration(
+        CustomJwtAuthenticationConverter customJwtAuthenticationConverter,
+        CorsFilter corsFilter,
+        KeycloakAuthenticationService keycloakAuthenticationService
+    ) {
         this.customJwtAuthenticationConverter = customJwtAuthenticationConverter;
         this.corsFilter = corsFilter;
+        this.keycloakAuthenticationService = keycloakAuthenticationService;
     }
 
     /**
@@ -115,7 +127,31 @@ public class SecurityConfiguration {
                     .requestMatchers("/swagger-ui/**")
                     .permitAll()
             )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter)));
+            .oauth2ResourceServer(oauth2 ->
+                oauth2
+                    .bearerTokenResolver(bearerTokenResolver())
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter))
+            );
         return http.build();
+    }
+
+    /**
+     * Extracts the bearer token from the 'access_token' cookie, falling back to the Authorization header.
+     *
+     * @return a BearerTokenResolver that reads from cookie and refreshes tokens as needed
+     */
+    private BearerTokenResolver bearerTokenResolver() {
+        DefaultBearerTokenResolver defaultResolver = new DefaultBearerTokenResolver();
+        return request -> {
+            Cookie accessCookie = WebUtils.getCookie(request, "access_token");
+            Cookie refreshCookie = WebUtils.getCookie(request, "refresh_token");
+            if (accessCookie != null && accessCookie.getValue() != null) {
+                return accessCookie.getValue();
+            } else if ((accessCookie == null || accessCookie.getValue() == null) && refreshCookie != null) {
+                AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(refreshCookie.getValue());
+                return tokens.accessToken();
+            }
+            return defaultResolver.resolve(request);
+        };
     }
 }

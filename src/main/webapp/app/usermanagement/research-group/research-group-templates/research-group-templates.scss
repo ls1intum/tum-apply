@@ -1,0 +1,30 @@
+.content {
+  padding: 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .header {
+    font-weight: 700;
+    padding-bottom: 4rem;
+    font-size: 2rem;
+    color: var(--p-primary-color);
+    align-items: center;
+  }
+
+  .table-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    max-width: 50rem;
+    align-self: center;
+
+    .actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      gap: 1rem;
+    }
+  }
+}

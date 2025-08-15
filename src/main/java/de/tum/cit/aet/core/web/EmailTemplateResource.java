@@ -3,10 +3,10 @@ package de.tum.cit.aet.core.web;
 import de.tum.cit.aet.core.dto.EmailTemplateDTO;
 import de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.EmailTemplateService;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -31,7 +31,7 @@ public class EmailTemplateResource {
      */
     @GetMapping
     @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<List<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+    public ResponseEntity<PageResponseDTO<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         return ResponseEntity.ok(emailTemplateService.getTemplates(currentUserService.getResearchGroupIfProfessor(), pageDTO));
     }
 

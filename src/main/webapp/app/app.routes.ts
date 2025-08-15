@@ -176,6 +176,35 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Research Group
+  // ======================================================================================
+  {
+    path: 'research-group/templates',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-templates/research-group-templates').then(m => m.ResearchGroupTemplates),
+  },
+  {
+    path: 'research-group/template/new',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-template-edit/research-group-template-edit').then(
+        m => m.ResearchGroupTemplateEdit,
+      ),
+  },
+  {
+    path: 'research-group/template/:templateId/edit',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-template-edit/research-group-template-edit').then(
+        m => m.ResearchGroupTemplateEdit,
+      ),
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,
