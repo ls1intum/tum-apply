@@ -10,7 +10,7 @@
         <constraints primaryKey="true" nullable="false"/>
       </column>
 
-      <column name="user" type="UUID">
+      <column name="user_id" type="UUID">
         <constraints nullable="false"/>
       </column>
 
@@ -25,12 +25,12 @@
 
     <addUniqueConstraint
       tableName="email_settings"
-      columnNames="user, email_type"
+      columnNames="user_id, email_type"
       constraintName="uk_email_setting_user_email_type"/>
 
     <addForeignKeyConstraint
       baseTableName="email_settings"
-      baseColumnNames="user"
+      baseColumnNames="user_id"
       constraintName="fk_email_setting_user"
       referencedTableName="users"
       referencedColumnNames="user_id"
