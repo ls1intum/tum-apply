@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { JobCardComponent } from './job-card.component';
 
@@ -46,6 +47,13 @@ describe('JobCardComponent', () => {
         {
           provide: MissingTranslationHandler,
           useValue: { handle: jest.fn() },
+        },
+        {
+          provide: DialogService,
+          useValue: {
+            open: jest.fn(),
+            dialogComponentRefMap: new Map(),
+          },
         },
       ],
     }).compileComponents();
