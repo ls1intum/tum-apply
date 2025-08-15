@@ -1,4 +1,4 @@
-<p-tag [severity]="color()" [rounded]="round()" class="custom-tag">
+<p-tag [severity]="color()" [rounded]="round()" class="custom-tag" [ngStyle]="widthStyle()">
   @if (icon() && !iconRight()) {
     <fa-icon [icon]="iconProp()" class="icon left" />
   }

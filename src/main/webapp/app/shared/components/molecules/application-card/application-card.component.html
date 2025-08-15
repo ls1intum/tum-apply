@@ -6,6 +6,7 @@
       <jhi-tag
         [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
         [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
+        width="7rem"
       />
     </div>
 
