@@ -168,6 +168,9 @@
     "publish": "Publish",
     "cancel": "Cancel",
     "next": "Next",
+    "previousStep": "Previous Step",
+    "step1": "Step 1",
+    "step2": "Step 2",
     "back": "Back",
     "saveDraft": "Save Draft"
   },
