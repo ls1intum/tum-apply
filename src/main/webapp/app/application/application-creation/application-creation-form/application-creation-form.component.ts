@@ -204,6 +204,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
+        disabled: !page1Valid,
         status: statusPanel,
       });
     }
@@ -240,6 +241,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
+        disabled: !page2Valid,
         status: statusPanel,
       });
     }
