@@ -18,7 +18,6 @@ import SharedModule from '../../../shared/shared.module';
   templateUrl: './job-card.component.html',
   styleUrls: ['./job-card.component.scss'],
   standalone: true,
-  providers: [DialogService],
   imports: [FontAwesomeModule, CardModule, ButtonComponent, CommonModule, SharedModule, TooltipModule],
 })
 export class JobCardComponent {
