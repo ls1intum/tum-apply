@@ -91,12 +91,7 @@ export default class ApplicationCreationFormComponent {
     masterGradingScale: masterGradingScale[0],
     masterGrade: '',
   });
-  page3 = signal<ApplicationCreationPage3Data>({
-    desiredStartDate: '',
-    motivation: '',
-    skills: '',
-    experiences: '',
-  });
+  page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
@@ -347,10 +342,10 @@ export default class ApplicationCreationFormComponent {
         masterUniversity: this.page2().masterDegreeUniversity,
       },
       applicationState: state,
-      desiredDate: this.page3().desiredStartDate,
-      motivation: this.page3().motivation,
-      specialSkills: this.page3().skills,
-      projects: this.page3().experiences,
+      desiredDate: this.page3()?.desiredStartDate ?? '',
+      motivation: this.page3()?.motivation ?? '',
+      specialSkills: this.page3()?.skills ?? '',
+      projects: this.page3()?.experiences,
       // answers: new Set(),
     };
     try {
