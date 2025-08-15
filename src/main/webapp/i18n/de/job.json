@@ -35,11 +35,13 @@
       },
       "startDate": {
         "label": "Startdatum",
-        "placeholder": "Wählen Sie ein Startdatum..."
+        "placeholder": "Wählen Sie ein Startdatum...",
+        "toolTipText": "Geben Sie das Datum an, an dem die Stelle voraussichtlich beginnt."
       },
-      "endDate": {
+      "applicationDeadline": {
         "label": "Bewerbungsfrist",
-        "placeholder": "Wählen Sie ein Fristdatum..."
+        "placeholder": "Wählen Sie ein Fristdatum...",
+        "toolTipText": "Geben Sie das Datum an, bis zu dem Bewerbungen für diese Stelle angenommen werden."
       },
       "workload": {
         "label": "Arbeitsaufwand",

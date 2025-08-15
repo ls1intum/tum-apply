@@ -35,11 +35,13 @@
       },
       "startDate": {
         "label": "Start Date",
-        "placeholder": "Select a Start Date..."
+        "placeholder": "Select a Start Date...",
+        "toolTipText": "Specify the date when the position is expected to start."
       },
-      "endDate": {
-        "label": "End Date",
-        "placeholder": "Select the final listing date..."
+      "applicationDeadline": {
+        "label": "Application Deadline",
+        "placeholder": "Select an Application Deadline...",
+        "toolTipText": "Specify the date when applications for this position will no longer be accepted."
       },
       "workload": {
         "label": "Workload",
