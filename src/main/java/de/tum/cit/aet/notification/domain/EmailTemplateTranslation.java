@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.domain;
+package de.tum.cit.aet.notification.domain;
 
 import de.tum.cit.aet.core.constants.Language;
 import jakarta.persistence.*;

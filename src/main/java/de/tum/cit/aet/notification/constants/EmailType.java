@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.constants;
+package de.tum.cit.aet.notification.constants;
 
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import java.util.Arrays;

@@ -1,8 +1,9 @@
-package de.tum.cit.aet.core.repository;
+package de.tum.cit.aet.notification.repository;
 
-import de.tum.cit.aet.core.constants.EmailType;
-import de.tum.cit.aet.core.domain.EmailTemplate;
-import de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO;
+import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.domain.EmailTemplate;
+import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import java.util.Optional;
 import java.util.Set;
@@ -59,7 +60,7 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
      */
     @Query(
         """
-            SELECT new de.tum.cit.aet.core.dto.EmailTemplateOverviewDTO(
+            SELECT new de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO(
                 et.emailTemplateId,
                 et.templateName,
                 et.emailType,

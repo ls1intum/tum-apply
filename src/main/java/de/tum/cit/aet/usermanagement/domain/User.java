@@ -1,8 +1,8 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
-import de.tum.cit.aet.core.domain.EmailSetting;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.notification.domain.EmailSetting;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;

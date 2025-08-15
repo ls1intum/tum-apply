@@ -1,7 +1,8 @@
-package de.tum.cit.aet.core.repository;
+package de.tum.cit.aet.notification.repository;
 
-import de.tum.cit.aet.core.constants.EmailType;
-import de.tum.cit.aet.core.domain.EmailSetting;
+import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.domain.EmailSetting;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Optional;
 import java.util.Set;
