@@ -1,11 +1,11 @@
 package de.tum.cit.aet.notification.service;
 
 import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.service.DocumentService;
-import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;

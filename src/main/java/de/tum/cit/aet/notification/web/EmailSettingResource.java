@@ -1,7 +1,7 @@
 package de.tum.cit.aet.notification.web;
 
-import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.service.EmailSettingService;
 import java.util.Set;
 import lombok.AllArgsConstructor;
