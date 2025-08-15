@@ -21,6 +21,7 @@ export type StepData = {
   buttonGroupNext: StepButton[];
   status?: TemplateRef<HTMLDivElement>;
   shouldTranslate?: boolean;
+  disabled?: boolean;
 };
 
 @Component({
