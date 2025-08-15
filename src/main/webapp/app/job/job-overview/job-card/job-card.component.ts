@@ -60,7 +60,7 @@ export class JobCardComponent {
         background: 'transparent',
         boxShadow: 'none',
       },
-      data: { mode: 'login', redirectUri: `/application/create/${this.jobId()}` },
+      data: { redirectUri: `/application/create/${this.jobId()}` },
       modal: true,
       contentStyle: { padding: '0' },
       dismissableMask: true,
