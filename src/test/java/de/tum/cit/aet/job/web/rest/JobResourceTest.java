@@ -1,6 +1,8 @@
 package de.tum.cit.aet.job.web.rest;
 
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
@@ -17,6 +19,9 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import de.tum.cit.aet.utility.*;
+import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
+import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +46,8 @@ class JobResourceTest {
     @Autowired ResearchGroupRepository researchGroupRepository;
 
     MvcTestClient api;
-    ResearchGroup rg;
-    User prof;
+    ResearchGroup researchGroup;
+    User professor;
 
     @BeforeEach
     void setup() {
@@ -52,26 +57,26 @@ class JobResourceTest {
         userRepository.deleteAll();
         researchGroupRepository.deleteAll();
 
-        rg = ResearchGroupTestData.savedAll(
+        researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Algorithms Group", "Prof. Doe", "alg@example.com", "ALG",
             "CS", "We do cool stuff", "alg@example.com",
             "80333", "CIT", "Arcisstr. 21", "https://alg.tum.de"
         );
 
-        prof = UserTestData.savedProfessorAll(
-            userRepository, rg,
+        professor = UserTestData.savedProfessorAll(
+            userRepository, researchGroup,
             null, "prof.doe@tum.de", "John", "Doe", "en",
             "+49 89 1234", "https://doe.tum.de", "https://linkedin.com/in/doe",
             "DE", null, "männlich"
         );
 
-        JobTestData.saved(jobRepository, prof, rg, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
-        JobTestData.saved(jobRepository, prof, rg, "Draft Role",     JobState.DRAFT,     LocalDate.of(2025,10, 1));
+        JobTestData.saved(jobRepository, professor, researchGroup, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
+        JobTestData.saved(jobRepository, professor, researchGroup, "Draft Role",     JobState.DRAFT,     LocalDate.of(2025,10, 1));
     }
 
     @Test
-    void getAvailableJobs_onlyPublished() {
+    void getAvailableJobs_onlyPublishedOnes() {
         PageResponse<JobCardDTO> page = api.getAndReadOk(
                 "/api/jobs/available",
                 Map.of("pageNumber", "0", "pageSize", "10"),
@@ -98,7 +103,7 @@ class JobResourceTest {
     void createJob_persistsAndReturnsIt() {
         JobFormDTO payload = new JobFormDTO(
             null, "ML Engineer", "Machine Learning", "CS",
-            prof.getUserId(), Campus.GARCHING,
+            professor.getUserId(), Campus.GARCHING,
             LocalDate.of(2025,11,1), LocalDate.of(2026,5,31),
             40, 12, FundingType.FULLY_FUNDED,
             "Build ML pipelines", "data cleaning and model training",
@@ -133,7 +138,7 @@ class JobResourceTest {
             "ML Engineer",
             "Machine Learning",
             "CS",
-            prof.getUserId(),
+            professor.getUserId(),
             Campus.GARCHING,
             LocalDate.of(2025,11,1),
             LocalDate.of(2026,5,31),
@@ -146,4 +151,34 @@ class JobResourceTest {
             JobState.PUBLISHED
         );
     }
+
+    @Test
+    @WithMockUser
+    void createJobInvalid_DoesNotPersist() {
+        long before = jobRepository.count();
+
+        Map<String, Object> invalid = Map.ofEntries(
+                entry("title", "Bad Job"),
+                entry("researchArea", "Machine Learning"),
+                entry("fieldOfStudies", "CS"),
+                entry("supervisingProfessor", professor.getUserId().toString()),
+                entry("location", "GARCHING"),
+                entry("startDate", "2025-11-01"),
+                entry("endDate", "2026-05-31"),
+                entry("workload", "oops"),
+                entry("contractDuration", 12),
+                entry("fundingType", "FULLY_FUNDED"),
+                entry("description", "desc"),
+                entry("tasks", "tasks"),
+                entry("requirements", "req"),
+                entry("state", "PUBLISHED")
+        );
+
+        assertThatThrownBy(() ->
+                api.postAndReadOk("/api/jobs/create", invalid, JobFormDTO.class)
+        ).isInstanceOf(AssertionError.class);
+
+        assertThat(jobRepository.count()).isEqualTo(before);
+    }
+
 }

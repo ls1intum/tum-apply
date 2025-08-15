@@ -1,4 +1,4 @@
-package de.tum.cit.aet.utility;
+package de.tum.cit.aet.utility.testDataGeneration;
 
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
