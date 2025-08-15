@@ -21,9 +21,7 @@ import ApplicationCreationPage3Component, {
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
-  bachelorGradingScale,
   getPage2FromApplication,
-  masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
 const ApplicationFormModes = {
@@ -65,32 +63,8 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   standalone: true,
 })
 export default class ApplicationCreationFormComponent {
-  page1 = signal<ApplicationCreationPage1Data>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    gender: undefined,
-    nationality: undefined,
-    language: undefined,
-    dateOfBirth: '',
-    website: '',
-    linkedIn: '',
-    street: '',
-    city: '',
-    country: '',
-    postcode: '',
-  });
-  page2 = signal<ApplicationCreationPage2Data>({
-    bachelorDegreeName: '',
-    bachelorDegreeUniversity: '',
-    bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: '',
-    masterDegreeName: '',
-    masterDegreeUniversity: '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: '',
-  });
+  page1 = signal<ApplicationCreationPage1Data | undefined>(undefined);
+  page2 = signal<ApplicationCreationPage2Data | undefined>(undefined);
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
@@ -314,30 +288,30 @@ export default class ApplicationCreationFormComponent {
       applicationId,
       applicant: {
         user: {
-          birthday: this.page1().dateOfBirth,
-          firstName: this.page1().firstName,
-          lastName: this.page1().lastName,
-          email: this.page1().email,
-          gender: this.page1().gender?.value as string,
-          linkedinUrl: this.page1().linkedIn,
-          nationality: this.page1().nationality?.value as string,
-          phoneNumber: this.page1().phoneNumber,
-          website: this.page1().website,
-          selectedLanguage: this.page1().language?.value as string,
+          birthday: this.page1()?.dateOfBirth,
+          firstName: this.page1()?.firstName,
+          lastName: this.page1()?.lastName,
+          email: this.page1()?.email,
+          gender: this.page1()?.gender?.value as string,
+          linkedinUrl: this.page1()?.linkedIn,
+          nationality: this.page1()?.nationality?.value as string,
+          phoneNumber: this.page1()?.phoneNumber,
+          website: this.page1()?.website,
+          selectedLanguage: this.page1()?.language?.value as string,
           userId: this.applicantId(),
         },
-        bachelorDegreeName: this.page2().bachelorDegreeName,
-        masterDegreeName: this.page2().masterDegreeName,
-        bachelorGrade: this.page2().bachelorGrade,
-        masterGrade: this.page2().masterGrade,
+        bachelorDegreeName: this.page2()?.bachelorDegreeName,
+        masterDegreeName: this.page2()?.masterDegreeName,
+        bachelorGrade: this.page2()?.bachelorGrade,
+        masterGrade: this.page2()?.masterGrade,
         bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
         masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
-        city: this.page1().city,
-        country: this.page1().country,
-        postalCode: this.page1().postcode,
-        street: this.page1().street,
-        bachelorUniversity: this.page2().bachelorDegreeUniversity,
-        masterUniversity: this.page2().masterDegreeUniversity,
+        city: this.page1()?.city,
+        country: this.page1()?.country?.value as string,
+        postalCode: this.page1()?.postcode,
+        street: this.page1()?.street,
+        bachelorUniversity: this.page2()?.bachelorDegreeUniversity,
+        masterUniversity: this.page2()?.masterDegreeUniversity,
       },
       applicationState: state,
       desiredDate: this.page3()?.desiredStartDate ?? '',

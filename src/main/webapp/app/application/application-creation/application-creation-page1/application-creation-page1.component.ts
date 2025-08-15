@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, model, output } from '@angular/core';
-import { ApplicationForApplicantDTO } from 'app/generated';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, Signal, effect } from '@angular/core';
+import { AbstractControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
+import * as postalCodes from 'postal-codes-js';
+import { ApplicationForApplicantDTO } from 'app/generated';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
+import { ApplicationCreationPageBaseComponent } from '../application-creation-page.component';
 
-import { selectNationality } from './nationalities';
+import { selectCountries, selectNationality } from './nationalities';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -25,7 +28,7 @@ export type ApplicationCreationPage1Data = {
   linkedIn: string;
   street: string;
   city: string;
-  country: string;
+  country?: SelectOption;
   postcode: string;
 };
 
@@ -54,10 +57,20 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     linkedIn: application.applicant?.user.linkedinUrl ?? '',
     street: application.applicant?.street ?? '',
     city: application.applicant?.city ?? '',
-    country: application.applicant?.country ?? '',
+    country: selectCountries.find(val => val.value === application.applicant?.country),
     postcode: application.applicant?.postalCode ?? '',
   };
 };
+
+function postalCodeValidator(getCountryFn: () => string): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const country = getCountryFn().toUpperCase();
+    const value = control.value;
+    if (!country || !value) return null;
+    const result = postalCodes.validate(country, value);
+    return result === true ? null : { invalidPostalCode: result };
+  };
+}
 
 @Component({
   selector: 'jhi-application-creation-page1',
@@ -75,74 +88,80 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   styleUrl: './application-creation-page1.component.scss',
   standalone: true,
 })
-export default class ApplicationCreationPage1Component {
-  data = model.required<ApplicationCreationPage1Data>();
-
-  valid = output<boolean>();
-  changed = output<boolean>();
-
+export default class ApplicationCreationPage1Component extends ApplicationCreationPageBaseComponent<ApplicationCreationPage1Data> {
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
-  fb = inject(FormBuilder);
-  page1Form = computed(() => {
-    const currentData = this.data();
-    return this.fb.group({
-      firstName: [currentData.firstName, Validators.required],
-      lastName: [currentData.lastName, Validators.required],
-      email: [currentData.email, Validators.required],
-      phoneNumber: [currentData.phoneNumber, Validators.required],
+  selectCountryLocal = selectCountries;
 
-      street: [currentData.street, Validators.required],
-      city: [currentData.city, Validators.required],
-      country: [currentData.country, Validators.required],
-      postcode: [currentData.postcode, Validators.required],
+  page1Form: FormGroup = this.fb.group({
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    phoneNumber: ['', Validators.required],
+    street: ['', Validators.required],
+    city: ['', Validators.required],
+    postcode: ['', Validators.required],
+    dateOfBirth: [''],
+    website: [''],
+    linkedIn: [''],
+  });
 
-      // Optional fields
-      gender: [currentData.gender ?? null],
-      nationality: [currentData.nationality ?? null],
-      language: [currentData.language ?? null],
-      dateOfBirth: [currentData.dateOfBirth],
-      website: [currentData.website],
-      linkedIn: [currentData.linkedIn],
+  get pageForm(): FormGroup {
+    return this.page1Form;
+  }
+
+  formValue: Signal<ApplicationCreationPage1Data> = toSignal(this.formValue$(), { initialValue: this.pageForm.value });
+
+  initializeFormEffect = effect(() => {
+    if (this.hasInitialized()) return;
+    const data = this.data();
+    if (!data) return;
+
+    this.page1Form.patchValue({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      street: data.street,
+      city: data.city,
+      postcode: data.postcode,
+      dateOfBirth: data.dateOfBirth,
+      website: data.website,
+      linkedIn: data.linkedIn,
     });
+    const postcodeControl = this.page1Form.get('postcode');
+    if (postcodeControl) {
+      postcodeControl.addValidators([Validators.required, postalCodeValidator(() => this.data()?.country?.value as string)]);
+    }
+
+    this.hasInitialized.set(true);
   });
 
   constructor() {
-    effect(onCleanup => {
-      const form = this.page1Form();
-      const valueSubscription = form.valueChanges.subscribe(value => {
-        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-        this.data.set({
-          ...this.data(),
-          ...normalizedValue,
-        });
-        this.changed.emit(true);
-        this.valid.emit(form.valid);
-      });
-
-      const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(form.valid);
-      });
-
-      this.valid.emit(form.valid);
-
-      onCleanup(() => {
-        valueSubscription.unsubscribe();
-        statusSubscription.unsubscribe();
-      });
-    });
-  }
-
-  emitChanged(): void {
-    this.changed.emit(true);
+    super();
+    void this.updateEffect;
   }
 
   setDateOfBirth($event: string | undefined): void {
-    this.data.set({
-      ...this.data(),
-      dateOfBirth: $event ?? '',
-    });
-    this.emitChanged();
+    const currentData = this.data();
+    if (currentData !== undefined) {
+      this.data.set({
+        ...currentData,
+        dateOfBirth: $event ?? '',
+      });
+    }
+    this.changed.emit(true);
+  }
+
+  updateSelectField(field: keyof ApplicationCreationPage1Data, value: any): void {
+    const currentData = this.data();
+    if (currentData !== undefined) {
+      this.data.set({
+        ...currentData,
+        [field]: value,
+      });
+    }
+    this.changed.emit(true);
   }
 }

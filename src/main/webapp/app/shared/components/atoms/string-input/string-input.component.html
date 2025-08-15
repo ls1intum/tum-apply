@@ -2,7 +2,11 @@
   <div class="label-top label-input-wrapper">
     @if (label()) {
       <label class="custom-label" [for]="id()">
-        {{ label() }}
+        @if (shouldTranslate()) {
+          <span [jhiTranslate]="label() ?? ''"></span>
+        } @else {
+          {{ label() }}
+        }
         @if (required()) {
           <span class="required">*</span>
         }
