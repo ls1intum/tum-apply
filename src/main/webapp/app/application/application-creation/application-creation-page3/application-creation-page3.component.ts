@@ -75,7 +75,6 @@ export default class ApplicationCreationPage3Component extends ApplicationCreati
     return doc ? [doc] : undefined;
   });
 
-
   initializeFormEffect = effect(() => {
     if (this.hasInitialized()) return;
     const data = this.data();

@@ -41,14 +41,26 @@
         />
       </div>
       <div class="w-1/2 pr-4">
-        <jhi-string-input
-          label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}"
-          [required]="true"
-          [(model)]="data.bachelorGrade"
-          [control]="page2Form.controls.bachelorGrade"
-          icon="circle-info"
-          [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
-        />
+        @switch (data.bachelorGradingScale.value) {
+          @case (BachelorGradingScaleEnumLocal.OneToFour) {
+            <jhi-number-input
+              label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}"
+              [required]="true"
+              [model]="getBachelorGradeAsNumber()"
+              (modelChange)="setBachelorGradeAsNumber($event)"
+              [control]="page2Form.controls.bachelorGrade"
+              icon="circle-info"
+              [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
+              [min]="1"
+              [max]="4"
+              [minFractionDigits]="1"
+              [maxFractionDigits]="1"
+            />
+          }
+          @default {
+            <span>Not Implemented</span>
+          }
+        }
       </div>
     </div>
 
@@ -114,6 +126,26 @@
           icon="circle-info"
           [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
         />
+        @switch (data.masterGradingScale.value) {
+          @case (MasterGradingScaleEnumLocal.OneToFour) {
+            <jhi-number-input
+              label="{{ 'entity.applicationPage2.label.masterGrade' | translate }}"
+              [required]="true"
+              [model]="getMasterGradeAsNumber()"
+              (modelChange)="setMasterGradeAsNumber($event)"
+              [control]="page2Form.controls.masterGrade"
+              icon="circle-info"
+              [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
+              [min]="1"
+              [max]="4"
+              [minFractionDigits]="1"
+              [maxFractionDigits]="1"
+            />
+          }
+          @default {
+            <span>Not Implemented</span>
+          }
+        }
       </div>
     </div>
   }

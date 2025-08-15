@@ -7,6 +7,7 @@ import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationCreationPageBaseComponent } from '../application-creation-page.component';
@@ -61,6 +62,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
     ReactiveFormsModule,
     StringInputComponent,
     TranslateModule,
+    NumberInputComponent,
   ],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
@@ -69,6 +71,8 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 export default class ApplicationCreationPage2Component extends ApplicationCreationPageBaseComponent<ApplicationCreationPage2Data> {
   bachelorGradingScaleLocal = bachelorGradingScale;
   masterGradingScaleLocal = masterGradingScale;
+  BachelorGradingScaleEnumLocal = ApplicantDTO.BachelorGradingScaleEnum;
+  MasterGradingScaleEnumLocal = ApplicantDTO.MasterGradingScaleEnum;
 
   applicationIdForDocuments = input<string | undefined>();
   documentIdsBachelorTranscript = input<DocumentInformationHolderDTO[] | undefined>();
@@ -109,4 +113,31 @@ export default class ApplicationCreationPage2Component extends ApplicationCreati
 
     this.hasInitialized.set(true);
   });
+
+  getBachelorGradeAsNumber(): number | undefined {
+    const bachelorGrade = this.data()?.bachelorGrade;
+    if (bachelorGrade !== undefined) {
+      Number.parseFloat(bachelorGrade);
+    }
+    return undefined;
+  }
+  setBachelorGradeAsNumber(ev: number | undefined): void {
+    this.data.set({
+      ...this.data(),
+      bachelorGrade: ev ? ev.toString() : undefined,
+    } as ApplicationCreationPage2Data);
+  }
+  getMasterGradeAsNumber(): number | undefined {
+    const masterGrade = this.data()?.masterGrade;
+    if (masterGrade !== undefined) {
+      Number.parseFloat(masterGrade);
+    }
+    return undefined;
+  }
+  setMasterGradeAsNumber(ev: number | undefined): void {
+    this.data.set({
+      ...this.data(),
+      masterGrade: ev ? ev.toString() : undefined,
+    } as ApplicationCreationPage2Data);
+  }
 }

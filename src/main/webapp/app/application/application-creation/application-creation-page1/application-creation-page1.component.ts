@@ -138,6 +138,11 @@ export default class ApplicationCreationPage1Component extends ApplicationCreati
     this.hasInitialized.set(true);
   });
 
+  constructor() {
+    super();
+    void this.updateEffect;
+  }
+
   setDateOfBirth($event: string | undefined): void {
     const currentData = this.data();
     if (currentData !== undefined) {
