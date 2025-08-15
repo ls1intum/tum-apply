@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Thin HTTP client for MVC.
@@ -78,13 +79,54 @@ public class MvcTestClient {
         return mockMvc.perform(rb);
     }
 
-    // --- Shortcuts that parse JSON bodies --------------------------------------------------------
-    public <T> T read(MvcResult result, Class<T> type) throws Exception {
-        return om.readValue(body(result), type);
+    // --- No-throws convenience (assert 200 OK inside) -------------------------------------------
+    public MvcResult getOk(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isOk()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed", e);
+        }
     }
 
-    public <T> T read(MvcResult result, TypeReference<T> typeRef) throws Exception {
-        return om.readValue(body(result), typeRef);
+    public MvcResult postOk(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isOk()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed", e);
+        }
+    }
+
+    public <T> T getAndReadOk(String url, Map<String, String> params, Class<T> type, MediaType... accepts) {
+        return read(getOk(url, params, accepts), type);
+    }
+
+    public <T> T getAndReadOk(String url, Map<String, String> params, TypeReference<T> typeRef, MediaType... accepts) {
+        return read(getOk(url, params, accepts), typeRef);
+    }
+
+    public <T> T postAndReadOk(String url, Object body, Class<T> type, MediaType... accepts) {
+        return read(postOk(url, body, accepts), type);
+    }
+
+    public <T> T postAndReadOk(String url, Object body, TypeReference<T> typeRef, MediaType... accepts) {
+        return read(postOk(url, body, accepts), typeRef);
+    }
+
+    // --- Shortcuts that parse JSON bodies --------------------------------------------------------
+    public <T> T read(MvcResult result, Class<T> type) {
+        try {
+            return om.readValue(body(result), type);
+        } catch (Exception e) {
+            throw new AssertionError("Failed to read body as " + type.getSimpleName(), e);
+        }
+    }
+
+    public <T> T read(MvcResult result, TypeReference<T> typeRef) {
+        try {
+            return om.readValue(body(result), typeRef);
+        } catch (Exception e) {
+            throw new AssertionError("Failed to read body via TypeReference", e);
+        }
     }
 
     public <T> T postAndRead(String url, Object body, Class<T> type, MediaType... accepts) throws Exception {
