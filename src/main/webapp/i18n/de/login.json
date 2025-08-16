@@ -7,8 +7,12 @@
     },
     "emailLogin": {
       "email": "E-Mail",
-      "emailPlaceholder": "name@example.de",
+      "emailPlaceholder": "name@beispiel.de",
       "password": "Passwort",
+      "passwordPrompt": "Geben Sie ein starkes Passwort ein",
+      "weakLabel": "Unsicher",
+      "mediumLabel": "Mittel",
+      "strongLabel": "Stark",
       "login": "Anmelden",
       "register": "Registrieren"
     },

@@ -5,12 +5,13 @@ import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/fo
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { Password } from 'primeng/password';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
 @Component({
   selector: 'jhi-password-input',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule, Password],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule, TranslateModule, Password],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -24,6 +25,7 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 })
 export class PasswordInputComponent extends BaseInputDirective<string> {
   tooltipText = input<string | undefined>(undefined);
+  showStrength = input<boolean>(false);
 
   onInputChange(value: string): void {
     this.modelChange.emit(value);
