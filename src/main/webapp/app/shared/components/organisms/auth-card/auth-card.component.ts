@@ -42,14 +42,6 @@ export class AuthCardComponent {
     direction: 'vertical',
     fullWidth: true,
     buttons: [
-      {
-        label: this.mode() === 'register' ? 'register.buttons.tum' : 'login.buttons.tum',
-        severity: 'primary',
-        variant: 'outlined',
-        disabled: false,
-        fullWidth: true,
-        onClick: this.onTUMSSOLogin.bind(this),
-      },
       // TODO: Enable Microsoft login when available in Production environment
       {
         label: this.mode() === 'register' ? 'register.buttons.apple' : 'login.buttons.apple',
