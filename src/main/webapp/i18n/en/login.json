@@ -1,10 +1,6 @@
 {
   "login": {
     "header": "Sign in to TUMApply",
-    "tabs": {
-      "student": "Student / Applicant",
-      "professor": "Professor / Supervisor"
-    },
     "emailLogin": {
       "email": "Email",
       "emailPlaceholder": "name@example.de",
@@ -13,18 +9,10 @@
       "weakLabel": "Insecure",
       "mediumLabel": "Medium",
       "strongLabel": "Strong",
-      "login": "Login",
-      "register": "Register"
-    },
-    "buttons": {
-      "microsoft": "Sign in with Microsoft",
-      "apple": "Sign in with Apple",
-      "google": "Sign in with Google",
-      "tum": "Sign in with TUM"
+      "login": "Login"
     },
     "texts": {
-      "or": "OR",
-      "professor": "As a TUM professor or supervisor, please sign in with your TUM login credentials.",
+      "or": "OR SIGN IN WITH",
       "accountmissing": {
         "prefix": "Don't have a TUMApply account yet?",
         "link": "Register here."

@@ -1,10 +1,6 @@
 {
   "login": {
     "header": "Melde dich bei TUMApply an",
-    "tabs": {
-      "student": "Studierende / Bewerbende",
-      "professor": "Professor*in / Betreuende"
-    },
     "emailLogin": {
       "email": "E-Mail",
       "emailPlaceholder": "name@beispiel.de",
@@ -13,18 +9,10 @@
       "weakLabel": "Unsicher",
       "mediumLabel": "Mittel",
       "strongLabel": "Stark",
-      "login": "Anmelden",
-      "register": "Registrieren"
-    },
-    "buttons": {
-      "microsoft": "Anmelden mit Microsoft",
-      "apple": "Anmelden mit Apple",
-      "google": "Anmelden mit Google",
-      "tum": "Anmelden mit TUM"
+      "login": "Anmelden"
     },
     "texts": {
-      "or": "ODER",
-      "professor": "Als TUM-Professor*in oder Betreuer*in melden Sie sich bitte mit Ihren TUM-Zugangsdaten an.",
+      "or": "ODER ANMELDEN MIT",
       "accountmissing": {
         "prefix": "Sie haben noch kein TUMApply-Konto?",
         "link": "Hier registrieren."
