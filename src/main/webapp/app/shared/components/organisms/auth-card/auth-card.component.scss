@@ -1,10 +1,5 @@
 .login-card {
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   border-radius: 0.75rem;
-  border: var(--p-border-default);
   background: var(--p-background-surface);
   width: auto;
   max-width: 35rem;
@@ -16,26 +11,20 @@
 
 .login-header {
   display: flex;
-  padding: 1rem 1rem;
-  flex-direction: column;
+  padding: 1.3rem 1rem;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
   align-self: stretch;
   background: var(--p-primary-color);
   color: var(--p-text-on-primary);
-  font-weight: 600;
-  font-size: 1.25rem;
+  font-weight: 700;
+  font-size: 2rem;
   border-radius: 0.75rem 0.75rem 0 0;
-
-  .tum-logo {
-    height: 3rem;
-  }
 }
 
 .login-content {
   display: flex;
-  padding: 1rem;
+  padding: 2rem;
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
@@ -53,10 +42,15 @@
 
 .login-buttons {
   display: flex;
+  flex: 1 1 auto;
+  align-self: stretch;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  align-self: stretch;
+}
+
+.login-credentials {
+  width: 100%;
 }
 
 .login-description {
@@ -70,6 +64,8 @@
 
 .login-providers {
   display: flex;
+  flex: 1 1 auto;
+  align-self: stretch;
   justify-content: center;
   color: var(--p-text-primary);
 }

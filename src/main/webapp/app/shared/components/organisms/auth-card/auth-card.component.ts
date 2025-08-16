@@ -1,12 +1,9 @@
-import { Component, Signal, ViewEncapsulation, computed, inject, signal } from '@angular/core';
-import { TabsModule } from 'primeng/tabs';
+import { Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
 
-import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
-import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { IdpProvider } from '../../../../core/auth/keycloak.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
@@ -15,16 +12,7 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [
-    ButtonComponent,
-    ButtonGroupComponent,
-    CommonModule,
-    CredentialsGroupComponent,
-    DividerModule,
-    TabsModule,
-    RouterModule,
-    TranslateDirective,
-  ],
+  imports: [ButtonGroupComponent, CommonModule, CredentialsGroupComponent, DividerModule, RouterModule, TranslateDirective],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -34,9 +22,6 @@ export class AuthCardComponent {
   readonly isRegister = computed(() => this.mode() === 'register');
 
   authFacadeService = inject(AuthFacadeService);
-  authTabService = inject(AuthTabService);
-
-  value: Signal<number> = this.authTabService.getSelectedTab();
 
   readonly idpButtons = computed<ButtonGroupData>(() => ({
     direction: 'vertical',
@@ -44,7 +29,7 @@ export class AuthCardComponent {
     buttons: [
       // TODO: Enable Microsoft login when available in Production environment
       {
-        label: this.mode() === 'register' ? 'register.buttons.apple' : 'login.buttons.apple',
+        label: 'Apple',
         icon: 'apple',
         severity: 'primary',
         variant: 'outlined',
@@ -55,7 +40,7 @@ export class AuthCardComponent {
         },
       },
       {
-        label: this.mode() === 'register' ? 'register.buttons.google' : 'login.buttons.google',
+        label: 'Google',
         icon: 'google',
         severity: 'primary',
         variant: 'outlined',
@@ -67,10 +52,6 @@ export class AuthCardComponent {
       },
     ],
   }));
-
-  onTabChange(newValue: string | number): void {
-    this.authTabService.setSelectedTab(Number(newValue));
-  }
 
   onTUMSSOLogin(): void {
     this.authFacadeService.loginWithTUM(this.redirectUri());
