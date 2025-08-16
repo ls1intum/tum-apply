@@ -38,25 +38,11 @@ export default class MainComponent {
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
     effect(() => {
-      void this.initApp();
+      this.initApp();
     });
   }
 
-  private async initApp(): Promise<void> {
-    const currentUrl = this.router.url;
-    const isPublicRoute = currentUrl === '/' || currentUrl.startsWith('/login') || currentUrl.startsWith('/register');
-
-    if (!isPublicRoute) {
-      if (!this.accountService.loaded()) {
-        console.warn('User not loaded, redirecting to login.');
-
-        await this.router.navigate(['/login'], {
-          queryParams: { redirect: currentUrl },
-        });
-        return;
-      }
-    }
-
+  private initApp(): void {
     this.router.events.subscribe(() => {
       this.currentUrl.set(this.router.url);
     });

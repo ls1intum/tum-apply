@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 
 import { AccountService } from './account.service';
 
-export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRouteSnapshot) => {
   const router = inject(Router);
   const accountService = inject(AccountService);
 
@@ -17,10 +17,7 @@ export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRoute
 
   // If route requires authentication and user is not logged in, redirect to login
   if (!accountService.signedIn()) {
-    const targetUrl = state.url;
-    await router.navigate(['/login'], {
-      queryParams: { redirect: targetUrl },
-    });
+    await router.navigate(['/']);
     return false;
   }
 
