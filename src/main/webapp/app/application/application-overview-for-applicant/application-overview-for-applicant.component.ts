@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
@@ -17,15 +16,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  imports: [
-    DynamicTableComponent,
-    ButtonComponent,
-    BadgeModule,
-    SharedModule,
-    TranslateModule,
-    ToastComponent,
-    ApplicationStateForApplicantsComponent,
-  ],
+  imports: [DynamicTableComponent, ButtonComponent, BadgeModule, SharedModule, TranslateModule, ApplicationStateForApplicantsComponent],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
 })
