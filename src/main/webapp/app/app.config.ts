@@ -17,6 +17,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
+import { MessageService } from 'primeng/api';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
@@ -48,6 +49,7 @@ export function apiConfigFactory(): Configuration {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    MessageService,
     provideAppInitializer(initializeAuth),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
