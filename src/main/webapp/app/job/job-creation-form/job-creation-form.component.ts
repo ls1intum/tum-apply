@@ -18,6 +18,7 @@ import { AccountService } from '../../core/auth/account.service';
 import * as DropdownOptions from '.././dropdown-options';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
+import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -39,10 +40,27 @@ type SavingState = 'SAVED' | 'SAVING';
     TranslateModule,
     SelectComponent,
     NumberInputComponent,
+    EditorComponent,
   ],
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
+  /* eslint-disable @typescript-eslint/member-ordering */
+
+  // Services
+  private fb = inject(FormBuilder);
+  private jobResourceService = inject(JobResourceService);
+  private accountService = inject(AccountService);
+  private autoSaveTimer: number | undefined;
+  private router = inject(Router);
+  private location = inject(Location);
+  private route = inject(ActivatedRoute);
+
+  constructor() {
+    this.init();
+    this.setupAutoSave();
+  }
+
   // State signals
   mode = signal<JobFormMode>('create');
   jobId = signal<string>('');
@@ -50,20 +68,25 @@ export class JobCreationFormComponent {
   isLoading = signal<boolean>(true);
   savingState = signal<SavingState>('SAVED');
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
+
   // Forms
   basicInfoForm = this.createBasicInfoForm();
   positionDetailsForm = this.createPositionDetailsForm();
+
   // Template references
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
   panel2 = viewChild<TemplateRef<HTMLDivElement>>('panel2');
   panel3 = viewChild<TemplateRef<HTMLDivElement>>('panel3');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
+
   // Tracks form validity
   basicInfoValid = signal(false);
   positionDetailsValid = signal(false);
   allFormsValid = computed(() => this.basicInfoValid() && this.positionDetailsValid());
+
   basicInfoChanges = toSignal(this.basicInfoForm.statusChanges, { initialValue: this.basicInfoForm.status });
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
+
   /** Effect that updates validity signals when form status changes */
   formValidationEffect = effect(() => {
     this.basicInfoChanges();
@@ -72,75 +95,30 @@ export class JobCreationFormComponent {
     this.basicInfoValid.set(this.basicInfoForm.valid);
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
   });
+
   // Data computation
   currentJobData = computed<JobFormDTO>(() => this.createJobDTO('DRAFT'));
+
   publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO('PUBLISHED') : undefined));
+
   hasUnsavedChanges = computed(() => {
     const current = this.currentJobData();
     const lastSaved = this.lastSavedData();
     return JSON.stringify(current) !== JSON.stringify(lastSaved);
   });
+
   /** Computed page title based on current mode (create/edit) */
   readonly pageTitle = computed(() =>
     this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
   );
+
   /** Computed CSS classes for saving badge based on current saving state */
   readonly savingBadgeCalculatedClass = computed(
     () => `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === 'SAVED' ? 'saved_color' : 'saving_color'}`,
   );
+
   // Step configuration
   readonly stepData = computed<StepData[]>(() => this.buildStepData());
-  DropdownOptions = DropdownOptions;
-  basicInfoFormValueSignal = toSignal(this.basicInfoForm.valueChanges, {
-    initialValue: this.basicInfoForm.getRawValue(),
-  });
-  positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
-    initialValue: this.positionDetailsForm.getRawValue(),
-  });
-  // Services
-  private fb = inject(FormBuilder);
-  private jobResourceService = inject(JobResourceService);
-  private accountService = inject(AccountService);
-  private autoSaveTimer: number | undefined;
-
-  // Character counters
-  private router = inject(Router);
-  private location = inject(Location);
-  private route = inject(ActivatedRoute);
-
-  constructor() {
-    await this.init();
-    this.setupAutoSave();
-  }
-
-  // TODO will be removed after Editor Component Integration
-  get descriptionLength(): number {
-    return this.positionDetailsForm.get('description')?.value?.length ?? 0;
-  }
-
-  get tasksLength(): number {
-    return this.positionDetailsForm.get('tasks')?.value?.length ?? 0;
-  }
-
-  get requirementsLength(): number {
-    return this.positionDetailsForm.get('requirements')?.value?.length ?? 0;
-  }
-
-  async publishJob(): Promise<void> {
-    const jobData = this.publishableJobData();
-    if (!jobData) return;
-
-    try {
-      await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
-      await this.router.navigate(['/my-positions']);
-    } catch (error) {
-      console.error('Failed to publish job:', error);
-    }
-  }
-
-  onBack(): void {
-    this.location.back();
-  }
 
   /**
    * Builds step configuration data for the progress stepper component
@@ -253,6 +231,31 @@ export class JobCreationFormComponent {
     return steps;
   }
 
+  DropdownOptions = DropdownOptions;
+
+  basicInfoFormValueSignal = toSignal(this.basicInfoForm.valueChanges, {
+    initialValue: this.basicInfoForm.getRawValue(),
+  });
+  positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
+    initialValue: this.positionDetailsForm.getRawValue(),
+  });
+
+  async publishJob(): Promise<void> {
+    const jobData = this.publishableJobData();
+    if (!jobData) return;
+
+    try {
+      await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
+      this.router.navigate(['/my-positions']);
+    } catch (error) {
+      console.error('Failed to publish job:', error);
+    }
+  }
+
+  onBack(): void {
+    this.location.back();
+  }
+
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
       // Basic Info Form: Currently required for saving a job
@@ -307,7 +310,7 @@ export class JobCreationFormComponent {
     try {
       const userId = this.accountService.loadedUser()?.id ?? '';
       if (!userId) {
-        await this.router.navigate(['/']);
+        this.router.navigate(['/login']);
         return;
       }
       this.userId.set(userId);
@@ -323,7 +326,7 @@ export class JobCreationFormComponent {
         const jobId = this.route.snapshot.paramMap.get('job_id') ?? '';
 
         if (!jobId) {
-          await this.router.navigate(['/my-positions']);
+          this.router.navigate(['/my-positions']);
           return;
         }
 
@@ -333,7 +336,7 @@ export class JobCreationFormComponent {
       }
     } catch (error) {
       console.error('Initialization error:', error);
-      await this.router.navigate(['/my-positions']);
+      this.router.navigate(['/my-positions']);
     } finally {
       this.isLoading.set(false);
     }
@@ -389,7 +392,6 @@ export class JobCreationFormComponent {
       this.autoSaveTimer = undefined;
     }
   }
-
   /**
    * Performs the actual auto-save operation by calling the appropriate API endpoint
    * Handles both create and update scenarios based on existing job ID

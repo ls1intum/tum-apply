@@ -19,6 +19,7 @@ export abstract class BaseInputDirective<T> {
   shouldTranslate = input<boolean>(false); // Whether to translate the label and placeholder
   tooltipText = input<string | undefined>(undefined);
   autofocus = input<boolean>(false);
+  errorEnabled = input<boolean>(true);
 
   readonly formValidityVersion = signal(0);
   isTouched = signal(false);
