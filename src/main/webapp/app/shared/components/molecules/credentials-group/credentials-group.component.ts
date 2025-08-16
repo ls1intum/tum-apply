@@ -1,7 +1,7 @@
 import { Component, Input, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PasswordModule } from 'primeng/password';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
@@ -37,8 +37,8 @@ export class CredentialsGroupComponent {
 
   isSubmitting = false;
   form = new FormGroup({
-    email: new FormControl<string>('', [Validators.required, Validators.email]),
-    password: new FormControl<string>('', Validators.required),
+    email: new FormControl<string>(''),
+    password: new FormControl<string>(''),
   });
   readonly _formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
 

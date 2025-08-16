@@ -2,6 +2,9 @@ import { Component, ViewEncapsulation, computed, inject, signal } from '@angular
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith } from 'rxjs';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { IdpProvider } from '../../../../core/auth/keycloak.service';
@@ -22,14 +25,23 @@ export class AuthCardComponent {
   readonly isRegister = computed(() => this.mode() === 'register');
 
   authFacadeService = inject(AuthFacadeService);
+  breakpointObserver = inject(BreakpointObserver);
+
+  readonly onlyIcons = toSignal(
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
+      map(state => state.matches),
+      startWith(false),
+    ),
+    { initialValue: false },
+  );
 
   readonly idpButtons = computed<ButtonGroupData>(() => ({
-    direction: 'vertical',
-    fullWidth: true,
+    direction: this.onlyIcons() ? 'horizontal' : 'vertical',
+    fullWidth: !this.onlyIcons(),
     buttons: [
       // TODO: Enable Microsoft login when available in Production environment
       {
-        label: 'Apple',
+        label: this.onlyIcons() ? undefined : 'Apple',
         icon: 'apple',
         severity: 'primary',
         variant: 'outlined',
@@ -40,7 +52,7 @@ export class AuthCardComponent {
         },
       },
       {
-        label: 'Google',
+        label: this.onlyIcons() ? undefined : 'Google',
         icon: 'google',
         severity: 'primary',
         variant: 'outlined',
