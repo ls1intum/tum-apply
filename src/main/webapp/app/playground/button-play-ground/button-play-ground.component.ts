@@ -1,13 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 
 @Component({
   selector: 'jhi-button-play-ground',
-  imports: [ButtonComponent, ButtonGroupComponent, ToastComponent],
+  imports: [ButtonComponent, ButtonGroupComponent],
   templateUrl: './button-play-ground.component.html',
   styleUrl: './button-play-ground.component.scss',
   standalone: true,

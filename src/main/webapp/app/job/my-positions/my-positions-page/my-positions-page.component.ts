@@ -5,7 +5,6 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -18,16 +17,7 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    TagComponent,
-    ButtonComponent,
-    DynamicTableComponent,
-    TranslateDirective,
-    TranslateModule,
-    SortBarComponent,
-    ToastComponent,
-  ],
+  imports: [CommonModule, TagComponent, ButtonComponent, DynamicTableComponent, TranslateDirective, TranslateModule, SortBarComponent],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
 })

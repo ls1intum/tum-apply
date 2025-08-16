@@ -8,7 +8,6 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { EmailTemplateDTO } from '../../../generated';
@@ -27,7 +26,6 @@ import { ToastService } from '../../../service/toast-service';
     FontAwesomeModule,
     StringInputComponent,
     TabsModule,
-    ToastComponent,
     QuillEditorComponent,
     ButtonComponent,
     SelectComponent,

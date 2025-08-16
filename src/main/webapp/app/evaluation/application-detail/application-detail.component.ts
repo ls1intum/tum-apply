@@ -4,7 +4,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
@@ -42,7 +41,6 @@ const WINDOW_SIZE = 7;
     ReviewDialogComponent,
     TranslateDirective,
     DocumentGroupComponent,
-    ToastComponent,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
