@@ -75,8 +75,10 @@ export class CredentialsGroupComponent {
     this.isSubmitting = false;
 
     if (success) {
-      this.form.reset({ email: '', password: '' });
+      this.form.reset({}, { emitEvent: false });
+      return;
     }
+
     this.form.markAsPristine();
     this.form.markAsUntouched();
     this.form.updateValueAndValidity({ emitEvent: true });
