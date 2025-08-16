@@ -34,7 +34,7 @@
         "placeholder": "Wählen Sie einen Standort..."
       },
       "startDate": {
-        "label": "Startdatum",
+        "label": "Startdatum der Stelle",
         "placeholder": "Wählen Sie ein Startdatum...",
         "toolTipText": "Geben Sie das Datum an, an dem die Stelle voraussichtlich beginnt."
       },

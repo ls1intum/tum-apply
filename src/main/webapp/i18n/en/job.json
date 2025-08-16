@@ -34,7 +34,7 @@
         "placeholder": "Select a Location..."
       },
       "startDate": {
-        "label": "Start Date",
+        "label": "Start Date of Job",
         "placeholder": "Select a Start Date...",
         "toolTipText": "Specify the date when the position is expected to start."
       },
