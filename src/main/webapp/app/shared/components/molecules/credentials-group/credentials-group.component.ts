@@ -1,11 +1,12 @@
-import { Component, Input, computed } from '@angular/core';
+import { Component, Input, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PasswordModule } from 'primeng/password';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
@@ -32,30 +33,54 @@ import { PasswordInputComponent } from '../../atoms/password-input/password-inpu
   styleUrl: './credentials-group.component.scss',
 })
 export class CredentialsGroupComponent {
-  @Input() submitHandler?: (credentials: { email: string; password: string }) => void;
+  @Input() submitHandler?: (credentials: { email: string; password: string }) => Promise<boolean>;
 
+  isSubmitting = false;
   form = new FormGroup({
-    email: new FormControl<string>('', [Validators.required, Validators.email]),
-    password: new FormControl<string>('', Validators.required),
+    email: new FormControl<string>(''),
+    password: new FormControl<string>(''),
   });
-  formSubmitted = false;
+  readonly _formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
 
-  emailInvalid = computed(() => {
-    const control = this.form.controls['email'];
-    return control.invalid && (control.touched || this.formSubmitted);
+  submitError = signal<string | null>(null);
+  readonly visibleError = computed(() => {
+    this._formValue();
+    return this.form.dirty ? null : this.submitError();
   });
 
-  passwordInvalid = computed(() => {
-    const control = this.form.controls['password'];
-    return control.invalid && (control.touched || this.formSubmitted);
-  });
+  private translate = inject(TranslateService);
 
   onSubmit(): void {
-    this.formSubmitted = true;
-    if (this.form.valid && this.submitHandler) {
-      this.submitHandler(this.form.value as { email: string; password: string });
-      this.form.reset();
-      this.formSubmitted = false;
+    if (this.form.invalid || !this.submitHandler) return;
+
+    this.isSubmitting = true;
+    const credentials = this.form.value as { email: string; password: string };
+
+    this.submitHandler(credentials)
+      .then(success => {
+        if (success) {
+          this.submitError.set(null);
+        } else {
+          this.submitError.set(this.translate.instant('login.messages.error.invalidCredentials'));
+        }
+        this.afterSubmit(success);
+      })
+      .catch(() => {
+        this.submitError.set(this.translate.instant('login.messages.error.unexpected'));
+        this.afterSubmit(false);
+      });
+  }
+
+  private afterSubmit(success: boolean): void {
+    this.isSubmitting = false;
+
+    if (success) {
+      this.form.reset({}, { emitEvent: false });
+      return;
     }
+
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity({ emitEvent: true });
   }
 }

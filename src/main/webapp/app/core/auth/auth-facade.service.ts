@@ -50,12 +50,18 @@ export class AuthFacadeService {
    * @returns true on success, throws on failure
    */
   async loginWithEmail(email: string, password: string, redirectUri?: string): Promise<boolean> {
-    await this.emailAuthenticationService.login(email, password);
-    // If a redirect URI is provided, navigate to it
-    if (redirectUri !== undefined) {
-      window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+    try {
+      await this.emailAuthenticationService.login(email, password);
+
+      // If a redirect URI is provided, navigate to it
+      if (redirectUri !== undefined) {
+        window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+      }
+      return true;
+    } catch (error: unknown) {
+      console.warn(error);
+      return false;
     }
-    return true;
   }
 
   /**

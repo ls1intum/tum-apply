@@ -11,5 +11,7 @@ jhi-button {
 }
 
 .button-group-full-width {
+  flex: 1 1 auto;
+  align-self: stretch;
   gap: 1rem;
 }

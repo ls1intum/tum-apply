@@ -1,16 +1,8 @@
 {
   "register": {
     "header": "Create your TUMApply Account",
-    "buttons": {
-      "microsoft": "Register with Microsoft",
-      "apple": "Register with Apple",
-      "google": "Register with Google",
-      "tum": "Register with TUM",
-      "email": "Register with Email"
-    },
     "texts": {
       "applicant": "Create an account to start your application journey.",
-      "professor": "As a TUM professor or supervisor, please register with your TUM login credentials.",
       "accountmissing": {
         "prefix": "You already have a TUMApply account?",
         "link": "Sign in here."

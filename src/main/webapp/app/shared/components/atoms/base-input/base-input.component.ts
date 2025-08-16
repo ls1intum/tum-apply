@@ -18,6 +18,7 @@ export abstract class BaseInputDirective<T> {
   id = input<string | undefined>(undefined);
   shouldTranslate = input<boolean>(false); // Whether to translate the label and placeholder
   tooltipText = input<string | undefined>(undefined);
+  autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
 
   readonly formValidityVersion = signal(0);
@@ -35,8 +36,10 @@ export abstract class BaseInputDirective<T> {
     if (this.formControl().invalid) return 'invalid';
     return 'valid';
   });
-
+  translate = inject(TranslateService);
+  langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
   errorMessage = computed<string | null>(() => {
+    this.formValidityVersion();
     this.langChange();
 
     const ctrl = this.formControl();
@@ -49,12 +52,10 @@ export abstract class BaseInputDirective<T> {
       minlength: this.translate.instant('global.input.error.minLength', { min: val?.requiredLength }),
       maxlength: this.translate.instant('global.input.error.maxLength', { max: val?.requiredLength }),
       pattern: this.translate.instant('global.input.error.pattern'),
+      email: this.translate.instant('global.input.error.email'),
     };
     return defaults[key] ?? `Invalid: ${key}`;
   });
-
-  protected translate = inject(TranslateService);
-  protected langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
 
   constructor() {
     effect(onCleanup => {
