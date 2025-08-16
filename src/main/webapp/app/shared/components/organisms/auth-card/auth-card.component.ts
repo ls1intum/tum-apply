@@ -44,7 +44,7 @@ export class AuthCardComponent {
         label: this.onlyIcons() ? undefined : 'Apple',
         icon: 'apple',
         severity: 'primary',
-        variant: 'outlined',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
         disabled: false,
         fullWidth: true,
         onClick: () => {
@@ -55,7 +55,7 @@ export class AuthCardComponent {
         label: this.onlyIcons() ? undefined : 'Google',
         icon: 'google',
         severity: 'primary',
-        variant: 'outlined',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
         disabled: false,
         fullWidth: true,
         onClick: () => {
