@@ -27,7 +27,14 @@
       "SENT": "Unopened",
       "ACCEPTED": "Approved",
       "REJECTED": "Rejected",
-      "IN_REVIEW": "In Review"
+      "IN_REVIEW": "In Review",
+
+      "tooltips": {
+        "SENT": "The application has been submitted but not yet opened",
+        "ACCEPTED": "The application has been accepted",
+        "REJECTED": "The application has been rejected",
+        "IN_REVIEW": "The application has been opened and is still under review"
+      }
     },
     "noApplicationsFound": "No applications found.",
     "filterOptions": {
