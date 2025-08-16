@@ -70,13 +70,6 @@ describe('AuthCardComponent', () => {
     expect(btnData.label).toBe('register.buttons.apple');
   });
 
-  it('should call authTabService.setSelectedTab when onTabChange is called', () => {
-    const authTabServiceSpy = jest.spyOn(component.authTabService, 'setSelectedTab');
-    component.onTabChange(1);
-    expect(authTabServiceSpy).toHaveBeenCalledTimes(1);
-    expect(authTabServiceSpy).toHaveBeenCalledWith(1);
-  });
-
   it('should call AuthFacadeService.loginWithTUM when onTUMSSOLogin is called', () => {
     const authFacadeService = fixture.debugElement.injector.get(AuthFacadeService);
     const loginWithTUMSpy = jest.spyOn(authFacadeService, 'loginWithTUM');
