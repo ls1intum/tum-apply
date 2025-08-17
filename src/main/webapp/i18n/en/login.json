@@ -21,8 +21,8 @@
     "messages": {
       "error": {
         "authentication": "<strong>Login failed!</strong> Please check your credentials and try again.",
-        "invalidCredentials": "Invalid credentials.",
-        "unexpected": "Unexpected error. Please try again."
+        "header": "Login failed",
+        "message": "Invalid email or password"
       }
     }
   }

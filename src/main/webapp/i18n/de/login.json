@@ -21,8 +21,8 @@
     "messages": {
       "error": {
         "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Überprüfen Sie bitte Ihre Angaben und versuchen Sie es erneut.",
-        "invalidCredentials": "Ungültige Anmeldedaten.",
-        "unexpected": "Unerwarteter Fehler. Bitte erneut versuchen."
+        "header": "Login fehlgeschlagen",
+        "message": "Ungültige E-Mail oder ungültiges Passwort"
       }
     }
   }

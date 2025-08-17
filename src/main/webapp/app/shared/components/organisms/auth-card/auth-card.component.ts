@@ -15,21 +15,11 @@ import { IdpProvider } from '../../../../core/auth/keycloak.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
-import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [
-    ButtonComponent,
-    ButtonGroupComponent,
-    CommonModule,
-    CredentialsGroupComponent,
-    DividerModule,
-    RouterModule,
-    TranslateDirective,
-    ToastComponent,
-  ],
+  imports: [ButtonGroupComponent, CommonModule, CredentialsGroupComponent, DividerModule, RouterModule, TranslateDirective, ToastComponent],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -87,15 +77,14 @@ export class AuthCardComponent {
   }
 
   onEmailLogin = async (credentials: { email: string; password: string }): Promise<boolean> => {
-    try {
-      return await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
-    } catch {
+    const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+    if (!response) {
       this.toastService.showError({
-        summary: this.translate.instant('global.messages.validate.error.header'),
-        detail: this.translate.instant('global.messages.validate.error.message'),
+        summary: this.translate.instant('login.messages.error.header'),
+        detail: this.translate.instant('login.messages.error.message'),
       });
-      return false;
     }
+    return response;
   };
 
   toggleMode(): void {

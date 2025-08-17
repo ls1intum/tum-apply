@@ -1,12 +1,11 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, input, signal } from '@angular/core';
 import { PasswordModule } from 'primeng/password';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
@@ -37,37 +36,21 @@ export class CredentialsGroupComponent {
 
   isSubmitting = false;
   form = new FormGroup({
-    email: new FormControl<string>(''),
+    email: new FormControl<string>('', Validators.required),
     password: new FormControl<string>(''),
   });
-  readonly _formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
 
-  submitError = signal<string | null>(null);
-  readonly visibleError = computed(() => {
-    this._formValue();
-    return this.form.dirty ? null : this.submitError();
-  });
+  submitError = signal<boolean>(false);
 
-  private translate = inject(TranslateService);
-
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.form.invalid || !this.submitHandler()) return;
 
     this.isSubmitting = true;
     const credentials = this.form.value as { email: string; password: string };
-    this.submitHandler()?.(credentials)
-      .then(success => {
-        if (success) {
-          this.submitError.set(null);
-        } else {
-          this.submitError.set(this.translate.instant('login.messages.error.invalidCredentials'));
-        }
-        this.afterSubmit(success);
-      })
-      .catch(() => {
-        this.submitError.set(this.translate.instant('login.messages.error.unexpected'));
-        this.afterSubmit(false);
-      });
+    await this.submitHandler()?.(credentials).then(success => {
+      this.submitError.set(!success);
+      this.afterSubmit(success);
+    });
   }
 
   private afterSubmit(success: boolean): void {
