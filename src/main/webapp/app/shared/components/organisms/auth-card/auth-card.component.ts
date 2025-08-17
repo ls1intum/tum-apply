@@ -5,17 +5,31 @@ import { DividerModule } from 'primeng/divider';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { ToastService } from 'app/service/toast-service';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { TranslateService } from '@ngx-translate/core';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { IdpProvider } from '../../../../core/auth/keycloak.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [ButtonGroupComponent, CommonModule, CredentialsGroupComponent, DividerModule, RouterModule, TranslateDirective],
+  imports: [
+    ButtonComponent,
+    ButtonGroupComponent,
+    CommonModule,
+    CredentialsGroupComponent,
+    DividerModule,
+    RouterModule,
+    TranslateDirective,
+    ToastComponent,
+  ],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -26,6 +40,9 @@ export class AuthCardComponent {
 
   authFacadeService = inject(AuthFacadeService);
   breakpointObserver = inject(BreakpointObserver);
+  config = inject(DynamicDialogConfig);
+  toastService = inject(ToastService);
+  translate = inject(TranslateService);
 
   readonly onlyIcons = toSignal(
     this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
@@ -69,8 +86,16 @@ export class AuthCardComponent {
     this.authFacadeService.loginWithTUM(this.redirectUri());
   }
 
-  onEmailLogin = (credentials: { email: string; password: string }): Promise<boolean> => {
-    return this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+  onEmailLogin = async (credentials: { email: string; password: string }): Promise<boolean> => {
+    try {
+      return await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+    } catch {
+      this.toastService.showError({
+        summary: this.translate.instant('global.messages.validate.error.header'),
+        detail: this.translate.instant('global.messages.validate.error.message'),
+      });
+      return false;
+    }
   };
 
   toggleMode(): void {
@@ -78,6 +103,6 @@ export class AuthCardComponent {
   }
 
   private redirectUri(): string {
-    return window.location.origin;
+    return this.config.data?.redirectUri ? `${window.location.origin}${this.config.data.redirectUri}` : window.location.origin;
   }
 }

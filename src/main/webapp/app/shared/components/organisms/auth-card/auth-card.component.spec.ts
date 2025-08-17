@@ -4,9 +4,12 @@ import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-ico
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
+import { Subject } from 'rxjs';
 
-import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
 
 import { AuthCardComponent } from './auth-card.component';
 
@@ -15,6 +18,7 @@ jest.mock('app/core/auth/account.service');
 describe('AuthCardComponent', () => {
   let component: AuthCardComponent;
   let fixture: ComponentFixture<AuthCardComponent>;
+  const messageSource = new Subject<any>();
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -32,6 +36,17 @@ describe('AuthCardComponent', () => {
             logout: jest.fn(),
             loginWithTUM: jest.fn(),
             loginWithEmail: jest.fn(),
+          },
+        },
+        {
+          provide: DynamicDialogConfig,
+          useValue: {},
+        },
+        {
+          provide: MessageService,
+          useValue: {
+            messageObserver: messageSource.asObservable(),
+            clearObserver: messageSource.asObservable(),
           },
         },
         {

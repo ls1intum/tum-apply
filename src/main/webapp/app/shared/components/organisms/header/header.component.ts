@@ -16,7 +16,6 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  providers: [DialogService],
   imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
