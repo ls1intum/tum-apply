@@ -12,11 +12,12 @@ import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dy
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { AuthCardComponent } from '../auth-card/auth-card.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
