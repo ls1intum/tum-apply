@@ -1,13 +1,14 @@
-import { Component, ViewEncapsulation, WritableSignal, inject } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { fromEventPattern, map } from 'rxjs';
+import { filter, fromEventPattern, map } from 'rxjs';
 import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { AuthCardComponent } from '../auth-card/auth-card.component';
@@ -40,19 +41,49 @@ export class HeaderComponent {
   user: WritableSignal<User | undefined> = this.accountService.user;
   ref: DynamicDialogRef | undefined;
   router = inject(Router);
-  isProfessorPage = toSignal(this.router.events.pipe(map(() => this.router.url === '/professor')), {
-    initialValue: this.router.url === '/professor',
+
+  routeAuthorities = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      map(() => {
+        let route = this.router.routerState.snapshot.root;
+        while (route.firstChild) route = route.firstChild;
+        const data = route.data as any;
+        return data?.['authorities'] ?? [];
+      }),
+    ),
+    {
+      initialValue: (() => {
+        let route = this.router.routerState.snapshot.root;
+        while (route.firstChild) route = route.firstChild;
+        const data = route.data as any;
+        return data?.['authorities'] ?? [];
+      })(),
+    },
+  );
+  isProfessorPage = computed(() => {
+    const auths = this.routeAuthorities();
+    return (
+      this.router.url === '/professor' ||
+      this.accountService.hasAnyAuthority(['PROFESSOR']) ||
+      (Array.isArray(auths) && auths.includes(UserShortDTO.RolesEnum.Professor))
+    );
   });
+
   private dialogService = inject(DialogService);
   private authFacadeService = inject(AuthFacadeService);
 
   navigateToHome(): void {
-    void this.router.navigate(['/']);
+    if (this.accountService.hasAnyAuthority(['PROFESSOR'])) {
+      this.redirectToProfessorLandingPage();
+    } else {
+      this.redirectToApplicantLandingPage();
+    }
   }
 
-  async login(): Promise<void> {
+  login(): void {
     if (this.isProfessorPage()) {
-      await this.onTUMSSOLogin();
+      void this.onTUMSSOLogin();
     } else {
       this.openLoginDialog();
     }
@@ -93,7 +124,8 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    void this.authFacadeService.logout();
+    const redirectUri = this.isProfessorPage() ? '/professor' : '/';
+    void this.authFacadeService.logout(redirectUri);
   }
 
   /*  toggleColorScheme(): void {
