@@ -43,11 +43,13 @@
       },
       "workload": {
         "label": "Arbeitsaufwand",
-        "placeholder": "Geben Sie einen Arbeitsaufwand an (in h/Woche)..."
+        "placeholder": "Geben Sie einen Arbeitsaufwand an (in h/Woche)...",
+        "toolTipText": "Geben Sie den erwarteten Arbeitsaufwand für die Doktorandenstelle in Stunden pro Woche an (z.B. 20)."
       },
       "contractDuration": {
         "label": "Vertragslaufzeit",
-        "placeholder": "Geben Sie eine Vertragslaufzeit an (in Jahren)..."
+        "placeholder": "Geben Sie eine Vertragslaufzeit an (in Jahren)...",
+        "toolTipText": "Geben Sie die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Sie können bis zu 5 Jahre eingeben."
       },
       "fundingType": {
         "label": "Finanzierungsart",
