@@ -362,3 +362,11 @@
 .basic-tab {
   background: var(--p-background-default);
 }
+
+/* ---------------------------
+ Style primeNg active step component
+------------------------------- */
+
+.p-step-active .p-step-header {
+  cursor: pointer;
+}
