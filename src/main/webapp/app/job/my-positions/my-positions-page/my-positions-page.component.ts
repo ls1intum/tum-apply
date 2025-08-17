@@ -5,7 +5,6 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -27,7 +26,6 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
     TranslateDirective,
     TranslateModule,
     SortBarComponent,
-    ToastComponent,
     ConfirmDialog,
   ],
   templateUrl: './my-positions-page.component.html',

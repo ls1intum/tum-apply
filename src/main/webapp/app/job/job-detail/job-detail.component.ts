@@ -4,7 +4,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -49,16 +48,7 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateDirective,
-    TranslateModule,
-    ButtonGroupComponent,
-    TagComponent,
-    ToastComponent,
-    ConfirmDialog,
-  ],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ConfirmDialog],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
