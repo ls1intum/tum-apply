@@ -87,7 +87,7 @@ public class UiTextFormatter {
      * - "3 days left to apply"
      * - "2 weeks left to apply"
      * - "5 months left to apply"
-     * - "2.5 years left to apply"
+     * - "6+ months left to apply"
      *
      * @param deadline The application deadline as a {@link LocalDate}.
      * @return A human-readable label indicating the time remaining until the deadline.
@@ -122,11 +122,9 @@ public class UiTextFormatter {
         if (monthsLeft <= 1) {
             return "1 month left to apply";
         }
-        if (monthsLeft < 12) {
+        if (monthsLeft < 6) {
             return monthsLeft + " months left to apply";
         }
-
-        double yearsLeft = Math.round((daysLeft / 365.0) * 2) / 2.0;
-        return yearsLeft <= 1 ? "1 year left to apply" : yearsLeft + " years left to apply";
+        return "6+ months left to apply";
     }
 }
