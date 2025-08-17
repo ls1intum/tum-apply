@@ -8,6 +8,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -27,6 +28,7 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
     TranslateModule,
     SortBarComponent,
     ToastComponent,
+    ConfirmDialog,
   ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
@@ -128,8 +130,6 @@ export class MyPositionsPageComponent {
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation, add dialog
-    // if (confirmDelete) {
     try {
       await firstValueFrom(this.jobService.deleteJob(jobId));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });
@@ -138,13 +138,10 @@ export class MyPositionsPageComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
-      // }
     }
   }
 
   async onCloseJob(jobId: string): Promise<void> {
-    // TO-DO: adjust confirmation, add dialog
-    // if (confirmClose) {
     try {
       await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
@@ -153,7 +150,6 @@ export class MyPositionsPageComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error closing job: ${error.message}` });
       }
-      // }
     }
   }
 

@@ -1,5 +1,5 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -12,6 +12,8 @@ import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
@@ -25,6 +27,9 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     TranslateModule,
     ToastComponent,
     ApplicationStateForApplicantsComponent,
+    RouterModule,
+    ConfirmDialogModule,
+    ConfirmDialog,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
@@ -52,15 +57,20 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for status badge display
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  // Template reference for job title display
+  readonly jobNameTemplate = viewChild.required<TemplateRef<unknown>>('jobNameTemplate');
+
   // Computed table column definitions including custom templates
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
+    const jobNameTemplate = this.jobNameTemplate();
     return [
       {
         field: 'jobTitle',
         header: 'entity.applicationOverview.columns.positionTitle',
         width: '34rem',
+        template: jobNameTemplate,
       },
       {
         field: 'researchGroup',
@@ -151,7 +161,7 @@ export default class ApplicationOverviewForApplicantComponent {
         if (event) this.loadPage(event);
       },
       error: err => {
-        this.toastService.showError({ detail: 'Error withdrawing the application' });
+        this.toastService.showError({ detail: 'Error deleting the application' });
         console.error('Delete failed', err);
       },
     });
@@ -159,20 +169,16 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onWithdrawApplication(applicationId: string): void {
-    // TODO nicer looking confirm
-    const confirmWithdraw = confirm('Do you really want to withdraw this application?');
-    if (confirmWithdraw) {
-      this.applicationService.withdrawApplication(applicationId).subscribe({
-        next: () => {
-          this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
-          const event = this.lastLazyLoadEvent();
-          if (event) this.loadPage(event);
-        },
-        error: err => {
-          this.toastService.showError({ detail: 'Error withdrawing the application' });
-          console.error('Withdraw failed', err);
-        },
-      });
-    }
+    this.applicationService.withdrawApplication(applicationId).subscribe({
+      next: () => {
+        this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
+        const event = this.lastLazyLoadEvent();
+        if (event) this.loadPage(event);
+      },
+      error: err => {
+        this.toastService.showError({ detail: 'Error withdrawing the application' });
+        console.error('Withdraw failed', err);
+      },
+    });
   }
 }
