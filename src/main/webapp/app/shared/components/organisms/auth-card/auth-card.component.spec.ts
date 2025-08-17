@@ -75,21 +75,14 @@ describe('AuthCardComponent', () => {
   it('should show correct Google label in login mode', () => {
     fixture.detectChanges();
     const btnData = component.idpButtons().buttons[1];
-    expect(btnData.label).toBe('login.buttons.apple');
+    expect(btnData.label).toBe('Google');
   });
 
   it('should show correct Google label in register mode', () => {
     component.mode.set('register');
     fixture.detectChanges();
     const btnData = component.idpButtons().buttons[1];
-    expect(btnData.label).toBe('register.buttons.apple');
-  });
-
-  it('should call authTabService.setSelectedTab when onTabChange is called', () => {
-    const authTabServiceSpy = jest.spyOn(component.authTabService, 'setSelectedTab');
-    component.onTabChange(1);
-    expect(authTabServiceSpy).toHaveBeenCalledTimes(1);
-    expect(authTabServiceSpy).toHaveBeenCalledWith(1);
+    expect(btnData.label).toBe('Google');
   });
 
   it('should call AuthFacadeService.loginWithTUM when onTUMSSOLogin is called', () => {

@@ -1,28 +1,18 @@
 {
   "login": {
     "header": "Melde dich bei TUMApply an",
-    "tabs": {
-      "student": "Studierende / Bewerbende",
-      "professor": "Professor*in / Betreuende"
-    },
     "emailLogin": {
       "email": "E-Mail",
-      "emailRequired": "E-Mail ist erforderlich",
-      "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "emailPlaceholder": "name@beispiel.de",
       "password": "Passwort",
-      "passwordRequired": "Passwort ist erforderlich",
-      "login": "Anmelden",
-      "register": "Registrieren"
-    },
-    "buttons": {
-      "microsoft": "Anmelden mit Microsoft",
-      "apple": "Anmelden mit Apple",
-      "google": "Anmelden mit Google",
-      "tum": "Anmelden mit TUM"
+      "passwordPrompt": "Geben Sie ein starkes Passwort ein",
+      "weakLabel": "Unsicher",
+      "mediumLabel": "Mittel",
+      "strongLabel": "Stark",
+      "login": "Anmelden"
     },
     "texts": {
-      "or": "ODER",
-      "professor": "Als TUM-Professor*in oder Betreuer*in melden Sie sich bitte mit Ihren TUM-Zugangsdaten an.",
+      "or": "ODER ANMELDEN MIT",
       "accountmissing": {
         "prefix": "Sie haben noch kein TUMApply-Konto?",
         "link": "Hier registrieren."
@@ -30,7 +20,9 @@
     },
     "messages": {
       "error": {
-        "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Überprüfen Sie bitte Ihre Angaben und versuchen Sie es erneut."
+        "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Überprüfen Sie bitte Ihre Angaben und versuchen Sie es erneut.",
+        "header": "Login fehlgeschlagen",
+        "message": "Ungültige E-Mail oder ungültiges Passwort"
       }
     }
   }
