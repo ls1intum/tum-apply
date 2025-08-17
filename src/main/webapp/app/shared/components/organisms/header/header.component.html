@@ -24,6 +24,23 @@
 			/>-->
 
     @if (user() === undefined) {
+      @if (isProfessorPage()) {
+        <jhi-button
+          class="fixed-width-button"
+          (click)="redirectToApplicantLandingPage()"
+          label="{{ 'header.applicant' | translate }}"
+          severity="primary"
+          variant="outlined"
+        />
+      } @else {
+        <jhi-button
+          class="fixed-width-button"
+          (click)="redirectToProfessorLandingPage()"
+          label="{{ 'header.professor' | translate }}"
+          severity="primary"
+          variant="outlined"
+        />
+      }
       <jhi-button class="fixed-width-button" (click)="openLoginDialog()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
       <div class="profile">

@@ -1,6 +1,8 @@
 {
   "header": {
     "login": "Login",
+    "professor": "Are you a professor?",
+    "applicant": "Are you an applicant?",
     "logout": "Logout"
   }
 }

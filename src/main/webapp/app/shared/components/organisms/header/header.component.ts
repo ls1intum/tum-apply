@@ -38,8 +38,10 @@ export class HeaderComponent {
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
   ref: DynamicDialogRef | undefined;
-
-  private router = inject(Router);
+  router = inject(Router);
+  isProfessorPage = toSignal(this.router.events.pipe(map(() => this.router.url === '/professor')), {
+    initialValue: this.router.url === '/professor',
+  });
   private dialogService = inject(DialogService);
   private authFacadeService = inject(AuthFacadeService);
 
@@ -64,6 +66,14 @@ export class HeaderComponent {
       closeOnEscape: true,
       showHeader: false,
     });
+  }
+
+  redirectToProfessorLandingPage(): void {
+    void this.router.navigate(['/professor']);
+  }
+
+  redirectToApplicantLandingPage(): void {
+    void this.router.navigate(['/']);
   }
 
   logout(): void {
