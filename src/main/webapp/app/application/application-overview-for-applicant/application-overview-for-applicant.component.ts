@@ -1,5 +1,5 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -27,6 +27,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     TranslateModule,
     ToastComponent,
     ApplicationStateForApplicantsComponent,
+    RouterModule,
     ConfirmDialogModule,
     ConfirmDialog,
   ],
@@ -56,15 +57,20 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for status badge display
   readonly badgeTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  // Template reference for job title display
+  readonly jobNameTemplate = viewChild.required<TemplateRef<unknown>>('jobNameTemplate');
+
   // Computed table column definitions including custom templates
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
+    const jobNameTemplate = this.jobNameTemplate();
     return [
       {
         field: 'jobTitle',
         header: 'entity.applicationOverview.columns.positionTitle',
         width: '34rem',
+        template: jobNameTemplate,
       },
       {
         field: 'researchGroup',
