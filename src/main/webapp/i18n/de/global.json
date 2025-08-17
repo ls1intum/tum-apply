@@ -75,10 +75,6 @@
           "invalid": "Ihre Email Adresse ist ungültig.",
           "minlength": "Ihre Email Adresse muss mindestens 5 Zeichen lang sein",
           "maxlength": "Ihre Email Adresse darf nicht länger als 50 Zeichen sein"
-        },
-        "error": {
-          "header": "Login fehlgeschlagen",
-          "message": "Ungültige E-Mail oder ungültiges Passwort"
         }
       }
     },
@@ -87,7 +83,8 @@
         "required": "Dieses Feld ist ein Pflichtfeld.",
         "minLength": "Dieses Feld muss mindestens {{min}} Zeichen lang sein.",
         "maxLength": "Dieses Feld darf höchstens {{max}} Zeichen lang sein.",
-        "pattern": "Ungültiges Format."
+        "pattern": "Ungültiges Format.",
+        "email": "Ungültige Email-Adresse."
       }
     },
     "editor": {

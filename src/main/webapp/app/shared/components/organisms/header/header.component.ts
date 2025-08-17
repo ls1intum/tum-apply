@@ -62,7 +62,6 @@ export class HeaderComponent {
       },
       dismissableMask: true,
       closeOnEscape: true,
-      focusOnShow: true,
       showHeader: false,
     });
   }

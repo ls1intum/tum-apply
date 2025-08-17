@@ -75,10 +75,6 @@
           "invalid": "Your email is invalid.",
           "minlength": "Your email is required to be at least 5 characters.",
           "maxlength": "Your email cannot be longer than 50 characters."
-        },
-        "error": {
-          "header": "Login failed",
-          "message": "Invalid email or password"
         }
       }
     },
@@ -87,7 +83,8 @@
         "required": "This field is required.",
         "minLength": "This field is required to be at least {{ min }} characters.",
         "maxLength": "This field cannot be longer than {{ max }} characters.",
-        "pattern": "Invalid format."
+        "pattern": "Invalid format.",
+        "email": "Invalid email."
       }
     },
     "editor": {
