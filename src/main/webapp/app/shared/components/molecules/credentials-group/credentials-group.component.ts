@@ -1,4 +1,4 @@
-import { Component, Input, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PasswordModule } from 'primeng/password';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -33,7 +33,7 @@ import { PasswordInputComponent } from '../../atoms/password-input/password-inpu
   styleUrl: './credentials-group.component.scss',
 })
 export class CredentialsGroupComponent {
-  @Input() submitHandler?: (credentials: { email: string; password: string }) => Promise<boolean>;
+  readonly submitHandler = input<(credentials: { email: string; password: string }) => Promise<boolean>>();
 
   isSubmitting = false;
   form = new FormGroup({
@@ -51,12 +51,11 @@ export class CredentialsGroupComponent {
   private translate = inject(TranslateService);
 
   onSubmit(): void {
-    if (this.form.invalid || !this.submitHandler) return;
+    if (this.form.invalid || !this.submitHandler()) return;
 
     this.isSubmitting = true;
     const credentials = this.form.value as { email: string; password: string };
-
-    this.submitHandler(credentials)
+    this.submitHandler()?.(credentials)
       .then(success => {
         if (success) {
           this.submitError.set(null);

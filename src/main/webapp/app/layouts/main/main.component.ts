@@ -1,8 +1,7 @@
-import { Component, Renderer2, RendererFactory2, computed, effect, inject, signal } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
-import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 
@@ -18,11 +17,6 @@ import { HeaderComponent } from '../../shared/components/organisms/header/header
   imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
-  readonly accountService = inject(AccountService);
-  loggedIn = computed(() => {
-    return this.accountService.signedIn();
-  });
-  currentUrl = signal(inject(Router).url);
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
@@ -36,15 +30,6 @@ export default class MainComponent {
       this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
       dayjs.locale(langChangeEvent.lang);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
-    });
-    effect(() => {
-      this.initApp();
-    });
-  }
-
-  private initApp(): void {
-    this.router.events.subscribe(() => {
-      this.currentUrl.set(this.router.url);
     });
   }
 }

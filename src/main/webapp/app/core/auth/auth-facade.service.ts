@@ -58,8 +58,7 @@ export class AuthFacadeService {
         window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
       }
       return true;
-    } catch (error: unknown) {
-      console.warn(error);
+    } catch {
       return false;
     }
   }
