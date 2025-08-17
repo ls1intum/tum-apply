@@ -16,7 +16,7 @@ export class ToastService {
   private messageService = inject(MessageService);
   private appRef = inject(ApplicationRef);
   private injector = inject(EnvironmentInjector);
-  private toastComponent: ComponentRef<ToastComponent> | null = null;
+  private toastComponent: ComponentRef<ToastComponent> | undefined = undefined;
 
   constructor() {
     this.createGlobalToast();
