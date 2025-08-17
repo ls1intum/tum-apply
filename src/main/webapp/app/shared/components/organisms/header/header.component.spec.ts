@@ -5,6 +5,7 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { signal } from '@angular/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faMoon, faSun, faUser } from '@fortawesome/free-solid-svg-icons';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { HeaderComponent } from './header.component';
 
@@ -25,6 +26,13 @@ describe('HeaderComponent', () => {
           useValue: {
             user: signal<User | undefined>(undefined),
             loaded: signal(true),
+          },
+        },
+        {
+          provide: DialogService,
+          useValue: {
+            open: jest.fn(),
+            dialogComponentRefMap: new Map(),
           },
         },
         {
