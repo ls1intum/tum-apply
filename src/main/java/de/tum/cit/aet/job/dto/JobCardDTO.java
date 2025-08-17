@@ -27,7 +27,7 @@ public record JobCardDTO(
         @NotNull String professorName,
         Integer workload,
         LocalDate startDate,
-        LocalDateTime createdAt
+        LocalDate endDate
     ) {
         this(
             jobId,
@@ -37,7 +37,7 @@ public record JobCardDTO(
             professorName,
             workload,
             startDate,
-            UiTextFormatter.getRelativeTimeLabel(createdAt)
+            UiTextFormatter.getTimeLeftLabel(endDate)
         );
     }
 }

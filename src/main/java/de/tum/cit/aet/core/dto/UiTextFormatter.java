@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -72,5 +73,60 @@ public class UiTextFormatter {
         // Years in intervals of 0.5
         double diffYears = Math.round((diffDays / 365.0) * 2) / 2.0;
         return diffYears <= 1 ? "1 year ago" : diffYears + " years ago";
+    }
+
+    /**
+     * Calculates a human-readable label indicating how much time is left until a given application deadline.
+     *
+     * If the deadline is null, a default message like "No application deadline" is returned to indicate
+     * an open or unspecified deadline.
+     *
+     * Examples of returned values:
+     * - "No application deadline" (if deadline is null)
+     * - "Apply by today"
+     * - "3 days left to apply"
+     * - "2 weeks left to apply"
+     * - "5 months left to apply"
+     * - "2.5 years left to apply"
+     *
+     * @param deadline The application deadline as a {@link LocalDate}.
+     * @return A human-readable label indicating the time remaining until the deadline.
+     */
+    public static String getTimeLeftLabel(LocalDate deadline) {
+        if (deadline == null) {
+            return "No application deadline";
+        }
+
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        long daysLeft = ChronoUnit.DAYS.between(today, deadline);
+
+        if (daysLeft == 0) {
+            return "Apply by today";
+        }
+        if (daysLeft == 1) {
+            return "1 day left to apply";
+        }
+        if (daysLeft < 7) {
+            return daysLeft + " days left to apply";
+        }
+
+        long weeksLeft = ChronoUnit.WEEKS.between(today, deadline);
+        if (weeksLeft == 1) {
+            return "1 week left to apply";
+        }
+        if (weeksLeft < 4) {
+            return weeksLeft + " weeks left to apply";
+        }
+
+        long monthsLeft = ChronoUnit.MONTHS.between(today, deadline);
+        if (monthsLeft <= 1) {
+            return "1 month left to apply";
+        }
+        if (monthsLeft < 12) {
+            return monthsLeft + " months left to apply";
+        }
+
+        double yearsLeft = Math.round((daysLeft / 365.0) * 2) / 2.0;
+        return yearsLeft <= 1 ? "1 year left to apply" : yearsLeft + " years left to apply";
     }
 }
