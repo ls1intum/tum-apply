@@ -35,6 +35,7 @@ public class ApplicationEntityRepositoryImpl implements ApplicationEntityReposit
             cb.construct(
                 ApplicationOverviewDTO.class,
                 application.get(Application_.applicationId),
+                job.get(Job_.jobId),
                 job.get(Job_.title),
                 researchGroup.get(ResearchGroup_.name),
                 application.get(Application_.state),

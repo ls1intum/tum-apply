@@ -3,6 +3,10 @@ import { TabsModule } from 'primeng/tabs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { ToastService } from 'app/service/toast-service';
+import { ToastComponent } from 'app/shared/toast/toast.component';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
@@ -24,17 +28,21 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
     TabsModule,
     RouterModule,
     TranslateDirective,
+    ToastComponent,
   ],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class AuthCardComponent {
-  mode = signal<'login' | 'register'>('login');
-  readonly isRegister = computed(() => this.mode() === 'register');
-
   authFacadeService = inject(AuthFacadeService);
   authTabService = inject(AuthTabService);
+  config = inject(DynamicDialogConfig);
+  toastService = inject(ToastService);
+  translate = inject(TranslateService);
+
+  mode = signal<'login' | 'register'>('login');
+  readonly isRegister = computed(() => this.mode() === 'register');
 
   value: Signal<number> = this.authTabService.getSelectedTab();
 
@@ -84,8 +92,15 @@ export class AuthCardComponent {
     this.authFacadeService.loginWithTUM(this.redirectUri());
   }
 
-  onEmailLogin = (credentials: { email: string; password: string }): void => {
-    this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+  onEmailLogin = async (credentials: { email: string; password: string }): Promise<void> => {
+    try {
+      await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+    } catch {
+      this.toastService.showError({
+        summary: this.translate.instant('global.messages.validate.error.header'),
+        detail: this.translate.instant('global.messages.validate.error.message'),
+      });
+    }
   };
 
   toggleMode(): void {
@@ -93,6 +108,6 @@ export class AuthCardComponent {
   }
 
   private redirectUri(): string {
-    return window.location.origin;
+    return this.config.data?.redirectUri ? `${window.location.origin}${this.config.data.redirectUri}` : window.location.origin;
   }
 }
