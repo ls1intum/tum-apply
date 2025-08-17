@@ -72,10 +72,6 @@ export class AuthCardComponent {
     ],
   }));
 
-  onTUMSSOLogin(): void {
-    this.authFacadeService.loginWithTUM(this.redirectUri());
-  }
-
   onEmailLogin = async (credentials: { email: string; password: string }): Promise<boolean> => {
     const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
     if (!response) {

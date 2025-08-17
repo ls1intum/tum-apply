@@ -49,6 +49,14 @@ export class HeaderComponent {
     void this.router.navigate(['/']);
   }
 
+  async login(): Promise<void> {
+    if (this.isProfessorPage()) {
+      await this.onTUMSSOLogin();
+    } else {
+      this.openLoginDialog();
+    }
+  }
+
   openLoginDialog(): void {
     this.ref = this.dialogService.open(AuthCardComponent, {
       style: {
@@ -57,7 +65,10 @@ export class HeaderComponent {
         background: 'transparent',
         boxShadow: 'none',
       },
-      data: { mode: 'login', redirectUri: this.router.url },
+      data: {
+        professor: this.isProfessorPage(),
+        redirectUri: this.router.url,
+      },
       modal: true,
       contentStyle: {
         padding: '0',
@@ -74,6 +85,10 @@ export class HeaderComponent {
 
   redirectToApplicantLandingPage(): void {
     void this.router.navigate(['/']);
+  }
+
+  async onTUMSSOLogin(): Promise<void> {
+    await this.authFacadeService.loginWithTUM(this.router.url);
   }
 
   logout(): void {
