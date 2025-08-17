@@ -25,11 +25,15 @@
         (click)="onViewApplication(row.applicationId)"
       />
       @if (['SENT', 'IN_REVIEW'].includes(row.applicationState)) {
-        <jhi-button
+        <jhi-confirm-dialog
           [label]="'entity.applicationOverview.actions.withdraw' | translate"
+          [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
+          [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
+          [data]="row.applicationId"
+          confirmIcon="file-circle-minus"
+          (confirmed)="onWithdrawApplication(row.applicationId)"
           severity="danger"
           variant="outlined"
-          (click)="onWithdrawApplication(row.applicationId)"
         />
       }
 
@@ -43,10 +47,14 @@
       }
 
       @if (['SAVED'].includes(row.applicationState)) {
-        <jhi-button
+        <jhi-confirm-dialog
           [label]="'entity.applicationOverview.actions.delete' | translate"
+          [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
+          [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
+          [data]="row.applicationId"
+          confirmIcon="trash"
+          (confirmed)="onDeleteApplication(row.applicationId)"
           severity="danger"
-          (click)="onDeleteApplication(row.applicationId)"
         />
       }
     </div>

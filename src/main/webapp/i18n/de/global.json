@@ -218,6 +218,10 @@
         "prev": "Zurück",
         "send": "Senden"
       },
+      "confirmDialog": {
+        "header": "Bewerbung abschicken",
+        "message": "Sind Sie sicher, dass Sie Ihre Bewerbung absenden möchten? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+      },
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
         "SAVED": "Änderungen gespeichert"
@@ -322,6 +326,12 @@
         "researchGroup": "Forschungsgruppe",
         "status": "Status",
         "created": "Erstellt"
+      },
+      "dialogs": {
+        "withdrawHeader": "Zurückziehen bestätigen",
+        "withdrawMessage": "Sind Sie sicher, dass Sie diese Bewerbung zurückziehen möchten? Sobald sie zurückgezogen wurde, ist sie für den Professor/die Professorin nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
+        "deleteHeader": "Löschvorgang bestätigen",
+        "deleteMessage": "Sind Sie sicher, dass Sie diesen Entwurf dauerhaft löschen möchten? Diese Aktion kann NICHT rückgängig gemacht werden!"
       }
     },
     "applicationDetail": {
