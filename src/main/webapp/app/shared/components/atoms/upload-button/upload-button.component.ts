@@ -2,7 +2,6 @@ import { Component, computed, inject, input, model, output, signal, viewChild } 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import SharedModule from 'app/shared/shared.module';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
@@ -25,17 +24,7 @@ type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
-  imports: [
-    FontAwesomeModule,
-    FormsModule,
-    SharedModule,
-    FileUpload,
-    ButtonComponent,
-    TooltipModule,
-    TranslateModule,
-    TranslateDirective,
-    ToastComponent,
-  ],
+  imports: [FontAwesomeModule, FormsModule, SharedModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
   standalone: true,

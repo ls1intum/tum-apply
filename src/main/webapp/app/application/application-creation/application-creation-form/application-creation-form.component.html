@@ -1,4 +1,14 @@
-<jhi-toast />
+<jhi-confirm-dialog
+  #sendConfirmDialog
+  class="confirm-dialog"
+  [header]="'entity.applicationSteps.confirmDialog.header' | translate"
+  [message]="'entity.applicationSteps.confirmDialog.message' | translate"
+  [label]="sendButtonLabel | translate"
+  [severity]="sendButtonSeverity"
+  [confirmIcon]="sendButtonIcon"
+  [showOpenButton]="false"
+  (confirmed)="sendCreateApplicationData('SENT', true)"
+/>
 <ng-template #panel1>
   <div class="panel">
     <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
