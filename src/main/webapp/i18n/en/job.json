@@ -36,12 +36,12 @@
       "startDate": {
         "label": "Start Date of Job",
         "placeholder": "Select a Start Date...",
-        "toolTipText": "Specify the date when the position is expected to start."
+        "toolTipText": "The expected start date for this position."
       },
       "applicationDeadline": {
         "label": "Application Deadline",
         "placeholder": "Select an Application Deadline...",
-        "toolTipText": "Specify the date when applications for this position will no longer be accepted."
+        "toolTipText": "After this date, applying is no longer possible."
       },
       "workload": {
         "label": "Workload",
