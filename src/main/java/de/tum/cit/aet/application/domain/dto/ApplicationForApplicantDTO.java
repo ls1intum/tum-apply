@@ -42,6 +42,8 @@ public record ApplicationForApplicantDTO(
                 job.getFieldOfStudies(),
                 job.getLocation(),
                 job.getSupervisingProfessor().getLastName(),
+                application.getApplicationId(),
+                application.getState(),
                 job.getWorkload(),
                 job.getStartDate(),
                 job.getCreatedAt()

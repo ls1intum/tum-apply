@@ -65,6 +65,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param workload filter for the job workload (nullable)
      * @param sortBy the field to sort by (only used for professorName sorting here)
      * @param sortDirection sort direction (ASC or DESC)
+     * @param userId id of the currently logged in user (nullable)
      * @param pageable pagination information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -76,11 +77,14 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             j.fieldOfStudies,
             j.location,
             CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+            CASE WHEN a.applicant.userId = :userId THEN a.applicationId ELSE NULL END,
+            CASE WHEN a.applicant.userId = :userId THEN a.state ELSE NULL END,
             j.workload,
             j.startDate,
             j.createdAt
         )
         FROM Job j
+        LEFT JOIN Application a ON a.job = j
         WHERE j.state = :state
         AND (:title IS NULL OR j.title LIKE %:title%)
         AND (:fieldOfStudies IS NULL OR j.fieldOfStudies LIKE %:fieldOfStudies%)
@@ -102,6 +106,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         @Param("workload") Integer workload,
         @Param("sortBy") String sortBy,
         @Param("sortDirection") String sortDirection,
+        @Param("userId") UUID userId,
         Pageable pageable
     );
 
@@ -115,6 +120,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param location the campus location filter (nullable)
      * @param professorName a partial match filter for the professor's full name (nullable)
      * @param workload filter for the job workload (nullable)
+     * @param userId id of the currently logged in user (nullable)
      * @param pageable pagination and sorting information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -126,20 +132,23 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             j.fieldOfStudies,
             j.location,
             CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+            CASE WHEN a.applicant.userId = :userId THEN a.applicationId ELSE NULL END,
+            CASE WHEN a.applicant.userId = :userId THEN CAST(a.state AS string) ELSE NULL END,
             j.workload,
             j.startDate,
             j.createdAt
         )
         FROM Job j
+        LEFT JOIN Application a ON a.job = j
         WHERE j.state = :state
         AND (:title IS NULL OR j.title LIKE %:title%)
         AND (:fieldOfStudies IS NULL OR j.fieldOfStudies LIKE %:fieldOfStudies%)
         AND (:location IS NULL OR j.location = :location)
         AND (:professorName IS NULL OR
-             CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE %:professorName%)
+            CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE %:professorName%)
         AND (:workload IS NULL OR j.workload = :workload)
         """
-    )
+        )
     Page<JobCardDTO> findAllJobCardsByState(
         @Param("state") JobState state,
         @Param("title") String title,
@@ -147,6 +156,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         @Param("location") Campus location,
         @Param("professorName") String professorName,
         @Param("workload") Integer workload,
+        @Param("userId") UUID userId,
         Pageable pageable
-    );
+);
+
 }

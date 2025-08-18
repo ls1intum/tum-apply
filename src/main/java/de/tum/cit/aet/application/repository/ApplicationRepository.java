@@ -56,6 +56,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.createdAt
@@ -115,6 +117,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.createdAt
@@ -173,6 +177,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.createdAt
@@ -257,6 +263,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    a.applicationId,
+                    a.state,
                     j.workload,
                     j.startDate,
                     j.createdAt
