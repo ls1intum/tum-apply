@@ -76,7 +76,40 @@
         severity="primary"
         variant="outlined"
       />
-      <jhi-button (click)="onApply()" [shouldTranslate]="true" class="apply-button" label="jobActionButton.apply" severity="primary" />
+      @switch (jobCard()?.applicationState) {
+        @case (undefined) {
+          <jhi-button
+            (click)="onApply()"
+            [shouldTranslate]="true"
+            class="apply-button"
+            label="jobActionButton.apply"
+            severity="primary"
+            icon="plus"
+          />
+        }
+        @case (ApplicationStateEnumLocal.Saved) {
+          <jhi-button
+            (click)="onEdit()"
+            [shouldTranslate]="true"
+            class="apply-button"
+            label="jobActionButton.edit"
+            severity="primary"
+            variant="outlined"
+            icon="file-import"
+          />
+        }
+        @default {
+          <jhi-button
+            (click)="onView()"
+            [shouldTranslate]="true"
+            class="apply-button"
+            label="jobActionButton.view"
+            severity="secondary"
+            variant="outlined"
+            icon="file-circle-check"
+          />
+        }
+      }
     </div>
   </div>
 </p-card>

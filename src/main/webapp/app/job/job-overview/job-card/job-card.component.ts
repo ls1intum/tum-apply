@@ -10,7 +10,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AuthCardComponent } from 'app/shared/components/organisms/auth-card/auth-card.component';
 import { AccountService } from 'app/core/auth/account.service';
 import { firstValueFrom } from 'rxjs';
-import { ApplicationResourceService } from 'app/generated';
+import { ApplicationResourceService, JobCardDTO } from 'app/generated';
 import { ToastService } from 'app/service/toast-service';
 
 import SharedModule from '../../../shared/shared.module';
@@ -32,6 +32,7 @@ export class JobCardComponent {
   workload = input<number | undefined>(undefined);
   startDate = input<string | undefined>('');
   relativeTime = input<string>('');
+  jobCard = input<JobCardDTO | undefined>(undefined);
   // TO-DO: Replace value of headerColor with a color corresponding to the field of study
   headerColor = input<string>('var(--p-secondary-color)');
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
@@ -40,6 +41,8 @@ export class JobCardComponent {
 
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
   translate = inject(TranslateService);
+
+  ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;
 
   private router = inject(Router);
   private dialogService = inject(DialogService);
@@ -87,5 +90,13 @@ export class JobCardComponent {
       focusOnShow: true,
       showHeader: false,
     });
+  }
+
+  onEdit(): void {
+    this.router.navigate([`/application/edit/${this.jobCard()?.applicationId}`]);
+  }
+
+  onView(): void {
+    this.router.navigate([`/application/detail/${this.jobCard()?.applicationId}`]);
   }
 }
