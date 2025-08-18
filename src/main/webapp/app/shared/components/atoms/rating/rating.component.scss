@@ -12,8 +12,12 @@
     flex: 1;
     transition: background-color 0.2s ease;
 
-    &.selectable:hover {
-      filter: brightness(0.8);
+    &.selectable {
+      cursor: pointer;
+
+      &:hover {
+        filter: brightness(0.8);
+      }
     }
   }
 }

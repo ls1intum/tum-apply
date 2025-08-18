@@ -1,11 +1,10 @@
 import { Component, input, model } from '@angular/core';
-import { NgClass, NgStyle } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-rating',
-  imports: [NgClass, NgStyle, TooltipModule, TranslateModule],
+  imports: [TooltipModule, TranslateModule],
   templateUrl: './rating.component.html',
   styleUrl: './rating.component.scss',
 })
@@ -36,7 +35,7 @@ export class RatingComponent {
     const currentRating = this.rating();
 
     if (currentRating === undefined) {
-      return '#d1d5db';
+      return 'var(--p-background-surface-alt)';
     }
 
     if (index === currentRating - 1) {
@@ -53,11 +52,10 @@ export class RatingComponent {
         case 5:
           return 'var(--p-success-active-color)';
         default:
-          return '#d1d5db';
+          return 'var(--p-background-surface-alt)';
       }
     }
-
-    return '#d1d5db'; // Gray for sections beyond current rating
+    return 'var(--p-background-surface-alt)';
   }
 
   getTooltip(index: number): string {
