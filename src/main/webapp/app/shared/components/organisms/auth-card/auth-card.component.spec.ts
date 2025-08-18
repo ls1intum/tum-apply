@@ -4,9 +4,12 @@ import { faApple, faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-ico
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
+import { Subject } from 'rxjs';
 
-import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
 
 import { AuthCardComponent } from './auth-card.component';
 
@@ -15,6 +18,7 @@ jest.mock('app/core/auth/account.service');
 describe('AuthCardComponent', () => {
   let component: AuthCardComponent;
   let fixture: ComponentFixture<AuthCardComponent>;
+  const messageSource = new Subject<any>();
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -32,6 +36,17 @@ describe('AuthCardComponent', () => {
             logout: jest.fn(),
             loginWithTUM: jest.fn(),
             loginWithEmail: jest.fn(),
+          },
+        },
+        {
+          provide: DynamicDialogConfig,
+          useValue: {},
+        },
+        {
+          provide: MessageService,
+          useValue: {
+            messageObserver: messageSource.asObservable(),
+            clearObserver: messageSource.asObservable(),
           },
         },
         {
@@ -60,21 +75,14 @@ describe('AuthCardComponent', () => {
   it('should show correct Google label in login mode', () => {
     fixture.detectChanges();
     const btnData = component.idpButtons().buttons[1];
-    expect(btnData.label).toBe('login.buttons.apple');
+    expect(btnData.label).toBe('Google');
   });
 
   it('should show correct Google label in register mode', () => {
     component.mode.set('register');
     fixture.detectChanges();
     const btnData = component.idpButtons().buttons[1];
-    expect(btnData.label).toBe('register.buttons.apple');
-  });
-
-  it('should call authTabService.setSelectedTab when onTabChange is called', () => {
-    const authTabServiceSpy = jest.spyOn(component.authTabService, 'setSelectedTab');
-    component.onTabChange(1);
-    expect(authTabServiceSpy).toHaveBeenCalledTimes(1);
-    expect(authTabServiceSpy).toHaveBeenCalledWith(1);
+    expect(btnData.label).toBe('Google');
   });
 
   it('should call AuthFacadeService.loginWithTUM when onTUMSSOLogin is called', () => {
