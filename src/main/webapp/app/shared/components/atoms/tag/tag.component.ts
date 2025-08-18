@@ -21,7 +21,7 @@ export class TagComponent {
   readonly iconProp = computed(() => this.icon() as IconDefinition);
 
   widthStyle = computed(() => {
-    if (this.width() != null) {
+    if (this.width() !== undefined) {
       return {
         width: this.width(),
       };
