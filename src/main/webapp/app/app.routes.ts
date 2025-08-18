@@ -56,6 +56,12 @@ const routes: Routes = [
     loadComponent: () =>
       import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
   },
+  {
+    path: 'playground/comment',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./playground/comment-playground/comment-playground').then(c => c.CommentPlayground),
+  },
 
   // ======================================================================================
   // User Management

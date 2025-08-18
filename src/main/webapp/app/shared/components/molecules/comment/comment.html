@@ -1,0 +1,32 @@
+<div class="comment">
+  <!-- Header -->
+  <div class="comment-header">
+    <div class="comment-details">
+      <span class="comment-author">Some Name</span>
+      <span class="comment-created-at">2 days ago</span>
+    </div>
+
+    @if (canEdit()) {
+      <div class="comment-actions">
+        <jhi-button variant="text" icon="pen" [size]="7" (click)="startEdit()" />
+        <jhi-button variant="text" icon="trash-alt" [size]="7" />
+      </div>
+    }
+  </div>
+
+  <!-- Body -->
+  <div class="comment-body">
+    @if (isEdit()) {
+      <textarea rows="3" pTextarea [autoResize]="true" class="w-full" [value]="draft()" (input)="onInput($event)"></textarea>
+    } @else {
+      <div class="comment-text">{{ text() }}</div>
+    }
+  </div>
+
+  @if (isEdit()) {
+    <div class="comment-controls">
+      <jhi-button label="Cancel" variant="text" severity="primary" (click)="onCancel()" />
+      <jhi-button label="Save" variant="text" severity="success" (click)="onSave()" />
+    </div>
+  }
+</div>
