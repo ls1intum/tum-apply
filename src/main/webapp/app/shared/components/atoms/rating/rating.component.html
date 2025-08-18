@@ -1,17 +1,12 @@
-<div
-  class="bar"
-  role="img"
-  [attr.aria-label]="ariaParams() | translate: { value: rating(), total: likertScale(), label: labelKey() | translate }"
-  [attr.title]="ariaParams() | translate: { value: rating(), total: likertScale(), label: labelKey() | translate }"
->
-  @if (rating() !== undefined) {
+<div class="rating">
+  @for (item of Array(likertScale); track $index) {
     <div
-      class="marker"
-      [ngStyle]="{
-        left: offsetPercent(),
-        width: markerWidthPercent(),
-        background: backgroundColor(),
-      }"
+      class="section"
+      [class.selectable]="selectable()"
+      [style.background-color]="getSectionColor($index)"
+      pTooltip="{{ getTooltip($index) | translate }}"
+      tooltipPosition="top"
+      (click)="onSectionClick($index)"
     ></div>
   }
 </div>
