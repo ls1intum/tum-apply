@@ -20,5 +20,4 @@ export class TagComponent {
   tooltipText = input<string | undefined>(undefined);
 
   readonly iconProp = computed(() => this.icon() as IconDefinition);
-  readonly tooltipKey = computed(() => this.tooltipText() ?? '');
 }

@@ -2,7 +2,7 @@
   class="custom-tag"
   [severity]="color()"
   [rounded]="round()"
-  [pTooltip]="tooltipKey() ? (tooltipKey() | translate) : null"
+  [pTooltip]="tooltipText() ? (tooltipText()! | translate) : null"
   tooltipPosition="top"
 >
   @if (icon() && !iconRight()) {
