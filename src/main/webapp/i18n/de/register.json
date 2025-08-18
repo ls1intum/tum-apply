@@ -1,16 +1,8 @@
 {
   "register": {
     "header": "Erstellen Sie Ihr TUMApply-Konto",
-    "buttons": {
-      "microsoft": "Registrieren mit Microsoft",
-      "apple": "Registrieren mit Apple",
-      "google": "Registrieren mit Google",
-      "tum": "Registrieren mit TUM",
-      "email": "Registrieren mit E-Mail"
-    },
     "texts": {
       "applicant": "Erstellen Sie ein Konto, um mit Ihrer Bewerbung zu beginnen.",
-      "professor": "Als TUM-Professor*in oder Betreuer*in registrieren Sie sich bitte mit Ihren TUM-Zugangsdaten.",
       "accountmissing": {
         "prefix": "Sie haben bereits ein TUMApply-Konto?",
         "link": "Hier anmelden."
