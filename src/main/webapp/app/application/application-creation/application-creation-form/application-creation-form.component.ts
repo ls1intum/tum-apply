@@ -6,10 +6,11 @@ import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -55,9 +56,9 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
-    ToastComponent,
     FontAwesomeModule,
     TranslateModule,
+    ConfirmDialog,
   ],
 
   templateUrl: './application-creation-form.component.html',
@@ -65,6 +66,9 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   standalone: true,
 })
 export default class ApplicationCreationFormComponent {
+  readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
+  readonly sendButtonSeverity = 'primary' as ButtonColor;
+  readonly sendButtonIcon = 'paper-plane';
   page1 = signal<ApplicationCreationPage1Data>({
     firstName: '',
     lastName: '',
@@ -96,6 +100,7 @@ export default class ApplicationCreationFormComponent {
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
+  sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
   title = signal<string>('');
   jobId = signal<string>('');
   applicantId = signal<string>('');
@@ -115,10 +120,6 @@ export default class ApplicationCreationFormComponent {
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   location = inject(Location);
   stepData = computed<StepData[]>(() => {
-    const sendData = (state: ApplicationState): void => {
-      this.sendCreateApplicationData(state, true);
-    };
-
     const steps: StepData[] = [];
     const panel1 = this.panel1();
     const panel2 = this.panel2();
@@ -224,13 +225,13 @@ export default class ApplicationCreationFormComponent {
         ],
         buttonGroupNext: [
           {
-            severity: 'primary',
-            icon: 'paper-plane',
-            onClick() {
-              sendData('SENT');
+            severity: this.sendButtonSeverity,
+            icon: this.sendButtonIcon,
+            onClick: () => {
+              this.sendConfirmDialog()?.confirm();
             },
             disabled: !allPagesValid,
-            label: 'entity.applicationSteps.buttons.send',
+            label: this.sendButtonLabel,
             shouldTranslate: true,
             changePanel: false,
           },

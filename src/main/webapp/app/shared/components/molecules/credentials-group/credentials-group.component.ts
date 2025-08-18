@@ -1,4 +1,4 @@
-import { Component, Input, computed } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { PasswordModule } from 'primeng/password';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -32,30 +32,37 @@ import { PasswordInputComponent } from '../../atoms/password-input/password-inpu
   styleUrl: './credentials-group.component.scss',
 })
 export class CredentialsGroupComponent {
-  @Input() submitHandler?: (credentials: { email: string; password: string }) => void;
+  readonly submitHandler = input<(credentials: { email: string; password: string }) => Promise<boolean>>();
 
+  isSubmitting = false;
   form = new FormGroup({
-    email: new FormControl<string>('', [Validators.required, Validators.email]),
-    password: new FormControl<string>('', Validators.required),
-  });
-  formSubmitted = false;
-
-  emailInvalid = computed(() => {
-    const control = this.form.controls['email'];
-    return control.invalid && (control.touched || this.formSubmitted);
+    email: new FormControl<string>('', Validators.required),
+    password: new FormControl<string>(''),
   });
 
-  passwordInvalid = computed(() => {
-    const control = this.form.controls['password'];
-    return control.invalid && (control.touched || this.formSubmitted);
-  });
+  submitError = signal<boolean>(false);
 
-  onSubmit(): void {
-    this.formSubmitted = true;
-    if (this.form.valid && this.submitHandler) {
-      this.submitHandler(this.form.value as { email: string; password: string });
-      this.form.reset();
-      this.formSubmitted = false;
+  async onSubmit(): Promise<void> {
+    if (this.form.invalid || !this.submitHandler()) return;
+
+    this.isSubmitting = true;
+    const credentials = this.form.value as { email: string; password: string };
+    await this.submitHandler()?.(credentials).then(success => {
+      this.submitError.set(!success);
+      this.afterSubmit(success);
+    });
+  }
+
+  private afterSubmit(success: boolean): void {
+    this.isSubmitting = false;
+
+    if (success) {
+      this.form.reset({}, { emitEvent: false });
+      return;
     }
+
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity({ emitEvent: true });
   }
 }

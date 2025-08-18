@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
@@ -13,14 +12,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [
-    ApplicationDetailCardComponent,
-    DocumentGroupComponent,
-    SharedModule,
-    ToastComponent,
-    ApplicationStateForApplicantsComponent,
-    ButtonComponent,
-  ],
+  imports: [ApplicationDetailCardComponent, DocumentGroupComponent, SharedModule, ApplicationStateForApplicantsComponent, ButtonComponent],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
