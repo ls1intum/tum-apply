@@ -225,7 +225,7 @@ export class JobCreationFormComponent {
             changePanel: false,
           },
         ],
-        disabled: !this.positionDetailsValid(),
+        disabled: !(this.basicInfoValid() && this.positionDetailsValid()),
         status: templates.status,
       });
     }
