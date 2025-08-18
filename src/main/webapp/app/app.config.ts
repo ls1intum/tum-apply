@@ -17,6 +17,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
@@ -87,6 +88,7 @@ export const appConfig: ApplicationConfig = {
     httpInterceptorProviders,
     { provide: TitleStrategy, useClass: AppPageTitleStrategy },
     DatePipe,
+    DialogService,
     /**
      * @description Interceptor declarations:
      * Interceptors are located at 'blocks/interceptor/.
