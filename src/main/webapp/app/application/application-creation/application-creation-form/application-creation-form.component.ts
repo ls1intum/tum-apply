@@ -125,6 +125,7 @@ export default class ApplicationCreationFormComponent {
     const panel3 = this.panel3();
     const page1Valid = this.page1Valid();
     const page2Valid = this.page2Valid();
+    const page1And2Valid = page1Valid && page2Valid;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
@@ -236,7 +237,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
-        disabled: !page2Valid,
+        disabled: !page1And2Valid,
         status: statusPanel,
       });
     }
