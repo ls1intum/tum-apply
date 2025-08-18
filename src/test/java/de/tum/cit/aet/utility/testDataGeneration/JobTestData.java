@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public final class JobTestData {
     private JobTestData() {}
 
-    /** Unsaved job with common defaults; pass title/state/startDate if you care. */
+    /** Creates an unsaved Job with common default values. Title, state, and startDate can be overridden (null = default). */
     public static Job newJob(User prof, ResearchGroup rg, String title, JobState state, LocalDate startDate) {
         Job j = new Job();
         j.setTitle(title != null ? title : "Default Title");
