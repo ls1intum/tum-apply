@@ -232,7 +232,7 @@
         "phoneNumber": "Telefonnummer",
         "gender": "Geschlecht",
         "nationality": "Nationalität",
-        "language": "Sprache",
+        "language": "Bevorzugte Sprache",
         "dateOfBirth": "Geburtsdatum",
         "website": "Webseite",
         "linkedIn": "LinkedIn",
@@ -244,6 +244,9 @@
       "section": {
         "userInformation": "Benutzerinformationen",
         "address": "Adresse"
+      },
+      "tooltip": {
+        "language": "Wählen Sie Ihre bevorzugte Kommunikationssprache."
       }
     },
     "applicationPage2": {
