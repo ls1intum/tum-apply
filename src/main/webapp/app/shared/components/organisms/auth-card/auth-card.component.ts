@@ -1,16 +1,16 @@
-import { Component, Signal, ViewEncapsulation, computed, inject, signal } from '@angular/core';
-import { TabsModule } from 'primeng/tabs';
+import { Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith } from 'rxjs';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ToastService } from 'app/service/toast-service';
 import { ToastComponent } from 'app/shared/toast/toast.component';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
-import { AuthTabService } from '../../../../core/auth/auth-tab.service';
 import { IdpProvider } from '../../../../core/auth/keycloak.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
@@ -19,51 +19,39 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [
-    ButtonComponent,
-    ButtonGroupComponent,
-    CommonModule,
-    CredentialsGroupComponent,
-    DividerModule,
-    TabsModule,
-    RouterModule,
-    TranslateDirective,
-    ToastComponent,
-  ],
+  imports: [ButtonGroupComponent, CommonModule, CredentialsGroupComponent, DividerModule, RouterModule, TranslateDirective, ToastComponent],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class AuthCardComponent {
+  mode = signal<'login' | 'register'>('login');
+  readonly isRegister = computed(() => this.mode() === 'register');
+
   authFacadeService = inject(AuthFacadeService);
-  authTabService = inject(AuthTabService);
+  breakpointObserver = inject(BreakpointObserver);
   config = inject(DynamicDialogConfig);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
-  mode = signal<'login' | 'register'>('login');
-  readonly isRegister = computed(() => this.mode() === 'register');
-
-  value: Signal<number> = this.authTabService.getSelectedTab();
+  readonly onlyIcons = toSignal(
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
+      map(state => state.matches),
+      startWith(false),
+    ),
+    { initialValue: false },
+  );
 
   readonly idpButtons = computed<ButtonGroupData>(() => ({
-    direction: 'vertical',
-    fullWidth: true,
+    direction: this.onlyIcons() ? 'horizontal' : 'vertical',
+    fullWidth: !this.onlyIcons(),
     buttons: [
-      {
-        label: this.mode() === 'register' ? 'register.buttons.tum' : 'login.buttons.tum',
-        severity: 'primary',
-        variant: 'outlined',
-        disabled: false,
-        fullWidth: true,
-        onClick: this.onTUMSSOLogin.bind(this),
-      },
       // TODO: Enable Microsoft login when available in Production environment
       {
-        label: this.mode() === 'register' ? 'register.buttons.apple' : 'login.buttons.apple',
+        label: this.onlyIcons() ? undefined : 'Apple',
         icon: 'apple',
         severity: 'primary',
-        variant: 'outlined',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
         disabled: false,
         fullWidth: true,
         onClick: () => {
@@ -71,10 +59,10 @@ export class AuthCardComponent {
         },
       },
       {
-        label: this.mode() === 'register' ? 'register.buttons.google' : 'login.buttons.google',
+        label: this.onlyIcons() ? undefined : 'Google',
         icon: 'google',
         severity: 'primary',
-        variant: 'outlined',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
         disabled: false,
         fullWidth: true,
         onClick: () => {
@@ -84,23 +72,19 @@ export class AuthCardComponent {
     ],
   }));
 
-  onTabChange(newValue: string | number): void {
-    this.authTabService.setSelectedTab(Number(newValue));
-  }
-
   onTUMSSOLogin(): void {
     this.authFacadeService.loginWithTUM(this.redirectUri());
   }
 
-  onEmailLogin = async (credentials: { email: string; password: string }): Promise<void> => {
-    try {
-      await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
-    } catch {
+  onEmailLogin = async (credentials: { email: string; password: string }): Promise<boolean> => {
+    const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+    if (!response) {
       this.toastService.showError({
-        summary: this.translate.instant('global.messages.validate.error.header'),
-        detail: this.translate.instant('global.messages.validate.error.message'),
+        summary: this.translate.instant('login.messages.error.header'),
+        detail: this.translate.instant('login.messages.error.message'),
       });
     }
+    return response;
   };
 
   toggleMode(): void {
