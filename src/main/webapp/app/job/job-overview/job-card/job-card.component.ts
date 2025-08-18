@@ -9,9 +9,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AuthCardComponent } from 'app/shared/components/organisms/auth-card/auth-card.component';
 import { AccountService } from 'app/core/auth/account.service';
+import { firstValueFrom } from 'rxjs';
+import { ApplicationResourceService } from 'app/generated';
+import { ToastService } from 'app/service/toast-service';
 
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import SharedModule from '../../../shared/shared.module';
+import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-job-card',
@@ -41,15 +44,32 @@ export class JobCardComponent {
   private router = inject(Router);
   private dialogService = inject(DialogService);
   private accountService = inject(AccountService);
+  private applicationResourceService = inject(ApplicationResourceService);
+  private toastService = inject(ToastService);
 
   onViewDetails(): void {
     this.router.navigate([`/job/detail/${this.jobId()}`]);
   }
 
-  onApply(): void {
+  async onApply(): Promise<void> {
     if (this.accountService.signedIn()) {
-      this.router.navigate([`/application/create/${this.jobId()}`]);
-      return;
+      try {
+        const application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
+        this.router.navigate([`/application/edit/${application.applicationId}`]);
+      } catch (e: any) {
+        if (e?.error?.errorCode === 'OPERATION_NOT_ALLOWED') {
+          this.toastService.showError({
+            summary: 'Error',
+            detail: 'You have already applied to this job',
+          });
+        } else {
+          console.error('Unexpected error during application:', e);
+          this.toastService.showError({
+            summary: 'Error',
+            detail: 'Something went wrong while applying for the job',
+          });
+        }
+      }
     }
 
     this.ref = this.dialogService.open(AuthCardComponent, {
@@ -59,7 +79,7 @@ export class JobCardComponent {
         background: 'transparent',
         boxShadow: 'none',
       },
-      data: { redirectUri: `/application/create/${this.jobId()}` },
+      data: { redirectUri: `/application/edit/${this.jobId()}` },
       modal: true,
       contentStyle: { padding: '0' },
       dismissableMask: true,

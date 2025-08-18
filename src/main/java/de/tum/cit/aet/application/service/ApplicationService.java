@@ -59,7 +59,7 @@ public class ApplicationService {
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
         UUID userId = currentUserService.getUserId();
-        if (applicationRepository.existsByApplicant_User_UserIdAndJob_JobId(jobId, userId)) {
+        if (applicationRepository.existsByApplicant_User_UserIdAndJob_JobId(userId, jobId)) {
             throw new OperationNotAllowedException("Applicant has already applied for this position");
         }
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
