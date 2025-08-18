@@ -9,6 +9,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import SharedModule from '../../shared/shared.module';
 import { JobDTO, JobFormDTO } from '../../generated';
@@ -41,12 +43,16 @@ type SavingState = 'SAVED' | 'SAVING';
     SelectComponent,
     NumberInputComponent,
     EditorComponent,
+    ConfirmDialog,
   ],
   providers: [JobResourceService],
 })
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
 
+  readonly publishButtonLabel = 'jobActionButton.publish';
+  readonly publishButtonSeverity = 'primary' as ButtonColor;
+  readonly publishButtonIcon = 'paper-plane';
   // Services
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceService);
@@ -78,6 +84,7 @@ export class JobCreationFormComponent {
   panel2 = viewChild<TemplateRef<HTMLDivElement>>('panel2');
   panel3 = viewChild<TemplateRef<HTMLDivElement>>('panel3');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
+  sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
 
   // Tracks form validity
   basicInfoValid = signal(false);
@@ -215,11 +222,13 @@ export class JobCreationFormComponent {
         ],
         buttonGroupNext: [
           {
-            severity: 'primary',
-            icon: 'paper-plane',
-            onClick: () => void this.publishJob(),
+            severity: this.publishButtonSeverity,
+            icon: this.publishButtonIcon,
+            onClick: () => {
+              this.sendPublishDialog()?.confirm();
+            },
             disabled: !this.allFormsValid(),
-            label: 'jobActionButton.publish',
+            label: this.publishButtonLabel,
             shouldTranslate: true,
             changePanel: false,
           },
@@ -266,7 +275,7 @@ export class JobCreationFormComponent {
       fundingType: [undefined],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
       startDate: [''],
-      endDate: [''],
+      applicationDeadline: [''],
       workload: [undefined],
       contractDuration: [undefined],
     });
@@ -292,7 +301,7 @@ export class JobCreationFormComponent {
       supervisingProfessor: this.userId(),
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
       startDate: basicInfoValue.startDate ?? '',
-      endDate: basicInfoValue.endDate ?? '',
+      endDate: basicInfoValue.applicationDeadline ?? '',
       workload: basicInfoValue.workload,
       contractDuration: basicInfoValue.contractDuration,
       fundingType: basicInfoValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
@@ -352,7 +361,7 @@ export class JobCreationFormComponent {
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       startDate: job?.startDate ?? '',
-      endDate: job?.endDate ?? '',
+      applicationDeadline: job?.endDate ?? '',
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),

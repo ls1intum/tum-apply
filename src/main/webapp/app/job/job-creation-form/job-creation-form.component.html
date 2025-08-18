@@ -1,3 +1,14 @@
+<jhi-confirm-dialog
+  #sendPublishDialog
+  class="confirm-dialog"
+  [header]="'jobCreationForm.confirmDialog.header' | translate"
+  [message]="'jobCreationForm.confirmDialog.message' | translate"
+  [label]="publishButtonLabel | translate"
+  [severity]="publishButtonSeverity"
+  [confirmIcon]="publishButtonIcon"
+  [showOpenButton]="false"
+  (confirmed)="publishJob()"
+/>
 @if (!isLoading()) {
   <div class="doctorate-form-container">
     <header>
@@ -57,7 +68,7 @@
           <label for="supervisingProfessor" jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
             <span class="required">*</span>
           </label>
-          <div class="icon-input-wrapper">
+          <div class="icon-input-wrapper mb-6">
             <fa-icon [icon]="['fas', 'user']" class="input-icon" />
             <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
           </div>
@@ -80,35 +91,28 @@
       <div class="form-row">
         <div class="form-field">
           <jhi-datepicker
-            [selectedDate]="basicInfoForm.get('startDate')?.value"
-            (selectedDateChange)="basicInfoForm.get('startDate')?.setValue($event)"
-            [label]="'jobCreationForm.basicInformationSection.startDate.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder' | translate"
+            [selectedDate]="basicInfoForm.get('applicationDeadline')?.value"
+            (selectedDateChange)="basicInfoForm.get('applicationDeadline')?.setValue($event)"
+            [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
+            [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
+            icon="circle-info"
+            tooltipText="jobCreationForm.basicInformationSection.applicationDeadline.toolTipText"
+            [shouldTranslate]="true"
             [width]="'100%'"
           />
         </div>
         <div class="form-field">
-          <jhi-datepicker
-            [selectedDate]="basicInfoForm.get('endDate')?.value"
-            (selectedDateChange)="basicInfoForm.get('endDate')?.setValue($event)"
-            [label]="'jobCreationForm.basicInformationSection.endDate.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.endDate.placeholder' | translate"
-            [width]="'100%'"
+          <jhi-number-input
+            [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
+            [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+            [model]="basicInfoForm.get('workload')?.value"
+            [control]="basicInfoForm.get('workload') ?? undefined"
+            [min]="1"
+            [max]="40"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="0"
           />
         </div>
-      </div>
-
-      <div class="form-field">
-        <jhi-number-input
-          [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
-          [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
-          [model]="basicInfoForm.get('workload')?.value"
-          [control]="basicInfoForm.get('workload') ?? undefined"
-          [min]="1"
-          [max]="40"
-          [minFractionDigits]="0"
-          [maxFractionDigits]="0"
-        />
       </div>
 
       <div class="form-row">
@@ -125,16 +129,28 @@
           />
         </div>
         <div class="form-field">
-          <jhi-select
-            [selected]="basicInfoForm.get('fundingType')?.value"
-            (selectedChange)="basicInfoForm.get('fundingType')?.setValue($event)"
-            [items]="DropdownOptions.fundingTypes"
-            [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
+          <jhi-datepicker
+            [selectedDate]="basicInfoForm.get('startDate')?.value"
+            (selectedDateChange)="basicInfoForm.get('startDate')?.setValue($event)"
+            [label]="'jobCreationForm.basicInformationSection.startDate.label'"
+            [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
+            icon="circle-info"
+            tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
+            [shouldTranslate]="true"
             [width]="'100%'"
-            [filter]="true"
           />
         </div>
+      </div>
+      <div class="form-field">
+        <jhi-select
+          [selected]="basicInfoForm.get('fundingType')?.value"
+          (selectedChange)="basicInfoForm.get('fundingType')?.setValue($event)"
+          [items]="DropdownOptions.fundingTypes"
+          [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
+          [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
+          [width]="'100%'"
+          [filter]="true"
+        />
       </div>
     </form>
   </ng-template>
