@@ -33,6 +33,7 @@ export const selectGender: SelectOption[] = [
   { value: 'female', name: 'Female' },
   { value: 'male', name: 'Male' },
   { value: 'other', name: 'Other' },
+  { value: 'prefer_not_to_say', name: 'Prefer not to say' },
 ];
 
 export const selectLanguage: SelectOption[] = [
