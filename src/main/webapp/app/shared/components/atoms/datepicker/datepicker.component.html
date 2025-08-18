@@ -1,8 +1,25 @@
 <div [class.active]="isCalendarOpen" class="label-top datepicker-container">
-  <label class="custom-label"
-    >{{ label() }}
+  <label class="custom-label">
+    @if (label() !== undefined) {
+      @if (shouldTranslate()) {
+        <span jhiTranslate="{{ label() }}"></span>
+      } @else {
+        {{ label() }}
+      }
+    }
     @if (required()) {
       <span class="required">*</span>
+    }
+    @if (icon(); as icon) {
+      @if (icon === 'circle-info' && tooltipText()) {
+        @if (shouldTranslate()) {
+          <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
+        } @else {
+          <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
+        }
+      } @else {
+        <fa-icon class="icon" [icon]="['fas', icon]" />
+      }
     }
   </label>
   <p-datepicker
@@ -10,7 +27,7 @@
     (onHide)="isCalendarOpen = false"
     (onShow)="isCalendarOpen = true"
     [(ngModel)]="modelDate"
-    [placeholder]="placeholder()"
+    [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
     [disabled]="disabled()"
     [showButtonBar]="true"
     [style]="{ width: width() }"

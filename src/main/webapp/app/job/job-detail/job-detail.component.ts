@@ -1,19 +1,19 @@
-import { Component, Signal, computed, inject, signal } from '@angular/core';
+import { Component, Signal, computed, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { JobDetailDTO, JobResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 
@@ -48,11 +48,21 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ToastComponent],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ConfirmDialog],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
+  readonly closeButtonLabel = 'jobActionButton.close';
+  readonly closeButtonSeverity = 'danger' as ButtonColor;
+  readonly closeButtonIcon = 'xmark';
+  readonly deleteButtonLabel = 'jobActionButton.delete';
+  readonly deleteButtonSeverity = 'danger' as ButtonColor;
+  readonly deleteButtonIcon = 'trash';
+
+  closeConfirmDialog = viewChild<ConfirmDialog>('closeConfirmDialog');
+  deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');
+
   userId = signal<string>('');
   jobId = signal<string>('');
 
@@ -100,9 +110,12 @@ export class JobDetailComponent {
             shouldTranslate: true,
           },
           {
-            label: 'jobActionButton.delete',
-            severity: 'danger',
-            onClick: () => void this.onDeleteJob(),
+            label: this.deleteButtonLabel,
+            severity: this.deleteButtonSeverity,
+            icon: this.deleteButtonIcon,
+            onClick: () => {
+              this.deleteConfirmDialog()?.confirm();
+            },
             disabled: false,
             shouldTranslate: true,
           },
@@ -115,10 +128,13 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: 'jobActionButton.close',
-            severity: 'danger',
+            label: this.closeButtonLabel,
+            severity: this.closeButtonSeverity,
+            icon: this.closeButtonIcon,
             variant: 'outlined',
-            onClick: () => void this.onCloseJob(),
+            onClick: () => {
+              this.closeConfirmDialog()?.confirm();
+            },
             disabled: false,
             shouldTranslate: true,
           },
