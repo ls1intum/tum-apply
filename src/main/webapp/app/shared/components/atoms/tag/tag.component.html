@@ -1,10 +1,4 @@
-<p-tag
-  class="custom-tag"
-  [severity]="color()"
-  [rounded]="round()"
-  [pTooltip]="tooltipText() ? (tooltipText()! | translate) : null"
-  tooltipPosition="top"
->
+<p-tag class="custom-tag" [severity]="color()" [rounded]="round()" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top">
   @if (icon() && !iconRight()) {
     <fa-icon [icon]="iconProp()" class="icon left" />
   }
