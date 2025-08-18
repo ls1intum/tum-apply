@@ -11,13 +11,17 @@ import { ButtonComponent } from '../../atoms/button/button.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class Comment {
+  // Inputs
   text = model<string>('');
   canEdit = input<boolean>(false);
+  isCreate = input<boolean>(false);
 
+  // Outputs
   saved = output<string>();
 
-  isEdit = signal<boolean>(false);
-  draft = signal<string>('');
+  // Internal Signals
+  protected isEdit = signal<boolean>(false);
+  protected draft = signal<string>('');
 
   startEdit(): void {
     this.draft.set(this.text());
