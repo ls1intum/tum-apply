@@ -80,3 +80,10 @@
     border: 0.1rem solid var(--p-primary-color);
   }
 }
+
+:root {
+  .p-select-option.p-select-option-selected {
+    background: var(--p-background-surface-alt) !important;
+    color: var(--p-text-primary) !important;
+  }
+}
