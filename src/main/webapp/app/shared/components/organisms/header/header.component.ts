@@ -64,7 +64,7 @@ export class HeaderComponent {
   isProfessorPage = computed(() => {
     const auths = this.routeAuthorities();
     return (
-      this.router.url === '/professor' ||
+      (this.router.url === '/professor' && !this.accountService.hasAnyAuthority(['APPLICANT'])) ||
       this.accountService.hasAnyAuthority(['PROFESSOR']) ||
       (Array.isArray(auths) && auths.includes(UserShortDTO.RolesEnum.Professor))
     );
