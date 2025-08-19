@@ -63,6 +63,12 @@ const routes: Routes = [
     loadComponent: () =>
       import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
   },
+  {
+    path: 'playground/rating',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./playground/rating-playground/rating-playground').then(c => c.RatingPlayground),
+  },
 
   // ======================================================================================
   // User Management
