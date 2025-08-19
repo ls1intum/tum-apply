@@ -83,6 +83,7 @@ export class JobCreationFormComponent {
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
   panel2 = viewChild<TemplateRef<HTMLDivElement>>('panel2');
   panel3 = viewChild<TemplateRef<HTMLDivElement>>('panel3');
+  panel4 = viewChild<TemplateRef<HTMLDivElement>>('panel4');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
   sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
 
@@ -136,6 +137,7 @@ export class JobCreationFormComponent {
       panel1: this.panel1(),
       panel2: this.panel2(),
       panel3: this.panel3(),
+      panel4: this.panel4(),
       status: this.savingStatePanel(),
     };
 
@@ -207,6 +209,38 @@ export class JobCreationFormComponent {
       steps.push({
         name: 'jobCreationForm.header.steps.additionalInfo',
         panelTemplate: templates.panel3,
+        shouldTranslate: true,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick() {},
+            disabled: false,
+            label: 'jobActionButton.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'arrow-right',
+            onClick() {},
+            disabled: !this.positionDetailsValid(),
+            label: 'jobActionButton.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        status: templates.status,
+      });
+    }
+
+    if (templates.panel4) {
+      steps.push({
+        name: 'jobCreationForm.header.steps.summary',
+        panelTemplate: templates.panel4,
         shouldTranslate: true,
         buttonGroupPrev: [
           {
