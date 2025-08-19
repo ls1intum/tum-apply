@@ -22,10 +22,10 @@ export default class MainComponent {
   loggedIn = computed(() => {
     return this.accountService.signedIn();
   });
+
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
-
   private readonly translateService = inject(TranslateService);
   private readonly rootRenderer = inject(RendererFactory2);
 

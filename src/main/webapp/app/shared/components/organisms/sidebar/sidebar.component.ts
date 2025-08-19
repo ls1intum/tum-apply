@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
@@ -7,19 +7,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
+import { ButtonComponent } from '../../atoms/button/button.component';
 
 type SidebarButton = { icon: string; text: string; link: string };
 type SidebarCategory = { title: string; buttons: SidebarButton[] };
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [DividerModule, PanelModule, SidebarButtonComponent, TranslateModule],
+  imports: [DividerModule, PanelModule, SidebarButtonComponent, TranslateModule, ButtonComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  private accountService = inject(AccountService);
-  private router = inject(Router);
+  isSidebarCollapsed = signal<boolean>(false);
 
   /**
    * Custom groups for sidebar links that have multiple paths.
@@ -30,6 +30,8 @@ export class SidebarComponent {
     '/job-overview': ['/job/detail', '/application/create'],
     '/my-positions': ['/job/detail', '/job/edit'],
   };
+  private accountService = inject(AccountService);
+  private router = inject(Router);
 
   /**
    * Returns the categories for the sidebar based on the user's roles.
@@ -65,6 +67,10 @@ export class SidebarComponent {
     }
 
     return currentPath === link || currentPath.startsWith(link + '/');
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarCollapsed.update(value => !value);
   }
 
   private getCategoryConfig(): Record<string, SidebarCategory[]> {
@@ -114,7 +120,13 @@ export class SidebarComponent {
         },
         {
           title: 'sidebar.researchgroup.researchgroup',
-          buttons: [{ icon: 'people-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/templates' }],
+          buttons: [
+            {
+              icon: 'people-group',
+              text: 'sidebar.researchgroup.yourgroup',
+              link: '/research-group/templates',
+            },
+          ],
         },
       ],
       ADMIN: [
