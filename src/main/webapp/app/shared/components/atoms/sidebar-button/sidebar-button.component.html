@@ -1,8 +1,15 @@
-<div class="sidebar-button" [class.active]="isActive()" (click)="navigate()">
+<div
+  (click)="navigate()"
+  [class.active]="isActive()"
+  [class.icon-only]="icon() !== undefined && label() === undefined"
+  class="sidebar-button"
+>
   @if (icon() !== undefined) {
     <fa-icon [icon]="['fas', icon() ?? '']" class="icon" [class.active]="isActive()" />
   }
-  <div class="text">
-    {{ label() }}
-  </div>
+  @if (label() !== undefined) {
+    <div class="text">
+      {{ label() }}
+    </div>
+  }
 </div>

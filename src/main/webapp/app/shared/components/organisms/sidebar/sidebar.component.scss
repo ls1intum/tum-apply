@@ -1,49 +1,6 @@
 .sidebar,
 .sidebar-collapsed {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: sticky;
-  top: 0;
-}
-
-.sidebar-collapsed {
-  .sidebar-menu-item {
-    position: static;
-  }
-
-  .sidebar-item {
-    i {
-      margin-right: 0;
-    }
-
-    &-text,
-    &-arrow {
-      opacity: 0;
-      width: 0;
-      overflow: hidden;
-    }
-  }
-
-  .section-divider {
-    height: 0.75rem;
-    border: none;
-    padding: 1rem 0;
-    color: var(--p-text-secondary);
-  }
-
-  .buttons {
-    align-items: center;
-  }
-
-  .sidebar-submenu {
-    display: none;
-  }
-}
-
-.sidebar {
-  display: flex;
-  width: 15rem;
   height: 100%;
   flex-direction: column;
   top: 0;
@@ -53,11 +10,15 @@
   flex: 1 1 auto;
   padding: 1rem;
 
+  .settings-content,
   .sidebar-content {
     display: flex;
     flex-direction: column;
+    width: 100%;
+  }
+
+  .sidebar-content {
     flex: 1 1 auto;
-    overflow: auto;
 
     .section-title {
       font-size: 0.75rem;
@@ -74,10 +35,17 @@
   }
 
   .settings-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
     flex: 0 0 auto;
+    justify-content: flex-end;
     padding-bottom: 1rem;
   }
+}
+
+.sidebar-collapsed {
+  width: 4.75rem;
+  align-items: center;
+}
+
+.sidebar {
+  width: 15rem;
 }
