@@ -9,6 +9,7 @@
   border-right: 0.1rem solid var(--p-border-default);
   flex: 1 1 auto;
   padding: 1rem;
+  width: var(--sidebar-width);
 
   .settings-content,
   .sidebar-content {
@@ -42,10 +43,5 @@
 }
 
 .sidebar-collapsed {
-  width: 4.75rem;
   align-items: center;
-}
-
-.sidebar {
-  width: 15rem;
 }

@@ -10,9 +10,18 @@
 }
 
 .main-page {
-  flex: 1 1 auto;
+  --sidebar-expanded: 15rem;
+  --sidebar-collapsed: 4.75rem;
+  --sidebar-width: var(--sidebar-expanded);
+  --sidebar-edge: var(--sidebar-width);
+
   display: flex;
+  flex: 1 1 auto;
   overflow: hidden;
+
+  &.is-collapsed {
+    --sidebar-width: var(--sidebar-collapsed);
+  }
 
   .sidebar {
     flex: 0 0 auto;
