@@ -188,6 +188,23 @@ server:
 springdoc:
   show-actuator: true
 
+# ===================================================================
+# OTP (One-Time Password) / Email Verification settings
+# - length: number of digits/characters for the generated OTP code
+# - ttl-seconds: validity period of the OTP in seconds
+# - max-attempts: how many verification attempts are allowed before invalidation
+# - resend-cooldown-seconds: minimum time in seconds before another code can be requested
+# - hmac-secret: Base64 encoded secret used for secure HMAC hashing of the OTP
+# ===================================================================
+
+security:
+  otp:
+    length: ${OTP_LENGTH:8}
+    ttl-seconds: ${OTP_TTL_SECONDS:900}
+    max-attempts: ${OTP_MAX_ATTEMPTS:6}
+    resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}
+    hmac-secret: ${OTP_HMAC_SECRET:CHANGE_ME_BASE64}
+
 # Properties to be exposed on the /info management endpoint
 info:
   # Comma separated list of profiles that will trigger the ribbon to show
