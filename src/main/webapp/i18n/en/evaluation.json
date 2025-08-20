@@ -3,11 +3,13 @@
     "overviewHeader": "Applications - Overview",
     "reviewHeader": "Applications - Review",
 
-    "ratingToolTip": "Rating: {{value}} on a {{total}}-Likert scale ({{label}})",
-    "positive": "Positive",
-    "negative": "Negative",
-    "neutral": "Neutral",
-    "noRating": "No rating available",
+    "ratings": {
+      "very_bad": "Poor",
+      "bad": "Fair",
+      "neutral": "Satisfactory",
+      "good": "Good",
+      "very_good": "Excellent"
+    },
 
     "accept": "Accept",
     "reject": "Reject",
@@ -27,7 +29,14 @@
       "SENT": "Unopened",
       "ACCEPTED": "Approved",
       "REJECTED": "Rejected",
-      "IN_REVIEW": "In Review"
+      "IN_REVIEW": "In Review",
+
+      "tooltips": {
+        "SENT": "The application has been submitted but not yet opened",
+        "ACCEPTED": "The application has been accepted",
+        "REJECTED": "The application has been rejected",
+        "IN_REVIEW": "The application has been opened and is still under review"
+      }
     },
     "noApplicationsFound": "No applications found.",
     "filterOptions": {

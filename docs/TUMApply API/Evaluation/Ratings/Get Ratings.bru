@@ -1,0 +1,15 @@
+meta {
+  name: Get Ratings
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/applications/:applicationId/ratings
+  body: none
+  auth: inherit
+}
+
+params:path {
+  applicationId: 00000000-0000-0000-0000-300000020001
+}
