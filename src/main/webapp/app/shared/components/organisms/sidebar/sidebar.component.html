@@ -2,9 +2,7 @@
   <div class="sidebar-content">
     @for (category of categories; track category.title) {
       @if (isSidebarCollapsed()) {
-        @if ($first) {
-          <div class="first-section-divider"></div>
-        } @else {
+        @if (!$first) {
           <p-divider class="section-divider" />
         }
       } @else {
