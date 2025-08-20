@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.config.OtpProperties;
+import de.tum.cit.aet.core.exception.EmailVerificationFailedException;
 import de.tum.cit.aet.core.security.otp.OtpUtil;
 import de.tum.cit.aet.core.service.EmailService;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
@@ -58,35 +59,39 @@ public class EmailVerificationService {
         emailService.sendEmailVerificationCode(email, code, Duration.ofSeconds(otpProperties.getTtlSeconds()));
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = EmailVerificationFailedException.class)
     public void verifyCode(String rawEmail, String submittedCode, String ip) {
         String email = OtpUtil.normalizeEmail(rawEmail);
         Instant now = Instant.now();
 
         var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(email, now);
         if (activeOpt.isEmpty()) {
-            throw new IllegalArgumentException("Verification failed");
+            throw new EmailVerificationFailedException("Validation failed");
         }
+
         var otp = activeOpt.get();
 
         if (otp.getAttempts() >= otp.getMaxAttempts()) {
             otp.setUsed(true); // lock this code
             emailVerificationOtpRepository.save(otp);
-            throw new IllegalArgumentException("Verification failed");
+            throw new EmailVerificationFailedException("Validation failed");
         }
 
-        otp.setAttempts(otp.getAttempts() + 1);
+        String cleanedCode = submittedCode == null ? "" : submittedCode.trim();
         String expected = OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(),
-            submittedCode + "|" + otp.getSalt() + "|" + email);
+            cleanedCode + "|" + otp.getSalt() + "|" + email);
+
         boolean ok = OtpUtil.constantTimeEquals(expected, otp.getCodeHash());
-        emailVerificationOtpRepository.save(otp);
+
         if (!ok) {
-            throw new IllegalArgumentException("Verification failed");
+            // Atomically increment attempts and burn if limit is reached
+            emailVerificationOtpRepository.incrementAttemptsIfActive(otp.getId(), now);
+            throw new EmailVerificationFailedException("Validation failed");
         }
 
         // Mark used atomically (race safety)
         if (emailVerificationOtpRepository.markUsedIfActive(otp.getId(), now) == 0) {
-            throw new IllegalArgumentException("Verification failed");
+            throw new EmailVerificationFailedException("Validation failed");
         }
 
         // Flip in Keycloak and force fresh tokens

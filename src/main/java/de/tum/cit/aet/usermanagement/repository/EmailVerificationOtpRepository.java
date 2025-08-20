@@ -52,6 +52,16 @@ public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<Em
     int markUsedIfActive(@Param("id") UUID id, @Param("now") Instant now);
 
     /**
+     * Atomically increments attempts for the given OTP if it is still active at the time of update.
+     * If the increment reached or exceed maxAttempts, the OTP is burned (used=true) in the same statement.
+     *
+     * @return number of rows updated (0 if already used/expired/not found).
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("update EmailVerificationOtp e set e.attempts = e.attempts + 1, e.used = (case when e.attempts >= e.maxAttempts then true else e.used end) where e.id = :id and e.used = false and e.expiresAt > :now")
+    int incrementAttemptsIfActive(@Param("id") UUID id, @Param("now") Instant now);
+
+    /**
      * Purges used or expired OTP rows; intended for the scheduled cleanup.
      * Returns number of deleted rows.
      */
