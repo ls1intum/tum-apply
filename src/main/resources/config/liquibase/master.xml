@@ -8,6 +8,7 @@
   <include file="changelog/00000000000001_alter_jobs_add_end_date.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000002_add_email-settings.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000003_add_email-templates.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000004_add_ratings.xml" relativeToChangelogFile="true"/>
 
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
