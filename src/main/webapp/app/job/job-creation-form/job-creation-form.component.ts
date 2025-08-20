@@ -11,6 +11,7 @@ import { ProgressStepperComponent, StepData } from 'app/shared/components/molecu
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 
 import SharedModule from '../../shared/shared.module';
 import { JobDTO, JobFormDTO } from '../../generated';
@@ -300,9 +301,9 @@ export class JobCreationFormComponent {
   private createPositionDetailsForm(): FormGroup {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
-      description: ['', [Validators.required, Validators.maxLength(1000)]],
-      tasks: ['', [Validators.required, Validators.maxLength(1000)]],
-      requirements: ['', [Validators.required, Validators.maxLength(1000)]],
+      description: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
+      tasks: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
+      requirements: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
     });
   }
 
