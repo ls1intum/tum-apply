@@ -105,7 +105,11 @@ export class JobCreationFormComponent {
   });
 
   // Data computation
-  currentJobData = computed<JobFormDTO>(() => this.createJobDTO('DRAFT'));
+  currentJobData = computed<JobFormDTO>(() => {
+    this.basicInfoFormValueSignal();
+    this.positionDetailsFormValueSignal();
+    return this.createJobDTO('DRAFT');
+  });
 
   publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO('PUBLISHED') : undefined));
 
