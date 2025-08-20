@@ -30,7 +30,13 @@
         <fa-icon class="profile-icon" icon="user" />
         <span class="font-medium">{{ user()?.name }}</span>
       </div>
-      <jhi-button (click)="logout()" label="{{ 'header.logout' | translate }}" severity="primary" variant="outlined" />
+      <jhi-button
+        class="fixed-width-button"
+        (click)="logout()"
+        label="{{ 'header.logout' | translate }}"
+        severity="primary"
+        variant="outlined"
+      />
     }
   </div>
 </header>

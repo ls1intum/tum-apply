@@ -5,18 +5,18 @@ import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
+import { ButtonModule } from 'primeng/button';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
 import { HeaderComponent } from '../../shared/components/organisms/header/header.component';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-main',
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [ButtonComponent, HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
+  imports: [ButtonModule, HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
   readonly accountService = inject(AccountService);

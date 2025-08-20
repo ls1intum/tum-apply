@@ -7,11 +7,16 @@
     @if (loggedIn()) {
       <jhi-sidebar class="sidebar" [isSidebarCollapsed]="isSidebarCollapsed()" />
 
-      <!-- Sidebar Button -->
-      <jhi-button
+      <!-- Sidebar Collapse Button -->
+      <p-button
         class="sidebar-collapse-button"
         (click)="toggleSidebar()"
-        [icon]="isSidebarCollapsed() ? 'circle-chevron-left' : 'circle-chevron-right'"
+        [rounded]="true"
+        [raised]="true"
+        [outlined]="true"
+        [icon]="isSidebarCollapsed() ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
+        size="small"
+        [style]="{ 'background-color': 'var(--p-background-surface)' }"
       />
     }
     <div class="content">
