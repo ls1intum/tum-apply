@@ -65,7 +65,7 @@
         "toolTipText": "Helfen Sie den Bewerbern, den Forschungsschwerpunkt und die Ziele der Position zu verstehen."
       },
       "tasks": {
-        "label": "Aufgaben",
+        "label": "Aufgaben & Verantwortlichkeiten",
         "placeholder": "Geben Sie die wichtigsten Aufgaben und Verantwortlichkeiten an...",
         "descriptionHelper": "Listen Sie die wichtigsten Aufgaben oder Tätigkeiten auf, an denen die/der Kandidat*in beteiligt sein wird. Stichpunkte werden empfohlen.",
         "toolTipText": "Verschaffen Sie den Bewerbern ein klares Bild von den Aufgaben und Tätigkeiten der Position."
@@ -163,9 +163,9 @@
     },
     "positionDetails": {
       "positionDetails": "Stellendetails",
-      "description": "Projektbeschreibung",
+      "description": "Stellenbeschreibung",
       "tasks": "Aufgaben & Verantwortlichkeiten",
-      "requirements": "Anforderungen"
+      "requirements": "Zugangsvoraussetzungen"
     },
     "dataPrivacy": {
       "dataProtectionInformation": "Hinweis zum Datenschutz:",

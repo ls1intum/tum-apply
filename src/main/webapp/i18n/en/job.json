@@ -65,7 +65,7 @@
         "toolTipText": "Help the applicant understand the research focus and goals of the position."
       },
       "tasks": {
-        "label": "Tasks",
+        "label": "Tasks & Responsibilities",
         "placeholder": "List the main responsibilities...",
         "descriptionHelper": "List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.",
         "toolTipText": "Provide a clear picture of the position’s responsibilities and activities."
@@ -163,9 +163,9 @@
     },
     "positionDetails": {
       "positionDetails": "Position Details",
-      "description": "Project Description",
-      "tasks": "Key Tasks & Responsibilities",
-      "requirements": "Requirements"
+      "description": "Job Description",
+      "tasks": "Tasks & Responsibilities",
+      "requirements": "Eligibility Criteria"
     },
     "dataPrivacy": {
       "dataProtectionInformation": "Data Protection Information",
