@@ -4,7 +4,7 @@
   flex-direction: column;
   height: 100%;
   position: sticky;
-  top: 0; /* stick under the header naturally if parent provides space */
+  top: 0;
 }
 
 .sidebar-collapsed {
@@ -32,7 +32,6 @@
     color: var(--p-text-secondary);
   }
 
-  /* Tighter layout and centering for icon-only buttons */
   .buttons {
     align-items: center;
   }

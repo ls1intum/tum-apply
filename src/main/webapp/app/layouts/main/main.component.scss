@@ -34,3 +34,11 @@
     }
   }
 }
+
+.sidebar-collapse-button {
+  position: absolute;
+  top: 50%;
+  left: var(--sidebar-edge);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}

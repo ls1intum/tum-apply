@@ -1,4 +1,4 @@
-import { Component, Renderer2, RendererFactory2, computed, inject } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, computed, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
@@ -9,16 +9,19 @@ import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sideba
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
 import { HeaderComponent } from '../../shared/components/organisms/header/header.component';
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-main',
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
+  imports: [ButtonComponent, HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
   readonly accountService = inject(AccountService);
+  readonly isSidebarCollapsed = signal(false);
+
   loggedIn = computed(() => {
     return this.accountService.signedIn();
   });
@@ -36,5 +39,9 @@ export default class MainComponent {
       dayjs.locale(langChangeEvent.lang);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarCollapsed.update(value => !value);
   }
 }

@@ -1,6 +1,4 @@
 <div [class.sidebar-collapsed]="isSidebarCollapsed()" [class.sidebar]="!isSidebarCollapsed()">
-  <p-button (onClick)="toggleSidebar()" class="sidebar-edge-toggle" icon="pi pi-check" />
-
   <div class="sidebar-content">
     @for (category of categories; track category.title) {
       @if (isSidebarCollapsed()) {
