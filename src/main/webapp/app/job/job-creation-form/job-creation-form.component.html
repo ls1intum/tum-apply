@@ -210,16 +210,28 @@
 
   <!-- Step 3: Additional Information -->
   <ng-template #panel3>
-    <section class="extras-section">
-      <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
-      <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
-      <br />
-      <!--        Not implemented yet-->
-      <!--        Custom Questions Selection-->
-      <div class="data-privacy-notice">
-        <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-      </div>
-    </section>
+    <form [formGroup]="additionalInfoForm">
+      <section class="extras-section">
+        <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
+        <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
+        <br />
+        <!--        Not implemented yet-->
+        <!--        Custom Questions Selection-->
+        <div class="data-privacy-notice">
+          <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" formControlName="privacyAccepted" />
+            <span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
+          </label>
+
+          @if (showErrorMessage()) {
+            <div class="error-message" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
+          }
+        </div>
+      </section>
+    </form>
   </ng-template>
 
   <!-- Saving State Panel -->

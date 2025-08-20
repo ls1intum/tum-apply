@@ -74,10 +74,12 @@ export class JobCreationFormComponent {
   isLoading = signal<boolean>(true);
   savingState = signal<SavingState>('SAVED');
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
+  showPrivacyErrorMessage = signal<boolean>(false);
 
   // Forms
   basicInfoForm = this.createBasicInfoForm();
   positionDetailsForm = this.createPositionDetailsForm();
+  additionalInfoForm = this.createAdditionalInfoForm();
 
   // Template references
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
@@ -93,6 +95,9 @@ export class JobCreationFormComponent {
 
   basicInfoChanges = toSignal(this.basicInfoForm.statusChanges, { initialValue: this.basicInfoForm.status });
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
+  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
+    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
+  });
 
   /** Effect that updates validity signals when form status changes */
   formValidationEffect = effect(() => {
@@ -101,6 +106,12 @@ export class JobCreationFormComponent {
 
     this.basicInfoValid.set(this.basicInfoForm.valid);
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
+  });
+
+  hidePrivacyErrorEffect = effect(() => {
+    if (Boolean(this.privacyAcceptedSignal())) {
+      this.showPrivacyErrorMessage.set(false);
+    }
   });
 
   // Data computation
@@ -251,6 +262,10 @@ export class JobCreationFormComponent {
 
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
+    if (!Boolean(this.privacyAcceptedSignal())) {
+      this.showPrivacyErrorMessage.set(true);
+      return;
+    }
     if (!jobData) return;
 
     try {
@@ -287,6 +302,12 @@ export class JobCreationFormComponent {
       description: ['', [Validators.required, Validators.maxLength(1000)]],
       tasks: ['', [Validators.required, Validators.maxLength(1000)]],
       requirements: ['', [Validators.required, Validators.maxLength(1000)]],
+    });
+  }
+
+  private createAdditionalInfoForm(): FormGroup {
+    return this.fb.group({
+      privacyAccepted: [false, [Validators.required]],
     });
   }
 
@@ -373,6 +394,9 @@ export class JobCreationFormComponent {
       requirements: job?.requirements ?? '',
     });
 
+    this.additionalInfoForm.patchValue({
+      privacyAccepted: false,
+    });
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
   }
 

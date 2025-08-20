@@ -82,7 +82,9 @@
         "title": "Zusätzliches",
         "description": "Fügen Sie benutzerdefinierte Fragen hinzu, die den Bewerber*innen im Bewerbungsformular angezeigt werden."
       },
-      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen finden Sie unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>."
+      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen finden Sie unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>.",
+      "dataPrivacyConfirmationText": "Ich habe die Datenschutzerklärung gelesen und verstanden und willige in die Verarbeitung meiner personenbezogenen Daten gemäß dieser Erklärung ein.",
+      "dataPrivacyErrorText": "Bitte bestätigen Sie, dass Sie die Datenschutzerklärung gelesen und verstanden haben und in die Verarbeitung Ihrer personenbezogenen Daten einwilligen, um fortzufahren."
     },
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",

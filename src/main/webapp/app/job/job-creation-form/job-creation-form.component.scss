@@ -244,3 +244,7 @@ input:disabled {
     color: inherit;
   }
 }
+
+.error-message {
+  color: var(--p-danger-color);
+}
