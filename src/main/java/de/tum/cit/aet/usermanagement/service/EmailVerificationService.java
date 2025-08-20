@@ -30,6 +30,13 @@ public class EmailVerificationService {
         this.keycloakUserService = keycloakUserService;
     }
 
+    /**
+     * Generates a new OTP for the given email, invalidates any previous active OTPs,
+     * saves the new OTP in the repository, and sends the verification code via email.
+     *
+     * @param rawEmail the raw email address to send the verification code to
+     * @param ip       the IP address of the client requesting the code
+     */
     @Transactional
     public void sendCode(String rawEmail, String ip) {
         String email = OtpUtil.normalizeEmail(rawEmail);
@@ -59,6 +66,17 @@ public class EmailVerificationService {
         emailService.sendEmailVerificationCode(email, code, Duration.ofSeconds(otpProperties.getTtlSeconds()));
     }
 
+    /**
+     * Verifies the submitted OTP code for the given email and IP address.
+     * Checks for active OTP, validates the code, increments attempt count if failed,
+     * marks the OTP as used if successful, and updates the user's email verification
+     * status in Keycloak, forcing logout for fresh tokens.
+     *
+     * @param rawEmail      the raw email address to verify
+     * @param submittedCode the OTP code submitted by the user
+     * @param ip            the IP address of the client submitting the code
+     * @throws EmailVerificationFailedException if verification fails for any reason
+     */
     @Transactional(noRollbackFor = EmailVerificationFailedException.class)
     public void verifyCode(String rawEmail, String submittedCode, String ip) {
         String email = OtpUtil.normalizeEmail(rawEmail);

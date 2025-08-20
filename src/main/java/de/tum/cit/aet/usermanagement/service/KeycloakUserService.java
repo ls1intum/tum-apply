@@ -34,16 +34,29 @@ public class KeycloakUserService {
     }
 
     /**
-     * Find Keycloak user-id by email (case-insensitive).
+     * Finds a Keycloak user ID by email (case-insensitive).
+     *
+     * @param email the email address to search for; must not be {@code null}
+     * @return an {@link Optional} containing the user ID if a user with the given email exists; otherwise {@link Optional#empty()}
      */
     public Optional<String> findUserIdByEmail(String email) {
         List<UserRepresentation> res = keycloak.realm(realm).users().searchByEmail(email, true);
-        if (res == null || res.isEmpty()) return Optional.empty();
+        if (res == null || res.isEmpty()) {
+            return Optional.empty();
+        }
         return Optional.of(res.get(0).getId());
     }
 
     /**
-     * Ensure a user exists for the email (enabled=true, emailVerified=false).
+     * Ensures a user exists in Keycloak for the given email (creates one if missing).
+     * <p>
+     * The created user is initialized with {@code enabled=true} and {@code emailVerified=false}. If a concurrent
+     * creation happens and Keycloak returns HTTP 409 (conflict), this method performs a follow-up lookup and returns
+     * the resulting user ID.
+     *
+     * @param email the email address used as both username and email in Keycloak; must not be {@code null}
+     * @return the Keycloak user ID corresponding to the email
+     * @throws IllegalStateException if user creation fails with an unexpected status code
      */
     public String ensureUser(String email) {
         return findUserIdByEmail(email).orElseGet(() -> {
@@ -68,18 +81,24 @@ public class KeycloakUserService {
     }
 
     /**
-     * Set emailVerified=true if not already set.
+     * Sets the {@code emailVerified} flag to {@code true} for the given user, if not already set.
+     *
+     * @param userId the Keycloak user ID; must not be {@code null}
      */
     public void markEmailVerified(String userId) {
         var userRes = keycloak.realm(realm).users().get(userId);
         var rep = userRes.toRepresentation();
-        if (Boolean.TRUE.equals(rep.isEmailVerified())) return;
+        if (Boolean.TRUE.equals(rep.isEmailVerified())) {
+            return;
+        }
         rep.setEmailVerified(true);
         userRes.update(rep);
     }
 
     /**
-     * Invalidate existing sessions so clients must fetch fresh tokens.
+     * Invalidates all active sessions of the specified user via backchannel logout.
+     *
+     * @param userId the Keycloak user ID; must not be {@code null}
      */
     public void logout(String userId) {
         keycloak.realm(realm).users().get(userId).logout();

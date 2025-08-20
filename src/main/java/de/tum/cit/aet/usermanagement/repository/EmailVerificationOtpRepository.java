@@ -19,7 +19,13 @@ import java.util.UUID;
 public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<EmailVerificationOtp, UUID> {
 
     /**
-     * Returns the most recent active (non-used, non-expired) OTP for the given email.
+     * Returns the most recent active OTP for the given email.
+     * An OTP is considered active if {@code used=false} and {@code expiresAt > now}.
+     * The method relies on an index over (email, used, expires_at) to be efficient.
+     *
+     * @param email the email to search for (normalized)
+     * @param now   the current timestamp used for the expiry comparison
+     * @return the newest matching OTP, if present
      */
     Optional<EmailVerificationOtp> findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
         String email,
@@ -27,43 +33,55 @@ public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<Em
     );
 
     /**
-     * Marks all currently active (unused) OTPs for the given email as used.
-     * Ensures that a new OTP request invalidates all older codes, enforcing the single-active-code policy.
+     * Invalidates all currently active OTPs for the given email by setting {@code used=true}.
+     * Call this before creating a new OTP to enforce the single-active-code policy.
      *
-     * @param email The email address whose existing OTPs should be invalidated.
-     * @return The number of OTP records updated.
+     * @param email the email whose active OTPs should be invalidated
+     * @return number of rows updated
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update EmailVerificationOtp e set e.used = true where e.email = :email and e.used = false")
     int invalidateAllForEmail(@Param("email") String email);
 
     /**
-     * Fast existence check used by guards – avoids loading an entity when only a boolean is needed.
+     * Fast existence check for an active OTP without loading an entity.
+     *
+     * @param email the email to check
+     * @param now   the current timestamp used for the expiry comparison
+     * @return {@code true} if at least one active OTP exists; {@code false} otherwise
      */
     boolean existsByEmailAndUsedFalseAndExpiresAtAfter(String email, Instant now);
 
     /**
-     * Atomically marks an OTP as used if it is still active at the time of update.
+     * Atomically marks a specific OTP as used if it is still active at the time of update.
      *
-     * @return number of rows updated (0 if already used/expired/not found).
+     * @param id  the OTP identifier
+     * @param now the current timestamp used for the expiry comparison
+     * @return number of rows updated (0 if already used/expired/not found)
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update EmailVerificationOtp e set e.used = true where e.id = :id and e.used = false and e.expiresAt > :now")
     int markUsedIfActive(@Param("id") UUID id, @Param("now") Instant now);
 
     /**
-     * Atomically increments attempts for the given OTP if it is still active at the time of update.
-     * If the increment reached or exceed maxAttempts, the OTP is burned (used=true) in the same statement.
+     * Atomically increments the {@code attempts} counter for the given OTP if it is still active.
+     * If the increment reached or exceed {@code maxAttempts}, the OTP is burned in the same statement by setting
+     * {@code used=true}. This avoids races between parallel verifications.
      *
-     * @return number of rows updated (0 if already used/expired/not found).
+     * @param id  the OTP identifier
+     * @param now the current timestamp used for the expiry comparison
+     * @return number of rows updated (0 if already used/expired/not found)
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update EmailVerificationOtp e set e.attempts = e.attempts + 1, e.used = (case when e.attempts >= e.maxAttempts then true else e.used end) where e.id = :id and e.used = false and e.expiresAt > :now")
     int incrementAttemptsIfActive(@Param("id") UUID id, @Param("now") Instant now);
 
     /**
-     * Purges used or expired OTP rows; intended for the scheduled cleanup.
-     * Returns number of deleted rows.
+     * Deletes all OTPs that are already used or expired.
+     * Intended for scheduled cleanup jobs and relies on an index over {@code expires_at} for efficiency.
+     *
+     * @param now the current timestamp used for the expiry comparison
+     * @return number of rows deleted
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from EmailVerificationOtp e where e.used = true or e.expiresAt < :now")

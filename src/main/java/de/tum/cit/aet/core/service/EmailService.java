@@ -70,8 +70,10 @@ public class EmailService {
      * Sends an email asynchronously. Includes retry logic for transient mailing errors.
      * If email sending is disabled, it will log the email contents instead.
      *
-     * @param email the email to be sent
-     * @return a completed {@link CompletableFuture}
+     * @param email recipient address (must be a valid email; validation is performed by Bean Validation annotation)
+     * @param code  the OTP shown to the user in the email body; not stored by this method
+     * @param ttl   validity window of the OTP; used to display minutes in the email (values ≤ 0 are coerced to 1 minute for display)
+     * @return a completed {@link CompletableFuture} representing the asynchronous dispatch
      */
     @Async
     @Retryable(retryFor = {MailingException.class}, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))

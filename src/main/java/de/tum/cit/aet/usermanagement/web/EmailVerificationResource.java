@@ -20,6 +20,15 @@ public class EmailVerificationResource {
         this.service = service;
     }
 
+    /**
+     * Handles the request to send a verification code to the specified email.
+     * Extracts the email and client IP address from the request, then delegates
+     * the sending of the code to the email verification service.
+     *
+     * @param body the request body containing the email address
+     * @param req  the HTTP servlet request
+     * @return a ResponseEntity with HTTP status 202 (Accepted)
+     */
     @PostMapping("/send-code")
     public ResponseEntity<Void> send(@Valid @RequestBody SendCodeRequest body, HttpServletRequest req) {
         String email = body.email();
@@ -28,6 +37,15 @@ public class EmailVerificationResource {
         return ResponseEntity.accepted().build();
     }
 
+    /**
+     * Verifies a submitted verification code for the given email address.
+     * Checks the code via the email verification service and returns an appropriate
+     * HTTP response indicating success or failure.
+     *
+     * @param body the request body containing the email and verification code
+     * @param req  the HTTP servlet request
+     * @return a ResponseEntity with HTTP status 204 (No Content) if successful
+     */
     @PostMapping("/verify-code")
     public ResponseEntity<Void> verify(@Valid @RequestBody VerifyCodeRequest body, HttpServletRequest req) {
         String email = body.email();
@@ -37,6 +55,14 @@ public class EmailVerificationResource {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Resolves the client's IP address from the HTTP request.
+     * Prefers the 'X-Forwarded-For' header if present to handle proxies,
+     * otherwise falls back to the remote address.
+     *
+     * @param req the HTTP servlet request
+     * @return the resolved client IP address as a String
+     */
     private String clientIp(HttpServletRequest req) {
         String xf = req.getHeader("X-Forwarded-For");
         if (xf != null && !xf.isBlank()) {
