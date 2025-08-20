@@ -5,16 +5,17 @@ import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
+import { ButtonModule } from 'primeng/button';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
-import { ButtonComponent } from '../../atoms/button/button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 type SidebarButton = { icon: string; text: string; link: string };
 type SidebarCategory = { title: string; buttons: SidebarButton[] };
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [DividerModule, PanelModule, SidebarButtonComponent, TranslateModule, ButtonComponent],
+  imports: [ButtonModule, DividerModule, PanelModule, SidebarButtonComponent, TranslateModule, TranslateDirective],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })

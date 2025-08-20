@@ -1,23 +1,37 @@
 <div [class.sidebar-collapsed]="isSidebarCollapsed()" [class.sidebar]="!isSidebarCollapsed()">
-  @for (category of categories; track category.title) {
-    <p-panel class="panel" [header]="category.title | translate">
+  <p-button (onClick)="toggleSidebar()" class="sidebar-edge-toggle" icon="pi pi-check" />
+
+  <div class="sidebar-content">
+    @for (category of categories; track category.title) {
+      @if (isSidebarCollapsed()) {
+        @if ($first) {
+          <div class="first-section-divider"></div>
+        } @else {
+          <p-divider class="section-divider" />
+        }
+      } @else {
+        <span [jhiTranslate]="category.title" class="section-title"></span>
+      }
+
       <div class="buttons">
         @for (button of category.buttons; track button.text) {
           <jhi-sidebar-button
             [icon]="button.icon"
-            [label]="button.text | translate"
+            [label]="!isSidebarCollapsed() ? (button.text | translate) : undefined"
             [link]="button.link"
             [isActive]="isActive(button.link)"
           />
         }
       </div>
-    </p-panel>
-  }
-  <div class="settings">
+    }
+  </div>
+  <div class="settings-content">
     <p-divider />
-    <div class="settings-button-wrapper">
-      <jhi-sidebar-button [isActive]="isActive('/settings')" [label]="'settings.header' | translate" icon="gear" link="/settings" />
-    </div>
-    <jhi-button (click)="toggleSidebar()" [icon]="isSidebarCollapsed() ? 'circle-chevron-left' : 'circle-chevron-right'" variant="text" />
+    <jhi-sidebar-button
+      [isActive]="isActive('/settings')"
+      [label]="!isSidebarCollapsed() ? ('settings.header' | translate) : undefined"
+      icon="gear"
+      link="/settings"
+    />
   </div>
 </div>
