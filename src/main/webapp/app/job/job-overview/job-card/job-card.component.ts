@@ -58,7 +58,12 @@ export class JobCardComponent {
     if (this.accountService.signedIn()) {
       try {
         const application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
-        this.router.navigate([`/application/form?job=${this.jobId()}&application=${application.applicationId}`]);
+        await this.router.navigate(['/application/form'], {
+          queryParams: {
+            job: this.jobId(),
+            application: application.applicationId,
+          },
+        });
       } catch (e: any) {
         if (e?.error?.errorCode === 'OPERATION_NOT_ALLOWED') {
           this.toastService.showError({
@@ -93,7 +98,12 @@ export class JobCardComponent {
   }
 
   onEdit(): void {
-    this.router.navigate([`/application/form?job=${this.jobId()}&application=${this.jobCard()?.applicationId}`]);
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        job: this.jobId(),
+        application: this.jobCard()?.applicationId,
+      },
+    });
   }
 
   onView(): void {

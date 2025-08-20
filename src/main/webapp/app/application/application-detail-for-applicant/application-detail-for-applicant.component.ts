@@ -48,6 +48,10 @@ export default class ApplicationDetailForApplicantComponent {
   }
 
   onUpdateApplication(): void {
-    this.router.navigate([`/application/form?application=${this.applicationId()}`]);
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        application: this.applicationId(),
+      },
+    });
   }
 }
