@@ -11,7 +11,7 @@
 
 .main-page {
   --sidebar-expanded: 15rem;
-  --sidebar-collapsed: 4.75rem;
+  --sidebar-collapsed: 5rem;
   --sidebar-width: var(--sidebar-expanded);
   --sidebar-edge: var(--sidebar-width);
 
@@ -50,4 +50,8 @@
   left: var(--sidebar-edge);
   transform: translate(-50%, -50%);
   z-index: 10;
+  transition:
+    left 200ms ease,
+    transform 200ms ease;
+  will-change: left, transform;
 }
