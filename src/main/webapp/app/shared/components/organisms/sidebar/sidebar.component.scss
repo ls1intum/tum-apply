@@ -24,13 +24,15 @@
 
   .sidebar-content {
     flex: 1 1 auto;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     .section-title {
       font-size: 0.75rem;
       font-weight: 700;
       padding: 1rem 0;
       color: var(--p-text-secondary);
+      width: 100%;
     }
 
     .buttons {
