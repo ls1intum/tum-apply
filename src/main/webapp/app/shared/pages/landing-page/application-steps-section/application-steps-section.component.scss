@@ -1,12 +1,13 @@
 @use '../../../../../content/scss/breakpoints' as bp;
 .application-steps-section {
   display: flex;
-  padding: 6.25rem 0;
+  padding: 3.25rem 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6.25rem;
+  gap: 4.5rem;
   align-self: stretch;
+  background: var(--p-background-special);
 
   .title {
     color: var(--p-text-primary);
@@ -20,12 +21,13 @@
     flex-direction: column;
     align-items: center;
     gap: 2.5rem;
+    margin-top: -2rem;
 
     .steps {
       display: flex;
       justify-content: center;
-      padding: 0 5rem;
-      gap: 2.5rem;
+      padding: 0 rem;
+      gap: 3rem;
     }
   }
 }
