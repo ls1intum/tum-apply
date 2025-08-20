@@ -114,7 +114,7 @@ const routes: Routes = [
   {
     path: 'application/form',
     canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
+    data: { authorities: [] },
     loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
   },
 
