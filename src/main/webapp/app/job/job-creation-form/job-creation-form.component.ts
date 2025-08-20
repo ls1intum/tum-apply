@@ -364,6 +364,7 @@ export class JobCreationFormComponent {
         this.jobId.set(jobId);
         const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
         this.populateForm(job);
+        this.autoSaveInitialized = false;
       }
     } catch (error) {
       console.error('Initialization error:', error);
