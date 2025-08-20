@@ -8,6 +8,7 @@ import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public class EmailVerificationService {
         evo.setIpHash(OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(), ip + "|" + salt));
         emailVerificationOtpRepository.save(evo);
 
-        //emailService.sendEmailVerificationCode(email, code, Duration.ofSeconds(otpProperties.getTtlSeconds()));
+        emailService.sendEmailVerificationCode(email, code, Duration.ofSeconds(otpProperties.getTtlSeconds()));
     }
 
     @Transactional

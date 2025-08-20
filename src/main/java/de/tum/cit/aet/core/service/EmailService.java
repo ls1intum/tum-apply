@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.service;
 
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -9,11 +10,6 @@ import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -29,6 +25,13 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -71,7 +74,42 @@ public class EmailService {
      * @return a completed {@link CompletableFuture}
      */
     @Async
-    @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
+    @Retryable(retryFor = {MailingException.class}, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
+    public CompletableFuture<Void> sendEmailVerificationCode(@jakarta.validation.constraints.Email String email, String code, Duration ttl) {
+        String subject = "TUMApply – Your verification code";
+        long ttlMinutes = Math.max(1, ttl.toMinutes());
+
+        String inner = """
+              <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Verify your email</h2>
+              <p style="margin:0 0 16px 0;">Use this code to verify your email address:</p>
+              <div style="text-align:center;margin:24px 0;">
+                <div style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:3px;padding:12px 16px;border:1px dashed #0A66C2;border-radius:6px;background:#F0F7FF;">%s</div>
+              </div>
+              <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
+              <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
+            """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
+
+        String body = templateProcessingService.renderRawTemplate(Language.ENGLISH, inner);
+
+        if (!emailEnabled) {
+            simulateEmail(email, subject, body);
+            return CompletableFuture.completedFuture(null);
+        }
+
+        sendEmail(email, subject, body);
+        log.info("Email successfully sent to: {}", email);
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * Sends an email asynchronously. Includes retry logic for transient mailing errors.
+     * If email sending is disabled, it will log the email contents instead.
+     *
+     * @param email the email to be sent
+     * @return a completed {@link CompletableFuture}
+     */
+    @Async
+    @Retryable(retryFor = {MailingException.class}, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
     public CompletableFuture<Void> send(Email email) {
         try {
             email.validate();
@@ -142,16 +180,37 @@ public class EmailService {
     private void simulateEmail(Email email, String subject, String body) {
         log.info(
             """
-            >>>> Sending Simulated Email <<<<
-              To: {}
-              CC: {}
-              BCC: {}
-              Subject: {}
-              Parsed Body: {}
-            """,
+                >>>> Sending Simulated Email <<<<
+                  To: {}
+                  CC: {}
+                  BCC: {}
+                  Subject: {}
+                  Parsed Body: {}
+                """,
             getRecipientsToNotify(email.getTo(), email),
             getRecipientsToNotify(email.getCc(), email),
             getRecipientsToNotify(email.getBcc(), email),
+            subject,
+            Jsoup.parse(body)
+        );
+    }
+
+    /**
+     * Logs the email instead of sending it. Used for local testing or when sending is disabled.
+     *
+     * @param email   the email address
+     * @param subject the rendered subject
+     * @param body    the rendered HTML body
+     */
+    private void simulateEmail(String email, String subject, String body) {
+        log.info(
+            """
+                >>>> Sending Simulated Email <<<<
+                  To: {}
+                  Subject: {}
+                  Parsed Body: {}
+                """,
+            email,
             subject,
             Jsoup.parse(body)
         );
@@ -195,6 +254,42 @@ public class EmailService {
             mailSender.send(message);
         } catch (MessagingException | IOException e) {
             log.error("Failed to send email to: {}. Reason: {}", email.getTo(), e.getMessage());
+            throw new MailingException(e.getMessage());
+        }
+    }
+
+    /**
+     * Sends an email using JavaMailSender.
+     *
+     * @param email   the email address
+     * @param subject the rendered subject
+     * @param body    the rendered HTML body
+     * @throws MailingException if sending fails
+     */
+    private void sendEmail(String email, String subject, String body) {
+        try {
+            JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
+            if (mailSender == null) {
+                log.error("Mail sender not configured but email sending is enabled. Could not send email to {}", email);
+                throw new IllegalStateException("Mail sender not configured");
+            }
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            String to = email;
+            if (to.isEmpty()) {
+                return;
+            }
+
+            helper.setTo(to);
+            helper.setFrom(from);
+            helper.setSubject(subject);
+            helper.setText(body, true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            log.error("Failed to send email to: {}. Reason: {}", email, e.getMessage());
             throw new MailingException(e.getMessage());
         }
     }
