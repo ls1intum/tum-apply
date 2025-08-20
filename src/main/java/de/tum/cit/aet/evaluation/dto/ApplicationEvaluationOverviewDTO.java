@@ -13,7 +13,6 @@ public record ApplicationEvaluationOverviewDTO(
     String name,
     ApplicationState state,
     String jobName,
-    Integer rating,
     LocalDateTime appliedAt
 ) {
     /**
@@ -33,7 +32,6 @@ public record ApplicationEvaluationOverviewDTO(
             applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName(),
             application.getState(),
             job.getTitle(),
-            application.getRating(),
             application.getCreatedAt()
         );
     }
