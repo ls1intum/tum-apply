@@ -13,9 +13,10 @@
         @for (button of category.buttons; track button.text) {
           <jhi-sidebar-button
             [icon]="button.icon"
-            [label]="!isSidebarCollapsed() ? (button.text | translate) : undefined"
+            [label]="button.text | translate"
             [link]="button.link"
             [isActive]="isActive(button.link)"
+            [isCollapsed]="isSidebarCollapsed()"
           />
         }
       </div>
@@ -25,7 +26,8 @@
     <p-divider />
     <jhi-sidebar-button
       [isActive]="isActive('/settings')"
-      [label]="!isSidebarCollapsed() ? ('settings.header' | translate) : undefined"
+      [isCollapsed]="isSidebarCollapsed()"
+      [label]="'settings.header' | translate"
       class="settings-button"
       icon="gear"
       link="/settings"
