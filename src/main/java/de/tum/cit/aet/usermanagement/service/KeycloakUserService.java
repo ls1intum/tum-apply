@@ -14,17 +14,17 @@ import java.util.Optional;
 @Service
 public class KeycloakUserService {
 
-    private final Keycloak kc;
+    private final Keycloak keycloak;
     private final String realm;
 
     public KeycloakUserService(
         @Value("${KEYCLOAK_URL}") String url,
         @Value("${KEYCLOAK_REALM}") String realm,
-        @Value("${KEYCLOAK_ADMIN_CLIENT_ID}") String clientId,           // e.g. tumapply-otp-admin
+        @Value("${KEYCLOAK_ADMIN_CLIENT_ID}") String clientId,
         @Value("${KEYCLOAK_ADMIN_CLIENT_SECRET}") String clientSecret
     ) {
         this.realm = realm;
-        this.kc = KeycloakBuilder.builder()
+        this.keycloak = KeycloakBuilder.builder()
             .serverUrl(url)
             .realm(realm)
             .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
@@ -34,10 +34,10 @@ public class KeycloakUserService {
     }
 
     /**
-     * Find Keycloak user-id by email (case insensitive).
+     * Find Keycloak user-id by email (case-insensitive).
      */
     public Optional<String> findUserIdByEmail(String email) {
-        List<UserRepresentation> res = kc.realm(realm).users().searchByEmail(email, true);
+        List<UserRepresentation> res = keycloak.realm(realm).users().searchByEmail(email, true);
         if (res == null || res.isEmpty()) return Optional.empty();
         return Optional.of(res.get(0).getId());
     }
@@ -53,16 +53,17 @@ public class KeycloakUserService {
             u.setEnabled(true);
             u.setEmailVerified(false);
 
-            Response resp = kc.realm(realm).users().create(u);
-            if (resp.getStatus() == 201 && resp.getLocation() != null) {
-                String path = resp.getLocation().getPath();
-                return path.substring(path.lastIndexOf('/') + 1);
+            try (Response resp = keycloak.realm(realm).users().create(u)) {
+                if (resp.getStatus() == 201 && resp.getLocation() != null) {
+                    String path = resp.getLocation().getPath();
+                    return path.substring(path.lastIndexOf('/') + 1);
+                }
+                // If created concurrently we might see 409; try lookup again
+                if (resp.getStatus() == 409) {
+                    return findUserIdByEmail(email).orElseThrow();
+                }
+                throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
             }
-            // If created concurrently we might see 409; try lookup again
-            if (resp.getStatus() == 409) {
-                return findUserIdByEmail(email).orElseThrow();
-            }
-            throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
         });
     }
 
@@ -70,7 +71,7 @@ public class KeycloakUserService {
      * Set emailVerified=true if not already set.
      */
     public void markEmailVerified(String userId) {
-        var userRes = kc.realm(realm).users().get(userId);
+        var userRes = keycloak.realm(realm).users().get(userId);
         var rep = userRes.toRepresentation();
         if (Boolean.TRUE.equals(rep.isEmailVerified())) return;
         rep.setEmailVerified(true);
@@ -81,6 +82,6 @@ public class KeycloakUserService {
      * Invalidate existing sessions so clients must fetch fresh tokens.
      */
     public void logout(String userId) {
-        kc.realm(realm).users().get(userId).logout();
+        keycloak.realm(realm).users().get(userId).logout();
     }
 }
