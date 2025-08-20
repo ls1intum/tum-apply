@@ -9,9 +9,12 @@
  */
 
 
-export interface SortObject { 
-    unsorted?: boolean;
-    sorted?: boolean;
-    empty?: boolean;
+export interface ResearchGroupLargeDTO { 
+    description?: string;
+    email?: string;
+    website?: string;
+    street?: string;
+    postalCode?: string;
+    city?: string;
 }
 

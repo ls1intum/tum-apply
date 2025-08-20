@@ -1,5 +1,3 @@
-export * from './actuator.service';
-import { ActuatorService } from './actuator.service';
 export * from './applicationEvaluationResource.service';
 import { ApplicationEvaluationResourceService } from './applicationEvaluationResource.service';
 export * from './applicationResource.service';
@@ -14,6 +12,10 @@ export * from './emailTemplateResource.service';
 import { EmailTemplateResourceService } from './emailTemplateResource.service';
 export * from './jobResource.service';
 import { JobResourceService } from './jobResource.service';
+export * from './ratingResource.service';
+import { RatingResourceService } from './ratingResource.service';
+export * from './researchGroupRessource.service';
+import { ResearchGroupRessourceService } from './researchGroupRessource.service';
 export * from './userResource.service';
 import { UserResourceService } from './userResource.service';
-export const APIS = [ActuatorService, ApplicationEvaluationResourceService, ApplicationResourceService, AuthenticationResourceService, DocumentResourceService, EmailSettingResourceService, EmailTemplateResourceService, JobResourceService, UserResourceService];
+export const APIS = [ApplicationEvaluationResourceService, ApplicationResourceService, AuthenticationResourceService, DocumentResourceService, EmailSettingResourceService, EmailTemplateResourceService, JobResourceService, RatingResourceService, ResearchGroupRessourceService, UserResourceService];
