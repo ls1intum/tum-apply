@@ -7,10 +7,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
 import { TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { AccountService } from 'app/core/auth/account.service';
-import { firstValueFrom } from 'rxjs';
-import { ApplicationResourceService, JobCardDTO } from 'app/generated';
-import { ToastService } from 'app/service/toast-service';
+import { JobCardDTO } from 'app/generated';
 
 import SharedModule from '../../../shared/shared.module';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
@@ -44,39 +41,17 @@ export class JobCardComponent {
   ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;
 
   private router = inject(Router);
-  private accountService = inject(AccountService);
-  private applicationResourceService = inject(ApplicationResourceService);
-  private toastService = inject(ToastService);
 
   onViewDetails(): void {
     this.router.navigate([`/job/detail/${this.jobId()}`]);
   }
 
-  async onApply(): Promise<void> {
-    if (this.accountService.signedIn()) {
-      try {
-        const application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
-        await this.router.navigate(['/application/form'], {
-          queryParams: {
-            job: this.jobId(),
-            application: application.applicationId,
-          },
-        });
-      } catch (e: any) {
-        if (e?.error?.errorCode === 'OPERATION_NOT_ALLOWED') {
-          this.toastService.showError({
-            summary: 'Error',
-            detail: 'You have already applied to this job',
-          });
-        } else {
-          console.error('Unexpected error during application:', e);
-          this.toastService.showError({
-            summary: 'Error',
-            detail: 'Something went wrong while applying for the job',
-          });
-        }
-      }
-    }
+  onApply(): void {
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        job: this.jobId(),
+      },
+    });
   }
 
   onEdit(): void {
