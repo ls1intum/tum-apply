@@ -95,7 +95,7 @@ export default class ApplicationCreationFormComponent {
   title = signal<string>('');
   jobId = signal<string>('');
   applicantId = signal<string>('');
-  applicationId = signal<string | undefined>(undefined);
+  applicationId = signal<string>('');
   applicationState = signal<ApplicationForApplicantDTO.ApplicationStateEnum>('SAVED');
   savingState = signal<SavingState>(SavingStates.SAVED);
 
@@ -111,6 +111,8 @@ export default class ApplicationCreationFormComponent {
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
 
+  useLocalStorage = signal<boolean>(false);
+
   location = inject(Location);
 
   stepData = computed<StepData[]>(() => {
@@ -118,6 +120,7 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const applicantId = this.applicantId();
     const page1Valid = this.page1Valid();
     const page2Valid = this.page2Valid();
     const allPagesValid = this.allPagesValid();
@@ -153,7 +156,7 @@ export default class ApplicationCreationFormComponent {
             severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
-            disabled: !page1Valid,
+            disabled: !(page1Valid && applicantId !== ''),
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
             changePanel: true,
@@ -261,6 +264,26 @@ export default class ApplicationCreationFormComponent {
     const jobId = this.route.snapshot.queryParamMap.get('job');
     const applicationId = this.route.snapshot.queryParamMap.get('application');
 
+    // If no applicantId, work with localStorage only
+    if (this.applicantId() === '') {
+      this.useLocalStorage.set(true);
+
+      if (jobId) {
+        // TODO fetch jobData for lateron displaying jobDetails
+        this.jobId.set(jobId);
+        this.loadPage1FromLocalStorage();
+        this.applicationState.set('SAVED');
+        return;
+      } else {
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'Job ID must be provided when not authenticated.',
+        });
+        return;
+      }
+    }
+
+    // logic for authenticated users
     let application: ApplicationForApplicantDTO;
 
     try {
@@ -283,7 +306,7 @@ export default class ApplicationCreationFormComponent {
         // Create mode - create new application
         try {
           application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
-          this.applicationId.set(application.applicationId);
+          this.applicationId.set(application.applicationId ?? '');
 
           // Update URL to include the new applicationId
           await this.router.navigate([], {
@@ -313,33 +336,18 @@ export default class ApplicationCreationFormComponent {
         this.title.set(application.job.title);
       }
 
-      // Set application state
       this.applicationState.set(application.applicationState);
 
-      // Load data from application or local storage
-      if (this.applicationId() === undefined) {
-        this.loadFromLocalStorage();
-      } else {
-        this.page1.set(getPage1FromApplication(application));
-        this.page2.set(getPage2FromApplication(application));
-        this.page3.set(getPage3FromApplication(application));
-      }
+      // For authenticated users, don't use localStorage
+      this.useLocalStorage.set(false);
+
+      // Load data from application
+      this.page1.set(getPage1FromApplication(application));
+      this.page2.set(getPage2FromApplication(application));
+      this.page3.set(getPage3FromApplication(application));
 
       this.updateDocumentInformation();
-    } catch (error: any) {
-      if (error?.error?.errorCode === 'OPERATION_NOT_ALLOWED') {
-        this.toastService.showError({
-          summary: 'Error',
-          detail: 'You have already applied to this job',
-        });
-      } else {
-        console.error('Unexpected error during application:', error);
-        this.toastService.showError({
-          summary: 'Error',
-          detail: 'Something went wrong while applying for the job',
-        });
-      }
-
+    } catch (error) {
       const httpError = error as HttpErrorResponse;
       this.toastService.showError({
         summary: 'Error',
@@ -351,22 +359,31 @@ export default class ApplicationCreationFormComponent {
 
   async performAutomaticSave(): Promise<void> {
     if (this.savingState() === SavingStates.SAVING) {
-      const applicationId = this.applicationId();
-      if (applicationId === undefined) {
+      if (this.useLocalStorage()) {
         this.saveToLocalStorage();
       } else {
-        await this.sendCreateApplicationData(applicationId, this.applicationState(), false);
+        await this.sendCreateApplicationData(this.applicationState(), false);
       }
       this.savingState.set(SavingStates.SAVED);
     }
   }
 
-  async sendCreateApplicationData(
-    applicationId: string,
-    state: ApplicationForApplicantDTO.ApplicationStateEnum,
-    rerouteToOtherPage: boolean,
-  ): Promise<void> {
+  async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<void> {
     const location = this.location;
+    const applicationId = this.applicationId();
+
+    if (applicationId === '') {
+      this.toastService.showError({ detail: 'There is an error with the applicationId' });
+      return;
+    }
+
+    // If using local storage, we can't send to server
+    if (this.useLocalStorage()) {
+      this.toastService.showError({
+        detail: 'Cannot submit application: User authentication required.',
+      });
+      return;
+    }
 
     const updateApplication: UpdateApplicationDTO = {
       applicationId,
@@ -426,12 +443,11 @@ export default class ApplicationCreationFormComponent {
 
   updateDocumentInformation(): void {
     // Skip document update if using local storage
-    const applicationId = this.applicationId();
-    if (applicationId === undefined) {
+    if (this.useLocalStorage()) {
       return;
     }
 
-    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
+    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);
       })
@@ -480,22 +496,25 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  private loadFromLocalStorage(): void {
+  /**
+   * Loads application form data for the first page from localStorage for the current application.
+   * Validates applicationId match before applying data to form page.
+   *
+   * @returns {boolean} True if data was successfully loaded, false otherwise
+   * @private
+   */
+  private loadPage1FromLocalStorage(): boolean {
     try {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-
-        // Only load if it's for the same application
-        if (parsedData.applicationId === this.applicationId()) {
-          this.page1.set(parsedData.page1 ?? this.page1());
-          this.page2.set(parsedData.page2 ?? this.page2());
-          this.page3.set(parsedData.page3 ?? this.page3());
-        }
+        this.page1.set(parsedData.page1);
+        return true;
       }
     } catch (error) {
       console.error('Failed to load from local storage:', error);
     }
+    return false;
   }
 
   private clearLocalStorage(): void {

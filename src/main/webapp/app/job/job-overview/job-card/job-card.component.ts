@@ -6,8 +6,7 @@ import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { AuthCardComponent } from 'app/shared/components/organisms/auth-card/auth-card.component';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AccountService } from 'app/core/auth/account.service';
 import { firstValueFrom } from 'rxjs';
 import { ApplicationResourceService, JobCardDTO } from 'app/generated';
@@ -45,7 +44,6 @@ export class JobCardComponent {
   ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;
 
   private router = inject(Router);
-  private dialogService = inject(DialogService);
   private accountService = inject(AccountService);
   private applicationResourceService = inject(ApplicationResourceService);
   private toastService = inject(ToastService);
@@ -79,22 +77,6 @@ export class JobCardComponent {
         }
       }
     }
-
-    this.ref = this.dialogService.open(AuthCardComponent, {
-      style: {
-        border: 'none',
-        overflow: 'auto',
-        background: 'transparent',
-        boxShadow: 'none',
-      },
-      data: { redirectUri: `/application/form?job=${this.jobId()}` },
-      modal: true,
-      contentStyle: { padding: '0' },
-      dismissableMask: true,
-      closeOnEscape: true,
-      focusOnShow: true,
-      showHeader: false,
-    });
   }
 
   onEdit(): void {

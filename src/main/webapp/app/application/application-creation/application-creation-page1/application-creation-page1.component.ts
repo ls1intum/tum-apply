@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
@@ -77,6 +77,8 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 })
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
+
+  disableEmail = input<boolean>(true);
 
   valid = output<boolean>();
   changed = output<boolean>();

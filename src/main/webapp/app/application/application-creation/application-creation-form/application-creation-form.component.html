@@ -7,11 +7,17 @@
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
-  (confirmed)="sendCreateApplicationData(applicationId() ?? '', 'SENT', true)"
+  (confirmed)="sendCreateApplicationData('SENT', true)"
 />
 <ng-template #panel1>
   <div class="panel">
-    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
+    <jhi-application-creation-page1
+      class="w-full"
+      [(data)]="page1"
+      (valid)="onPage1ValidityChanged($event)"
+      (changed)="onValueChanged()"
+      [disableEmail]="!useLocalStorage()"
+    />
   </div>
 </ng-template>
 <ng-template #panel2>

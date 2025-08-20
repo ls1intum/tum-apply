@@ -22,7 +22,7 @@
     <jhi-string-input
       label="{{ 'entity.applicationPage1.label.email' | translate }}"
       icon="envelope"
-      [disabled]="true"
+      [disabled]="disableEmail()"
       id="email"
       [required]="true"
       [(model)]="data().email"
