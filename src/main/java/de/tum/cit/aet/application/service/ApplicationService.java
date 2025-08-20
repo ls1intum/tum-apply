@@ -58,9 +58,21 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
+
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
         UUID userId = currentUserService.getUserId();
-        if (applicationRepository.existsByApplicant_User_UserIdAndJob_JobId(userId, jobId)) {
-            throw new OperationNotAllowedException("Applicant has already applied for this position");
+
+        if(userId == null) {
+            Application application = new Application();
+            application.setJob(job);
+            application.setState(ApplicationState.SAVED);
+            return ApplicationForApplicantDTO.getFromEntity(application);
+        }
+
+        Application a = applicationRepository.getByApplicant_User_UserIdAndJob_JobId(userId, jobId);
+        if (a != null) {
+            return ApplicationForApplicantDTO.getFromEntity(a);
         }
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
         Applicant applicant;
@@ -69,8 +81,6 @@ public class ApplicationService {
         } else {
             applicant = applicantOptional.get();
         }
-
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         Application application = new Application(
             null,

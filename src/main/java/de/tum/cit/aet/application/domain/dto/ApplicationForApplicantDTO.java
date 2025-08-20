@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationForApplicantDTO(
-    @NotNull UUID applicationId,
+    UUID applicationId,
     ApplicantDTO applicant,
     @NotNull JobCardDTO job,
     @NotNull ApplicationState applicationState,

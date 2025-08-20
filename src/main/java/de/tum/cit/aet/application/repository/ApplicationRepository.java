@@ -322,4 +322,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
+
+    Application getByApplicant_User_UserIdAndJob_JobId(UUID userId, UUID jobId);
 }

@@ -1,8 +1,8 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
-import { ActivatedRoute } from '@angular/router';
+import { ApplicationDocumentIdsDTO, ApplicationForApplicantDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
@@ -27,26 +27,14 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
-const ApplicationFormModes = {
-  CREATE: 'create',
-  EDIT: 'edit',
-} as const;
-
-type ApplicationFormMode = (typeof ApplicationFormModes)[keyof typeof ApplicationFormModes];
-
-const ApplicationStates = {
-  SAVED: 'SAVED',
-  SENT: 'SENT',
-} as const;
-
-type ApplicationState = (typeof ApplicationStates)[keyof typeof ApplicationStates];
-
 const SavingStates = {
   SAVED: 'SAVED',
   SAVING: 'SAVING',
 } as const;
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
+
+const LOCAL_STORAGE_KEY = 'application_draft';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -60,7 +48,6 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     TranslateModule,
     ConfirmDialog,
   ],
-
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
   standalone: true,
@@ -69,6 +56,7 @@ export default class ApplicationCreationFormComponent {
   readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
   readonly sendButtonSeverity = 'primary' as ButtonColor;
   readonly sendButtonIcon = 'paper-plane';
+
   page1 = signal<ApplicationCreationPage1Data>({
     firstName: '',
     lastName: '',
@@ -85,6 +73,7 @@ export default class ApplicationCreationFormComponent {
     country: '',
     postcode: '',
   });
+
   page2 = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
@@ -95,30 +84,35 @@ export default class ApplicationCreationFormComponent {
     masterGradingScale: masterGradingScale[0],
     masterGrade: '',
   });
+
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
+
   title = signal<string>('');
   jobId = signal<string>('');
   applicantId = signal<string>('');
-  applicationId = signal<string>('');
-  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
+  applicationId = signal<string | undefined>(undefined);
+  applicationState = signal<ApplicationForApplicantDTO.ApplicationStateEnum>('SAVED');
   savingState = signal<SavingState>(SavingStates.SAVED);
+
   savingBadgeCalculatedClass = computed<string>(
     () =>
       `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
   );
-  mode: ApplicationFormMode = 'create';
+
   page1Valid = signal<boolean>(false);
   page2Valid = signal<boolean>(false);
   page3Valid = signal<boolean>(false);
   savingTick = signal<number>(0);
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+
   location = inject(Location);
+
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];
     const panel1 = this.panel1();
@@ -131,6 +125,7 @@ export default class ApplicationCreationFormComponent {
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
     const statusPanel = this.savedStatusPanel();
     const updateDocumentInformation = this.updateDocumentInformation.bind(this);
+
     if (panel1) {
       steps.push({
         name: 'entity.applicationSteps.personalInformation',
@@ -245,6 +240,7 @@ export default class ApplicationCreationFormComponent {
   private applicationResourceService = inject(ApplicationResourceService);
   private accountService = inject(AccountService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private toastService = inject(ToastService);
 
   constructor() {
@@ -260,57 +256,118 @@ export default class ApplicationCreationFormComponent {
 
   async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-    const segments = await firstValueFrom(this.route.url);
-    const firstSegment = segments[1]?.path;
-    let application;
-    if (firstSegment === ApplicationFormModes.CREATE) {
-      this.mode = ApplicationFormModes.CREATE;
-      const jobId = this.route.snapshot.paramMap.get('job_id');
-      if (jobId === null) {
-        this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
+
+    // Get query parameters
+    const jobId = this.route.snapshot.queryParamMap.get('job');
+    const applicationId = this.route.snapshot.queryParamMap.get('application');
+
+    let application: ApplicationForApplicantDTO;
+
+    try {
+      if (applicationId) {
+        // Edit mode - load existing application
+        application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
+
+        // Check if application state allows editing
+        if (application.applicationState !== 'SAVED') {
+          this.toastService.showError({
+            summary: 'Error',
+            detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
+          });
+          await this.router.navigate(['/application/detail', applicationId]);
+          return;
+        }
+
+        this.applicationId.set(applicationId);
+      } else if (jobId) {
+        // Create mode - create new application
+        try {
+          application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
+          this.applicationId.set(application.applicationId);
+
+          // Update URL to include the new applicationId
+          await this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { job: jobId, application: application.applicationId },
+            queryParamsHandling: 'merge',
+          });
+        } catch (error) {
+          this.toastService.showError({
+            summary: 'Error',
+            detail: 'Failed to create application. Please try again.',
+          });
+          console.error('Failed to create application:', error);
+          return;
+        }
       } else {
-        this.jobId.set(jobId);
-      }
-      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
-    } else if (firstSegment === ApplicationFormModes.EDIT) {
-      this.mode = ApplicationFormModes.EDIT;
-      const applicationId = this.route.snapshot.paramMap.get('application_id');
-      if (applicationId === null) {
-        this.toastService.showError({ summary: 'Error', detail: 'This is no valid applicationId' });
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'Either job ID or application ID must be provided in the URL.',
+        });
         return;
       }
-      application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
-    } else {
-      this.toastService.showError({ summary: 'Error', detail: 'This is no valid application page link' });
-      return;
-    }
-    this.jobId.set(application.job.jobId);
-    if (application.job.title && application.job.title.trim().length > 0) {
-      this.title.set(application.job.title);
-    }
-    this.applicationId.set(application.applicationId);
-    this.page1.set(getPage1FromApplication(application));
-    this.page2.set(getPage2FromApplication(application));
-    this.page3.set(getPage3FromApplication(application));
 
-    this.updateDocumentInformation();
-    this.location.replaceState(`${segments[0].path}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
+      // Set job information
+      this.jobId.set(application.job.jobId);
+      if (application.job.title && application.job.title.trim().length > 0) {
+        this.title.set(application.job.title);
+      }
+
+      // Set application state
+      this.applicationState.set(application.applicationState);
+
+      // Load data from application or local storage
+      if (this.applicationId() === undefined) {
+        this.loadFromLocalStorage();
+      } else {
+        this.page1.set(getPage1FromApplication(application));
+        this.page2.set(getPage2FromApplication(application));
+        this.page3.set(getPage3FromApplication(application));
+      }
+
+      this.updateDocumentInformation();
+    } catch (error: any) {
+      if (error?.error?.errorCode === 'OPERATION_NOT_ALLOWED') {
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'You have already applied to this job',
+        });
+      } else {
+        console.error('Unexpected error during application:', error);
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'Something went wrong while applying for the job',
+        });
+      }
+
+      const httpError = error as HttpErrorResponse;
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to load application: ' + httpError.statusText,
+      });
+      console.error('Failed to load application:', error);
+    }
   }
 
   async performAutomaticSave(): Promise<void> {
     if (this.savingState() === SavingStates.SAVING) {
-      await this.sendCreateApplicationData(this.applicationState(), false);
+      const applicationId = this.applicationId();
+      if (applicationId === undefined) {
+        this.saveToLocalStorage();
+      } else {
+        await this.sendCreateApplicationData(applicationId, this.applicationState(), false);
+      }
       this.savingState.set(SavingStates.SAVED);
     }
   }
 
-  async sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): Promise<void> {
+  async sendCreateApplicationData(
+    applicationId: string,
+    state: ApplicationForApplicantDTO.ApplicationStateEnum,
+    rerouteToOtherPage: boolean,
+  ): Promise<void> {
     const location = this.location;
-    const applicationId = this.applicationId();
-    if (applicationId === '') {
-      this.toastService.showError({ detail: 'There is an error with the applicationId' });
-      return;
-    }
+
     const updateApplication: UpdateApplicationDTO = {
       applicationId,
       applicant: {
@@ -345,27 +402,45 @@ export default class ApplicationCreationFormComponent {
       motivation: this.page3()?.motivation ?? '',
       specialSkills: this.page3()?.skills ?? '',
       projects: this.page3()?.experiences,
-      // answers: new Set(),
     };
+
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
+
+      // Clear local storage on successful server save
+      this.clearLocalStorage();
+
       if (rerouteToOtherPage) {
         this.toastService.showSuccess({ detail: 'Successfully saved application' });
         location.back();
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to save application: ' + httpError.statusText,
+      });
       console.error('Failed to save application:', err);
     }
   }
 
   updateDocumentInformation(): void {
-    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
+    // Skip document update if using local storage
+    const applicationId = this.applicationId();
+    if (applicationId === undefined) {
+      return;
+    }
+
+    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(applicationId))
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+      .catch(() =>
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'fetching the document ids for this application',
+        }),
+      );
   }
 
   onValueChanged(): void {
@@ -382,5 +457,53 @@ export default class ApplicationCreationFormComponent {
 
   onPage3ValidityChanged(isValid: boolean): void {
     this.page3Valid.set(isValid);
+  }
+
+  private saveToLocalStorage(): void {
+    const applicationData = {
+      page1: this.page1(),
+      page2: this.page2(),
+      page3: this.page3(),
+      applicationId: this.applicationId(),
+      jobId: this.jobId(),
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(applicationData));
+    } catch (error) {
+      console.error('Failed to save to local storage:', error);
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to save application data locally.',
+      });
+    }
+  }
+
+  private loadFromLocalStorage(): void {
+    try {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+
+        // Only load if it's for the same application
+        if (parsedData.applicationId === this.applicationId()) {
+          this.page1.set(parsedData.page1 ?? this.page1());
+          this.page2.set(parsedData.page2 ?? this.page2());
+          this.page3.set(parsedData.page3 ?? this.page3());
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load from local storage:', error);
+      // Don't show error to user as this is not critical
+    }
+  }
+
+  private clearLocalStorage(): void {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    } catch (error) {
+      console.error('Failed to clear local storage:', error);
+    }
   }
 }
