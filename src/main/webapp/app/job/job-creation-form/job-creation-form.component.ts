@@ -61,6 +61,7 @@ export class JobCreationFormComponent {
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
+  private autoSaveInitialized = false;
 
   constructor() {
     this.init();
@@ -408,6 +409,12 @@ export class JobCreationFormComponent {
     effect(() => {
       this.basicInfoFormValueSignal();
       this.positionDetailsFormValueSignal();
+
+      // Don't auto-save as soon as the form is opened
+      if (!this.autoSaveInitialized) {
+        this.autoSaveInitialized = true;
+        return;
+      }
 
       // TODO: currently state changes to saving on form loading
       this.clearAutoSaveTimer();
