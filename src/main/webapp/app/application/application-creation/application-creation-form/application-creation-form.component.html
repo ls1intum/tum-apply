@@ -7,7 +7,7 @@
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
-  (confirmed)="sendCreateApplicationData('SENT', true)"
+  (confirmed)="sendCreateApplicationData(applicationId() ?? '', 'SENT', true)"
 />
 <ng-template #panel1>
   <div class="panel">

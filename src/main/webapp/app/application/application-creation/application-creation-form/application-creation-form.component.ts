@@ -495,7 +495,6 @@ export default class ApplicationCreationFormComponent {
       }
     } catch (error) {
       console.error('Failed to load from local storage:', error);
-      // Don't show error to user as this is not critical
     }
   }
 
