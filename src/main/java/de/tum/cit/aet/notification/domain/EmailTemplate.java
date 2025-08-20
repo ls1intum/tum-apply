@@ -15,7 +15,7 @@ import lombok.Setter;
 @Table(
     name = "email_templates",
     uniqueConstraints = @UniqueConstraint(
-        name = "uk_email_template_name_group_type",
+        name = "uk_email_templates_type_name_group",
         columnNames = { "template_name", "research_group_id", "email_type" }
     )
 )

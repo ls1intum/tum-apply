@@ -16,7 +16,7 @@ import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.service.EmailService;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -44,7 +44,7 @@ public class ApplicationService {
     private final DocumentService documentService;
     private final DocumentDictionaryService documentDictionaryService;
     private final CurrentUserService currentUserService;
-    private final EmailService emailService;
+    private final AsyncEmailSender sender;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -188,7 +188,7 @@ public class ApplicationService {
             .content(application)
             .researchGroup(application.getJob().getResearchGroup())
             .build();
-        emailService.send(email);
+        sender.sendAsync(email);
     }
 
     private void confirmApplicationToProfessor(Application application) {
@@ -200,7 +200,7 @@ public class ApplicationService {
             .content(application)
             .researchGroup(application.getJob().getResearchGroup())
             .build();
-        emailService.send(email);
+        sender.sendAsync(email);
     }
 
     /**
@@ -226,7 +226,7 @@ public class ApplicationService {
             .researchGroup(job.getResearchGroup())
             .build();
 
-        emailService.send(email);
+        sender.sendAsync(email);
 
         application.setState(ApplicationState.WITHDRAWN);
         applicationRepository.save(application);

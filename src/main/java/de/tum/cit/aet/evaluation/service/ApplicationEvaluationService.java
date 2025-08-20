@@ -15,7 +15,7 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.service.EmailService;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 public class ApplicationEvaluationService {
 
     private final JobService jobService;
-    private final EmailService emailService;
+    private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
 
@@ -88,8 +88,9 @@ public class ApplicationEvaluationService {
                 .emailType(EmailType.APPLICATION_ACCEPTED)
                 .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 .htmlBody(acceptDTO.message())
+                .researchGroup(job.getResearchGroup())
                 .build();
-            emailService.send(email);
+            sender.sendAsync(email);
         }
     }
 
@@ -128,7 +129,7 @@ public class ApplicationEvaluationService {
                 .content(application)
                 .researchGroup(researchGroup)
                 .build();
-            emailService.send(email);
+            sender.sendAsync(email);
         }
     }
 

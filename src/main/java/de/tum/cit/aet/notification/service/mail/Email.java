@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
@@ -73,5 +74,9 @@ public class Email {
                     throw new IllegalArgumentException("Invalid email address: " + user.getEmail());
                 }
             });
+    }
+
+    public String getRecipients() {
+        return this.getTo().stream().map(User::getEmail).collect(Collectors.joining(", "));
     }
 }

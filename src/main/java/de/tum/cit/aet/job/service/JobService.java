@@ -14,7 +14,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.service.EmailService;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -30,20 +30,20 @@ public class JobService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
-    private final EmailService emailService;
+    private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
 
     public JobService(
         JobRepository jobRepository,
         UserRepository userRepository,
         ApplicationRepository applicationRepository,
-        EmailService emailService,
+        AsyncEmailSender sender,
         CurrentUserService currentUserService
     ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
-        this.emailService = emailService;
+        this.sender = sender;
         this.currentUserService = currentUserService;
     }
 
@@ -116,7 +116,7 @@ public class JobService {
                 .templateName(reason.getValue())
                 .content(application)
                 .build();
-            emailService.send(email);
+            sender.sendAsync(email);
         }
     }
 

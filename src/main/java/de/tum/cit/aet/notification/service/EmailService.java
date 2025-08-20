@@ -13,7 +13,6 @@ import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +27,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -65,34 +63,25 @@ public class EmailService {
     }
 
     /**
-     * Sends an email asynchronously. Includes retry logic for transient mailing errors.
+     * Sends an email and includes retry logic for transient mailing errors.
      * If email sending is disabled, it will log the email contents instead.
      *
      * @param email the email to be sent
-     * @return a completed {@link CompletableFuture}
      */
-    @Async
-    @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
-    public CompletableFuture<Void> send(Email email) {
-        try {
-            email.validate();
-        } catch (IllegalArgumentException e) {
-            log.error("Email validation failed", e);
-            return CompletableFuture.completedFuture(null);
-        }
+    @Retryable(retryFor = MailingException.class, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
+    public void send(Email email) {
+        email.validate();
 
-        EmailTemplateTranslation emailTemplateTranslation = getEmailTemplateTranslation(email);
-        String subject = renderSubject(emailTemplateTranslation);
-        String body = renderBody(email, emailTemplateTranslation);
+        EmailTemplateTranslation tpl = getEmailTemplateTranslation(email);
+        String subject = renderSubject(tpl);
+        String body = renderBody(email, tpl);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
-        sendEmail(email, subject, body);
-        log.info("Email successfully sent to: {}", email.getTo());
-        return CompletableFuture.completedFuture(null);
+        sendEmail(email, subject, body); // throws MailingException on failure
     }
 
     /**
@@ -100,12 +89,10 @@ public class EmailService {
      *
      * @param ex    the cause of the failure
      * @param email the email that failed to send
-     * @return a completed {@link CompletableFuture}
      */
     @Recover
-    public CompletableFuture<Void> recoverMailingException(MailingException ex, Email email) {
-        log.error("Email sending failed permanently after multiple retries. To: {}. Reason: {}", email.getTo(), ex.getMessage());
-        return CompletableFuture.completedFuture(null);
+    public void recoverMailingException(MailingException ex, Email email) {
+        log.error("Email sending failed permanently after retries. To: {}. Reason: {}", email.getTo(), ex.getMessage());
     }
 
     /**

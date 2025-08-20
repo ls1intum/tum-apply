@@ -21,7 +21,6 @@ import de.tum.cit.aet.notification.dto.EmailTemplateTranslationDTO;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Objects;
@@ -34,6 +33,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -56,8 +56,6 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     protected EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
-        addMissingTemplates(researchGroup);
-
         return emailTemplateRepository
             .findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType)
             .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", researchGroup.getResearchGroupId(), templateName, emailType));
@@ -107,8 +105,6 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     public PageResponseDTO<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
-        addMissingTemplates(researchGroup);
-
         Pageable pageable = PageRequest.of(
             pageDTO.pageNumber(),
             pageDTO.pageSize(),
@@ -224,8 +220,8 @@ public class EmailTemplateService {
      *
      * @param researchGroup the research group
      */
-    @Transactional // for write -> read
-    protected void addMissingTemplates(ResearchGroup researchGroup) {
+    @Transactional
+    public void addMissingTemplates(ResearchGroup researchGroup) {
         Set<EmailTemplate> toSave = new HashSet<>();
 
         // Fetch existing EmailTypes already defined for the group
