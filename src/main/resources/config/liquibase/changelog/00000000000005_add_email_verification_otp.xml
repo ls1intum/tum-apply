@@ -42,13 +42,28 @@
       </column>
     </createTable>
 
+    <!-- Index to support sorting recent OTPs per email (fallback ordering by created_at) -->
     <createIndex tableName="email_verification_otp" indexName="idx_evo_email_created">
       <column name="email"/>
       <column name="created_at"/>
     </createIndex>
 
+    <!-- Unique index on jti to ensure single-use tokens and fast, deterministic lookups for replay/audit checks. -->
     <createIndex tableName="email_verification_otp" indexName="idx_evo_jti" unique="true">
       <column name="jti"/>
+    </createIndex>
+
+    <!-- Composite index (email, used, expires_at) to speed up fetching the newest active (non-used, non-expired) OTP. -->
+    <createIndex tableName="email_verification_otp" indexName="idx_evo_email_used_expires">
+      <column name="email"/>
+      <column name="used"/>
+      <column name="expires_at"/>
+    </createIndex>
+
+    <!-- Index on expires_at to make scheduled purges of expired OTPs efficient.
+     Allows quick lookups for batch jobs or schedulers that delete all expired rows. -->
+    <createIndex tableName="email_verification_otp" indexName="idx_evo_expires_at">
+      <column name="expires_at"/>
     </createIndex>
   </changeSet>
 </databaseChangeLog>

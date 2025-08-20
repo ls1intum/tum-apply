@@ -7,21 +7,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Repository enforcing a single-active-OTP-per-email policy and optimized lookups.
+ */
 public interface EmailVerificationOtpRepository extends JpaRepository<EmailVerificationOtp, UUID> {
 
-    @Query("""
-            select e from EmailVerificationOtp e
-             where e.email = :email
-               and e.used = false
-               and e.expiresAt > :now
-             order by e.createdAt desc
-        """)
-    List<EmailVerificationOtp> findActiveByEmail(@Param("email") String email, @Param("now") Instant now);
+    /**
+     * Returns the most recent active (non-used, non-expired) OTP for the given email.
+     */
+    Optional<EmailVerificationOtp> findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
+        String email,
+        Instant now
+    );
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update EmailVerificationOtp e set e.used = true where e.email = :email and e.id <> :keepId and e.used = false")
-    int invalidateOthers(@Param("email") String email, @Param("keepId") UUID keepId);
+    @Query("update EmailVerificationOtp e set e.used = true where e.email = :email and e.used = false")
+    int invalidateAllForEmail(@Param("email") String email);
 }

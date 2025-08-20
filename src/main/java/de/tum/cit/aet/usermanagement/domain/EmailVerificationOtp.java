@@ -22,7 +22,9 @@ import java.util.UUID;
 @Table(name = "email_verification_otp",
     indexes = {
         @Index(name = "idx_evo_email_created", columnList = "email, created_at"),
-        @Index(name = "idx_evo_jti", columnList = "jti", unique = true)
+        @Index(name = "idx_evo_jti", columnList = "jti", unique = true),
+        @Index(name = "idx_evo_email_used_expires", columnList = "email, used, expires_at"),
+        @Index(name = "idx_evo_expires_at", columnList = "expires_at")
     })
 public class EmailVerificationOtp implements Serializable {
 
