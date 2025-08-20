@@ -327,6 +327,77 @@
         }
       }
     },
+    "/api/applications/{applicationId}/ratings": {
+      "get": {
+        "tags": [
+          "rating-resource"
+        ],
+        "operationId": "getRatings",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "rating-resource"
+        ],
+        "operationId": "updateRating",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rating",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "maximum": 2,
+              "minimum": -2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications/withdraw/{applicationId}": {
       "put": {
         "tags": [
@@ -556,6 +627,52 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AcceptDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/verify-code": {
+      "post": {
+        "tags": [
+          "email-verification-resource"
+        ],
+        "operationId": "verify",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/send-code": {
+      "post": {
+        "tags": [
+          "email-verification-resource"
+        ],
+        "operationId": "send",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendCodeRequest"
               }
             }
           },
@@ -2693,6 +2810,34 @@
           "title"
         ]
       },
+      "RatingDTO": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RatingOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "currentUserRating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "otherRatings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RatingDTO"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
       "RejectDTO": {
         "type": "object",
         "properties": {
@@ -2728,6 +2873,35 @@
             "type": "boolean"
           }
         }
+      },
+      "VerifyCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "code",
+          "email"
+        ]
+      },
+      "SendCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email"
+        ]
       },
       "LoginRequestDTO": {
         "type": "object",
@@ -2963,6 +3137,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -2979,12 +3159,6 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -3145,10 +3319,6 @@
           },
           "motivation": {
             "type": "string"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
           },
           "customFieldAnswers": {
             "type": "array",
@@ -3651,6 +3821,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -3667,12 +3843,6 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -3725,10 +3895,6 @@
           },
           "jobName": {
             "type": "string"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
           },
           "appliedAt": {
             "type": "string",
@@ -3848,10 +4014,6 @@
           "jobId": {
             "type": "string",
             "format": "uuid"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
           },
           "appliedAt": {
             "type": "string",
