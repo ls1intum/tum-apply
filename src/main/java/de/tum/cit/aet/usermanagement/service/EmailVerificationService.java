@@ -32,9 +32,6 @@ public class EmailVerificationService {
     public void sendCode(String rawEmail, String ip) {
         String email = OtpUtil.normalizeEmail(rawEmail);
 
-        // ensure Keycloak user exists
-        keycloakUserService.findUserIdByEmail(email).orElseGet(() -> keycloakUserService.ensureUser(email));
-
         // Enforce single-active-code policy
         emailVerificationOtpRepository.invalidateAllForEmail(email);
 
