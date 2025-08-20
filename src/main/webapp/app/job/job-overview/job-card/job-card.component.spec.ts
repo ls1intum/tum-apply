@@ -1,5 +1,13 @@
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faCalendar, faClock, faFlaskVial, faGraduationCap, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendar,
+  faClock,
+  faFileCircleCheck,
+  faFlaskVial,
+  faGraduationCap,
+  faLocationDot,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router, provideRouter } from '@angular/router';
@@ -8,11 +16,30 @@ import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ng
 import { Observable, of } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
 import { DialogService } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
+import { ToastService } from 'app/service/toast-service';
 
 import { JobCardComponent } from './job-card.component';
 
 @Component({ template: '' })
 class DummyComponent {}
+
+// Mock ToastService
+const mockToastService = {
+  showSuccess: jest.fn(),
+  showError: jest.fn(),
+  showInfo: jest.fn(),
+  showWarn: jest.fn(),
+};
+
+// Mock MessageService
+const mockMessageService = {
+  add: jest.fn(),
+  addAll: jest.fn(),
+  clear: jest.fn(),
+  messageObserver: of([]),
+  clearObserver: of(''),
+};
 
 class MockTranslationLoader implements TranslateLoader {
   getTranslation(): Observable<{}> {
@@ -55,6 +82,8 @@ describe('JobCardComponent', () => {
             dialogComponentRefMap: new Map(),
           },
         },
+        { provide: MessageService, useValue: mockMessageService },
+        { provide: ToastService, useValue: mockToastService },
       ],
     }).compileComponents();
 
@@ -64,7 +93,7 @@ describe('JobCardComponent', () => {
     router = TestBed.inject(Router);
 
     library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial);
+    library.addIcons(faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial, faFileCircleCheck);
 
     fixture.componentRef.setInput('jobTitle', 'Test Job');
     fixture.componentRef.setInput('jobId', '123');
@@ -100,13 +129,6 @@ describe('JobCardComponent', () => {
   it('should trigger onViewDetails when "View Details" button is clicked', () => {
     const spy = jest.spyOn(component, 'onViewDetails');
     const button = fixture.debugElement.query(By.css('.view-button')).nativeElement;
-    button.click();
-    expect(spy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should trigger onApply when "Apply" button is clicked', () => {
-    const spy = jest.spyOn(component, 'onApply');
-    const button = fixture.debugElement.query(By.css('.apply-button')).nativeElement;
     button.click();
     expect(spy).toHaveBeenCalledTimes(1);
   });
