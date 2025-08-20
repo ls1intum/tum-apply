@@ -90,7 +90,8 @@
       "message": "Sind Sie sicher, dass Sie Ihre Doktorandenstelle veröffentlichen möchten? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
     },
     "reviewPageSection": {
-      "message": "Überprüfen Sie Ihre Eingaben, bevor Sie die Doktorandenstelle veröffentlichen."
+      "title": "Übersicht",
+      "message": "Bitte überprüfen Sie Ihre Eingaben, bevor Sie die Doktorandenstelle veröffentlichen."
     }
   },
   "jobOverviewPage": {
