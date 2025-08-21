@@ -30,8 +30,8 @@
 }
 @media (max-width: bp.$lg) {
   .application-steps-section {
-    padding: 4rem 4rem;
-    gap: 4rem;
+    padding: 3rem 2rem;
+    gap: 2.5rem;
 
     .title {
       font-size: 2rem;
@@ -39,7 +39,7 @@
 
     .application-steps {
       .steps {
-        padding: 0 2rem;
+        padding: 0 1.5rem;
         gap: 2rem;
         flex-wrap: wrap;
       }
@@ -49,15 +49,15 @@
 
 @media (max-width: bp.$md) {
   .application-steps-section {
-    padding: 3rem 1rem;
-    gap: 5rem;
+    padding: 2rem 1rem;
+    gap: 2rem;
 
     .title {
       font-size: 1.75rem;
     }
 
     .application-steps {
-      gap: 2rem;
+      gap: 1.5rem;
 
       .steps {
         flex-direction: column;
