@@ -1,9 +1,9 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.notification.service;
 
-import de.tum.cit.aet.core.constants.EmailType;
-import de.tum.cit.aet.core.domain.EmailSetting;
-import de.tum.cit.aet.core.dto.EmailSettingDTO;
-import de.tum.cit.aet.core.repository.EmailSettingRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.domain.EmailSetting;
+import de.tum.cit.aet.notification.dto.EmailSettingDTO;
+import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;

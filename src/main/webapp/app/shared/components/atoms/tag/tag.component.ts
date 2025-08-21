@@ -18,6 +18,14 @@ export class TagComponent {
   round = input<boolean>(false);
   iconRight = input<boolean>(false);
   tooltipText = input<string | undefined>(undefined);
+  width = input<string | undefined>(undefined);
 
   readonly iconProp = computed(() => this.icon() as IconDefinition);
+
+  widthValue = computed(() => {
+    if (this.width() !== undefined) {
+      return this.width();
+    }
+    return undefined;
+  });
 }
