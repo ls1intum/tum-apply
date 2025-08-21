@@ -36,7 +36,7 @@
       "startDate": {
         "label": "Start Date of Job",
         "placeholder": "Select a Start Date...",
-        "toolTipText": "The expected start date for this position."
+        "toolTipText": "Expected start date for this position."
       },
       "applicationDeadline": {
         "label": "Application Deadline",
