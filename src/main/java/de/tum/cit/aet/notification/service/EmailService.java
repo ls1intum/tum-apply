@@ -70,11 +70,11 @@ public class EmailService {
      * @param email the email to be sent
      */
     @Retryable(retryFor = MailingException.class, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
-    public void send(Email email) {
+    protected void send(Email email) {
         email.validate();
 
         EmailTemplateTranslation tpl = getEmailTemplateTranslation(email);
-        String subject = renderSubject(tpl);
+        String subject = renderSubject(email, tpl);
         String body = renderBody(email, tpl);
 
         if (!emailEnabled) {
@@ -92,31 +92,38 @@ public class EmailService {
      * @param email the email that failed to send
      */
     @Recover
-    public void recoverMailingException(MailingException ex, Email email) {
+    protected void recoverMailingException(MailingException ex, Email email) {
         log.error("Email sending failed permanently after retries. To: {}", email.getRecipients());
     }
 
     /**
      * Renders the email subject using the template processor.
+     * If a custom subject is set it will be rendered as-is
+     * Otherwise, the subject of the template will be used
      *
+     * @param email                    the email
      * @param emailTemplateTranslation the template translation
      * @return the rendered subject
      */
-    private String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
+    private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
+        if (StringUtils.isNotEmpty(email.getCustomSubject())) {
+            return templateProcessingService.renderSubject(email.getCustomSubject());
+        }
         return templateProcessingService.renderSubject(emailTemplateTranslation);
     }
 
     /**
-     * Renders the email body. If an HTML body is already present in the email,
-     * it will be rendered as-is. Otherwise, the body is rendered using the template.
+     * Renders the email body.
+     * If an HTML body is already present in the email, it will be rendered as-is
+     * Otherwise, the body is rendered using the template.
      *
      * @param email                    the email to render
      * @param emailTemplateTranslation the template translation
      * @return the rendered HTML body
      */
     private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getHtmlBody())) {
-            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
+        if (StringUtils.isNotEmpty(email.getCustomBody())) {
+            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody());
         }
         return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
     }
@@ -131,13 +138,13 @@ public class EmailService {
     private void simulateEmail(Email email, String subject, String body) {
         log.info(
             """
-            >>>> Sending Simulated Email <<<<
-              To: {}
-              CC: {}
-              BCC: {}
-              Subject: {}
-              Parsed Body: {}
-            """,
+                >>>> Sending Simulated Email <<<<
+                  To: {}
+                  CC: {}
+                  BCC: {}
+                  Subject: {}
+                  Parsed Body: {}
+                """,
             getRecipientsToNotify(email.getTo(), email),
             getRecipientsToNotify(email.getCc(), email),
             getRecipientsToNotify(email.getBcc(), email),

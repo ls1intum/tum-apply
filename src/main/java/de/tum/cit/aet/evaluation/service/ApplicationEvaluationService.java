@@ -20,14 +20,15 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -84,10 +85,10 @@ public class ApplicationEvaluationService {
             Email email = Email.builder()
                 .to(applicant.getUser())
                 .bcc(supervisingProfessor)
-                .htmlBody(acceptDTO.message())
+                .customBody(acceptDTO.message())
                 .emailType(EmailType.APPLICATION_ACCEPTED)
                 .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
-                .htmlBody(acceptDTO.message())
+                .customBody(acceptDTO.message())
                 .researchGroup(job.getResearchGroup())
                 .build();
             sender.sendAsync(email);
