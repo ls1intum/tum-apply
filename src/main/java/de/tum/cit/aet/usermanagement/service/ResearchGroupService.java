@@ -18,6 +18,13 @@ public class ResearchGroupService {
         this.researchGroupRepository = researchGroupRepository;
     }
 
+    /**
+     * Retrieves the details of a research group by its ID.
+     *
+     * @param researchGroupId the unique identifier of the research group
+     * @return a {@link ResearchGroupLargeDTO} containing detailed information about
+     *         the research group
+     */
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
                 .orElseThrow(() -> EntityNotFoundException.forId("ResearchGoup", researchGroupId));
