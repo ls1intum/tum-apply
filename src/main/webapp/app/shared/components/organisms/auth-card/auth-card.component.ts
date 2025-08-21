@@ -7,7 +7,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ToastService } from 'app/service/toast-service';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { TranslateService } from '@ngx-translate/core';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
@@ -19,7 +18,7 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [ButtonGroupComponent, CommonModule, CredentialsGroupComponent, DividerModule, RouterModule, TranslateDirective, ToastComponent],
+  imports: [ButtonGroupComponent, CommonModule, CredentialsGroupComponent, DividerModule, RouterModule, TranslateDirective],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
