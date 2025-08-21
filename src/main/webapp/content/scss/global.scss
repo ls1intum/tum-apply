@@ -368,7 +368,7 @@
 ------------------------------- */
 .hero-carousel {
   position: relative;
-} /* Anker für absolute Position */
+}
 
 .hero-carousel .p-carousel-indicators,
 .hero-carousel .p-carousel-indicator-list {
@@ -380,7 +380,7 @@
 }
 
 .hero-carousel .p-carousel-indicator .p-carousel-indicator-button {
-  width: 8px;
-  height: 8px;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
 }
