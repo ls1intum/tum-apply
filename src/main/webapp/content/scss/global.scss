@@ -383,3 +383,11 @@
   height: 0.65rem;
   border-radius: 50%;
 }
+
+/* -------------------------------
+ Style primeNg select component.
+------------------------------- */
+.p-select-option.p-select-option-selected {
+  background: var(--p-background-surface-alt);
+  color: var(--p-text-primary);
+}
