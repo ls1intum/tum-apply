@@ -1,25 +1,26 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.notification.service;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.constants.TemplateVariable;
-import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.notification.constants.TemplateVariable;
+import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TemplateProcessingService {
@@ -41,7 +42,11 @@ public class TemplateProcessingService {
      * @return the prefixed subject line
      */
     public String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
-        return "TUMApply - " + emailTemplateTranslation.getSubject();
+        return renderSubject(emailTemplateTranslation.getSubject());
+    }
+
+    public String renderSubject(String subject) {
+        return "TUMApply - " + subject;
     }
 
     /**
