@@ -364,19 +364,22 @@
 }
 
 /* ---------------------------
- Style primeNg active step component
+   PrimeNG Carousel Indicators (Hero)
 ------------------------------- */
-
-.p-step-active .p-step-header {
-  cursor: pointer;
+.hero-carousel {
+  position: relative;
 }
 
-/* -------------------------------
- Style primeNg tooltip component.
----------------------------------- */
-.tooltip,
-.p-tooltip,
-.jhi-tooltip {
-  max-width: 15rem;
-  font-size: 0.875rem;
+.hero-carousel .p-carousel-indicators,
+.hero-carousel .p-carousel-indicator-list {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0.25rem;
+}
+
+.hero-carousel .p-carousel-indicator .p-carousel-indicator-button {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
 }
