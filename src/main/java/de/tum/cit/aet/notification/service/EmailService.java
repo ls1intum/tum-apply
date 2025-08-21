@@ -10,10 +10,6 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -28,6 +24,11 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -92,7 +93,7 @@ public class EmailService {
      */
     @Recover
     public void recoverMailingException(MailingException ex, Email email) {
-        log.error("Email sending failed permanently after retries. To: {}. Reason: {}", email.getTo(), ex.getMessage());
+        log.error("Email sending failed permanently after retries. To: {}", email.getRecipients());
     }
 
     /**
@@ -158,8 +159,7 @@ public class EmailService {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
             if (mailSender == null) {
-                log.error("Mail sender not configured but email sending is enabled. Could not send email to {}", email.getTo());
-                throw new IllegalStateException("Mail sender not configured");
+                throw new IllegalStateException("Mail sender not configured but email sending is enabled");
             }
 
             MimeMessage message = mailSender.createMimeMessage();
