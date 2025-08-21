@@ -29,6 +29,8 @@
       <jhi-tag
         [text]="'evaluation.statusBadge.' + (application.state || '') | translate"
         [color]="stateSeverityMap()[application.state] || 'info'"
+        [tooltipText]="'evaluation.statusBadge.tooltips.' + (application.state || '')"
+        width="7rem"
       />
     </ng-template>
   </div>

@@ -1,10 +1,12 @@
 import { Component, computed, input } from '@angular/core';
 import { Tag } from 'primeng/tag';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-tag',
-  imports: [Tag, FontAwesomeModule],
+  imports: [Tag, FontAwesomeModule, TooltipModule, TranslateModule],
   templateUrl: './tag.component.html',
   styleUrl: './tag.component.scss',
   standalone: true,
@@ -15,6 +17,15 @@ export class TagComponent {
   icon = input<IconDefinition | undefined>(undefined);
   round = input<boolean>(false);
   iconRight = input<boolean>(false);
+  tooltipText = input<string | undefined>(undefined);
+  width = input<string | undefined>(undefined);
 
   readonly iconProp = computed(() => this.icon() as IconDefinition);
+
+  widthValue = computed(() => {
+    if (this.width() !== undefined) {
+      return this.width();
+    }
+    return undefined;
+  });
 }

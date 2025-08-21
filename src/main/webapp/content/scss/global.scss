@@ -363,12 +363,10 @@
   background: var(--p-background-default);
 }
 
-/* -------------------------------
- Style primeNg tooltip component.
----------------------------------- */
-.tooltip,
-.p-tooltip,
-.jhi-tooltip {
-  max-width: 15rem;
-  font-size: 0.875rem;
+/* ---------------------------
+ Style primeNg active step component
+------------------------------- */
+
+.p-step-active .p-step-header {
+  cursor: pointer;
 }

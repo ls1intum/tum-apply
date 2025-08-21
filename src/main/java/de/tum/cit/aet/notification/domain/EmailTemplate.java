@@ -1,6 +1,7 @@
-package de.tum.cit.aet.core.domain;
+package de.tum.cit.aet.notification.domain;
 
-import de.tum.cit.aet.core.constants.EmailType;
+import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Table(
     name = "email_templates",
     uniqueConstraints = @UniqueConstraint(
-        name = "uk_email_template_name_group_type",
+        name = "uk_email_templates_type_name_group",
         columnNames = { "template_name", "research_group_id", "email_type" }
     )
 )
