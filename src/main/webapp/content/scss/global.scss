@@ -373,8 +373,8 @@
 .hero-carousel .p-carousel-indicators,
 .hero-carousel .p-carousel-indicator-list {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 50%;
+  transform: translateX(50%);
   bottom: 0.25rem;
 }
 
