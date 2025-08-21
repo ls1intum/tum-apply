@@ -264,97 +264,117 @@ export default class ApplicationCreationFormComponent {
     const jobId = this.route.snapshot.queryParamMap.get('job');
     const applicationId = this.route.snapshot.queryParamMap.get('application');
 
-    // If no applicantId, work with localStorage only
     if (this.applicantId() === '') {
-      this.useLocalStorage.set(true);
+      this.initPageForLocalStorageCase(jobId);
+    } else {
+      // logic for authenticated users
+      let application: ApplicationForApplicantDTO;
 
-      if (jobId) {
-        // TODO fetch jobData for lateron displaying jobDetails
-        this.jobId.set(jobId);
-        this.loadPage1FromLocalStorage();
-        this.applicationState.set('SAVED');
-        return;
-      } else {
+      try {
+        if (applicationId) {
+          const fetchedApplication = await this.initPageLoadExistingApplication(applicationId);
+
+          if (fetchedApplication === undefined) {
+            return;
+          }
+          application = fetchedApplication;
+        } else if (jobId) {
+          // Create mode - create new application
+          const createdApplication = await this.initPageCreateApplication(jobId);
+
+          if (createdApplication === undefined) {
+            return;
+          }
+          application = createdApplication;
+        } else {
+          this.toastService.showError({
+            summary: 'Error',
+            detail: 'Either job ID or application ID must be provided in the URL.',
+          });
+          return;
+        }
+
+        // Set job information
+        this.jobId.set(application.job.jobId);
+        if (application.job.title && application.job.title.trim().length > 0) {
+          this.title.set(application.job.title);
+        }
+
+        this.applicationState.set(application.applicationState);
+
+        // For authenticated users, don't use localStorage
+        this.useLocalStorage.set(false);
+
+        // Load data from application
+        this.page1.set(getPage1FromApplication(application));
+        this.page2.set(getPage2FromApplication(application));
+        this.page3.set(getPage3FromApplication(application));
+
+        this.updateDocumentInformation();
+      } catch (error) {
+        const httpError = error as HttpErrorResponse;
         this.toastService.showError({
           summary: 'Error',
-          detail: 'Job ID must be provided when not authenticated.',
+          detail: 'Failed to load application: ' + httpError.statusText,
         });
-        return;
+        console.error('Failed to load application:', error);
       }
     }
+  }
 
-    // logic for authenticated users
-    let application: ApplicationForApplicantDTO;
-
-    try {
-      if (applicationId) {
-        // Edit mode - load existing application
-        application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
-
-        // Check if application state allows editing
-        if (application.applicationState !== 'SAVED') {
-          this.toastService.showError({
-            summary: 'Error',
-            detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
-          });
-          await this.router.navigate(['/application/detail', applicationId]);
-          return;
-        }
-
-        this.applicationId.set(applicationId);
-      } else if (jobId) {
-        // Create mode - create new application
-        try {
-          application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
-          this.applicationId.set(application.applicationId ?? '');
-
-          // Update URL to include the new applicationId
-          await this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { job: jobId, application: application.applicationId },
-            queryParamsHandling: 'merge',
-          });
-        } catch (error) {
-          this.toastService.showError({
-            summary: 'Error',
-            detail: 'Failed to create application. Please try again.',
-          });
-          console.error('Failed to create application:', error);
-          return;
-        }
-      } else {
-        this.toastService.showError({
-          summary: 'Error',
-          detail: 'Either job ID or application ID must be provided in the URL.',
-        });
-        return;
-      }
-
-      // Set job information
-      this.jobId.set(application.job.jobId);
-      if (application.job.title && application.job.title.trim().length > 0) {
-        this.title.set(application.job.title);
-      }
-
-      this.applicationState.set(application.applicationState);
-
-      // For authenticated users, don't use localStorage
-      this.useLocalStorage.set(false);
-
-      // Load data from application
-      this.page1.set(getPage1FromApplication(application));
-      this.page2.set(getPage2FromApplication(application));
-      this.page3.set(getPage3FromApplication(application));
-
-      this.updateDocumentInformation();
-    } catch (error) {
-      const httpError = error as HttpErrorResponse;
+  initPageForLocalStorageCase(jobId: string | null): void {
+    this.useLocalStorage.set(true);
+    if (jobId) {
+      // TODO fetch jobData for lateron displaying jobDetails
+      this.jobId.set(jobId);
+      this.loadPage1FromLocalStorage();
+      this.applicationState.set('SAVED');
+    } else {
       this.toastService.showError({
         summary: 'Error',
-        detail: 'Failed to load application: ' + httpError.statusText,
+        detail: 'Job ID must be provided when not authenticated.',
       });
-      console.error('Failed to load application:', error);
     }
+  }
+
+  async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO | undefined> {
+    const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
+
+    // Check if application state allows editing
+    if (application.applicationState !== 'SAVED') {
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
+      });
+      await this.router.navigate(['/application/detail', applicationId]);
+      return;
+    }
+
+    this.applicationId.set(applicationId);
+    return application;
+  }
+
+  async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO | undefined> {
+    let application;
+    try {
+      application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
+      this.applicationId.set(application.applicationId ?? '');
+
+      // Update URL to include the new applicationId
+      await this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { job: jobId, application: application.applicationId },
+        queryParamsHandling: 'merge',
+      });
+    } catch (error) {
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to create application. Please try again.',
+      });
+      console.error('Failed to create application:', error);
+      return;
+    }
+    return application;
   }
 
   async performAutomaticSave(): Promise<void> {
