@@ -209,6 +209,7 @@
       "personalInformation": "Persönliche Informationen",
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
+      "summary": "Zusammenfassung",
       "buttons": {
         "cancel": "Abbrechen",
         "next": "Weiter",
@@ -301,6 +302,10 @@
       "placeholder": {
         "selectStartDate": "Startdatum auswählen..."
       }
+    },
+    "applicationPage4": {
+      "title": "Übersicht",
+      "message": "Bitte überprüfen Sie Ihre Eingaben, bevor Sie die Bewerbung abschicken."
     },
     "applicationOverview": {
       "header": "Ihre Bewerbungen",

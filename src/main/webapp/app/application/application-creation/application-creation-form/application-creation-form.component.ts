@@ -1,7 +1,12 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
+import {
+  ApplicantForApplicationDetailDTO,
+  ApplicationDocumentIdsDTO,
+  ApplicationResourceService,
+  UpdateApplicationDTO,
+} from 'app/generated';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -11,6 +16,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
+import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -59,6 +65,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     FontAwesomeModule,
     TranslateModule,
     ConfirmDialog,
+    ApplicationDetailForApplicantComponent,
   ],
 
   templateUrl: './application-creation-form.component.html',
@@ -96,9 +103,47 @@ export default class ApplicationCreationFormComponent {
     masterGrade: '',
   });
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
+
+  previewData = computed(() => {
+    const p1 = this.page1();
+    const p2 = this.page2();
+    const p3 = this.page3();
+
+    return {
+      applicationId: this.applicationId(),
+      applicationState: this.applicationState(),
+      applicant: {
+        user: {
+          userId: this.applicantId(),
+          email: p1.email,
+          gender: p1.gender?.name,
+          nationality: p1.nationality?.name,
+          birthday: p1.dateOfBirth,
+          website: p1.website,
+          linkedinUrl: p1.linkedIn,
+          preferredLanguage: p1.language?.name,
+        },
+        bachelorDegreeName: p2.bachelorDegreeName,
+        bachelorUniversity: p2.bachelorDegreeUniversity,
+        bachelorGrade: p2.bachelorGrade,
+        bachelorGradingScale: p2.bachelorGradingScale.value as ApplicantForApplicationDetailDTO.BachelorGradingScaleEnum,
+        masterDegreeName: p2.masterDegreeName,
+        masterUniversity: p2.masterDegreeUniversity,
+        masterGrade: p2.masterGrade,
+        masterGradingScale: p2.masterGradingScale.value as ApplicantForApplicationDetailDTO.MasterGradingScaleEnum,
+      },
+      motivation: p3?.motivation,
+      specialSkills: p3?.skills,
+      desiredDate: p3?.desiredStartDate,
+      projects: p3?.experiences,
+      jobTitle: this.title(),
+    };
+  });
+
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
+  panel4 = viewChild<TemplateRef<any>>('panel4');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
   title = signal<string>('');
@@ -124,8 +169,10 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const panel4 = this.panel4();
     const page1Valid = this.page1Valid();
     const page2Valid = this.page2Valid();
+    const page3Valid = this.page3Valid();
     const allPagesValid = this.allPagesValid();
     const location = this.location;
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
@@ -209,6 +256,42 @@ export default class ApplicationCreationFormComponent {
         name: 'entity.applicationSteps.applicationDetails',
         shouldTranslate: true,
         panelTemplate: panel3,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: false,
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'arrow-right',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: !page3Valid,
+            label: 'entity.applicationSteps.buttons.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        status: statusPanel,
+      });
+    }
+
+    if (panel4) {
+      steps.push({
+        name: 'entity.applicationSteps.summary',
+        shouldTranslate: true,
+        panelTemplate: panel4,
         buttonGroupPrev: [
           {
             variant: 'outlined',
