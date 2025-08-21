@@ -8,13 +8,13 @@ export const locations = [
   { name: 'Garching Hochbrueck Campus', value: JobFormDTO.LocationEnum.GarchingHochbrueck },
   { name: 'Heilbronn Campus', value: JobFormDTO.LocationEnum.Heilbronn },
   { name: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
+  { name: 'Singapore Campus', value: JobFormDTO.LocationEnum.Singapore },
   { name: 'Straubing Campus', value: JobFormDTO.LocationEnum.Straubing },
   { name: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
-  { name: 'Singapore Campus', value: JobFormDTO.LocationEnum.Singapore },
 ];
 export const fieldsOfStudies = [
-  { name: 'Agricultural Engineering', value: 'Agricultural Engineering' },
   { name: 'Aerospace Engineering', value: 'Aerospace Engineering' },
+  { name: 'Agricultural Engineering', value: 'Agricultural Engineering' },
   { name: 'Architecture', value: 'Architecture' },
   { name: 'Art History', value: 'Art History' },
   { name: 'Automotive Engineering', value: 'Automotive Engineering' },
@@ -49,8 +49,8 @@ export const fieldsOfStudies = [
 export const fundingTypes = [
   { name: 'Fully Funded', value: JobFormDTO.FundingTypeEnum.FullyFunded },
   { name: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
-  { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
   { name: 'Industry Sponsored', value: JobFormDTO.FundingTypeEnum.IndustrySponsored },
-  { name: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
   { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
+  { name: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
+  { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
 ];

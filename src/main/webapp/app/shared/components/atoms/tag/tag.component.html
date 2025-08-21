@@ -1,4 +1,11 @@
-<p-tag [severity]="color()" [rounded]="round()" class="custom-tag" [ngStyle]="widthStyle()">
+<p-tag
+  class="custom-tag"
+  [severity]="color()"
+  [rounded]="round()"
+  [pTooltip]="tooltipText() ?? '' | translate"
+  tooltipPosition="top"
+  [style.width]="widthValue()"
+>
   @if (icon() && !iconRight()) {
     <fa-icon [icon]="iconProp()" class="icon left" />
   }
