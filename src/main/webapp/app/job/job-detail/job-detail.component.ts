@@ -310,8 +310,8 @@ export class JobDetailComponent implements OnInit {
       description: form.description ?? '',
       tasks: form.tasks ?? '',
       requirements: form.requirements ?? '',
-      startDate: form.startDate !== undefined ? dayjs(form.startDate).format('DD.MM.YYYY') : '',
-      endDate: form.endDate !== undefined ? dayjs(form.endDate).format('DD.MM.YYYY') : '',
+      startDate: form.startDate ? dayjs(form.startDate).format('DD.MM.YYYY') : '',
+      endDate: form.endDate ? dayjs(form.endDate).format('DD.MM.YYYY') : '',
       createdAt: dayjs().format('DD.MM.YYYY'),
       lastModifiedAt: dayjs().format('DD.MM.YYYY'),
 
