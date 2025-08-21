@@ -21,6 +21,7 @@ import * as DropdownOptions from '.././dropdown-options';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
 import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
+import { JobDetailComponent } from '../job-detail/job-detail.component';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -44,6 +45,7 @@ type SavingState = 'SAVED' | 'SAVING';
     NumberInputComponent,
     EditorComponent,
     ConfirmDialog,
+    JobDetailComponent,
   ],
   providers: [JobResourceService],
 })

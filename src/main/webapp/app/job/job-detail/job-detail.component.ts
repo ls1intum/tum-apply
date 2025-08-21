@@ -1,4 +1,4 @@
-import { Component, Signal, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, OnInit, Signal, computed, inject, input, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-import { JobDetailDTO, JobResourceService } from '../../generated';
+import { JobDetailDTO, JobFormDTO, JobResourceService, ResearchGroupRessourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
@@ -52,13 +52,16 @@ export interface JobDetails {
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
-export class JobDetailComponent {
+export class JobDetailComponent implements OnInit {
   readonly closeButtonLabel = 'jobActionButton.close';
   readonly closeButtonSeverity = 'danger' as ButtonColor;
   readonly closeButtonIcon = 'xmark';
   readonly deleteButtonLabel = 'jobActionButton.delete';
   readonly deleteButtonSeverity = 'danger' as ButtonColor;
   readonly deleteButtonIcon = 'trash';
+
+  // Input for preview data, used in the job creation overview step
+  previewData = input<Signal<JobFormDTO | undefined>>();
 
   closeConfirmDialog = viewChild<ConfirmDialog>('closeConfirmDialog');
   deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');
@@ -78,6 +81,7 @@ export class JobDetailComponent {
   });
 
   readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
+    if (this.previewData()) return null;
     const job = this.jobDetails();
     if (!job) return null;
 
@@ -165,9 +169,16 @@ export class JobDetailComponent {
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
+  private researchGroupService = inject(ResearchGroupRessourceService);
 
-  constructor() {
-    this.init();
+  ngOnInit(): void {
+    const previewDataValue = this.previewData()?.();
+    if (previewDataValue) {
+      this.loadJobDetailsFromForm(previewDataValue);
+      this.dataLoaded.set(true);
+    } else {
+      void this.init();
+    }
   }
 
   onBack(): void {
@@ -270,6 +281,48 @@ export class JobDetailComponent {
 
       jobState: job.state,
       belongsToResearchGroup: job.researchGroup.researchGroupId === this.accountService.loadedUser()?.researchGroup?.researchGroupId,
+    };
+
+    this.jobDetails.set(loadedJob);
+  }
+
+  private async loadJobDetailsFromForm(form: JobFormDTO): Promise<void> {
+    const user = this.accountService.loadedUser();
+    let researchGroupDeatils;
+    try {
+      researchGroupDeatils = await firstValueFrom(
+        this.researchGroupService.getRessourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
+      );
+    } catch {
+      this.toastService.showError({ detail: `Error loading research Group details.` });
+    }
+
+    const loadedJob: JobDetails = {
+      supervisingProfessor: user?.name ?? '',
+      researchGroup: user?.researchGroup?.name ?? '',
+      title: form.title,
+      fieldOfStudies: form.fieldOfStudies,
+      researchArea: form.researchArea ?? '',
+      location: form.location,
+      workload: form.workload?.toString() ?? '',
+      contractDuration: form.contractDuration?.toString() ?? '',
+      fundingType: form.fundingType ?? '',
+      description: form.description ?? '',
+      tasks: form.tasks ?? '',
+      requirements: form.requirements ?? '',
+      startDate: form.startDate !== undefined ? dayjs(form.startDate).format('DD.MM.YYYY') : '',
+      endDate: form.endDate !== undefined ? dayjs(form.endDate).format('DD.MM.YYYY') : '',
+      createdAt: dayjs().format('DD.MM.YYYY'),
+      lastModifiedAt: dayjs().format('DD.MM.YYYY'),
+
+      researchGroupDescription: researchGroupDeatils?.description ?? '',
+      researchGroupEmail: researchGroupDeatils?.email ?? '',
+      researchGroupWebsite: researchGroupDeatils?.website ?? '',
+      researchGroupStreet: researchGroupDeatils?.street ?? '',
+      researchGroupPostalCode: researchGroupDeatils?.postalCode ?? '',
+      researchGroupCity: researchGroupDeatils?.city ?? '',
+      jobState: 'DRAFT',
+      belongsToResearchGroup: false,
     };
 
     this.jobDetails.set(loadedJob);

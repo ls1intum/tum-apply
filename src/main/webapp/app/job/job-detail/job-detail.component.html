@@ -26,20 +26,24 @@
     <header class="page-header">
       <div class="header-row">
         <h1 class="job-title">{{ jobDetails()?.title }}</h1>
-        <!-- display job state if the logged-in user belongs to the research group -->
-        @if (jobDetails()?.belongsToResearchGroup) {
-          @if (jobDetails()?.jobState) {
-            <jhi-tag
-              class="job-state-badge"
-              [text]="
-                stateTextMap()[jobDetails()?.jobState!]
-                  ? (stateTextMap()[jobDetails()?.jobState!] | translate)
-                  : ('jobState.unknown' | translate)
-              "
-              [color]="stateSeverityMap()[jobDetails()?.jobState!] || 'info'"
-            />
-          } @else {
-            <jhi-tag class="job-state-badge" [text]="'Unknown'" [color]="'info'" />
+        <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
+        @if (previewData()) {
+          <jhi-tag class="job-state-badge" [text]="'jobState.draft' | translate" [color]="'info'" />
+        } @else {
+          @if (jobDetails()?.belongsToResearchGroup) {
+            @if (jobDetails()?.jobState) {
+              <jhi-tag
+                class="job-state-badge"
+                [text]="
+                  stateTextMap()[jobDetails()?.jobState!]
+                    ? (stateTextMap()[jobDetails()?.jobState!] | translate)
+                    : ('jobState.unknown' | translate)
+                "
+                [color]="stateSeverityMap()[jobDetails()?.jobState!] || 'info'"
+              />
+            } @else {
+              <jhi-tag class="job-state-badge" [text]="'Unknown'" [color]="'info'" />
+            }
           }
         }
       </div>
@@ -214,7 +218,9 @@
       <div class="button-wrapper">
         <!-- Left-aligned Back button -->
         <div class="left-buttons">
-          <jhi-button label="jobActionButton.back" severity="info" variant="outlined" (click)="onBack()" [shouldTranslate]="true" />
+          @if (!previewData()) {
+            <jhi-button label="jobActionButton.back" severity="info" variant="outlined" (click)="onBack()" [shouldTranslate]="true" />
+          }
         </div>
         <!-- Right-aligned dynamic button group -->
         <div class="right-buttons">
