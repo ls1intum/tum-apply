@@ -27,6 +27,7 @@
     (onHide)="isCalendarOpen = false"
     (onShow)="isCalendarOpen = true"
     [(ngModel)]="modelDate"
+    [appendTo]="'body'"
     [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
     [disabled]="disabled()"
     [showButtonBar]="true"

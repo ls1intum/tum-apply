@@ -173,6 +173,8 @@ export default class ApplicationCreationFormComponent {
     const page1Valid = this.page1Valid();
     const page2Valid = this.page2Valid();
     const page3Valid = this.page3Valid();
+    const page1And2Valid = page1Valid && page2Valid;
+    const page1And2And3Valid = page1Valid && page2Valid && page3Valid;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
@@ -247,6 +249,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
+        disabled: !page1Valid,
         status: statusPanel,
       });
     }
@@ -283,6 +286,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
+        disabled: !page1And2Valid,
         status: statusPanel,
       });
     }
@@ -319,6 +323,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
+        disabled: !page1And2And3Valid,
         status: statusPanel,
       });
     }
