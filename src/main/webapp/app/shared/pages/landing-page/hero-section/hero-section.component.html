@@ -1,4 +1,11 @@
-<p-carousel [autoplayInterval]="8000" [circular]="true" [numVisible]="1" [showNavigators]="false" [value]="imagesWithBackgroundClass">
+<p-carousel
+  styleClass="hero-carousel"
+  [autoplayInterval]="8000"
+  [circular]="true"
+  [numVisible]="1"
+  [showNavigators]="false"
+  [value]="imagesWithBackgroundClass"
+>
   <ng-template #item let-image>
     <div [class]="image.backgroundClass" class="hero-container">
       <div class="hero-content">
