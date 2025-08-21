@@ -76,7 +76,7 @@ export class JobCreationFormComponent {
   isLoading = signal<boolean>(true);
   savingState = signal<SavingState>('SAVED');
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
-  showPrivacyErrorMessage = signal<boolean>(false);
+  publishAttempted = signal<boolean>(false);
 
   // Forms
   basicInfoForm = this.createBasicInfoForm();
@@ -108,12 +108,6 @@ export class JobCreationFormComponent {
 
     this.basicInfoValid.set(this.basicInfoForm.valid);
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
-  });
-
-  hidePrivacyErrorEffect = effect(() => {
-    if (Boolean(this.privacyAcceptedSignal())) {
-      this.showPrivacyErrorMessage.set(false);
-    }
   });
 
   // Data computation
@@ -264,8 +258,8 @@ export class JobCreationFormComponent {
 
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
+    this.publishAttempted.set(true);
     if (!Boolean(this.privacyAcceptedSignal())) {
-      this.showPrivacyErrorMessage.set(true);
       return;
     }
     if (!jobData) return;

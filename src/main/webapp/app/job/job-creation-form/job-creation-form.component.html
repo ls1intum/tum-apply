@@ -226,7 +226,7 @@
             <span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
           </label>
 
-          @if (showPrivacyErrorMessage()) {
+          @if (privacyAcceptedSignal() === false && publishAttempted()) {
             <div class="error-message" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
           }
         </div>
