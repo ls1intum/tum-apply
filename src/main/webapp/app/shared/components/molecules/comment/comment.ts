@@ -2,10 +2,11 @@ import { Component, ViewEncapsulation, input, model, output, signal } from '@ang
 import { TextareaModule } from 'primeng/textarea';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { TimeAgoPipe } from '../../../pipes/time-ago.pipe';
 
 @Component({
   selector: 'jhi-comment',
-  imports: [ButtonComponent, TextareaModule],
+  imports: [ButtonComponent, TextareaModule, TimeAgoPipe],
   templateUrl: './comment.html',
   styleUrl: './comment.scss',
   encapsulation: ViewEncapsulation.None,
@@ -13,6 +14,8 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 export class Comment {
   // Inputs
   text = model<string>('');
+  author = input<string>('');
+  createdAt = input<string>('');
   canEdit = input<boolean>(false);
   isCreate = input<boolean>(false);
 

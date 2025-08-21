@@ -2,9 +2,11 @@
   <!-- Header -->
   <div class="comment-header">
     <div class="comment-details">
-      <span class="comment-author">Some Name</span>
+      <span class="comment-author">{{ author() }}</span>
       @if (!isCreate()) {
-        <span class="comment-created-at">2 days ago</span>
+        <span class="comment-created-at">
+          {{ createdAt() | timeAgo }}
+        </span>
       }
     </div>
 
@@ -27,12 +29,12 @@
 
   @if (isEdit()) {
     <div class="comment-controls">
-      <jhi-button label="Cancel" variant="text" severity="primary" (click)="onCancel()" />
-      <jhi-button label="Save" severity="primary" (click)="onSave()" />
+      <jhi-button label="evaluation.cancel" [shouldTranslate]="true" variant="text" severity="primary" (click)="onCancel()" />
+      <jhi-button label="evaluation.save" [shouldTranslate]="true" severity="primary" (click)="onSave()" />
     </div>
   } @else if (isCreate()) {
     <div class="comment-controls">
-      <jhi-button label="Comment" severity="primary" (click)="onSave()" />
+      <jhi-button label="evaluation.post" [shouldTranslate]="true" icon="paper-plane" severity="primary" (click)="onSave()" />
     </div>
   }
 </div>
