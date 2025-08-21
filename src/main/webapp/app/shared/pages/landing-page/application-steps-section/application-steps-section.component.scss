@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6rem;
+  gap: 3rem;
   align-self: stretch;
   background: var(--p-background-special);
 
@@ -20,8 +20,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    //gap: 2.5rem;
-    // margin-bottom:4rem;
+
     .steps {
       display: flex;
       justify-content: center;
