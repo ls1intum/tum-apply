@@ -358,6 +358,14 @@ export default class ApplicationCreationFormComponent {
     let application;
     try {
       application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
+      if (application.applicationState !== 'SAVED') {
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
+        });
+        await this.router.navigate(['/application/detail', application.applicationId]);
+        return;
+      }
       this.applicationId.set(application.applicationId ?? '');
 
       // Update URL to include the new applicationId
