@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import SharedModule from '../../shared/shared.module';
 import { JobDTO, JobFormDTO } from '../../generated';
@@ -22,6 +23,7 @@ import * as DropdownOptions from '.././dropdown-options';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
 import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
+import { ToastService } from '../../service/toast-service';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -62,6 +64,7 @@ export class JobCreationFormComponent {
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
   private autoSaveInitialized = false;
 
   constructor() {
@@ -267,8 +270,10 @@ export class JobCreationFormComponent {
     try {
       await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
       this.router.navigate(['/my-positions']);
-    } catch (error) {
-      console.error('Failed to publish job:', error);
+    } catch (err) {
+      console.error('Failed to publish job:', err);
+      const httpError = err as HttpErrorResponse;
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to publish job: ' + httpError.statusText });
     }
   }
 
@@ -361,8 +366,10 @@ export class JobCreationFormComponent {
         this.populateForm(job);
         this.autoSaveInitialized = false;
       }
-    } catch (error) {
-      console.error('Initialization error:', error);
+    } catch (err) {
+      const httpError = err as HttpErrorResponse;
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to load job form: ' + httpError.statusText });
+      console.error('Initialization error:', err);
       this.router.navigate(['/my-positions']);
     } finally {
       this.isLoading.set(false);
@@ -450,10 +457,11 @@ export class JobCreationFormComponent {
       }
 
       this.lastSavedData.set(currentData);
-    } catch (error) {
-      console.error('Auto-save failed:', error);
-    } finally {
       this.savingState.set('SAVED');
+    } catch (err) {
+      const httpError = err as HttpErrorResponse;
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to save job: ' + httpError.statusText });
+      console.error('Auto-save failed:', err);
     }
   }
 
