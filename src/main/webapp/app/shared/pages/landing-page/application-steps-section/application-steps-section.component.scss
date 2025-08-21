@@ -20,13 +20,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2.5rem;
-    margin-top: -4rem;
-
+    //gap: 2.5rem;
+    // margin-bottom:4rem;
     .steps {
       display: flex;
       justify-content: center;
-      padding: 0rem;
       gap: 2.5rem;
     }
   }
