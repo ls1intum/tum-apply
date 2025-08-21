@@ -1,19 +1,15 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.notification.service;
 
 import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.core.service.mail.Email;
+import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -27,8 +23,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -64,34 +64,25 @@ public class EmailService {
     }
 
     /**
-     * Sends an email asynchronously. Includes retry logic for transient mailing errors.
+     * Sends an email and includes retry logic for transient mailing errors.
      * If email sending is disabled, it will log the email contents instead.
      *
      * @param email the email to be sent
-     * @return a completed {@link CompletableFuture}
      */
-    @Async
-    @Retryable(retryFor = { MailingException.class }, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
-    public CompletableFuture<Void> send(Email email) {
-        try {
-            email.validate();
-        } catch (IllegalArgumentException e) {
-            log.error("Email validation failed", e);
-            return CompletableFuture.completedFuture(null);
-        }
+    @Retryable(retryFor = MailingException.class, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
+    protected void send(Email email) {
+        email.validate();
 
-        EmailTemplateTranslation emailTemplateTranslation = getEmailTemplateTranslation(email);
-        String subject = renderSubject(emailTemplateTranslation);
-        String body = renderBody(email, emailTemplateTranslation);
+        EmailTemplateTranslation tpl = getEmailTemplateTranslation(email);
+        String subject = renderSubject(email, tpl);
+        String body = renderBody(email, tpl);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
-        sendEmail(email, subject, body);
-        log.info("Email successfully sent to: {}", email.getTo());
-        return CompletableFuture.completedFuture(null);
+        sendEmail(email, subject, body); // throws MailingException on failure
     }
 
     /**
@@ -99,35 +90,40 @@ public class EmailService {
      *
      * @param ex    the cause of the failure
      * @param email the email that failed to send
-     * @return a completed {@link CompletableFuture}
      */
     @Recover
-    public CompletableFuture<Void> recoverMailingException(MailingException ex, Email email) {
-        log.error("Email sending failed permanently after multiple retries. To: {}. Reason: {}", email.getTo(), ex.getMessage());
-        return CompletableFuture.completedFuture(null);
+    protected void recoverMailingException(MailingException ex, Email email) {
+        log.error("Email sending failed permanently after retries. To: {}", email.getRecipients());
     }
 
     /**
      * Renders the email subject using the template processor.
+     * If a custom subject is set it will be rendered as-is
+     * Otherwise, the subject of the template will be used
      *
+     * @param email                    the email
      * @param emailTemplateTranslation the template translation
      * @return the rendered subject
      */
-    private String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
+    private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
+        if (StringUtils.isNotEmpty(email.getCustomSubject())) {
+            return templateProcessingService.renderSubject(email.getCustomSubject());
+        }
         return templateProcessingService.renderSubject(emailTemplateTranslation);
     }
 
     /**
-     * Renders the email body. If an HTML body is already present in the email,
-     * it will be rendered as-is. Otherwise, the body is rendered using the template.
+     * Renders the email body.
+     * If an HTML body is already present in the email, it will be rendered as-is
+     * Otherwise, the body is rendered using the template.
      *
      * @param email                    the email to render
      * @param emailTemplateTranslation the template translation
      * @return the rendered HTML body
      */
     private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getHtmlBody())) {
-            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
+        if (StringUtils.isNotEmpty(email.getCustomBody())) {
+            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody());
         }
         return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
     }
@@ -142,13 +138,13 @@ public class EmailService {
     private void simulateEmail(Email email, String subject, String body) {
         log.info(
             """
-            >>>> Sending Simulated Email <<<<
-              To: {}
-              CC: {}
-              BCC: {}
-              Subject: {}
-              Parsed Body: {}
-            """,
+                >>>> Sending Simulated Email <<<<
+                  To: {}
+                  CC: {}
+                  BCC: {}
+                  Subject: {}
+                  Parsed Body: {}
+                """,
             getRecipientsToNotify(email.getTo(), email),
             getRecipientsToNotify(email.getCc(), email),
             getRecipientsToNotify(email.getBcc(), email),
@@ -170,8 +166,7 @@ public class EmailService {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
             if (mailSender == null) {
-                log.error("Mail sender not configured but email sending is enabled. Could not send email to {}", email.getTo());
-                throw new IllegalStateException("Mail sender not configured");
+                throw new IllegalStateException("Mail sender not configured but email sending is enabled");
             }
 
             MimeMessage message = mailSender.createMimeMessage();

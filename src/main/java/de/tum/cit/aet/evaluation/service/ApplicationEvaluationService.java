@@ -2,13 +2,10 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.service.EmailService;
-import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
@@ -17,24 +14,28 @@ import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.service.JobService;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class ApplicationEvaluationService {
 
     private final JobService jobService;
-    private final EmailService emailService;
+    private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
 
@@ -84,12 +85,13 @@ public class ApplicationEvaluationService {
             Email email = Email.builder()
                 .to(applicant.getUser())
                 .bcc(supervisingProfessor)
-                .htmlBody(acceptDTO.message())
+                .customBody(acceptDTO.message())
                 .emailType(EmailType.APPLICATION_ACCEPTED)
                 .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
-                .htmlBody(acceptDTO.message())
+                .customBody(acceptDTO.message())
+                .researchGroup(job.getResearchGroup())
                 .build();
-            emailService.send(email);
+            sender.sendAsync(email);
         }
     }
 
@@ -128,7 +130,7 @@ public class ApplicationEvaluationService {
                 .content(application)
                 .researchGroup(researchGroup)
                 .build();
-            emailService.send(email);
+            sender.sendAsync(email);
         }
     }
 

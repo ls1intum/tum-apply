@@ -362,3 +362,29 @@
 .basic-tab {
   background: var(--p-background-default);
 }
+
+/* ---------------------------
+ Style primeNg active step component
+------------------------------- */
+
+.p-step-active .p-step-header {
+  cursor: pointer;
+}
+
+/* -------------------------------
+ Style primeNg tooltip component.
+---------------------------------- */
+.tooltip,
+.p-tooltip,
+.jhi-tooltip {
+  max-width: 15rem;
+  font-size: 0.875rem;
+}
+
+/* -------------------------------
+ Style primeNg select component.
+------------------------------- */
+.p-select-option.p-select-option-selected {
+  background: var(--p-background-surface-alt);
+  color: var(--p-text-primary);
+}
