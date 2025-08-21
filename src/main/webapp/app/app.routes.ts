@@ -57,6 +57,12 @@ const routes: Routes = [
       import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
   },
   {
+    path: 'playground/rating',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./playground/rating-playground/rating-playground').then(c => c.RatingPlayground),
+  },
+  {
     path: 'playground/comment',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },

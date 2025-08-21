@@ -3,11 +3,13 @@
     "overviewHeader": "Bewerbungen - Übersicht",
     "reviewHeader": "Bewerbungen - Prüfen",
 
-    "ratingToolTip": "Bewertung: {{value}} auf einer {{total}}-Likert Skala ({{label}})",
-    "positive": "Positiv",
-    "negative": "Negativ",
-    "neutral": "Neutral",
-    "noRating": "Keine Bewertung verfügbar",
+    "ratings": {
+      "very_bad": "Mangelhaft",
+      "bad": "Ausreichend",
+      "neutral": "Befriedigend",
+      "good": "Gut",
+      "very_good": "Sehr gut"
+    },
 
     "accept": "Annehmen",
     "reject": "Ablehnen",
@@ -29,7 +31,14 @@
       "SENT": "Ungelesen",
       "ACCEPTED": "Angenommen",
       "REJECTED": "Abgelehnt",
-      "IN_REVIEW": "In Bearbeitung"
+      "IN_REVIEW": "In Bearbeitung",
+
+      "tooltips": {
+        "SENT": "Die Bewerbung wurde eingereicht, aber noch nicht geöffnet",
+        "ACCEPTED": "Die Bewerbung wurde angenommen",
+        "REJECTED": "Die Bewerbung wurde abgelehnt",
+        "IN_REVIEW": "Die Bewerbung wurde geöffnet und befindet sich noch in Bearbeitung"
+      }
     },
     "noApplicationsFound": "Keine Bewerbungen gefunden.",
     "filterOptions": {

@@ -44,6 +44,7 @@ export class ButtonComponent {
   shouldTranslate = input<boolean>(false);
   fullWidth = input<boolean>(false);
   type = input<'button' | 'submit' | 'reset'>('button');
+  loading = input<boolean>(false);
   size = input<ButtonSize>('lg');
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
@@ -58,8 +59,8 @@ export class ButtonComponent {
   buttonClass(): string {
     let sizeClass = '';
     if (this.label() === undefined) {
-      sizeClass = `rounded-full ${this.size() === 'sm' ? 'w-8 h-8' : this.size() === 'lg' ? 'w-14 h-14' : 'w-10 h-10'}`;
+      sizeClass = `rounded-full ${this.size() === 'sm' ? 'w-8 h-8' : this.size() === 'md' ? 'w-10 h-10' : 'w-14 h-14'}`;
     }
-    return `${sizeClass} ${this.fullWidth() ? 'w-full' : ''}`;
+    return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''}`;
   }
 }
