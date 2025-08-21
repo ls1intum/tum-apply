@@ -2,6 +2,7 @@ import { Component, Signal, TemplateRef, computed, input, signal } from '@angula
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 import { TranslateModule } from '@ngx-translate/core';
+import SharedModule from 'app/shared/shared.module';
 
 import { Button } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
@@ -21,11 +22,12 @@ export type StepData = {
   buttonGroupNext: StepButton[];
   status?: TemplateRef<HTMLDivElement>;
   shouldTranslate?: boolean;
+  disabled?: boolean;
 };
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule],
+  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, SharedModule],
   templateUrl: './progress-stepper.component.html',
   styleUrl: './progress-stepper.component.scss',
   standalone: true,
