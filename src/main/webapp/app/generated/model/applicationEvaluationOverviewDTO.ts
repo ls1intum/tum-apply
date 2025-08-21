@@ -15,7 +15,6 @@ export interface ApplicationEvaluationOverviewDTO {
     name?: string;
     state?: ApplicationEvaluationOverviewDTO.StateEnum;
     jobName?: string;
-    rating?: number;
     appliedAt?: string;
 }
 export namespace ApplicationEvaluationOverviewDTO {

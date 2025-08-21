@@ -39,27 +39,24 @@ class MockApplicationResourceService {
   deleteApplication = jest.fn();
 }
 
-jest.useFakeTimers();
-
 describe('ApplicationCreationFormComponent create', () => {
   let component: ApplicationCreationFormComponent;
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
 
   beforeEach(async () => {
-    jest.clearAllTimers();
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationFormComponent, TranslateModule.forRoot()],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: {
-            url: of([{ path: 'application' }, { path: 'create' }]),
             snapshot: {
-              paramMap: {
-                get(key: string) {
-                  if (key === 'job_id') return '123';
+              queryParamMap: {
+                get: jest.fn().mockImplementation((key: string) => {
+                  if (key === 'job') return '123';
+                  if (key === 'application') return null;
                   return null;
-                },
+                }),
               },
             },
           },
@@ -89,16 +86,9 @@ describe('ApplicationCreationFormComponent create', () => {
 
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faEnvelope, faChevronDown, faChevronUp, faCalendar, faCaretLeft, faCaretRight, faArrowRight, faArrowLeft, faSave);
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should set mode to "create" and extract jobId from route', () => {
-    expect(component.mode).toBe('create');
-    expect(component.jobId()).toBe('123');
   });
 });

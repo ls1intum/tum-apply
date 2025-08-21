@@ -25,7 +25,6 @@ export interface Application {
     projects?: string;
     specialSkills?: string;
     motivation?: string;
-    rating?: number;
     customFieldAnswers?: Array<CustomFieldAnswer>;
     internalComments?: Array<InternalComment>;
 }

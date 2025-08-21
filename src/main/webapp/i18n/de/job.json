@@ -181,7 +181,8 @@
     "cancel": "Abbrechen",
     "next": "Weiter",
     "back": "Zurück",
-    "saveDraft": "Entwurf speichern"
+    "saveDraft": "Entwurf speichern",
+    "viewApplication": "Zur Bewerbung"
   },
   "jobState": {
     "draft": "Entwurf",

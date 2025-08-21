@@ -11,6 +11,7 @@ api/documentResource.service.ts
 api/emailSettingResource.service.ts
 api/emailTemplateResource.service.ts
 api/jobResource.service.ts
+api/ratingResource.service.ts
 api/userResource.service.ts
 configuration.ts
 encoder.ts
@@ -55,6 +56,8 @@ model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageableObject.ts
 model/professorDTO.ts
+model/ratingDTO.ts
+model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
 model/researchGroupShortDTO.ts

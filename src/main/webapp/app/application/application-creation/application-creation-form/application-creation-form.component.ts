@@ -1,8 +1,8 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import { ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
-import { ActivatedRoute } from '@angular/router';
+import { ApplicationDocumentIdsDTO, ApplicationForApplicantDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
@@ -27,26 +27,14 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 
-const ApplicationFormModes = {
-  CREATE: 'create',
-  EDIT: 'edit',
-} as const;
-
-type ApplicationFormMode = (typeof ApplicationFormModes)[keyof typeof ApplicationFormModes];
-
-const ApplicationStates = {
-  SAVED: 'SAVED',
-  SENT: 'SENT',
-} as const;
-
-type ApplicationState = (typeof ApplicationStates)[keyof typeof ApplicationStates];
-
 const SavingStates = {
   SAVED: 'SAVED',
   SAVING: 'SAVING',
 } as const;
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
+
+const LOCAL_STORAGE_KEY = 'application_draft';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -60,7 +48,6 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     TranslateModule,
     ConfirmDialog,
   ],
-
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
   standalone: true,
@@ -69,6 +56,7 @@ export default class ApplicationCreationFormComponent {
   readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
   readonly sendButtonSeverity = 'primary' as ButtonColor;
   readonly sendButtonIcon = 'paper-plane';
+
   page1 = signal<ApplicationCreationPage1Data>({
     firstName: '',
     lastName: '',
@@ -85,6 +73,7 @@ export default class ApplicationCreationFormComponent {
     country: '',
     postcode: '',
   });
+
   page2 = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
@@ -95,35 +84,43 @@ export default class ApplicationCreationFormComponent {
     masterGradingScale: masterGradingScale[0],
     masterGrade: '',
   });
+
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
+
   title = signal<string>('');
   jobId = signal<string>('');
   applicantId = signal<string>('');
   applicationId = signal<string>('');
-  applicationState = signal<ApplicationState>(ApplicationStates.SAVED);
+  applicationState = signal<ApplicationForApplicantDTO.ApplicationStateEnum>('SAVED');
   savingState = signal<SavingState>(SavingStates.SAVED);
+
   savingBadgeCalculatedClass = computed<string>(
     () =>
       `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
   );
-  mode: ApplicationFormMode = 'create';
+
   page1Valid = signal<boolean>(false);
   page2Valid = signal<boolean>(false);
   page3Valid = signal<boolean>(false);
   savingTick = signal<number>(0);
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+
+  useLocalStorage = signal<boolean>(false);
+
   location = inject(Location);
+
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const applicantId = this.applicantId();
     const page1Valid = this.page1Valid();
     const page2Valid = this.page2Valid();
     const page1And2Valid = page1Valid && page2Valid;
@@ -132,6 +129,7 @@ export default class ApplicationCreationFormComponent {
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
     const statusPanel = this.savedStatusPanel();
     const updateDocumentInformation = this.updateDocumentInformation.bind(this);
+
     if (panel1) {
       steps.push({
         name: 'entity.applicationSteps.personalInformation',
@@ -159,7 +157,7 @@ export default class ApplicationCreationFormComponent {
             severity: 'primary',
             icon: 'arrow-right',
             onClick() {},
-            disabled: !page1Valid,
+            disabled: !(page1Valid && applicantId !== ''),
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
             changePanel: true,
@@ -248,6 +246,7 @@ export default class ApplicationCreationFormComponent {
   private applicationResourceService = inject(ApplicationResourceService);
   private accountService = inject(AccountService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private toastService = inject(ToastService);
 
   constructor() {
@@ -263,57 +262,160 @@ export default class ApplicationCreationFormComponent {
 
   async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-    const segments = await firstValueFrom(this.route.url);
-    const firstSegment = segments[1]?.path;
-    let application;
-    if (firstSegment === ApplicationFormModes.CREATE) {
-      this.mode = ApplicationFormModes.CREATE;
-      const jobId = this.route.snapshot.paramMap.get('job_id');
-      if (jobId === null) {
-        this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
-      } else {
-        this.jobId.set(jobId);
-      }
-      application = await firstValueFrom(this.applicationResourceService.createApplication(this.jobId()));
-    } else if (firstSegment === ApplicationFormModes.EDIT) {
-      this.mode = ApplicationFormModes.EDIT;
-      const applicationId = this.route.snapshot.paramMap.get('application_id');
-      if (applicationId === null) {
-        this.toastService.showError({ summary: 'Error', detail: 'This is no valid applicationId' });
-        return;
-      }
-      application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
+
+    // Get query parameters
+    const jobId = this.route.snapshot.queryParamMap.get('job');
+    const applicationId = this.route.snapshot.queryParamMap.get('application');
+
+    if (this.applicantId() === '') {
+      this.initPageForLocalStorageCase(jobId);
     } else {
-      this.toastService.showError({ summary: 'Error', detail: 'This is no valid application page link' });
+      // logic for authenticated users
+      let application: ApplicationForApplicantDTO;
+
+      try {
+        if (applicationId) {
+          const fetchedApplication = await this.initPageLoadExistingApplication(applicationId);
+
+          if (fetchedApplication === undefined) {
+            return;
+          }
+          application = fetchedApplication;
+        } else if (jobId) {
+          // Create mode - create new application
+          const createdApplication = await this.initPageCreateApplication(jobId);
+
+          if (createdApplication === undefined) {
+            return;
+          }
+          application = createdApplication;
+        } else {
+          this.toastService.showError({
+            summary: 'Error',
+            detail: 'Either job ID or application ID must be provided in the URL.',
+          });
+          return;
+        }
+
+        // Set job information
+        this.jobId.set(application.job.jobId);
+        if (application.job.title && application.job.title.trim().length > 0) {
+          this.title.set(application.job.title);
+        }
+
+        this.applicationState.set(application.applicationState);
+
+        // For authenticated users, don't use localStorage
+        this.useLocalStorage.set(false);
+
+        // Load data from application
+        this.page1.set(getPage1FromApplication(application));
+        this.page2.set(getPage2FromApplication(application));
+        this.page3.set(getPage3FromApplication(application));
+
+        this.updateDocumentInformation();
+      } catch (error) {
+        const httpError = error as HttpErrorResponse;
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'Failed to load application: ' + httpError.statusText,
+        });
+        console.error('Failed to load application:', error);
+      }
+    }
+  }
+
+  initPageForLocalStorageCase(jobId: string | null): void {
+    this.useLocalStorage.set(true);
+    if (jobId) {
+      // TODO fetch jobData for lateron displaying jobDetails
+      this.jobId.set(jobId);
+      this.loadPage1FromLocalStorage();
+      this.applicationState.set('SAVED');
+    } else {
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Job ID must be provided when not authenticated.',
+      });
+    }
+  }
+
+  async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO | undefined> {
+    const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
+
+    // Check if application state allows editing
+    if (application.applicationState !== 'SAVED') {
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
+      });
+      await this.router.navigate(['/application/detail', applicationId]);
       return;
     }
-    this.jobId.set(application.job.jobId);
-    if (application.job.title && application.job.title.trim().length > 0) {
-      this.title.set(application.job.title);
-    }
-    this.applicationId.set(application.applicationId);
-    this.page1.set(getPage1FromApplication(application));
-    this.page2.set(getPage2FromApplication(application));
-    this.page3.set(getPage3FromApplication(application));
 
-    this.updateDocumentInformation();
-    this.location.replaceState(`${segments[0].path}/${ApplicationFormModes.EDIT}/${this.applicationId()}`);
+    this.applicationId.set(applicationId);
+    return application;
+  }
+
+  async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO | undefined> {
+    let application;
+    try {
+      application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
+      if (application.applicationState !== 'SAVED') {
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
+        });
+        await this.router.navigate(['/application/detail', application.applicationId]);
+        return;
+      }
+      this.applicationId.set(application.applicationId ?? '');
+
+      // Update URL to include the new applicationId
+      await this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { job: jobId, application: application.applicationId },
+        queryParamsHandling: 'merge',
+      });
+    } catch (error) {
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to create application. Please try again.',
+      });
+      console.error('Failed to create application:', error);
+      return;
+    }
+    return application;
   }
 
   async performAutomaticSave(): Promise<void> {
     if (this.savingState() === SavingStates.SAVING) {
-      await this.sendCreateApplicationData(this.applicationState(), false);
+      if (this.useLocalStorage()) {
+        this.saveToLocalStorage();
+      } else {
+        await this.sendCreateApplicationData(this.applicationState(), false);
+      }
       this.savingState.set(SavingStates.SAVED);
     }
   }
 
-  async sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): Promise<void> {
+  async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<void> {
     const location = this.location;
     const applicationId = this.applicationId();
+
     if (applicationId === '') {
       this.toastService.showError({ detail: 'There is an error with the applicationId' });
       return;
     }
+
+    // If using local storage, we can't send to server
+    if (this.useLocalStorage()) {
+      this.toastService.showError({
+        detail: 'Cannot submit application: User authentication required.',
+      });
+      return;
+    }
+
     const updateApplication: UpdateApplicationDTO = {
       applicationId,
       applicant: {
@@ -348,27 +450,44 @@ export default class ApplicationCreationFormComponent {
       motivation: this.page3()?.motivation ?? '',
       specialSkills: this.page3()?.skills ?? '',
       projects: this.page3()?.experiences,
-      // answers: new Set(),
     };
+
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
+
+      // Clear local storage on successful server save
+      this.clearLocalStorage();
+
       if (rerouteToOtherPage) {
         this.toastService.showSuccess({ detail: 'Successfully saved application' });
         location.back();
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to save application: ' + httpError.statusText,
+      });
       console.error('Failed to save application:', err);
     }
   }
 
   updateDocumentInformation(): void {
+    // Skip document update if using local storage
+    if (this.useLocalStorage()) {
+      return;
+    }
+
     firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+      .catch(() =>
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'fetching the document ids for this application',
+        }),
+      );
   }
 
   onValueChanged(): void {
@@ -385,5 +504,55 @@ export default class ApplicationCreationFormComponent {
 
   onPage3ValidityChanged(isValid: boolean): void {
     this.page3Valid.set(isValid);
+  }
+
+  private saveToLocalStorage(): void {
+    const applicationData = {
+      page1: this.page1(),
+      page2: this.page2(),
+      page3: this.page3(),
+      applicationId: this.applicationId(),
+      jobId: this.jobId(),
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(applicationData));
+    } catch (error) {
+      console.error('Failed to save to local storage:', error);
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to save application data locally.',
+      });
+    }
+  }
+
+  /**
+   * Loads application form data for the first page from localStorage for the current application.
+   * Validates applicationId match before applying data to form page.
+   *
+   * @returns {boolean} True if data was successfully loaded, false otherwise
+   * @private
+   */
+  private loadPage1FromLocalStorage(): boolean {
+    try {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        this.page1.set(parsedData.page1);
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to load from local storage:', error);
+    }
+    return false;
+  }
+
+  private clearLocalStorage(): void {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    } catch (error) {
+      console.error('Failed to clear local storage:', error);
+    }
   }
 }

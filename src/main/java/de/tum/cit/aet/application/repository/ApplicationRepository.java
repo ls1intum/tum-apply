@@ -56,6 +56,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.createdAt
@@ -115,6 +117,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.createdAt
@@ -173,6 +177,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.createdAt
@@ -257,6 +263,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    a.applicationId,
+                    a.state,
                     j.workload,
                     j.startDate,
                     j.createdAt
@@ -314,4 +322,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
+
+    Application getByApplicant_User_UserIdAndJob_JobId(UUID userId, UUID jobId);
 }
