@@ -71,7 +71,7 @@
         "toolTipText": "Verschaffen Sie den Bewerbern ein klares Bild von den Aufgaben und Tätigkeiten der Position."
       },
       "requirements": {
-        "label": "Zugangsvoraussetzungen",
+        "label": "Zulassungsvoraussetzungen",
         "placeholder": "Listen Sie die Mindestanforderungen für Bewerber*innen auf...",
         "descriptionHelper": "Geben Sie die Mindestanforderungen an (z. B. Abschluss, Noten, Sprachkenntnisse), die erfüllt sein müssen.",
         "toolTipText": "Stellen Sie sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
@@ -165,7 +165,7 @@
       "positionDetails": "Stellendetails",
       "description": "Stellenbeschreibung",
       "tasks": "Aufgaben & Verantwortlichkeiten",
-      "requirements": "Zugangsvoraussetzungen"
+      "requirements": "Zulassungsvoraussetzungen"
     },
     "dataPrivacy": {
       "dataProtectionInformation": "Hinweis zum Datenschutz:",
