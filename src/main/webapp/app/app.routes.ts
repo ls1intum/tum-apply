@@ -160,14 +160,12 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
     loadComponent: () => import('./shared/pages/imprint-page/imprint-page.component').then(m => m.ImprintPageComponent),
-    title: 'imprint',
   },
   {
     path: 'privacy',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
     loadComponent: () => import('./shared/pages/privacy-page/privacy-page.component').then(m => m.PrivacyPageComponent),
-    title: 'privacy',
   },
 
   // ======================================================================================
@@ -178,7 +176,6 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
-    title: 'Settings',
   },
 
   // ======================================================================================
