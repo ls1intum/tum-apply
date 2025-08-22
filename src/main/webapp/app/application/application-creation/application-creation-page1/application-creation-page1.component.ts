@@ -60,9 +60,9 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   };
 };
 
-function postalCodeValidator(getCountryFn: () => string): ValidatorFn {
+function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const country = getCountryFn().toUpperCase();
+    const country = getCountryFn()?.toUpperCase();
     const value = control.value;
     if (!country || !value) return null;
     const result = postalCodes.validate(country, value);
@@ -95,6 +95,8 @@ export default class ApplicationCreationPage1Component {
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
+  selectCountryLocal = selectCountries;
+
   fb = inject(FormBuilder);
   page1Form = computed(() => {
     const currentData = this.data();

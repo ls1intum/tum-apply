@@ -125,12 +125,15 @@
 
   <div class="form-row">
     <div class="w-1/2 pr-4">
-      <jhi-string-input
+      <jhi-select
         label="{{ 'entity.applicationPage1.label.country' | translate }}"
         id="country"
         [required]="true"
-        [(model)]="data().country"
-        [control]="page1Form().controls.country"
+        [(selected)]="data().country"
+        width="100%"
+        [items]="selectCountryLocal"
+        (selectedChange)="emitChanged()"
+        [filter]="true"
       />
     </div>
     <div class="w-1/2 pr-4">
