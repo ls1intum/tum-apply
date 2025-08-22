@@ -199,6 +199,7 @@ export class JobCreationFormComponent {
             changePanel: true,
           },
         ],
+        disabled: !this.basicInfoValid(),
         status: templates.status,
       });
     }
@@ -233,6 +234,7 @@ export class JobCreationFormComponent {
             changePanel: false,
           },
         ],
+        disabled: !(this.basicInfoValid() && this.positionDetailsValid()),
         status: templates.status,
       });
     }
