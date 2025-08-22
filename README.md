@@ -80,20 +80,20 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ### UML Diagram
 
-![TUMApply Project Architecture UML Diagram](docs/architecture/tumapply-project-architecture.svg)
+![TUMApply Project Architecture UML Diagram](docs-github/architecture/tumapply-project-architecture.svg)
 
 ## 📄 Documentation for Developers
 
 If you're a developer or contributor, head over to the full documentation:
 
-- 📚 [Development Setup](docs/setup/dev-environment.md)
-- 🎨 [Theming & Color Tokens](docs/theming/color-theming.md)
-- 🛠️ [API Documentation](docs/TUMApply%20API)
-- 🧪 [Testing Guide](docs/testing/testing-guide.md)
-- 🐳 [Docker Setup](docs/deployment/docker.md)
-- 🚀 [Build for Production](docs/deployment/build-production.md)
+- 📚 [Development Setup](docs-github/setup/dev-environment.md)
+- 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
+- 🛠️ [API Documentation](docs-github/TUMApply%20API)
+- 🧪 [Testing Guide](docs-github/testing/testing-guide.md)
+- 🐳 [Docker Setup](docs-github/deployment/docker.md)
+- 🚀 [Build for Production](docs-github/deployment/build-production.md)
 
-Full documentation is available in the [`/docs`](./docs) folder.
+Full documentation is available in the [`/docs`](docs-github) folder.
 
 ---
 
