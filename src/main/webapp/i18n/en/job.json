@@ -46,7 +46,7 @@
       "workload": {
         "label": "Workload",
         "placeholder": "Specify the Workload (in h/week)...",
-        "toolTipText": "Indicate the expected workload for the doctoral position in hours per week (e.g. 20)."
+        "toolTipText": "Indicate the expected workload for the doctoral position in hours per week (e.g. 20). You can enter up to 40 h/week."
       },
       "contractDuration": {
         "label": "Contract Duration",
