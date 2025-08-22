@@ -198,4 +198,5 @@ export const selectNationality: SelectOption[] = [
   { value: 'ye', name: 'Yemeni' },
   { value: 'zm', name: 'Zambian' },
   { value: 'zw', name: 'Zimbabwean' },
+  { value: 'ot', name: 'Other' },
 ];

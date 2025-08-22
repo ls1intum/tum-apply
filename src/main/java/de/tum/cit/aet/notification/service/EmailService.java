@@ -1,12 +1,12 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.notification.service;
 
-import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.core.service.mail.Email;
+import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -23,14 +23,11 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,71 +64,25 @@ public class EmailService {
     }
 
     /**
-     * Sends an email asynchronously. Includes retry logic for transient mailing errors.
-     * If email sending is disabled, it will log the email contents instead.
-     *
-     * @param email recipient address (must be a valid email; validation is performed by Bean Validation annotation)
-     * @param code  the OTP shown to the user in the email body; not stored by this method
-     * @param ttl   validity window of the OTP; used to display minutes in the email (values ≤ 0 are coerced to 1 minute for display)
-     * @return a completed {@link CompletableFuture} representing the asynchronous dispatch
-     */
-    @Async
-    @Retryable(retryFor = {MailingException.class}, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
-    public CompletableFuture<Void> sendEmailVerificationCode(@jakarta.validation.constraints.Email String email, String code, Duration ttl) {
-        String subject = "TUMApply – Your verification code";
-        long ttlMinutes = Math.max(1, ttl.toMinutes());
-
-        String inner = """
-              <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Verify your email</h2>
-              <p style="margin:0 0 16px 0;">Use this code to verify your email address:</p>
-              <div style="text-align:center;margin:24px 0;">
-                <div style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:3px;padding:12px 16px;border:1px dashed #0A66C2;border-radius:6px;background:#F0F7FF;">%s</div>
-              </div>
-              <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
-              <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
-            """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
-
-        String body = templateProcessingService.renderRawTemplate(Language.ENGLISH, inner);
-
-        if (!emailEnabled) {
-            simulateEmail(email, subject, body);
-            return CompletableFuture.completedFuture(null);
-        }
-
-        sendEmail(email, subject, body);
-        log.info("Email successfully sent to: {}", email);
-        return CompletableFuture.completedFuture(null);
-    }
-
-    /**
-     * Sends an email asynchronously. Includes retry logic for transient mailing errors.
+     * Sends an email and includes retry logic for transient mailing errors.
      * If email sending is disabled, it will log the email contents instead.
      *
      * @param email the email to be sent
-     * @return a completed {@link CompletableFuture}
      */
-    @Async
-    @Retryable(retryFor = {MailingException.class}, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
-    public CompletableFuture<Void> send(Email email) {
-        try {
-            email.validate();
-        } catch (IllegalArgumentException e) {
-            log.error("Email validation failed", e);
-            return CompletableFuture.completedFuture(null);
-        }
+    @Retryable(retryFor = MailingException.class, maxAttempts = 3, backoff = @Backoff(delay = 5000, multiplier = 2))
+    protected void send(Email email) {
+        email.validate();
 
-        EmailTemplateTranslation emailTemplateTranslation = getEmailTemplateTranslation(email);
-        String subject = renderSubject(emailTemplateTranslation);
-        String body = renderBody(email, emailTemplateTranslation);
+        EmailTemplateTranslation tpl = getEmailTemplateTranslation(email);
+        String subject = renderSubject(email, tpl);
+        String body = renderBody(email, tpl);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
-            return CompletableFuture.completedFuture(null);
+            return;
         }
 
-        sendEmail(email, subject, body);
-        log.info("Email successfully sent to: {}", email.getTo());
-        return CompletableFuture.completedFuture(null);
+        sendEmail(email, subject, body); // throws MailingException on failure
     }
 
     /**
@@ -139,35 +90,40 @@ public class EmailService {
      *
      * @param ex    the cause of the failure
      * @param email the email that failed to send
-     * @return a completed {@link CompletableFuture}
      */
     @Recover
-    public CompletableFuture<Void> recoverMailingException(MailingException ex, Email email) {
-        log.error("Email sending failed permanently after multiple retries. To: {}. Reason: {}", email.getTo(), ex.getMessage());
-        return CompletableFuture.completedFuture(null);
+    protected void recoverMailingException(MailingException ex, Email email) {
+        log.error("Email sending failed permanently after retries. To: {}", email.getRecipients());
     }
 
     /**
      * Renders the email subject using the template processor.
+     * If a custom subject is set it will be rendered as-is
+     * Otherwise, the subject of the template will be used
      *
+     * @param email                    the email
      * @param emailTemplateTranslation the template translation
      * @return the rendered subject
      */
-    private String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
+    private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
+        if (StringUtils.isNotEmpty(email.getCustomSubject())) {
+            return templateProcessingService.renderSubject(email.getCustomSubject());
+        }
         return templateProcessingService.renderSubject(emailTemplateTranslation);
     }
 
     /**
-     * Renders the email body. If an HTML body is already present in the email,
-     * it will be rendered as-is. Otherwise, the body is rendered using the template.
+     * Renders the email body.
+     * If an HTML body is already present in the email, it will be rendered as-is
+     * Otherwise, the body is rendered using the template.
      *
      * @param email                    the email to render
      * @param emailTemplateTranslation the template translation
      * @return the rendered HTML body
      */
     private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getHtmlBody())) {
-            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getHtmlBody());
+        if (StringUtils.isNotEmpty(email.getCustomBody())) {
+            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody());
         }
         return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
     }
@@ -198,27 +154,6 @@ public class EmailService {
     }
 
     /**
-     * Logs the email instead of sending it. Used for local testing or when sending is disabled.
-     *
-     * @param email   the email address
-     * @param subject the rendered subject
-     * @param body    the rendered HTML body
-     */
-    private void simulateEmail(String email, String subject, String body) {
-        log.info(
-            """
-                >>>> Sending Simulated Email <<<<
-                  To: {}
-                  Subject: {}
-                  Parsed Body: {}
-                """,
-            email,
-            subject,
-            Jsoup.parse(body)
-        );
-    }
-
-    /**
      * Sends a fully constructed email using JavaMailSender.
      * Includes optional CC, BCC, and file attachments.
      *
@@ -231,8 +166,7 @@ public class EmailService {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
             if (mailSender == null) {
-                log.error("Mail sender not configured but email sending is enabled. Could not send email to {}", email.getTo());
-                throw new IllegalStateException("Mail sender not configured");
+                throw new IllegalStateException("Mail sender not configured but email sending is enabled");
             }
 
             MimeMessage message = mailSender.createMimeMessage();
@@ -256,42 +190,6 @@ public class EmailService {
             mailSender.send(message);
         } catch (MessagingException | IOException e) {
             log.error("Failed to send email to: {}. Reason: {}", email.getTo(), e.getMessage());
-            throw new MailingException(e.getMessage());
-        }
-    }
-
-    /**
-     * Sends an email using JavaMailSender.
-     *
-     * @param email   the email address
-     * @param subject the rendered subject
-     * @param body    the rendered HTML body
-     * @throws MailingException if sending fails
-     */
-    private void sendEmail(String email, String subject, String body) {
-        try {
-            JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
-            if (mailSender == null) {
-                log.error("Mail sender not configured but email sending is enabled. Could not send email to {}", email);
-                throw new IllegalStateException("Mail sender not configured");
-            }
-
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            String to = email;
-            if (to.isEmpty()) {
-                return;
-            }
-
-            helper.setTo(to);
-            helper.setFrom(from);
-            helper.setSubject(subject);
-            helper.setText(body, true);
-
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            log.error("Failed to send email to: {}. Reason: {}", email, e.getMessage());
             throw new MailingException(e.getMessage());
         }
     }
