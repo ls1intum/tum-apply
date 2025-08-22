@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, model, output } from '@angular/core';
 import { ApplicationForApplicantDTO } from 'app/generated';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
+import * as postalCodes from 'postal-codes-js';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
-import { selectNationality } from './nationalities';
+import { selectCountries, selectNationality } from './nationalities';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -25,7 +26,7 @@ export type ApplicationCreationPage1Data = {
   linkedIn: string;
   street: string;
   city: string;
-  country: string;
+  country?: SelectOption;
   postcode: string;
 };
 
@@ -54,10 +55,20 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     linkedIn: application.applicant?.user.linkedinUrl ?? '',
     street: application.applicant?.street ?? '',
     city: application.applicant?.city ?? '',
-    country: application.applicant?.country ?? '',
+    country: selectCountries.find(val => val.value === application.applicant?.country),
     postcode: application.applicant?.postalCode ?? '',
   };
 };
+
+function postalCodeValidator(getCountryFn: () => string): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const country = getCountryFn().toUpperCase();
+    const value = control.value;
+    if (!country || !value) return null;
+    const result = postalCodes.validate(country, value);
+    return result === true ? null : { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' };
+  };
+}
 
 @Component({
   selector: 'jhi-application-creation-page1',
@@ -96,7 +107,7 @@ export default class ApplicationCreationPage1Component {
       street: [currentData.street, Validators.required],
       city: [currentData.city, Validators.required],
       country: [currentData.country, Validators.required],
-      postcode: [currentData.postcode, Validators.required],
+      postcode: [currentData.postcode, [Validators.required, postalCodeValidator(() => this.data().country?.value as string)]],
 
       // Optional fields
       gender: [currentData.gender ?? null],
