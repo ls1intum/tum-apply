@@ -103,7 +103,7 @@ export default class ApplicationCreationPage1Component {
     return this.fb.group({
       firstName: [currentData.firstName, Validators.required],
       lastName: [currentData.lastName, Validators.required],
-      email: [currentData.email, Validators.required],
+      email: [currentData.email, [Validators.required, Validators.email]],
       phoneNumber: [currentData.phoneNumber, Validators.required],
 
       street: [currentData.street, Validators.required],
@@ -124,10 +124,19 @@ export default class ApplicationCreationPage1Component {
   constructor() {
     effect(onCleanup => {
       const form = this.page1Form();
+      const data = this.data();
       const valueSubscription = form.valueChanges.subscribe(value => {
         const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
+        const selectFields = {
+          gender: data.gender,
+          nationality: data.nationality,
+          language: data.language,
+          country: data.country,
+          dateOfBirth: data.dateOfBirth,
+        };
         this.data.set({
           ...this.data(),
+          ...selectFields,
           ...normalizedValue,
         });
         this.changed.emit(true);
@@ -155,6 +164,14 @@ export default class ApplicationCreationPage1Component {
     this.data.set({
       ...this.data(),
       dateOfBirth: $event ?? '',
+    });
+    this.emitChanged();
+  }
+
+  updateSelect(field: keyof ApplicationCreationPage1Data, value: SelectOption | undefined): void {
+    this.data.set({
+      ...this.data(),
+      [field]: value,
     });
     this.emitChanged();
   }

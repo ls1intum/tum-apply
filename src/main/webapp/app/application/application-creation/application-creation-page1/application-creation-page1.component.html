@@ -45,7 +45,7 @@
         [items]="selectGenderLocal"
         id="gender"
         [(selected)]="data().gender"
-        (selectedChange)="emitChanged()"
+        (selectedChange)="updateSelect('gender', $event)"
       />
     </div>
     <div class="w-1/2 pr-4">
@@ -69,7 +69,7 @@
         [items]="selectLanguageLocal"
         id="language"
         [(selected)]="data().language"
-        (selectedChange)="emitChanged()"
+        (selectedChange)="updateSelect('language', $event)"
         icon="circle-info"
         [tooltipText]="'entity.applicationPage1.tooltip.language' | translate"
       />
@@ -132,7 +132,7 @@
         [(selected)]="data().country"
         width="100%"
         [items]="selectCountryLocal"
-        (selectedChange)="emitChanged()"
+        (selectedChange)="updateSelect('country', $event)"
         [filter]="true"
       />
     </div>
@@ -143,6 +143,7 @@
         [required]="true"
         [(model)]="data().postcode"
         [control]="page1Form().controls.postcode"
+        [translateErrorMessage]="true"
       />
     </div>
   </div>
