@@ -1,6 +1,6 @@
 package de.tum.cit.aet.core.util;
 
-import de.tum.cit.aet.core.constants.TemplateVariable;
+import de.tum.cit.aet.notification.constants.TemplateVariable;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
