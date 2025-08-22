@@ -15,6 +15,7 @@ import { SortObject } from './sortObject';
 export interface PageCreatedJobDTO { 
     totalElements?: number;
     totalPages?: number;
+    pageable?: PageableObject;
     size?: number;
     content?: Array<CreatedJobDTO>;
     number?: number;
@@ -22,7 +23,6 @@ export interface PageCreatedJobDTO {
     first?: boolean;
     last?: boolean;
     numberOfElements?: number;
-    pageable?: PageableObject;
     empty?: boolean;
 }
 
