@@ -3,12 +3,12 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.domain.CurrentUser;
-import de.tum.cit.aet.core.domain.EmailTemplate;
 import de.tum.cit.aet.core.domain.ResearchGroupRole;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -269,5 +269,17 @@ public class CurrentUserService {
      */
     private boolean hasAccessTo(EmailTemplate emailTemplate) {
         return isAdminOrProfessorOf(emailTemplate.getResearchGroup().getResearchGroupId());
+    }
+
+    /**
+     * Checks if the current professor can review the specified application.
+     * A professor can review the application if they belong to the same research group
+     * as the job associated with the application.
+     *
+     * @param application the {@link Application} to check; must not be {@code null}
+     * @return {@code true} if the current professor can review the application, {@code false} otherwise
+     */
+    public boolean canReview(Application application) {
+        return getResearchGroupIfProfessor().getResearchGroupId().equals(application.getJob().getResearchGroup().getResearchGroupId());
     }
 }

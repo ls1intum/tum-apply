@@ -24,13 +24,19 @@
 			/>-->
 
     @if (user() === undefined) {
-      <jhi-button class="fixed-width-button" (click)="openLoginDialog()" label="{{ 'header.login' | translate }}" severity="primary" />
+      <jhi-button class="header-button" (click)="openLoginDialog()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
       <div class="profile">
         <fa-icon class="profile-icon" icon="user" />
         <span class="font-medium">{{ user()?.name }}</span>
       </div>
-      <jhi-button (click)="logout()" label="{{ 'header.logout' | translate }}" severity="primary" variant="outlined" />
+      <jhi-button
+        class="header-button"
+        (click)="logout()"
+        label="{{ 'header.logout' | translate }}"
+        severity="primary"
+        variant="outlined"
+      />
     }
   </div>
 </header>

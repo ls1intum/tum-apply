@@ -1,0 +1,36 @@
+<p-confirmdialog>
+  <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+    <div class="confirm-dialog">
+      <h2 class="confirm-title">
+        {{ message.header }}
+      </h2>
+
+      <p class="confirm-message">
+        {{ message.message }}
+      </p>
+
+      <div class="confirm-buttons">
+        <jhi-button
+          class="cancel"
+          icon="ban"
+          [shouldTranslate]="true"
+          label="entity.action.cancel"
+          (click)="onReject()"
+          variant="outlined"
+        />
+        <jhi-button
+          class="confirm"
+          [icon]="confirmIcon()"
+          [label]="label()"
+          (click)="onAccept()"
+          [severity]="severity()"
+          [variant]="variant()"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+@if (showOpenButton()) {
+  <jhi-button [label]="label()" [icon]="confirmIcon()" (click)="confirm()" [severity]="severity()" [variant]="variant()" />
+}

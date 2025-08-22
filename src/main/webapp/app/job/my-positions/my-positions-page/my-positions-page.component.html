@@ -1,4 +1,3 @@
-<jhi-toast />
 <div class="header-container">
   <div class="ml-2 mt-5 mb-8 p-2">
     <h1 jhiTranslate="myPositionsPage.header.title"></h1>
@@ -46,22 +45,26 @@
           [shouldTranslate]="true"
         />
         @if (job.state === 'DRAFT') {
-          <jhi-button
-            label="jobActionButton.delete"
+          <jhi-confirm-dialog
+            [label]="'jobActionButton.delete' | translate"
             severity="danger"
-            (click)="onDeleteJob(job.jobId)"
+            [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
+            [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+            (confirmed)="onDeleteJob(job.jobId)"
+            confirmIcon="trash"
             data-testid="delete"
-            [shouldTranslate]="true"
           />
         }
         @if (job.state === 'PUBLISHED') {
-          <jhi-button
-            label="jobActionButton.close"
+          <jhi-confirm-dialog
+            [label]="'jobActionButton.close' | translate"
             severity="danger"
             variant="outlined"
-            (click)="onCloseJob(job.jobId)"
+            [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
+            [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
+            (confirmed)="onCloseJob(job.jobId)"
+            confirmIcon="xmark"
             data-testid="delete"
-            [shouldTranslate]="true"
           />
         }
       </div>
@@ -71,6 +74,7 @@
       <jhi-tag
         [text]="stateTextMap()[job.state] ? (stateTextMap()[job.state] | translate) : ('jobState.unknown' | translate)"
         [color]="stateSeverityMap()[job.state] || 'info'"
+        width="8rem"
       />
     </ng-template>
   </div>

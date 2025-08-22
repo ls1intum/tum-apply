@@ -10,6 +10,7 @@ import {
   faChevronDown,
   faChevronUp,
   faEnvelope,
+  faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -53,7 +54,7 @@ describe('ApplicationCreationPage1Component', () => {
     library.addIcons(faCaretRight);
     library.addIcons(faArrowRight);
     library.addIcons(faArrowLeft);
-
+    library.addIcons(faInfoCircle);
     componentRef = fixture.componentRef;
     componentRef.setInput('data', mockData);
     fixture.detectChanges();

@@ -75,6 +75,8 @@
           id="language"
           [(selected)]="data.language"
           (selectedChange)="emitChanged()"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage1.tooltip.language' | translate"
         />
       </div>
       <div class="w-1/2 pr-4">
