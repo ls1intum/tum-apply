@@ -14,7 +14,6 @@ import { FaqSectionComponent } from './faq-section/faq-section.component';
     ApplicationStepsSectionComponent,
     DoctoralJourneySectionComponent,
     InformationSectionComponent,
-    VoicesSectionComponent,
     FaqSectionComponent,
   ],
   templateUrl: './landing-page.component.html',

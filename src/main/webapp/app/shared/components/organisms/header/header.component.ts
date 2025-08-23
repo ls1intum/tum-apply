@@ -10,7 +10,7 @@ import { fromEventPattern, map } from 'rxjs';
 import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { AuthCardComponent } from '../auth-card/auth-card.component';
+import { AuthCardComponent } from '../../templates/auth-card/auth-card.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 @Component({

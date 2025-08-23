@@ -7,7 +7,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
 import { TranslateService } from '@ngx-translate/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { AuthCardComponent } from 'app/shared/components/organisms/auth-card/auth-card.component';
+import { AuthCardComponent } from 'app/shared/components/templates/auth-card/auth-card.component';
 import { AccountService } from 'app/core/auth/account.service';
 
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
