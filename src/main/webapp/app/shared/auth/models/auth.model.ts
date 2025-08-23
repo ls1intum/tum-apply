@@ -5,12 +5,13 @@ export type RegisterStep = 'verify' | 'profile' | 'password';
 export interface PrefaceResponse {
   authContext: string;
   methods?: ('password' | 'otp' | 'sso')[];
-  otp?: { cooldownSeconds?: number; requiresCaptcha?: boolean };
+  otp?: { cooldownSeconds?: number };
 }
 
 export interface CooldownResponse {
   cooldownSeconds?: number;
 }
+
 export interface RegisterVerifyResponse {
   registrationToken: string;
 }
