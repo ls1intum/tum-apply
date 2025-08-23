@@ -1,0 +1,9 @@
+<ul class="space-y-2">
+  @for (link of links(); track link.url) {
+    <li class="flex items-top">
+      <a [href]="link.url" target="_blank" rel="noopener" class="text-sm underline text-blue-600 hover:text-blue-800">
+        {{ link.labelKey | translate }}
+      </a>
+    </li>
+  }
+</ul>

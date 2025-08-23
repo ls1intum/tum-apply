@@ -46,15 +46,92 @@
       (reject)="rejectApplication($event)"
     />
 
-    @if (this.currentApplication(); as application) {
-      <div class="w-full mt-8">
-        <jhi-application-detail-card [application]="application.applicationDetailDTO">
-          <div class="slot-right-width" slot-vertical-right>
-            @if (currentDocumentIds(); as documentIds) {
-              <jhi-document-group [documentIds]="documentIds" />
-            }
+    @if (currentApplication(); as application) {
+      <div class="w-full">
+        <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
+          <div>
+            <jhi-section title="applicant.title">
+              <div class="grid gap-8 md:grid-cols-2">
+                <!-- Applicant Information -->
+                <jhi-sub-section title="applicant.information">
+                  <jhi-description-list
+                    [items]="[
+                      { labelKey: 'applicant.name', value: application.applicationDetailDTO.applicant?.user?.name },
+                      { labelKey: 'applicant.gender', value: application.applicationDetailDTO.applicant?.user?.gender },
+                      { labelKey: 'applicant.nationality', value: application.applicationDetailDTO.applicant?.user?.nationality },
+                      { labelKey: 'applicant.language', value: application.applicationDetailDTO.applicant?.user?.preferredLanguage },
+                    ]"
+                  />
+                </jhi-sub-section>
+
+                <!-- Links -->
+                <jhi-sub-section title="applicant.links">
+                  <jhi-link-list
+                    [links]="[
+                      { labelKey: 'applicant.website', url: application.applicationDetailDTO.applicant?.user?.website ?? '' },
+                      { labelKey: 'applicant.linkedin', url: application.applicationDetailDTO.applicant?.user?.linkedinUrl ?? '' },
+                    ]"
+                  />
+                </jhi-sub-section>
+              </div>
+            </jhi-section>
+
+            <p-divider />
+
+            <!-- Education -->
+            <jhi-section title="education.title">
+              <div class="grid gap-8 md:grid-cols-2">
+                <!-- Bachelor -->
+                <jhi-sub-section title="education.bachelor">
+                  <jhi-description-list
+                    [items]="[
+                      { labelKey: 'education.degree', value: application.applicationDetailDTO.applicant?.bachelorDegreeName },
+                      { labelKey: 'education.university', value: application.applicationDetailDTO.applicant?.bachelorUniversity },
+                      { labelKey: 'education.grade', value: application.applicationDetailDTO.applicant?.bachelorGrade },
+                    ]"
+                  />
+                </jhi-sub-section>
+
+                <!-- Master -->
+                <jhi-sub-section title="education.master">
+                  <jhi-description-list
+                    [items]="[
+                      { labelKey: 'education.degree', value: application.applicationDetailDTO.applicant?.masterDegreeName },
+                      { labelKey: 'education.university', value: application.applicationDetailDTO.applicant?.masterUniversity },
+                      { labelKey: 'education.grade', value: application.applicationDetailDTO.applicant?.masterGrade },
+                    ]"
+                  />
+                </jhi-sub-section>
+              </div>
+            </jhi-section>
+
+            <p-divider />
+
+            <!-- Application -->
+            <jhi-section title="application.title">
+              <jhi-sub-section title="application.desiredStart">
+                <span class="text-sm"> {{ application.applicationDetailDTO.desiredDate || '—' }} </span>
+              </jhi-sub-section>
+
+              <jhi-sub-section title="application.motivation">
+                <jhi-prose [text]="application.applicationDetailDTO.motivation" />
+              </jhi-sub-section>
+
+              <jhi-sub-section title="application.skills">
+                <jhi-prose [text]="application.applicationDetailDTO.specialSkills" />
+              </jhi-sub-section>
+
+              <jhi-sub-section title="application.projects">
+                <jhi-prose [text]="application.applicationDetailDTO.projects" />
+              </jhi-sub-section>
+            </jhi-section>
           </div>
-        </jhi-application-detail-card>
+          <div>
+            <jhi-section title="documents">
+              <jhi-document-section [idsDTO]="currentDocumentIds()" />
+            </jhi-section>
+          </div>
+        </div>
       </div>
     }
   </div>
