@@ -4,7 +4,7 @@
 <div class="login-content">
   <div class="login-panel">
     <p class="login-description" jhiTranslate="register.texts.applicant"></p>
-    <p-progressbar [value]="registerProgress()" class="progressbar" />
+    <p-progressbar [value]="registerProgress()" class="progressbar" color="var(--p-accent-color)" />
     <div class="login-buttons">
       <jhi-credentials-group [submitHandler]="onEmailLogin" class="login-credentials" />
       <p-divider align="center">
