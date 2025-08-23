@@ -1,6 +1,5 @@
 package de.tum.cit.aet.usermanagement.service;
 
-import de.tum.cit.aet.core.config.OtpProperties;
 import de.tum.cit.aet.core.exception.EmailVerificationFailedException;
 import de.tum.cit.aet.core.security.otp.OtpUtil;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
@@ -8,6 +7,7 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,16 +17,22 @@ import java.util.UUID;
 
 @Service
 public class EmailVerificationService {
-    private final OtpProperties otpProperties;
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
     private final AsyncEmailSender asyncEmailSender;
     private final KeycloakUserService keycloakUserService;
+    @Value("${security.otp.length}")
+    private int otpLength;
+    @Value("${security.otp.ttl-seconds}")
+    private long otpTtlSeconds;
+    @Value("${security.otp.max-attempts}")
+    private int otpMaxAttempts;
+    @Value("${security.otp.hmac-secret}")
+    private String otpHmacSecret;
 
-    public EmailVerificationService(OtpProperties otpProperties,
-                                    EmailVerificationOtpRepository emailVerificationOtpRepository,
-                                    AsyncEmailSender asyncEmailSender,
-                                    KeycloakUserService keycloakUserService) {
-        this.otpProperties = otpProperties;
+    public EmailVerificationService(
+        EmailVerificationOtpRepository emailVerificationOtpRepository,
+        AsyncEmailSender asyncEmailSender,
+        KeycloakUserService keycloakUserService) {
         this.emailVerificationOtpRepository = emailVerificationOtpRepository;
         this.asyncEmailSender = asyncEmailSender;
         this.keycloakUserService = keycloakUserService;
@@ -47,9 +53,9 @@ public class EmailVerificationService {
         emailVerificationOtpRepository.invalidateAllForEmail(emailAddress);
 
         // Generate OTP
-        String code = OtpUtil.generateAlphanumeric(otpProperties.getLength());
+        String code = OtpUtil.generateAlphanumeric(otpLength);
         String salt = OtpUtil.randomBase64(16);
-        String hash = OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(), code + "|" + salt + "|" + emailAddress);
+        String hash = OtpUtil.hmacSha256Base64(otpHmacSecret, code + "|" + salt + "|" + emailAddress);
 
         Instant now = Instant.now();
         EmailVerificationOtp evo = new EmailVerificationOtp();
@@ -58,11 +64,11 @@ public class EmailVerificationService {
         evo.setSalt(salt);
         evo.setJti(UUID.randomUUID().toString());
         evo.setCreatedAt(now);
-        evo.setExpiresAt(now.plusSeconds(otpProperties.getTtlSeconds()));
-        evo.setMaxAttempts(otpProperties.getMaxAttempts());
+        evo.setExpiresAt(now.plusSeconds(otpTtlSeconds));
+        evo.setMaxAttempts(otpMaxAttempts);
         evo.setAttempts(0);
         evo.setUsed(false);
-        evo.setIpHash(OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(), ip + "|" + salt));
+        evo.setIpHash(OtpUtil.hmacSha256Base64(otpHmacSecret, ip + "|" + salt));
         emailVerificationOtpRepository.save(evo);
 
         User user = new User();
@@ -107,7 +113,7 @@ public class EmailVerificationService {
         }
 
         String cleanedCode = submittedCode == null ? "" : submittedCode.trim();
-        String expected = OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(),
+        String expected = OtpUtil.hmacSha256Base64(otpHmacSecret,
             cleanedCode + "|" + otp.getSalt() + "|" + email);
 
         boolean ok = OtpUtil.constantTimeEquals(expected, otp.getCodeHash());
@@ -136,7 +142,7 @@ public class EmailVerificationService {
      * @return the HTML content in English as a String
      */
     private String generateHTML(String code) {
-        Duration ttl = Duration.ofSeconds(otpProperties.getTtlSeconds());
+        Duration ttl = Duration.ofSeconds(otpTtlSeconds);
         long ttlMinutes = Math.max(1, ttl.toMinutes());
 
         return """
