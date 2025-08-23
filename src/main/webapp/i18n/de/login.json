@@ -14,8 +14,8 @@
     "texts": {
       "or": "ODER ANMELDEN MIT",
       "accountmissing": {
-        "prefix": "Sie haben noch kein TUMApply-Konto?",
-        "link": "Hier registrieren."
+        "prefix": "Du hast noch kein TUMApply-Konto?",
+        "link": "Registrieren"
       }
     },
     "messages": {

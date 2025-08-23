@@ -15,7 +15,7 @@
       "or": "OR SIGN IN WITH",
       "accountmissing": {
         "prefix": "Don't have a TUMApply account yet?",
-        "link": "Register here."
+        "link": "Register"
       }
     },
     "messages": {

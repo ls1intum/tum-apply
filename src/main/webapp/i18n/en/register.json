@@ -5,7 +5,7 @@
       "applicant": "Create an account to start your application journey.",
       "accountmissing": {
         "prefix": "You already have a TUMApply account?",
-        "link": "Sign in here."
+        "link": "Sign in"
       }
     },
     "messages": {

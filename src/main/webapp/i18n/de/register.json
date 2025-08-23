@@ -4,8 +4,8 @@
     "texts": {
       "applicant": "Erstellen Sie ein Konto, um mit Ihrer Bewerbung zu beginnen.",
       "accountmissing": {
-        "prefix": "Sie haben bereits ein TUMApply-Konto?",
-        "link": "Hier anmelden."
+        "prefix": "Du hast bereits ein TUMApply-Konto?",
+        "link": "Anmelden"
       }
     },
     "messages": {

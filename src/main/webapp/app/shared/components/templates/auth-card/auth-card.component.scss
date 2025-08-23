@@ -4,16 +4,3 @@
   width: auto;
   max-width: 35rem;
 }
-
-.login-header {
-  display: flex;
-  padding: 1.3rem 1rem;
-  justify-content: center;
-  align-items: center;
-  align-self: stretch;
-  background: var(--p-primary-color);
-  color: var(--p-text-on-primary);
-  font-weight: 700;
-  font-size: 2rem;
-  border-radius: 0.75rem 0.75rem 0 0;
-}
