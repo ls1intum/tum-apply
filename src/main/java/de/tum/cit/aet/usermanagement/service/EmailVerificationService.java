@@ -3,8 +3,10 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.config.OtpProperties;
 import de.tum.cit.aet.core.exception.EmailVerificationFailedException;
 import de.tum.cit.aet.core.security.otp.OtpUtil;
-import de.tum.cit.aet.core.service.EmailService;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,16 +19,16 @@ import java.util.UUID;
 public class EmailVerificationService {
     private final OtpProperties otpProperties;
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
-    private final EmailService emailService;
+    private final AsyncEmailSender asyncEmailSender;
     private final KeycloakUserService keycloakUserService;
 
     public EmailVerificationService(OtpProperties otpProperties,
                                     EmailVerificationOtpRepository emailVerificationOtpRepository,
-                                    EmailService emailService,
+                                    AsyncEmailSender asyncEmailSender,
                                     KeycloakUserService keycloakUserService) {
         this.otpProperties = otpProperties;
         this.emailVerificationOtpRepository = emailVerificationOtpRepository;
-        this.emailService = emailService;
+        this.asyncEmailSender = asyncEmailSender;
         this.keycloakUserService = keycloakUserService;
     }
 
@@ -39,19 +41,19 @@ public class EmailVerificationService {
      */
     @Transactional
     public void sendCode(String rawEmail, String ip) {
-        String email = OtpUtil.normalizeEmail(rawEmail);
+        String emailAddress = OtpUtil.normalizeEmail(rawEmail);
 
         // Enforce single-active-code policy
-        emailVerificationOtpRepository.invalidateAllForEmail(email);
+        emailVerificationOtpRepository.invalidateAllForEmail(emailAddress);
 
         // Generate OTP
         String code = OtpUtil.generateAlphanumeric(otpProperties.getLength());
         String salt = OtpUtil.randomBase64(16);
-        String hash = OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(), code + "|" + salt + "|" + email);
+        String hash = OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(), code + "|" + salt + "|" + emailAddress);
 
         Instant now = Instant.now();
         EmailVerificationOtp evo = new EmailVerificationOtp();
-        evo.setEmail(email);
+        evo.setEmail(emailAddress);
         evo.setCodeHash(hash);
         evo.setSalt(salt);
         evo.setJti(UUID.randomUUID().toString());
@@ -63,7 +65,16 @@ public class EmailVerificationService {
         evo.setIpHash(OtpUtil.hmacSha256Base64(otpProperties.getHmacSecret(), ip + "|" + salt));
         emailVerificationOtpRepository.save(evo);
 
-        emailService.sendEmailVerificationCode(email, code, Duration.ofSeconds(otpProperties.getTtlSeconds()));
+        User user = new User();
+        user.setEmail(emailAddress);
+
+        Email email = Email.builder()
+            .to(user)
+            .customSubject("TUMApply – Your verification code")
+            .customBody(generateHTML(code))
+            .sendAlways(true)
+            .build();
+        asyncEmailSender.sendAsync(email);
     }
 
     /**
@@ -116,5 +127,26 @@ public class EmailVerificationService {
         String userId = keycloakUserService.ensureUser(email);
         keycloakUserService.markEmailVerified(userId);
         keycloakUserService.logout(userId);
+    }
+
+    /**
+     * Generates the HTML content for the verification email, including the OTP code
+     *
+     * @param code the OTP code to include in the email
+     * @return the HTML content in English as a String
+     */
+    private String generateHTML(String code) {
+        Duration ttl = Duration.ofSeconds(otpProperties.getTtlSeconds());
+        long ttlMinutes = Math.max(1, ttl.toMinutes());
+
+        return """
+              <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Verify your email</h2>
+              <p style="margin:0 0 16px 0;">Use this code to verify your email address:</p>
+              <div style="text-align:center;margin:24px 0;">
+                <div style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:3px;padding:12px 16px;border:1px dashed #0A66C2;border-radius:6px;background:#F0F7FF;">%s</div>
+              </div>
+              <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
+              <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
+            """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
     }
 }
