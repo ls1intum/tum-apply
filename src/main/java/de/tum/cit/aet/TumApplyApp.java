@@ -2,7 +2,6 @@ package de.tum.cit.aet;
 
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.CRLFLogConverter;
-import de.tum.cit.aet.core.config.OtpProperties;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +22,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 @SpringBootApplication
-@EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class, OtpProperties.class})
+@EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
 public class TumApplyApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(TumApplyApp.class);
