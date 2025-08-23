@@ -1,7 +1,7 @@
 <div class="login-card">
-  @if (loginMode()) {
-    <jhi-login (toggleMode)="toggleMode()" />
+  @if (authOrchestrator.mode() === 'login') {
+    <jhi-login />
   } @else {
-    <jhi-registration (toggleMode)="toggleMode()" />
+    <jhi-registration />
   }
 </div>

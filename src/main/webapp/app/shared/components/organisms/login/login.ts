@@ -1,4 +1,4 @@
-import { Component, computed, inject, output } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
@@ -12,6 +12,7 @@ import { IdpProvider } from '../../../../core/auth/keycloak.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 
 @Component({
   selector: 'jhi-login',
@@ -20,9 +21,8 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
   styleUrl: './login.scss',
 })
 export class Login {
-  readonly toggleMode = output();
-
   authFacadeService = inject(AuthFacadeService);
+  authOrchestrator = inject(AuthOrchestratorService);
   breakpointObserver = inject(BreakpointObserver);
   config = inject(DynamicDialogConfig);
   toastService = inject(ToastService);

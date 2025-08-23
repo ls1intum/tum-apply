@@ -12,6 +12,7 @@ import { IdpProvider } from '../../../../core/auth/keycloak.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 
 @Component({
   selector: 'jhi-registration',
@@ -23,6 +24,7 @@ export class Registration {
   readonly toggleMode = output();
 
   authFacadeService = inject(AuthFacadeService);
+  authOrchestrator = inject(AuthOrchestratorService);
   breakpointObserver = inject(BreakpointObserver);
   config = inject(DynamicDialogConfig);
   toastService = inject(ToastService);
@@ -65,6 +67,8 @@ export class Registration {
       },
     ],
   }));
+
+  readonly registerProgress = computed(() => this.authOrchestrator.registerProgress() * 100);
 
   onTUMSSOLogin(): void {
     this.authFacadeService.loginWithTUM(this.redirectUri());
