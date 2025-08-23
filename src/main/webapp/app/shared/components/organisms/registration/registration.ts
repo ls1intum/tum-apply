@@ -6,6 +6,7 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
+import { ProgressBar } from 'primeng/progressbar';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { IdpProvider } from '../../../../core/auth/keycloak.service';
@@ -16,7 +17,7 @@ import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestr
 
 @Component({
   selector: 'jhi-registration',
-  imports: [ButtonGroupComponent, CredentialsGroupComponent, TranslateDirective, DividerModule],
+  imports: [ButtonGroupComponent, CredentialsGroupComponent, TranslateDirective, DividerModule, ProgressBar],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
 })
