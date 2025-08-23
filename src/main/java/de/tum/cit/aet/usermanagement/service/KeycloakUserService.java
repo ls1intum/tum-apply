@@ -18,10 +18,10 @@ public class KeycloakUserService {
     private final String realm;
 
     public KeycloakUserService(
-        @Value("${KEYCLOAK_URL}") String url,
-        @Value("${KEYCLOAK_REALM}") String realm,
-        @Value("${KEYCLOAK_ADMIN_CLIENT_ID}") String clientId,
-        @Value("${KEYCLOAK_ADMIN_CLIENT_SECRET}") String clientSecret
+        @Value("${KEYCLOAK_URL:http://localhost:9080}") String url,
+        @Value("${KEYCLOAK_REALM:tumapply}") String realm,
+        @Value("${KEYCLOAK_ADMIN_CLIENT_ID:tumapply-otp-admin}") String clientId,
+        @Value("${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}") String clientSecret
     ) {
         this.realm = realm;
         this.keycloak = KeycloakBuilder.builder()
