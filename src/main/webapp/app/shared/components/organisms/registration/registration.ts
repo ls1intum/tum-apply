@@ -1,4 +1,4 @@
-import { Component, computed, inject, output } from '@angular/core';
+import { Component, ViewEncapsulation, computed, inject } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
@@ -17,13 +17,13 @@ import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestr
 
 @Component({
   selector: 'jhi-registration',
+  standalone: true,
   imports: [ButtonGroupComponent, CredentialsGroupComponent, TranslateDirective, DividerModule, ProgressBar],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class Registration {
-  readonly toggleMode = output();
-
   authFacadeService = inject(AuthFacadeService);
   authOrchestrator = inject(AuthOrchestratorService);
   breakpointObserver = inject(BreakpointObserver);

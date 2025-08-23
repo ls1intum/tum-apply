@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, ViewEncapsulation, computed, inject } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
@@ -16,9 +16,11 @@ import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestr
 
 @Component({
   selector: 'jhi-login',
+  standalone: true,
   imports: [ButtonGroupComponent, CredentialsGroupComponent, TranslateDirective, DividerModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class Login {
   authFacadeService = inject(AuthFacadeService);

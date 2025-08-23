@@ -56,6 +56,10 @@
         background-color: var(--p-background-surface);
       }
 
+      .divider-text {
+        color: var(--p-text-secondary);
+      }
+
       .login-providers {
         display: flex;
         flex: 1 1 auto;
