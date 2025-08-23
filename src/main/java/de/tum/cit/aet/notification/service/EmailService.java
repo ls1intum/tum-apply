@@ -220,6 +220,9 @@ public class EmailService {
         if (users == null || users.isEmpty()) {
             return Set.of();
         }
+        if (email.isSendAlways()) {
+            return users.stream().map(User::getEmail).collect(Collectors.toSet());
+        }
         return users
             .stream()
             .filter(user -> emailSettingService.canNotify(email.getEmailType(), user))
