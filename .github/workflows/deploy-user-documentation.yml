@@ -2,17 +2,25 @@ name: Deploy Docusaurus to GitHub Pages
 
 on:
   push:
-    branches: [documentation/integrate-docusaurus]
+    branches: [ documentation/integrate-docusaurus ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write          # required for deploy-pages
+  id-token: write       # required for OIDC
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -24,8 +32,19 @@ jobs:
         working-directory: docs
         run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      # Upload the built site as a Pages artifact (no branch needed)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/build
+          path: docs/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
