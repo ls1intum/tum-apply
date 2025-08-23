@@ -1,0 +1,69 @@
+.p-divider-content {
+  background-color: var(--p-background-surface);
+}
+
+.login-content {
+  display: flex;
+  padding: 1.5rem 2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  align-self: stretch;
+}
+
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  align-self: stretch;
+}
+
+.login-buttons {
+  display: flex;
+  flex: 1 1 auto;
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-credentials {
+  width: 100%;
+}
+
+.login-description {
+  max-width: 100%;
+  width: 100%;
+  word-break: break-word;
+  text-align: center;
+  box-sizing: border-box;
+  color: var(--p-text-primary);
+}
+
+.login-providers {
+  display: flex;
+  flex: 1 1 auto;
+  align-self: stretch;
+  justify-content: center;
+  color: var(--p-text-primary);
+}
+
+.login-footer {
+  padding: 1rem 0 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--p-text-primary);
+}
+
+.login-footer a {
+  color: var(--p-primary-color);
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--p-primary-hover);
+  }
+}

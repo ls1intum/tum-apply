@@ -2,25 +2,9 @@
   <div class="login-header">
     <h1>TUMApply</h1>
   </div>
-  <div class="login-content">
-    <div class="login-panel">
-      @if (isRegister()) {
-        <p class="login-description" jhiTranslate="register.texts.applicant"></p>
-      }
-      <div class="login-buttons">
-        <jhi-credentials-group [submitHandler]="onEmailLogin" class="login-credentials" />
-        <p-divider align="center">
-          <span class="divider-text" jhiTranslate="login.texts.or"></span>
-        </p-divider>
-        <jhi-button-group [data]="idpButtons()" class="login-providers" />
-      </div>
-    </div>
-    <p class="login-footer">
-      <span jhiTranslate="{{ isRegister() ? 'register.texts.accountmissing.prefix' : 'login.texts.accountmissing.prefix' }}"></span>
-      <a
-        (click)="toggleMode()"
-        jhiTranslate="{{ isRegister() ? 'register.texts.accountmissing.link' : 'login.texts.accountmissing.link' }}"
-      ></a>
-    </p>
-  </div>
+  @if (loginMode()) {
+    <jhi-login (toggleMode)="toggleMode()" />
+  } @else {
+    <jhi-registration (toggleMode)="toggleMode()" />
+  }
 </div>
