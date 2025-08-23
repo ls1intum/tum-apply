@@ -1,27 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 
-/**
- * Modes the dialog can run in
- * - 'login'         : regular login flow
- * - 'register'      : regular registration flow (verify -> profile -> optional password)
- * - 'apply-register': embedded, inline registration during job apply
- */
-export type AuthFlowMode = 'login' | 'register' | 'apply-register';
-
-export type LoginSubState = 'email' | 'password' | 'otp';
-export type RegisterStep = 'verify' | 'profile' | 'password';
-export type ApplyStep = 'inline' | 'verified' | 'password'; // for embedded flow
-
-export interface AuthOpenOptions {
-  mode?: AuthFlowMode;
-  prefill?: {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  // optional callback when user is fully authenticated
-  onSuccess?: () => void;
-}
+import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginSubState, RegisterStep } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthOrchestratorService {
@@ -31,7 +10,7 @@ export class AuthOrchestratorService {
 
   // substates per flow
   readonly loginSub = signal<LoginSubState>('email');
-  readonly registerStep = signal<RegisterStep>('verify');
+  readonly registerStep = signal<RegisterStep>('email');
   readonly applyStep = signal<ApplyStep>('inline');
 
   // form state (shared across flows)
@@ -53,6 +32,8 @@ export class AuthOrchestratorService {
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     switch (this.registerStep()) {
+      case 'email':
+        return 0;
       case 'verify':
         return 0.33;
       case 'profile':
@@ -80,9 +61,15 @@ export class AuthOrchestratorService {
     }
 
     // choose sensible starting substates
-    if (this.mode() === 'login') this.loginSub.set('email');
-    if (this.mode() === 'register') this.registerStep.set('verify');
-    if (this.mode() === 'apply-register') this.applyStep.set('inline');
+    if (this.mode() === 'login') {
+      this.loginSub.set('email');
+    }
+    if (this.mode() === 'register') {
+      this.registerStep.set('email');
+    }
+    if (this.mode() === 'apply-register') {
+      this.applyStep.set('inline');
+    }
 
     this.onSuccessCb = opts?.onSuccess;
     this.isOpen.set(true);
@@ -109,7 +96,7 @@ export class AuthOrchestratorService {
 
   switchToRegister(): void {
     this.mode.set('register');
-    this.registerStep.set('verify');
+    this.registerStep.set('email');
   }
 
   switchToApplyRegister(): void {

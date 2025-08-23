@@ -56,7 +56,7 @@ export class AuthService {
       const res = await this.authGateway.registerStart(this.authOrchestration.email());
       const cooldown = (res as any)?.cooldownSeconds ?? 30;
       this.authOrchestration.startCooldown(cooldown);
-      this.authOrchestration.registerStep.set('verify');
+      this.authOrchestration.registerStep.set('email');
     } finally {
       this.authOrchestration.isSendingCode.set(false);
     }

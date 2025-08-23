@@ -2,14 +2,9 @@ import { EffectRef, Injectable, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
-import { type AuthFlowMode, AuthOrchestratorService } from '../data-access/auth-orchestrator.service';
+import { AuthOrchestratorService } from '../data-access/auth-orchestrator.service';
 import { AuthCardComponent } from '../../components/templates/auth-card/auth-card.component';
-
-export interface OpenAuthOptions {
-  mode?: AuthFlowMode;
-  prefill?: { email?: string; firstName?: string; lastName?: string };
-  onSuccess?: () => void;
-}
+import { AuthOpenOptions } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthDialogService {
@@ -33,7 +28,7 @@ export class AuthDialogService {
     });
   }
 
-  open(opts?: OpenAuthOptions): void {
+  open(opts?: AuthOpenOptions): void {
     // Clean up any existing effects before opening new dialog
     if (this.onCloseEffect) {
       this.onCloseEffect.destroy();
