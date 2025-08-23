@@ -20,13 +20,17 @@ public class EmailVerificationService {
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
     private final AsyncEmailSender asyncEmailSender;
     private final KeycloakUserService keycloakUserService;
-    @Value("${security.otp.length}")
+
+    @Value("${security.otp.length:8}")
     private int otpLength;
-    @Value("${security.otp.ttl-seconds}")
+
+    @Value("${security.otp.ttl-seconds:900}")
     private long otpTtlSeconds;
-    @Value("${security.otp.max-attempts}")
+
+    @Value("${security.otp.max-attempts:6}")
     private int otpMaxAttempts;
-    @Value("${security.otp.hmac-secret}")
+
+    @Value("${security.otp.hmac-secret:dGVzdC1zZWNyZXQ=}")
     private String otpHmacSecret;
 
     public EmailVerificationService(
