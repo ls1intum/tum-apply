@@ -1,22 +1,26 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.notification.service;
 
-import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.domain.EmailTemplate;
-import de.tum.cit.aet.core.domain.EmailTemplateTranslation;
-import de.tum.cit.aet.core.domain.EmailTemplate_;
-import de.tum.cit.aet.core.dto.*;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EmailTemplateException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
-import de.tum.cit.aet.core.repository.EmailTemplateRepository;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.TemplateUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.domain.EmailTemplate;
+import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.domain.EmailTemplate_;
+import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
+import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
+import de.tum.cit.aet.notification.dto.EmailTemplateTranslationDTO;
+import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Objects;
@@ -29,6 +33,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -51,8 +56,6 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     protected EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
-        addMissingTemplates(researchGroup);
-
         return emailTemplateRepository
             .findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType)
             .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", researchGroup.getResearchGroupId(), templateName, emailType));
@@ -102,8 +105,6 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     public PageResponseDTO<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
-        addMissingTemplates(researchGroup);
-
         Pageable pageable = PageRequest.of(
             pageDTO.pageNumber(),
             pageDTO.pageSize(),
@@ -219,8 +220,8 @@ public class EmailTemplateService {
      *
      * @param researchGroup the research group
      */
-    @Transactional // for write -> read
-    protected void addMissingTemplates(ResearchGroup researchGroup) {
+    @Transactional
+    public void addMissingTemplates(ResearchGroup researchGroup) {
         Set<EmailTemplate> toSave = new HashSet<>();
 
         // Fetch existing EmailTypes already defined for the group

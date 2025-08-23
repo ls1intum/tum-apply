@@ -2,9 +2,13 @@
   <p-step-list>
     @for (step of steps(); track $index) {
       @if (step.shouldTranslate) {
-        <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''">{{ step.name | translate }}</p-step>
+        <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''" [disabled]="step?.disabled ?? false">
+          <span [jhiTranslate]="step.name"></span>
+        </p-step>
       } @else {
-        <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''">{{ step.name }}</p-step>
+        <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''" [disabled]="step?.disabled ?? false">
+          {{ step.name }}
+        </p-step>
       }
     }
   </p-step-list>
