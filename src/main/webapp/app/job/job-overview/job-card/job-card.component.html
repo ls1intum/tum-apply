@@ -76,7 +76,7 @@
         severity="primary"
         variant="outlined"
       />
-      @switch (jobCard()?.applicationState) {
+      @switch (applicationState()) {
         @case (undefined) {
           <jhi-button
             (click)="onApply()"

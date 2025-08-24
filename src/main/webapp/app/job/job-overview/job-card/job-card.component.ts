@@ -28,7 +28,8 @@ export class JobCardComponent {
   workload = input<number | undefined>(undefined);
   startDate = input<string | undefined>('');
   relativeTime = input<string>('');
-  jobCard = input<JobCardDTO | undefined>(undefined);
+  applicationId = input<string | undefined>(undefined);
+  applicationState = input<JobCardDTO.ApplicationStateEnum | undefined>(undefined);
   // TO-DO: Replace value of headerColor with a color corresponding to the field of study
   headerColor = input<string>('var(--p-secondary-color)');
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
@@ -58,12 +59,12 @@ export class JobCardComponent {
     this.router.navigate(['/application/form'], {
       queryParams: {
         job: this.jobId(),
-        application: this.jobCard()?.applicationId,
+        application: this.applicationId(),
       },
     });
   }
 
   onView(): void {
-    this.router.navigate([`/application/detail/${this.jobCard()?.applicationId}`]);
+    this.router.navigate([`/application/detail/${this.applicationId()}`]);
   }
 }
