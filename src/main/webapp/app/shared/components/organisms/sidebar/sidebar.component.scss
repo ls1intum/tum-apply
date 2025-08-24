@@ -48,12 +48,35 @@
     justify-content: flex-end;
     padding-bottom: 1rem;
 
-    .settings-button {
+    .settings-row {
+      display: flex;
+      gap: 0.5rem;
       width: 100%;
+      justify-content: space-between;
+      align-items: center;
+
+      .settings-button {
+        flex: 1 1 auto;
+      }
+
+      .sidebar-collapse-button {
+        flex: 0 0 auto;
+      }
     }
   }
 }
 
 .sidebar-collapsed {
   align-items: center;
+
+  .settings-content {
+    .settings-row {
+      flex-direction: column;
+
+      .settings-button,
+      .sidebar-collapse-button {
+        width: 100%;
+      }
+    }
+  }
 }
