@@ -15,8 +15,6 @@ export class AuthOrchestratorService {
 
   // form state (shared across flows)
   readonly email = signal<string>('');
-  readonly password = signal<string>('');
-  readonly otp = signal<string>('');
   readonly firstName = signal<string>('');
   readonly lastName = signal<string>('');
 
@@ -125,7 +123,5 @@ export class AuthOrchestratorService {
     this.error.set(null);
     this.cooldownSeconds.set(0);
     this.registrationToken.set(null);
-    this.password.set('');
-    this.otp.set('');
   }
 }
