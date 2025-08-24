@@ -28,7 +28,16 @@
     align-self: stretch;
 
     .progressbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       width: 100%;
+
+      .progress-label {
+        width: 3.5rem;
+        text-align: right;
+        color: var(--p-text-primary);
+      }
     }
 
     .login-description {

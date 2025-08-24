@@ -3,7 +3,10 @@
 </div>
 <div class="login-content">
   <div class="login-panel">
-    <p-progressbar [value]="registerProgress()" class="progressbar" color="var(--p-accent-color)" />
+    <div class="progressbar">
+      <p-progressbar [showValue]="false" [value]="registerProgress()" class="progressbar" color="var(--p-accent-color)" />
+      <span class="progress-label">{{ registerProgress() }} %</span>
+    </div>
     <div class="login-buttons">
       @switch (authOrchestrator.registerStep()) {
         @case ('email') {
@@ -19,13 +22,6 @@
           <jhi-auth-idp-buttons class="login-providers" />
         }
         @case ('verify') {
-          <jhi-string-input
-            [control]="emailDisplayControl"
-            label="auth.login.emailLogin.email"
-            [shouldTranslate]="true"
-            [disabled]="true"
-            class="login-credentials"
-          />
           <jhi-otp-input [registration]="true" />
         }
         @case ('profile') {}
@@ -33,8 +29,10 @@
       }
     </div>
   </div>
-  <p class="login-footer">
-    <span jhiTranslate="auth.register.texts.accountMissing.prefix"></span>
-    <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountMissing.link"></a>
-  </p>
+  @if (authOrchestrator.registerStep() === 'email') {
+    <p class="login-footer">
+      <span jhiTranslate="auth.register.texts.accountMissing.prefix"></span>
+      <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountMissing.link"></a>
+    </p>
+  }
 </div>
