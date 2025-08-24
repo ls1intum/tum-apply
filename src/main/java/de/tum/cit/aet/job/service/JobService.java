@@ -6,7 +6,6 @@ import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.EmailService;
@@ -202,12 +201,7 @@ public class JobService {
      * @return a page of {@link JobCardDTO} matching the criteria
      */
     public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
-        UUID userId = null;
-        try {
-            userId = currentUserService.getUserId();
-        } catch (AccessDeniedException e) {
-            // User is not authenticated, userId remains null
-        }
+        UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
