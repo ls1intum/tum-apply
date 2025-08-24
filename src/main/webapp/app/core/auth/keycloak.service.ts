@@ -25,7 +25,7 @@ export class KeycloakService {
     realm: environment.keycloak.realm,
     clientId: environment.keycloak.clientId,
   });
-  private refreshIntervalId: any;
+  private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
 
   /**
    * Initializes the Keycloak client and determines login status.
