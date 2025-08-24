@@ -1,0 +1,14 @@
+<div class="otp-wrapper">
+  <p-inputotp
+    (keydown)="onKeyDown($event)"
+    (onChange)="onChange($any($event))"
+    [autofocus]="true"
+    [length]="length"
+    formControlName="otp"
+    inputmode="latin"
+  />
+  <div class="buttons">
+    <jhi-button (click)="onResend()" [disabled]="disableResend()" [shouldTranslate]="true" label="resendin" />
+    <jhi-button (click)="onSubmit()" [disabled]="disabledSubmit()" [label]="'common.submit'" [shouldTranslate]="true" />
+  </div>
+</div>
