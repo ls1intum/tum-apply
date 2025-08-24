@@ -7,7 +7,7 @@
     <div class="login-buttons">
       @switch (authOrchestrator.registerStep()) {
         @case ('email') {
-          <jhi-credentials-group [showEmail]="true" [showPassword]="true" [submitHandler]="sendOtp" class="login-credentials" />
+          <jhi-credentials-group [showEmail]="true" [showPassword]="false" [submitHandler]="sendOtp" class="login-credentials" />
           <p-divider align="center">
             <span class="divider-text" jhiTranslate="register.texts.or"></span>
           </p-divider>
