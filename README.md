@@ -20,7 +20,8 @@ scalable, secure, and transparent recruitment processes.
 - Save, submit and delete application drafts ([Save](https://live.rbg.tum.de/w/artemisintro/61942)) ([
   Submit](https://live.rbg.tum.de/w/artemisintro/61941)) ([
   Delete](https://live.rbg.tum.de/w/artemisintro/61940))
-- Track your application status for multiple positions ([Video](https://live.rbg.tum.de/w/artemisintro/61943))
+- Track/Review your application details and submission for multiple
+  positions ([Video](https://live.rbg.tum.de/w/artemisintro/61943))
 - Withdraw applications ([Video](https://live.rbg.tum.de/w/artemisintro/61944))
 - Get notified when a decision is made
 
@@ -30,7 +31,7 @@ scalable, secure, and transparent recruitment processes.
 - View published positions ([Video](https://live.rbg.tum.de/w/artemisintro/61932))
 - View position details ([Video](https://live.rbg.tum.de/w/artemisintro/61933))
 - Edit jobs ([Video](https://live.rbg.tum.de/w/artemisintro/61936))
-- Close and delete job positions ([Video](https://live.rbg.tum.de/w/artemisintro/61938))
+- Close and delete job postings ([Video](https://live.rbg.tum.de/w/artemisintro/61938))
 - Manage incoming applications ([Video](https://live.rbg.tum.de/w/artemisintro/61948))
 - Evaluate candidates and assign
   status ([Review](https://live.rbg.tum.de/w/artemisintro/61947)) ([Accept](https://live.rbg.tum.de/w/artemisintro/61945))
