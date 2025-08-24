@@ -5,19 +5,7 @@
 
   <div [class.is-collapsed]="isSidebarCollapsed()" class="main-page">
     @if (loggedIn()) {
-      <jhi-sidebar class="sidebar" [isSidebarCollapsed]="isSidebarCollapsed()" />
-
-      <!-- Sidebar Collapse Button -->
-      <p-button
-        class="sidebar-collapse-button"
-        (click)="toggleSidebar()"
-        [rounded]="true"
-        [raised]="true"
-        [outlined]="true"
-        [icon]="isSidebarCollapsed() ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
-        size="small"
-        [style]="{ 'background-color': 'var(--p-background-surface)' }"
-      />
+      <jhi-sidebar class="sidebar" [isSidebarCollapsed]="isSidebarCollapsed()" (sidebarCollapsedChange)="isSidebarCollapsed.set($event)" />
     }
     <div class="content">
       <div class="content-flex">

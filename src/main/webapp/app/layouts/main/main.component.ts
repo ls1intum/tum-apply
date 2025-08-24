@@ -5,7 +5,6 @@ import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
-import { ButtonModule } from 'primeng/button';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
@@ -16,7 +15,7 @@ import { HeaderComponent } from '../../shared/components/organisms/header/header
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [ButtonModule, HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
+  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
   readonly accountService = inject(AccountService);
@@ -39,9 +38,5 @@ export default class MainComponent {
       dayjs.locale(langChangeEvent.lang);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
-  }
-
-  toggleSidebar(): void {
-    this.isSidebarCollapsed.update(value => !value);
   }
 }

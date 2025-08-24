@@ -24,13 +24,23 @@
   </div>
   <div class="settings-content">
     <p-divider />
-    <jhi-sidebar-button
-      [isActive]="isActive('/settings')"
-      [isCollapsed]="isSidebarCollapsed()"
-      [label]="'settings.header' | translate"
-      class="settings-button"
-      icon="gear"
-      link="/settings"
-    />
+    <div class="settings-row">
+      <jhi-sidebar-button
+        [isActive]="isActive('/settings')"
+        [isCollapsed]="isSidebarCollapsed()"
+        [label]="'settings.header' | translate"
+        class="settings-button"
+        icon="gear"
+        link="/settings"
+      />
+      <p-button
+        (click)="toggleSidebar()"
+        [icon]="isSidebarCollapsed() ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
+        [rounded]="true"
+        [text]="true"
+        class="sidebar-collapse-button"
+        size="small"
+      />
+    </div>
   </div>
 </div>

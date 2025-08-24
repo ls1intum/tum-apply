@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
@@ -20,7 +20,8 @@ type SidebarCategory = { title: string; buttons: SidebarButton[] };
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  isSidebarCollapsed = input<boolean>(false);
+  isSidebarCollapsed = input.required<boolean>();
+  sidebarCollapsedChange = output<boolean>();
 
   /**
    * Custom groups for sidebar links that have multiple paths.
@@ -68,6 +69,10 @@ export class SidebarComponent {
     }
 
     return currentPath === link || currentPath.startsWith(link + '/');
+  }
+
+  toggleSidebar(): void {
+    this.sidebarCollapsedChange.emit(!this.isSidebarCollapsed());
   }
 
   private getCategoryConfig(): Record<string, SidebarCategory[]> {
