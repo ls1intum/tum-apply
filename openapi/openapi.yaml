@@ -327,6 +327,77 @@
         }
       }
     },
+    "/api/applications/{applicationId}/ratings": {
+      "get": {
+        "tags": [
+          "rating-resource"
+        ],
+        "operationId": "getRatings",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "rating-resource"
+        ],
+        "operationId": "updateRating",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rating",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "maximum": 2,
+              "minimum": -2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/applications/withdraw/{applicationId}": {
       "put": {
         "tags": [
@@ -500,7 +571,7 @@
         }
       }
     },
-    "/api/evaluation/applications({applicationId}/reject": {
+    "/api/evaluation/applications/{applicationId}/reject": {
       "post": {
         "tags": [
           "application-evaluation-resource"
@@ -534,7 +605,7 @@
         }
       }
     },
-    "/api/evaluation/applications({applicationId}/accept": {
+    "/api/evaluation/applications/{applicationId}/accept": {
       "post": {
         "tags": [
           "application-evaluation-resource"
@@ -1695,6 +1766,38 @@
         }
       }
     },
+    "/api/evaluation/applications/{applicationId}/documents-download": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "downloadAll",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ZIP file containing all documents",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/evaluation/application-details": {
       "get": {
         "tags": [
@@ -2693,6 +2796,34 @@
           "title"
         ]
       },
+      "RatingDTO": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RatingOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "currentUserRating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "otherRatings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RatingDTO"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
       "RejectDTO": {
         "type": "object",
         "properties": {
@@ -3008,12 +3139,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "paged": {
-            "type": "boolean"
-          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
@@ -3021,6 +3146,12 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -3030,10 +3161,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
@@ -3145,10 +3276,6 @@
           },
           "motivation": {
             "type": "string"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
           },
           "customFieldAnswers": {
             "type": "array",
@@ -3726,10 +3853,6 @@
           "jobName": {
             "type": "string"
           },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
-          },
           "appliedAt": {
             "type": "string",
             "format": "date-time"
@@ -3848,10 +3971,6 @@
           "jobId": {
             "type": "string",
             "format": "uuid"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32"
           },
           "appliedAt": {
             "type": "string",

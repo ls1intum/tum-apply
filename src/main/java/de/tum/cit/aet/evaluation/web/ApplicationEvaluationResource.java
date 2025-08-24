@@ -5,6 +5,10 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -145,9 +149,19 @@ public class ApplicationEvaluationResource {
      * to the HTTP response output stream.
      *
      * @param applicationId the ID of the application whose documents are downloaded
-     * @param response the HTTP response used to write the ZIP content
+     * @param response      the HTTP response used to write the ZIP content
      * @throws IOException if an I/O error occurs while writing to the response
      */
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "ZIP file containing all documents",
+            content = @Content(
+                mediaType = "application/zip",
+                schema = @Schema(type = "string", format = "binary")
+            )
+        )
+    })
     @GetMapping(path = "/applications/{applicationId}/documents-download", produces = "application/zip")
     public void downloadAll(@PathVariable("applicationId") UUID applicationId, HttpServletResponse response) throws IOException {
         applicationEvaluationService.downloadAllDocumentsForApplication(applicationId, response);
