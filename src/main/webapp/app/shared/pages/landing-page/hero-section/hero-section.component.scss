@@ -18,8 +18,13 @@
   width: 100%;
   height: 100%;
   background: var(--p-base-black);
-  opacity: 0.5;
+  opacity: 0.35;
   z-index: 1;
+}
+
+.hero-background-landing-page-hero-section-2.hero-container::after,
+.hero-background-landing-page-hero-section-3.hero-container::after {
+  opacity: 0.4;
 }
 
 .hero-content {
