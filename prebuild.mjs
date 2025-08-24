@@ -69,7 +69,6 @@ const keycloakConfig = {
   clientId: process.env.KEYCLOAK_CLIENT_ID,
   enableLogging: process.env.KEYCLOAK_ENABLE_LOGGING === 'true',
 };
-console.log(process.env);
 const otpConfig = {
   length: process.env.OTP_LENGTH,
   cooldown: process.env.OTP_RESEND_COOLDOWN_SECONDS,
