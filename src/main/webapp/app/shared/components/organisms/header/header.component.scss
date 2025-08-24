@@ -10,6 +10,7 @@
   z-index: 1000;
   overflow-x: auto;
   white-space: nowrap;
+  height: 3.5rem;
 
   .logo-section {
     display: flex;
@@ -23,6 +24,11 @@
 
     .tum-logo {
       height: 1.5rem;
+    }
+
+    .professor {
+      color: var(--p-secondary-color);
+      font-weight: 300;
     }
   }
 
@@ -74,8 +80,8 @@
       .profile-icon {
         display: flex;
         justify-content: center;
-        width: 2.25rem;
-        height: 2.25rem;
+        width: 1.75rem;
+        height: 1.75rem;
         align-items: center;
         border-radius: 50%;
         background: var(--p-primary-color);
@@ -83,11 +89,12 @@
       }
     }
 
-    .fixed-width-button {
+    .header-button {
       display: inline-flex;
 
       .p-button {
         min-width: 6.3rem;
+        height: 2rem;
         justify-content: center;
         padding: 0.4rem 0.75rem;
         font-size: 0.9rem;
