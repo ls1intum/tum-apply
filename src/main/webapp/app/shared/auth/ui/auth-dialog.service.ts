@@ -8,7 +8,7 @@ import { AuthOpenOptions } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthDialogService {
-  private readonly dialog = inject(DialogService);
+  private readonly dialogService = inject(DialogService);
   private readonly orchestrator = inject(AuthOrchestratorService);
   private ref: DynamicDialogRef | null = null;
   private onCloseEffect?: EffectRef;
@@ -46,8 +46,8 @@ export class AuthDialogService {
     this.orchestrator.open(opts);
 
     // Open new dialog
-    this.ref = this.dialog.open(AuthCardComponent, {
-      style: { border: 'none', overflow: 'auto', background: 'transparent', boxShadow: 'none' },
+    this.ref = this.dialogService.open(AuthCardComponent, {
+      style: { border: 'none', overflow: 'auto', background: 'transparent', boxShadow: 'none', minWidth: '25rem' },
       contentStyle: { padding: '0' },
       modal: true,
       dismissableMask: true,
