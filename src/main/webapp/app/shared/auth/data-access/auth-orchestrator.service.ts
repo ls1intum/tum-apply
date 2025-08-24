@@ -28,6 +28,7 @@ export class AuthOrchestratorService {
   readonly isBusy = signal(false);
   readonly isSendingCode = signal(false);
   readonly error = signal<string | null>(null);
+
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     switch (this.registerStep()) {

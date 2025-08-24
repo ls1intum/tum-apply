@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { PasswordModule } from 'primeng/password';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -11,6 +11,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { PasswordInputComponent } from '../../atoms/password-input/password-input';
 import { environment } from '../../../../environments/environment';
+import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 
 @Component({
   selector: 'jhi-credentials-group',
@@ -33,6 +34,8 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './credentials-group.component.scss',
 })
 export class CredentialsGroupComponent {
+  authOrchestrator = inject(AuthOrchestratorService);
+
   submitHandler = input.required<(credentials: { email: string; password?: string; otp?: string }) => Promise<boolean>>();
   showPassword = input<boolean>(true);
   submitLabel = input<string>('auth.login.emailLogin.login');
@@ -41,7 +44,10 @@ export class CredentialsGroupComponent {
   otpLength = environment.otp.length;
 
   form = new FormGroup({
-    email: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
+    email: new FormControl<string>(this.authOrchestrator.email(), {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
     password: new FormControl<string>(''),
     otp: new FormControl<string>('', [Validators.pattern(/^[A-Z0-9]*$/), Validators.maxLength(this.otpLength)]),
   });
