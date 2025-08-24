@@ -26,6 +26,7 @@ describe('HeaderComponent', () => {
           useValue: {
             user: signal<User | undefined>(undefined),
             loaded: signal(true),
+            hasAnyAuthority: jest.fn().mockReturnValue(false),
           },
         },
         {
