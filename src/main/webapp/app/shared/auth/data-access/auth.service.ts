@@ -9,11 +9,11 @@ export class AuthService {
   private readonly authGateway = inject(AuthGateway);
 
   // -------- Login flow ----------
-  async loginWithPassword(): Promise<void> {
+  async loginWithPassword(password: string): Promise<void> {
     if (this.authOrchestration.isBusy()) return;
     this.authOrchestration.isBusy.set(true);
     try {
-      await this.authGateway.loginPassword(this.authOrchestration.email(), this.authOrchestration.password());
+      await this.authGateway.loginPassword(this.authOrchestration.email(), password);
       this.finishLogin();
     } catch {
       this.authOrchestration.setError('Invalid credentials.');
@@ -22,60 +22,26 @@ export class AuthService {
     }
   }
 
-  async sendLoginOtp(): Promise<void> {
-    this.authOrchestration.isSendingCode.set(true);
-    try {
-      const res = await this.authGateway.loginOtpStart(this.authOrchestration.email());
-      const cooldown = res?.cooldownSeconds ?? 30;
-      this.authOrchestration.startCooldown(cooldown);
-      this.authOrchestration.loginSub.set('otp');
-    } finally {
-      this.authOrchestration.isSendingCode.set(false);
-    }
-  }
-
-  async verifyLoginOtp(): Promise<void> {
-    if (this.authOrchestration.isBusy()) return;
-    this.authOrchestration.isBusy.set(true);
-    try {
-      await this.authGateway.loginOtpVerify(this.authOrchestration.email(), this.authOrchestration.otp());
-      this.finishLogin();
-    } catch {
-      this.authOrchestration.setError('Code invalid or expired.');
-    } finally {
-      this.authOrchestration.isBusy.set(false);
-    }
-  }
-
   // -------- Registration flow ----------
-  // TODO: add services for registration
-  /*
-  async registerStart(): Promise<void> {
-    this.authOrchestration.isSendingCode.set(true);
-    try {
-      const res = await this.authGateway.registerStart(this.authOrchestration.email());
-      const cooldown = (res as any)?.cooldownSeconds ?? 30;
-      this.authOrchestration.startCooldown(cooldown);
-      this.authOrchestration.registerStep.set('email');
-    } finally {
-      this.authOrchestration.isSendingCode.set(false);
-    }
-  }
 
-  async registerVerify(): Promise<void> {
+  async registerVerify(otp: string): Promise<void> {
+    this.authOrchestration.isSendingCode.set(true);
     if (this.authOrchestration.isBusy()) return;
     this.authOrchestration.isBusy.set(true);
     try {
-      const res = await this.authGateway.registerVerify(this.authOrchestration.email(), this.authOrchestration.otp());
-      this.authOrchestration.registrationToken.set((res as any)?.registrationToken ?? null);
+      const res = await this.authGateway.verifyOtp(this.authOrchestration.email(), otp);
+      this.authOrchestration.registrationToken.set(res?.registrationToken ?? null);
       this.authOrchestration.registerStep.set('profile');
     } catch {
       this.authOrchestration.setError('Code invalid or expired.');
     } finally {
       this.authOrchestration.isBusy.set(false);
+      this.authOrchestration.isSendingCode.set(false);
     }
   }
 
+  // TODO: add services for registration
+  /*
   async registerSaveProfile(consents: unknown): Promise<void> {
     if (!this.authOrchestration.registrationToken()) return;
     if (this.authOrchestration.isBusy()) return;
@@ -155,6 +121,36 @@ export class AuthService {
   }*/
 
   // -------- Shared ----------
+
+  async sendOtp(registration = false): Promise<void> {
+    this.authOrchestration.isSendingCode.set(true);
+    try {
+      const res = await this.authGateway.sendOtp(this.authOrchestration.email());
+      const cooldown = res?.cooldownSeconds ?? 30;
+      this.authOrchestration.startCooldown(cooldown);
+      if (registration) {
+        this.authOrchestration.registerStep.set('verify');
+      } else {
+        this.authOrchestration.loginSub.set('otp');
+      }
+    } finally {
+      this.authOrchestration.isSendingCode.set(false);
+    }
+  }
+
+  async verifyOtp(email: string, otp: string): Promise<void> {
+    if (this.authOrchestration.isBusy()) return;
+    this.authOrchestration.isBusy.set(true);
+    try {
+      await this.authGateway.verifyOtp(email, otp);
+      this.finishLogin();
+    } catch {
+      this.authOrchestration.setError('Code invalid or expired.');
+    } finally {
+      this.authOrchestration.isBusy.set(false);
+    }
+  }
+
   private finishLogin(): void {
     this.authOrchestration.authSuccess();
   }

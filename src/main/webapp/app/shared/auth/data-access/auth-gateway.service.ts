@@ -10,21 +10,23 @@ export class AuthGateway {
   private readonly emailAuthApi = inject(EmailLoginResourceService);
   private readonly verificationApi = inject(EmailVerificationResourceService);
 
+  // --------- Shared -----------
+
+  // Sends an OTP (one-time password) via email.
+  sendOtp(email: string): Promise<any> {
+    return firstValueFrom(this.verificationApi.send({ email }));
+  }
+
+  // Verifies OTP code for login or registration.
+  verifyOtp(email: string, code: string): Promise<any> {
+    return firstValueFrom(this.verificationApi.verify({ email, code }));
+  }
+
   // -------- Login flow ----------
 
   // Logs in using email and password.
   loginPassword(email: string, password: string): Promise<any> {
     return firstValueFrom(this.emailAuthApi.login({ email, password }));
-  }
-
-  // Starts OTP (one-time password) login by sending code to email.
-  loginOtpStart(email: string): Promise<any> {
-    return firstValueFrom(this.verificationApi.send({ email }));
-  }
-
-  // Verifies OTP code for login.
-  loginOtpVerify(email: string, code: string): Promise<any> {
-    return firstValueFrom(this.verificationApi.verify({ email, code }));
   }
 
   // TODO: create registration api calls
