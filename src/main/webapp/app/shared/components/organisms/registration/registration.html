@@ -19,6 +19,13 @@
           <jhi-auth-idp-buttons class="login-providers" />
         }
         @case ('verify') {
+          <jhi-string-input
+            [control]="emailDisplayControl"
+            label="auth.login.emailLogin.email"
+            [shouldTranslate]="true"
+            [disabled]="true"
+            class="login-credentials"
+          />
           <jhi-otp-input [registration]="true" />
         }
         @case ('profile') {}

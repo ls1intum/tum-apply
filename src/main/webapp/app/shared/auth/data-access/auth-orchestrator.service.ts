@@ -1,4 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { interval } from 'rxjs';
 
 import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginSubState, RegisterStep } from '../models/auth.model';
 import { environment } from '../../../environments/environment';
@@ -26,8 +28,6 @@ export class AuthOrchestratorService {
   readonly isBusy = signal(false);
   readonly isSendingCode = signal(false);
   readonly error = signal<string | null>(null);
-  readonly cooldownSeconds = signal<number>(0);
-
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     switch (this.registerStep()) {
@@ -40,6 +40,20 @@ export class AuthOrchestratorService {
       case 'password':
         return 1;
     }
+  });
+
+  // cooldown for OTP resend
+  readonly cooldownUntil = signal<number | null>(null);
+  readonly _tick = toSignal(interval(250), { initialValue: 0 });
+  readonly cooldownSeconds = computed(() => {
+    // depend on _tick so this recomputes ~4x per second
+    this._tick();
+    const until = this.cooldownUntil();
+    if (until == null) {
+      return 0;
+    }
+    const ms = until - Date.now();
+    return ms <= 0 ? 0 : Math.ceil(ms / 1000);
   });
 
   private onSuccessCb: (() => void) | undefined;
@@ -109,20 +123,17 @@ export class AuthOrchestratorService {
     this.error.set(msg);
   }
 
-  startCooldown(sec: number = environment.otp.cooldown): void {
-    this.cooldownSeconds.set(sec);
-    const iv = setInterval(() => {
-      const v = this.cooldownSeconds();
-      if (v <= 0) return clearInterval(iv);
-      this.cooldownSeconds.set(v - 1);
-    }, 1000);
+  startCooldown(): void {
+    const cooldown = environment.otp.cooldown;
+    const now = Date.now();
+    this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);
   }
 
   private resetAll(): void {
     this.isBusy.set(false);
     this.isSendingCode.set(false);
     this.error.set(null);
-    this.cooldownSeconds.set(0);
+    this.cooldownUntil.set(null);
     this.registrationToken.set(null);
   }
 }

@@ -25,39 +25,39 @@ export class AuthService {
   // -------- Registration flow ----------
   // TODO: add services for registration
   /*
-  async registerSaveProfile(consents: unknown): Promise<void> {
-    if (!this.authOrchestration.registrationToken()) return;
-    if (this.authOrchestration.isBusy()) return;
-    this.authOrchestration.isBusy.set(true);
-    try {
-      await this.authGateway.registerProfile(
-        this.authOrchestration.registrationToken()!,
-        this.authOrchestration.firstName(),
-        this.authOrchestration.lastName(),
-        consents,
-      );
-      this.authOrchestration.registerStep.set('password');
-    } catch {
-      this.authOrchestration.setError('Could not save your profile.');
-    } finally {
-      this.authOrchestration.isBusy.set(false);
-    }
-  }
-
-  async registerSetPasswordAndFinish(password?: string): Promise<void> {
-    if (this.authOrchestration.isBusy()) return;
-    this.authOrchestration.isBusy.set(true);
-    try {
-      if (password?.length) {
-        await this.authGateway.registerSetPassword(this.authOrchestration.registrationToken()!, password);
+    async registerSaveProfile(consents: unknown): Promise<void> {
+      if (!this.authOrchestration.registrationToken()) return;
+      if (this.authOrchestration.isBusy()) return;
+      this.authOrchestration.isBusy.set(true);
+      try {
+        await this.authGateway.registerProfile(
+          this.authOrchestration.registrationToken()!,
+          this.authOrchestration.firstName(),
+          this.authOrchestration.lastName(),
+          consents,
+        );
+        this.authOrchestration.registerStep.set('password');
+      } catch {
+        this.authOrchestration.setError('Could not save your profile.');
+      } finally {
+        this.authOrchestration.isBusy.set(false);
       }
-      this.finishLogin();
-    } catch {
-      this.authOrchestration.setError('Could not set password.');
-    } finally {
-      this.authOrchestration.isBusy.set(false);
     }
-  }*/
+
+    async registerSetPasswordAndFinish(password?: string): Promise<void> {
+      if (this.authOrchestration.isBusy()) return;
+      this.authOrchestration.isBusy.set(true);
+      try {
+        if (password?.length) {
+          await this.authGateway.registerSetPassword(this.authOrchestration.registrationToken()!, password);
+        }
+        this.finishLogin();
+      } catch {
+        this.authOrchestration.setError('Could not set password.');
+      } finally {
+        this.authOrchestration.isBusy.set(false);
+      }
+    }*/
 
   // --- "Apply" registration
   /**
@@ -65,52 +65,51 @@ export class AuthService {
    * After verification, we keep a registrationToken and the hosting form can continue.
    */
   /*
-    this.authOrchestration.setError(null);
-    this.authOrchestration.isSendingCode.set(true);
-    try {
-      const res = await this.authGateway.applyInlineSendCode(
-        this.authOrchestration.email(),
-        this.authOrchestration.firstName(),
-        this.authOrchestration.lastName(),
-      );
-      const cooldown = (res as any)?.cooldownSeconds ?? 30;
-      this.authOrchestration.startCooldown(cooldown);
-      this.authOrchestration.applyStep.set('inline'); // still inline, now waiting for OTP entry
-    } finally {
-      this.authOrchestration.isSendingCode.set(false);
+      this.authOrchestration.setError(null);
+      this.authOrchestration.isSendingCode.set(true);
+      try {
+        const res = await this.authGateway.applyInlineSendCode(
+          this.authOrchestration.email(),
+          this.authOrchestration.firstName(),
+          this.authOrchestration.lastName(),
+        );
+        const cooldown = (res as any)?.cooldownSeconds ?? 30;
+        this.authOrchestration.startCooldown(cooldown);
+        this.authOrchestration.applyStep.set('inline'); // still inline, now waiting for OTP entry
+      } finally {
+        this.authOrchestration.isSendingCode.set(false);
+      }
     }
-  }
 
-  async applyInlineVerify(): Promise<void> {
-    if (this.authOrchestration.isBusy()) return;
-    this.authOrchestration.isBusy.set(true);
-    try {
-      const res = await this.authGateway.applyInlineVerify(this.authOrchestration.email(), this.authOrchestration.otp());
-      this.authOrchestration.registrationToken.set((res as any)?.registrationToken ?? null);
-      this.authOrchestration.applyStep.set('verified'); // host form may now enable submit
-    } catch {
-      this.authOrchestration.setError('Code invalid or expired.');
-    } finally {
-      this.authOrchestration.isBusy.set(false);
+    async applyInlineVerify(): Promise<void> {
+      if (this.authOrchestration.isBusy()) return;
+      this.authOrchestration.isBusy.set(true);
+      try {
+        const res = await this.authGateway.applyInlineVerify(this.authOrchestration.email(), this.authOrchestration.otp());
+        this.authOrchestration.registrationToken.set((res as any)?.registrationToken ?? null);
+        this.authOrchestration.applyStep.set('verified'); // host form may now enable submit
+      } catch {
+        this.authOrchestration.setError('Code invalid or expired.');
+      } finally {
+        this.authOrchestration.isBusy.set(false);
+      }
     }
-  }
 
-  async finishAfterApply(optionalPassword?: string): Promise<void> {
-    // called after the job application is submitted successfully
-    if (optionalPassword?.length) {
-      await this.authGateway.registerSetPassword(this.authOrchestration.registrationToken()!, optionalPassword);
-    }
-    this.finishLogin(); // if your backend wants to auto-login at this point
-  }*/
+    async finishAfterApply(optionalPassword?: string): Promise<void> {
+      // called after the job application is submitted successfully
+      if (optionalPassword?.length) {
+        await this.authGateway.registerSetPassword(this.authOrchestration.registrationToken()!, optionalPassword);
+      }
+      this.finishLogin(); // if your backend wants to auto-login at this point
+    }*/
 
   // -------- Shared ----------
 
   async sendOtp(registration = false): Promise<void> {
     this.authOrchestration.isSendingCode.set(true);
     try {
-      const res = await this.authGateway.sendOtp(this.authOrchestration.email());
-      const cooldown = res?.cooldownSeconds ?? 30;
-      this.authOrchestration.startCooldown(cooldown);
+      await this.authGateway.sendOtp(this.authOrchestration.email());
+      this.authOrchestration.startCooldown();
       if (registration) {
         this.authOrchestration.registerStep.set('verify');
       } else {
