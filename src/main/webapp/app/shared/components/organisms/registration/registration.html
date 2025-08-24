@@ -9,16 +9,12 @@
         @case ('email') {
           <jhi-credentials-group [showEmail]="true" [showPassword]="false" [submitHandler]="sendOtp" class="login-credentials" />
           <p-divider align="center">
-            <span class="divider-text" jhiTranslate="register.texts.or"></span>
+            <span class="divider-text" jhiTranslate="auth.register.texts.or"></span>
           </p-divider>
           <jhi-auth-idp-buttons class="login-providers" />
         }
         @case ('verify') {
-          <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="login-credentials" />
-          <p-divider align="center">
-            <span class="divider-text" jhiTranslate="register.texts.or"></span>
-          </p-divider>
-          <jhi-auth-idp-buttons class="login-providers" />
+          <jhi-otp-input [registration]="true" />
         }
         @case ('profile') {}
         @case ('password') {}
@@ -26,7 +22,7 @@
     </div>
   </div>
   <p class="login-footer">
-    <span jhiTranslate="register.texts.accountMissing.prefix"></span>
-    <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="register.texts.accountMissing.link"></a>
+    <span jhiTranslate="auth.register.texts.accountMissing.prefix"></span>
+    <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountMissing.link"></a>
   </p>
 </div>

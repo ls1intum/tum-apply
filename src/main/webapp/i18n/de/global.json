@@ -31,18 +31,6 @@
       },
       "language": "Sprache"
     },
-    "form": {
-      "username.label": "Benutzername",
-      "username.placeholder": "Ihr Benutzername",
-      "currentpassword.label": "Aktuelles Passwort",
-      "currentpassword.placeholder": "Aktuelles Passwort",
-      "newpassword.label": "Neues Passwort",
-      "newpassword.placeholder": "Neues Passwort",
-      "confirmpassword.label": "Neues Passwort bestätigen",
-      "confirmpassword.placeholder": "Bestätigen Sie Ihr neues Passwort",
-      "email.label": "Email Adresse",
-      "email.placeholder": "Ihre Email Adresse"
-    },
     "messages": {
       "info": {
         "authenticated": {

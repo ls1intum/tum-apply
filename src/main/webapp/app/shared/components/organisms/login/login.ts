@@ -30,8 +30,8 @@ export class Login {
     const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
     if (!response) {
       this.toastService.showError({
-        summary: this.translate.instant('login.messages.error.header'),
-        detail: this.translate.instant('login.messages.error.message'),
+        summary: this.translate.instant('auth.login.messages.error.header'),
+        detail: this.translate.instant('auth.login.messages.error.message'),
       });
     }
     return response;
