@@ -14,7 +14,7 @@
           <jhi-auth-idp-buttons class="login-providers" />
         }
         @case ('verify') {
-          <jhi-credentials-group [showOtp]="true" [showPassword]="false" [submitHandler]="sendOtp" class="login-credentials" />
+          <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="login-credentials" />
           <p-divider align="center">
             <span class="divider-text" jhiTranslate="register.texts.or"></span>
           </p-divider>
