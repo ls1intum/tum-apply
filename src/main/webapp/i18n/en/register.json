@@ -2,7 +2,7 @@
   "register": {
     "header": "Create your TUMApply Account",
     "texts": {
-      "applicant": "Create an account to start your application journey.",
+      "or": "OR REGISTER WITH",
       "accountmissing": {
         "prefix": "You already have a TUMApply account?",
         "link": "Sign in"

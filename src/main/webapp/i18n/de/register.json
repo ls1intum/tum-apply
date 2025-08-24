@@ -2,7 +2,7 @@
   "register": {
     "header": "Erstellen Sie Ihr TUMApply-Konto",
     "texts": {
-      "applicant": "Erstellen Sie ein Konto, um mit Ihrer Bewerbung zu beginnen.",
+      "or": "ODER REGISTRIEREN MIT",
       "accountmissing": {
         "prefix": "Du hast bereits ein TUMApply-Konto?",
         "link": "Anmelden"
