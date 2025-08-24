@@ -8,9 +8,8 @@ describe('OtpInput', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OtpInput]
-    })
-    .compileComponents();
+      imports: [OtpInput],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(OtpInput);
     component = fixture.componentInstance;

@@ -1,6 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
 
 import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginSubState, RegisterStep } from '../models/auth.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthOrchestratorService {
@@ -108,7 +109,7 @@ export class AuthOrchestratorService {
     this.error.set(msg);
   }
 
-  startCooldown(sec: number): void {
+  startCooldown(sec: number = environment.otp.cooldown): void {
     this.cooldownSeconds.set(sec);
     const iv = setInterval(() => {
       const v = this.cooldownSeconds();

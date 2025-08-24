@@ -23,23 +23,6 @@ export class AuthService {
   }
 
   // -------- Registration flow ----------
-
-  async registerVerify(otp: string): Promise<void> {
-    this.authOrchestration.isSendingCode.set(true);
-    if (this.authOrchestration.isBusy()) return;
-    this.authOrchestration.isBusy.set(true);
-    try {
-      const res = await this.authGateway.verifyOtp(this.authOrchestration.email(), otp);
-      this.authOrchestration.registrationToken.set(res?.registrationToken ?? null);
-      this.authOrchestration.registerStep.set('profile');
-    } catch {
-      this.authOrchestration.setError('Code invalid or expired.');
-    } finally {
-      this.authOrchestration.isBusy.set(false);
-      this.authOrchestration.isSendingCode.set(false);
-    }
-  }
-
   // TODO: add services for registration
   /*
   async registerSaveProfile(consents: unknown): Promise<void> {
@@ -138,16 +121,26 @@ export class AuthService {
     }
   }
 
-  async verifyOtp(email: string, otp: string): Promise<void> {
+  async verifyOtp(otp: string, registration = false): Promise<void> {
+    this.authOrchestration.isSendingCode.set(true);
     if (this.authOrchestration.isBusy()) return;
     this.authOrchestration.isBusy.set(true);
     try {
-      await this.authGateway.verifyOtp(email, otp);
-      this.finishLogin();
+      const res = await this.authGateway.verifyOtp(this.authOrchestration.email(), otp);
+
+      if (registration) {
+        this.authOrchestration.registrationToken.set(res?.registrationToken ?? null);
+        this.authOrchestration.registerStep.set('profile');
+      } else {
+        // TODO: set token
+      }
+
+      this.authOrchestration.authSuccess();
     } catch {
       this.authOrchestration.setError('Code invalid or expired.');
     } finally {
       this.authOrchestration.isBusy.set(false);
+      this.authOrchestration.isSendingCode.set(false);
     }
   }
 
