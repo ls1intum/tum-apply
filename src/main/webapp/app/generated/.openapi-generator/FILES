@@ -10,7 +10,9 @@ api/authenticationResource.service.ts
 api/documentResource.service.ts
 api/emailSettingResource.service.ts
 api/emailTemplateResource.service.ts
+api/emailVerificationResource.service.ts
 api/jobResource.service.ts
+api/ratingResource.service.ts
 api/userResource.service.ts
 configuration.ts
 encoder.ts
@@ -55,9 +57,12 @@ model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageableObject.ts
 model/professorDTO.ts
+model/ratingDTO.ts
+model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
 model/researchGroupShortDTO.ts
+model/sendCodeRequest.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/user.ts
@@ -65,6 +70,7 @@ model/userDTO.ts
 model/userForApplicationDetailDTO.ts
 model/userResearchGroupRole.ts
 model/userShortDTO.ts
+model/verifyCodeRequest.ts
 ng-package.json
 package.json
 param.ts

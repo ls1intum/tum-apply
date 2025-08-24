@@ -6,9 +6,6 @@ import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.exception.errors.ValidationFieldError;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -22,6 +19,10 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Global exception handler for all unhandled runtime and validation exceptions in the application.
@@ -38,6 +39,7 @@ public class GlobalExceptionHandler {
         Map.entry(InvalidParameterException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PARAMETER)),
         Map.entry(OperationNotAllowedException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.OPERATION_NOT_ALLOWED)),
         Map.entry(UploadException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.UPLOAD_FAILED)),
+        Map.entry(EmailVerificationFailedException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.UPLOAD_FAILED)),
         Map.entry(AccessDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(UnauthorizedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(MailingException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR)),
@@ -61,7 +63,7 @@ public class GlobalExceptionHandler {
      * @param request the current HTTP request
      * @return a ResponseEntity with a structured ApiError body
      */
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleRuntime(Exception ex, HttpServletRequest request) {
         if (ex instanceof MethodArgumentNotValidException manve) {
             log.warn("Handled validation exception: {} - Path: {}", ex.getClass().getSimpleName(), request.getRequestURI(), ex);
@@ -192,5 +194,6 @@ public class GlobalExceptionHandler {
      * @param status the HTTP status to return
      * @param code   the error code associated with the exception
      */
-    private record ExceptionMetadata(HttpStatus status, ErrorCode code) {}
+    private record ExceptionMetadata(HttpStatus status, ErrorCode code) {
+    }
 }

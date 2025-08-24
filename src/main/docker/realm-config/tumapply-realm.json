@@ -160,6 +160,33 @@
           }
         }
       ]
+    },
+    {
+      "clientId": "tumapply-otp-admin",
+      "name": "TUMApply OTP Admin",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "secret": "tumapply-otp-secret",
+      "protocolMappers": [
+        {
+          "name": "service-account-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "tumapply-otp-admin",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
     }
   ]
 }
