@@ -13,28 +13,28 @@ scalable, secure, and transparent recruitment processes.
 
 ### For Applicants
 
-- Browse doctoral openings across TUM ([Video](https://live.rbg.tum.de/w/artemisintro/61799))
-- View job details and requirements ([Video](https://live.rbg.tum.de/w/artemisintro/61798))
+- Browse doctoral openings across TUM ([Video](https://live.rbg.tum.de/w/artemisintro/61935))
+- View job details and requirements ([Video](https://live.rbg.tum.de/w/artemisintro/61934))
 - Apply with your documents (CV, transcripts, motivation letter,
-  etc.) ([Video](https://live.rbg.tum.de/w/artemisintro/61803))
-- Save, submit and delete application drafts ([Save](https://live.rbg.tum.de/w/artemisintro/61806)) ([
-  Submit](https://live.rbg.tum.de/w/artemisintro/61805)) ([
-  Delete](https://live.rbg.tum.de/w/artemisintro/61804))
-- Track your application status for multiple positions ([Video](https://live.rbg.tum.de/w/artemisintro/61807))
-- Withdraw applications ([Video](https://live.rbg.tum.de/w/artemisintro/61808))
+  etc.) ([Video](https://live.rbg.tum.de/w/artemisintro/61939))
+- Save, submit and delete application drafts ([Save](https://live.rbg.tum.de/w/artemisintro/61942)) ([
+  Submit](https://live.rbg.tum.de/w/artemisintro/61941)) ([
+  Delete](https://live.rbg.tum.de/w/artemisintro/61940))
+- Track your application status for multiple positions ([Video](https://live.rbg.tum.de/w/artemisintro/61943))
+- Withdraw applications ([Video](https://live.rbg.tum.de/w/artemisintro/61944))
 - Get notified when a decision is made
 
 ### For Professors & Research Groups
 
-- Create and publish doctoral positions ([Video](https://live.rbg.tum.de/w/artemisintro/61801))
-- View published positions ([Video](https://live.rbg.tum.de/w/artemisintro/61796))
-- View position details ([Video](https://live.rbg.tum.de/w/artemisintro/61797))
-- Edit jobs ([Video](https://live.rbg.tum.de/w/artemisintro/61800))
-- Close and delete job positions ([Video](https://live.rbg.tum.de/w/artemisintro/61802))
-- Manage incoming applications ([Video](https://live.rbg.tum.de/w/artemisintro/61812))
+- Create and publish doctoral positions ([Video](https://live.rbg.tum.de/w/artemisintro/61937))
+- View published positions ([Video](https://live.rbg.tum.de/w/artemisintro/61932))
+- View position details ([Video](https://live.rbg.tum.de/w/artemisintro/61933))
+- Edit jobs ([Video](https://live.rbg.tum.de/w/artemisintro/61936))
+- Close and delete job positions ([Video](https://live.rbg.tum.de/w/artemisintro/61938))
+- Manage incoming applications ([Video](https://live.rbg.tum.de/w/artemisintro/61948))
 - Evaluate candidates and assign
-  status ([Review](https://live.rbg.tum.de/w/artemisintro/61811)) ([Accept](https://live.rbg.tum.de/w/artemisintro/61809))
-  ([Reject](https://live.rbg.tum.de/w/artemisintro/61810))
+  status ([Review](https://live.rbg.tum.de/w/artemisintro/61947)) ([Accept](https://live.rbg.tum.de/w/artemisintro/61945))
+  ([Reject](https://live.rbg.tum.de/w/artemisintro/61946))
 - Notify applicants directly via the system
 
 ## 🧭 How to Get Started
@@ -48,9 +48,9 @@ scalable, secure, and transparent recruitment processes.
 
 TUMApply supports **secure login** via:
 
-- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/61794))
-- Apple, Google and Microsoft ([Video](https://live.rbg.tum.de/w/artemisintro/61813))
-- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/61814))
+- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/61951))
+- Apple, Google and Microsoft ([Video](https://live.rbg.tum.de/w/artemisintro/61949))
+- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/61950))
 
 ## 🧱 Architecture Overview
 
@@ -60,7 +60,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Technology Stack
 
 | Component      | Technology                                     |
-| -------------- | ---------------------------------------------- |
+|----------------|------------------------------------------------|
 | Client         | Angular                                        |
 | Server         | Spring Boot (Java)                             |
 | Proxy          | Nginx                                          |
@@ -71,7 +71,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Core Modules & Responsibilities
 
 | Module/Service         | Responsibilities                                     |
-| ---------------------- | ---------------------------------------------------- |
+|------------------------|------------------------------------------------------|
 | User Authentication    | Handles logins via Keycloak                          |
 | Job Management         | Professors create and manage doctoral positions      |
 | Application Handling   | Applicants submit documents for a position           |
@@ -82,7 +82,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Areas of Work
 
 | Area                      | Tasks                                                       |
-| ------------------------- | ----------------------------------------------------------- |
+|---------------------------|-------------------------------------------------------------|
 | Client-Side               | Angular UI development with role-based views                |
 | Server-Side               | Implement REST APIs using Spring Boot                       |
 | Database Management       | Design and optimize MySQL schema                            |
