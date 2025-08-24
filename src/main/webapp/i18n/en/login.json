@@ -13,7 +13,7 @@
     },
     "texts": {
       "or": "OR SIGN IN WITH",
-      "accountmissing": {
+      "accountMissing": {
         "prefix": "Don't have a TUMApply account yet?",
         "link": "Register"
       }

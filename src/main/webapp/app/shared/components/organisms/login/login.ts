@@ -7,11 +7,12 @@ import { CredentialsGroupComponent } from '../../molecules/credentials-group/cre
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 import { AuthIdpButtons } from '../../molecules/auth-idp-buttons/auth-idp-buttons';
+import { TranslateDirective } from '../../../language';
 
 @Component({
   selector: 'jhi-login',
   standalone: true,
-  imports: [CredentialsGroupComponent, DividerModule, AuthIdpButtons],
+  imports: [AuthIdpButtons, CredentialsGroupComponent, DividerModule, TranslateDirective],
   templateUrl: './login.html',
   styleUrl: './login.scss',
   encapsulation: ViewEncapsulation.None,

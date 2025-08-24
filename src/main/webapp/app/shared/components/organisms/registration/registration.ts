@@ -6,11 +6,12 @@ import { CredentialsGroupComponent } from '../../molecules/credentials-group/cre
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { AuthIdpButtons } from '../../molecules/auth-idp-buttons/auth-idp-buttons';
+import { TranslateDirective } from '../../../language';
 
 @Component({
   selector: 'jhi-registration',
   standalone: true,
-  imports: [CredentialsGroupComponent, DividerModule, ProgressBar, AuthIdpButtons],
+  imports: [AuthIdpButtons, CredentialsGroupComponent, DividerModule, ProgressBar, TranslateDirective],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
   encapsulation: ViewEncapsulation.None,

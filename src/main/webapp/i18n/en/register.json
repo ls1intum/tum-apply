@@ -3,7 +3,7 @@
     "header": "Create your TUMApply Account",
     "texts": {
       "or": "OR REGISTER WITH",
-      "accountmissing": {
+      "accountMissing": {
         "prefix": "You already have a TUMApply account?",
         "link": "Sign in"
       }
