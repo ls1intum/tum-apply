@@ -2,10 +2,15 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.DocumentDictionaryService;
+import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
@@ -20,24 +25,29 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @AllArgsConstructor
 public class ApplicationEvaluationService {
 
     private final JobService jobService;
+    private final DocumentDictionaryService documentDictionaryService;
+    private final DocumentService documentService;
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
+
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -265,6 +275,83 @@ public class ApplicationEvaluationService {
      */
     public void markApplicationAsInReview(UUID applicationId) {
         applicationEvaluationRepository.markApplicationAsInReview(applicationId);
+    }
+
+    /**
+     * Collects all documents belonging to the specified application and streams them
+     * as a single ZIP file to the HTTP response output stream. The ZIP file name is
+     * based on the applicant's first and last name.
+     *
+     * @param applicationId the ID of the application whose documents are downloaded
+     * @param response the HTTP response used to write the ZIP content
+     * @throws IOException if an I/O error occurs while writing to the response
+     */
+    public void downloadAllDocumentsForApplication(UUID applicationId, HttpServletResponse response) throws IOException {
+        Application application = getApplication(applicationId);
+        Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
+
+        User user = application.getApplicant().getUser();
+        String zipName = user.getFirstName() + "_" + user.getLastName();
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s.zip\"", zipName));
+
+        // Count per type to decide if we need numbering
+        Map<DocumentType, Long> typeCounts = documentDictionaries.stream()
+            .collect(Collectors.groupingBy(
+                DocumentDictionary::getDocumentType,
+                () -> new EnumMap<>(DocumentType.class),
+                Collectors.counting()
+            ));
+
+        // Per-type index used only when count > 1
+        Map<DocumentType, Integer> typeIndex = new EnumMap<>(DocumentType.class);
+
+        try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+            for (DocumentDictionary documentDictionary : documentDictionaries) {
+                DocumentType type = documentDictionary.getDocumentType();
+                Document doc = documentDictionary.getDocument();
+
+                long count = typeCounts.getOrDefault(type, 0L);
+                String base = fileName(type);
+                String entryName = (count > 1)
+                    ? base + "_" + typeIndex.merge(type, 1, Integer::sum)
+                    : base;
+
+                ZipEntry entry = new ZipEntry(entryName);
+                zos.putNextEntry(entry);
+                zos.write(documentService.download(doc).getContentAsByteArray());
+                zos.closeEntry();
+            }
+            zos.finish();
+        }
+    }
+
+    /**
+     * Resolves a file name prefix for the given document type.
+     *
+     * @param documentType the type of document
+     * @return a short, lowercase file name string corresponding to the document type
+     */
+    private String fileName(DocumentType documentType) {
+        return switch (documentType) {
+            case BACHELOR_TRANSCRIPT -> "bachelor";
+            case MASTER_TRANSCRIPT -> "master";
+            case CV -> "cv";
+            case REFERENCE -> "reference";
+            case CUSTOM -> "custom";
+        };
+    }
+
+    /**
+     * Get the application for an applicationId
+     *
+     * @param applicationId the id of the application
+     * @return {@link Application}
+     */
+    public Application getApplication(UUID applicationId) {
+        return applicationEvaluationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
     }
 
     /**
