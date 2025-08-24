@@ -17,6 +17,7 @@ export interface JobCardDTO {
     professorName: string;
     workload?: number;
     startDate?: string;
-    relativeTime?: string;
+    relativeTimeEnglish?: string;
+    relativeTimeGerman?: string;
 }
 
