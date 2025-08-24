@@ -11,8 +11,6 @@
   padding-block: 1rem;
   padding-inline: 1rem;
   width: var(--sidebar-width);
-  transition: width 200ms ease;
-  will-change: width;
 
   .settings-content,
   .sidebar-content {
