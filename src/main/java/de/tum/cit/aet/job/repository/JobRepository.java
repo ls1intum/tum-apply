@@ -70,45 +70,39 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param pageable       pagination information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    @Query("""    
+    @Query("""
             SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
-                j.jobId,
-                j.title,
-                j.fieldOfStudies,
-                j.location,
-                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-                (SELECT a1.applicationId 
-                FROM Application a1 
-                WHERE a1.job = j 
-                AND a1.applicant.userId = :userId 
-                AND a1.createdAt = (SELECT MAX(a2.createdAt) 
-                                    FROM Application a2 
-                                    WHERE a2.job = j 
-                                    AND a2.applicant.userId = :userId)),
-                (SELECT CAST(a1.state AS string)
-                FROM Application a1 
-                WHERE a1.job = j 
-                AND a1.applicant.userId = :userId 
-                AND a1.createdAt = (SELECT MAX(a2.createdAt) 
-                                    FROM Application a2 
-                                    WHERE a2.job = j 
-                                    AND a2.applicant.userId = :userId)),
-                j.workload,
-                j.startDate,
-                j.createdAt
+              j.jobId as jobId,
+              j.title as title,
+              j.fieldOfStudies as fieldOfStudies,
+              j.location as location,
+              CONCAT(p.firstName, ' ', p.lastName) as professorName,
+              a.applicationId as applicationId,
+              a.state as applicationState,
+              j.workload as workload,
+              j.startDate as startDate,
+              j.createdAt as createdAt
             )
             FROM Job j
+            JOIN j.supervisingProfessor p
+            LEFT JOIN j.applications a
+                   WITH (:userId IS NOT NULL
+                     AND a.applicant.userId = :userId
+                     AND a.createdAt = (
+                          SELECT MAX(a2.createdAt)
+                          FROM Application a2
+                          WHERE a2.job = j AND a2.applicant.userId = :userId
+                     ))
             WHERE j.state = :state
-            AND (:title IS NULL OR j.title LIKE %:title%)
-            AND (:fieldOfStudies IS NULL OR j.fieldOfStudies LIKE %:fieldOfStudies%)
-            AND (:location IS NULL OR j.location = :location)
-            AND (:professorName IS NULL OR
-                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE %:professorName%)
-            AND (:workload IS NULL OR j.workload = :workload)
-            ORDER BY
-                CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END ASC,
-                CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END DESC
-            """)
+              AND (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
+              AND (:fieldOfStudies IS NULL OR LOWER(j.fieldOfStudies) LIKE LOWER(CONCAT('%', :fieldOfStudies, '%')))
+              AND (:location IS NULL OR j.location = :location)
+              AND (:professorName IS NULL OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :professorName, '%')))
+              AND (:workload IS NULL OR j.workload = :workload)
+                      ORDER BY
+                          CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END ASC,
+                          CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END DESC
+                      """)
     Page<JobCardDTO> findAllJobCardsByState(
             @Param("state") JobState state,
             @Param("title") String title,
@@ -138,53 +132,44 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param pageable       pagination and sorting information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    @Query(
-        """
-        SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
-            j.jobId,
-            j.title,
-            j.fieldOfStudies,
-            j.location,
-            CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-            (SELECT a1.applicationId 
-             FROM Application a1 
-             WHERE a1.job = j 
-             AND a1.applicant.userId = :userId 
-             AND a1.createdAt = (SELECT MAX(a2.createdAt) 
-                                FROM Application a2 
-                                WHERE a2.job = j 
-                                AND a2.applicant.userId = :userId)),
-            (SELECT CAST(a1.state AS string)
-             FROM Application a1 
-             WHERE a1.job = j 
-             AND a1.applicant.userId = :userId 
-             AND a1.createdAt = (SELECT MAX(a2.createdAt) 
-                                FROM Application a2 
-                                WHERE a2.job = j 
-                                AND a2.applicant.userId = :userId)),
-            j.workload,
-            j.startDate,
-            j.createdAt
-        )
-        FROM Job j
-        WHERE j.state = :state
-        AND (:title IS NULL OR j.title LIKE %:title%)
-        AND (:fieldOfStudies IS NULL OR j.fieldOfStudies LIKE %:fieldOfStudies%)
-        AND (:location IS NULL OR j.location = :location)
-        AND (:professorName IS NULL OR
-            CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE %:professorName%)
-        AND (:workload IS NULL OR j.workload = :workload)
-        """
-        )
+    @Query("""
+              SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
+                j.jobId as jobId,
+                j.title as title,
+                j.fieldOfStudies as fieldOfStudies,
+                j.location as location,
+                CONCAT(p.firstName, ' ', p.lastName) as professorName,
+                a.applicationId as applicationId,
+                a.state as applicationState,
+                j.workload as workload,
+                j.startDate as startDate,
+                j.createdAt as createdAt
+              )
+              FROM Job j
+              JOIN j.supervisingProfessor p
+              LEFT JOIN j.applications a
+                     WITH (:userId IS NOT NULL
+                       AND a.applicant.userId = :userId
+                       AND a.createdAt = (
+                            SELECT MAX(a2.createdAt)
+                            FROM Application a2
+                            WHERE a2.job = j AND a2.applicant.userId = :userId
+                       ))
+              WHERE j.state = :state
+                AND (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
+                AND (:fieldOfStudies IS NULL OR LOWER(j.fieldOfStudies) LIKE LOWER(CONCAT('%', :fieldOfStudies, '%')))
+                AND (:location IS NULL OR j.location = :location)
+                AND (:professorName IS NULL OR LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :professorName, '%')))
+                AND (:workload IS NULL OR j.workload = :workload)
+            """)
     Page<JobCardDTO> findAllJobCardsByState(
-        @Param("state") JobState state,
-        @Param("title") String title,
-        @Param("fieldOfStudies") String fieldOfStudies,
-        @Param("location") Campus location,
-        @Param("professorName") String professorName,
-        @Param("workload") Integer workload,
-        @Param("userId") UUID userId,
-        Pageable pageable
-    );
+            @Param("state") JobState state,
+            @Param("title") String title,
+            @Param("fieldOfStudies") String fieldOfStudies,
+            @Param("location") Campus location,
+            @Param("professorName") String professorName,
+            @Param("workload") Integer workload,
+            @Param("userId") UUID userId,
+            Pageable pageable);
 
 }

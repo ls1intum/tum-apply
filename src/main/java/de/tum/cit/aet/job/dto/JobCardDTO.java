@@ -48,30 +48,4 @@ public record JobCardDTO(
             UiTextFormatter.getRelativeTimeLabel(createdAt)
         );
     }
-
-        public JobCardDTO(
-        @NotNull UUID jobId,
-        @NotNull String title,
-        @NotNull String fieldOfStudies,
-        @NotNull Campus location,
-        @NotNull String professorName,
-        UUID applicationId,
-        String applicationStateStr,
-        Integer workload,
-        LocalDate startDate,
-        LocalDateTime createdAt
-    ) {
-        this(
-            jobId,
-            title,
-            fieldOfStudies,
-            UiTextFormatter.formatEnumValue(location),
-            professorName,
-            applicationId,
-            applicationStateStr != null ? ApplicationState.valueOf(applicationStateStr) : null,
-            workload,
-            startDate,
-            UiTextFormatter.getRelativeTimeLabel(createdAt)
-        );
-    }
 }
