@@ -25,13 +25,13 @@
     }
 
     <div [class.error]="inputState() === 'invalid'" class="input-wrapper">
-      @if (formControl(); as ctrl) {
+      @if (control()) {
         <input
           (blur)="onBlur()"
           (focus)="onFocus()"
           [disabled]="disabled()"
           [id]="id()"
-          [formControl]="ctrl"
+          [formControl]="formControl()"
           [pAutoFocus]="autofocus()"
           [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
           [required]="required()"
