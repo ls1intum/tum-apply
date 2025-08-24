@@ -106,7 +106,7 @@ public class EmailService {
      * @return the rendered subject
      */
     private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getCustomSubject())) {
+        if (StringUtils.isNotEmpty(email.getCustomSubject()) || emailTemplateTranslation == null) {
             return templateProcessingService.renderSubject(email.getCustomSubject());
         }
         return templateProcessingService.renderSubject(emailTemplateTranslation);
@@ -122,7 +122,7 @@ public class EmailService {
      * @return the rendered HTML body
      */
     private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getCustomBody())) {
+        if (StringUtils.isNotEmpty(email.getCustomBody()) || emailTemplateTranslation == null) {
             return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody());
         }
         return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
@@ -201,6 +201,9 @@ public class EmailService {
      * @return the corresponding {@link EmailTemplateTranslation}
      */
     private EmailTemplateTranslation getEmailTemplateTranslation(Email email) {
+        if (email.getEmailType() == null || email.getResearchGroup() == null) {
+            return null;
+        }
         return emailTemplateService.getTemplateTranslation(
             email.getResearchGroup(),
             email.getTemplateName(),
