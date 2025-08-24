@@ -1,12 +1,13 @@
 @use '../../../../../content/scss/breakpoints' as bp;
 .application-steps-section {
   display: flex;
-  padding: 6.25rem 0;
+  padding: 4rem 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6.25rem;
+  gap: 3rem;
   align-self: stretch;
+  background: var(--p-background-special);
 
   .title {
     color: var(--p-text-primary);
@@ -19,20 +20,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2.5rem;
 
     .steps {
       display: flex;
       justify-content: center;
-      padding: 0 5rem;
       gap: 2.5rem;
     }
   }
 }
 @media (max-width: bp.$lg) {
   .application-steps-section {
-    padding: 4rem 4rem;
-    gap: 4rem;
+    padding: 3rem 2rem;
+    gap: 2.5rem;
 
     .title {
       font-size: 2rem;
@@ -40,7 +39,7 @@
 
     .application-steps {
       .steps {
-        padding: 0 2rem;
+        padding: 0 1.5rem;
         gap: 2rem;
         flex-wrap: wrap;
       }
@@ -50,20 +49,20 @@
 
 @media (max-width: bp.$md) {
   .application-steps-section {
-    padding: 3rem 1rem;
-    gap: 3rem;
+    padding: 2rem 1rem;
+    gap: 2rem;
 
     .title {
       font-size: 1.75rem;
     }
 
     .application-steps {
-      gap: 2rem;
+      gap: 1.5rem;
 
       .steps {
         flex-direction: column;
         padding: 0;
-        gap: 2rem;
+        gap: 1rem;
         width: 100%;
       }
     }

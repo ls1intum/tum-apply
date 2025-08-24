@@ -5,7 +5,6 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.constants.EmailType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
@@ -14,10 +13,11 @@ import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
-import de.tum.cit.aet.core.service.EmailService;
-import de.tum.cit.aet.core.service.mail.Email;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -44,7 +44,7 @@ public class ApplicationService {
     private final DocumentService documentService;
     private final DocumentDictionaryService documentDictionaryService;
     private final CurrentUserService currentUserService;
-    private final EmailService emailService;
+    private final AsyncEmailSender sender;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -187,7 +187,7 @@ public class ApplicationService {
             .content(application)
             .researchGroup(application.getJob().getResearchGroup())
             .build();
-        emailService.send(email);
+        sender.sendAsync(email);
     }
 
     private void confirmApplicationToProfessor(Application application) {
@@ -199,7 +199,7 @@ public class ApplicationService {
             .content(application)
             .researchGroup(application.getJob().getResearchGroup())
             .build();
-        emailService.send(email);
+        sender.sendAsync(email);
     }
 
     /**
@@ -225,7 +225,7 @@ public class ApplicationService {
             .researchGroup(job.getResearchGroup())
             .build();
 
-        emailService.send(email);
+        sender.sendAsync(email);
 
         application.setState(ApplicationState.WITHDRAWN);
         applicationRepository.save(application);

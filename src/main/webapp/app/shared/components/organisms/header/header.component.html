@@ -29,7 +29,7 @@
     @if (user() === undefined) {
       @if (isProfessorPage()) {
         <jhi-button
-          class="fixed-width-button"
+          class="header-button"
           (click)="redirectToApplicantLandingPage()"
           label="{{ 'header.applicant' | translate }}"
           severity="primary"
@@ -37,20 +37,26 @@
         />
       } @else {
         <jhi-button
-          class="fixed-width-button"
+          class="header-button"
           (click)="redirectToProfessorLandingPage()"
           label="{{ 'header.professor' | translate }}"
           severity="primary"
           variant="outlined"
         />
       }
-      <jhi-button class="fixed-width-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
+      <jhi-button class="header-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
       <div class="profile">
         <fa-icon class="profile-icon" icon="user" />
         <span class="font-medium">{{ user()?.name }}</span>
       </div>
-      <jhi-button (click)="logout()" label="{{ 'header.logout' | translate }}" severity="primary" variant="outlined" />
+      <jhi-button
+        class="header-button"
+        (click)="logout()"
+        label="{{ 'header.logout' | translate }}"
+        severity="primary"
+        variant="outlined"
+      />
     }
   </div>
 </header>

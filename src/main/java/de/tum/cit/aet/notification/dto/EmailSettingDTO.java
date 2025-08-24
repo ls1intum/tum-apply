@@ -1,7 +1,7 @@
-package de.tum.cit.aet.core.dto;
+package de.tum.cit.aet.notification.dto;
 
-import de.tum.cit.aet.core.constants.EmailType;
-import de.tum.cit.aet.core.domain.EmailSetting;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.domain.EmailSetting;
 
 public record EmailSettingDTO(EmailType emailType, boolean enabled) {
     /**

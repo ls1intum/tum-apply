@@ -362,3 +362,32 @@
 .basic-tab {
   background: var(--p-background-default);
 }
+
+/* ---------------------------
+   PrimeNG Carousel Indicators (Hero)
+------------------------------- */
+.hero-carousel {
+  position: relative;
+}
+
+.hero-carousel .p-carousel-indicators,
+.hero-carousel .p-carousel-indicator-list {
+  position: absolute;
+  right: 50%;
+  transform: translateX(50%);
+  bottom: 0.25rem;
+}
+
+.hero-carousel .p-carousel-indicator .p-carousel-indicator-button {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+}
+
+/* -------------------------------
+ Style primeNg select component.
+------------------------------- */
+.p-select-option.p-select-option-selected {
+  background: var(--p-background-surface-alt);
+  color: var(--p-text-primary);
+}
