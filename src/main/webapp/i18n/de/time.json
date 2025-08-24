@@ -1,0 +1,22 @@
+{
+  "time": {
+    "justNow": "Gerade eben",
+    "ago": "vor {{count}} {{unit}}",
+    "units": {
+      "second": "Sekunde",
+      "secondPlural": "Sekunden",
+      "minute": "Minute",
+      "minutePlural": "Minuten",
+      "hour": "Stunde",
+      "hourPlural": "Stunden",
+      "day": "Tag",
+      "dayPlural": "Tagen",
+      "week": "Woche",
+      "weekPlural": "Wochen",
+      "month": "Monat",
+      "monthPlural": "Monaten",
+      "year": "Jahr",
+      "yearPlural": "Jahren"
+    }
+  }
+}

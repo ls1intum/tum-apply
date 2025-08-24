@@ -23,6 +23,8 @@ export type Button = {
   shouldTranslate?: boolean;
 };
 
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
 @Component({
   selector: 'jhi-button',
   templateUrl: './button.component.html',
@@ -43,6 +45,7 @@ export class ButtonComponent {
   fullWidth = input<boolean>(false);
   type = input<'button' | 'submit' | 'reset'>('button');
   loading = input<boolean>(false);
+  size = input<ButtonSize>('lg');
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 
@@ -51,5 +54,13 @@ export class ButtonComponent {
       return 'fab';
     }
     return 'fas';
+  }
+
+  buttonClass(): string {
+    let sizeClass = '';
+    if (this.label() === undefined) {
+      sizeClass = `rounded-full ${this.size() === 'sm' ? 'w-8 h-8' : this.size() === 'md' ? 'w-10 h-10' : 'w-14 h-14'}`;
+    }
+    return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''}`;
   }
 }
