@@ -7,11 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { RatingDTO } from './ratingDTO';
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface RatingOverviewDTO { 
+    currentUserRating?: number;
+    otherRatings?: Array<RatingDTO>;
 }
 

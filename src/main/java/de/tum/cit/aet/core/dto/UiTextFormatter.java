@@ -76,11 +76,11 @@ public class UiTextFormatter {
     }
 
     /**
-     * Calculates a human-readable label indicating how much time is left until a given application deadline.
-     *
+     * Calculates a human-readable label in **English** indicating how much time is left until a given application deadline.
+     * <p>
      * If the deadline is null, a default message like "No application deadline" is returned to indicate
      * an open or unspecified deadline.
-     *
+     * <p>
      * Examples of returned values:
      * - "No application deadline" (if deadline is null)
      * - "Apply by today"
@@ -90,9 +90,9 @@ public class UiTextFormatter {
      * - "6+ months left to apply"
      *
      * @param deadline The application deadline as a {@link LocalDate}.
-     * @return A human-readable label indicating the time remaining until the deadline.
+     * @return A human-readable label in **English** indicating the time remaining until the deadline.
      */
-    public static String getTimeLeftLabel(LocalDate deadline) {
+    public static String getTimeLeftLabelEnglish(LocalDate deadline) {
         if (deadline == null) {
             return "No application deadline";
         }
@@ -126,5 +126,58 @@ public class UiTextFormatter {
             return monthsLeft + " months left to apply";
         }
         return "6+ months left to apply";
+    }
+
+    /**
+     * Calculates a human-readable label in **German** indicating how much time is left until a given application deadline.
+     * <p>
+     * If the deadline is null, a default message like "Keine Bewerbungsfrist" is returned to indicate
+     * an open or unspecified deadline.
+     * <p>
+     * Examples of returned values:
+     * - "Keine Bewerbungsfrist" (if deadline is null)
+     * - "Bis heute bewerben"
+     * - "Noch 3 Tage zu Bewerben"
+     * - "Noch 2 Wochen zu Bewerben"
+     * - "Noch 5 Monate zu Bewerben"
+     * - "Noch 6+ Monate zu Bewerben"
+     *
+     * @param deadline The application deadline as a {@link LocalDate}.
+     * @return A human-readable label in **German** indicating the time remaining until the deadline.
+     */
+    public static String getTimeLeftLabelGerman(LocalDate deadline) {
+        if (deadline == null) {
+            return "Keine Bewerbungsfrist";
+        }
+
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        long daysLeft = ChronoUnit.DAYS.between(today, deadline);
+
+        if (daysLeft == 0) {
+            return "Bis heute bewerben";
+        }
+        if (daysLeft == 1) {
+            return "Noch 1 Tag zu bewerben";
+        }
+        if (daysLeft < 7) {
+            return "Noch " + daysLeft + " Tage zu bewerben";
+        }
+
+        long weeksLeft = ChronoUnit.WEEKS.between(today, deadline);
+        if (weeksLeft == 1) {
+            return "Noch 1 Woche zu bewerben";
+        }
+        if (weeksLeft < 4) {
+            return "Noch " + weeksLeft + " Wochen zu bewerben";
+        }
+
+        long monthsLeft = ChronoUnit.MONTHS.between(today, deadline);
+        if (monthsLeft <= 1) {
+            return "Noch 1 Monat zu bewerben";
+        }
+        if (monthsLeft < 6) {
+            return "Noch " + monthsLeft + " Monate zu bewerben";
+        }
+        return "Noch 6+ Monate zu bewerben";
     }
 }
