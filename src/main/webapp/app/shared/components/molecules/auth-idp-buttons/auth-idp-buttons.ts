@@ -28,7 +28,7 @@ export class AuthIdpButtons {
 
   readonly idpButtons = computed<ButtonGroupData>(() => ({
     direction: this.onlyIcons() ? 'horizontal' : 'vertical',
-    fullWidth: !this.onlyIcons(),
+    fullWidth: true,
     buttons: [
       // TODO: Enable Microsoft login when available in Production environment
       {
