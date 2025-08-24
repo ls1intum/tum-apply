@@ -273,7 +273,6 @@ export class JobCreationFormComponent {
       await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
       this.router.navigate(['/my-positions']);
     } catch (err) {
-      console.error('Failed to publish job:', err);
       const httpError = err as HttpErrorResponse;
       this.toastService.showError({ summary: 'Error', detail: 'Failed to publish job: ' + httpError.statusText });
     }
@@ -371,7 +370,6 @@ export class JobCreationFormComponent {
     } catch (err) {
       const httpError = err as HttpErrorResponse;
       this.toastService.showError({ summary: 'Error', detail: 'Failed to load job form: ' + httpError.statusText });
-      console.error('Initialization error:', err);
       this.router.navigate(['/my-positions']);
     } finally {
       this.isLoading.set(false);
@@ -463,7 +461,6 @@ export class JobCreationFormComponent {
     } catch (err) {
       const httpError = err as HttpErrorResponse;
       this.toastService.showError({ summary: 'Error', detail: 'Failed to save job: ' + httpError.statusText });
-      console.error('Auto-save failed:', err);
     }
   }
 
