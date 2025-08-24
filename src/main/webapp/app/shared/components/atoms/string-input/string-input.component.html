@@ -25,24 +25,37 @@
     }
 
     <div [class.error]="inputState() === 'invalid'" class="input-wrapper">
-      <input
-        (blur)="onBlur()"
-        (focus)="onFocus()"
-        (ngModelChange)="onInputChange($event)"
-        [disabled]="disabled()"
-        [id]="id()"
-        [ngModel]="model()"
-        [pAutoFocus]="autofocus()"
-        [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
-        [required]="required()"
-        [style]="{ width: width() }"
-        autocomplete="off"
-        class="custom-input"
-        pInputText
-      />
-
-      @if (formControl()) {
-        <input type="hidden" [formControl]="formControl()" />
+      @if (formControl(); as ctrl) {
+        <input
+          (blur)="onBlur()"
+          (focus)="onFocus()"
+          [disabled]="disabled()"
+          [id]="id()"
+          [formControl]="ctrl"
+          [pAutoFocus]="autofocus()"
+          [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
+          [required]="required()"
+          [style]="{ width: width() }"
+          autocomplete="off"
+          class="custom-input"
+          pInputText
+        />
+      } @else {
+        <input
+          (blur)="onBlur()"
+          (focus)="onFocus()"
+          (ngModelChange)="onInputChange($event)"
+          [disabled]="disabled()"
+          [id]="id()"
+          [ngModel]="model()"
+          [pAutoFocus]="autofocus()"
+          [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
+          [required]="required()"
+          [style]="{ width: width() }"
+          autocomplete="off"
+          class="custom-input"
+          pInputText
+        />
       }
     </div>
     @if (errorEnabled()) {
