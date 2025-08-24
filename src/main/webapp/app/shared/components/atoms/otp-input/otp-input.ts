@@ -45,6 +45,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   // derived states
   readonly disabledSubmit = computed(() => this.isBusy() || this.otpValue().length !== this.length);
 
+  // TODO: show error messages from server
   // determine size of the OTP input based on screen size
   readonly otpSize = toSignal<'small' | 'large' | null>(
     this.breakpointObserver
@@ -60,6 +61,13 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   }
 
   onKeyDown(e: KeyboardEvent): void {
+    // Submit on Enter
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.onSubmit();
+      return;
+    }
+
     // Block any non-alphanumeric character keys (allows navigation keys, backspace, etc.)
     if (e.key && e.key.length === 1 && !/[a-zA-Z0-9]/.test(e.key)) {
       e.preventDefault();
