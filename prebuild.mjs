@@ -69,9 +69,10 @@ const keycloakConfig = {
   clientId: process.env.KEYCLOAK_CLIENT_ID,
   enableLogging: process.env.KEYCLOAK_ENABLE_LOGGING === 'true',
 };
+console.log(process.env);
 const otpConfig = {
-  length: process.env.OTP_LENGTH || 6,
-  cooldown: process.env.OTP_RESEND_COOLDOWN_SECONDS || 60,
+  length: process.env.OTP_LENGTH,
+  cooldown: process.env.OTP_RESEND_COOLDOWN_SECONDS,
 };
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
