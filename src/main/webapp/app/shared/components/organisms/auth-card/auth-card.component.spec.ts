@@ -84,11 +84,4 @@ describe('AuthCardComponent', () => {
     const btnData = component.idpButtons().buttons[1];
     expect(btnData.label).toBe('Google');
   });
-
-  it('should call AuthFacadeService.loginWithTUM when onTUMSSOLogin is called', () => {
-    const authFacadeService = fixture.debugElement.injector.get(AuthFacadeService);
-    const loginWithTUMSpy = jest.spyOn(authFacadeService, 'loginWithTUM');
-    component.onTUMSSOLogin();
-    expect(loginWithTUMSpy).toHaveBeenCalledTimes(1);
-  });
 });

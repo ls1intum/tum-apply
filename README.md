@@ -61,7 +61,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Technology Stack
 
 | Component      | Technology                                     |
-|----------------|------------------------------------------------|
+| -------------- | ---------------------------------------------- |
 | Client         | Angular                                        |
 | Server         | Spring Boot (Java)                             |
 | Proxy          | Nginx                                          |
@@ -72,7 +72,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Core Modules & Responsibilities
 
 | Module/Service         | Responsibilities                                     |
-|------------------------|------------------------------------------------------|
+| ---------------------- | ---------------------------------------------------- |
 | User Authentication    | Handles logins via Keycloak                          |
 | Job Management         | Professors create and manage doctoral positions      |
 | Application Handling   | Applicants submit documents for a position           |
@@ -83,7 +83,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Areas of Work
 
 | Area                      | Tasks                                                       |
-|---------------------------|-------------------------------------------------------------|
+| ------------------------- | ----------------------------------------------------------- |
 | Client-Side               | Angular UI development with role-based views                |
 | Server-Side               | Implement REST APIs using Spring Boot                       |
 | Database Management       | Design and optimize MySQL schema                            |
