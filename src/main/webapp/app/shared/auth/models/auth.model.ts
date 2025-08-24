@@ -17,9 +17,24 @@ export interface AuthOpenOptions {
   onSuccess?: () => void;
 }
 
+// Substates within the login flow:
+// - 'email'    : user enters their email (decides between password or OTP)
+// - 'password' : user is prompted for their password
+// - 'otp'      : user enters a one-time code sent by email
 export type LoginSubState = 'email' | 'password' | 'otp';
+
+// Steps within the registration flow:
+// - 'email'    : user enters their email
+// - 'verify'   : user verifies their email with a code
+// - 'profile'   : user enters first name, last name, and consents
+// - 'password' : optional step to set a password for future logins
 export type RegisterStep = 'email' | 'verify' | 'profile' | 'password';
-export type ApplyStep = 'inline' | 'verified' | 'password'; // for embedded flow
+
+// Steps for the inline "apply" registration flow (during job application):
+// - 'inline'   : user provides email + names and requests a code
+// - 'verified'  : email successfully verified, host form can proceed
+// - 'password' : optional step to set a password after applying
+export type ApplyStep = 'inline' | 'verified' | 'password';
 
 export interface PrefaceResponse {
   authContext: string;
