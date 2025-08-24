@@ -38,7 +38,6 @@ public class Email {
      */
     private ResearchGroup researchGroup;
 
-    @NonNull
     private EmailType emailType;
 
     @Builder.Default
