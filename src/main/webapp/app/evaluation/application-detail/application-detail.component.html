@@ -50,26 +50,44 @@
       <div class="w-full">
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
           <div>
-            <jhi-section title="applicant.title">
+            <jhi-section title="evaluation.details.applicantTitle">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Applicant Information -->
-                <jhi-sub-section title="applicant.information">
+                <jhi-sub-section title="evaluation.details.applicantInformation">
                   <jhi-description-list
                     [items]="[
-                      { labelKey: 'applicant.name', value: application.applicationDetailDTO.applicant?.user?.name },
-                      { labelKey: 'applicant.gender', value: application.applicationDetailDTO.applicant?.user?.gender },
-                      { labelKey: 'applicant.nationality', value: application.applicationDetailDTO.applicant?.user?.nationality },
-                      { labelKey: 'applicant.language', value: application.applicationDetailDTO.applicant?.user?.preferredLanguage },
+                      { labelKey: 'evaluation.details.applicantName', value: application.applicationDetailDTO.applicant?.user?.name },
+                      {
+                        labelKey: 'evaluation.details.applicantGender',
+                        value: application.applicationDetailDTO.applicant?.user?.gender | genderName,
+                      },
+                      {
+                        labelKey: 'evaluation.details.applicantNationality',
+                        value: application.applicationDetailDTO.applicant?.user?.nationality | nationalityName,
+                      },
+                      {
+                        labelKey: 'evaluation.details.applicantPreferredLanguage',
+                        value: application.applicationDetailDTO.applicant?.user?.preferredLanguage | languageName,
+                      },
                     ]"
                   />
                 </jhi-sub-section>
 
                 <!-- Links -->
-                <jhi-sub-section title="applicant.links">
+                <jhi-sub-section title="evaluation.details.applicantLinks">
                   <jhi-link-list
                     [links]="[
-                      { labelKey: 'applicant.website', url: application.applicationDetailDTO.applicant?.user?.website ?? '' },
-                      { labelKey: 'applicant.linkedin', url: application.applicationDetailDTO.applicant?.user?.linkedinUrl ?? '' },
+                      {
+                        labelKey: 'evaluation.details.applicantLinkedIn',
+                        url: application.applicationDetailDTO.applicant?.user?.website ?? '',
+                        icon: 'linkedin',
+                        isBrandIcon: true,
+                      },
+                      {
+                        labelKey: 'evaluation.details.applicantWebsite',
+                        url: application.applicationDetailDTO.applicant?.user?.linkedinUrl ?? '',
+                        icon: 'link',
+                      },
                     ]"
                   />
                 </jhi-sub-section>
@@ -79,26 +97,38 @@
             <p-divider />
 
             <!-- Education -->
-            <jhi-section title="education.title">
+            <jhi-section title="evaluation.details.educationTitle">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Bachelor -->
-                <jhi-sub-section title="education.bachelor">
+                <jhi-sub-section title="evaluation.details.educationBachelors">
                   <jhi-description-list
                     [items]="[
-                      { labelKey: 'education.degree', value: application.applicationDetailDTO.applicant?.bachelorDegreeName },
-                      { labelKey: 'education.university', value: application.applicationDetailDTO.applicant?.bachelorUniversity },
-                      { labelKey: 'education.grade', value: application.applicationDetailDTO.applicant?.bachelorGrade },
+                      {
+                        labelKey: 'evaluation.details.educationDegree',
+                        value: application.applicationDetailDTO.applicant?.bachelorDegreeName,
+                      },
+                      {
+                        labelKey: 'evaluation.details.educationUniversity',
+                        value: application.applicationDetailDTO.applicant?.bachelorUniversity,
+                      },
+                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.bachelorGrade },
                     ]"
                   />
                 </jhi-sub-section>
 
                 <!-- Master -->
-                <jhi-sub-section title="education.master">
+                <jhi-sub-section title="evaluation.details.educationMasters">
                   <jhi-description-list
                     [items]="[
-                      { labelKey: 'education.degree', value: application.applicationDetailDTO.applicant?.masterDegreeName },
-                      { labelKey: 'education.university', value: application.applicationDetailDTO.applicant?.masterUniversity },
-                      { labelKey: 'education.grade', value: application.applicationDetailDTO.applicant?.masterGrade },
+                      {
+                        labelKey: 'evaluation.details.educationDegree',
+                        value: application.applicationDetailDTO.applicant?.masterDegreeName,
+                      },
+                      {
+                        labelKey: 'evaluation.details.educationUniversity',
+                        value: application.applicationDetailDTO.applicant?.masterUniversity,
+                      },
+                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.masterGrade },
                     ]"
                   />
                 </jhi-sub-section>
@@ -108,27 +138,30 @@
             <p-divider />
 
             <!-- Application -->
-            <jhi-section title="application.title">
-              <jhi-sub-section title="application.desiredStart">
+            <jhi-section title="evaluation.details.applicationTitle">
+              <jhi-sub-section title="evaluation.details.applicationDesiredStartDate">
                 <span class="text-sm"> {{ application.applicationDetailDTO.desiredDate || '—' }} </span>
               </jhi-sub-section>
 
-              <jhi-sub-section title="application.motivation">
+              <jhi-sub-section title="evaluation.details.applicationMotivation">
                 <jhi-prose [text]="application.applicationDetailDTO.motivation" />
               </jhi-sub-section>
 
-              <jhi-sub-section title="application.skills">
+              <jhi-sub-section title="evaluation.details.applicationSkills">
                 <jhi-prose [text]="application.applicationDetailDTO.specialSkills" />
               </jhi-sub-section>
 
-              <jhi-sub-section title="application.projects">
+              <jhi-sub-section title="evaluation.details.applicationProjects">
                 <jhi-prose [text]="application.applicationDetailDTO.projects" />
               </jhi-sub-section>
             </jhi-section>
           </div>
           <div>
-            <jhi-section title="documents">
-              <jhi-document-section [idsDTO]="currentDocumentIds()" />
+            <jhi-section title="evaluation.details.documentTitle">
+              <jhi-document-section
+                [idsDTO]="currentDocumentIds()"
+                [applicationId]="currentApplication()?.applicationDetailDTO?.applicationId ?? ''"
+              />
             </jhi-section>
           </div>
         </div>

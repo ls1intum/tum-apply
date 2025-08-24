@@ -319,6 +319,9 @@ public class ApplicationEvaluationService {
                     ? base + "_" + typeIndex.merge(type, 1, Integer::sum)
                     : base;
 
+                // append file extension
+                entryName += "." + documentService.resolveFileExtension(doc).getExtension();
+
                 ZipEntry entry = new ZipEntry(entryName);
                 zos.putNextEntry(entry);
                 zos.write(documentService.download(doc).getContentAsByteArray());
