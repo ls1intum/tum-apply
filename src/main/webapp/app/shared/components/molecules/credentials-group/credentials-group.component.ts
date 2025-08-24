@@ -34,9 +34,8 @@ import { environment } from '../../../../environments/environment';
 })
 export class CredentialsGroupComponent {
   submitHandler = input.required<(credentials: { email: string; password?: string; otp?: string }) => Promise<boolean>>();
-  showEmail = input<boolean>(true);
   showPassword = input<boolean>(true);
-  submitLabel = input<string>();
+  submitLabel = input<string>('auth.login.emailLogin.login');
 
   isSubmitting = false;
   otpLength = environment.otp.length;

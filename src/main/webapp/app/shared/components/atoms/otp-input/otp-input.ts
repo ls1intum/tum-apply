@@ -11,11 +11,12 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 import { ButtonComponent } from '../button/button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-otp-input',
   standalone: true,
-  imports: [InputOtpModule, ButtonModule, ButtonComponent],
+  imports: [InputOtpModule, ButtonModule, ButtonComponent, TranslateDirective],
   templateUrl: './otp-input.html',
   styleUrl: './otp-input.scss',
 })
@@ -48,15 +49,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   readonly otpSize = toSignal<'small' | 'large' | null>(
     this.breakpointObserver
       .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.XLarge])
-      .pipe(
-        map(r =>
-          r.breakpoints[Breakpoints.XLarge]
-            ? 'large'
-            : r.breakpoints[Breakpoints.XSmall] || r.breakpoints[Breakpoints.Small]
-              ? 'small'
-              : null,
-        ),
-      ),
+      .pipe(map(r => (r.breakpoints[Breakpoints.XLarge] ? 'large' : r.breakpoints[Breakpoints.XSmall] ? 'small' : null))),
     { initialValue: null },
   );
 

@@ -1,4 +1,5 @@
 <div class="otp-wrapper">
+  <span class="otp-instruction" jhiTranslate="auth.common.otp.instructions"></span>
   <p-inputotp
     (keydown)="onKeyDown($event)"
     (onChange)="onChange($any($event))"
@@ -7,6 +8,7 @@
     [size]="$any(otpSize())"
     formControlName="otp"
     inputmode="latin"
+    styleClass="otp-input"
   />
   <div class="buttons">
     <jhi-button (click)="onResend()" [disabled]="disableResend()" [fullWidth]="true" [label]="resendLabel" variant="text" />
