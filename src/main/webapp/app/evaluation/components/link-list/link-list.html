@@ -1,6 +1,6 @@
 <ul class="space-y-2">
   @for (link of links(); track link.url) {
-    <li class="flex items-start gap-x-2 hover:text-blue-800">
+    <li class="flex items-start w-fit gap-x-2 hover:text-[var(--p-primary-color)]">
       <a [href]="link.url" target="_blank" rel="noopener" class="text-sm underline">
         {{ link.labelKey | translate }}
       </a>
