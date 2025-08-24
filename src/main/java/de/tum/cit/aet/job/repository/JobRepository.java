@@ -78,10 +78,11 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
             j.workload,
             j.startDate,
-            j.createdAt
+            j.endDate
         )
         FROM Job j
         WHERE j.state = :state
+        AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
         AND (:title IS NULL OR j.title LIKE %:title%)
         AND (:fieldOfStudies IS NULL OR j.fieldOfStudies LIKE %:fieldOfStudies%)
         AND (:location IS NULL OR j.location = :location)
@@ -128,10 +129,11 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
             j.workload,
             j.startDate,
-            j.createdAt
+            j.endDate
         )
         FROM Job j
         WHERE j.state = :state
+        AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
         AND (:title IS NULL OR j.title LIKE %:title%)
         AND (:fieldOfStudies IS NULL OR j.fieldOfStudies LIKE %:fieldOfStudies%)
         AND (:location IS NULL OR j.location = :location)

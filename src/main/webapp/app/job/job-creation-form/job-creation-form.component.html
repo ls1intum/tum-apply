@@ -111,6 +111,8 @@
             [max]="40"
             [minFractionDigits]="0"
             [maxFractionDigits]="0"
+            icon="circle-info"
+            [tooltipText]="'jobCreationForm.basicInformationSection.workload.toolTipText' | translate"
           />
         </div>
       </div>
@@ -123,9 +125,11 @@
             [model]="basicInfoForm.get('contractDuration')?.value"
             [control]="basicInfoForm.get('contractDuration') ?? undefined"
             [min]="1"
-            [max]="100"
+            [max]="5"
             [minFractionDigits]="0"
-            [maxFractionDigits]="0"
+            [maxFractionDigits]="2"
+            icon="circle-info"
+            [tooltipText]="'jobCreationForm.basicInformationSection.contractDuration.toolTipText' | translate"
           />
         </div>
         <div class="form-field">
