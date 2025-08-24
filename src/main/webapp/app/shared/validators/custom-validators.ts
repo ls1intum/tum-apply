@@ -14,6 +14,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
  */
 export function htmlTextRequiredValidator(control: AbstractControl): ValidationErrors | undefined {
   const htmlText = control.value ?? '';
+  // TODO: investigate whether DOM dependency should be removed
   const temp = document.createElement('div');
   temp.innerHTML = htmlText;
   const plainText = temp.textContent ?? temp.innerText;
