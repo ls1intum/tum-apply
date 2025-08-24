@@ -1,0 +1,18 @@
+<div class="login-header">
+  <h1>TUMApply</h1>
+</div>
+<div class="login-content">
+  <div class="login-panel">
+    <div class="login-buttons">
+      <jhi-credentials-group [submitHandler]="onEmailLogin" class="login-credentials" />
+      <p-divider align="center">
+        <span class="divider-text" jhiTranslate="auth.login.texts.or"></span>
+      </p-divider>
+      <jhi-auth-idp-buttons class="login-providers" />
+    </div>
+  </div>
+  <p class="login-footer">
+    <span jhiTranslate="auth.login.texts.accountMissing.prefix"></span>
+    <a (click)="authOrchestrator.switchToRegister()" jhiTranslate="auth.login.texts.accountMissing.link"></a>
+  </p>
+</div>

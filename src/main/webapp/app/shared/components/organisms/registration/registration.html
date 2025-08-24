@@ -1,0 +1,41 @@
+<div class="login-header">
+  <h1>TUMApply</h1>
+</div>
+<div class="login-content">
+  <div class="login-panel">
+    <div class="progressbar">
+      <p-progressbar [showValue]="false" [value]="registerProgress()" class="progressbar" color="var(--p-accent-color)" />
+      <span class="progress-label">{{ registerProgress() }} %</span>
+    </div>
+    <div class="login-buttons">
+      @switch (authOrchestrator.registerStep()) {
+        @case ('email') {
+          <jhi-credentials-group
+            [showPassword]="false"
+            [submitHandler]="sendOtp"
+            class="login-credentials"
+            [submitLabel]="'auth.register.buttons.continue'"
+          />
+          <p-divider align="center">
+            <span class="divider-text" jhiTranslate="auth.register.texts.or"></span>
+          </p-divider>
+          <jhi-auth-idp-buttons class="login-providers" />
+        }
+        @case ('verify') {
+          <jhi-otp-input [registration]="true" />
+        }
+        @case ('profile') {}
+        @case ('password') {}
+      }
+      @if (authOrchestrator.registerStep() !== 'email') {
+        <jhi-button (click)="onBack()" [label]="'auth.common.back'" [shouldTranslate]="true" variant="text" icon="chevron-left" />
+      }
+    </div>
+  </div>
+  @if (authOrchestrator.registerStep() === 'email') {
+    <p class="login-footer">
+      <span jhiTranslate="auth.register.texts.accountMissing.prefix"></span>
+      <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountMissing.link"></a>
+    </p>
+  }
+</div>

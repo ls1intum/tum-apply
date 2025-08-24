@@ -5,6 +5,7 @@ import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/fo
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoFocusModule } from 'primeng/autofocus';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -20,7 +21,16 @@ import { BaseInputDirective } from '../base-input/base-input.component';
       multi: true,
     },
   ],
-  imports: [AutoFocusModule, CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
+  imports: [
+    AutoFocusModule,
+    CommonModule,
+    FormsModule,
+    FontAwesomeModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    TooltipModule,
+    TranslateModule,
+  ],
 })
 export class StringInputComponent extends BaseInputDirective<string> {
   tooltipText = input<string | undefined>(undefined);
