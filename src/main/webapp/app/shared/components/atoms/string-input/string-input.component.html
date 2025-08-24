@@ -1,16 +1,24 @@
 <div class="input-container">
   <div class="label-top label-input-wrapper">
-    @if (label()) {
+    @if (label(); as label) {
       <label class="custom-label" [for]="id()">
-        {{ label() }}
+        @if (shouldTranslate()) {
+          {{ label | translate }}
+        } @else {
+          {{ label }}
+        }
         @if (required()) {
           <span class="required">*</span>
         }
-        @if (icon()) {
-          @if (icon() === 'circle-info' && tooltipText()) {
-            <fa-icon class="icon" [icon]="['fas', icon() ?? '']" [pTooltip]="tooltipText()" tooltipPosition="top" />
+        @if (icon(); as icon) {
+          @if (icon === 'circle-info' && tooltipText()) {
+            @if (shouldTranslate()) {
+              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
+            } @else {
+              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
+            }
           } @else {
-            <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+            <fa-icon class="icon" [icon]="['fas', icon ?? '']" />
           }
         }
       </label>
@@ -25,7 +33,7 @@
         [id]="id()"
         [ngModel]="model()"
         [pAutoFocus]="autofocus()"
-        [placeholder]="placeholder() ?? ''"
+        [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
         [required]="required()"
         [style]="{ width: width() }"
         autocomplete="off"
