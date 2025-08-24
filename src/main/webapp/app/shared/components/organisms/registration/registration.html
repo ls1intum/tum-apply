@@ -27,6 +27,9 @@
         @case ('profile') {}
         @case ('password') {}
       }
+      @if (authOrchestrator.registerStep() !== 'email') {
+        <jhi-button (click)="onBack()" [label]="'auth.common.back'" [shouldTranslate]="true" variant="text" icon="chevron-left" />
+      }
     </div>
   </div>
   @if (authOrchestrator.registerStep() === 'email') {

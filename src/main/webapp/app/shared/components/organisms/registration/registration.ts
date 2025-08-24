@@ -10,6 +10,7 @@ import { AuthService } from '../../../auth/data-access/auth.service';
 import { AuthIdpButtons } from '../../molecules/auth-idp-buttons/auth-idp-buttons';
 import { TranslateDirective } from '../../../language';
 import { OtpInput } from '../../atoms/otp-input/otp-input';
+import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-registration',
@@ -23,6 +24,7 @@ import { OtpInput } from '../../atoms/otp-input/otp-input';
     ReactiveFormsModule,
     TranslateDirective,
     TranslateModule,
+    ButtonComponent,
   ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
@@ -42,5 +44,9 @@ export class Registration {
     this.authOrchestrator.email.set(normalized);
     await this.authService.sendOtp(true);
     return true;
+  };
+
+  onBack = (): void => {
+    this.authOrchestrator.registerStep.set('email');
   };
 }
