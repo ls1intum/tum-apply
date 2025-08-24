@@ -72,7 +72,10 @@ export class Login {
     this.authFacadeService.loginWithTUM(this.redirectUri());
   }
 
-  onEmailLogin = async (credentials: { email: string; password: string }): Promise<boolean> => {
+  onEmailLogin = async (credentials: { email: string; password?: string }): Promise<boolean> => {
+    if (credentials.password == null || credentials.password.trim() === '') {
+      return false;
+    }
     const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
     if (!response) {
       this.toastService.showError({

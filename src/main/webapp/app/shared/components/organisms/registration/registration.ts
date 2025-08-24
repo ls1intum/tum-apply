@@ -14,6 +14,7 @@ import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
+import { AuthService } from '../../../auth/data-access/auth.service';
 
 @Component({
   selector: 'jhi-registration',
@@ -25,6 +26,7 @@ import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestr
 })
 export class Registration {
   authFacadeService = inject(AuthFacadeService);
+  authService = inject(AuthService);
   authOrchestrator = inject(AuthOrchestratorService);
   breakpointObserver = inject(BreakpointObserver);
   config = inject(DynamicDialogConfig);
@@ -71,19 +73,14 @@ export class Registration {
 
   readonly registerProgress = computed(() => this.authOrchestrator.registerProgress() * 100);
 
-  onTUMSSOLogin(): void {
-    this.authFacadeService.loginWithTUM(this.redirectUri());
-  }
-
-  onEmailLogin = async (credentials: { email: string; password: string }): Promise<boolean> => {
-    const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
-    if (!response) {
-      this.toastService.showError({
-        summary: this.translate.instant('login.messages.error.header'),
-        detail: this.translate.instant('login.messages.error.message'),
-      });
+  sendOtp = async (credentials: { email: string }): Promise<boolean> => {
+    const normalized = credentials.email.trim();
+    if (!normalized) {
+      return false;
     }
-    return response;
+    this.authOrchestrator.email.set(normalized);
+    await this.authService.sendOtp(true);
+    return true;
   };
 
   private redirectUri(): string {
