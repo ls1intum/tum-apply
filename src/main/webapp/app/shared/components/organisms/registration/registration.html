@@ -5,11 +5,24 @@
   <div class="login-panel">
     <p-progressbar [value]="registerProgress()" class="progressbar" color="var(--p-accent-color)" />
     <div class="login-buttons">
-      <jhi-credentials-group [showOtp]="true" [showPassword]="false" [submitHandler]="sendOtp" class="login-credentials" />
-      <p-divider align="center">
-        <span class="divider-text" jhiTranslate="register.texts.or"></span>
-      </p-divider>
-      <jhi-button-group [data]="idpButtons()" class="login-providers" />
+      @switch (authOrchestrator.registerStep()) {
+        @case ('email') {
+          <jhi-credentials-group [showEmail]="true" [showPassword]="true" [submitHandler]="sendOtp" class="login-credentials" />
+          <p-divider align="center">
+            <span class="divider-text" jhiTranslate="register.texts.or"></span>
+          </p-divider>
+          <jhi-auth-idp-buttons class="login-providers" />
+        }
+        @case ('verify') {
+          <jhi-credentials-group [showOtp]="true" [showPassword]="false" [submitHandler]="sendOtp" class="login-credentials" />
+          <p-divider align="center">
+            <span class="divider-text" jhiTranslate="register.texts.or"></span>
+          </p-divider>
+          <jhi-auth-idp-buttons class="login-providers" />
+        }
+        @case ('profile') {}
+        @case ('password') {}
+      }
     </div>
   </div>
   <p class="login-footer">

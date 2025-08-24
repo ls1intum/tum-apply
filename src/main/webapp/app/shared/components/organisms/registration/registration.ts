@@ -1,75 +1,23 @@
 import { Component, ViewEncapsulation, computed, inject } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map, startWith } from 'rxjs';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { ToastService } from 'app/service/toast-service';
-import { TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { ProgressBar } from 'primeng/progressbar';
 
-import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
-import { IdpProvider } from '../../../../core/auth/keycloak.service';
-import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
-import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 import { AuthService } from '../../../auth/data-access/auth.service';
+import { AuthIdpButtons } from '../../molecules/auth-idp-buttons/auth-idp-buttons';
 
 @Component({
   selector: 'jhi-registration',
   standalone: true,
-  imports: [ButtonGroupComponent, CredentialsGroupComponent, TranslateDirective, DividerModule, ProgressBar],
+  imports: [CredentialsGroupComponent, DividerModule, ProgressBar, AuthIdpButtons],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class Registration {
-  authFacadeService = inject(AuthFacadeService);
   authService = inject(AuthService);
   authOrchestrator = inject(AuthOrchestratorService);
-  breakpointObserver = inject(BreakpointObserver);
-  config = inject(DynamicDialogConfig);
-  toastService = inject(ToastService);
-  translate = inject(TranslateService);
-
-  readonly onlyIcons = toSignal(
-    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
-      map(state => state.matches),
-      startWith(false),
-    ),
-    { initialValue: false },
-  );
-
-  readonly idpButtons = computed<ButtonGroupData>(() => ({
-    direction: this.onlyIcons() ? 'horizontal' : 'vertical',
-    fullWidth: !this.onlyIcons(),
-    buttons: [
-      // TODO: Enable Microsoft login when available in Production environment
-      {
-        label: this.onlyIcons() ? undefined : 'Apple',
-        icon: 'apple',
-        severity: 'primary',
-        variant: this.onlyIcons() ? 'text' : 'outlined',
-        disabled: false,
-        fullWidth: true,
-        onClick: () => {
-          void this.authFacadeService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
-        },
-      },
-      {
-        label: this.onlyIcons() ? undefined : 'Google',
-        icon: 'google',
-        severity: 'primary',
-        variant: this.onlyIcons() ? 'text' : 'outlined',
-        disabled: false,
-        fullWidth: true,
-        onClick: () => {
-          void this.authFacadeService.loginWithProvider(IdpProvider.Google, this.redirectUri());
-        },
-      },
-    ],
-  }));
 
   readonly registerProgress = computed(() => this.authOrchestrator.registerProgress() * 100);
 
@@ -82,8 +30,4 @@ export class Registration {
     await this.authService.sendOtp(true);
     return true;
   };
-
-  private redirectUri(): string {
-    return this.config.data?.redirectUri ? `${window.location.origin}${this.config.data.redirectUri}` : window.location.origin;
-  }
 }
