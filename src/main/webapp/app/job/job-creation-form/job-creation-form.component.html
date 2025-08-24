@@ -1,3 +1,14 @@
+<jhi-confirm-dialog
+  #sendPublishDialog
+  class="confirm-dialog"
+  [header]="'jobCreationForm.confirmDialog.header' | translate"
+  [message]="'jobCreationForm.confirmDialog.message' | translate"
+  [label]="publishButtonLabel | translate"
+  [severity]="publishButtonSeverity"
+  [confirmIcon]="publishButtonIcon"
+  [showOpenButton]="false"
+  (confirmed)="publishJob()"
+/>
 @if (!isLoading()) {
   <div class="doctorate-form-container">
     <header>
@@ -57,7 +68,7 @@
           <label for="supervisingProfessor" jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
             <span class="required">*</span>
           </label>
-          <div class="icon-input-wrapper">
+          <div class="icon-input-wrapper mb-6">
             <fa-icon [icon]="['fas', 'user']" class="input-icon" />
             <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
           </div>
@@ -80,35 +91,28 @@
       <div class="form-row">
         <div class="form-field">
           <jhi-datepicker
-            [selectedDate]="basicInfoForm.get('startDate')?.value"
-            (selectedDateChange)="basicInfoForm.get('startDate')?.setValue($event)"
-            [label]="'jobCreationForm.basicInformationSection.startDate.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder' | translate"
+            [selectedDate]="basicInfoForm.get('applicationDeadline')?.value"
+            (selectedDateChange)="basicInfoForm.get('applicationDeadline')?.setValue($event)"
+            [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
+            [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
+            icon="circle-info"
+            tooltipText="jobCreationForm.basicInformationSection.applicationDeadline.toolTipText"
+            [shouldTranslate]="true"
             [width]="'100%'"
           />
         </div>
         <div class="form-field">
-          <jhi-datepicker
-            [selectedDate]="basicInfoForm.get('endDate')?.value"
-            (selectedDateChange)="basicInfoForm.get('endDate')?.setValue($event)"
-            [label]="'jobCreationForm.basicInformationSection.endDate.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.endDate.placeholder' | translate"
-            [width]="'100%'"
+          <jhi-number-input
+            [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
+            [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+            [model]="basicInfoForm.get('workload')?.value"
+            [control]="basicInfoForm.get('workload') ?? undefined"
+            [min]="1"
+            [max]="40"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="0"
           />
         </div>
-      </div>
-
-      <div class="form-field">
-        <jhi-number-input
-          [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
-          [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
-          [model]="basicInfoForm.get('workload')?.value"
-          [control]="basicInfoForm.get('workload') ?? undefined"
-          [min]="1"
-          [max]="40"
-          [minFractionDigits]="0"
-          [maxFractionDigits]="0"
-        />
       </div>
 
       <div class="form-row">
@@ -125,16 +129,28 @@
           />
         </div>
         <div class="form-field">
-          <jhi-select
-            [selected]="basicInfoForm.get('fundingType')?.value"
-            (selectedChange)="basicInfoForm.get('fundingType')?.setValue($event)"
-            [items]="DropdownOptions.fundingTypes"
-            [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
+          <jhi-datepicker
+            [selectedDate]="basicInfoForm.get('startDate')?.value"
+            (selectedDateChange)="basicInfoForm.get('startDate')?.setValue($event)"
+            [label]="'jobCreationForm.basicInformationSection.startDate.label'"
+            [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
+            icon="circle-info"
+            tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
+            [shouldTranslate]="true"
             [width]="'100%'"
-            [filter]="true"
           />
         </div>
+      </div>
+      <div class="form-field">
+        <jhi-select
+          [selected]="basicInfoForm.get('fundingType')?.value"
+          (selectedChange)="basicInfoForm.get('fundingType')?.setValue($event)"
+          [items]="DropdownOptions.fundingTypes"
+          [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
+          [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
+          [width]="'100%'"
+          [filter]="true"
+        />
       </div>
     </form>
   </ng-template>
@@ -146,72 +162,48 @@
       <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
       <br />
       <div class="form-field">
-        <label for="description" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.label"></label>
-        <span class="required">*</span>
-        <fa-icon
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.toolTipText' | translate"
-          tooltipPosition="top"
+        <jhi-editor
+          label="jobCreationForm.positionDetailsSection.jobDescription.label"
+          placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
+          helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+          tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
+          [required]="true"
+          [characterLimit]="1000"
+          [model]="positionDetailsForm.get('description')?.value"
+          [control]="positionDetailsForm.get('description') ?? undefined"
+          icon="circle-info"
+          [shouldTranslate]="true"
         />
-        <div class="input-with-icon">
-          <textarea
-            formControlName="description"
-            maxlength="1000"
-            id="description"
-            [placeholder]="'jobCreationForm.positionDetailsSection.jobDescription.placeholder' | translate"
-            rows="10"
-          ></textarea>
-        </div>
-        <div class="form-footer">
-          <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"></small>
-          <small class="char-counter">{{ descriptionLength }}/1000</small>
-        </div>
       </div>
 
       <div class="form-field">
-        <label for="tasks" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.label"></label>
-        <span class="required">*</span>
-        <fa-icon
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'jobCreationForm.positionDetailsSection.tasks.toolTipText' | translate"
-          tooltipPosition="top"
+        <jhi-editor
+          label="jobCreationForm.positionDetailsSection.tasks.label"
+          placeholder="jobCreationForm.positionDetailsSection.tasks.placeholder"
+          helperText="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"
+          tooltipText="jobCreationForm.positionDetailsSection.tasks.toolTipText"
+          [required]="true"
+          [characterLimit]="1000"
+          [model]="positionDetailsForm.get('tasks')?.value"
+          [control]="positionDetailsForm.get('tasks') ?? undefined"
+          icon="circle-info"
+          [shouldTranslate]="true"
         />
-        <div class="input-with-icon">
-          <textarea
-            formControlName="tasks"
-            maxlength="1000"
-            id="tasks"
-            [placeholder]="'jobCreationForm.positionDetailsSection.tasks.placeholder' | translate"
-            rows="8"
-          ></textarea>
-        </div>
-        <div class="form-footer">
-          <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
-          <small class="char-counter">{{ tasksLength }}/1000</small>
-        </div>
       </div>
 
       <div class="form-field">
-        <label for="requirements" jhiTranslate="jobCreationForm.positionDetailsSection.requirements.label"></label>
-        <span class="required">*</span>
-        <fa-icon
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'jobCreationForm.positionDetailsSection.requirements.toolTipText' | translate"
-          tooltipPosition="top"
+        <jhi-editor
+          label="jobCreationForm.positionDetailsSection.requirements.label"
+          placeholder="jobCreationForm.positionDetailsSection.requirements.placeholder"
+          helperText="jobCreationForm.positionDetailsSection.requirements.descriptionHelper"
+          tooltipText="jobCreationForm.positionDetailsSection.requirements.toolTipText"
+          [required]="true"
+          [characterLimit]="1000"
+          [model]="positionDetailsForm.get('requirements')?.value"
+          [control]="positionDetailsForm.get('requirements') ?? undefined"
+          icon="circle-info"
+          [shouldTranslate]="true"
         />
-        <div class="input-with-icon">
-          <textarea
-            formControlName="requirements"
-            maxlength="1000"
-            id="requirements"
-            [placeholder]="'jobCreationForm.positionDetailsSection.requirements.placeholder' | translate"
-            rows="10"
-          ></textarea>
-        </div>
-        <div class="form-footer">
-          <small class="description-helper" jhiTranslate="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"></small>
-          <small class="char-counter">{{ requirementsLength }}/1000</small>
-        </div>
       </div>
     </form>
   </ng-template>

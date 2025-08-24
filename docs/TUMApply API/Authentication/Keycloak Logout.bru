@@ -1,7 +1,7 @@
 meta {
   name: Keycloak Logout
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
@@ -27,7 +27,7 @@ auth:oauth2 {
   state: {{$guid}}
   pkce: true
   credentials_placement: basic_auth_header
-  credentials_id: 
+  credentials_id: credentials
   token_placement: header
   token_header_prefix: 
   auto_fetch_token: true

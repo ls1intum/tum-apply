@@ -1,43 +1,20 @@
 <div class="login-card">
   <div class="login-header">
-    <img alt="TUM Logo" class="tum-logo" src="/content/images/tum-logo/tum-logo.gif" />
-    <h1 jhiTranslate="{{ isRegister() ? 'register.header' : 'login.header' }}"></h1>
+    <h1>TUMApply</h1>
   </div>
-
-  <p-tabs (valueChange)="onTabChange($event)" [value]="value()" class="login-content">
-    <p-tablist>
-      <p-tab [value]="0" jhiTranslate="login.tabs.student" />
-      <p-tab [value]="1" jhiTranslate="login.tabs.professor" />
-    </p-tablist>
-    <p-tabpanels>
-      <!-- Students / Applicants -->
-      <p-tabpanel [value]="0" class="login-panel">
-        @if (isRegister()) {
-          <p class="login-description" jhiTranslate="register.texts.applicant"></p>
-        }
-        <div class="login-buttons">
-          <jhi-credentials-group [submitHandler]="onEmailLogin" />
-          <p-divider align="center">
-            <span class="divider-text" jhiTranslate="login.texts.or"></span>
-          </p-divider>
-          <jhi-button-group [data]="identityProvider()" [shouldTranslate]="true" class="login-providers" />
-        </div>
-      </p-tabpanel>
-
-      <!-- Professors / Supervisors -->
-      <p-tabpanel [value]="1" class="login-panel">
-        <p class="login-description" jhiTranslate="{{ isRegister() ? 'register.texts.professor' : 'login.texts.professor' }}"></p>
-        <div class="login-providers">
-          <jhi-button
-            (click)="onTUMSSOLogin()"
-            [disabled]="false"
-            [fullWidth]="true"
-            [label]="isRegister() ? 'register.buttons.tum' : 'login.buttons.tum'"
-            [shouldTranslate]="true"
-          />
-        </div>
-      </p-tabpanel>
-    </p-tabpanels>
+  <div class="login-content">
+    <div class="login-panel">
+      @if (isRegister()) {
+        <p class="login-description" jhiTranslate="register.texts.applicant"></p>
+      }
+      <div class="login-buttons">
+        <jhi-credentials-group [submitHandler]="onEmailLogin" class="login-credentials" />
+        <p-divider align="center">
+          <span class="divider-text" jhiTranslate="login.texts.or"></span>
+        </p-divider>
+        <jhi-button-group [data]="idpButtons()" class="login-providers" />
+      </div>
+    </div>
     <p class="login-footer">
       <span jhiTranslate="{{ isRegister() ? 'register.texts.accountmissing.prefix' : 'login.texts.accountmissing.prefix' }}"></span>
       <a
@@ -45,5 +22,5 @@
         jhiTranslate="{{ isRegister() ? 'register.texts.accountmissing.link' : 'login.texts.accountmissing.link' }}"
       ></a>
     </p>
-  </p-tabs>
+  </div>
 </div>

@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 
 @Component({
   selector: 'jhi-stepper-playground',
-  imports: [CommonModule, ProgressStepperComponent, ToastComponent],
+  imports: [CommonModule, ProgressStepperComponent],
   templateUrl: './stepper-playground.component.html',
   styleUrl: './stepper-playground.component.scss',
   standalone: true,

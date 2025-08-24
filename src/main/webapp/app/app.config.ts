@@ -17,6 +17,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
+import { DialogService } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
@@ -29,17 +31,15 @@ import { missingTranslationHandler, translatePartialLoader } from './config/tran
 import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
-import { KeycloakService } from './core/auth/keycloak.service';
-import { AccountService } from './core/auth/account.service';
+import { AuthFacadeService } from './core/auth/auth-facade.service';
 
-export async function initializeKeycloak(): Promise<void> {
-  const keycloakService = inject(KeycloakService);
-  const accountService = inject(AccountService);
-
-  const success = await keycloakService.init();
-  if (success) {
-    await accountService.loadUser();
-  }
+/**
+ * Application initializer that tries email-session-refresh first,
+ * then falls back to Keycloak SSO init via AuthFacadeService.
+ */
+export async function initializeAuth(): Promise<void> {
+  const authFacade = inject(AuthFacadeService);
+  await authFacade.initAuth();
 }
 
 export function apiConfigFactory(): Configuration {
@@ -50,7 +50,8 @@ export function apiConfigFactory(): Configuration {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAppInitializer(initializeKeycloak),
+    MessageService,
+    provideAppInitializer(initializeAuth),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
@@ -89,6 +90,7 @@ export const appConfig: ApplicationConfig = {
     httpInterceptorProviders,
     { provide: TitleStrategy, useClass: AppPageTitleStrategy },
     DatePipe,
+    DialogService,
     /**
      * @description Interceptor declarations:
      * Interceptors are located at 'blocks/interceptor/.

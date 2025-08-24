@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { signal } from '@angular/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faMoon, faSun, faUser } from '@fortawesome/free-solid-svg-icons';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { HeaderComponent } from './header.component';
 
@@ -24,6 +26,22 @@ describe('HeaderComponent', () => {
           useValue: {
             user: signal<User | undefined>(undefined),
             loaded: signal(true),
+          },
+        },
+        {
+          provide: DialogService,
+          useValue: {
+            open: jest.fn(),
+            dialogComponentRefMap: new Map(),
+          },
+        },
+        {
+          provide: AuthFacadeService,
+          useValue: {
+            isAuthenticated: false,
+            logout: jest.fn(),
+            loginWithTUM: jest.fn(),
+            loginWithEmail: jest.fn(),
           },
         },
       ],
@@ -69,7 +87,6 @@ describe('HeaderComponent', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      bearer: 'token',
     });
     fixture.detectChanges();
     const userNameElement = fixture.nativeElement.querySelector('.font-medium');
@@ -81,7 +98,6 @@ describe('HeaderComponent', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      bearer: 'token',
     });
     fixture.detectChanges();
     const logoutSpy = jest.spyOn(component, 'logout');

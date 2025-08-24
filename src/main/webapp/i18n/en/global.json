@@ -83,7 +83,8 @@
         "required": "This field is required.",
         "minLength": "This field is required to be at least {{ min }} characters.",
         "maxLength": "This field cannot be longer than {{ max }} characters.",
-        "pattern": "Invalid format."
+        "pattern": "Invalid format.",
+        "email": "Invalid email."
       }
     },
     "editor": {
@@ -214,6 +215,10 @@
         "prev": "Previous",
         "send": "Send"
       },
+      "confirmDialog": {
+        "header": "Submit Application",
+        "message": "Are you sure you want to submit your application? Once published, further edits will NOT be possible."
+      },
       "status": {
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved"
@@ -227,7 +232,7 @@
         "phoneNumber": "Phone Number",
         "gender": "Gender",
         "nationality": "Nationality",
-        "language": "Language",
+        "language": "Preferred Language",
         "dateOfBirth": "Date of Birth",
         "website": "Website",
         "linkedIn": "LinkedIn",
@@ -239,6 +244,9 @@
       "section": {
         "userInformation": "User Information",
         "address": "Address"
+      },
+      "tooltip": {
+        "language": "Choose your preferred communication language."
       }
     },
     "applicationPage2": {
@@ -318,6 +326,12 @@
         "researchGroup": "Research Group",
         "status": "Status",
         "created": "Created"
+      },
+      "dialogs": {
+        "withdrawHeader": "Confirm Withdrawal",
+        "withdrawMessage": "Are you sure you want to withdraw this application? Once withdrawn, it will no longer be visible to the professor. This action can NOT be undone!",
+        "deleteHeader": "Confirm Delete Operation",
+        "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!"
       }
     },
     "applicationDetail": {

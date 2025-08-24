@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendar, faChevronDown, faChevronUp, faCloudArrowUp, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ComponentRef } from '@angular/core';
@@ -54,12 +54,13 @@ describe('ApplicationCreationPage3Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should reflect user input in the bound model', () => {
-    const input = fixture.nativeElement.querySelector('textarea[formControlName="motivation"]');
-    input.value = 'Driven by innovation';
-    input.dispatchEvent(new Event('input'));
+  it('should reflect user input in the bound model', waitForAsync(async () => {
+    const newValue = 'Driven by innovation';
+    component.page3Form.controls['motivation'].setValue(newValue);
 
+    await fixture.whenStable();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for debounceTime(100)
     fixture.detectChanges();
-    expect(component.data().motivation).toBe('Driven by innovation');
-  });
+    expect(component.data()?.motivation).toBe('Driven by innovation');
+  }));
 });

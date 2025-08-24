@@ -56,6 +56,12 @@ const routes: Routes = [
     loadComponent: () =>
       import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
   },
+  {
+    path: 'playground/rating',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./playground/rating-playground/rating-playground').then(c => c.RatingPlayground),
+  },
 
   // ======================================================================================
   // User Management
@@ -173,6 +179,35 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
     title: 'Settings',
+  },
+
+  // ======================================================================================
+  // Research Group
+  // ======================================================================================
+  {
+    path: 'research-group/templates',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-templates/research-group-templates').then(m => m.ResearchGroupTemplates),
+  },
+  {
+    path: 'research-group/template/new',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-template-edit/research-group-template-edit').then(
+        m => m.ResearchGroupTemplateEdit,
+      ),
+  },
+  {
+    path: 'research-group/template/:templateId/edit',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-template-edit/research-group-template-edit').then(
+        m => m.ResearchGroupTemplateEdit,
+      ),
   },
 
   // ======================================================================================

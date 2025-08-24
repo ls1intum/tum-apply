@@ -11,11 +11,11 @@ import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dy
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { AuthCardComponent } from '../auth-card/auth-card.component';
+import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  providers: [DialogService],
   imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
@@ -41,6 +41,7 @@ export class HeaderComponent {
 
   private router = inject(Router);
   private dialogService = inject(DialogService);
+  private authFacadeService = inject(AuthFacadeService);
 
   navigateToHome(): void {
     void this.router.navigate(['/']);
@@ -61,13 +62,12 @@ export class HeaderComponent {
       },
       dismissableMask: true,
       closeOnEscape: true,
-      focusOnShow: true,
       showHeader: false,
     });
   }
 
   logout(): void {
-    void this.accountService.signOut(window.location.origin + '/');
+    void this.authFacadeService.logout();
   }
 
   /*  toggleColorScheme(): void {

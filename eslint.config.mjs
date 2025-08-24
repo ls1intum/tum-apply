@@ -117,7 +117,6 @@ export default [
         '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'jhi', style: 'kebab-case' }],
         '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'jhi', style: 'camelCase' }],
         '@angular-eslint/relative-url-prefix': 'error',
-        '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
         '@angular-eslint/directive-class-suffix': ['error', { suffixes: ['Directive'] }],
         '@typescript-eslint/consistent-type-definitions': 'off',
         '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],

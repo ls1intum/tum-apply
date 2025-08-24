@@ -6,9 +6,10 @@ api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
+api/authenticationResource.service.ts
 api/documentResource.service.ts
-api/emailLoginResource.service.ts
 api/emailSettingResource.service.ts
+api/emailTemplateResource.service.ts
 api/jobResource.service.ts
 api/userResource.service.ts
 configuration.ts
@@ -36,6 +37,9 @@ model/customFieldAnswerDTO.ts
 model/documentInformationHolderDTO.ts
 model/emailSetting.ts
 model/emailSettingDTO.ts
+model/emailTemplateDTO.ts
+model/emailTemplateOverviewDTO.ts
+model/emailTemplateTranslationDTO.ts
 model/internalComment.ts
 model/job.ts
 model/jobCardDTO.ts
@@ -48,6 +52,7 @@ model/loginRequestDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
+model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageableObject.ts
 model/professorDTO.ts
 model/rejectDTO.ts

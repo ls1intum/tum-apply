@@ -1,31 +1,24 @@
-import { Component, Signal, ViewEncapsulation, computed, inject, signal } from '@angular/core';
-import { TabsModule } from 'primeng/tabs';
+import { Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith } from 'rxjs';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { ToastService } from 'app/service/toast-service';
+import { TranslateService } from '@ngx-translate/core';
 
-import { ButtonComponent } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
-import { AuthTabService } from '../../../../core/auth/auth-tab.service';
-import { AccountService } from '../../../../core/auth/account.service';
-import { IdpProvider, KeycloakService } from '../../../../core/auth/keycloak.service';
+import { IdpProvider } from '../../../../core/auth/keycloak.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
-import { EmailLoginResourceService } from '../../../../generated/api/emailLoginResource.service';
+import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [
-    ButtonComponent,
-    ButtonGroupComponent,
-    CommonModule,
-    CredentialsGroupComponent,
-    DividerModule,
-    TabsModule,
-    RouterModule,
-    TranslateDirective,
-  ],
+  imports: [ButtonGroupComponent, CommonModule, CredentialsGroupComponent, DividerModule, RouterModule, TranslateDirective],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -34,83 +27,63 @@ export class AuthCardComponent {
   mode = signal<'login' | 'register'>('login');
   readonly isRegister = computed(() => this.mode() === 'register');
 
-  authTabService = inject(AuthTabService);
-  value: Signal<number> = this.authTabService.getSelectedTab();
-  accountService = inject(AccountService);
-  keycloakService = inject(KeycloakService);
-  emailLoginResourceService = inject(EmailLoginResourceService);
+  authFacadeService = inject(AuthFacadeService);
+  breakpointObserver = inject(BreakpointObserver);
+  config = inject(DynamicDialogConfig);
+  toastService = inject(ToastService);
+  translate = inject(TranslateService);
 
-  onTabChange(newValue: string | number): void {
-    this.authTabService.setSelectedTab(Number(newValue));
-  }
+  readonly onlyIcons = toSignal(
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
+      map(state => state.matches),
+      startWith(false),
+    ),
+    { initialValue: false },
+  );
 
-  identityProvider(): ButtonGroupData {
-    return {
-      direction: 'vertical',
-      fullWidth: true,
-      buttons: [
-        {
-          label: this.mode() === 'register' ? 'register.buttons.tum' : 'login.buttons.tum',
-          severity: 'primary',
-          variant: 'outlined',
-          disabled: false,
-          fullWidth: true,
-          onClick: () => this.onTUMSSOLogin(),
+  readonly idpButtons = computed<ButtonGroupData>(() => ({
+    direction: this.onlyIcons() ? 'horizontal' : 'vertical',
+    fullWidth: !this.onlyIcons(),
+    buttons: [
+      // TODO: Enable Microsoft login when available in Production environment
+      {
+        label: this.onlyIcons() ? undefined : 'Apple',
+        icon: 'apple',
+        severity: 'primary',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
+        disabled: false,
+        fullWidth: true,
+        onClick: () => {
+          void this.authFacadeService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
         },
-        // TODO: Enable Microsoft login when available in Production environment
-        {
-          label: this.mode() === 'register' ? 'register.buttons.apple' : 'login.buttons.apple',
-          icon: 'apple',
-          severity: 'primary',
-          variant: 'outlined',
-          disabled: false,
-          fullWidth: true,
-          onClick: () => this.onAppleLogin(),
+      },
+      {
+        label: this.onlyIcons() ? undefined : 'Google',
+        icon: 'google',
+        severity: 'primary',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
+        disabled: false,
+        fullWidth: true,
+        onClick: () => {
+          void this.authFacadeService.loginWithProvider(IdpProvider.Google, this.redirectUri());
         },
-        {
-          label: this.mode() === 'register' ? 'register.buttons.google' : 'login.buttons.google',
-          icon: 'google',
-          severity: 'primary',
-          variant: 'outlined',
-          disabled: false,
-          fullWidth: true,
-          onClick: () => this.onGoogleLogin(),
-        },
-      ],
-    };
-  }
+      },
+    ],
+  }));
 
   onTUMSSOLogin(): void {
-    this.keycloakService.login(this.redirectUri());
+    this.authFacadeService.loginWithTUM(this.redirectUri());
   }
 
-  onMicrosoftLogin(): void {
-    this.keycloakService.loginWithProvider(IdpProvider.Microsoft, this.redirectUri());
-  }
-
-  onGoogleLogin(): void {
-    this.keycloakService.loginWithProvider(IdpProvider.Google, this.redirectUri());
-  }
-
-  onAppleLogin(): void {
-    this.keycloakService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
-  }
-
-  onEmailLogin = async (credentials: { email: string; password: string }): Promise<void> => {
-    this.emailLoginResourceService.login(credentials, 'response');
-    await this.accountService.loadUser();
-    const loadedUser = this.accountService.user();
-    if (loadedUser) {
-      this.keycloakService.profile = {
-        sub: loadedUser.id,
-        email: loadedUser.email,
-        given_name: loadedUser.name.split(' ')[0] ?? '',
-        family_name: loadedUser.name.split(' ').slice(1).join(' '),
-        token: loadedUser.bearer,
-      };
+  onEmailLogin = async (credentials: { email: string; password: string }): Promise<boolean> => {
+    const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+    if (!response) {
+      this.toastService.showError({
+        summary: this.translate.instant('login.messages.error.header'),
+        detail: this.translate.instant('login.messages.error.message'),
+      });
     }
-    const redirectUri = this.redirectUri();
-    window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+    return response;
   };
 
   toggleMode(): void {
@@ -118,6 +91,6 @@ export class AuthCardComponent {
   }
 
   private redirectUri(): string {
-    return window.location.origin;
+    return this.config.data?.redirectUri ? `${window.location.origin}${this.config.data.redirectUri}` : window.location.origin;
   }
 }

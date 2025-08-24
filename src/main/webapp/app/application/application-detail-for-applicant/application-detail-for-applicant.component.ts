@@ -1,16 +1,18 @@
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
-import { ToastComponent } from 'app/shared/toast/toast.component';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
+import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [ApplicationDetailCardComponent, DocumentGroupComponent, SharedModule, ToastComponent],
+  imports: [ApplicationDetailCardComponent, DocumentGroupComponent, SharedModule, ApplicationStateForApplicantsComponent, ButtonComponent],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
@@ -22,6 +24,7 @@ export default class ApplicationDetailForApplicantComponent {
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
   constructor() {
     this.init();
@@ -42,5 +45,9 @@ export default class ApplicationDetailForApplicantComponent {
         this.documentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+  }
+
+  onUpdateApplication(): void {
+    this.router.navigate([`/application/edit/${this.applicationId()}`]);
   }
 }
