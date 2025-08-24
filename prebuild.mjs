@@ -69,6 +69,9 @@ const keycloakConfig = {
   clientId: process.env.KEYCLOAK_CLIENT_ID,
   enableLogging: process.env.KEYCLOAK_ENABLE_LOGGING === 'true',
 };
+const otpConfig = {
+  length: process.env.OTP_LENGTH || 6,
+};
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
 export const __VERSION__ = '${process.env.APP_VERSION || inferVersion()}';
@@ -80,6 +83,9 @@ export const environment = {
     realm: '${keycloakConfig.realm}',
     clientId: '${keycloakConfig.clientId}',
     enableLogging: ${keycloakConfig.enableLogging},
+  },
+  otp: {
+    length: ${otpConfig.length},
   },
 };
 `;
