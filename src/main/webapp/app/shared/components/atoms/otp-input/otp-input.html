@@ -4,11 +4,18 @@
     (onChange)="onChange($any($event))"
     [autofocus]="true"
     [length]="length"
+    [size]="$any(otpSize())"
     formControlName="otp"
     inputmode="latin"
   />
   <div class="buttons">
-    <jhi-button (click)="onResend()" [disabled]="disableResend()" [shouldTranslate]="true" label="resendin" />
-    <jhi-button (click)="onSubmit()" [disabled]="disabledSubmit()" [label]="'common.submit'" [shouldTranslate]="true" />
+    <jhi-button (click)="onResend()" [disabled]="disableResend()" [fullWidth]="true" [label]="resendLabel" variant="text" />
+    <jhi-button
+      (click)="onSubmit()"
+      [disabled]="disabledSubmit()"
+      [fullWidth]="true"
+      [shouldTranslate]="true"
+      label="auth.common.otp.submit"
+    />
   </div>
 </div>
