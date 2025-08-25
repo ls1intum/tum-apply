@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
@@ -17,6 +17,9 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
   styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
+  previewDetailData = input<ApplicationDetailDTO | undefined>();
+  previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
+
   applicationId = signal<string>('');
   application = signal<ApplicationDetailDTO | undefined>(undefined);
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
@@ -27,7 +30,21 @@ export default class ApplicationDetailForApplicantComponent {
   private readonly router = inject(Router);
 
   constructor() {
-    this.init();
+    effect(() => {
+      const appData = this.previewDetailData();
+      if (appData) {
+        this.application.set(appData);
+      }
+
+      const docData = this.previewDocumentData();
+      if (docData) {
+        this.documentIds.set(docData);
+      }
+
+      if (!this.application()) {
+        this.init();
+      }
+    });
   }
 
   async init(): Promise<void> {
