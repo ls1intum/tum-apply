@@ -11,6 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
+import { ApplicationDraftData, LocalStorageService } from 'app/service/localStorage.service';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -33,8 +34,6 @@ const SavingStates = {
 } as const;
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
-
-const LOCAL_STORAGE_KEY = 'application_draft';
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -107,7 +106,6 @@ export default class ApplicationCreationFormComponent {
   page1Valid = signal<boolean>(false);
   page2Valid = signal<boolean>(false);
   page3Valid = signal<boolean>(false);
-  savingTick = signal<number>(0);
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
 
@@ -245,6 +243,7 @@ export default class ApplicationCreationFormComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastService = inject(ToastService);
+  private localStorageService = inject(LocalStorageService);
 
   constructor() {
     this.init();
@@ -327,7 +326,13 @@ export default class ApplicationCreationFormComponent {
     if (jobId) {
       // TODO fetch jobData for lateron displaying jobDetails
       this.jobId.set(jobId);
-      this.loadPage1FromLocalStorage();
+      const loaded = this.loadPage1FromLocalStorage(jobId);
+      if (!loaded) {
+        this.toastService.showError({
+          summary: 'Error',
+          detail: 'Error loading Application from local storage.',
+        });
+      }
       this.applicationState.set('SAVED');
     } else {
       this.toastService.showError({
@@ -504,17 +509,15 @@ export default class ApplicationCreationFormComponent {
   }
 
   private saveToLocalStorage(): void {
-    const applicationData = {
+    const applicationData: ApplicationDraftData = {
       page1: this.page1(),
-      page2: this.page2(),
-      page3: this.page3(),
       applicationId: this.applicationId(),
       jobId: this.jobId(),
       timestamp: new Date().toISOString(),
     };
 
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(applicationData));
+      this.localStorageService.saveApplicationDraft(applicationData);
     } catch (error) {
       console.error('Failed to save to local storage:', error);
       this.toastService.showError({
@@ -531,25 +534,18 @@ export default class ApplicationCreationFormComponent {
    * @returns {boolean} True if data was successfully loaded, false otherwise
    * @private
    */
-  private loadPage1FromLocalStorage(): boolean {
-    try {
-      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        this.page1.set(parsedData.page1);
-        return true;
-      }
-    } catch (error) {
-      console.error('Failed to load from local storage:', error);
+  private loadPage1FromLocalStorage(jobId: string): boolean {
+    const draft = this.localStorageService.loadApplicationDraft(undefined, jobId);
+    if (draft) {
+      this.page1.set(draft.page1);
+      this.applicationId.set(draft.applicationId);
+      this.jobId.set(draft.jobId);
+      return true;
     }
     return false;
   }
 
   private clearLocalStorage(): void {
-    try {
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-    } catch (error) {
-      console.error('Failed to clear local storage:', error);
-    }
+    this.localStorageService.clearApplicationDraft(this.applicationId(), this.jobId());
   }
 }
