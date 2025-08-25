@@ -1,6 +1,9 @@
 {
   "header": {
     "login": "Anmelden",
+    "professorTitle": "Professor:in",
+    "professor": "Bist du Professor:in?",
+    "applicant": "Bist du Bewerber:in?",
     "logout": "Abmelden"
   }
 }

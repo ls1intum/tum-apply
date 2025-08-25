@@ -17,7 +17,7 @@
         [professor]="job.professorName"
         [workload]="job.workload || undefined"
         [startDate]="job.startDate?.toString() || undefined"
-        [relativeTime]="job.relativeTime || ''"
+        [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"
       />
     }
   </div>
