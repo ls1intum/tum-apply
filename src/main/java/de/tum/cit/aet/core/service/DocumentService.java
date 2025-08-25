@@ -5,6 +5,15 @@ import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
+import lombok.NonNull;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,13 +27,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.Optional;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.PathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class DocumentService {
@@ -127,6 +129,24 @@ public class DocumentService {
             throw new UploadException("Could not load document", e);
         }
     }
+
+    /**
+     * Resolves the file extension for the given document.
+     *
+     * @param document the document
+     * @return the corresponding file extension (e.g. ".pdf"), or an empty string if unsupported
+     */
+    public FileExtension resolveFileExtension(@NonNull Document document) {
+        String mimeType = document.getMimeType();
+        if (mimeType == null) {
+            throw new IllegalArgumentException("Document must have a mime type");
+        }
+
+        return switch (mimeType) {
+            case "application/pdf" -> FileExtension.PDF;
+            default -> throw new IllegalArgumentException("Unsupported mime type: " + mimeType);
+        };
+     }
 
     /**
      * Return a single document as a {@link Resource} that the caller can

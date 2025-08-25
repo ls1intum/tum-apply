@@ -1,0 +1,9 @@
+<section class="mt-8">
+  <header class="flex items-baseline gap-2">
+    <h2 class="text-lg font-bold">{{ title() | translate }}</h2>
+    <ng-content select="[actions]" />
+  </header>
+  <div class="ml-3 mt-3">
+    <ng-content />
+  </div>
+</section>

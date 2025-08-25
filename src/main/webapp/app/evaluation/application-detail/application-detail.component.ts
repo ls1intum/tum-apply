@@ -3,9 +3,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 import { ToastService } from 'app/service/toast-service';
+import { DividerModule } from 'primeng/divider';
 
+import { GenderNamePipe, LanguageNamePipe, NationalityNamePipe } from '../../shared/pipes';
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
@@ -21,10 +22,15 @@ import {
   ApplicationResourceService,
   RejectDTO,
 } from '../../generated';
-import { ApplicationDetailCardComponent } from '../../shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
 import TranslateDirective from '../../shared/language/translate.directive';
+import { Section } from '../components/section/section';
+import { SubSection } from '../components/sub-section/sub-section';
+import { DescriptionList } from '../components/description-list/description-list';
+import { LinkList } from '../components/link-list/link-list';
+import { Prose } from '../components/prose/prose';
+import { DocumentSection } from '../components/document-section/document-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -34,13 +40,21 @@ const WINDOW_SIZE = 7;
   selector: 'jhi-application-detail',
   imports: [
     ApplicationCarouselComponent,
+    DividerModule,
     FilterSortBarComponent,
-    ApplicationDetailCardComponent,
     TranslateModule,
     ButtonComponent,
     ReviewDialogComponent,
     TranslateDirective,
-    DocumentGroupComponent,
+    Section,
+    SubSection,
+    DescriptionList,
+    LinkList,
+    Prose,
+    DocumentSection,
+    NationalityNamePipe,
+    GenderNamePipe,
+    LanguageNamePipe,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
