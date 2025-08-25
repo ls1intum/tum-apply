@@ -1,4 +1,4 @@
-import { Component, OnInit, Signal, computed, inject, input, signal, viewChild } from '@angular/core';
+import { Component, Signal, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
@@ -52,7 +52,7 @@ export interface JobDetails {
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
-export class JobDetailComponent implements OnInit {
+export class JobDetailComponent {
   readonly closeButtonLabel = 'jobActionButton.close';
   readonly closeButtonSeverity = 'danger' as ButtonColor;
   readonly closeButtonIcon = 'xmark';
@@ -171,14 +171,16 @@ export class JobDetailComponent implements OnInit {
   private toastService = inject(ToastService);
   private researchGroupService = inject(ResearchGroupRessourceService);
 
-  ngOnInit(): void {
-    const previewDataValue = this.previewData()?.();
-    if (previewDataValue) {
-      this.loadJobDetailsFromForm(previewDataValue);
-      this.dataLoaded.set(true);
-    } else {
-      void this.init();
-    }
+  constructor() {
+    effect(() => {
+      const previewDataValue = this.previewData()?.();
+      if (previewDataValue) {
+        this.loadJobDetailsFromForm(previewDataValue);
+        this.dataLoaded.set(true);
+      } else {
+        void this.init();
+      }
+    });
   }
 
   onBack(): void {

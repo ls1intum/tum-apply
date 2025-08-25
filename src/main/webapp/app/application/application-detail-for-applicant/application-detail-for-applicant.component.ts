@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
@@ -16,7 +16,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
-export default class ApplicationDetailForApplicantComponent implements OnInit {
+export default class ApplicationDetailForApplicantComponent {
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
 
@@ -40,13 +40,11 @@ export default class ApplicationDetailForApplicantComponent implements OnInit {
       if (docData) {
         this.documentIds.set(docData);
       }
-    });
-  }
 
-  ngOnInit(): void {
-    if (!this.application()) {
-      this.init();
-    }
+      if (!this.application()) {
+        this.init();
+      }
+    });
   }
 
   async init(): Promise<void> {
