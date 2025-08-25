@@ -120,9 +120,9 @@ export default class ApplicationCreationPage2Component {
     });
   }
 
-  getBachelorGradeAsNumber(): number {
+  getBachelorGradeAsNumber(): number | undefined {
     const bachelorGrade = this.data().bachelorGrade;
-    return Number.parseFloat(bachelorGrade);
+    return bachelorGrade === '' ? undefined : Number.parseFloat(bachelorGrade);
   }
   setBachelorGradeAsNumber(ev: number | undefined): void {
     this.data.set({
@@ -130,9 +130,9 @@ export default class ApplicationCreationPage2Component {
       bachelorGrade: ev ? ev.toString() : '',
     } as ApplicationCreationPage2Data);
   }
-  getMasterGradeAsNumber(): number {
+  getMasterGradeAsNumber(): number | undefined {
     const masterGrade = this.data().masterGrade;
-    return Number.parseFloat(masterGrade);
+    return masterGrade === '' ? undefined : Number.parseFloat(masterGrade);
   }
   setMasterGradeAsNumber(ev: number | undefined): void {
     this.data.set({

@@ -4,7 +4,7 @@
       <label class="custom-label" [for]="id()">
         {{ label() }}
         @if (icon()) {
-          <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
+          <fa-icon class="icon" [icon]="['fas', icon() ?? '']" [pTooltip]="tooltipText()" tooltipPosition="top" />
         }
         @if (required()) {
           <span class="required">*</span>
