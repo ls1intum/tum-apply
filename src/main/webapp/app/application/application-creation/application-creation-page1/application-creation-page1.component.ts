@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, model, output } from '@angular/core';
+import { Component, computed, effect, inject, model, output } from '@angular/core';
 import { ApplicationForApplicantDTO } from 'app/generated';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
+import { AccountService } from 'app/core/auth/account.service';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
@@ -78,14 +79,16 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
-  disableEmail = input<boolean>(true);
-
   valid = output<boolean>();
   changed = output<boolean>();
+
+  disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
+
+  accountService = inject(AccountService);
   fb = inject(FormBuilder);
   page1Form = computed(() => {
     const currentData = this.data();
