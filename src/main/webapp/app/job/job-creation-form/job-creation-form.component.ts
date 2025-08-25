@@ -422,7 +422,7 @@ export class JobCreationFormComponent {
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
-      supervisingProfessor: user?.name ?? '',
+      supervisingProfessor: user?.name,
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       startDate: job?.startDate ?? '',
