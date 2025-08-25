@@ -55,22 +55,6 @@ public class GlobalExceptionHandler {
         Map.entry(HttpMessageNotReadableException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PARAMETER))
     );
 
-
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<Object> handleHandlerMethodValidation(HandlerMethodValidationException ex,
-                                                                HttpServletRequest request) {
-        log.warn("Handled handler-method validation: {} - Path: {}", ex.getMessage(), request.getRequestURI());
-        var fieldErrors = ex.getParameterValidationResults().stream()
-            .flatMap(r -> r.getResolvableErrors().stream()
-                .map(err -> new ValidationFieldError(
-                    "request",
-                    r.getMethodParameter().getParameterName(),
-                    err.getDefaultMessage())))
-            .toList();
-
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, ex, request.getRequestURI(), fieldErrors);
-    }
-
     /**
      * Handles all runtime exceptions and validation errors.
      * Maps them to appropriate HTTP responses and error codes.
