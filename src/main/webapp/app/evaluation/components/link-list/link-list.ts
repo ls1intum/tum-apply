@@ -13,7 +13,6 @@ export interface LinkItem {
   selector: 'jhi-link-list',
   imports: [FontAwesomeModule, TranslateModule],
   templateUrl: './link-list.html',
-  styleUrl: './link-list.scss',
 })
 export class LinkList {
   links = input.required<readonly LinkItem[]>();

@@ -14,7 +14,6 @@ import { ToastService } from '../../../service/toast-service';
   selector: 'jhi-document-section',
   imports: [DocumentViewerComponent, SubSection, ButtonComponent, TranslateDirective],
   templateUrl: './document-section.html',
-  styleUrl: './document-section.scss',
 })
 export class DocumentSection {
   idsDTO = input<ApplicationDocumentIdsDTO | undefined>(undefined);

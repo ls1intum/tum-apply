@@ -10,7 +10,6 @@ export interface DescItem {
   selector: 'jhi-description-list',
   imports: [TranslateModule],
   templateUrl: './description-list.html',
-  styleUrl: './description-list.scss',
 })
 export class DescriptionList {
   items = input.required<readonly DescItem[]>();

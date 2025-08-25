@@ -26,19 +26,22 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ApplicationEvaluationService {
 
     private final JobService jobService;
@@ -47,6 +50,9 @@ public class ApplicationEvaluationService {
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
+
+    @Value("${aet.download.deterministic-zip:false}")
+    private boolean DETERMINISTIC_ZIP;
 
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
@@ -291,13 +297,13 @@ public class ApplicationEvaluationService {
         Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
 
         User user = application.getApplicant().getUser();
-        String zipName = user.getFirstName() + "_" + user.getLastName();
+        String zipName = sanitizeFilename(user.getFirstName() + "_" + user.getLastName());
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/zip");
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s.zip\"", zipName));
 
-        // Count per type to decide if we need numbering
+        // Count per type to decide if numbering is needed
         Map<DocumentType, Long> typeCounts = documentDictionaries.stream()
             .collect(Collectors.groupingBy(
                 DocumentDictionary::getDocumentType,
@@ -308,10 +314,14 @@ public class ApplicationEvaluationService {
         // Per-type index used only when count > 1
         Map<DocumentType, Integer> typeIndex = new EnumMap<>(DocumentType.class);
 
-        try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
-            for (DocumentDictionary documentDictionary : documentDictionaries) {
-                DocumentType type = documentDictionary.getDocumentType();
-                Document doc = documentDictionary.getDocument();
+        try (BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
+             ZipOutputStream zos = new ZipOutputStream(bos)) {
+
+            zos.setLevel(Deflater.BEST_SPEED);
+
+            for (DocumentDictionary dd : documentDictionaries) {
+                DocumentType type = dd.getDocumentType();
+                Document doc = dd.getDocument();
 
                 long count = typeCounts.getOrDefault(type, 0L);
                 String base = fileName(type);
@@ -319,16 +329,42 @@ public class ApplicationEvaluationService {
                     ? base + "_" + typeIndex.merge(type, 1, Integer::sum)
                     : base;
 
-                // append file extension
-                entryName += "." + documentService.resolveFileExtension(doc).getExtension();
+                // append file extension if present (e.g., "cv.pdf")
+                String ext = documentService.resolveFileExtension(doc).getExtension();
+                if (ext != null && !ext.isBlank()) {
+                    entryName += "." + ext;
+                }
 
                 ZipEntry entry = new ZipEntry(entryName);
                 zos.putNextEntry(entry);
-                zos.write(documentService.download(doc).getContentAsByteArray());
+
+                // can be enabled for testing
+                if (DETERMINISTIC_ZIP) {
+                    entry.setTime(0L);
+                }
+
+                byte[] bytes = documentService.download(doc).getContentAsByteArray();
+                zos.write(bytes);
+
                 zos.closeEntry();
             }
+
             zos.finish();
         }
+    }
+
+    private static String sanitizeFilename(String input) {
+        if (input == null || input.isBlank()) {
+            return "file";
+        }
+        String cleaned = input.replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]+", "_").trim();
+
+        // limit length (some file systems break >255 chars)
+        if (cleaned.length() > 120) {
+            cleaned = cleaned.substring(0, 120);
+        }
+
+        return cleaned.isEmpty() ? "file" : cleaned;
     }
 
     /**

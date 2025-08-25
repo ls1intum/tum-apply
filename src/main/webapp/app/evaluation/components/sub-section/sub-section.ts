@@ -5,7 +5,6 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'jhi-sub-section',
   imports: [TranslateModule],
   templateUrl: './sub-section.html',
-  styleUrl: './sub-section.scss',
 })
 export class SubSection {
   title = input.required<string>();
