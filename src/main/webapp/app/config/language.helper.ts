@@ -59,7 +59,7 @@ export class JhiLanguageHelper {
    * @param routeSnapshot The snapshot of the current route
    */
   getPageTitle(routeSnapshot: ActivatedRouteSnapshot): string {
-    let title: string = routeSnapshot.data['pageTitle'] ?? 'global.title';
+    let title: string = routeSnapshot.data['pageTitle'] ?? routeSnapshot.title ?? 'global.title';
     if (routeSnapshot.firstChild) {
       title = this.getPageTitle(routeSnapshot.firstChild);
     }

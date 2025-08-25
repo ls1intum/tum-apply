@@ -20,13 +20,12 @@ export interface UserProfile {
 @Injectable({ providedIn: 'root' })
 export class KeycloakService {
   profile: UserProfile | undefined;
-  private refreshIntervalId: any;
-
   private readonly keycloak = new Keycloak({
     url: environment.keycloak.url,
     realm: environment.keycloak.realm,
     clientId: environment.keycloak.clientId,
   });
+  private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
 
   /**
    * Initializes the Keycloak client and determines login status.
@@ -107,7 +106,7 @@ export class KeycloakService {
         this.refreshIntervalId = undefined;
       }
       await this.keycloak.logout({
-        redirectUri: redirectUri ?? window.location.origin + '/',
+        redirectUri: redirectUri?.startsWith('http') ? redirectUri : window.location.origin + (redirectUri ?? '/'),
       });
     } catch (err) {
       console.error('Logout failed:', err);

@@ -58,7 +58,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                 j.workload,
                 j.startDate,
-                j.createdAt
+                j.endDate
             ),
             a.state,
             a.desiredStartDate,
@@ -117,7 +117,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                 j.workload,
                 j.startDate,
-                j.createdAt
+                j.endDate
             ),
             a.state,
             a.desiredStartDate,
@@ -175,7 +175,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                 j.workload,
                 j.startDate,
-                j.createdAt
+                j.endDate
             ),
             a.state,
             a.desiredStartDate,
@@ -259,7 +259,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                     j.workload,
                     j.startDate,
-                    j.createdAt
+                    j.endDate
                 ),
                 a.state,
                 a.desiredStartDate,

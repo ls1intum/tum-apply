@@ -44,7 +44,7 @@ public record ApplicationForApplicantDTO(
                 job.getSupervisingProfessor().getLastName(),
                 job.getWorkload(),
                 job.getStartDate(),
-                job.getCreatedAt()
+                job.getEndDate()
             ),
             application.getState(),
             application.getDesiredStartDate(),
