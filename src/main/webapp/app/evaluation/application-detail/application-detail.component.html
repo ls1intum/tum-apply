@@ -78,15 +78,15 @@
                   <jhi-link-list
                     [links]="[
                       {
-                        labelKey: 'evaluation.details.applicantLinkedIn',
-                        url: application.applicationDetailDTO.applicant?.user?.website ?? '',
-                        icon: 'linkedin',
-                        isBrandIcon: true,
+                        labelKey: 'evaluation.details.applicantWebsite',
+                        url: application.applicationDetailDTO.applicant?.user?.linkedinUrl,
+                        icon: 'link',
                       },
                       {
-                        labelKey: 'evaluation.details.applicantWebsite',
-                        url: application.applicationDetailDTO.applicant?.user?.linkedinUrl ?? '',
-                        icon: 'link',
+                        labelKey: 'evaluation.details.applicantLinkedIn',
+                        url: application.applicationDetailDTO.applicant?.user?.website,
+                        icon: 'linkedin',
+                        isBrandIcon: true,
                       },
                     ]"
                   />

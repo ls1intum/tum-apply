@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 export interface LinkItem {
   labelKey: string;
-  url: string;
+  url?: string;
   icon?: string;
   isBrandIcon?: boolean;
 }
