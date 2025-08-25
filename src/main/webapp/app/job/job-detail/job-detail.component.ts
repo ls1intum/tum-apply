@@ -290,9 +290,9 @@ export class JobDetailComponent {
 
   private async loadJobDetailsFromForm(form: JobFormDTO): Promise<void> {
     const user = this.accountService.loadedUser();
-    let researchGroupDeatils;
+    let researchGroupDetails;
     try {
-      researchGroupDeatils = await firstValueFrom(
+      researchGroupDetails = await firstValueFrom(
         this.researchGroupService.getRessourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
       );
     } catch {
@@ -317,12 +317,12 @@ export class JobDetailComponent {
       createdAt: dayjs().format('DD.MM.YYYY'),
       lastModifiedAt: dayjs().format('DD.MM.YYYY'),
 
-      researchGroupDescription: researchGroupDeatils?.description ?? '',
-      researchGroupEmail: researchGroupDeatils?.email ?? '',
-      researchGroupWebsite: researchGroupDeatils?.website ?? '',
-      researchGroupStreet: researchGroupDeatils?.street ?? '',
-      researchGroupPostalCode: researchGroupDeatils?.postalCode ?? '',
-      researchGroupCity: researchGroupDeatils?.city ?? '',
+      researchGroupDescription: researchGroupDetails?.description ?? '',
+      researchGroupEmail: researchGroupDetails?.email ?? '',
+      researchGroupWebsite: researchGroupDetails?.website ?? '',
+      researchGroupStreet: researchGroupDetails?.street ?? '',
+      researchGroupPostalCode: researchGroupDetails?.postalCode ?? '',
+      researchGroupCity: researchGroupDetails?.city ?? '',
       jobState: 'DRAFT',
       belongsToResearchGroup: false,
     };
