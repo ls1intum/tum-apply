@@ -20,6 +20,7 @@ export abstract class BaseInputDirective<T> {
   tooltipText = input<string | undefined>(undefined);
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
+  translateErrorMessage = input<boolean | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
   isTouched = signal(false);
@@ -54,7 +55,7 @@ export abstract class BaseInputDirective<T> {
       pattern: this.translate.instant('global.input.error.pattern'),
       email: this.translate.instant('global.input.error.email'),
     };
-    return defaults[key] ?? `Invalid: ${key}`;
+    return (defaults[key] ?? this.translateErrorMessage()) ? this.translate.instant(val) : `Invalid: ${key}`;
   });
 
   constructor() {

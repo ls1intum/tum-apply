@@ -247,6 +247,9 @@
       },
       "tooltip": {
         "language": "Choose your preferred communication language."
+      },
+      "validation": {
+        "postalCode": "Please enter a valid postal code for the selected country."
       }
     },
     "applicationPage2": {
