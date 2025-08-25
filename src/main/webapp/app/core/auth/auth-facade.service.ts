@@ -52,11 +52,7 @@ export class AuthFacadeService {
   async loginWithEmail(email: string, password: string, redirectUri?: string): Promise<boolean> {
     try {
       await this.emailAuthenticationService.login(email, password);
-
-      // If a redirect URI is provided, navigate to it
-      if (redirectUri !== undefined) {
-        window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
-      }
+      this.redirectToPage(redirectUri);
       return true;
     } catch {
       return false;
@@ -81,15 +77,16 @@ export class AuthFacadeService {
   }
 
   // Logout the user from both email and Keycloak sessions.
-  async logout(): Promise<void> {
+  async logout(redirectUri?: string): Promise<void> {
     // Email-Logout
     try {
       await this.emailAuthenticationService.logout();
+      this.redirectToPage(redirectUri);
     } catch {}
 
     // Keycloak-Logout
     try {
-      await this.keycloakService.logout();
+      await this.keycloakService.logout(redirectUri);
     } catch {}
 
     // reset account state
@@ -105,5 +102,12 @@ export class AuthFacadeService {
    */
   private async loadUser(): Promise<void> {
     await this.accountService.loadUser();
+  }
+
+  private redirectToPage(redirectUri?: string): void {
+    // If a redirect URI is provided, navigate to it
+    if (redirectUri !== undefined) {
+      window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+    }
   }
 }
