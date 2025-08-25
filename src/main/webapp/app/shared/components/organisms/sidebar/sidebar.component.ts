@@ -82,7 +82,7 @@ export class SidebarComponent {
           title: 'sidebar.dashboard.dashboard',
           buttons: [
             { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
-            { icon: 'search', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
+            { icon: 'briefcase', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
           ],
         },
         {
