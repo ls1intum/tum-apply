@@ -362,7 +362,7 @@ export class JobCreationFormComponent {
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
       fieldOfStudies: basicInfoValue.fieldOfStudies?.value !== undefined ? String(basicInfoValue.fieldOfStudies.value) : '',
       supervisingProfessor: this.userId(),
-      location: basicInfoValue.location?.name,
+      location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
       startDate: basicInfoValue.startDate ?? '',
       endDate: basicInfoValue.applicationDeadline ?? '',
       workload: basicInfoValue.workload,
