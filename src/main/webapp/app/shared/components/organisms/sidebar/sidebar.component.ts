@@ -113,8 +113,8 @@ export class SidebarComponent {
           ],
         },
         {
-          title: 'sidebar.researchgroup.researchgroup',
-          buttons: [{ icon: 'people-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/templates' }],
+          title: 'sidebar.researchgroup.emailtemplates',
+          buttons: [{ icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' }],
         },
       ],
       ADMIN: [

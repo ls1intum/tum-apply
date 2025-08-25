@@ -20,6 +20,7 @@
       "createposition": "Create Position"
     },
     "researchgroup": {
+      "emailtemplates": "My Email Templates",
       "researchgroup": "Research Group",
       "yourgroup": "My Group",
       "yourmembers": "Your Members"
