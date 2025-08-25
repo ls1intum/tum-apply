@@ -68,7 +68,7 @@
     "details": {
       "applicantTitle": "Bewerber·in",
       "applicantInformation": "Allgemeine Informationen",
-      "links": "Links",
+      "applicantLinks": "Links",
 
       "applicantName": "Name",
       "applicantGender": "Geschlecht",
