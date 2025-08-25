@@ -1,0 +1,21 @@
+meta {
+  name: Add Comment
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/applications/:applicationId/comments
+  body: json
+  auth: inherit
+}
+
+params:path {
+  applicationId: 00000000-0000-0000-0000-300000020007
+}
+
+body:json {
+  {
+    "message": "I like this application"
+  }
+}
