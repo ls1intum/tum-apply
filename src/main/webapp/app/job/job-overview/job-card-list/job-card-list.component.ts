@@ -3,7 +3,9 @@ import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { CommonModule } from '@angular/common';
 import { JobCardDTO, JobResourceService } from 'app/generated';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import SharedModule from '../../../shared/shared.module';
 import { JobCardComponent } from '../job-card/job-card.component';
@@ -33,6 +35,11 @@ export class JobCardListComponent {
     { displayName: 'jobOverviewPage.sortingOptions.professor', field: 'professorName', type: 'TEXT' },
     { displayName: 'jobOverviewPage.sortingOptions.workload', field: 'workload', type: 'NUMBER' },
   ];
+
+  translateService = inject(TranslateService);
+  currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
+    initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
+  });
 
   private jobService = inject(JobResourceService);
 

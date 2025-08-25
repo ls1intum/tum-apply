@@ -11,6 +11,8 @@ import { ProgressStepperComponent, StepData } from 'app/shared/components/molecu
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import SharedModule from '../../shared/shared.module';
 import { JobDTO, JobFormDTO } from '../../generated';
@@ -21,6 +23,7 @@ import * as DropdownOptions from '.././dropdown-options';
 import { SelectComponent } from '../../shared/components/atoms/select/select.component';
 import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
 import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
+import { ToastService } from '../../service/toast-service';
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 
 type JobFormMode = 'create' | 'edit';
@@ -63,6 +66,8 @@ export class JobCreationFormComponent {
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
+  private autoSaveInitialized = false;
 
   constructor() {
     this.init();
@@ -76,10 +81,12 @@ export class JobCreationFormComponent {
   isLoading = signal<boolean>(true);
   savingState = signal<SavingState>('SAVED');
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
+  publishAttempted = signal<boolean>(false);
 
   // Forms
   basicInfoForm = this.createBasicInfoForm();
   positionDetailsForm = this.createPositionDetailsForm();
+  additionalInfoForm = this.createAdditionalInfoForm();
 
   // Template references
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
@@ -96,6 +103,9 @@ export class JobCreationFormComponent {
 
   basicInfoChanges = toSignal(this.basicInfoForm.statusChanges, { initialValue: this.basicInfoForm.status });
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
+  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
+    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
+  });
 
   /** Effect that updates validity signals when form status changes */
   formValidationEffect = effect(() => {
@@ -293,13 +303,18 @@ export class JobCreationFormComponent {
 
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
+    this.publishAttempted.set(true);
+    if (!Boolean(this.privacyAcceptedSignal())) {
+      return;
+    }
     if (!jobData) return;
 
     try {
       await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
       this.router.navigate(['/my-positions']);
-    } catch (error) {
-      console.error('Failed to publish job:', error);
+    } catch (err) {
+      const httpError = err as HttpErrorResponse;
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to publish job: ' + httpError.statusText });
     }
   }
 
@@ -326,9 +341,15 @@ export class JobCreationFormComponent {
   private createPositionDetailsForm(): FormGroup {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
-      description: ['', [Validators.required, Validators.maxLength(1000)]],
-      tasks: ['', [Validators.required, Validators.maxLength(1000)]],
-      requirements: ['', [Validators.required, Validators.maxLength(1000)]],
+      description: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
+      tasks: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
+      requirements: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
+    });
+  }
+
+  private createAdditionalInfoForm(): FormGroup {
+    return this.fb.group({
+      privacyAccepted: [false, [Validators.required]],
     });
   }
 
@@ -384,9 +405,11 @@ export class JobCreationFormComponent {
         this.jobId.set(jobId);
         const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
         this.populateForm(job);
+        this.autoSaveInitialized = false;
       }
-    } catch (error) {
-      console.error('Initialization error:', error);
+    } catch (err) {
+      const httpError = err as HttpErrorResponse;
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to load job form: ' + httpError.statusText });
       this.router.navigate(['/my-positions']);
     } finally {
       this.isLoading.set(false);
@@ -415,6 +438,9 @@ export class JobCreationFormComponent {
       requirements: job?.requirements ?? '',
     });
 
+    this.additionalInfoForm.patchValue({
+      privacyAccepted: false,
+    });
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
   }
 
@@ -426,6 +452,12 @@ export class JobCreationFormComponent {
     effect(() => {
       this.basicInfoFormValueSignal();
       this.positionDetailsFormValueSignal();
+
+      // Don't auto-save as soon as the form is opened
+      if (!this.autoSaveInitialized) {
+        this.autoSaveInitialized = true;
+        return;
+      }
 
       // TODO: currently state changes to saving on form loading
       this.clearAutoSaveTimer();
@@ -465,10 +497,10 @@ export class JobCreationFormComponent {
       }
 
       this.lastSavedData.set(currentData);
-    } catch (error) {
-      console.error('Auto-save failed:', error);
-    } finally {
       this.savingState.set('SAVED');
+    } catch (err) {
+      const httpError = err as HttpErrorResponse;
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to save job: ' + httpError.statusText });
     }
   }
 

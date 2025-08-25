@@ -36,6 +36,8 @@ export * from './pageJobCardDTO';
 export * from './pageResponseDTOEmailTemplateOverviewDTO';
 export * from './pageableObject';
 export * from './professorDTO';
+export * from './ratingDTO';
+export * from './ratingOverviewDTO';
 export * from './rejectDTO';
 export * from './researchGroup';
 export * from './researchGroupShortDTO';

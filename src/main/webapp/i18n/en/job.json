@@ -37,20 +37,22 @@
       "startDate": {
         "label": "Start Date of Job",
         "placeholder": "Select a Start Date...",
-        "toolTipText": "Specify the date when the position is expected to start."
+        "toolTipText": "Expected start date for this position."
       },
       "applicationDeadline": {
         "label": "Application Deadline",
         "placeholder": "Select an Application Deadline...",
-        "toolTipText": "Specify the date when applications for this position will no longer be accepted."
+        "toolTipText": "After this date, applying is no longer possible."
       },
       "workload": {
         "label": "Workload",
-        "placeholder": "Specify the Workload (in h/week)..."
+        "placeholder": "Specify the Workload (in h/week)...",
+        "toolTipText": "Indicate the expected workload for the doctoral position in hours per week (e.g. 20). You can enter up to 40 h/week."
       },
       "contractDuration": {
         "label": "Contract Duration",
-        "placeholder": "Specify the Contract Duration (in years)..."
+        "placeholder": "Specify the Contract Duration (in years)...",
+        "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 5 years."
       },
       "fundingType": {
         "label": "Funding Type",
@@ -66,7 +68,7 @@
         "toolTipText": "Help the applicant understand the research focus and goals of the position."
       },
       "tasks": {
-        "label": "Tasks",
+        "label": "Tasks & Responsibilities",
         "placeholder": "List the main responsibilities...",
         "descriptionHelper": "List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.",
         "toolTipText": "Provide a clear picture of the position’s responsibilities and activities."
@@ -83,7 +85,9 @@
         "title": "Extras",
         "description": "Add custom questions that applicants will see in the application form."
       },
-      "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>."
+      "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>.",
+      "dataPrivacyConfirmationText": "I have read and understood the Data Privacy Statement and consent to the processing of my personal data as described therein.",
+      "dataPrivacyErrorText": "Please confirm that you have read and understood the Data Privacy Statement and consent to the processing of your personal data in order to proceed."
     },
     "confirmDialog": {
       "header": "Publish Doctorate Position",
@@ -166,9 +170,9 @@
     },
     "positionDetails": {
       "positionDetails": "Position Details",
-      "description": "Project Description",
-      "tasks": "Key Tasks & Responsibilities",
-      "requirements": "Requirements"
+      "description": "Job Description",
+      "tasks": "Tasks & Responsibilities",
+      "requirements": "Eligibility Criteria"
     },
     "dataPrivacy": {
       "dataProtectionInformation": "Data Protection Information",

@@ -111,6 +111,8 @@
             [max]="40"
             [minFractionDigits]="0"
             [maxFractionDigits]="0"
+            icon="circle-info"
+            [tooltipText]="'jobCreationForm.basicInformationSection.workload.toolTipText' | translate"
           />
         </div>
       </div>
@@ -123,9 +125,11 @@
             [model]="basicInfoForm.get('contractDuration')?.value"
             [control]="basicInfoForm.get('contractDuration') ?? undefined"
             [min]="1"
-            [max]="100"
+            [max]="5"
             [minFractionDigits]="0"
-            [maxFractionDigits]="0"
+            [maxFractionDigits]="2"
+            icon="circle-info"
+            [tooltipText]="'jobCreationForm.basicInformationSection.contractDuration.toolTipText' | translate"
           />
         </div>
         <div class="form-field">
@@ -210,16 +214,28 @@
 
   <!-- Step 3: Additional Information -->
   <ng-template #panel3>
-    <section class="extras-section">
-      <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
-      <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
-      <br />
-      <!--        Not implemented yet-->
-      <!--        Custom Questions Selection-->
-      <div class="data-privacy-notice">
-        <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-      </div>
-    </section>
+    <form [formGroup]="additionalInfoForm">
+      <section class="extras-section">
+        <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
+        <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
+        <br />
+        <!--        Not implemented yet-->
+        <!--        Custom Questions Selection-->
+        <div class="data-privacy-notice">
+          <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" formControlName="privacyAccepted" />
+            <span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
+          </label>
+
+          @if (privacyAcceptedSignal() === false && publishAttempted()) {
+            <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
+          }
+        </div>
+      </section>
+    </form>
   </ng-template>
 
   <!-- Step 4: Review Page -->

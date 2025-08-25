@@ -37,20 +37,22 @@
       "startDate": {
         "label": "Startdatum der Stelle",
         "placeholder": "Wählen Sie ein Startdatum...",
-        "toolTipText": "Geben Sie das Datum an, an dem die Stelle voraussichtlich beginnt."
+        "toolTipText": "Voraussichtliches Startdatum dieser Stelle."
       },
       "applicationDeadline": {
         "label": "Bewerbungsfrist",
         "placeholder": "Wählen Sie ein Fristdatum...",
-        "toolTipText": "Geben Sie das Datum an, bis zu dem Bewerbungen für diese Stelle angenommen werden."
+        "toolTipText": "Nach diesem Datum sind Bewerbungen nicht mehr möglich."
       },
       "workload": {
         "label": "Arbeitsaufwand",
-        "placeholder": "Geben Sie einen Arbeitsaufwand an (in h/Woche)..."
+        "placeholder": "Gebe einen Arbeitsaufwand an (in h/Woche)...",
+        "toolTipText": "Gebe den erwarteten Arbeitsaufwand für die Doktorandenstelle in Stunden pro Woche an (z.B. 20). Du kannst bis zu 40 h/Woche eingeben."
       },
       "contractDuration": {
         "label": "Vertragslaufzeit",
-        "placeholder": "Geben Sie eine Vertragslaufzeit an (in Jahren)..."
+        "placeholder": "Gebe eine Vertragslaufzeit an (in Jahren)...",
+        "toolTipText": "Gebe die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 5 Jahre eingeben."
       },
       "fundingType": {
         "label": "Finanzierungsart",
@@ -66,13 +68,13 @@
         "toolTipText": "Helfen Sie den Bewerbern, den Forschungsschwerpunkt und die Ziele der Position zu verstehen."
       },
       "tasks": {
-        "label": "Aufgaben",
+        "label": "Aufgaben & Verantwortlichkeiten",
         "placeholder": "Geben Sie die wichtigsten Aufgaben und Verantwortlichkeiten an...",
         "descriptionHelper": "Listen Sie die wichtigsten Aufgaben oder Tätigkeiten auf, an denen die/der Kandidat*in beteiligt sein wird. Stichpunkte werden empfohlen.",
         "toolTipText": "Verschaffen Sie den Bewerbern ein klares Bild von den Aufgaben und Tätigkeiten der Position."
       },
       "requirements": {
-        "label": "Zugangsvoraussetzungen",
+        "label": "Zulassungsvoraussetzungen",
         "placeholder": "Listen Sie die Mindestanforderungen für Bewerber*innen auf...",
         "descriptionHelper": "Geben Sie die Mindestanforderungen an (z. B. Abschluss, Noten, Sprachkenntnisse), die erfüllt sein müssen.",
         "toolTipText": "Stellen Sie sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
@@ -83,7 +85,9 @@
         "title": "Zusätzliches",
         "description": "Fügen Sie benutzerdefinierte Fragen hinzu, die den Bewerber*innen im Bewerbungsformular angezeigt werden."
       },
-      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen finden Sie unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>."
+      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen finden Sie unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>.",
+      "dataPrivacyConfirmationText": "Ich habe die Datenschutzerklärung gelesen und verstanden und willige in die Verarbeitung meiner personenbezogenen Daten gemäß dieser Erklärung ein.",
+      "dataPrivacyErrorText": "Bitte bestätigen Sie, dass Sie die Datenschutzerklärung gelesen und verstanden haben und in die Verarbeitung Ihrer personenbezogenen Daten einwilligen, um fortzufahren."
     },
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
@@ -166,9 +170,9 @@
     },
     "positionDetails": {
       "positionDetails": "Stellendetails",
-      "description": "Projektbeschreibung",
+      "description": "Stellenbeschreibung",
       "tasks": "Aufgaben & Verantwortlichkeiten",
-      "requirements": "Anforderungen"
+      "requirements": "Zulassungsvoraussetzungen"
     },
     "dataPrivacy": {
       "dataProtectionInformation": "Hinweis zum Datenschutz:",
