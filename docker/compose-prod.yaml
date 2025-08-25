@@ -26,6 +26,8 @@ services:
       - .env
     expose:
       - '8080'
+    volumes:
+      - docs_data:/data/docs
     healthcheck:
       test: wget -nv -t1 --spider http://localhost:8080/actuator/health || exit 1
       start_period: 100s
@@ -69,3 +71,4 @@ networks:
 
 volumes:
   mysql_data:
+  docs_data:

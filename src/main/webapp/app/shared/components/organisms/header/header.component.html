@@ -2,6 +2,9 @@
   <div (click)="navigateToHome()" class="logo-section">
     <img alt="TUM Logo" class="tum-logo" src="content/images/tum-logo/tum-logo-blue.svg" />
     <span class="app-name">Apply</span>
+    @if (isProfessorPage()) {
+      <span class="professor" jhiTranslate="header.professorTitle"></span>
+    }
   </div>
 
   <div class="actions-section">
@@ -24,7 +27,24 @@
 			/>-->
 
     @if (user() === undefined) {
-      <jhi-button class="header-button" (click)="openLoginDialog()" label="{{ 'header.login' | translate }}" severity="primary" />
+      @if (isProfessorPage()) {
+        <jhi-button
+          class="header-button"
+          (click)="redirectToApplicantLandingPage()"
+          label="{{ 'header.applicant' | translate }}"
+          severity="primary"
+          variant="outlined"
+        />
+      } @else {
+        <jhi-button
+          class="header-button"
+          (click)="redirectToProfessorLandingPage()"
+          label="{{ 'header.professor' | translate }}"
+          severity="primary"
+          variant="outlined"
+        />
+      }
+      <jhi-button class="header-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
       <div class="profile">
         <fa-icon class="profile-icon" icon="user" />
