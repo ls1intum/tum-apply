@@ -19,16 +19,6 @@ export const filterFields: FilterField[] = [
 
 export const sortOptions: SortOption[] = [
   {
-    displayName: 'Rating (Worst to Best)',
-    field: 'rating',
-    direction: 'ASC',
-  },
-  {
-    displayName: 'Rating (Best to Worst)',
-    field: 'rating',
-    direction: 'DESC',
-  },
-  {
     displayName: 'Applied at (Oldest to Newest)',
     field: 'createdAt',
     direction: 'ASC',
