@@ -8,6 +8,7 @@ import { DocumentViewerComponent } from '../../../shared/components/atoms/docume
 import { SubSection } from '../sub-section/sub-section';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { ToastService } from '../../../service/toast-service';
 
 @Component({
   selector: 'jhi-document-section',
@@ -25,6 +26,7 @@ export class DocumentSection {
   readonly NUMBER_OF_DOCUMENTS = 3;
 
   evaluationResourceService = inject(ApplicationEvaluationResourceService);
+  toastService = inject(ToastService);
 
   hasDocuments = computed(() => this.documents().length > 0);
 
@@ -83,9 +85,8 @@ export class DocumentSection {
         a.click();
         window.URL.revokeObjectURL(url);
       }
-    } catch (e) {
-      // TODO: inject a toast/notification service and show error
-      console.error('Failed to download documents', e);
+    } catch {
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to download documents' });
     }
   }
 }
