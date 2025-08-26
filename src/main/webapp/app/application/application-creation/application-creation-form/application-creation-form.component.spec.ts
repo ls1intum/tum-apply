@@ -76,6 +76,7 @@ describe('ApplicationCreationFormComponent create', () => {
           provide: AccountService,
           useValue: {
             loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
+            signedIn: jest.fn().mockReturnValue(of(true)),
           },
         },
         MessageService,

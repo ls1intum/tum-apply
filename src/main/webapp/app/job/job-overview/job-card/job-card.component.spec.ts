@@ -3,9 +3,11 @@ import {
   faCalendar,
   faClock,
   faFileCircleCheck,
+  faFileImport,
   faFlaskVial,
   faGraduationCap,
   faLocationDot,
+  faPlus,
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -93,7 +95,7 @@ describe('JobCardComponent', () => {
     router = TestBed.inject(Router);
 
     library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial, faFileCircleCheck);
+    library.addIcons(faGraduationCap, faLocationDot, faUser, faClock, faCalendar, faFlaskVial, faFileCircleCheck, faPlus, faFileImport);
 
     fixture.componentRef.setInput('jobTitle', 'Test Job');
     fixture.componentRef.setInput('jobId', '123');
