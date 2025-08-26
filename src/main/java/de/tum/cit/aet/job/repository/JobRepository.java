@@ -81,7 +81,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
               a.state as applicationState,
               j.workload as workload,
               j.startDate as startDate,
-              j.createdAt as createdAt
+              j.endDate as endDate
             )
             FROM Job j
             JOIN j.supervisingProfessor p
@@ -94,6 +94,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                           WHERE a2.job = j AND a2.applicant.userId = :userId
                      ))
             WHERE j.state = :state
+              AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
               AND (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
               AND (:fieldOfStudies IS NULL OR LOWER(j.fieldOfStudies) LIKE LOWER(CONCAT('%', :fieldOfStudies, '%')))
               AND (:location IS NULL OR j.location = :location)
@@ -143,7 +144,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                 a.state as applicationState,
                 j.workload as workload,
                 j.startDate as startDate,
-                j.createdAt as createdAt
+                j.endDate as endDate
               )
               FROM Job j
               JOIN j.supervisingProfessor p
@@ -156,6 +157,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                             WHERE a2.job = j AND a2.applicant.userId = :userId
                        ))
               WHERE j.state = :state
+                AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
                 AND (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
                 AND (:fieldOfStudies IS NULL OR LOWER(j.fieldOfStudies) LIKE LOWER(CONCAT('%', :fieldOfStudies, '%')))
                 AND (:location IS NULL OR j.location = :location)

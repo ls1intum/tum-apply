@@ -7,7 +7,6 @@ import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -21,7 +20,9 @@ public record JobCardDTO(
     ApplicationState applicationState,
     Integer workload,
     LocalDate startDate,
-    String relativeTime
+    String relativeTimeEnglish,
+    String relativeTimeGerman
+
 ) {
     public JobCardDTO(
         @NotNull UUID jobId,
@@ -33,7 +34,7 @@ public record JobCardDTO(
         ApplicationState applicationState,
         Integer workload,
         LocalDate startDate,
-        LocalDateTime createdAt
+        LocalDate endDate
     ) {
         this(
             jobId,
@@ -45,7 +46,8 @@ public record JobCardDTO(
             applicationState,
             workload,
             startDate,
-            UiTextFormatter.getRelativeTimeLabel(createdAt)
+            UiTextFormatter.getTimeLeftLabelEnglish(endDate),
+            UiTextFormatter.getTimeLeftLabelGerman(endDate)
         );
     }
 }

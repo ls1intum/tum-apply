@@ -245,7 +245,7 @@ aet:
     enabled: false
     from:
   storage:
-    root: storage/docs
+    root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400
   client:
     url: ${AET_CLIENT_URL}

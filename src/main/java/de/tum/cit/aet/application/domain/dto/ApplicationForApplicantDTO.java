@@ -46,7 +46,7 @@ public record ApplicationForApplicantDTO(
                 application.getState(),
                 job.getWorkload(),
                 job.getStartDate(),
-                job.getCreatedAt()
+                job.getEndDate()
             ),
             application.getState(),
             application.getDesiredStartDate(),

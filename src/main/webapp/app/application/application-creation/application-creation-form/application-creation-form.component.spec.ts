@@ -12,6 +12,7 @@ import {
   faChevronDown,
   faChevronUp,
   faEnvelope,
+  faInfoCircle,
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
 import { HttpResponse } from '@angular/common/http';
@@ -85,7 +86,19 @@ describe('ApplicationCreationFormComponent create', () => {
     component = fixture.componentInstance;
 
     const library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faEnvelope, faChevronDown, faChevronUp, faCalendar, faCaretLeft, faCaretRight, faArrowRight, faArrowLeft, faSave);
+    library.addIcons(
+      faEnvelope,
+      faChevronDown,
+      faChevronUp,
+      faCalendar,
+      faCaretLeft,
+      faCaretRight,
+      faInfoCircle,
+      faArrowRight,
+      faArrowLeft,
+      faSave,
+    );
+    fixture.detectChanges();
   });
 
   it('should create', () => {

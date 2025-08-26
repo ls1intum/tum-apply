@@ -19,7 +19,8 @@ export interface JobCardDTO {
     applicationState?: JobCardDTO.ApplicationStateEnum;
     workload?: number;
     startDate?: string;
-    relativeTime?: string;
+    relativeTimeEnglish?: string;
+    relativeTimeGerman?: string;
 }
 export namespace JobCardDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
