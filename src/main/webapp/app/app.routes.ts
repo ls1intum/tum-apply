@@ -69,6 +69,12 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./playground/rating-playground/rating-playground').then(c => c.RatingPlayground),
   },
+  {
+    path: 'playground/comment',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./playground/comment-playground/comment-playground').then(c => c.CommentPlayground),
+  },
 
   // ======================================================================================
   // User Management
