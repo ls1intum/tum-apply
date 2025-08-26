@@ -12,7 +12,8 @@ export class RatingComponent {
   rating = model<number | undefined>(undefined);
   selectable = input<boolean>(false);
 
-  readonly likertScale = 5;
+  // Likert scale values from -2 to +2
+  readonly likertValues = [-2, -1, 0, 1, 2];
   protected readonly Array = Array;
 
   private readonly tooltips = ['very_bad', 'bad', 'neutral', 'good', 'very_good'];
@@ -22,7 +23,7 @@ export class RatingComponent {
       return;
     }
 
-    const newRating = index + 1;
+    const newRating = this.likertValues[index];
     // If clicking the same rating, unselect it
     if (this.rating() === newRating) {
       this.rating.set(undefined);
@@ -33,23 +34,23 @@ export class RatingComponent {
 
   getSectionColor(index: number): string {
     const currentRating = this.rating();
+    const sectionValue = this.likertValues[index];
 
     if (currentRating === undefined) {
       return 'var(--p-background-surface-alt)';
     }
 
-    if (index === currentRating - 1) {
-      // Color based on rating level
-      switch (currentRating) {
-        case 1:
+    if (sectionValue === currentRating) {
+      switch (sectionValue) {
+        case -2:
           return 'var(--p-danger-active-color)';
-        case 2:
+        case -1:
           return 'var(--p-danger-hover-color)';
-        case 3:
+        case 0:
           return 'var(--p-warn-color)';
-        case 4:
+        case 1:
           return 'var(--p-success-hover-color)';
-        case 5:
+        case 2:
           return 'var(--p-success-active-color)';
         default:
           return 'var(--p-background-surface-alt)';

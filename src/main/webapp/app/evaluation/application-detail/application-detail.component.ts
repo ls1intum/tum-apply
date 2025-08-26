@@ -88,6 +88,10 @@ export class ApplicationDetailComponent {
     return state !== 'ACCEPTED' && state !== 'REJECTED';
   });
 
+  protected currentApplicationId = computed(() => {
+    return this.currentApplication()?.applicationDetailDTO.applicationId;
+  });
+
   protected readonly sortOptions = sortOptions;
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
 

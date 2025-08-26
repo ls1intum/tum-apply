@@ -4,15 +4,19 @@
   <jhi-sub-section class="flex gap-8" title="evaluation.details.ratingYourRating">
     <div class="flex flex-col gap-2">
       <p class="text-sm">{{ currentUser()?.name ?? '' }}</p>
-      <jhi-rating [selectable]="true" />
+      <jhi-rating [(rating)]="myRating" [selectable]="true" />
       <p class="mt-2 text-xs w-full flex justify-center">Click a box to select your rating</p>
     </div>
   </jhi-sub-section>
 
-  <jhi-sub-section class="flex gap-8" title="evaluation.details.ratingOtherRatings">
-    <div class="flex flex-col gap-2">
-      <p class="text-sm">Click a box to select your rating</p>
-      <jhi-rating />
-    </div>
-  </jhi-sub-section>
+  @if (otherRatings().length > 0) {
+    <jhi-sub-section class="flex gap-8" title="evaluation.details.ratingOtherRatings">
+      @for (otherRating of otherRatings(); track otherRating.from) {
+        <div class="flex flex-col gap-2">
+          <p class="text-sm">{{ otherRating.from }}</p>
+          <jhi-rating [rating]="otherRating.rating" />
+        </div>
+      }
+    </jhi-sub-section>
+  }
 </div>

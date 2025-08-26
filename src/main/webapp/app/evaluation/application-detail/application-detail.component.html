@@ -158,10 +158,7 @@
           </div>
           <div>
             <jhi-section title="evaluation.details.documentTitle">
-              <jhi-document-section
-                [idsDTO]="currentDocumentIds()"
-                [applicationId]="currentApplication()?.applicationDetailDTO?.applicationId ?? ''"
-              />
+              <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
         </div>
@@ -169,7 +166,7 @@
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
             <jhi-section title="evaluation.details.ratingTitle">
-              <jhi-rating-section />
+              <jhi-rating-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
           <div>

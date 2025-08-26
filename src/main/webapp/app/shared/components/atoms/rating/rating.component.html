@@ -1,5 +1,5 @@
 <div class="rating">
-  @for (item of Array(likertScale); track $index) {
+  @for (item of likertValues; track $index) {
     <div
       class="section"
       [class.selectable]="selectable()"

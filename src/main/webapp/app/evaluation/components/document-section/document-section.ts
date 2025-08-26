@@ -17,7 +17,7 @@ import { ToastService } from '../../../service/toast-service';
 })
 export class DocumentSection {
   idsDTO = input<ApplicationDocumentIdsDTO | undefined>(undefined);
-  applicationId = input.required<string>();
+  applicationId = input.required<string | undefined>();
 
   documents = signal<{ label: string; id: DocumentInformationHolderDTO }[]>([]);
   documentsCount = signal<number>(0);
@@ -57,9 +57,15 @@ export class DocumentSection {
   });
 
   async downloadAllDocuments(): Promise<void> {
+    const applicationId = this.applicationId();
+    if (applicationId === undefined) {
+      this.toastService.showError({ summary: 'Error', detail: 'No application selected' });
+      return;
+    }
+
     try {
       const response: HttpResponse<Blob> = await firstValueFrom(
-        this.evaluationResourceService.downloadAll(this.applicationId(), 'response', false, {
+        this.evaluationResourceService.downloadAll(applicationId, 'response', false, {
           httpHeaderAccept: 'application/zip',
         }),
       );
