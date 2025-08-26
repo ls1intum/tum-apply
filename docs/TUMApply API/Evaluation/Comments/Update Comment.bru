@@ -1,0 +1,21 @@
+meta {
+  name: Update Comment
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/comments/:commentId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  commentId: c4a4c4a4-4444-4444-4444-444444444444
+}
+
+body:json {
+  {
+    "message": "Updated the comment"
+  }
+}
