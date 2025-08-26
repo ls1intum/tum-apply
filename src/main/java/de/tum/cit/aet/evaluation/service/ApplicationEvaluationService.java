@@ -297,7 +297,7 @@ public class ApplicationEvaluationService {
         Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
 
         User user = application.getApplicant().getUser();
-        String zipName = sanitizeFilename(user.getFirstName() + "_" + user.getLastName());
+        String zipName = sanitizeFilename(user.getFirstName() + " " + user.getLastName() + " - " + application.getJob().getTitle());
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/zip");
