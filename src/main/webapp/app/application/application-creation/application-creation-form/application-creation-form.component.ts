@@ -111,8 +111,6 @@ export default class ApplicationCreationFormComponent {
 
   useLocalStorage = signal<boolean>(false);
 
-  location = inject(Location);
-
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];
     const panel1 = this.panel1();
@@ -241,6 +239,9 @@ export default class ApplicationCreationFormComponent {
     return steps;
   });
 
+  private initCalled = signal(false);
+
+  private location = inject(Location);
   private applicationResourceService = inject(ApplicationResourceService);
   private accountService = inject(AccountService);
   private route = inject(ActivatedRoute);
@@ -248,16 +249,19 @@ export default class ApplicationCreationFormComponent {
   private toastService = inject(ToastService);
   private localStorageService = inject(LocalStorageService);
 
-  constructor() {
-    this.init();
+  private initEffect = effect(() => {
+    if (!this.initCalled()) {
+      this.initCalled.set(true);
+      this.init();
+    }
+  });
 
-    effect(() => {
-      const intervalId = setInterval(() => {
-        this.performAutomaticSave();
-      }, 3000);
-      return () => clearInterval(intervalId);
-    });
-  }
+  private automaticSaveEffect = effect(() => {
+    const intervalId = setInterval(() => {
+      this.performAutomaticSave();
+    }, 3000);
+    return () => clearInterval(intervalId);
+  });
 
   async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
@@ -289,10 +293,7 @@ export default class ApplicationCreationFormComponent {
           }
           application = createdApplication;
         } else {
-          this.toastService.showError({
-            summary: 'Error',
-            detail: 'Either job ID or application ID must be provided in the URL.',
-          });
+          this.showInitErrorMessage('Error', 'Either job ID or application ID must be provided in the URL.');
           return;
         }
 
@@ -315,11 +316,7 @@ export default class ApplicationCreationFormComponent {
         this.updateDocumentInformation();
       } catch (error) {
         const httpError = error as HttpErrorResponse;
-        this.toastService.showError({
-          summary: 'Error',
-          detail: 'Failed to load application: ' + httpError.statusText,
-        });
-        console.error('Failed to load application:', error);
+        this.showInitErrorMessage('Error', 'Failed to load application: ' + httpError.statusText);
       }
     }
   }
@@ -331,17 +328,11 @@ export default class ApplicationCreationFormComponent {
       this.jobId.set(jobId);
       const loaded = this.loadPage1FromLocalStorage(jobId);
       if (!loaded) {
-        this.toastService.showError({
-          summary: 'Error',
-          detail: 'Error loading Application from local storage.',
-        });
+        this.showInitErrorMessage('Error', 'Error loading Application from local storage.');
       }
       this.applicationState.set('SAVED');
     } else {
-      this.toastService.showError({
-        summary: 'Error',
-        detail: 'Job ID must be provided when not authenticated.',
-      });
+      this.showInitErrorMessage('Error', 'Job ID must be provided when not authenticated.');
     }
   }
 
@@ -550,5 +541,15 @@ export default class ApplicationCreationFormComponent {
 
   private clearLocalStorage(): void {
     this.localStorageService.clearApplicationDraft(this.applicationId(), this.jobId());
+  }
+
+  private showInitErrorMessage(summary: string, detail: string): void {
+    queueMicrotask(() => {
+      this.toastService.showError({
+        summary,
+        detail,
+      });
+      setTimeout(() => void this.router.navigate(['']), 3000);
+    });
   }
 }
