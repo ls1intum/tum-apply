@@ -10,10 +10,10 @@
       }
     </div>
 
-    @if (canEdit()) {
+    @if (canEdit() && !isCreate()) {
       <div class="comment-actions">
         <jhi-button variant="text" icon="pen" (click)="startEdit()" [disabled]="isEdit()" size="sm" />
-        <jhi-button variant="text" icon="trash-alt" size="sm" />
+        <jhi-button variant="text" icon="trash-alt" size="sm" (click)="deleted.emit()" />
       </div>
     }
   </div>
@@ -34,7 +34,14 @@
     </div>
   } @else if (isCreate()) {
     <div class="comment-controls">
-      <jhi-button label="evaluation.post" [shouldTranslate]="true" icon="paper-plane" severity="primary" (click)="onSave()" />
+      <jhi-button
+        label="evaluation.post"
+        [shouldTranslate]="true"
+        icon="paper-plane"
+        severity="primary"
+        (click)="onSave()"
+        [disabled]="draft().length === 0"
+      />
     </div>
   }
 </div>

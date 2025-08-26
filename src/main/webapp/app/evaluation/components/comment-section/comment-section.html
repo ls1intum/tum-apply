@@ -1,0 +1,31 @@
+<div class="flex flex-col gap-4">
+  @if (comments().length === 0) {
+    <div class="text-sm">No comments yet. Add one below.</div>
+  } @else {
+    @for (c of comments(); track c.commentId) {
+      <div class="flex items-start gap-3">
+        <jhi-comment
+          class="flex-1"
+          [author]="c.author ?? ''"
+          [createdAt]="c.createdAt ?? ''"
+          [canEdit]="c.canEdit ?? false"
+          [isCreate]="false"
+          [text]="c.message ?? ''"
+          (saved)="updateComment(c.commentId!, $event)"
+          (deleted)="deleteComment(c.commentId)"
+        />
+      </div>
+    }
+  }
+  <div class="mt-6">
+    <jhi-comment
+      [author]="currentUser()?.name ?? ''"
+      [createdAt]="''"
+      [canEdit]="true"
+      [isCreate]="true"
+      [text]="createDraft()"
+      (textChange)="createDraft.set($event)"
+      (saved)="createComment($event)"
+    />
+  </div>
+</div>

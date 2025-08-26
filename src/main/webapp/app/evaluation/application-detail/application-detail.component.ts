@@ -32,6 +32,7 @@ import { LinkList } from '../components/link-list/link-list';
 import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
 import { RatingSection } from '../components/rating-section/rating-section';
+import { CommentSection } from '../components/comment-section/comment-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -57,6 +58,7 @@ const WINDOW_SIZE = 7;
     GenderNamePipe,
     LanguageNamePipe,
     RatingSection,
+    CommentSection,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',

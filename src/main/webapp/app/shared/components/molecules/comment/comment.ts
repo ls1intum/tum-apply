@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, input, model, output, signal } from '@angular/core';
+import { Component, ViewEncapsulation, effect, input, model, output, signal } from '@angular/core';
 import { TextareaModule } from 'primeng/textarea';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -21,18 +21,35 @@ export class Comment {
 
   // Outputs
   saved = output<string>();
+  deleted = output();
 
-  // Internal Signals
+  // Internal
   protected isEdit = signal<boolean>(false);
-  protected draft = signal<string>('');
+  protected draft = model<string>('');
+
+  protected _updateDraftEffect = effect(() => {
+    const incoming = this.text();
+    const editing = this.isEdit();
+    const creating = this.isCreate();
+
+    // In create mode, or whenever not editing, mirror incoming text into draft
+    if (creating || !editing) {
+      this.draft.set(incoming);
+    }
+  });
+
+  onInput(e: Event): void {
+    const value = (e.target as HTMLTextAreaElement).value;
+    this.draft.set(value);
+
+    if (this.isCreate()) {
+      this.text.set(value);
+    }
+  }
 
   startEdit(): void {
     this.draft.set(this.text());
     this.isEdit.set(true);
-  }
-
-  onInput(e: Event): void {
-    this.draft.set((e.target as HTMLTextAreaElement).value);
   }
 
   onCancel(): void {
@@ -43,7 +60,7 @@ export class Comment {
   onSave(): void {
     const value = this.draft();
     this.saved.emit(value);
-    this.text.set(value);
+
     this.isEdit.set(false);
   }
 }
