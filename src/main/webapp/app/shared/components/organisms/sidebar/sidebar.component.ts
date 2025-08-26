@@ -27,7 +27,7 @@ export class SidebarComponent {
    */
   private readonly customGroups: Partial<Record<string, string[]>> = {
     '/application/overview': ['/application/detail', '/application/form'],
-    '/job-overview': ['/job/detail', '/application/form'],
+    '/job-overview': ['/job/detail'],
     '/my-positions': ['/job/detail', '/job/edit'],
   };
 
