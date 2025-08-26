@@ -21,6 +21,7 @@ export class CommentSection {
   protected comments = signal<InternalCommentDTO[]>([]);
   protected createDraft = signal<string>('');
   protected currentUser: WritableSignal<User | undefined> = this.accountService.user;
+  protected editingId = signal<string | undefined>(undefined);
 
   protected _loadCommentsEffect = effect(() => {
     const id = this.applicationId();

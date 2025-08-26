@@ -6,13 +6,17 @@
       <div class="flex items-start gap-3">
         <jhi-comment
           class="flex-1"
+          [commentId]="c.commentId!"
           [author]="c.author ?? ''"
           [createdAt]="c.createdAt ?? ''"
           [canEdit]="c.canEdit ?? false"
           [isCreate]="false"
           [text]="c.message ?? ''"
+          [editingId]="editingId()"
+          (enterEdit)="editingId.set(c.commentId!)"
+          (exitEdit)="editingId.set(undefined)"
           (saved)="updateComment(c.commentId!, $event)"
-          (deleted)="deleteComment(c.commentId)"
+          (deleted)="editingId.set(undefined); deleteComment(c.commentId)"
         />
       </div>
     }
