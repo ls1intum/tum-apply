@@ -548,7 +548,7 @@ export default class ApplicationCreationFormComponent {
         summary,
         detail,
       });
-      setTimeout(() => void this.router.navigate(['']), 3000);
+      setTimeout(() => void this.router.navigate(['/job-overview']), 3000);
     });
   }
 }
