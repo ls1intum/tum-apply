@@ -102,7 +102,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
               AND (:workload IS NULL OR j.workload = :workload)
                       ORDER BY
                           CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END ASC,
-                          CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END DESC
+                          CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END DESC,
+                          j.createdAt DESC
                       """)
     Page<JobCardDTO> findAllJobCardsByState(
             @Param("state") JobState state,
