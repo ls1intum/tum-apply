@@ -30,27 +30,22 @@ export class LocalStorageService {
 
   loadApplicationDraft(applicationId?: string, jobId?: string): ApplicationDraftData | null {
     const key = this.getApplicationKey(applicationId, jobId);
-    try {
-      const savedData = localStorage.getItem(key);
-      if (!savedData) return null;
+    const savedData = localStorage.getItem(key);
+    if (!savedData) return null;
 
-      const parsed = JSON.parse(savedData) as ApplicationDraftData;
+    const parsed = JSON.parse(savedData) as ApplicationDraftData;
 
-      // Check if draft is expired (older than 30 days)
-      const now = new Date();
-      const saved = new Date(parsed.timestamp);
-      const daysDiff = (now.getTime() - saved.getTime()) / (1000 * 60 * 60 * 24);
+    // Check if draft is expired (older than 30 days)
+    const now = new Date();
+    const saved = new Date(parsed.timestamp);
+    const daysDiff = (now.getTime() - saved.getTime()) / (1000 * 60 * 60 * 24);
 
-      if (daysDiff > this.APPLICATION_DRAFT_VALIDITY_DURATION_IN_DAYS) {
-        this.clearApplicationDraft(applicationId, jobId);
-        return null;
-      }
-
-      return parsed;
-    } catch (error) {
-      console.error('Failed to load or parse from local storage:', error);
+    if (daysDiff > this.APPLICATION_DRAFT_VALIDITY_DURATION_IN_DAYS) {
+      this.clearApplicationDraft(applicationId, jobId);
       return null;
     }
+
+    return parsed;
   }
 
   clearApplicationDraft(applicationId?: string, jobId?: string): void {

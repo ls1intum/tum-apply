@@ -326,10 +326,7 @@ export default class ApplicationCreationFormComponent {
     if (jobId) {
       // TODO fetch jobData for lateron displaying jobDetails
       this.jobId.set(jobId);
-      const loaded = this.loadPage1FromLocalStorage(jobId);
-      if (!loaded) {
-        this.showInitErrorMessage('Error', 'Error loading Application from local storage.');
-      }
+      this.loadPage1FromLocalStorage(jobId);
       this.applicationState.set('SAVED');
     } else {
       this.showInitErrorMessage('Error', 'Job ID must be provided when not authenticated.');
@@ -534,15 +531,22 @@ export default class ApplicationCreationFormComponent {
    * @returns {boolean} True if data was successfully loaded, false otherwise
    * @private
    */
-  private loadPage1FromLocalStorage(jobId: string): boolean {
-    const draft = this.localStorageService.loadApplicationDraft(undefined, jobId);
-    if (draft) {
-      this.page1.set(draft.page1);
-      this.applicationId.set(draft.applicationId);
-      this.jobId.set(draft.jobId);
-      return true;
+  private loadPage1FromLocalStorage(jobId: string): void {
+    try {
+      const draft = this.localStorageService.loadApplicationDraft(undefined, jobId);
+      if (draft) {
+        this.page1.set(draft.page1);
+        this.applicationId.set(draft.applicationId);
+        this.jobId.set(draft.jobId);
+      }
+    } catch {
+      queueMicrotask(() => {
+        this.toastService.showError({
+          detail: 'Error',
+          summary: 'Error retrieving the application data from the local storage',
+        });
+      });
     }
-    return false;
   }
 
   private clearLocalStorage(): void {
