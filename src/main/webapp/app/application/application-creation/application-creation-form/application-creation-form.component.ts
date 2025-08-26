@@ -386,22 +386,25 @@ export default class ApplicationCreationFormComponent {
 
   async performAutomaticSave(): Promise<void> {
     if (this.savingState() === SavingStates.SAVING) {
+      let savedSuccessFully;
       if (this.useLocalStorage()) {
-        this.saveToLocalStorage();
+        savedSuccessFully = this.saveToLocalStorage();
       } else {
-        await this.sendCreateApplicationData(this.applicationState(), false);
+        savedSuccessFully = await this.sendCreateApplicationData(this.applicationState(), false);
       }
-      this.savingState.set(SavingStates.SAVED);
+      if (savedSuccessFully) {
+        this.savingState.set(SavingStates.SAVED);
+      }
     }
   }
 
-  async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<void> {
+  async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
     const location = this.location;
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
       this.toastService.showError({ detail: 'There is an error with the applicationId' });
-      return;
+      return false;
     }
 
     // If using local storage, we can't send to server
@@ -409,7 +412,7 @@ export default class ApplicationCreationFormComponent {
       this.toastService.showError({
         detail: 'Cannot submit application: User authentication required.',
       });
-      return;
+      return false;
     }
 
     const updateApplication: UpdateApplicationDTO = {
@@ -465,7 +468,9 @@ export default class ApplicationCreationFormComponent {
         detail: 'Failed to save application: ' + httpError.statusText,
       });
       console.error('Failed to save application:', err);
+      return false;
     }
+    return true;
   }
 
   updateDocumentInformation(): void {
@@ -502,7 +507,7 @@ export default class ApplicationCreationFormComponent {
     this.page3Valid.set(isValid);
   }
 
-  private saveToLocalStorage(): void {
+  private saveToLocalStorage(): boolean {
     const applicationData: ApplicationDraftData = {
       page1: this.page1(),
       applicationId: this.applicationId(),
@@ -517,7 +522,9 @@ export default class ApplicationCreationFormComponent {
         summary: 'Error',
         detail: 'Failed to save application data locally.',
       });
+      return false;
     }
+    return true;
   }
 
   /**
