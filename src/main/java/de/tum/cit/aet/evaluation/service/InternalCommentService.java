@@ -105,7 +105,7 @@ public class InternalCommentService {
      */
     private void checkOwnership(InternalComment comment) {
         if (!currentUserService.isCurrentUser(comment.getCreatedBy().getUserId())) {
-            throw new AccessDeniedException("Current user is not authorized");
+            throw new AccessDeniedException("Access denied to this comment");
         }
     }
 

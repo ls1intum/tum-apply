@@ -8,13 +8,14 @@ import de.tum.cit.aet.evaluation.dto.RatingOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -104,13 +105,12 @@ public class RatingService {
     /**
      * Verifies that the current user has permission to review the specified application.
      *
-     * @param applicationId the unique ID of the application; must not be {@code null}
-     * @throws jakarta.persistence.EntityNotFoundException if the application does not exist
+     * @param applicationId the unique ID of the application
      */
     private void checkReviewRights(UUID applicationId) {
         Application application = applicationEvaluationRepository
             .findById(applicationId)
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
-        currentUserService.canReview(application);
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
     }
 }
