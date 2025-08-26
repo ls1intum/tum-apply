@@ -113,7 +113,7 @@ export class SidebarComponent {
           ],
         },
         {
-          title: 'sidebar.researchgroup.emailtemplates',
+          title: 'sidebar.researchgroup.researchgroup',
           buttons: [{ icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' }],
         },
       ],
