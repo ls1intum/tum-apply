@@ -512,8 +512,7 @@ export default class ApplicationCreationFormComponent {
 
     try {
       this.localStorageService.saveApplicationDraft(applicationData);
-    } catch (error) {
-      console.error('Failed to save to local storage:', error);
+    } catch {
       this.toastService.showError({
         summary: 'Error',
         detail: 'Failed to save application data locally.',
