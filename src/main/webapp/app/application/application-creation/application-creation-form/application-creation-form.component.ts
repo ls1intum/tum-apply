@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
 import { ApplicationDocumentIdsDTO, ApplicationForApplicantDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
@@ -250,7 +250,7 @@ export default class ApplicationCreationFormComponent {
   private localStorageService = inject(LocalStorageService);
 
   private initEffect = effect(() => {
-    if (!this.initCalled()) {
+    if (!untracked(() => this.initCalled())) {
       this.initCalled.set(true);
       this.init();
     }
