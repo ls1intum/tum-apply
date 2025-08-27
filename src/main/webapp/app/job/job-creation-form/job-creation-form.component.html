@@ -221,19 +221,6 @@
         <br />
         <!--        Not implemented yet-->
         <!--        Custom Questions Selection-->
-        <div class="data-privacy-notice">
-          <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-        </div>
-        <div>
-          <label>
-            <input type="checkbox" formControlName="privacyAccepted" />
-            <span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
-          </label>
-
-          @if (privacyAcceptedSignal() === false && publishAttempted()) {
-            <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
-          }
-        </div>
       </section>
     </form>
   </ng-template>
@@ -245,6 +232,19 @@
       <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>
     </div>
     <jhi-job-detail [previewData]="currentJobData" />
+    <div class="data-privacy-notice">
+      <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
+    </div>
+    <div [formGroup]="additionalInfoForm">
+      <label>
+        <input type="checkbox" formControlName="privacyAccepted" />
+        <span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
+      </label>
+
+      @if (privacyAcceptedSignal() === false && publishAttempted()) {
+        <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
+      }
+    </div>
   </ng-template>
 
   <!-- Saving State Panel -->

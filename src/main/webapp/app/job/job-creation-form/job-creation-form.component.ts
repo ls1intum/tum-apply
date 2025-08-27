@@ -222,7 +222,9 @@ export class JobCreationFormComponent {
       });
     }
 
-    if (templates.panel3) {
+    // TODO: Add additional info step back in if needed
+
+    /* if (templates.panel3) {
       steps.push({
         name: 'jobCreationForm.header.steps.additionalInfo',
         panelTemplate: templates.panel3,
@@ -252,7 +254,7 @@ export class JobCreationFormComponent {
         ],
         status: templates.status,
       });
-    }
+    }*/
 
     if (templates.panel4) {
       steps.push({
