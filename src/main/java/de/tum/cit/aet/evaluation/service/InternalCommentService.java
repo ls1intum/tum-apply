@@ -1,8 +1,8 @@
 package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.evaluation.dto.InternalCommentDTO;
@@ -53,12 +53,13 @@ public class InternalCommentService {
         Application application = getApplication(applicationId);
         authorizeReview(application);
 
+        User currentUser = currentUserService.getUser();
         InternalComment comment = new InternalComment();
         comment.setApplication(application);
         comment.setMessage(internalCommentUpdateDTO.message());
-        comment.setCreatedBy(currentUserService.getUser());
+        comment.setCreatedBy(currentUser);
 
-        return InternalCommentDTO.from(internalCommentRepository.save(comment), currentUserService.getUser());
+        return InternalCommentDTO.from(internalCommentRepository.save(comment), currentUser);
     }
 
     /**
@@ -93,7 +94,7 @@ public class InternalCommentService {
      * @param internalCommentId the UUID of the comment
      * @return the {@link InternalComment} entity
      */
-    public InternalComment getInternalComment(UUID internalCommentId) {
+    private InternalComment getInternalComment(UUID internalCommentId) {
         return internalCommentRepository.findById(internalCommentId).orElseThrow(() -> EntityNotFoundException.forId("InternalComment", internalCommentId));
     }
 
@@ -103,8 +104,8 @@ public class InternalCommentService {
      * @param comment the {@link InternalComment} to check ownership for
      */
     private void checkOwnership(InternalComment comment) {
-        if (!comment.getCreatedBy().getUserId().equals(currentUserService.getUser().getUserId())) {
-            throw new UnauthorizedException("Current user is not authorized");
+        if (!currentUserService.isCurrentUser(comment.getCreatedBy().getUserId())) {
+            throw new AccessDeniedException("Access denied to this comment");
         }
     }
 
@@ -114,7 +115,7 @@ public class InternalCommentService {
      * @param application the {@link Application} to check
      */
     private void authorizeReview(Application application) {
-        currentUserService.canReview(application);
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
     }
 
     /**
