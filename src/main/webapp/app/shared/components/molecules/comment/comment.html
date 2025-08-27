@@ -21,7 +21,15 @@
   <!-- Body -->
   <div class="comment-body">
     @if (isEdit() || isCreate()) {
-      <textarea rows="3" pTextarea [autoResize]="true" class="w-full" [value]="draft()" (input)="onInput($event)"></textarea>
+      <textarea
+        rows="3"
+        pTextarea
+        [placeholder]="'entity.comment.placeholder' | translate"
+        [autoResize]="true"
+        class="w-full"
+        [value]="draft()"
+        (input)="onInput($event)"
+      ></textarea>
     } @else {
       <div class="comment-text">{{ text() }}</div>
     }

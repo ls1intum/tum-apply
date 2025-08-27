@@ -338,6 +338,9 @@
       "motivation": "Motivation",
       "skills": "Skills",
       "researchExperience": "Research Experience"
+    },
+    "comment": {
+      "placeholder": "Add a comment..."
     }
   },
   "error": {

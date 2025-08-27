@@ -5,10 +5,11 @@ import { InternalCommentDTO, InternalCommentResourceService } from '../../../gen
 import { AccountService, User } from '../../../core/auth/account.service';
 import { ToastService } from '../../../service/toast-service';
 import { Comment } from '../../../shared/components/molecules/comment/comment';
+import TranslateDirective from '../../../shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-comment-section',
-  imports: [Comment],
+  imports: [Comment, TranslateDirective],
   templateUrl: './comment-section.html',
 })
 export class CommentSection {

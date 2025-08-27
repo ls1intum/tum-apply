@@ -1,9 +1,9 @@
 <div class="flex flex-col gap-4">
-  @if (comments().length === 0) {
-    <div class="text-sm">No comments yet. Add one below.</div>
-  } @else {
-    @for (c of comments(); track c.commentId) {
-      <div class="flex items-start gap-3">
+  <p class="text-sm" jhiTranslate="evaluation.details.commentDescription"></p>
+
+  @if (comments().length > 0) {
+    <div class="mt-6 flex flex-col gap-4">
+      @for (c of comments(); track c.commentId) {
         <jhi-comment
           class="flex-1"
           [commentId]="c.commentId!"
@@ -18,9 +18,10 @@
           (saved)="updateComment(c.commentId!, $event)"
           (deleted)="editingId.set(undefined); deleteComment(c.commentId)"
         />
-      </div>
-    }
+      }
+    </div>
   }
+
   <div class="mt-6">
     <jhi-comment
       [author]="currentUser()?.name ?? ''"

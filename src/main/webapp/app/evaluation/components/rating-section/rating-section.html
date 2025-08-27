@@ -1,11 +1,12 @@
 <div class="flex flex-col gap-5">
-  <p class="text-sm">Rate the application and view how other reviewers have assessed it. This will not be shared with the applicant.</p>
+  <p class="text-sm" jhiTranslate="evaluation.details.ratingDescription"></p>
 
   <jhi-sub-section class="flex gap-8" title="evaluation.details.ratingYourRating">
-    <div class="flex flex-col gap-2">
-      <p class="text-sm">{{ currentUser()?.name ?? '' }}</p>
-      <jhi-rating [(rating)]="myRating" [selectable]="true" />
-      <p class="mt-2 text-xs w-full flex justify-center">Click a box to select your rating</p>
+    <div>
+      <p class="text-xs" jhiTranslate="evaluation.details.ratingYourRatingLabel"></p>
+      <div class="mt-2">
+        <jhi-rating [(rating)]="myRating" [selectable]="true" />
+      </div>
     </div>
   </jhi-sub-section>
 

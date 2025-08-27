@@ -50,7 +50,7 @@
       <div class="w-full">
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
           <div>
-            <jhi-section title="evaluation.details.applicantTitle">
+            <jhi-section title="evaluation.details.applicantTitle" icon="user">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Applicant Information -->
                 <jhi-sub-section title="evaluation.details.applicantInformation">
@@ -97,7 +97,7 @@
             <p-divider />
 
             <!-- Education -->
-            <jhi-section title="evaluation.details.educationTitle">
+            <jhi-section title="evaluation.details.educationTitle" icon="building-columns">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Bachelor -->
                 <jhi-sub-section title="evaluation.details.educationBachelors">
@@ -138,7 +138,7 @@
             <p-divider />
 
             <!-- Application -->
-            <jhi-section title="evaluation.details.applicationTitle">
+            <jhi-section title="evaluation.details.applicationTitle" icon="file-lines">
               <jhi-sub-section title="evaluation.details.applicationDesiredStartDate">
                 <span class="text-sm"> {{ application.applicationDetailDTO.desiredDate || '—' }} </span>
               </jhi-sub-section>
@@ -157,7 +157,7 @@
             </jhi-section>
           </div>
           <div>
-            <jhi-section title="evaluation.details.documentTitle">
+            <jhi-section title="evaluation.details.documentTitle" icon="folder">
               <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
@@ -165,12 +165,12 @@
         <p-divider />
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
-            <jhi-section title="evaluation.details.ratingTitle">
+            <jhi-section title="evaluation.details.ratingTitle" icon="thumbs-up">
               <jhi-rating-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
           <div>
-            <jhi-section title="evaluation.details.commentTitle">
+            <jhi-section title="evaluation.details.commentTitle" icon="comments">
               <jhi-comment-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>

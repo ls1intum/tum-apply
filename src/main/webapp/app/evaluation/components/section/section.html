@@ -1,5 +1,8 @@
 <section class="mt-8">
-  <header class="flex items-baseline gap-2">
+  <header class="flex items-center gap-2">
+    @if (icon(); as icon) {
+      <fa-icon class="text-[var(--p-primary-color)]" [icon]="icon" />
+    }
     <h2 class="text-lg font-bold">{{ title() | translate }}</h2>
     <ng-content select="[actions]" />
   </header>

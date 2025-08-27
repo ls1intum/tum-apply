@@ -6,10 +6,11 @@ import { RatingComponent } from '../../../shared/components/atoms/rating/rating.
 import { RatingOverviewDTO, RatingResourceService } from '../../../generated';
 import { AccountService, User } from '../../../core/auth/account.service';
 import { ToastService } from '../../../service/toast-service';
+import TranslateDirective from '../../../shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-rating-section',
-  imports: [SubSection, RatingComponent],
+  imports: [SubSection, RatingComponent, TranslateDirective],
   templateUrl: './rating-section.html',
 })
 export class RatingSection {
