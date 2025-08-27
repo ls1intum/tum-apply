@@ -1,10 +1,10 @@
-import { Component, WritableSignal, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { SubSection } from '../sub-section/sub-section';
 import { RatingComponent } from '../../../shared/components/atoms/rating/rating.component';
 import { RatingOverviewDTO, RatingResourceService } from '../../../generated';
-import { AccountService, User } from '../../../core/auth/account.service';
+import { AccountService } from '../../../core/auth/account.service';
 import { ToastService } from '../../../service/toast-service';
 import TranslateDirective from '../../../shared/language/translate.directive';
 
@@ -18,7 +18,6 @@ export class RatingSection {
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
-  currentUser: WritableSignal<User | undefined> = this.accountService.user;
   applicationId = input<string | undefined>(undefined);
   ratings = signal<RatingOverviewDTO | undefined>(undefined);
 
