@@ -15,6 +15,12 @@
         "
         [translateValues]="{ count: documentsCount() - NUMBER_OF_DOCUMENTS }"
       ></p>
+      <fa-icon
+        class="ml-1 text-sm text-[var(--p-primary-color)]"
+        icon="circle-info"
+        [pTooltip]="allDocumentsTooltip()"
+        tooltipPosition="top"
+      />
     </div>
   }
   <div class="mt-8 w-full flex justify-end">

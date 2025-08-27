@@ -1,7 +1,11 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { ApplicationEvaluationResourceService, DocumentInformationHolderDTO } from 'app/generated';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ApplicationDocumentIdsDTO } from '../../../generated';
 import { DocumentViewerComponent } from '../../../shared/components/atoms/document-viewer/document-viewer.component';
@@ -12,7 +16,7 @@ import { ToastService } from '../../../service/toast-service';
 
 @Component({
   selector: 'jhi-document-section',
-  imports: [DocumentViewerComponent, SubSection, ButtonComponent, TranslateDirective],
+  imports: [DocumentViewerComponent, SubSection, FontAwesomeModule, ButtonComponent, TranslateDirective, TooltipModule],
   templateUrl: './document-section.html',
 })
 export class DocumentSection {
@@ -20,27 +24,41 @@ export class DocumentSection {
   applicationId = input.required<string | undefined>();
 
   documents = signal<{ label: string; id: DocumentInformationHolderDTO }[]>([]);
+  extraDocuments = signal<{ label: string; id: DocumentInformationHolderDTO }[]>([]);
+
   documentsCount = signal<number>(0);
 
   readonly NUMBER_OF_DOCUMENTS = 3;
 
   evaluationResourceService = inject(ApplicationEvaluationResourceService);
   toastService = inject(ToastService);
+  translate = inject(TranslateService);
+
+  currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
 
   hasDocuments = computed(() => this.documents().length > 0);
+
+  allDocumentsTooltip = computed(() => {
+    this.currentLang();
+
+    return this.extraDocuments()
+      .map(doc => this.translate.instant(doc.label))
+      .join(', ');
+  });
 
   idChangeEffect = effect(() => {
     const dto = this.idsDTO();
 
     if (!dto) {
       this.documents.set([]);
+      this.extraDocuments.set([]);
+      this.documentsCount.set(0);
       return;
     }
+
     const result: { label: string; id: DocumentInformationHolderDTO }[] = [];
 
-    dto.masterDocumentDictionaryIds?.forEach(
-      d => result.push({ label: 'evaluation.details.documentTypeMaster', id: d }), // adapt "id" property name if different
-    );
+    dto.masterDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', id: d }));
 
     if (dto.cvDocumentDictionaryId) {
       result.push({ label: 'evaluation.details.documentTypeCV', id: dto.cvDocumentDictionaryId });
@@ -52,8 +70,9 @@ export class DocumentSection {
 
     this.documentsCount.set(result.length);
 
-    // Limit to first NUMBER_OF_DOCUMENTS
+    // Split into "shown" and "extra"
     this.documents.set(result.slice(0, this.NUMBER_OF_DOCUMENTS));
+    this.extraDocuments.set(result.slice(this.NUMBER_OF_DOCUMENTS));
   });
 
   async downloadAllDocuments(): Promise<void> {
