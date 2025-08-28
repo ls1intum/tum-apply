@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
@@ -21,8 +21,11 @@ export default class ApplicationDetailForApplicantComponent {
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
 
   applicationId = signal<string>('');
-  application = signal<ApplicationDetailDTO | undefined>(undefined);
-  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  apiApplication = signal<ApplicationDetailDTO | undefined>(undefined);
+  apiDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+
+  application = computed(() => this.previewDetailData() ?? this.apiApplication());
+  documentIds = computed(() => this.previewDocumentData() ?? this.apiDocumentIds());
 
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
@@ -30,21 +33,9 @@ export default class ApplicationDetailForApplicantComponent {
   private readonly router = inject(Router);
 
   constructor() {
-    effect(() => {
-      const appData = this.previewDetailData();
-      if (appData) {
-        this.application.set(appData);
-      }
-
-      const docData = this.previewDocumentData();
-      if (docData) {
-        this.documentIds.set(docData);
-      }
-
-      if (!this.application()) {
-        this.init();
-      }
-    });
+    if (!this.previewDetailData()) {
+      this.init();
+    }
   }
 
   async init(): Promise<void> {
@@ -55,11 +46,11 @@ export default class ApplicationDetailForApplicantComponent {
       this.applicationId.set(applicationId);
     }
     const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
-    this.application.set(application);
+    this.apiApplication.set(application);
 
     firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
-        this.documentIds.set(ids);
+        this.apiDocumentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }

@@ -171,17 +171,14 @@ export class JobDetailComponent {
   private toastService = inject(ToastService);
   private researchGroupService = inject(ResearchGroupRessourceService);
 
-  constructor() {
-    effect(() => {
-      const previewDataValue = this.previewData()?.();
-      if (previewDataValue) {
-        this.loadJobDetailsFromForm(previewDataValue);
-        this.dataLoaded.set(true);
-      } else {
-        void this.init();
-      }
-    });
-  }
+  private previewOrInitEffect = effect(() => {
+    const previewDataValue = this.previewData()?.();
+    if (previewDataValue) {
+      this.loadJobDetailsFromForm(previewDataValue);
+    } else {
+      void this.init();
+    }
+  });
 
   onBack(): void {
     this.location.back();
@@ -328,5 +325,6 @@ export class JobDetailComponent {
     };
 
     this.jobDetails.set(loadedJob);
+    this.dataLoaded.set(true);
   }
 }
