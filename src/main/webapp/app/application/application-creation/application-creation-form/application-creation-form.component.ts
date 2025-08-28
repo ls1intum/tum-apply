@@ -140,10 +140,10 @@ export default class ApplicationCreationFormComponent {
     };
   });
 
-  panel1 = viewChild<TemplateRef<any>>('panel1');
-  panel2 = viewChild<TemplateRef<any>>('panel2');
-  panel3 = viewChild<TemplateRef<any>>('panel3');
-  panel4 = viewChild<TemplateRef<any>>('panel4');
+  panel1 = viewChild<TemplateRef<ApplicationCreationPage1Component>>('panel1');
+  panel2 = viewChild<TemplateRef<ApplicationCreationPage2Component>>('panel2');
+  panel3 = viewChild<TemplateRef<ApplicationCreationPage3Component>>('panel3');
+  panel4 = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('panel4');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
   title = signal<string>('');
