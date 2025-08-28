@@ -65,8 +65,8 @@ function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorF
     const country = getCountryFn()?.toUpperCase();
     const value = control.value;
     if (!country || !value) return null;
-    const result = postalCodes.validate(country, value);
-    return result === true ? null : { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' };
+    const isPostalCodeValid = postalCodes.validate(country, value);
+    return isPostalCodeValid === true ? null : { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' };
   };
 }
 
@@ -95,12 +95,12 @@ export default class ApplicationCreationPage1Component {
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
-  selectCountryLocal = selectCountries;
+  selectCountriesLocal = selectCountries;
 
-  fb = inject(FormBuilder);
+  formbuilder = inject(FormBuilder);
   page1Form = computed(() => {
     const currentData = this.data();
-    return this.fb.group({
+    return this.formbuilder.group({
       firstName: [currentData.firstName, Validators.required],
       lastName: [currentData.lastName, Validators.required],
       email: [currentData.email, [Validators.required, Validators.email]],

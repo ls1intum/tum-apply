@@ -80,10 +80,10 @@ export default class ApplicationCreationPage2Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
-  fb = inject(FormBuilder);
+  formbuilder = inject(FormBuilder);
   page2Form = computed(() => {
     const currentData = this.data();
-    return this.fb.group({
+    return this.formbuilder.group({
       bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
       bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
       bachelorGrade: [currentData.bachelorGrade, Validators.required],
@@ -122,22 +122,22 @@ export default class ApplicationCreationPage2Component {
 
   getBachelorGradeAsNumber(): number | undefined {
     const bachelorGrade = this.data().bachelorGrade;
-    return bachelorGrade === '' ? undefined : Number.parseFloat(bachelorGrade);
+    return bachelorGrade === '' ? undefined : Number.parseFloat(bachelorGrade.trim());
   }
-  setBachelorGradeAsNumber(ev: number | undefined): void {
+  setBachelorGradeAsNumber(gradeInputValue: number | undefined): void {
     this.data.set({
       ...this.data(),
-      bachelorGrade: ev ? ev.toString() : '',
-    } as ApplicationCreationPage2Data);
+      bachelorGrade: gradeInputValue !== undefined ? gradeInputValue.toString() : '',
+    });
   }
   getMasterGradeAsNumber(): number | undefined {
     const masterGrade = this.data().masterGrade;
-    return masterGrade === '' ? undefined : Number.parseFloat(masterGrade);
+    return masterGrade === '' ? undefined : Number.parseFloat(masterGrade.trim());
   }
-  setMasterGradeAsNumber(ev: number | undefined): void {
+  setMasterGradeAsNumber(gradeInputValue: number | undefined): void {
     this.data.set({
       ...this.data(),
-      masterGrade: ev ? ev.toString() : undefined,
-    } as ApplicationCreationPage2Data);
+      masterGrade: gradeInputValue !== undefined ? gradeInputValue.toString() : '',
+    });
   }
 }

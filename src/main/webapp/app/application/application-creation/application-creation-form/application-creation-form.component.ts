@@ -356,10 +356,10 @@ export default class ApplicationCreationFormComponent {
         this.toastService.showSuccess({ detail: 'Successfully saved application' });
         location.back();
       }
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
+    } catch (error) {
+      const httpError = error as HttpErrorResponse;
       this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
-      console.error('Failed to save application:', err);
+      console.error('Failed to save application:', error);
     }
   }
 

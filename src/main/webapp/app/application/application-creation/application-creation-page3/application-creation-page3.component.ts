@@ -79,11 +79,11 @@ export default class ApplicationCreationPage3Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
-  fb = inject(FormBuilder);
+  formbuilder = inject(FormBuilder);
 
   hasInitialized = signal(false);
 
-  page3Form: FormGroup = this.fb.group({
+  page3Form: FormGroup = this.formbuilder.group({
     experiences: [this.data()?.experiences ?? '', Validators.required],
     motivation: [this.data()?.motivation ?? '', Validators.required],
     skills: [this.data()?.skills ?? '', Validators.required],
@@ -99,8 +99,8 @@ export default class ApplicationCreationPage3Component {
   });
 
   computedDocumentIdsCvSet = computed(() => {
-    const doc = this.documentIdsCv();
-    return doc ? [doc] : undefined;
+    const docInfoHolder = this.documentIdsCv();
+    return docInfoHolder ? [docInfoHolder] : undefined;
   });
 
   private updateEffect = effect(() => {
