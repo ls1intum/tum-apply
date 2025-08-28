@@ -6,7 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 
-import { GenderNamePipe, LanguageNamePipe, NationalityNamePipe } from '../../shared/pipes';
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
@@ -52,9 +51,6 @@ const WINDOW_SIZE = 7;
     LinkList,
     Prose,
     DocumentSection,
-    NationalityNamePipe,
-    GenderNamePipe,
-    LanguageNamePipe,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
