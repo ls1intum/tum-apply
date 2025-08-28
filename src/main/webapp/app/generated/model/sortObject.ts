@@ -9,9 +9,9 @@
  */
 
 
-export interface SortObject { 
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface SortObject {
     empty?: boolean;
+    sorted?: boolean;
+    unsorted?: boolean;
 }
 
