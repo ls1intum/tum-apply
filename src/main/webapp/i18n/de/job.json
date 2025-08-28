@@ -75,7 +75,7 @@
       "requirements": {
         "label": "Zulassungsvoraussetzungen",
         "placeholder": "Liste die Mindestanforderungen für Bewerber auf...",
-        "descriptionHelper": "Gib die Mindestanforderungen an (z. B. Abschluss, Noten, Sprachkenntnisse), die erfüllt sein müssen.",
+        "descriptionHelper": "Gib die Mindestanforderungen an, die erfüllt sein müssen (z. B. Abschluss, Noten, Sprachkenntnisse).",
         "toolTipText": "Stelle sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
       }
     },
