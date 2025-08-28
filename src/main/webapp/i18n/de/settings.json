@@ -22,7 +22,7 @@
         },
         "accepted": {
           "title": "Bewerbung angenommen (BCC)",
-          "description": "Erhalte eine Kopie, wenn eine Bewerbung für deine Stelle angenommen wird."
+          "description": "Erhalte eine Kopie per E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
     }
