@@ -64,7 +64,7 @@ public class ApplicationEvaluationService {
 
     private static final Set<ApplicationState> REVIEW_STATES = Set.of(ApplicationState.SENT, ApplicationState.IN_REVIEW);
 
-    private static final Set<String> SORTABLE_FIELDS = Set.of("rating", "createdAt", "applicant.lastName");
+    private static final Set<String> SORTABLE_FIELDS = Set.of("createdAt", "applicant.lastName");
 
     /**
      * Accepts the specified application and updates its state.

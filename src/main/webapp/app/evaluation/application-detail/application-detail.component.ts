@@ -30,6 +30,8 @@ import { DescriptionList } from '../components/description-list/description-list
 import { LinkList } from '../components/link-list/link-list';
 import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
+import { CommentSection } from '../components/comment-section/comment-section';
+import { RatingSection } from '../components/rating-section/rating-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -51,6 +53,8 @@ const WINDOW_SIZE = 7;
     LinkList,
     Prose,
     DocumentSection,
+    CommentSection,
+    RatingSection,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
