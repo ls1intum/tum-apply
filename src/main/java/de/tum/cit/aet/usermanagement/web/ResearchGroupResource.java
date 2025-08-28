@@ -13,16 +13,16 @@ import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 
 @RestController
 @RequestMapping("/api/ressearch-groups")
-public class ResearchGroupRessource {
+public class ResearchGroupResource {
 
     final ResearchGroupService researchGroupService;
 
-    public ResearchGroupRessource(ResearchGroupService researchGroupService) {
+    public ResearchGroupResource(ResearchGroupService researchGroupService) {
         this.researchGroupService = researchGroupService;
     }
 
     @GetMapping("/detail/{researchGroupId}")
-    public ResponseEntity<ResearchGroupLargeDTO> getRessourceGroupDetails(@PathVariable UUID researchGroupId) {
+    public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
         return ResponseEntity.ok(researchGroupService.getResearchGroupDetails(researchGroupId));
     }
 }

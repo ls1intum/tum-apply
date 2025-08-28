@@ -12,7 +12,7 @@ api/emailTemplateResource.service.ts
 api/internalCommentResource.service.ts
 api/jobResource.service.ts
 api/ratingResource.service.ts
-api/researchGroupRessource.service.ts
+api/researchGroupResource.service.ts
 api/userResource.service.ts
 configuration.ts
 encoder.ts

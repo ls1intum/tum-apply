@@ -863,9 +863,9 @@
     "/api/ressearch-groups/detail/{researchGroupId}": {
       "get": {
         "tags": [
-          "research-group-ressource"
+          "research-group-resource"
         ],
-        "operationId": "getRessourceGroupDetails",
+        "operationId": "getResourceGroupDetails",
         "parameters": [
           {
             "name": "researchGroupId",

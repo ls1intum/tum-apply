@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-import { JobDetailDTO, JobFormDTO, JobResourceService, ResearchGroupRessourceService } from '../../generated';
+import { JobDetailDTO, JobFormDTO, JobResourceService, ResearchGroupResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
@@ -169,7 +169,7 @@ export class JobDetailComponent {
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private researchGroupService = inject(ResearchGroupRessourceService);
+  private researchGroupService = inject(ResearchGroupResourceService);
 
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();
@@ -290,7 +290,7 @@ export class JobDetailComponent {
     let researchGroupDetails;
     try {
       researchGroupDetails = await firstValueFrom(
-        this.researchGroupService.getRessourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
+        this.researchGroupService.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
       );
     } catch {
       this.toastService.showError({ detail: `Error loading research Group details.` });
