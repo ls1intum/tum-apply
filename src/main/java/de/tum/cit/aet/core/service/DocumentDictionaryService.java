@@ -10,12 +10,13 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.service.support.DocumentDictionaryOwnerSetter;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -180,5 +181,14 @@ public class DocumentDictionaryService {
                 document.setName(newName);
                 documentDictionaryRepository.save(document);
             });
+    }
+
+    /**
+     * Get all {@link DocumentDictionary} entries for an application
+     * @param applicationId the id of the application
+     * @return a {@link Set} of {@link DocumentDictionary}
+     */
+    public Set<DocumentDictionary> findAllByApplication(UUID applicationId) {
+        return documentDictionaryRepository.findAllByApplicationApplicationId(applicationId);
     }
 }
