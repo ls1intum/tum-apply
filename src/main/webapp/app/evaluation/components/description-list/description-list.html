@@ -1,0 +1,16 @@
+<dl class="space-y-2">
+  @for (item of items(); track item.labelKey) {
+    <div class="flex justify-between gap-x-8">
+      <dt class="text-sm text-muted-foreground">
+        {{ item.labelKey | translate }}
+      </dt>
+      <dd class="text-sm text-right">
+        @if (item.value !== null && item.value !== undefined && item.value !== '') {
+          {{ item.value }}
+        } @else {
+          —
+        }
+      </dd>
+    </div>
+  }
+</dl>

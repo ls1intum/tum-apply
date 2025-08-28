@@ -2,10 +2,15 @@ package de.tum.cit.aet.evaluation.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.DocumentDictionaryService;
+import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
@@ -20,24 +25,35 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import lombok.AllArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ApplicationEvaluationService {
 
     private final JobService jobService;
+    private final DocumentDictionaryService documentDictionaryService;
+    private final DocumentService documentService;
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final JobEvaluationRepository jobEvaluationRepository;
+
+    @Value("${aet.download.deterministic-zip:false}")
+    private boolean DETERMINISTIC_ZIP;
+
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -48,7 +64,7 @@ public class ApplicationEvaluationService {
 
     private static final Set<ApplicationState> REVIEW_STATES = Set.of(ApplicationState.SENT, ApplicationState.IN_REVIEW);
 
-    private static final Set<String> SORTABLE_FIELDS = Set.of("rating", "createdAt", "applicant.lastName");
+    private static final Set<String> SORTABLE_FIELDS = Set.of("createdAt", "applicant.lastName");
 
     /**
      * Accepts the specified application and updates its state.
@@ -262,6 +278,116 @@ public class ApplicationEvaluationService {
      */
     public void markApplicationAsInReview(UUID applicationId) {
         applicationEvaluationRepository.markApplicationAsInReview(applicationId);
+    }
+
+    /**
+     * Collects all documents belonging to the specified application and streams them
+     * as a single ZIP file to the HTTP response output stream. The ZIP file name is
+     * based on the applicant's first and last name.
+     *
+     * @param applicationId the ID of the application whose documents are downloaded
+     * @param response the HTTP response used to write the ZIP content
+     * @throws IOException if an I/O error occurs while writing to the response
+     */
+    public void downloadAllDocumentsForApplication(UUID applicationId, HttpServletResponse response) throws IOException {
+        Application application = getApplication(applicationId);
+        Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
+
+        User user = application.getApplicant().getUser();
+        String zipName = sanitizeFilename(user.getFirstName() + " " + user.getLastName() + " - " + application.getJob().getTitle());
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s.zip\"", zipName));
+
+        // Count per type to decide if numbering is needed
+        Map<DocumentType, Long> typeCounts = documentDictionaries.stream()
+            .collect(Collectors.groupingBy(
+                DocumentDictionary::getDocumentType,
+                () -> new EnumMap<>(DocumentType.class),
+                Collectors.counting()
+            ));
+
+        // Per-type index used only when count > 1
+        Map<DocumentType, Integer> typeIndex = new EnumMap<>(DocumentType.class);
+
+        try (BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
+             ZipOutputStream zos = new ZipOutputStream(bos)) {
+
+            zos.setLevel(Deflater.BEST_SPEED);
+
+            for (DocumentDictionary dd : documentDictionaries) {
+                DocumentType type = dd.getDocumentType();
+                Document doc = dd.getDocument();
+
+                long count = typeCounts.getOrDefault(type, 0L);
+                String base = fileName(type);
+                String entryName = (count > 1)
+                    ? base + "_" + typeIndex.merge(type, 1, Integer::sum)
+                    : base;
+
+                // append file extension if present (e.g., "cv.pdf")
+                String ext = documentService.resolveFileExtension(doc).getExtension();
+                if (ext != null && !ext.isBlank()) {
+                    entryName += "." + ext;
+                }
+
+                ZipEntry entry = new ZipEntry(entryName);
+                zos.putNextEntry(entry);
+
+                // can be enabled for testing
+                if (DETERMINISTIC_ZIP) {
+                    entry.setTime(0L);
+                }
+
+                byte[] bytes = documentService.download(doc).getContentAsByteArray();
+                zos.write(bytes);
+
+                zos.closeEntry();
+            }
+
+            zos.finish();
+        }
+    }
+
+    private static String sanitizeFilename(String input) {
+        if (input == null || input.isBlank()) {
+            return "file";
+        }
+        String cleaned = input.replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]+", "_").trim();
+
+        // limit length (some file systems break >255 chars)
+        if (cleaned.length() > 120) {
+            cleaned = cleaned.substring(0, 120);
+        }
+
+        return cleaned.isEmpty() ? "file" : cleaned;
+    }
+
+    /**
+     * Resolves a file name prefix for the given document type.
+     *
+     * @param documentType the type of document
+     * @return a short, lowercase file name string corresponding to the document type
+     */
+    private String fileName(DocumentType documentType) {
+        return switch (documentType) {
+            case BACHELOR_TRANSCRIPT -> "bachelor";
+            case MASTER_TRANSCRIPT -> "master";
+            case CV -> "cv";
+            case REFERENCE -> "reference";
+            case CUSTOM -> "custom";
+        };
+    }
+
+    /**
+     * Get the application for an applicationId
+     *
+     * @param applicationId the id of the application
+     * @return {@link Application}
+     */
+    public Application getApplication(UUID applicationId) {
+        return applicationEvaluationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
     }
 
     /**
