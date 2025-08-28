@@ -28,7 +28,6 @@ public final class ApplicationTestData {
         app.setProjects("Robotics Project; ML Pipeline");
         app.setSpecialSkills("Python, TensorFlow, ROS");
         app.setMotivation("Highly motivated to contribute to research.");
-        // applicationReview, customFieldAnswers, internalComments left null/empty
         return app;
     }
 

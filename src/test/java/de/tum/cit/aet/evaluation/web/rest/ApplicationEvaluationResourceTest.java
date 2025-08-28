@@ -150,7 +150,7 @@ public class ApplicationEvaluationResourceTest {
         var dto = api.getAndReadOk(
             "/api/evaluation/applications",
             Map.ofEntries(entry("offset", "0"), entry("limit", "10")),
-            new com.fasterxml.jackson.core.type.TypeReference<ApplicationEvaluationOverviewListDTO>() {
+            new TypeReference<ApplicationEvaluationOverviewListDTO>() {
             }
         );
 
@@ -178,7 +178,6 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser
     void getApplicationsDetailsWindow_validOddSize_containsTarget() {
-        // Act
         var win = api.getAndReadOk(
             "/api/evaluation/application-details/window",
             Map.ofEntries(
@@ -190,6 +189,18 @@ public class ApplicationEvaluationResourceTest {
         );
 
         assertThat(win.applications().size()).isBetween(1, 3);
+    }
+
+    @Test
+    @WithMockUser
+    void getApplicationsDetails_limitIsApplied() {
+        var details = api.getAndReadOk(
+            "/api/evaluation/application-details",
+            Map.of("offset","0","limit","1"),
+            new TypeReference<ApplicationEvaluationDetailListDTO>() {}
+        );
+        assertThat(details.totalRecords()).isGreaterThanOrEqualTo(2);
+        assertThat(details.applications()).hasSize(1);
     }
 
     @Test
@@ -212,7 +223,7 @@ public class ApplicationEvaluationResourceTest {
         Set<JobFilterOptionDTO> options = api.getAndReadOk(
             "/api/evaluation/jobs",
             Map.of(),
-            new TypeReference<Set<JobFilterOptionDTO>>() {
+            new TypeReference<>() {
             }
         );
 
@@ -237,7 +248,8 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser
     void acceptApplication_sent_becomesAccepted_andMayCloseJob() throws Exception {
-        var payload = new AcceptDTO("Welcome!", true, true);
+        String message = "Accepted!";
+        var payload = new AcceptDTO(message, true, true);
 
         mockMvc.perform(
                 post("/api/evaluation/applications/{applicationId}/accept", sentApp.getApplicationId())
@@ -250,7 +262,7 @@ public class ApplicationEvaluationResourceTest {
         var updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
         assertThat(updated.getState()).isEqualTo(ApplicationState.ACCEPTED);
         assertThat(updated.getApplicationReview()).isNotNull();
-        assertThat(updated.getApplicationReview().getReason()).isEqualTo("Welcome!");
+        assertThat(updated.getApplicationReview().getReason()).isEqualTo(message);
 
         var job = jobRepository.findById(publishedJob.getJobId()).orElseThrow();
         assertThat(job.getState()).isEqualTo(JobState.APPLICANT_FOUND);
@@ -283,6 +295,28 @@ public class ApplicationEvaluationResourceTest {
                 post("/api/evaluation/applications/{applicationId}/accept", sentApp.getApplicationId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsBytes(payload))
+                    .accept(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void rejectApplication_unauthenticated_returns401() throws Exception {
+        var payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
+
+        mockMvc.perform(
+                post("/api/evaluation/applications/{applicationId}/reject", sentApp.getApplicationId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsBytes(payload))
+                    .accept(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void markApplicationAsInReview_unauthenticated_returns401() throws Exception {
+        mockMvc.perform(
+                put("/api/evaluation/applications/{applicationId}/open", sentApp.getApplicationId())
                     .accept(MediaType.APPLICATION_JSON)
             )
             .andExpect(status().isUnauthorized());
