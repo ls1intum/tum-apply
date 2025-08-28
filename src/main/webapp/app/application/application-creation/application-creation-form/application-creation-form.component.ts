@@ -1,12 +1,7 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import {
-  ApplicantForApplicationDetailDTO,
-  ApplicationDocumentIdsDTO,
-  ApplicationResourceService,
-  UpdateApplicationDTO,
-} from 'app/generated';
+import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -104,41 +99,7 @@ export default class ApplicationCreationFormComponent {
   });
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
 
-  previewData = computed(() => {
-    const p1 = this.page1();
-    const p2 = this.page2();
-    const p3 = this.page3();
-
-    return {
-      applicationId: this.applicationId(),
-      applicationState: this.applicationState(),
-      applicant: {
-        user: {
-          userId: this.applicantId(),
-          email: p1.email,
-          gender: p1.gender?.name,
-          nationality: p1.nationality?.name,
-          birthday: p1.dateOfBirth,
-          website: p1.website,
-          linkedinUrl: p1.linkedIn,
-          preferredLanguage: p1.language?.name,
-        },
-        bachelorDegreeName: p2.bachelorDegreeName,
-        bachelorUniversity: p2.bachelorDegreeUniversity,
-        bachelorGrade: p2.bachelorGrade,
-        bachelorGradingScale: p2.bachelorGradingScale.value as ApplicantForApplicationDetailDTO.BachelorGradingScaleEnum,
-        masterDegreeName: p2.masterDegreeName,
-        masterUniversity: p2.masterDegreeUniversity,
-        masterGrade: p2.masterGrade,
-        masterGradingScale: p2.masterGradingScale.value as ApplicantForApplicationDetailDTO.MasterGradingScaleEnum,
-      },
-      motivation: p3?.motivation,
-      specialSkills: p3?.skills,
-      desiredDate: p3?.desiredStartDate,
-      projects: p3?.experiences,
-      jobTitle: this.title(),
-    };
-  });
+  previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
 
   panel1 = viewChild<TemplateRef<ApplicationCreationPage1Component>>('panel1');
   panel2 = viewChild<TemplateRef<ApplicationCreationPage2Component>>('panel2');
@@ -399,42 +360,9 @@ export default class ApplicationCreationFormComponent {
       this.toastService.showError({ detail: 'There is an error with the applicationId' });
       return;
     }
-    const updateApplication: UpdateApplicationDTO = {
-      applicationId,
-      applicant: {
-        user: {
-          birthday: this.page1().dateOfBirth,
-          firstName: this.page1().firstName,
-          lastName: this.page1().lastName,
-          email: this.page1().email,
-          gender: this.page1().gender?.value as string,
-          linkedinUrl: this.page1().linkedIn,
-          nationality: this.page1().nationality?.value as string,
-          phoneNumber: this.page1().phoneNumber,
-          website: this.page1().website,
-          selectedLanguage: this.page1().language?.value as string,
-          userId: this.applicantId(),
-        },
-        bachelorDegreeName: this.page2().bachelorDegreeName,
-        masterDegreeName: this.page2().masterDegreeName,
-        bachelorGrade: this.page2().bachelorGrade,
-        masterGrade: this.page2().masterGrade,
-        bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
-        masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
-        city: this.page1().city,
-        country: this.page1().country,
-        postalCode: this.page1().postcode,
-        street: this.page1().street,
-        bachelorUniversity: this.page2().bachelorDegreeUniversity,
-        masterUniversity: this.page2().masterDegreeUniversity,
-      },
-      applicationState: state,
-      desiredDate: this.page3()?.desiredStartDate ?? '',
-      motivation: this.page3()?.motivation ?? '',
-      specialSkills: this.page3()?.skills ?? '',
-      projects: this.page3()?.experiences,
-      // answers: new Set(),
-    };
+
+    const updateApplication = this.mapPagesToDTO(state) as UpdateApplicationDTO;
+
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
       if (rerouteToOtherPage) {
@@ -470,5 +398,58 @@ export default class ApplicationCreationFormComponent {
 
   onPage3ValidityChanged(isValid: boolean): void {
     this.page3Valid.set(isValid);
+  }
+
+  private mapPagesToDTO(state?: ApplicationState | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
+    const p1 = this.page1();
+    const p2 = this.page2();
+    const p3 = this.page3();
+
+    const base = {
+      applicationId: this.applicationId(),
+      applicant: {
+        user: {
+          userId: this.applicantId(),
+          email: p1.email,
+          gender: p1.gender?.name,
+          nationality: p1.nationality?.name,
+          birthday: p1.dateOfBirth,
+          website: p1.website,
+          linkedinUrl: p1.linkedIn,
+          preferredLanguage: p1.language?.name,
+        },
+        bachelorDegreeName: p2.bachelorDegreeName,
+        bachelorUniversity: p2.bachelorDegreeUniversity,
+        bachelorGrade: p2.bachelorGrade,
+        bachelorGradingScale: p2.bachelorGradingScale.value,
+        masterDegreeName: p2.masterDegreeName,
+        masterUniversity: p2.masterDegreeUniversity,
+        masterGrade: p2.masterGrade,
+        masterGradingScale: p2.masterGradingScale.value,
+      },
+      motivation: p3?.motivation,
+      specialSkills: p3?.skills,
+      desiredDate: p3?.desiredStartDate,
+      projects: p3?.experiences,
+      jobTitle: this.title(),
+    };
+
+    if (state !== undefined) {
+      return {
+        ...base,
+        applicationState: state,
+        applicant: {
+          ...base.applicant,
+          user: {
+            ...base.applicant.user,
+            selectedLanguage: base.applicant.user.preferredLanguage,
+          },
+          bachelorGradingScale: 'ONE_TO_FOUR',
+          masterGradingScale: 'ONE_TO_FOUR',
+        },
+      } as UpdateApplicationDTO;
+    }
+
+    return base as ApplicationDetailDTO;
   }
 }

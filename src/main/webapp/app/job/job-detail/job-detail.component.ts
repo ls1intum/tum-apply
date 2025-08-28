@@ -253,36 +253,54 @@ export class JobDetailComponent {
   }
 
   loadJobDetails(job: JobDetailDTO): void {
-    const loadedJob: JobDetails = {
-      supervisingProfessor: job.supervisingProfessorName,
-      researchGroup: job.researchGroup.name ?? '',
-      title: job.title,
-      fieldOfStudies: job.fieldOfStudies ?? '',
-      researchArea: job.researchArea ?? '',
-      location: job.location ?? '',
-      workload: job.workload?.toString() ?? '',
-      contractDuration: job.contractDuration?.toString() ?? '',
-      fundingType: job.fundingType ?? '',
-      description: job.description ?? '',
-      tasks: job.tasks ?? '',
-      requirements: job.requirements ?? '',
-      startDate: job.startDate !== undefined ? dayjs(job.startDate).format('DD.MM.YYYY') : '',
-      endDate: job.endDate !== undefined ? dayjs(job.endDate).format('DD.MM.YYYY') : '',
-      createdAt: dayjs(job.createdAt).format('DD.MM.YYYY'),
-      lastModifiedAt: dayjs(job.lastModifiedAt).format('DD.MM.YYYY'),
+    this.jobDetails.set(this.mapToJobDetails(job, this.accountService.loadedUser()));
+  }
 
-      researchGroupDescription: job.researchGroup.description ?? '',
-      researchGroupEmail: job.researchGroup.email ?? '',
-      researchGroupWebsite: job.researchGroup.website ?? '',
-      researchGroupStreet: job.researchGroup.street ?? '',
-      researchGroupPostalCode: job.researchGroup.postalCode ?? '',
-      researchGroupCity: job.researchGroup.city ?? '',
+  private mapToJobDetails(
+    data: JobDetailDTO | JobFormDTO,
+    user?: ReturnType<AccountService['loadedUser']>,
+    researchGroupDetails?: {
+      description?: string;
+      email?: string;
+      website?: string;
+      street?: string;
+      postalCode?: string;
+      city?: string;
+    },
+    isForm = false,
+  ): JobDetails {
+    const now = dayjs().format('DD.MM.YYYY');
 
-      jobState: job.state,
-      belongsToResearchGroup: job.researchGroup.researchGroupId === this.accountService.loadedUser()?.researchGroup?.researchGroupId,
+    const jobDetailDTO = data as JobDetailDTO;
+
+    return {
+      supervisingProfessor: isForm ? (user?.name ?? '') : jobDetailDTO.supervisingProfessorName,
+      researchGroup: isForm ? (user?.researchGroup?.name ?? '') : (jobDetailDTO.researchGroup.name ?? ''),
+      title: data.title,
+      fieldOfStudies: data.fieldOfStudies ?? '',
+      researchArea: data.researchArea ?? '',
+      location: data.location ?? '',
+      workload: data.workload?.toString() ?? '',
+      contractDuration: data.contractDuration?.toString() ?? '',
+      fundingType: data.fundingType ?? '',
+      description: data.description ?? '',
+      tasks: data.tasks ?? '',
+      requirements: data.requirements ?? '',
+      startDate: data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '',
+      endDate: data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '',
+      createdAt: isForm ? now : dayjs(jobDetailDTO.createdAt).format('DD.MM.YYYY'),
+      lastModifiedAt: isForm ? now : dayjs(jobDetailDTO.lastModifiedAt).format('DD.MM.YYYY'),
+
+      researchGroupDescription: researchGroupDetails?.description ?? (!isForm ? (jobDetailDTO.researchGroup.description ?? '') : ''),
+      researchGroupEmail: researchGroupDetails?.email ?? (!isForm ? (jobDetailDTO.researchGroup.email ?? '') : ''),
+      researchGroupWebsite: researchGroupDetails?.website ?? (!isForm ? (jobDetailDTO.researchGroup.website ?? '') : ''),
+      researchGroupStreet: researchGroupDetails?.street ?? (!isForm ? (jobDetailDTO.researchGroup.street ?? '') : ''),
+      researchGroupPostalCode: researchGroupDetails?.postalCode ?? (!isForm ? (jobDetailDTO.researchGroup.postalCode ?? '') : ''),
+      researchGroupCity: researchGroupDetails?.city ?? (!isForm ? (jobDetailDTO.researchGroup.city ?? '') : ''),
+
+      jobState: isForm ? 'DRAFT' : jobDetailDTO.state,
+      belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
     };
-
-    this.jobDetails.set(loadedJob);
   }
 
   private async loadJobDetailsFromForm(form: JobFormDTO): Promise<void> {
@@ -296,35 +314,7 @@ export class JobDetailComponent {
       this.toastService.showError({ detail: `Error loading research Group details.` });
     }
 
-    const loadedJob: JobDetails = {
-      supervisingProfessor: user?.name ?? '',
-      researchGroup: user?.researchGroup?.name ?? '',
-      title: form.title,
-      fieldOfStudies: form.fieldOfStudies,
-      researchArea: form.researchArea ?? '',
-      location: form.location,
-      workload: form.workload?.toString() ?? '',
-      contractDuration: form.contractDuration?.toString() ?? '',
-      fundingType: form.fundingType ?? '',
-      description: form.description ?? '',
-      tasks: form.tasks ?? '',
-      requirements: form.requirements ?? '',
-      startDate: form.startDate ? dayjs(form.startDate).format('DD.MM.YYYY') : '',
-      endDate: form.endDate ? dayjs(form.endDate).format('DD.MM.YYYY') : '',
-      createdAt: dayjs().format('DD.MM.YYYY'),
-      lastModifiedAt: dayjs().format('DD.MM.YYYY'),
-
-      researchGroupDescription: researchGroupDetails?.description ?? '',
-      researchGroupEmail: researchGroupDetails?.email ?? '',
-      researchGroupWebsite: researchGroupDetails?.website ?? '',
-      researchGroupStreet: researchGroupDetails?.street ?? '',
-      researchGroupPostalCode: researchGroupDetails?.postalCode ?? '',
-      researchGroupCity: researchGroupDetails?.city ?? '',
-      jobState: 'DRAFT',
-      belongsToResearchGroup: false,
-    };
-
-    this.jobDetails.set(loadedJob);
+    this.jobDetails.set(this.mapToJobDetails(form, user, researchGroupDetails, true));
     this.dataLoaded.set(true);
   }
 }
