@@ -6,7 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 
-import { GenderNamePipe, LanguageNamePipe, NationalityNamePipe } from '../../shared/pipes';
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
@@ -31,8 +30,6 @@ import { DescriptionList } from '../components/description-list/description-list
 import { LinkList } from '../components/link-list/link-list';
 import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
-import { RatingSection } from '../components/rating-section/rating-section';
-import { CommentSection } from '../components/comment-section/comment-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -54,11 +51,6 @@ const WINDOW_SIZE = 7;
     LinkList,
     Prose,
     DocumentSection,
-    NationalityNamePipe,
-    GenderNamePipe,
-    LanguageNamePipe,
-    RatingSection,
-    CommentSection,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
