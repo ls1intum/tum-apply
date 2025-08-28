@@ -1,0 +1,7 @@
+<div class="text-sm whitespace-pre-line">
+  @if (text(); as t) {
+    <div [innerHTML]="safeHtml()"></div>
+  } @else {
+    —
+  }
+</div>
