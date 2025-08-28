@@ -49,7 +49,7 @@
                 labelKey: 'entity.applicationPage2.label.bachelorGrade',
                 tooltipKey: 'entity.applicationPage2.tooltip.bachelorGrade',
                 control: page2Form().controls.bachelorGrade,
-                model: getBachelorGradeAsNumber,
+                model: getBachelorGradeAsNumber(),
                 modelChange: setBachelorGradeAsNumber,
               }
             "
@@ -125,7 +125,7 @@
                 labelKey: 'entity.applicationPage2.label.masterGrade',
                 tooltipKey: 'entity.applicationPage2.tooltip.masterGrade',
                 control: page2Form().controls.masterGrade,
-                model: getMasterGradeAsNumber,
+                model: getMasterGradeAsNumber(),
                 modelChange: setMasterGradeAsNumber,
               }
             "
@@ -165,7 +165,7 @@
     [label]="labelKey | translate"
     [tooltipText]="tooltipKey | translate"
     [control]="control"
-    [model]="model()"
+    [model]="model"
     (modelChange)="modelChange($event)"
     icon="circle-info"
     [min]="1"
