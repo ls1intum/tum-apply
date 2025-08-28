@@ -370,12 +370,11 @@ export default class ApplicationCreationFormComponent {
         queryParams: { job: jobId, application: application.applicationId },
         queryParamsHandling: 'merge',
       });
-    } catch (error) {
+    } catch {
       this.toastService.showError({
         summary: 'Error',
         detail: 'Failed to create application. Please try again.',
       });
-      console.error('Failed to create application:', error);
       return;
     }
     return application;
@@ -464,7 +463,6 @@ export default class ApplicationCreationFormComponent {
         summary: 'Error',
         detail: 'Failed to save application: ' + httpError.statusText,
       });
-      console.error('Failed to save application:', err);
       return false;
     }
     return true;
