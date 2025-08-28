@@ -93,12 +93,53 @@ export class ApplicationEvaluationResourceService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/evaluation/applications(${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/accept`;
+        let localVarPath = `/api/evaluation/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/accept`;
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: acceptDTO,
                 responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param applicationId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public downloadAll(applicationId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/zip', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
+    public downloadAll(applicationId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/zip', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
+    public downloadAll(applicationId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/zip', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
+    public downloadAll(applicationId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/zip', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (applicationId === null || applicationId === undefined) {
+            throw new Error('Required parameter applicationId was null or undefined when calling downloadAll.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/zip'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let localVarPath = `/api/evaluation/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/documents-download`;
+        return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: "blob",
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
@@ -494,7 +535,7 @@ export class ApplicationEvaluationResourceService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/evaluation/applications(${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/reject`;
+        let localVarPath = `/api/evaluation/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/reject`;
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
