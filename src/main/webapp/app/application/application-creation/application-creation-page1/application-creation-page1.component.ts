@@ -55,7 +55,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     linkedIn: application.applicant?.user.linkedinUrl ?? '',
     street: application.applicant?.street ?? '',
     city: application.applicant?.city ?? '',
-    country: selectCountries.find(val => val.value === application.applicant?.country),
+    country: selectCountries.find(country => country.value === application.applicant?.country),
     postcode: application.applicant?.postalCode ?? '',
   };
 };
