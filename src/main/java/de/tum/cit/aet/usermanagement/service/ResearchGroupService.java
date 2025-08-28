@@ -27,7 +27,7 @@ public class ResearchGroupService {
      */
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
-                .orElseThrow(() -> EntityNotFoundException.forId("ResearchGoup", researchGroupId));
+                .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
 
         return new ResearchGroupLargeDTO(
                 researchGroup.getDescription(),
