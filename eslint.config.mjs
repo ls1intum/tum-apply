@@ -50,6 +50,7 @@ export default [
         'build/resources/main/static/',
         'prebuild.mjs',
         'src/main/webapp/app/generated/',
+        'docs/'
       ],
       languageOptions: {
         globals: {
