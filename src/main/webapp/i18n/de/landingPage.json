@@ -2,34 +2,34 @@
   "landingPage": {
     "title": "TUMApply",
     "hero": {
-      "headline": "Beginnen Sie Ihre Promotion an der TUM",
-      "subline": "Die TUM bietet ein weltweit führendes Umfeld für Ihre Promotion.",
+      "headline": "Beginne deine Promotion an der TUM",
+      "subline": "Die TUM bietet ein weltweit führendes Umfeld für deine Promotion.",
       "button": "Offene Stellen"
     },
     "doctoralJourney": {
-      "headline": "Ihre Promotionsreise an der TUM",
+      "headline": "Deine Promotionsreise an der TUM",
       "text": "Die Technische Universität München (TUM) ist fest davon überzeugt, dass Talent die Grundlage für exzellente akademische Ausbildung in der Promotion ist. Die TUM blickt auf eine lange Tradition in der Förderung von exzellenten Promovierenden zurück, die sich der Lösung gesellschaftlicher Herausforderungen widmen. Unterstützt von führenden Forschenden investiert die TUM umfassend in die Förderung junger Wissenschaftler, um selbstständig arbeiten und ihre Karriere starten zu können.",
       "button1": "Warum TUM?",
       "button2": "Mehr erfahren"
     },
     "applicationSteps": {
-      "headline": "Ihre Bewerbung in 4 Schritten",
+      "headline": "Deine Bewerbung in 4 Schritten",
       "steps": {
         "1": {
           "title": "1. Offene Stellen finden",
-          "description": "Nutzen Sie Filter, um passende Stellen in verschiedenen Forschungsgruppen zu finden."
+          "description": "Nutze Filter, um passende Stellen in verschiedenen Forschungsgruppen zu finden."
         },
         "2": {
           "title": "2. Details prüfen",
-          "description": "Lesen Sie die Stellenbeschreibung, prüfen Sie die Voraussetzungen und sehen Sie, welche Dokumente benötigt werden."
+          "description": "Lies die Stellenbeschreibung, prüfe die Voraussetzungen und sieh nach, welche Dokumente benötigt werden."
         },
         "3": {
           "title": "3. Bewerbung einreichen",
-          "description": "Erstellen Sie ein Konto, laden Sie Ihre Dokumente hoch und reichen Sie Ihre Bewerbung ein."
+          "description": "Erstelle ein Konto, lade deine Dokumente hoch und reiche deine Bewerbung ein."
         },
         "4": {
           "title": "4. Status verfolgen",
-          "description": "Bleiben Sie informiert. Sie erhalten Benachrichtigungen, wenn Ihre Bewerbung geprüft wurde, neue Stellen verfügbar sind oder gespeicherte Stellen entfernt werden."
+          "description": "Bleib informiert. Du erhältst Benachrichtigungen, wenn deine Bewerbung geprüft wurde, neue Stellen verfügbar sind oder gespeicherte Stellen entfernt werden."
         }
       },
       "button": "Prozess ansehen"
@@ -77,23 +77,23 @@
     },
     "faq": {
       "headline": "Häufig gestellte Fragen",
-      "subheadline": "Hier finden Sie schnelle Antworten zu TUMApply",
+      "subheadline": "Hier findest du schnelle Antworten zu TUMApply",
       "questions": {
         "login": {
           "title": "Wie melde ich mich bei TUMApply an?",
-          "content": "Sie können sich mit Ihren TUM-Zugangsdaten oder alternativ über Microsoft, Google oder Apple Single Sign-On anmelden."
+          "content": "Du kannst dich mit deinen TUM-Zugangsdaten oder alternativ über Microsoft, Google oder Apple Single Sign-On anmelden."
         },
         "multipleApplications": {
           "title": "Kann ich mich gleichzeitig auf mehrere Promotionsstellen bewerben?",
-          "content": "Ja, Sie können sich auf mehrere Stellen bewerben. Jede Bewerbung wird individuell von den jeweiligen Betreuenden geprüft."
+          "content": "Ja, du kannst dich auf mehrere Stellen bewerben. Jede Bewerbung wird individuell von den jeweiligen Betreuenden geprüft."
         },
         "documents": {
           "title": "Welche Dokumente werden benötigt?",
-          "content": "In der Regel benötigen Sie einen Lebenslauf, Zeugnisse und Ihre Abschlussurkunden. Weitere Dokumente können je nach Stelle erforderlich sein."
+          "content": "In der Regel brauchst du einen Lebenslauf, Zeugnisse und deine Abschlussurkunden. Weitere Dokumente können je nach Stelle erforderlich sein."
         },
         "status": {
           "title": "Wie erfahre ich den Status meiner Bewerbung?",
-          "content": "Sie werden per E-Mail benachrichtigt, sobald sich der Status Ihrer Bewerbung ändert. Den Status können Sie auch im TUMApply-Dashboard verfolgen, sofern Sie einen Account erstellt haben."
+          "content": "Du wirst per E-Mail benachrichtigt, sobald sich der Status deiner Bewerbung ändert. Den Status kannst du auch im TUMApply-Dashboard verfolgen, sofern du einen Account erstellt hast."
         }
       }
     }
