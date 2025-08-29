@@ -860,7 +860,7 @@
         }
       }
     },
-    "/api/ressearch-groups/detail/{researchGroupId}": {
+    "/api/research-groups/detail/{researchGroupId}": {
       "get": {
         "tags": [
           "research-group-resource"

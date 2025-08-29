@@ -73,7 +73,7 @@ export class ResearchGroupResourceService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/ressearch-groups/detail/${this.configuration.encodeParam({name: "researchGroupId", value: researchGroupId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        let localVarPath = `/api/research-groups/detail/${this.configuration.encodeParam({name: "researchGroupId", value: researchGroupId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
         return this.httpClient.request<ResearchGroupLargeDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

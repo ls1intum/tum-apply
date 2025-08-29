@@ -12,7 +12,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 
 @RestController
-@RequestMapping("/api/ressearch-groups")
+@RequestMapping("/api/research-groups")
 public class ResearchGroupResource {
 
     final ResearchGroupService researchGroupService;
