@@ -70,9 +70,9 @@ public class ApplicationService {
             return ApplicationForApplicantDTO.getFromEntity(application);
         }
 
-        Application a = applicationRepository.getByApplicant_User_UserIdAndJob_JobId(userId, jobId);
-        if (a != null) {
-            return ApplicationForApplicantDTO.getFromEntity(a);
+        Application existingApplication = applicationRepository.getByApplicant_User_UserIdAndJob_JobId(userId, jobId);
+        if (existingApplication != null) {
+            return ApplicationForApplicantDTO.getFromEntity(existingApplication);
         }
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
         Applicant applicant;
@@ -82,7 +82,7 @@ public class ApplicationService {
             applicant = applicantOptional.get();
         }
 
-        Application application = new Application(
+        Application newApplication = new Application(
             null,
             null, // no applicationReview yet
             applicant,
@@ -95,7 +95,7 @@ public class ApplicationService {
             new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
             new HashSet<>()
         );
-        Application savedApplication = applicationRepository.save(application);
+        Application savedApplication = applicationRepository.save(newApplication);
         return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
