@@ -411,12 +411,11 @@ export default class ApplicationCreationFormComponent {
         user: {
           userId: this.applicantId(),
           email: p1.email,
-          gender: p1.gender?.name,
-          nationality: p1.nationality?.name,
+          gender: p1.gender?.value as string,
+          nationality: p1.nationality?.value as string,
           birthday: p1.dateOfBirth,
           website: p1.website,
           linkedinUrl: p1.linkedIn,
-          preferredLanguage: p1.language?.name,
         },
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
@@ -427,9 +426,9 @@ export default class ApplicationCreationFormComponent {
         masterGrade: p2.masterGrade,
         masterGradingScale: p2.masterGradingScale.value,
       },
-      motivation: p3?.motivation,
-      specialSkills: p3?.skills,
-      desiredDate: p3?.desiredStartDate,
+      motivation: p3?.motivation ?? '',
+      specialSkills: p3?.skills ?? '',
+      desiredDate: p3?.desiredStartDate ?? '',
       projects: p3?.experiences,
       jobTitle: this.title(),
     };
@@ -440,9 +439,16 @@ export default class ApplicationCreationFormComponent {
         applicationState: state,
         applicant: {
           ...base.applicant,
+          city: p1.city,
+          country: p1.country,
+          postalCode: p1.postcode,
+          street: p1.street,
           user: {
             ...base.applicant.user,
-            selectedLanguage: base.applicant.user.preferredLanguage,
+            firstName: p1.firstName,
+            lastName: p1.lastName,
+            phoneNumber: p1.phoneNumber,
+            selectedLanguage: p1.language?.value as string,
           },
           bachelorGradingScale: 'ONE_TO_FOUR',
           masterGradingScale: 'ONE_TO_FOUR',
@@ -450,6 +456,9 @@ export default class ApplicationCreationFormComponent {
       } as UpdateApplicationDTO;
     }
 
-    return base as ApplicationDetailDTO;
+    return {
+      ...base,
+      applicationState: this.applicationState(),
+    } as ApplicationDetailDTO;
   }
 }
