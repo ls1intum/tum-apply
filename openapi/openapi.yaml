@@ -634,7 +634,7 @@
         }
       }
     },
-    "/api/evaluation/applications({applicationId}/reject": {
+    "/api/evaluation/applications/{applicationId}/reject": {
       "post": {
         "tags": [
           "application-evaluation-resource"
@@ -668,7 +668,7 @@
         }
       }
     },
-    "/api/evaluation/applications({applicationId}/accept": {
+    "/api/evaluation/applications/{applicationId}/accept": {
       "post": {
         "tags": [
           "application-evaluation-resource"
@@ -1895,6 +1895,38 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApplicationEvaluationOverviewListDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications/{applicationId}/documents-download": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "downloadAll",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ZIP file containing all documents",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
