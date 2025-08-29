@@ -3,6 +3,7 @@ import { Component, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -11,7 +12,7 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   templateUrl: './number-input.component.html',
   styleUrl: './number-input.component.scss',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, InputNumberModule, ReactiveFormsModule, InputNumberModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, InputNumberModule, ReactiveFormsModule, InputNumberModule, TooltipModule],
 })
 export class NumberInputComponent extends BaseInputDirective<number | undefined> {
   // Min and max values
