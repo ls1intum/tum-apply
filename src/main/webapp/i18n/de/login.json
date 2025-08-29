@@ -5,7 +5,7 @@
       "email": "E-Mail",
       "emailPlaceholder": "name@beispiel.de",
       "password": "Passwort",
-      "passwordPrompt": "Geben Sie ein starkes Passwort ein",
+      "passwordPrompt": "Gib ein starkes Passwort ein",
       "weakLabel": "Unsicher",
       "mediumLabel": "Mittel",
       "strongLabel": "Stark",
@@ -14,13 +14,13 @@
     "texts": {
       "or": "ODER ANMELDEN MIT",
       "accountmissing": {
-        "prefix": "Sie haben noch kein TUMApply-Konto?",
+        "prefix": "Du hast noch kein TUMApply-Konto?",
         "link": "Hier registrieren."
       }
     },
     "messages": {
       "error": {
-        "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Überprüfen Sie bitte Ihre Angaben und versuchen Sie es erneut.",
+        "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Bitte überprüfe deine Angaben und versuche es erneut.",
         "header": "Login fehlgeschlagen",
         "message": "Ungültige E-Mail oder ungültiges Passwort"
       }
