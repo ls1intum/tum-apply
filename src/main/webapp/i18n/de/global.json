@@ -247,6 +247,9 @@
       },
       "tooltip": {
         "language": "Wähle deine bevorzugte Kommunikationssprache."
+      },
+      "validation": {
+        "postalCode": "Bitte gib eine gültige Postleitzahl für das ausgewählte Land ein."
       }
     },
     "applicationPage2": {
