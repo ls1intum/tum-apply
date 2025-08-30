@@ -391,3 +391,11 @@
   background: var(--p-background-surface-alt);
   color: var(--p-text-primary);
 }
+
+/* -------------------------------
+ Style primeNg filter select component.
+-------------------------------
+ */
+.p-select-list-container {
+  max-height: 11.5rem !important;
+}
