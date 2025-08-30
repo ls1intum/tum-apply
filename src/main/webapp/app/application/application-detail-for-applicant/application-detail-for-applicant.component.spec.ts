@@ -97,14 +97,15 @@ describe('ApplicationDetailForApplicantComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the application detail card when application data is present', () => {
+  it('should render the application detail card when application data is present', async () => {
+    await waitForComponentUpdate(fixture);
     const compiled = fixture.nativeElement as HTMLElement;
     const detailCard = compiled.querySelector('jhi-application-detail-card');
     expect(detailCard).toBeTruthy();
   });
 
   it('should display "Application not found" when no application is available', () => {
-    component.application.set(undefined);
+    component.apiApplication.set(undefined);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
