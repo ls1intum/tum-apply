@@ -6,15 +6,10 @@
   >
   </span>
   <div class="actions">
-    <jhi-button
-      [label]="'entity.filters.filter' | translate"
-      (click)="filterDialogVisible.set(true)"
-      variant="outlined"
-      [numberOfFavorites]="activeFilters()"
-      icon="filter"
-      severity="info"
-    />
-    <jhi-filter-dialog [(visible)]="filterDialogVisible" [filterFields]="filterFields()" (applyFilters)="updateFilters($event)" />
+    <!-- TODO: Add new filter and sorting functionality -->
+    <!-- <jhi-button [label]="'entity.filters.filter' | translate" (click)="filterDialogVisible.set(true)" variant="outlined"
+      [numberOfFavorites]="activeFilters()" icon="filter" severity="info" />-->
+    <!--<jhi-filter-dialog [(visible)]="filterDialogVisible" [filterFields]="filterFields()" (applyFilters)="updateFilters($event)" />-->
 
     @if ((this.sortOptions() ?? []).length > 0) {
       <jhi-select
