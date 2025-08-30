@@ -5,10 +5,18 @@ body:
   - type: textarea
     attributes:
       label: Description
-      description: What needs to be done?
+      description: What needs to be done? Provide a short motivation for this task.
     validations:
       required: true
+
   - type: textarea
     attributes:
-      label: Notes
-      description: Which page is affected? Any other relevant information?
+      label: Tasks
+      description: List the concrete steps needed to implement this task.
+
+  - type: textarea
+    attributes:
+      label: Acceptance Criteria
+      description: Define what must be true for this task to be considered complete.
+      placeholder: |
+        - [ ] Criteria 1
