@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
+import { AccountService } from 'app/core/auth/account.service';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
@@ -81,9 +82,13 @@ export default class ApplicationCreationPage1Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
+  disabledEmail = computed<boolean>(() => this.accountService.signedIn());
+
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
+
+  accountService = inject(AccountService);
   fb = inject(FormBuilder);
   page1Form = computed(() => {
     const currentData = this.data();
