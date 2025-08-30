@@ -17,6 +17,11 @@
     color: var(--p-text-on-primary);
   }
 
+  &.icon-only {
+    justify-content: center;
+    width: 2.75rem;
+  }
+
   .icon {
     color: var(--p-primary-color);
 

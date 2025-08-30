@@ -49,6 +49,8 @@ describe('SidebarComponent', () => {
     fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;
 
+    fixture.componentRef.setInput('isSidebarCollapsed', false);
+
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faGear);
 
