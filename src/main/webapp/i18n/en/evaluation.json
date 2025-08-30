@@ -101,7 +101,16 @@
       "documentNoUploads": "No documents uploaded",
       "documentDownloadAll": "Download all",
       "moreDocument": "+1 more document",
-      "moreDocuments": "+{{count}} more documents"
+      "moreDocuments": "+{{count}} more documents",
+
+      "ratingTitle": "Ratings",
+      "ratingDescription": "Rate the application and view how other reviewers have assessed it. These are not visible to the applicant.",
+      "ratingYourRating": "Your Rating",
+      "ratingYourRatingLabel": "Click a box to select your rating",
+      "ratingOtherRatings": "Other Ratings",
+
+      "commentTitle": "Comments",
+      "commentDescription": "Leave internal comments to discuss the application with other reviewers or keep personal notes. These are not visible to the applicant."
     }
   }
 }
