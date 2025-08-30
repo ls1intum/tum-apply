@@ -46,15 +46,130 @@
       (reject)="rejectApplication($event)"
     />
 
-    @if (this.currentApplication(); as application) {
-      <div class="w-full mt-8">
-        <jhi-application-detail-card [application]="application.applicationDetailDTO">
-          <div class="slot-right-width" slot-vertical-right>
-            @if (currentDocumentIds(); as documentIds) {
-              <jhi-document-group [documentIds]="documentIds" />
-            }
+    @if (currentApplication(); as application) {
+      <div class="w-full">
+        <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
+          <div>
+            <jhi-section title="evaluation.details.applicantTitle">
+              <div class="grid gap-8 md:grid-cols-2">
+                <!-- Applicant Information -->
+                <jhi-sub-section title="evaluation.details.applicantInformation">
+                  <jhi-description-list
+                    [items]="[
+                      { labelKey: 'evaluation.details.applicantName', value: application.applicationDetailDTO.applicant?.user?.name },
+
+                      {
+                        labelKey: 'evaluation.details.applicantGender',
+                        value: 'genders.' + (application.applicationDetailDTO.applicant?.user?.gender ?? '').toLowerCase() | translate,
+                      },
+                      {
+                        labelKey: 'evaluation.details.applicantNationality',
+                        value:
+                          'nationalities.' + (application.applicationDetailDTO.applicant?.user?.nationality ?? '').toLowerCase()
+                          | translate,
+                      },
+                      {
+                        labelKey: 'evaluation.details.applicantPreferredLanguage',
+                        value:
+                          'languages.' + (application.applicationDetailDTO.applicant?.user?.preferredLanguage ?? '').toLowerCase()
+                          | translate,
+                      },
+                    ]"
+                  />
+                </jhi-sub-section>
+
+                <!-- Links -->
+                <jhi-sub-section title="evaluation.details.applicantLinks">
+                  <jhi-link-list
+                    [links]="[
+                      {
+                        labelKey: 'evaluation.details.applicantWebsite',
+                        url: application.applicationDetailDTO.applicant?.user?.linkedinUrl,
+                        icon: 'link',
+                      },
+                      {
+                        labelKey: 'evaluation.details.applicantLinkedIn',
+                        url: application.applicationDetailDTO.applicant?.user?.website,
+                        icon: 'linkedin',
+                        isBrandIcon: true,
+                      },
+                    ]"
+                  />
+                </jhi-sub-section>
+              </div>
+            </jhi-section>
+
+            <p-divider />
+
+            <!-- Education -->
+            <jhi-section title="evaluation.details.educationTitle">
+              <div class="grid gap-8 md:grid-cols-2">
+                <!-- Bachelor -->
+                <jhi-sub-section title="evaluation.details.educationBachelors">
+                  <jhi-description-list
+                    [items]="[
+                      {
+                        labelKey: 'evaluation.details.educationDegree',
+                        value: application.applicationDetailDTO.applicant?.bachelorDegreeName,
+                      },
+                      {
+                        labelKey: 'evaluation.details.educationUniversity',
+                        value: application.applicationDetailDTO.applicant?.bachelorUniversity,
+                      },
+                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.bachelorGrade },
+                    ]"
+                  />
+                </jhi-sub-section>
+
+                <!-- Master -->
+                <jhi-sub-section title="evaluation.details.educationMasters">
+                  <jhi-description-list
+                    [items]="[
+                      {
+                        labelKey: 'evaluation.details.educationDegree',
+                        value: application.applicationDetailDTO.applicant?.masterDegreeName,
+                      },
+                      {
+                        labelKey: 'evaluation.details.educationUniversity',
+                        value: application.applicationDetailDTO.applicant?.masterUniversity,
+                      },
+                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.masterGrade },
+                    ]"
+                  />
+                </jhi-sub-section>
+              </div>
+            </jhi-section>
+
+            <p-divider />
+
+            <!-- Application -->
+            <jhi-section title="evaluation.details.applicationTitle">
+              <jhi-sub-section title="evaluation.details.applicationDesiredStartDate">
+                <span class="text-sm"> {{ application.applicationDetailDTO.desiredDate || '—' }} </span>
+              </jhi-sub-section>
+
+              <jhi-sub-section title="evaluation.details.applicationMotivation">
+                <jhi-prose [text]="application.applicationDetailDTO.motivation" />
+              </jhi-sub-section>
+
+              <jhi-sub-section title="evaluation.details.applicationSkills">
+                <jhi-prose [text]="application.applicationDetailDTO.specialSkills" />
+              </jhi-sub-section>
+
+              <jhi-sub-section title="evaluation.details.applicationProjects">
+                <jhi-prose [text]="application.applicationDetailDTO.projects" />
+              </jhi-sub-section>
+            </jhi-section>
           </div>
-        </jhi-application-detail-card>
+          <div>
+            <jhi-section title="evaluation.details.documentTitle">
+              <jhi-document-section
+                [idsDTO]="currentDocumentIds()"
+                [applicationId]="currentApplication()?.applicationDetailDTO?.applicationId ?? ''"
+              />
+            </jhi-section>
+          </div>
+        </div>
       </div>
     }
   </div>

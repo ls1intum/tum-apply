@@ -1,12 +1,12 @@
 import { Component, inject, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Router } from '@angular/router';
-import { Tooltip } from 'primeng/tooltip';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   standalone: true,
   selector: 'jhi-sidebar-button',
-  imports: [FontAwesomeModule, Tooltip],
+  imports: [FontAwesomeModule, TooltipModule],
   templateUrl: './sidebar-button.component.html',
   styleUrl: './sidebar-button.component.scss',
 })
