@@ -13,16 +13,29 @@ scalable, secure, and transparent recruitment processes.
 
 ### For Applicants
 
-- Browse doctoral openings across TUM
-- Apply with your documents (CV, transcripts, motivation letter, etc.)
-- Track your application status for multiple positions
+- Browse doctoral openings across TUM ([Video](https://live.rbg.tum.de/w/artemisintro/61935))
+- View job details and requirements ([Video](https://live.rbg.tum.de/w/artemisintro/61934))
+- Apply with your documents (CV, transcripts, motivation letter,
+  etc.) ([Video](https://live.rbg.tum.de/w/artemisintro/61939))
+- Save, submit and delete application drafts ([Save](https://live.rbg.tum.de/w/artemisintro/61942)) ([
+  Submit](https://live.rbg.tum.de/w/artemisintro/61941)) ([
+  Delete](https://live.rbg.tum.de/w/artemisintro/61940))
+- Track/Review your application details and submission for multiple
+  positions ([Video](https://live.rbg.tum.de/w/artemisintro/61943))
+- Withdraw applications ([Video](https://live.rbg.tum.de/w/artemisintro/61944))
 - Get notified when a decision is made
 
 ### For Professors & Research Groups
 
-- Create and publish doctoral positions
-- Manage incoming applications
-- Evaluate candidates and assign status
+- Create and publish doctoral positions ([Video](https://live.rbg.tum.de/w/artemisintro/61937))
+- View published positions ([Video](https://live.rbg.tum.de/w/artemisintro/61932))
+- View position details ([Video](https://live.rbg.tum.de/w/artemisintro/61933))
+- Edit jobs ([Video](https://live.rbg.tum.de/w/artemisintro/61936))
+- Close and delete job postings ([Video](https://live.rbg.tum.de/w/artemisintro/61938))
+- Manage incoming applications ([Video](https://live.rbg.tum.de/w/artemisintro/61948))
+- Evaluate candidates and assign
+  status ([Review](https://live.rbg.tum.de/w/artemisintro/61947)) ([Accept](https://live.rbg.tum.de/w/artemisintro/61945))
+  ([Reject](https://live.rbg.tum.de/w/artemisintro/61946))
 - Notify applicants directly via the system
 
 ## 🧭 How to Get Started
@@ -36,9 +49,9 @@ scalable, secure, and transparent recruitment processes.
 
 TUMApply supports **secure login** via:
 
-- TUM Single Sign-On (SSO)
-- Google and Microsoft accounts
-- Email and password
+- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/61951))
+- Apple, Google and Microsoft ([Video](https://live.rbg.tum.de/w/artemisintro/61949))
+- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/61950))
 
 ## 🧱 Architecture Overview
 
@@ -80,20 +93,20 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ### UML Diagram
 
-![TUMApply Project Architecture UML Diagram](docs/architecture/tumapply-project-architecture.svg)
+![TUMApply Project Architecture UML Diagram](docs-github/architecture/tumapply-project-architecture.svg)
 
 ## 📄 Documentation for Developers
 
 If you're a developer or contributor, head over to the full documentation:
 
-- 📚 [Development Setup](docs/setup/dev-environment.md)
-- 🎨 [Theming & Color Tokens](docs/theming/color-theming.md)
-- 🛠️ [API Documentation](docs/TUMApply%20API)
-- 🧪 [Testing Guide](docs/testing/testing-guide.md)
-- 🐳 [Docker Setup](docs/deployment/docker.md)
-- 🚀 [Build for Production](docs/deployment/build-production.md)
+- 📚 [Development Setup](docs-github/setup/dev-environment.md)
+- 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
+- 🛠️ [API Documentation](docs-github/TUMApply%20API)
+- 🧪 [Testing Guide](docs-github/testing/testing-guide.md)
+- 🐳 [Docker Setup](docs-github/deployment/docker.md)
+- 🚀 [Build for Production](docs-github/deployment/build-production.md)
 
-Full documentation is available in the [`/docs`](./docs) folder.
+Full documentation is available in the [`/docs`](docs-github) folder.
 
 ---
 

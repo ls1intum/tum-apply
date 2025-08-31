@@ -1,0 +1,7 @@
+{
+  "genders": {
+    "male": "Männlich",
+    "female": "Weiblich",
+    "other": "Andere"
+  }
+}

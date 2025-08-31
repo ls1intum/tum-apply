@@ -264,5 +264,7 @@ aet:
   storage:
     root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400
+  download:
+    deterministic-zip: false
   client:
     url: ${AET_CLIENT_URL}

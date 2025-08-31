@@ -20,9 +20,10 @@
       "createposition": "Position erstellen"
     },
     "researchgroup": {
+      "emailtemplates": "Meine E-Mail-Vorlagen",
       "researchgroup": "Forschungsgruppe",
       "yourgroup": "Meine Gruppe",
-      "yourmembers": "Ihre Mitglieder"
+      "yourmembers": "Deine Mitglieder"
     },
     "content": {
       "content": "Inhalt",
