@@ -3,9 +3,9 @@
 
   <jhi-header />
 
-  <div class="main-page">
+  <div [class.is-collapsed]="isSidebarCollapsed()" class="main-page">
     @if (loggedIn()) {
-      <jhi-sidebar class="sidebar" />
+      <jhi-sidebar class="sidebar" [isSidebarCollapsed]="isSidebarCollapsed()" (sidebarCollapsedChange)="isSidebarCollapsed.set($event)" />
     }
     <div class="content">
       <div class="content-flex">
