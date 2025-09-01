@@ -14,6 +14,7 @@ export class SidebarButtonComponent {
   icon = input<string | undefined>(undefined);
   label = input<string>('');
   isActive = input<boolean>(false);
+  isCollapsed = input<boolean>(false);
   link = input<string>('/');
 
   private router = inject(Router);

@@ -1,25 +1,27 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
+import { ButtonModule } from 'primeng/button';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 type SidebarButton = { icon: string; text: string; link: string };
 type SidebarCategory = { title: string; buttons: SidebarButton[] };
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [DividerModule, PanelModule, SidebarButtonComponent, TranslateModule],
+  imports: [ButtonModule, DividerModule, PanelModule, SidebarButtonComponent, TranslateModule, TranslateDirective],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  private accountService = inject(AccountService);
-  private router = inject(Router);
+  isSidebarCollapsed = input.required<boolean>();
+  sidebarCollapsedChange = output<boolean>();
 
   /**
    * Custom groups for sidebar links that have multiple paths.
@@ -30,6 +32,8 @@ export class SidebarComponent {
     '/job-overview': ['/job/detail'],
     '/my-positions': ['/job/detail', '/job/edit'],
   };
+  private accountService = inject(AccountService);
+  private router = inject(Router);
 
   /**
    * Returns the categories for the sidebar based on the user's roles.
@@ -67,6 +71,10 @@ export class SidebarComponent {
     return currentPath === link || currentPath.startsWith(link + '/');
   }
 
+  toggleSidebar(): void {
+    this.sidebarCollapsedChange.emit(!this.isSidebarCollapsed());
+  }
+
   private getCategoryConfig(): Record<string, SidebarCategory[]> {
     return {
       APPLICANT: [
@@ -74,7 +82,7 @@ export class SidebarComponent {
           title: 'sidebar.dashboard.dashboard',
           buttons: [
             { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
-            { icon: 'search', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
+            { icon: 'briefcase', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
           ],
         },
         {
