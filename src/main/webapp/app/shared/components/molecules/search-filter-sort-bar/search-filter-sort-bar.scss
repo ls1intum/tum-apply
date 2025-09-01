@@ -1,0 +1,14 @@
+.search-filter-sort-bar {
+  .p-iconfield {
+    width: 100%;
+    flex: 1;
+
+    .p-inputtext {
+      width: 100%;
+
+      &::placeholder {
+        color: var(--p-background-disabled);
+      }
+    }
+  }
+}

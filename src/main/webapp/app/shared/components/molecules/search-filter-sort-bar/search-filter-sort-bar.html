@@ -1,1 +1,8 @@
-<p>search-filter-sort-bar works!</p>
+<div class="search-filter-sort-bar">
+  <p-iconfield iconPosition="left">
+    <p-inputicon>
+      <fa-icon class="icon" [icon]="['fas', 'search']" />
+    </p-inputicon>
+    <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" />
+  </p-iconfield>
+</div>
