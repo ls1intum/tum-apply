@@ -1,0 +1,8 @@
+{
+  "label": "Professors",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "All information for professors: from first login and research group setup to managing applications and email templates."
+  }
+}

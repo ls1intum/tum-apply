@@ -1,0 +1,8 @@
+{
+  "label": "General",
+  "position": 0,
+  "link": {
+    "type": "generated-index",
+    "description": "General information for all users: account creation, login, and shared features."
+  }
+}
