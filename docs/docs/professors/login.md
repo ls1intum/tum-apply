@@ -18,9 +18,8 @@ at [https://tumapply.aet.cit.tum.de/professor](https://tumapply.aet.cit.tum.de/p
 ## What Happens After Login
 
 - On your first login, you will only have the same rights as applicants.
-- To learn how to receive professor rights and create a Research Group, please visit the following pages:
-  - [Research Groups](../research-groups.md)
-  - [Roles and Permissions](../roles.md)
+- To learn how to receive professor rights and create a Research Group, please
+  visit [Research Groups and Rights](./research-groups)
 
 If you already logged in before and your rights have been assigned, you can directly access your Research Group and see
 all positions you have published.

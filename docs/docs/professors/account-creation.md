@@ -15,10 +15,8 @@ first time you sign in via the official TUM Login.
 
 On your first login, you will **initially have the same rights as applicants**. This is normal.
 
-To receive professor rights and work with your Research Group, continue here:
-
-- **Research Groups:** [Set up and manage your research group](../research-groups.md)
-- **Roles & Permissions:** [How professor rights are assigned](../roles.md)
+To receive professor rights and work with your Research Group, continue
+here: [Research Groups and Rights](./research-groups)
 
 ## Tips
 
