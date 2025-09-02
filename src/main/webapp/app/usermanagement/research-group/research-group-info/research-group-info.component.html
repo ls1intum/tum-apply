@@ -1,0 +1,86 @@
+<div class="content">
+  <div class="header">
+    <h1>{{ 'researchGroup.groupInfoHeader' | translate }}</h1>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h2 class="text-primary">{{ 'researchGroup.groupInfo.title' | translate }}</h2>
+      <jhi-button [label]="'researchGroup.groupInfo.saveButton' | translate" [disabled]="!form.valid" (click)="onSave()" />
+    </div>
+    <div class="card-body">
+      <p jhiTranslate="researchGroup.groupInfo.description"></p>
+      <hr class="divider" />
+
+      <form [formGroup]="form" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <jhi-string-input
+            [id]="'rg-name'"
+            label="{{ 'researchGroup.groupInfo.fields.name' | translate }}"
+            [required]="true"
+            [control]="form.controls.name"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.name' | translate }}"
+          />
+
+          <jhi-string-input
+            [id]="'rg-abbreviation'"
+            label="{{ 'researchGroup.groupInfo.fields.abbreviation' | translate }}"
+            [required]="true"
+            [control]="form.controls.abbreviation"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.abbreviation' | translate }}"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <jhi-string-input
+            [id]="'rg-head'"
+            label="{{ 'researchGroup.groupInfo.fields.groupHead' | translate }}"
+            [required]="true"
+            [control]="form.controls.groupHead"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.groupHead' | translate }}"
+          />
+          <div></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="grid grid-cols-2 gap-4">
+          <jhi-string-input
+            [id]="'rg-campus'"
+            label="{{ 'researchGroup.groupInfo.fields.campus' | translate }}"
+            [required]="true"
+            [control]="form.controls.campus"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.campus' | translate }}"
+          />
+
+          <jhi-string-input
+            [id]="'rg-website'"
+            label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
+            [required]="true"
+            [control]="form.controls.website"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.website' | translate }}"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <jhi-string-input
+            [id]="'rg-email'"
+            label="{{ 'researchGroup.groupInfo.fields.email' | translate }}"
+            [required]="true"
+            [control]="form.controls.email"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
+          />
+          <div></div>
+        </div>
+
+        <jhi-string-input
+          [id]="'rg-address'"
+          label="{{ 'researchGroup.groupInfo.fields.address' | translate }}"
+          [control]="form.controls.address"
+          placeholder="{{ 'researchGroup.groupInfo.placeholders.address' | translate }}"
+        />
+
+        <label class="block mb-2" [for]="'rg-description'">{{ 'researchGroup.groupInfo.fields.description' | translate }}</label>
+        <jhi-editor [id]="'rg-description'" [characterLimit]="1000" />
+      </form>
+    </div>
+  </div>
+</div>

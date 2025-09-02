@@ -1,6 +1,31 @@
 {
   "researchGroup": {
-    "header": "My Email Templates",
+    "emailTemplatesHeader": "My Email Templates",
+    "groupInfoHeader": "My Group",
+    "groupInfo": {
+      "title": "Group Infomation",
+      "description": "Edit the basic information about your research group.",
+      "saveButton": "Save",
+      "fields": {
+        "name": "Name",
+        "abbreviation": "Abbreviation",
+        "groupHead": "Group Head",
+        "campus": "Campus",
+        "website": "Website",
+        "email": "Email",
+        "address": "Address",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "e.g. Biomedical Engineering Group",
+        "groupHead": "e.g. Lina Zhang",
+        "email": "e.g. aniruddh.zaveri@tum.de",
+        "website": "e.g. https://academics.nat.tum.de/msc/bemp",
+        "abbreviation": "e.g. BEG",
+        "campus": "e.g. Garching",
+        "address": "e.g. Boltzmannstraße 3, 85748 Garching b. München"
+      }
+    },
 
     "emailTemplates": {
       "newTemplate": "New Template",

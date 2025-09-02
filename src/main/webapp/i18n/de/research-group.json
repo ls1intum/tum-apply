@@ -1,6 +1,32 @@
 {
   "researchGroup": {
-    "header": "Meine E-Mail-Vorlagen",
+    "emailTemplatesHeader": "Meine E-Mail-Vorlagen",
+    "groupInfoHeader": "Meine Gruppe",
+
+    "groupInfo": {
+      "title": "Gruppeninformationen",
+      "description": "Bearbeite die grundlegenden Informationen über Deine Forschungsgruppe.",
+      "saveButton": "Speichern",
+      "fields": {
+        "name": "Name",
+        "abbreviation": "Abkürzung",
+        "groupHead": "Gruppenleiter",
+        "campus": "Campus",
+        "website": "Website",
+        "email": "E-Mail",
+        "address": "Adresse",
+        "description": "Beschreibung"
+      },
+      "placeholders": {
+        "name": "z.B. Biomedizinische Ingenieurwissenschaften",
+        "abbreviation": "z.B. BIM",
+        "groupHead": "z.B. Lina Zhang",
+        "email": "z.B. aniruddh.zaveri@tum.de",
+        "website": "z.B. https://academics.nat.tum.de/msc/bemp",
+        "campus": "z.B. Garching",
+        "address": "z.B. Boltzmannstraße 3, 85748 Garching b. München"
+      }
+    },
 
     "emailTemplates": {
       "newTemplate": "Neue Vorlage",
