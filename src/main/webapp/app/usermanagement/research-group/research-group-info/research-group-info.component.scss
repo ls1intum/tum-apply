@@ -16,14 +16,12 @@
   }
 
   .card {
-    background: white;
     border-radius: 0.5rem;
     border: 0.1rem solid var(--p-border-default);
 
     .card-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       padding: 1rem 1.5rem;
 
       h2 {
