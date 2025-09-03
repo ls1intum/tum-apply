@@ -34,6 +34,12 @@
             [documentIds]="computedDocumentIdsCvSet()"
           />
         </div>
+        <fa-icon
+          icon="circle-info"
+          class="upload-info-icon mr-4"
+          pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
+          tooltipPosition="top"
+        />
         <div class="w-1/2 ml-1">
           <jhi-upload-button
             uploadKey="entity.upload.upload_instruction.REFERENCE"
@@ -42,6 +48,12 @@
             [documentIds]="documentIdsReferences()"
           />
         </div>
+        <fa-icon
+          icon="circle-info"
+          class="upload-info-icon"
+          pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
+          tooltipPosition="top"
+        />
       </div>
     }
     @if (hasInitialized()) {
