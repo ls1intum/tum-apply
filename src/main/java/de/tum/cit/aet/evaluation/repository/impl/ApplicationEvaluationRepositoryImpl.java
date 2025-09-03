@@ -160,8 +160,10 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
                         predicates.add(root.get(Application_.STATE).in(states));
                 }
 
-                if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-                        String searchPattern = "%" + searchQuery.toLowerCase() + "%";
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+
+            String normalizedQuery = searchQuery.trim().toLowerCase();
+            String searchPattern = "%" + normalizedQuery.toLowerCase() + "%";
 
                         Join<Application, Applicant> applicantJoin = root.join(Application_.APPLICANT);
                         Join<Applicant, User> userJoin = applicantJoin.join(Applicant_.USER);
