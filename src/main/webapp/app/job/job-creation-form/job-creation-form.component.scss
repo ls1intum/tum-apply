@@ -4,10 +4,6 @@
   display: none;
 }
 
-// Variables
-
-$shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
-
 // Base styles
 body {
   background-color: var(--p-background-surface);
@@ -20,7 +16,7 @@ body {
   margin: 0 auto;
   padding: 1.25rem;
   background-color: var(--p-background-default);
-  box-shadow: $shadow;
+  border: 0.1rem solid var(--p-background-surface);
   border-radius: 0.25rem;
 }
 
