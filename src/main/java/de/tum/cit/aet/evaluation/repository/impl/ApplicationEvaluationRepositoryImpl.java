@@ -8,7 +8,11 @@ import de.tum.cit.aet.core.util.SqlQueryUtil;
 import de.tum.cit.aet.evaluation.repository.custom.ApplicationEvaluationRepositoryCustom;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.domain.Job_;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.Applicant_;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup_;
+import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.User_;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import java.util.*;
@@ -39,18 +43,19 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      */
     @Override
     public List<Application> findApplications(
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Pageable pageable,
-        Map<String, List<?>> dynamicFilters
-    ) {
+            UUID researchGroupId,
+            Collection<ApplicationState> states,
+            Pageable pageable,
+            Map<String, List<?>> dynamicFilters,
+            String searchQuery) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Application> cq = cb.createQuery(Application.class);
 
         Root<Application> root = cq.from(Application.class);
         Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
 
-        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters);
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters,
+                searchQuery);
 
         cq
             .select(root)
@@ -68,14 +73,16 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      * and optional dynamic filters.
      */
     @Override
-    public long countApplications(UUID researchGroupId, Collection<ApplicationState> states, Map<String, List<?>> dynamicFilters) {
+    public long countApplications(UUID researchGroupId, Collection<ApplicationState> states,
+            Map<String, List<?>> dynamicFilters, String searchQuery) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 
         Root<Application> root = cq.from(Application.class);
         Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
 
-        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters);
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters,
+                searchQuery);
 
         cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
 
@@ -133,25 +140,51 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         }
     }
 
-    /**
-     * Builds a list of common predicates for filtering applications based on research group,
-     * application states, and dynamic filters.
-     */
-    private List<Predicate> buildCommonPredicates(
-        CriteriaBuilder cb,
-        Root<Application> root,
-        Join<Application, Job> jobJoin,
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Map<String, List<?>> dynamicFilters
-    ) {
-        List<Predicate> predicates = new ArrayList<>();
+        /**
+         * Builds a list of common predicates for filtering applications based on
+         * research group,
+         * application states, and dynamic filters, and an optional search query.
+         */
+        private List<Predicate> buildCommonPredicates(
+                        CriteriaBuilder cb,
+                        Root<Application> root,
+                        Join<Application, Job> jobJoin,
+                        UUID researchGroupId,
+                        Collection<ApplicationState> states,
+                        Map<String, List<?>> dynamicFilters, String searchQuery) {
+                List<Predicate> predicates = new ArrayList<>();
 
         predicates.add(cb.equal(jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
 
-        if (states != null && !states.isEmpty()) {
-            predicates.add(root.get(Application_.STATE).in(states));
-        }
+                if (states != null && !states.isEmpty()) {
+                        predicates.add(root.get(Application_.STATE).in(states));
+                }
+
+                if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                        String searchPattern = "%" + searchQuery.toLowerCase() + "%";
+
+                        Join<Application, Applicant> applicantJoin = root.join(Application_.APPLICANT);
+                        Join<Applicant, User> userJoin = applicantJoin.join(Applicant_.USER);
+
+                        List<Predicate> searchPredicates = new ArrayList<>();
+
+                        // search for firstname or lastname
+                        searchPredicates.add(cb.like(cb.lower(userJoin.get(User_.FIRST_NAME)), searchPattern));
+                        searchPredicates.add(cb.like(cb.lower(userJoin.get(User_.LAST_NAME)), searchPattern));
+
+                        // search for full name (format: firstname lastname)
+                        Expression<String> fullName = cb.concat(
+                                        cb.concat(cb.lower(userJoin.get(User_.FIRST_NAME)), " "),
+                                        cb.lower(userJoin.get(User_.LAST_NAME)));
+                        searchPredicates.add(cb.like(fullName, searchPattern));
+
+                        // search for job title
+                        searchPredicates.add(cb.like(cb.lower(jobJoin.get(Job_.TITLE)), searchPattern));
+
+                        Predicate searchPredicate = cb.or(searchPredicates.toArray(new Predicate[0]));
+
+                        predicates.add(searchPredicate);
+                }
 
         predicates.addAll(CriteriaUtils.buildDynamicFilters(cb, root, dynamicFilters));
 
