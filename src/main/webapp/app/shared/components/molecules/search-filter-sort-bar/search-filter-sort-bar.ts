@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -24,7 +24,12 @@ export class SearchFilterSortBar {
   singleEntity = input.required<string>();
   multipleEntities = input.required<string>();
 
+  searchOutput = output<string>();
+
+  // text entered in the search input field
   inputText = '';
 
-  onSearch(): void {}
+  onSearch(): void {
+    this.searchOutput.emit(this.inputText);
+  }
 }

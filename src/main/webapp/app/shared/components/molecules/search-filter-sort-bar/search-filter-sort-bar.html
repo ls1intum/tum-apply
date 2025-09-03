@@ -3,7 +3,7 @@
     <p-inputicon>
       <fa-icon class="icon" [icon]="['fas', 'search']" />
     </p-inputicon>
-    <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" />
+    <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
   </p-iconfield>
   <div
     class="record-count"
