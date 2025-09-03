@@ -29,7 +29,15 @@ export class SearchFilterSortBar {
   // text entered in the search input field
   inputText = '';
 
+  private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
   onSearch(): void {
-    this.searchOutput.emit(this.inputText);
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+    }
+
+    this.debounceTimeout = setTimeout(() => {
+      this.searchOutput.emit(this.inputText);
+    }, 300);
   }
 }
