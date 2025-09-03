@@ -6,13 +6,13 @@ import ButtonGroupComponent, { ButtonGroupData } from '../../../components/molec
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
-  selector: 'jhi-professor-doctoral-journey-section',
+  selector: 'jhi-professor-platform-benefits-section',
   standalone: true,
   imports: [CommonModule, TranslateModule, ButtonGroupComponent, TranslateDirective],
-  templateUrl: './professor-doctoral-journey-section.component.html',
-  styleUrl: './professor-doctoral-journey-section.component.scss',
+  templateUrl: './professor-platform-benefits-section.component.html',
+  styleUrl: './professor-platform-benefits-section.component.scss',
 })
-export class ProfessorDoctoralJourneySectionComponent {
+export class ProfessorPlatformBenefitsSectionComponent {
   private translate = inject(TranslateService);
 
   buttons(): ButtonGroupData {
@@ -20,19 +20,19 @@ export class ProfessorDoctoralJourneySectionComponent {
       direction: 'horizontal',
       buttons: [
         {
-          label: this.translate.instant('professorLandingPage.doctoralJourney.button1'),
+          label: this.translate.instant('professorLandingPage.platformBenefits.button1'),
           severity: 'secondary',
           variant: 'outlined',
           disabled: false,
           isExternalLink: true,
-          onClick: () => window.open('https://www.gs.tum.de/en/gs/path-to-a-doctorate/why-do-your-doctorate-at-tum/', '_blank'),
+          onClick: () => window.open('/job/create', '_blank'),
         },
         {
-          label: this.translate.instant('professorLandingPage.doctoralJourney.button2'),
+          label: this.translate.instant('professorLandingPage.platformBenefits.button2'),
           severity: 'primary',
           disabled: false,
-          isExternalLink: true,
-          onClick: () => window.open('https://www.gs.tum.de/en/gs/doctorate-at-tum/', '_blank'),
+          isExternalLink: false,
+          onClick: () => window.open('/job-overview', '_blank'),
         },
       ],
     };
