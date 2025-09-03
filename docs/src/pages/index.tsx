@@ -17,7 +17,7 @@ function HomepageHeader() {
           The official guide for Applicants and Professors using TUMApply.
         </p>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/docs/intro">
+          <Link className="button button--secondary button--lg" to="/docs/faq">
             Get Started →
           </Link>
         </div>
