@@ -1,0 +1,10 @@
+<div class="application-steps-section">
+  <h2 class="title" jhiTranslate="professorLandingPage.workflow.headline"></h2>
+  <div class="application-steps">
+    <div class="steps">
+      @for (step of steps; track step.title) {
+        <jhi-application-step [icon]="step.icon" [title]="step.title | translate" [description]="step.description | translate" />
+      }
+    </div>
+  </div>
+</div>
