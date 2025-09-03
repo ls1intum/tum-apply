@@ -2,7 +2,9 @@
   "evaluation": {
     "overviewHeader": "Bewerbungen - Übersicht",
     "reviewHeader": "Bewerbungen - Prüfen",
-
+    "searchFilterSortBar": {
+      "searchText": "Bewerbungen suchen..."
+    },
     "ratings": {
       "very_bad": "Mangelhaft",
       "bad": "Ausreichend",

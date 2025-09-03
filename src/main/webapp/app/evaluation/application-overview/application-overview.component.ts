@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
@@ -13,7 +14,6 @@ import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sor
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
-import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 
@@ -26,9 +26,9 @@ import TranslateDirective from '../../shared/language/translate.directive';
     ButtonComponent,
     DynamicTableComponent,
     TagComponent,
-    FilterSortBarComponent,
     TranslateModule,
     TranslateDirective,
+    SearchFilterSortBar,
   ],
   templateUrl: './application-overview.component.html',
   styleUrls: ['./application-overview.component.scss'],
@@ -41,6 +41,7 @@ export class ApplicationOverviewComponent {
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
   filters = signal<FilterField[]>([]);
   total = signal(0);
+  searchQuery = signal<string>('');
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
@@ -79,6 +80,8 @@ export class ApplicationOverviewComponent {
 
   protected readonly sortOptions = sortOptions;
 
+  private isSearchInitiatedByUser = false;
+
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
   private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
@@ -99,6 +102,12 @@ export class ApplicationOverviewComponent {
       const rawSD = qp.get('sortDir');
       this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
 
+      if (!this.isSearchInitiatedByUser) {
+        this.searchQuery.set(qp.get('search') ?? '');
+      }
+
+      this.isSearchInitiatedByUser = false;
+
       void this.loadPage();
     });
     void this.initFilterFields();
@@ -118,6 +127,13 @@ export class ApplicationOverviewComponent {
     this.page.set(newPage);
     this.pageSize.set(rows);
 
+    void this.loadPage();
+  }
+
+  loadOnSearchEmit(searchQuery: string): void {
+    this.isSearchInitiatedByUser = true;
+    this.page.set(0);
+    this.searchQuery.set(searchQuery);
     void this.loadPage();
   }
 
@@ -161,6 +177,7 @@ export class ApplicationOverviewComponent {
       const limit = this.pageSize();
       const sortBy = this.sortBy();
       const direction = this.sortDirection();
+      const search = this.searchQuery();
 
       const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
       const statusFilters = Array.from(filtersByKey['status'] ?? []);
@@ -174,6 +191,7 @@ export class ApplicationOverviewComponent {
           direction,
           statusFilters.length ? statusFilters : undefined,
           jobFilters.length ? jobFilters : undefined,
+          search || undefined,
         ),
       );
 
@@ -195,6 +213,9 @@ export class ApplicationOverviewComponent {
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
     };
+    if (this.searchQuery()) {
+      baseParams['search'] = this.searchQuery();
+    }
     const filterParams: Params = {};
     this.filters().forEach(f => {
       const entry = f.getQueryParamEntry();
