@@ -13,6 +13,7 @@ api/emailTemplateResource.service.ts
 api/emailVerificationResource.service.ts
 api/internalCommentResource.service.ts
 api/jobResource.service.ts
+api/profOnboardingResource.service.ts
 api/ratingResource.service.ts
 api/userResource.service.ts
 configuration.ts
@@ -59,6 +60,7 @@ model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageableObject.ts
+model/profOnboardingDTO.ts
 model/professorDTO.ts
 model/ratingDTO.ts
 model/ratingOverviewDTO.ts
