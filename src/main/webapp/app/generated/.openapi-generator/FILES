@@ -11,6 +11,7 @@ api/documentResource.service.ts
 api/emailSettingResource.service.ts
 api/emailTemplateResource.service.ts
 api/emailVerificationResource.service.ts
+api/internalCommentResource.service.ts
 api/jobResource.service.ts
 api/ratingResource.service.ts
 api/userResource.service.ts
@@ -43,6 +44,8 @@ model/emailTemplateDTO.ts
 model/emailTemplateOverviewDTO.ts
 model/emailTemplateTranslationDTO.ts
 model/internalComment.ts
+model/internalCommentDTO.ts
+model/internalCommentUpdateDTO.ts
 model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts

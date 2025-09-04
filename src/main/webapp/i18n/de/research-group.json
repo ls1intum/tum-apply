@@ -1,6 +1,6 @@
 {
   "researchGroup": {
-    "header": "Meine Gruppe",
+    "header": "Meine E-Mail-Vorlagen",
 
     "emailTemplates": {
       "newTemplate": "Neue Vorlage",
@@ -25,7 +25,7 @@
       "subject": "Betreff",
       "addSubject": "Betreff der Email...",
 
-      "addVariable": "Drücken Sie '$', um eine Variable einzufügen",
+      "addVariable": "Drücke '$', um eine Variable einzufügen",
 
       "message": "Nachricht",
 

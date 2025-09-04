@@ -7,6 +7,8 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.util.UUID;
 
 @Service
 public class EmailVerificationService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailVerificationService.class);
+
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
     private final AsyncEmailSender asyncEmailSender;
     private final KeycloakUserService keycloakUserService;
@@ -80,7 +84,7 @@ public class EmailVerificationService {
 
         Email email = Email.builder()
             .to(user)
-            .customSubject("TUMApply – Your verification code")
+            .customSubject("Your verification code")
             .customBody(generateHTML(code))
             .sendAlways(true)
             .build();
@@ -105,6 +109,7 @@ public class EmailVerificationService {
 
         var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(email, now);
         if (activeOpt.isEmpty()) {
+            LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(email), ip);
             throw new EmailVerificationFailedException("Validation failed");
         }
 
@@ -113,6 +118,7 @@ public class EmailVerificationService {
         if (otp.getAttempts() >= otp.getMaxAttempts()) {
             otp.setUsed(true); // lock this code
             emailVerificationOtpRepository.save(otp);
+            LOGGER.warn("OTP max-attempts reached -> locked - emailId={} ip={} attempts={}/{}", emailLogId(email), ip, otp.getAttempts(), otp.getMaxAttempts());
             throw new EmailVerificationFailedException("Validation failed");
         }
 
@@ -130,6 +136,7 @@ public class EmailVerificationService {
 
         // Mark used atomically (race safety)
         if (emailVerificationOtpRepository.markUsedIfActive(otp.getId(), now) == 0) {
+            LOGGER.warn("OTP race: markUsedIfActive returned 0 - emailId={} ip={}", emailLogId(email), ip);
             throw new EmailVerificationFailedException("Validation failed");
         }
 
@@ -158,5 +165,21 @@ public class EmailVerificationService {
               <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
               <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
             """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
+    }
+
+    /**
+     * Generates a short, non-reversible identifier for the given email address
+     * to be used in logs. The identifier is derived by computing an HMAC-SHA256
+     * hash of the email using the configured {@code otpHmacSecret} and truncating
+     * the result to 12 characters.
+     * <p>
+     * This avoids writing the plain email address into logs while still allowing
+     * correlation of repeated events for the same user.
+     *
+     * @param email the email address to obfuscate for logging purposes
+     * @return a short, stable identifier string for the given email
+     */
+    private String emailLogId(String email) {
+        return OtpUtil.hmacSha256Base64(otpHmacSecret, email).substring(0, 12);
     }
 }

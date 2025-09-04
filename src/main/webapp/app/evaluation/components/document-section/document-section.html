@@ -1,0 +1,36 @@
+<div>
+  @for (document of documents(); track document.id) {
+    <jhi-sub-section [title]="document.label">
+      <div class="h-60 w-full">
+        <jhi-document-viewer [documentDictionaryId]="document.id" />
+      </div>
+    </jhi-sub-section>
+  }
+  @if (hasDocuments()) {
+    @if (documentsCount() > NUMBER_OF_DOCUMENTS) {
+      <div class="mt-8 w-full flex justify-center">
+        <p
+          class="text-sm font-semibold"
+          [jhiTranslate]="
+            documentsCount() - NUMBER_OF_DOCUMENTS === 1 ? 'evaluation.details.moreDocument' : 'evaluation.details.moreDocuments'
+          "
+          [translateValues]="{ count: documentsCount() - NUMBER_OF_DOCUMENTS }"
+        ></p>
+      </div>
+    }
+    <div class="mt-8 w-full flex justify-end">
+      <jhi-button
+        class="h-1/2"
+        label="evaluation.details.documentDownloadAll"
+        [shouldTranslate]="true"
+        icon="download"
+        variant="outlined"
+        (click)="downloadAllDocuments()"
+      />
+    </div>
+  } @else {
+    <div class="mt-14 w-full flex justify-center">
+      <p class="text-sm" jhiTranslate="evaluation.details.documentNoUploads"></p>
+    </div>
+  }
+</div>

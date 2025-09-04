@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1.5rem;
-  border-bottom: 0.25rem solid var(--p-border-default);
+  border-bottom: 0.1rem solid var(--p-border-default);
   background-color: var(--p-background-default);
   position: sticky;
   top: 0;
@@ -24,6 +24,11 @@
 
     .tum-logo {
       height: 1.5rem;
+    }
+
+    .professor {
+      color: var(--p-secondary-color);
+      font-weight: 300;
     }
   }
 

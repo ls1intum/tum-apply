@@ -23,6 +23,8 @@ export * from './emailTemplateDTO';
 export * from './emailTemplateOverviewDTO';
 export * from './emailTemplateTranslationDTO';
 export * from './internalComment';
+export * from './internalCommentDTO';
+export * from './internalCommentUpdateDTO';
 export * from './job';
 export * from './jobCardDTO';
 export * from './jobDTO';
