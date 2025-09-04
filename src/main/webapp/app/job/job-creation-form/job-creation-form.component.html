@@ -102,6 +102,21 @@
           />
         </div>
         <div class="form-field">
+          <jhi-datepicker
+            [selectedDate]="basicInfoForm.get('startDate')?.value"
+            (selectedDateChange)="basicInfoForm.get('startDate')?.setValue($event)"
+            [label]="'jobCreationForm.basicInformationSection.startDate.label'"
+            [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
+            icon="circle-info"
+            tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
+            [shouldTranslate]="true"
+            [width]="'100%'"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
           <jhi-number-input
             [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
@@ -115,9 +130,6 @@
             [tooltipText]="'jobCreationForm.basicInformationSection.workload.toolTipText' | translate"
           />
         </div>
-      </div>
-
-      <div class="form-row">
         <div class="form-field">
           <jhi-number-input
             [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
@@ -125,23 +137,11 @@
             [model]="basicInfoForm.get('contractDuration')?.value"
             [control]="basicInfoForm.get('contractDuration') ?? undefined"
             [min]="1"
-            [max]="5"
+            [max]="6"
             [minFractionDigits]="0"
             [maxFractionDigits]="2"
             icon="circle-info"
             [tooltipText]="'jobCreationForm.basicInformationSection.contractDuration.toolTipText' | translate"
-          />
-        </div>
-        <div class="form-field">
-          <jhi-datepicker
-            [selectedDate]="basicInfoForm.get('startDate')?.value"
-            (selectedDateChange)="basicInfoForm.get('startDate')?.setValue($event)"
-            [label]="'jobCreationForm.basicInformationSection.startDate.label'"
-            [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
-            icon="circle-info"
-            tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
-            [shouldTranslate]="true"
-            [width]="'100%'"
           />
         </div>
       </div>

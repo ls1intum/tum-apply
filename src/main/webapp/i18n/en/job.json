@@ -52,7 +52,7 @@
       "contractDuration": {
         "label": "Contract Duration",
         "placeholder": "Specify the Contract Duration (in years)...",
-        "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 5 years."
+        "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years."
       },
       "fundingType": {
         "label": "Funding Type",

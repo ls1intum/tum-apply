@@ -52,7 +52,7 @@
       "contractDuration": {
         "label": "Vertragslaufzeit",
         "placeholder": "Gib eine Vertragslaufzeit an (in Jahren)...",
-        "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 5 Jahre eingeben."
+        "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
       "fundingType": {
         "label": "Finanzierungsart",
