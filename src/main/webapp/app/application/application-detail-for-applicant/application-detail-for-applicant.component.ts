@@ -17,15 +17,18 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
   styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
+  // preview application data passed from parent component (if any)
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
 
-  applicationId = signal<string>('');
-  apiApplication = signal<ApplicationDetailDTO | undefined>(undefined);
-  apiDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  // actual application data fetched from the backend
+  actualDetailData = signal<ApplicationDetailDTO | undefined>(undefined);
+  actualDocumentData = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
 
-  application = computed(() => this.previewDetailData() ?? this.apiApplication());
-  documentIds = computed(() => this.previewDocumentData() ?? this.apiDocumentIds());
+  applicationId = signal<string>('');
+
+  application = computed(() => this.previewDetailData() ?? this.actualDetailData());
+  documentIds = computed(() => this.previewDocumentData() ?? this.actualDocumentData());
 
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
@@ -46,11 +49,11 @@ export default class ApplicationDetailForApplicantComponent {
       this.applicationId.set(applicationId);
     }
     const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
-    this.apiApplication.set(application);
+    this.actualDetailData.set(application);
 
     firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
-        this.apiDocumentIds.set(ids);
+        this.actualDocumentData.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }
