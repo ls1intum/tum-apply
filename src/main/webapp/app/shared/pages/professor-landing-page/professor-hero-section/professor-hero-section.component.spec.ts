@@ -8,7 +8,6 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { ProfessorHeroSectionComponent } from './professor-hero-section.component';
 
@@ -29,7 +28,6 @@ describe('ProfessorHeroSectionComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
-        provideAnimations(),
       ],
     }).compileComponents();
 
