@@ -21,6 +21,8 @@ import java.util.stream.Stream;
 @Builder
 public class Email {
 
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+
     @NonNull
     @Singular("to")
     private Set<User> to;
@@ -34,10 +36,8 @@ public class Email {
     /**
      * To load corresponding template
      */
-    @NonNull
     private ResearchGroup researchGroup;
 
-    @NonNull
     private EmailType emailType;
 
     @Builder.Default
@@ -62,12 +62,16 @@ public class Email {
      */
     private String customBody;
 
+    /**
+     * If the email settings should be checked, set to true.
+     */
+    @Builder.Default
+    private boolean sendAlways = false;
+
     @Builder.Default
     private Language language = Language.ENGLISH;
 
     private Set<UUID> documentIds;
-
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
     /**
      * Validates the email addresses
@@ -85,6 +89,7 @@ public class Email {
 
     /**
      * Concatenates all recipients as a String
+     *
      * @return recipients of the email
      */
     public String getRecipients() {
