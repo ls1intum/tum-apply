@@ -9,9 +9,8 @@
  */
 
 
-export interface SortObject {
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface VerifyCodeRequest { 
+    email: string;
+    code: string;
 }
 
