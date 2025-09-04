@@ -7,7 +7,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, fromEventPattern, map } from 'rxjs';
-import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -50,7 +50,6 @@ export class HeaderComponent {
   languages = LANGUAGES.map(lang => lang.toUpperCase());
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
-  ref: DynamicDialogRef | undefined;
   router = inject(Router);
 
   routeAuthorities = toSignal(
@@ -81,7 +80,6 @@ export class HeaderComponent {
     );
   });
 
-  private dialogService = inject(DialogService);
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
 
