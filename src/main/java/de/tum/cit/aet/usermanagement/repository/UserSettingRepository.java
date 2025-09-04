@@ -33,7 +33,6 @@ public interface UserSettingRepository extends TumApplyJpaRepository<UserSetting
      * @param userId the UUID of the user
      * @param key    the setting key
      * @param value  the value of the setting
-     * @return true if an insert or update was performed, false if the existing value was unchanged
      */
     @Modifying
     @Transactional
@@ -44,5 +43,5 @@ public interface UserSettingRepository extends TumApplyJpaRepository<UserSetting
           setting_value = IF(new.setting_value <> user_settings.setting_value, new.setting_value, user_settings.setting_value),
           updated_at    = IF(new.setting_value <> user_settings.setting_value, CURRENT_TIMESTAMP, user_settings.updated_at)
         """, nativeQuery = true)
-    boolean upsert(@Param("userId") UUID userId, @Param("key") String key, @Param("value") String value);
+    void upsert(@Param("userId") UUID userId, @Param("key") String key, @Param("value") String value);
 }
