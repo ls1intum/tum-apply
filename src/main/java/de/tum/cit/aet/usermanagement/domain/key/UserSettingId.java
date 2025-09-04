@@ -33,8 +33,12 @@ public class UserSettingId implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserSettingId that)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserSettingId that)) {
+            return false;
+        }
         return Objects.equals(userId, that.userId) && Objects.equals(settingKey, that.settingKey);
     }
 

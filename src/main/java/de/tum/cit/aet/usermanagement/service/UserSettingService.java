@@ -35,7 +35,6 @@ public class UserSettingService {
      * @param userId the UUID of the user
      * @param key    the setting key
      * @param value  the boolean value to set
-     * @return true if insert or update changed data, false if value was unchanged
      */
     public void setBool(UUID userId, String key, boolean value) {
         userSettingRepository.upsert(userId, key, Boolean.toString(value));
