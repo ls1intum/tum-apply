@@ -29,10 +29,8 @@
         <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
         @if (previewData()) {
           <jhi-tag class="job-state-badge" [text]="'jobState.draft' | translate" [color]="'info'" />
-        } @else {
-          @if (jobDetails()?.belongsToResearchGroup) {
-            <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
-          }
+        } @else if (jobDetails()?.belongsToResearchGroup) {
+          <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
         }
       </div>
       <div class="job-meta">
