@@ -174,7 +174,7 @@ export class JobDetailComponent {
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();
     if (previewDataValue) {
-      this.loadJobDetailsFromForm(previewDataValue);
+      void this.loadJobDetailsFromForm(previewDataValue);
     } else {
       void this.init();
     }
