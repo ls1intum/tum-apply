@@ -6,7 +6,6 @@ import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-faq-section',
-  standalone: true,
   imports: [AccordionModule, TranslateModule, TranslateDirective],
   templateUrl: './professor-faq-section.component.html',
   styleUrl: './professor-faq-section.component.scss',

@@ -8,7 +8,6 @@ import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-benefits-section',
-  standalone: true,
   imports: [CommonModule, TranslateModule, ButtonGroupComponent, TranslateDirective],
   templateUrl: './professor-benefits-section.component.html',
   styleUrl: './professor-benefits-section.component.scss',

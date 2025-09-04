@@ -8,7 +8,6 @@ import { ProfessorFaqSectionComponent } from './professor-faq-section/professor-
 
 @Component({
   selector: 'jhi-professor-landing-page',
-  standalone: true,
   imports: [
     ProfessorHeroSectionComponent,
     ProfessorBenefitsSectionComponent,
