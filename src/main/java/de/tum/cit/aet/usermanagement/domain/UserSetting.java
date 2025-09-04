@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.domain;
 import de.tum.cit.aet.usermanagement.domain.key.UserSettingId;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
@@ -16,6 +17,7 @@ import java.sql.Timestamp;
 @Setter
 @Entity
 @Table(name = "user_settings")
+@NoArgsConstructor
 public class UserSetting {
 
     /**
@@ -59,11 +61,5 @@ public class UserSetting {
         this.id.setSettingKey(settingKey);
         this.user = user;
         this.value = value;
-    }
-
-    /**
-     * Default no-args constructor required by JPA.
-     */
-    public UserSetting() {
     }
 }
