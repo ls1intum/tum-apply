@@ -15,6 +15,8 @@ public class EvaluationFilterDTO implements AbstractFilterDTO {
 
     private List<String> job;
 
+    private String search;
+
     @Override
     public Map<String, List<?>> getFilters() {
         Map<String, List<?>> filters = new HashMap<>();

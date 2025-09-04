@@ -1,0 +1,13 @@
+<div class="search-filter-sort-bar">
+  <p-iconfield iconPosition="left">
+    <p-inputicon>
+      <fa-icon class="icon" [icon]="['fas', 'search']" />
+    </p-inputicon>
+    <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
+  </p-iconfield>
+  <div
+    class="record-count"
+    jhiTranslate="entity.filters.recordsFound"
+    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+  ></div>
+</div>

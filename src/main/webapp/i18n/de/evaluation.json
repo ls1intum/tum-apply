@@ -2,7 +2,9 @@
   "evaluation": {
     "overviewHeader": "Bewerbungen - Übersicht",
     "reviewHeader": "Bewerbungen - Prüfen",
-
+    "searchFilterSortBar": {
+      "searchText": "Bewerbungen suchen..."
+    },
     "ratings": {
       "very_bad": "Mangelhaft",
       "bad": "Ausreichend",
@@ -34,10 +36,10 @@
       "IN_REVIEW": "In Bearbeitung",
 
       "tooltips": {
-        "SENT": "Die Bewerbung wurde eingereicht, aber noch nicht geöffnet",
+        "SENT": "Die Bewerbung wurde noch nicht geöffnet",
         "ACCEPTED": "Die Bewerbung wurde angenommen",
         "REJECTED": "Die Bewerbung wurde abgelehnt",
-        "IN_REVIEW": "Die Bewerbung wurde geöffnet und befindet sich noch in Bearbeitung"
+        "IN_REVIEW": "Die Bewerbung wurde geöffnet"
       }
     },
     "noApplicationsFound": "Keine Bewerbungen gefunden.",
