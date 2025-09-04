@@ -256,6 +256,21 @@ export class JobDetailComponent {
     this.jobDetails.set(this.mapToJobDetails(job, this.accountService.loadedUser()));
   }
 
+  get currentJobState(): string | undefined {
+    return this.jobDetails()?.jobState;
+  }
+
+  get jobStateText(): string {
+    const jobState = this.currentJobState;
+    if (!jobState) return 'Unknown';
+    return this.stateTextMap()[jobState] || 'jobState.unknown';
+  }
+
+  get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
+    const jobState = this.currentJobState;
+    return jobState ? this.stateSeverityMap()[jobState] : 'info';
+  }
+
   private mapToJobDetails(
     data: JobDetailDTO | JobFormDTO,
     user?: ReturnType<AccountService['loadedUser']>,

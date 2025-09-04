@@ -31,19 +31,7 @@
           <jhi-tag class="job-state-badge" [text]="'jobState.draft' | translate" [color]="'info'" />
         } @else {
           @if (jobDetails()?.belongsToResearchGroup) {
-            @if (jobDetails()?.jobState) {
-              <jhi-tag
-                class="job-state-badge"
-                [text]="
-                  stateTextMap()[jobDetails()?.jobState!]
-                    ? (stateTextMap()[jobDetails()?.jobState!] | translate)
-                    : ('jobState.unknown' | translate)
-                "
-                [color]="stateSeverityMap()[jobDetails()?.jobState!] || 'info'"
-              />
-            } @else {
-              <jhi-tag class="job-state-badge" [text]="'Unknown'" [color]="'info'" />
-            }
+            <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
           }
         }
       </div>
