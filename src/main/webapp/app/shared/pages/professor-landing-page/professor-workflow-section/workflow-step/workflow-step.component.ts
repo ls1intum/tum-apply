@@ -11,7 +11,7 @@ import { ButtonComponent } from '../../../../components/atoms/button/button.comp
   styleUrl: './workflow-step.component.scss',
 })
 export class WorkflowStepComponent {
-  icon = input<string>('search');
+  icon = input<string>('file-pen');
   title = input<string>('');
   description = input<string>('');
 }
