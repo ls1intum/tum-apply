@@ -63,7 +63,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const country = getCountryFn()?.toUpperCase();
-    const value: string = control.value;
+    const value: string = control.value as string;
     if (!country || !value) return null;
     const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
     const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
