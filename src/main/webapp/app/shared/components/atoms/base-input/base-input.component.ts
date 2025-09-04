@@ -43,15 +43,15 @@ export abstract class BaseInputDirective<T> {
     this.formValidityVersion();
     this.langChange();
 
-    const ctrl = this.formControl();
-    const errors = ctrl.errors;
-    if (!errors) return null;
-
     const allowedKeys = ['required', 'minlength', 'maxlength', 'pattern', 'email'] as const;
 
-    const foundKey = allowedKeys.find(k => k in errors);
+    const ctrl = this.formControl();
+    const errors = ctrl.errors as Record<string, any> | null;
 
-    // If no known key is found, try fallback or show raw key
+    if (!errors) return null;
+
+    const foundKey = allowedKeys.find(k => Object.prototype.hasOwnProperty.call(errors, k));
+
     if (!foundKey) {
       const unknownKey = Object.keys(errors)[0];
       return this.translateErrorMessage() ? this.translate.instant(errors[unknownKey]) : `Invalid: ${unknownKey}`;
