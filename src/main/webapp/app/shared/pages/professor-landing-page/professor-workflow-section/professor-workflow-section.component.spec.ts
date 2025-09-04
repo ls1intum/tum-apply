@@ -8,7 +8,8 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { faBell, faInfo, faPaperPlane, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { ProfessorWorkflowSectionComponent } from './professor-workflow-section.component';
 
@@ -18,7 +19,7 @@ describe('ProfessorWorkflowSectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfessorWorkflowSectionComponent, TranslateModule.forRoot()],
+      imports: [ProfessorWorkflowSectionComponent, TranslateModule.forRoot(), FontAwesomeModule],
       providers: [
         TranslateStore,
         TranslateLoader,
@@ -29,9 +30,14 @@ describe('ProfessorWorkflowSectionComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
-        provideAnimations(),
       ],
     }).compileComponents();
+
+    const library = TestBed.inject(FaIconLibrary);
+    library.addIcons(faBell);
+    library.addIcons(faSearch);
+    library.addIcons(faPaperPlane);
+    library.addIcons(faInfo);
 
     fixture = TestBed.createComponent(ProfessorWorkflowSectionComponent);
     component = fixture.componentInstance;
