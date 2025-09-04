@@ -16,7 +16,7 @@
       "headline": "Wie TUMApply für dich funktioniert",
       "steps": {
         "1": {
-          "title": "Stellenausschreibung erstellen",
+          "title": "Stelle erstellen",
           "description": "Definiere deine Forschungsstelle mit detaillierten Anforderungen und Qualifikationen"
         },
         "2": {
@@ -28,7 +28,7 @@
           "description": "Nutze unser Bewertungssystem, um Bewerber:innen systematisch zu beurteilen und zu vergleichen"
         },
         "4": {
-          "title": "Interview & Auswahl",
+          "title": "Interviews planen",
           "description": "Plane Interviews mit qualifizierten Kandidat:innen und wähle die beste Bewerber:in für deine Forschungsgruppe"
         }
       }

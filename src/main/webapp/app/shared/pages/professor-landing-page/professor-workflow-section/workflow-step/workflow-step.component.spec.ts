@@ -10,17 +10,16 @@ import {
 } from '@ngx-translate/core';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCalendarCheck, faFilePen, faFolderOpen, faStar } from '@fortawesome/free-solid-svg-icons';
-import { provideAnimations } from '@angular/platform-browser/animations';
 
-import { ProfessorLandingPageComponent } from './professor-landing-page.component';
+import { WorkflowStepComponent } from './workflow-step.component';
 
-describe('ProfessorLandingPageComponent', () => {
-  let component: ProfessorLandingPageComponent;
-  let fixture: ComponentFixture<ProfessorLandingPageComponent>;
+describe('WorkflowStepComponent', () => {
+  let component: WorkflowStepComponent;
+  let fixture: ComponentFixture<WorkflowStepComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfessorLandingPageComponent, TranslateModule.forRoot(), FontAwesomeModule],
+      imports: [WorkflowStepComponent, TranslateModule.forRoot(), FontAwesomeModule],
       providers: [
         TranslateStore,
         TranslateLoader,
@@ -31,7 +30,6 @@ describe('ProfessorLandingPageComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
-        provideAnimations(),
       ],
     }).compileComponents();
 
@@ -41,7 +39,7 @@ describe('ProfessorLandingPageComponent', () => {
     library.addIcons(faFolderOpen);
     library.addIcons(faStar);
 
-    fixture = TestBed.createComponent(ProfessorLandingPageComponent);
+    fixture = TestBed.createComponent(WorkflowStepComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

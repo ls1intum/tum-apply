@@ -1,6 +1,6 @@
 @use '../../../../../content/scss/breakpoints' as bp;
 
-.application-steps-section {
+.workflow-section {
   display: flex;
   padding: 4rem 0;
   flex-direction: column;
@@ -17,7 +17,7 @@
     font-weight: 700;
   }
 
-  .application-steps {
+  .workflow-steps {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,7 +31,7 @@
 }
 
 @media (max-width: bp.$lg) {
-  .application-steps-section {
+  .workflow-section {
     padding: 3rem 2rem;
     gap: 2.5rem;
 
@@ -39,7 +39,7 @@
       font-size: 2rem;
     }
 
-    .application-steps {
+    .workflow-steps {
       .steps {
         padding: 0 1.5rem;
         gap: 2rem;
@@ -50,7 +50,7 @@
 }
 
 @media (max-width: bp.$md) {
-  .application-steps-section {
+  .workflow-section {
     padding: 2rem 1rem;
     gap: 2rem;
 
@@ -58,7 +58,7 @@
       font-size: 1.75rem;
     }
 
-    .application-steps {
+    .workflow-steps {
       gap: 1.5rem;
 
       .steps {
