@@ -35,8 +35,19 @@ or [Professors – Account Creation](./professors/account-creation)
 <details>
 <summary>**How do I log in?**</summary>
 
-- Applicants: Use email + code, email + password, or Google/Apple. See [Applicants – Login](./applicants/login)
-- Professors: Use TUM ID and password via the official TUM Login. See [Professors – Login](./professors/login)
+**Applicants**: To log in, go to the **[TUMApply](https://tumapply.aet.cit.tum.de/)** page and click on the **Login**
+button in the top-right corner. You can then choose one of three options – email + verification code, Google or Apple.
+
+For more details, see [Applicants – Login](./applicants/login).
+
+---
+
+**Professors**: To log in, go to the **[TUMApply Professor](https://tumapply.aet.cit.tum.de/professor)** page and click
+on the **Login** button in the top-right corner. Use your TUM ID and TUM password to sign in via the TUM Login system.
+These are the same credentials you normally use for other TUM services (e.g., email, campus portal). No separate
+registration is required – your account is created automatically.
+
+For more details, see [Professors – Login](./professors/login).
 
 </details>
 ---
