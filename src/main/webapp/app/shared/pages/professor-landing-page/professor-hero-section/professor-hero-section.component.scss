@@ -1,4 +1,5 @@
 @use '../../../../../content/scss/breakpoints' as bp;
+
 .hero-container {
   position: relative;
   display: flex;
@@ -62,6 +63,7 @@
   background-image: url('/content/images/professor-landing-page/hero-section/professor-landing-page-hero-section-3.webp');
   background-position: 50% 60%;
 }
+
 @media (max-width: bp.$lg) {
   .hero-container {
     height: 26rem;

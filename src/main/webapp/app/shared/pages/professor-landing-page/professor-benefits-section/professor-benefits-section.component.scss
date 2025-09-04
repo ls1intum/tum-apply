@@ -1,4 +1,5 @@
 @use '../../../../../content/scss/breakpoints' as bp;
+
 .platform-benefits-section {
   display: flex;
   flex-direction: row;
@@ -32,6 +33,9 @@
   .text {
     color: var(--p-text-primary);
     text-align: justify;
+    text-justify: inter-word;
+    word-spacing: normal;
+    letter-spacing: normal;
   }
 }
 
