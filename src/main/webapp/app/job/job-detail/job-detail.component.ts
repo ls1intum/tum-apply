@@ -288,9 +288,44 @@ export class JobDetailComponent {
 
     const jobDetailDTO = data as JobDetailDTO;
 
+    let supervisingProfessor: string;
+    let researchGroup: string;
+    let createdAt: string;
+    let lastModifiedAt: string;
+
+    if (isForm) {
+      supervisingProfessor = user?.name ?? '';
+      researchGroup = user?.researchGroup?.name ?? '';
+      createdAt = now;
+      lastModifiedAt = now;
+    } else {
+      supervisingProfessor = jobDetailDTO.supervisingProfessorName;
+      researchGroup = jobDetailDTO.researchGroup.name ?? '';
+      createdAt = dayjs(jobDetailDTO.createdAt).format('DD.MM.YYYY');
+      lastModifiedAt = dayjs(jobDetailDTO.lastModifiedAt).format('DD.MM.YYYY');
+    }
+
+    const startDate = data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '';
+    const endDate = data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '';
+
+    const researchGroupDescription = this.getResearchGroupField(
+      researchGroupDetails?.description,
+      isForm,
+      jobDetailDTO.researchGroup.description,
+    );
+    const researchGroupEmail = this.getResearchGroupField(researchGroupDetails?.email, isForm, jobDetailDTO.researchGroup.email);
+    const researchGroupWebsite = this.getResearchGroupField(researchGroupDetails?.website, isForm, jobDetailDTO.researchGroup.website);
+    const researchGroupStreet = this.getResearchGroupField(researchGroupDetails?.street, isForm, jobDetailDTO.researchGroup.street);
+    const researchGroupPostalCode = this.getResearchGroupField(
+      researchGroupDetails?.postalCode,
+      isForm,
+      jobDetailDTO.researchGroup.postalCode,
+    );
+    const researchGroupCity = this.getResearchGroupField(researchGroupDetails?.city, isForm, jobDetailDTO.researchGroup.city);
+
     return {
-      supervisingProfessor: isForm ? (user?.name ?? '') : jobDetailDTO.supervisingProfessorName,
-      researchGroup: isForm ? (user?.researchGroup?.name ?? '') : (jobDetailDTO.researchGroup.name ?? ''),
+      supervisingProfessor,
+      researchGroup,
       title: data.title,
       fieldOfStudies: data.fieldOfStudies ?? '',
       researchArea: data.researchArea ?? '',
@@ -301,21 +336,32 @@ export class JobDetailComponent {
       description: data.description ?? '',
       tasks: data.tasks ?? '',
       requirements: data.requirements ?? '',
-      startDate: data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '',
-      endDate: data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '',
-      createdAt: isForm ? now : dayjs(jobDetailDTO.createdAt).format('DD.MM.YYYY'),
-      lastModifiedAt: isForm ? now : dayjs(jobDetailDTO.lastModifiedAt).format('DD.MM.YYYY'),
+      startDate,
+      endDate,
+      createdAt,
+      lastModifiedAt,
 
-      researchGroupDescription: researchGroupDetails?.description ?? (!isForm ? (jobDetailDTO.researchGroup.description ?? '') : ''),
-      researchGroupEmail: researchGroupDetails?.email ?? (!isForm ? (jobDetailDTO.researchGroup.email ?? '') : ''),
-      researchGroupWebsite: researchGroupDetails?.website ?? (!isForm ? (jobDetailDTO.researchGroup.website ?? '') : ''),
-      researchGroupStreet: researchGroupDetails?.street ?? (!isForm ? (jobDetailDTO.researchGroup.street ?? '') : ''),
-      researchGroupPostalCode: researchGroupDetails?.postalCode ?? (!isForm ? (jobDetailDTO.researchGroup.postalCode ?? '') : ''),
-      researchGroupCity: researchGroupDetails?.city ?? (!isForm ? (jobDetailDTO.researchGroup.city ?? '') : ''),
+      researchGroupDescription,
+      researchGroupEmail,
+      researchGroupWebsite,
+      researchGroupStreet,
+      researchGroupPostalCode,
+      researchGroupCity,
 
       jobState: isForm ? 'DRAFT' : jobDetailDTO.state,
       belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
     };
+  }
+
+  // helper method to get research group field values with proper fallbacks
+  private getResearchGroupField(providedValue: string | undefined, isForm: boolean, fallbackValue?: string): string {
+    if (providedValue) {
+      return providedValue;
+    }
+    if (isForm) {
+      return '';
+    }
+    return fallbackValue ?? '';
   }
 
   private async loadJobDetailsFromForm(form: JobFormDTO): Promise<void> {
