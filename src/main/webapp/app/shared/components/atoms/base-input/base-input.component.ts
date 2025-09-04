@@ -46,16 +46,20 @@ export abstract class BaseInputDirective<T> {
     const ctrl = this.formControl();
     const errors = ctrl.errors;
     if (!errors) return null;
-    const key = Object.keys(errors)[0];
-    const val = errors[key];
-    const defaults: Record<string, string> = {
-      required: this.translate.instant('global.input.error.required'),
-      minlength: this.translate.instant('global.input.error.minLength', { min: val?.requiredLength }),
-      maxlength: this.translate.instant('global.input.error.maxLength', { max: val?.requiredLength }),
-      pattern: this.translate.instant('global.input.error.pattern'),
-      email: this.translate.instant('global.input.error.email'),
-    };
-    return (defaults[key] ?? this.translateErrorMessage()) ? this.translate.instant(val) : `Invalid: ${key}`;
+
+    const allowedKeys = ['required', 'minlength', 'maxlength', 'pattern', 'email'] as const;
+
+    const foundKey = allowedKeys.find(k => k in errors);
+
+    // If no known key is found, try fallback or show raw key
+    if (!foundKey) {
+      const unknownKey = Object.keys(errors)[0];
+      return this.translateErrorMessage() ? this.translate.instant(errors[unknownKey]) : `Invalid: ${unknownKey}`;
+    }
+
+    const val = errors[foundKey];
+
+    return this.translate.instant(val);
   });
 
   constructor() {

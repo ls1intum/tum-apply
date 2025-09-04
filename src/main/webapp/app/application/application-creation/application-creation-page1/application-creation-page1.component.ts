@@ -66,7 +66,8 @@ function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorF
     const value = control.value;
     if (!country || !value) return null;
     const isPostalCodeValid = postalCodes.validate(country, value);
-    return isPostalCodeValid === true ? null : { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' };
+    const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' };
+    return isPostalCodeValid === true ? null : validationError;
   };
 }
 
