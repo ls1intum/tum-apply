@@ -214,7 +214,7 @@ export class ApplicationOverviewComponent {
       sortDir: this.sortDirection(),
     };
     if (this.searchQuery()) {
-      baseParams['search'] = this.searchQuery();
+      baseParams.search = this.searchQuery();
     }
     const filterParams: Params = {};
     this.filters().forEach(f => {
