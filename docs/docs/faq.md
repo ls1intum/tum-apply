@@ -16,7 +16,7 @@ a specific topic, please refer to the relevant section in the documentation or c
 No. You can search and view all open positions on TUMApply without creating an account.
 
 If you want to apply for a position or save your personal data, you need to create an account.
-See [Account Creation](../applicants/account-creation)
+See [Account Creation](./applicants/account-creation)
 
 </details>
 
@@ -26,8 +26,8 @@ See [Account Creation](../applicants/account-creation)
 <summary>**How do I create an account?**</summary>
 
 Applicants can register with Google, Apple, or email. Professors automatically get an account when they log in with
-their TUM ID. See [Applicants – Account Creation](../applicants/account-creation)
-or [Professors – Account Creation](../professors/account-creation)
+their TUM ID. See [Applicants – Account Creation](./applicants/account-creation)
+or [Professors – Account Creation](./professors/account-creation)
 
 </details>
 ---
@@ -35,8 +35,8 @@ or [Professors – Account Creation](../professors/account-creation)
 <details>
 <summary>**How do I log in?**</summary>
 
-- Applicants: Use email + code, email + password, or Google/Apple. See [Applicants – Login](../applicants/login)
-- Professors: Use TUM ID and password via the official TUM Login. See [Professors – Login](../professors/login)
+- Applicants: Use email + code, email + password, or Google/Apple. See [Applicants – Login](./applicants/login)
+- Professors: Use TUM ID and password via the official TUM Login. See [Professors – Login](./professors/login)
 
 </details>
 ---
@@ -45,7 +45,7 @@ or [Professors – Account Creation](../professors/account-creation)
 <summary>**I did not receive my email code. What can I do?**</summary>
 
 First, check your spam folder. If no code arrived, request a new one in the login dialog.
-See [Login](../applicants/login)
+See [Login](./applicants/login)
 
 </details>
 ---
@@ -54,7 +54,7 @@ See [Login](../applicants/login)
 <summary>**What are Research Groups?**</summary>
 
 Research Groups are usually equivalent to chairs and professorships at TUM. They are needed for professors to manage
-applications and postings. See [Research Groups and Rights](../professors/research-groups)
+applications and postings. See [Research Groups and Rights](./professors/research-groups)
 
 </details>
 ---
@@ -64,7 +64,7 @@ applications and postings. See [Research Groups and Rights](../professors/resear
 
 On first login, you only have applicant rights. Please send us an email with the name of your Research Group and its
 head. Our team will assign your rights and confirm by email.
-See [Research Groups and Rights](../professors/research-groups)
+See [Research Groups and Rights](./professors/research-groups)
 
 </details>
 ---
@@ -73,6 +73,6 @@ See [Research Groups and Rights](../professors/research-groups)
 <summary>**Can I apply without an account?**</summary>
 
 No. You can browse all open positions without an account, but as soon as you want to apply, you must create an account.
-See [Applicants – Account Creation](../applicants/account-creation)
+See [Applicants – Account Creation](./applicants/account-creation)
 
 </details>
