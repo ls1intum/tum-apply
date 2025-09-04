@@ -265,7 +265,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-freemarker'
 
   // Jsoup for sanitizing HTML
-  implementation 'org.jsoup:jsoup:1.21.1'
+  implementation 'org.jsoup:jsoup:1.21.2'
 
   // Spring Retry
   implementation 'org.springframework.retry:spring-retry:2.0.12'
