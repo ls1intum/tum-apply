@@ -12,7 +12,7 @@
       }
     },
     "basicInformationSection": {
-      "description": "Geben Sie die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende/r Professor/in.",
+      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende/r Professor/in.",
       "jobTitle": {
         "label": "Stellentitel",
         "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
@@ -20,81 +20,81 @@
       "researchArea": {
         "label": "Forschungsbereich",
         "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion",
-        "toolTipText": "Geben Sie das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
+        "toolTipText": "Gib das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
       },
       "fieldOfStudies": {
         "label": "Studienfach",
-        "placeholder": "Wählen Sie ein Studienfach..."
+        "placeholder": "Wähle ein Studienfach..."
       },
       "supervisingProfessor": {
         "label": "Betreuende/r Professor/in"
       },
       "location": {
         "label": "Standort",
-        "placeholder": "Wählen Sie einen Standort..."
+        "placeholder": "Wähle einen Standort..."
       },
       "startDate": {
         "label": "Startdatum der Stelle",
-        "placeholder": "Wählen Sie ein Startdatum...",
+        "placeholder": "Wähle ein Startdatum...",
         "toolTipText": "Voraussichtliches Startdatum dieser Stelle."
       },
       "applicationDeadline": {
         "label": "Bewerbungsfrist",
-        "placeholder": "Wählen Sie ein Fristdatum...",
+        "placeholder": "Wähle ein Fristdatum...",
         "toolTipText": "Nach diesem Datum sind Bewerbungen nicht mehr möglich."
       },
       "workload": {
         "label": "Arbeitsaufwand",
-        "placeholder": "Gebe einen Arbeitsaufwand an (in h/Woche)...",
-        "toolTipText": "Gebe den erwarteten Arbeitsaufwand für die Doktorandenstelle in Stunden pro Woche an (z.B. 20). Du kannst bis zu 40 h/Woche eingeben."
+        "placeholder": "Gib einen Arbeitsaufwand an (in h/Woche)...",
+        "toolTipText": "Gib den erwarteten Arbeitsaufwand für die Doktorandenstelle in Stunden pro Woche an (z.B. 20). Du kannst bis zu 40 h/Woche eingeben."
       },
       "contractDuration": {
         "label": "Vertragslaufzeit",
-        "placeholder": "Gebe eine Vertragslaufzeit an (in Jahren)...",
-        "toolTipText": "Gebe die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 5 Jahre eingeben."
+        "placeholder": "Gib eine Vertragslaufzeit an (in Jahren)...",
+        "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
       "fundingType": {
         "label": "Finanzierungsart",
-        "placeholder": "Wählen Sie eine Finanzierungsart..."
+        "placeholder": "Wähle eine Finanzierungsart..."
       }
     },
     "positionDetailsSection": {
-      "description": "Beschreiben Sie den Forschungsschwerpunkt, die Hauptaufgaben und die Erwartungen an die Bewerber*innen. Definieren Sie die Mindestanforderungen und gegebenenfalls wünschenswerte Qualifikationen.",
+      "description": "Beschreibe den Forschungsschwerpunkt, die Hauptaufgaben und die Erwartungen an die Bewerber. Definiere die Mindestanforderungen und gegebenenfalls wünschenswerte Qualifikationen.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
-        "placeholder": "Beschreiben Sie den Umfang und den Schwerpunkt der Position...",
-        "descriptionHelper": "Beschreiben Sie den Forschungskontext, die Ziele und den Gesamtumfang der Stelle. Halten Sie es kurz, aber informativ.",
-        "toolTipText": "Helfen Sie den Bewerbern, den Forschungsschwerpunkt und die Ziele der Position zu verstehen."
+        "placeholder": "Beschreibe den Umfang und den Schwerpunkt der Position...",
+        "descriptionHelper": "Beschreibe den Forschungskontext, die Ziele und den Gesamtumfang der Stelle. Halte es kurz, aber informativ.",
+        "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt und die Ziele der Position zu verstehen."
       },
       "tasks": {
         "label": "Aufgaben & Verantwortlichkeiten",
-        "placeholder": "Geben Sie die wichtigsten Aufgaben und Verantwortlichkeiten an...",
-        "descriptionHelper": "Listen Sie die wichtigsten Aufgaben oder Tätigkeiten auf, an denen die/der Kandidat*in beteiligt sein wird. Stichpunkte werden empfohlen.",
-        "toolTipText": "Verschaffen Sie den Bewerbern ein klares Bild von den Aufgaben und Tätigkeiten der Position."
+        "placeholder": "Gib die wichtigsten Aufgaben und Verantwortlichkeiten an...",
+        "descriptionHelper": "Liste die wichtigsten Aufgaben oder Tätigkeiten auf, an denen der Kandidat beteiligt sein wird. Stichpunkte werden empfohlen.",
+        "toolTipText": "Verschaffe den Bewerbern ein klares Bild von den Aufgaben und Tätigkeiten der Position."
       },
       "requirements": {
         "label": "Zulassungsvoraussetzungen",
-        "placeholder": "Listen Sie die Mindestanforderungen für Bewerber*innen auf...",
-        "descriptionHelper": "Geben Sie die Mindestanforderungen an (z. B. Abschluss, Noten, Sprachkenntnisse), die erfüllt sein müssen.",
-        "toolTipText": "Stellen Sie sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
+        "placeholder": "Liste die Mindestanforderungen für Bewerber auf...",
+        "descriptionHelper": "Gib die Mindestanforderungen an, die erfüllt sein müssen (z. B. Abschluss, Noten, Sprachkenntnisse).",
+        "toolTipText": "Stelle sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
       }
     },
     "additionalInformationSection": {
       "extras": {
         "title": "Zusätzliches",
-        "description": "Fügen Sie benutzerdefinierte Fragen hinzu, die den Bewerber*innen im Bewerbungsformular angezeigt werden."
+        "description": "Füge benutzerdefinierte Fragen hinzu, die den Bewerbern im Bewerbungsformular angezeigt werden."
       },
-      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen finden Sie unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>.",
+      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen findest du unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>.",
       "dataPrivacyConfirmationText": "Ich habe die Datenschutzerklärung gelesen und verstanden und willige in die Verarbeitung meiner personenbezogenen Daten gemäß dieser Erklärung ein.",
-      "dataPrivacyErrorText": "Bitte bestätigen Sie, dass Sie die Datenschutzerklärung gelesen und verstanden haben und in die Verarbeitung Ihrer personenbezogenen Daten einwilligen, um fortzufahren."
+      "dataPrivacyErrorText": "Bitte bestätige, dass du die Datenschutzerklärung gelesen und verstanden hast und in die Verarbeitung deiner personenbezogenen Daten einwilligst, um fortzufahren."
     },
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
-      "message": "Sind Sie sicher, dass Sie Ihre Doktorandenstelle veröffentlichen möchten? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+      "message": "Bist du sicher, dass du diese Doktorandenstelle veröffentlichen möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
     }
   },
   "jobOverviewPage": {
-    "title": "Finden Sie Ihre passende Stelle",
+    "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
     "sortingOptions": {
       "startDate": "Startdatum",
@@ -115,7 +115,7 @@
   },
   "myPositionsPage": {
     "header": {
-      "title": "Verwalten Sie Ihre Doktorandenstellen",
+      "title": "Verwalte deine Doktorandenstellen",
       "createButton": "Neue Stelle erstellen"
     },
     "tableColumn": {
@@ -135,9 +135,9 @@
     },
     "confirmDialog": {
       "closeHeader": "Schließung der Position bestätigen",
-      "closeMessage": "Sind Sie sicher, dass Sie diese Position schließen möchten? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
+      "closeMessage": "Bist du sicher, dass du diese Position schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
       "deleteHeader": "Löschvorgang bestätigen",
-      "deleteMessage": "Sind Sie sicher, dass Sie diesen Entwurf dauerhaft löschen möchten? Diese Aktion kann NICHT rückgängig gemacht werden!"
+      "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
     }
   },
   "jobDetailPage": {

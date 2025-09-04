@@ -9,7 +9,7 @@ on:
       - 'CONTRIBUTING.md'
       - 'LICENSE'
       - 'SECURITY.md'
-      - 'docs/**'
+      - '../../docs-github/**'
       - '.github/**'
       - '!.github/workflows/build.yml'
   push:
@@ -22,7 +22,7 @@ on:
       - 'CONTRIBUTING.md'
       - 'LICENSE'
       - 'SECURITY.md'
-      - 'docs/**'
+      - '../../docs-github/**'
       - '.github/**'
       - '!.github/workflows/build.yml'
   release:

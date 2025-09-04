@@ -1,7 +1,7 @@
 {
   "global": {
     "title": "TUMApply",
-    "browsehappy": "Sie benutzen einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisieren Sie Ihren Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+    "browsehappy": "Du benutzt einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisiere deinen Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
     "menu": {
       "home": "Startseite",
       "colorTheme": "Farbschema ändern",
@@ -33,26 +33,26 @@
     },
     "form": {
       "username.label": "Benutzername",
-      "username.placeholder": "Ihr Benutzername",
+      "username.placeholder": "Dein Benutzername",
       "currentpassword.label": "Aktuelles Passwort",
       "currentpassword.placeholder": "Aktuelles Passwort",
       "newpassword.label": "Neues Passwort",
       "newpassword.placeholder": "Neues Passwort",
       "confirmpassword.label": "Neues Passwort bestätigen",
-      "confirmpassword.placeholder": "Bestätigen Sie Ihr neues Passwort",
+      "confirmpassword.placeholder": "Bestätige dein neues Passwort",
       "email.label": "Email Adresse",
-      "email.placeholder": "Ihre Email Adresse"
+      "email.placeholder": "Deine Email Adresse"
     },
     "messages": {
       "info": {
         "authenticated": {
-          "prefix": "Wenn Sie sich ",
+          "prefix": "Wenn du dich ",
           "link": "anmelden",
-          "suffix": " möchten, versuchen Sie es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
+          "suffix": " möchtest, versuche es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
         },
         "register": {
-          "noaccount": "Sie haben noch keinen Zugang?",
-          "link": "Registrieren Sie sich"
+          "noaccount": "Du hast noch keinen Zugang?",
+          "link": "Registriere dich"
         }
       },
       "error": {
@@ -66,15 +66,15 @@
           "strength": "Passwortstärke:"
         },
         "confirmpassword": {
-          "required": "Sie müssen das Passwort bestätigen.",
+          "required": "Du musst das Passwort bestätigen.",
           "minlength": "Das bestätigte Passwort muss mindestens 4 Zeichen lang sein",
           "maxlength": "Das bestätigte Passwort darf nicht länger als 50 Zeichen sein"
         },
         "email": {
-          "required": "Ihre Email Adresse wird benötigt.",
-          "invalid": "Ihre Email Adresse ist ungültig.",
-          "minlength": "Ihre Email Adresse muss mindestens 5 Zeichen lang sein",
-          "maxlength": "Ihre Email Adresse darf nicht länger als 50 Zeichen sein"
+          "required": "Deine Email Adresse wird benötigt.",
+          "invalid": "Deine Email Adresse ist ungültig.",
+          "minlength": "Deine Email Adresse muss mindestens 5 Zeichen lang sein",
+          "maxlength": "Deine Email Adresse darf nicht länger als 50 Zeichen sein"
         }
       }
     },
@@ -168,17 +168,17 @@
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",
       "upload_instruction": {
-        "BACHELOR_TRANSCRIPT": "Bitte laden Sie Ihr Bachelor-Zeugnis hoch",
-        "MASTER_TRANSCRIPT": "Bitte laden Sie Ihr Master-Zeugnis hoch",
-        "REFERENCE": "Bitte laden Sie Ihre Empfehlungsschreiben hoch",
-        "CV": "Bitte laden Sie Ihren Lebenslauf hoch"
+        "BACHELOR_TRANSCRIPT": "Bitte lade dein Bachelor-Zeugnis hoch",
+        "MASTER_TRANSCRIPT": "Bitte lade dein Master-Zeugnis hoch",
+        "REFERENCE": "Bitte lade deine Empfehlungsschreiben hoch",
+        "CV": "Bitte lade deinen Lebenslauf hoch"
       },
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
       "add": "Hinzufügen",
       "clear": "Alles löschen",
       "upload": "Hochladen",
-      "instruction": "Hier klicken oder Dateien hinziehen ziehen, um sie hochzuladen.",
+      "instruction": "Hier klicken oder Dateien hinziehen, um sie hochzuladen.",
       "max_size": "Maximale Upload-Größe:",
       "upload_progress": "Upload-Fortschritt: ",
       "document_type": {
@@ -217,7 +217,7 @@
       },
       "confirmDialog": {
         "header": "Bewerbung abschicken",
-        "message": "Sind Sie sicher, dass Sie Ihre Bewerbung absenden möchten? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+        "message": "Bist du sicher, dass du deine Bewerbung absenden möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
       },
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
@@ -268,28 +268,28 @@
         "masterGrade": "Master-Abschlussnote"
       },
       "tooltip": {
-        "bachelorDegreeName": "Geben Sie den Studiengang Ihres Bachelors an.",
-        "bachelorDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Bachelor absolviert haben.",
-        "bachelorGradingScale": "Wählen Sie die Benotungsskala Ihres Bachelors.",
-        "bachelorGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an.",
-        "masterDegreeName": "Geben Sie den Studiengang Ihres Masters an.",
-        "masterDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Master absolviert haben.",
-        "masterGradingScale": "Wählen Sie die Benotungsskala Ihres Masters.",
-        "masterGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an."
+        "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
+        "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
+        "bachelorGradingScale": "Wähle die Benotungsskala deines Bachelors.",
+        "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
+        "masterDegreeName": "Gib den Studiengang deines Masters an.",
+        "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
+        "masterGradingScale": "Wähle die Benotungsskala deines Masters.",
+        "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an."
       }
     },
     "applicationPage3": {
       "label": {
         "desiredStartDate": "Gewünschter Starttermin",
-        "motivation": "Was motiviert Sie für diese Position?",
-        "skills": "Welche Fähigkeiten bringen Sie mit?",
-        "experiences": "Welche Forschungserfahrungen haben Sie bereits gesammelt?"
+        "motivation": "Was motiviert dich für diese Position?",
+        "skills": "Welche Fähigkeiten bringst du mit?",
+        "experiences": "Welche Forschungserfahrungen hast du bereits gesammelt?"
       },
       "tooltip": {
-        "desiredStartDate": "Wählen Sie das bevorzugte Startdatum für die Position.",
-        "motivation": "Erläutern Sie, wie diese Position zu Ihren beruflichen oder wissenschaftlichen Zielen passt.",
-        "skills": "Beschreiben Sie Ihre Forschungserfahrungen und wie diese zur Position passen.",
-        "experiences": "Heben Sie Ergebnisse oder Erkenntnisse hervor, die Ihre Forschungserfahrung geprägt haben."
+        "desiredStartDate": "Wähle das bevorzugte Startdatum für die Position.",
+        "motivation": "Erläutere, wie diese Position zu deinen beruflichen oder wissenschaftlichen Zielen passt.",
+        "skills": "Beschreibe deine Forschungserfahrungen und wie diese zur Position passen.",
+        "experiences": "Hebe Ergebnisse oder Erkenntnisse hervor, die deine Forschungserfahrung geprägt haben."
       },
       "floatlabel": {
         "motivation": "Berufliche oder persönliche Gründe angeben",
@@ -297,9 +297,9 @@
         "experiences": "Frühere Forschungsprojekte, Abschlussarbeiten oder Veröffentlichungen erläutern"
       },
       "sublabel": {
-        "motivation": "Halten Sie es kurz, aber informativ ...",
-        "skills": "Warum passen Sie gut zu diesem Programm oder Labor?",
-        "experiences": "Beschreiben Sie Ihre Rolle, verwendete Methoden, Ergebnisse, Themen, Projekte usw."
+        "motivation": "Halte es kurz, aber informativ ...",
+        "skills": "Warum passt du gut zu diesem Programm oder Labor?",
+        "experiences": "Beschreibe deine Rolle, verwendete Methoden, Ergebnisse, Themen, Projekte usw."
       },
       "section": {
         "uploads": "Dateiuploads"
@@ -309,7 +309,7 @@
       }
     },
     "applicationOverview": {
-      "header": "Ihre Bewerbungen",
+      "header": "Deine Bewerbungen",
       "state": {
         "draft": "Entwurf",
         "submitted": "Eingereicht",
@@ -332,9 +332,9 @@
       },
       "dialogs": {
         "withdrawHeader": "Zurückziehen bestätigen",
-        "withdrawMessage": "Sind Sie sicher, dass Sie diese Bewerbung zurückziehen möchten? Sobald sie zurückgezogen wurde, ist sie für den Professor/die Professorin nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
+        "withdrawMessage": "Bist du sicher, dass du diese Bewerbung zurückziehen möchtest? Sobald sie zurückgezogen wurde, ist sie für den Professor nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
         "deleteHeader": "Löschvorgang bestätigen",
-        "deleteMessage": "Sind Sie sicher, dass Sie diesen Entwurf dauerhaft löschen möchten? Diese Aktion kann NICHT rückgängig gemacht werden!"
+        "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
       }
     },
     "applicationDetail": {

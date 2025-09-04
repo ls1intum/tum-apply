@@ -8,21 +8,21 @@
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",
-          "description": "Erhalten Sie eine Bestätigung, wenn Sie eine Bewerbung einreichen oder zurückziehen."
+          "description": "Erhalte eine Bestätigung per E-Mail, wenn du eine Bewerbung einreichst oder zurückziehst."
         },
         "outcome": {
           "title": "Bewerbungsergebnis",
-          "description": "Werden Sie benachrichtigt, wenn Ihre Bewerbung angenommen oder abgelehnt wurde."
+          "description": "Du wirst per E-Mail benachrichtigt, wenn deine Bewerbung angenommen oder abgelehnt wurde."
         }
       },
       "professor": {
         "new": {
           "title": "Neue Bewerbungen",
-          "description": "Werden Sie benachrichtigt, wenn eine neue Bewerbung für Ihre Stelle eingeht."
+          "description": "Du wirst per E-Mail benachrichtigt, wenn eine neue Bewerbung für deine Stelle eingeht."
         },
         "accepted": {
           "title": "Bewerbung angenommen (BCC)",
-          "description": "Erhalten Sie eine Kopie, wenn eine Bewerbung für Ihre Stelle angenommen wird."
+          "description": "Erhalte eine Kopie per E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
     }
