@@ -3,12 +3,12 @@
     "title": "TUMApply - Professor Portal",
     "hero": {
       "headline": "Find Your Next Doctoral Candidates",
-      "subline": "Streamline your research group's hiring process with TUMApply's comprehensive platform.",
+      "subline": "Streamline your research group's hiring process with TUMApply.",
       "button": "Get Started"
     },
     "platformBenefits": {
       "headline": "Why Use TUMApply?",
-      "text": "TUMApply gives you powerful tools to streamline your entire hiring process, saving you time and improving the quality of your applicant selection. The platform supports you with everything from job posting creation to candidate evaluation, with integrated document management and interview scheduling. You can easily track applications and compare candidates systematically.",
+      "text": "With TUMApply, you manage your entire hiring process, save time and improve the quality of your applicant selection. The platform supports you with everything from job posting creation to candidate evaluation, with integrated document management and interview scheduling. You can easily track applications and compare candidates systematically.",
       "button1": "Create Job Posting",
       "button2": "Manage Jobs"
     },
@@ -34,14 +34,14 @@
       }
     },
     "informationSection": {
-      "headline": "Resources for Your Research Group",
+      "headline": "TUM Resources for Your Research Group",
       "tiles": {
-        "1": "TUM Excellence Initiative",
-        "2": "Graduate School Events",
-        "3": "Gender Equality in Science",
-        "4": "International Collaboration",
-        "5": "Funding Opportunities",
-        "6": "Diversity & Inclusion"
+        "1": "Research",
+        "2": "Development",
+        "3": "Networks",
+        "4": "Services",
+        "5": "Transfer",
+        "6": "Partnerships"
       }
     },
     "faq": {

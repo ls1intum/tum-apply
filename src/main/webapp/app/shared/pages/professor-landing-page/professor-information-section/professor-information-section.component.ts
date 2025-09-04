@@ -14,34 +14,34 @@ import { InformationCardComponent } from '../../landing-page/information-section
 export class ProfessorInformationSectionComponent {
   cards = [
     {
-      imageSrc: '/content/images/landing-page/information-section/excellence.webp',
+      imageSrc: '/content/images/professor-landing-page/information-section/research.webp',
       text: 'professorLandingPage.informationSection.tiles.1',
-      link: 'https://www.tum.de/en/about-tum/university-of-excellence',
+      link: 'https://www.tum.de/en/research',
     },
     {
       imageSrc: '/content/images/landing-page/information-section/events.webp',
       text: 'professorLandingPage.informationSection.tiles.2',
-      link: 'https://www.gs.tum.de/gs/veranstaltungen/',
+      link: 'https://www.tum.de/en/lifelong-learning/all-employees',
     },
     {
       imageSrc: '/content/images/landing-page/information-section/women.webp',
       text: 'professorLandingPage.informationSection.tiles.3',
-      link: 'https://www.community.tum.de/en/tum-community/women/',
+      link: 'https://web.tum.de/en/inw/home/',
     },
     {
       imageSrc: '/content/images/landing-page/information-section/internationality.webp',
       text: 'professorLandingPage.informationSection.tiles.4',
-      link: 'https://www.tum.de/en/studies/international-students',
+      link: 'https://www.tum.de/en/research/support-for-researchers',
     },
     {
       imageSrc: '/content/images/landing-page/information-section/funding.webp',
       text: 'professorLandingPage.informationSection.tiles.5',
-      link: 'https://www.gs.tum.de/en/gs/path-to-a-doctorate/funding/',
+      link: 'https://www.tum.de/en/innovation/patents-and-licenses',
     },
     {
       imageSrc: '/content/images/landing-page/information-section/diversity.webp',
       text: 'professorLandingPage.informationSection.tiles.6',
-      link: 'https://www.zv.tum.de/en/diversity/homepage/',
+      link: 'https://www.international.tum.de/en/global/partnerships-initiatives/',
     },
   ];
 }

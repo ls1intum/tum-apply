@@ -3,12 +3,12 @@
     "title": "TUMApply - Professor Portal",
     "hero": {
       "headline": "Finde deine nächsten Promovierenden",
-      "subline": "Optimiere den Einstellungsprozess deiner Forschungsgruppe mit TUMApply's umfassender Plattform.",
+      "subline": "Optimiere den Einstellungsprozess deiner Forschungsgruppe mit TUMApply.",
       "button": "Loslegen"
     },
     "platformBenefits": {
       "headline": "Warum TUMApply nutzen?",
-      "text": "TUMApply gibt dir leistungsstarke Tools, um deinen gesamten Einstellungsprozess zu optimieren, Zeit zu sparen und die Qualität deiner Bewerber:innen-Auswahl zu verbessern. Die Plattform unterstützt dich bei allem von der Erstellung von Stellenausschreibungen bis zur Kandidatenbewertung, mit integriertem Dokumentenmanagement und Interviewplanung. Du kannst Bewerbungen einfach verfolgen und Kandidat:innen systematisch vergleichen.",
+      "text": "Mit TUMApply verwaltest du deinen gesamten Einstellungsprozess, sparst Zeit und verbesserst die Qualität deiner Bewerber:innen-Auswahl. Die Plattform unterstützt dich bei allem von der Erstellung von Stellenausschreibungen bis zur Kandidatenbewertung, mit integriertem Dokumentenmanagement und Interviewplanung. Du kannst Bewerbungen einfach verfolgen und Kandidat:innen systematisch vergleichen.",
       "button1": "Stellenausschreibung erstellen",
       "button2": "Stellen verwalten"
     },
@@ -34,14 +34,14 @@
       }
     },
     "informationSection": {
-      "headline": "Ressourcen für deine Forschungsgruppe",
+      "headline": "TUM-Ressourcen für deine Forschungsgruppe",
       "tiles": {
-        "1": "TUM Exzellenzinitiative",
-        "2": "Graduate School Veranstaltungen",
-        "3": "Geschlechtergleichheit in der Wissenschaft",
-        "4": "Internationale Zusammenarbeit",
-        "5": "Förderungsmöglichkeiten",
-        "6": "Vielfalt & Inklusion"
+        "1": "Forschung",
+        "2": "Entwicklung",
+        "3": "Netzwerke",
+        "4": "Dienste",
+        "5": "Transfer",
+        "6": "Partnerschaften"
       }
     },
     "faq": {

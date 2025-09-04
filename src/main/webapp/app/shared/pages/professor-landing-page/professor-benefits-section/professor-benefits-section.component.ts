@@ -6,13 +6,13 @@ import ButtonGroupComponent, { ButtonGroupData } from '../../../components/molec
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
-  selector: 'jhi-professor-platform-benefits-section',
+  selector: 'jhi-professor-benefits-section',
   standalone: true,
   imports: [CommonModule, TranslateModule, ButtonGroupComponent, TranslateDirective],
-  templateUrl: './professor-platform-benefits-section.component.html',
-  styleUrl: './professor-platform-benefits-section.component.scss',
+  templateUrl: './professor-benefits-section.component.html',
+  styleUrl: './professor-benefits-section.component.scss',
 })
-export class ProfessorPlatformBenefitsSectionComponent {
+export class ProfessorBenefitsSectionComponent {
   private translate = inject(TranslateService);
 
   buttons(): ButtonGroupData {
