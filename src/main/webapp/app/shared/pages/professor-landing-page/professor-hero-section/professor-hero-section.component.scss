@@ -18,13 +18,8 @@
   width: 100%;
   height: 100%;
   background: var(--p-base-black);
-  opacity: 0.35;
-  z-index: 1;
-}
-
-.hero-background-landing-page-hero-section-2.hero-container::after,
-.hero-background-landing-page-hero-section-3.hero-container::after {
   opacity: 0.4;
+  z-index: 1;
 }
 
 .hero-content {
@@ -54,17 +49,17 @@
   }
 }
 
-.hero-background-landing-page-hero-section-1 {
-  background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-1.webp');
+.hero-background-professor-landing-page-hero-section-1 {
+  background-image: url('/content/images/professor-landing-page/hero-section/professor-landing-page-hero-section-1.webp');
 }
 
-.hero-background-landing-page-hero-section-2 {
-  background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-2.webp');
+.hero-background-professor-landing-page-hero-section-2 {
+  background-image: url('/content/images/professor-landing-page/hero-section/professor-landing-page-hero-section-2.webp');
   background-position: 50% 30%;
 }
 
-.hero-background-landing-page-hero-section-3 {
-  background-image: url('/content/images/landing-page/hero-section/landing-page-hero-section-3.webp');
+.hero-background-professor-landing-page-hero-section-3 {
+  background-image: url('/content/images/professor-landing-page/hero-section/professor-landing-page-hero-section-3.webp');
   background-position: 50% 60%;
 }
 @media (max-width: bp.$lg) {

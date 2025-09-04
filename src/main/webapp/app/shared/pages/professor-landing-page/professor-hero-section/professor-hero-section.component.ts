@@ -15,9 +15,9 @@ import TranslateDirective from '../../../language/translate.directive';
 })
 export class ProfessorHeroSectionComponent {
   imagesWithBackgroundClass = [
-    { image: 'landing-page-hero-section-1', backgroundClass: 'hero-background-landing-page-hero-section-1' },
-    { image: 'landing-page-hero-section-2', backgroundClass: 'hero-background-landing-page-hero-section-2' },
-    { image: 'landing-page-hero-section-3', backgroundClass: 'hero-background-landing-page-hero-section-3' },
+    { image: 'professor-landing-page-hero-section-1', backgroundClass: 'hero-background-professor-landing-page-hero-section-1' },
+    { image: 'professor-landing-page-hero-section-2', backgroundClass: 'hero-background-professor-landing-page-hero-section-2' },
+    { image: 'professor-landing-page-hero-section-3', backgroundClass: 'hero-background-professor-landing-page-hero-section-3' },
   ];
 
   private router = inject(Router);
