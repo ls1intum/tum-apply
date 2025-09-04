@@ -2,7 +2,9 @@
   "evaluation": {
     "overviewHeader": "Applications - Overview",
     "reviewHeader": "Applications - Review",
-
+    "searchFilterSortBar": {
+      "searchText": "Search Applications..."
+    },
     "ratings": {
       "very_bad": "Poor",
       "bad": "Fair",
