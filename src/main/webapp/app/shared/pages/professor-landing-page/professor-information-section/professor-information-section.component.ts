@@ -19,27 +19,27 @@ export class ProfessorInformationSectionComponent {
       link: 'https://www.tum.de/en/research',
     },
     {
-      imageSrc: '/content/images/landing-page/information-section/events.webp',
+      imageSrc: '/content/images/professor-landing-page/information-section/development.webp',
       text: 'professorLandingPage.informationSection.tiles.2',
       link: 'https://www.tum.de/en/lifelong-learning/all-employees',
     },
     {
-      imageSrc: '/content/images/landing-page/information-section/women.webp',
+      imageSrc: '/content/images/professor-landing-page/information-section/networks.webp',
       text: 'professorLandingPage.informationSection.tiles.3',
       link: 'https://web.tum.de/en/inw/home/',
     },
     {
-      imageSrc: '/content/images/landing-page/information-section/internationality.webp',
+      imageSrc: '/content/images/professor-landing-page/information-section/services.webp',
       text: 'professorLandingPage.informationSection.tiles.4',
       link: 'https://www.tum.de/en/research/support-for-researchers',
     },
     {
-      imageSrc: '/content/images/landing-page/information-section/funding.webp',
+      imageSrc: '/content/images/professor-landing-page/information-section/transfer.webp',
       text: 'professorLandingPage.informationSection.tiles.5',
       link: 'https://www.tum.de/en/innovation/patents-and-licenses',
     },
     {
-      imageSrc: '/content/images/landing-page/information-section/diversity.webp',
+      imageSrc: '/content/images/professor-landing-page/information-section/partnerships.webp',
       text: 'professorLandingPage.informationSection.tiles.6',
       link: 'https://www.international.tum.de/en/global/partnerships-initiatives/',
     },

@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../../components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../../language/translate.directive';
@@ -14,6 +15,7 @@ import TranslateDirective from '../../../language/translate.directive';
 })
 export class ProfessorBenefitsSectionComponent {
   private translate = inject(TranslateService);
+  private router = inject(Router);
 
   buttons(): ButtonGroupData {
     return {
@@ -24,15 +26,16 @@ export class ProfessorBenefitsSectionComponent {
           severity: 'secondary',
           variant: 'outlined',
           disabled: false,
-          isExternalLink: true,
-          onClick: () => window.open('/job/create', '_blank'),
+          isExternalLink: false,
+          onClick: () => void this.router.navigate(['/job-overview']),
         },
+        // TODO: replace link with platform overview when available
         {
           label: this.translate.instant('professorLandingPage.platformBenefits.button2'),
           severity: 'primary',
           disabled: false,
           isExternalLink: false,
-          onClick: () => window.open('/job-overview', '_blank'),
+          onClick: () => void this.router.navigate(['/job-overview']),
         },
       ],
     };
