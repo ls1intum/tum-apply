@@ -14,8 +14,8 @@ As an applicant, you can easily create your account and log in to TUMApply.
 - **Google**: You will be redirected to Google and follow their instructions.
 - **Apple**: You will be redirected to Apple and follow their instructions.
 - **Email**: Enter your email address and you will receive a verification code. Enter the received code in the
-  dialog to confirm your email. After verifying your email, you will be asked to provide your **first name** and *
-  *last name**. Finally, you can optionally set a password. If you do so, you can later log in using your email and
+  dialog to confirm your email. After verifying your email, you will be asked to provide your **first name** and **last
+  name**. Finally, you can optionally set a password. If you do so, you can later log in using your email and
   password instead of receiving a code each time.
 
 Once registration is complete, you will be redirected to the landing page where you can see your personal information.
