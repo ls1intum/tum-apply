@@ -8,7 +8,7 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
-import { faBell, faInfo, faPaperPlane, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarCheck, faFilePen, faFolderOpen, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { ProfessorWorkflowSectionComponent } from './professor-workflow-section.component';
@@ -34,10 +34,10 @@ describe('ProfessorWorkflowSectionComponent', () => {
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faBell);
-    library.addIcons(faSearch);
-    library.addIcons(faPaperPlane);
-    library.addIcons(faInfo);
+    library.addIcons(faCalendarCheck);
+    library.addIcons(faFilePen);
+    library.addIcons(faFolderOpen);
+    library.addIcons(faStar);
 
     fixture = TestBed.createComponent(ProfessorWorkflowSectionComponent);
     component = fixture.componentInstance;
