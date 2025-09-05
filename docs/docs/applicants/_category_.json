@@ -1,0 +1,8 @@
+{
+  "label": "Applicants",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "All information for applicants: from account creation and login to submitting and managing your applications."
+  }
+}

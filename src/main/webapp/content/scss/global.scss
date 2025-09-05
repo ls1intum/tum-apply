@@ -315,6 +315,13 @@
   }
 }
 
+/* Styles for the tooltip icon in the Upload component */
+.upload-info-icon {
+  color: var(--p-primary-color);
+  margin-left: 0.5rem;
+  font-size: 1rem;
+}
+
 /* Styling for links */
 .link {
   color: var(--p-primary-color);
