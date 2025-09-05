@@ -14,34 +14,18 @@ export class AuthDialogService {
   private ref: DynamicDialogRef | null = null;
   private onCloseEffect?: EffectRef;
   private onDestroyEffect?: EffectRef;
-
-  constructor() {
-    // Close PrimeNG dialog whenever orchestrator reports it is closed
-    effect(() => {
-      const isOpen = this.orchestrator.isOpen();
-      if (!isOpen && this.ref) {
-        try {
-          this.ref.close();
-        } finally {
-          this.ref = null;
-        }
-      }
-    });
-  }
+  private onOrchestratorEffect?: EffectRef;
 
   open(opts?: AuthOpenOptions): void {
-    // Clean up any existing effects before opening new dialog
-    if (this.onCloseEffect) {
-      this.onCloseEffect.destroy();
-      this.onCloseEffect = undefined;
+    // Ensure any previous dialog/effects are cleaned up before opening a new one
+    if (this.ref) {
+      try {
+        this.ref.close();
+      } finally {
+        this.ref = null;
+      }
     }
-    if (this.onDestroyEffect) {
-      this.onDestroyEffect.destroy();
-      this.onDestroyEffect = undefined;
-    }
-
-    // Close any existing instance to avoid duplicates
-    this.ref?.close();
+    this.destroyEffects();
 
     // Initialize orchestrator state (this stores opts.onSuccess intern)
     this.orchestrator.open(opts);
@@ -55,6 +39,20 @@ export class AuthDialogService {
       closeOnEscape: true,
       showHeader: false,
     });
+
+    this.onOrchestratorEffect = effect(
+      () => {
+        const isOpen = this.orchestrator.isOpen();
+        if (!isOpen && this.ref) {
+          try {
+            this.ref.close();
+          } finally {
+            this.ref = null;
+          }
+        }
+      },
+      { injector: this.injector },
+    );
 
     const onCloseSig = toSignal(this.ref.onClose, { injector: this.injector, initialValue: null });
     const onDestroySig = toSignal(this.ref.onDestroy, { injector: this.injector, initialValue: null });
@@ -86,14 +84,23 @@ export class AuthDialogService {
     } finally {
       this.ref = null;
       this.orchestrator.close();
-      if (this.onCloseEffect) {
-        this.onCloseEffect.destroy();
-        this.onCloseEffect = undefined;
-      }
-      if (this.onDestroyEffect) {
-        this.onDestroyEffect.destroy();
-        this.onDestroyEffect = undefined;
-      }
+      this.destroyEffects();
+    }
+  }
+
+  private destroyEffects(): void {
+    // Clean up any existing effects
+    if (this.onCloseEffect) {
+      this.onCloseEffect.destroy();
+      this.onCloseEffect = undefined;
+    }
+    if (this.onDestroyEffect) {
+      this.onDestroyEffect.destroy();
+      this.onDestroyEffect = undefined;
+    }
+    if (this.onOrchestratorEffect) {
+      this.onOrchestratorEffect.destroy();
+      this.onOrchestratorEffect = undefined;
     }
   }
 }
