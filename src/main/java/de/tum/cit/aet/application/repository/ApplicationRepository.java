@@ -198,13 +198,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     )
     Set<ApplicationForApplicantDTO> findAllDtosByJobJobId(UUID jobId);
 
-    // Follows Spring Data JPA derived query naming convention — cannot rename method
-    @SuppressWarnings("checkstyle:MethodName")
-    boolean existsByApplicant_User_UserIdAndJob_JobId(UUID applicantId, UUID jobId);
-    
-    @SuppressWarnings("checkstyle:MethodName")
-    long countByApplicant_User_UserId(UUID applicantId);
-
     @Modifying
     @Query(
         value = """
@@ -325,6 +318,14 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
-
+    
+    // Follows Spring Data JPA derived query naming convention — cannot rename method
+    @SuppressWarnings("checkstyle:MethodName")
     Application getByApplicant_User_UserIdAndJob_JobId(UUID userId, UUID jobId);
+    
+    @SuppressWarnings("checkstyle:MethodName")
+    boolean existsByApplicant_User_UserIdAndJob_JobId(UUID applicantId, UUID jobId);
+    
+    @SuppressWarnings("checkstyle:MethodName")
+    long countByApplicant_User_UserId(UUID applicantId);
 }
