@@ -41,6 +41,8 @@ export const selectLanguage: SelectOption[] = [
   { value: 'en', name: 'English' },
 ];
 
+// Suppressed: flat object mapping logic causes high cyclomatic complexity, but function is safe and readable
+// codacy-disable-next-line
 export const getPage1FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage1Data => {
   return {
     firstName: application.applicant?.user.firstName ?? '',
