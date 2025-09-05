@@ -86,6 +86,22 @@
           [shouldTranslate]="true"
         />
       </div>
+      <p-divider layout="horizontal">
+        <span jhiTranslate="privacy.privacyConsent.title"></span>
+      </p-divider>
+
+      <div class="data-privacy-notice mb-2">
+        <p [innerHTML]="'privacy.privacyConsent.text' | translate"></p>
+      </div>
+
+      <label>
+        <input type="checkbox" formControlName="privacyAccepted" />
+        <span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
+      </label>
+
+      @if (!privacyAcceptedSignal() && submitAttempted()) {
+        <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
+      }
     }
   </form>
 }

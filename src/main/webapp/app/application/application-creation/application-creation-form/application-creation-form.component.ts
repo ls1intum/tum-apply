@@ -99,6 +99,8 @@ export default class ApplicationCreationFormComponent {
   panel1 = viewChild<TemplateRef<any>>('panel1');
   panel2 = viewChild<TemplateRef<any>>('panel2');
   panel3 = viewChild<TemplateRef<any>>('panel3');
+  sendAttempted = signal<boolean>(false);
+  privacyAccepted = signal<boolean>(false);
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
   title = signal<string>('');
@@ -308,6 +310,11 @@ export default class ApplicationCreationFormComponent {
   }
 
   async sendCreateApplicationData(state: 'SAVED' | 'SENT', rerouteToOtherPage: boolean): Promise<void> {
+    if (state === 'SENT' && !this.privacyAccepted()) {
+      this.sendAttempted.set(true);
+      this.toastService.showError({ detail: 'Please confirm the privacy statement.' });
+      return;
+    }
     const location = this.location;
     const applicationId = this.applicationId();
     if (applicationId === '') {
@@ -353,12 +360,12 @@ export default class ApplicationCreationFormComponent {
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
       if (rerouteToOtherPage) {
-        this.toastService.showSuccess({ detail: 'Successfully saved application' });
+        this.toastService.showSuccess({ detail: 'Thank you for submitting your application' });
         location.back();
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to submit your application: ' + httpError.statusText });
       console.error('Failed to save application:', err);
     }
   }
@@ -385,5 +392,12 @@ export default class ApplicationCreationFormComponent {
 
   onPage3ValidityChanged(isValid: boolean): void {
     this.page3Valid.set(isValid);
+  }
+
+  onPrivacyAcceptedChanged(accepted: boolean): void {
+    this.privacyAccepted.set(accepted);
+    if (accepted && this.sendAttempted()) {
+      this.sendAttempted.set(false);
+    }
   }
 }

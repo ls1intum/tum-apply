@@ -33,6 +33,12 @@
     "emailSec": {
       "headline": "E-mail security",
       "text": "If you e-mail us, your e-mail address will only be used for correspondence with you. Please note that data transmission on the Internet can have security gaps. Complete protection of data from access by third parties is not possible."
+    },
+    "privacyConsent": {
+      "title": "Privacy",
+      "text": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>.",
+      "confirmationText": "I have read and understood the Data Privacy Statement and consent to the processing of my personal data as described therein.",
+      "errorText": "Please confirm the Data Privacy Statement to proceed."
     }
   }
 }
