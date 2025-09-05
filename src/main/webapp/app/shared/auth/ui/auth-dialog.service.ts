@@ -53,8 +53,8 @@ export class AuthDialogService {
       { injector: this.injector },
     );
 
-    const onCloseSig = toSignal(this.ref.onClose, { injector: this.injector, initialValue: null });
-    const onDestroySig = toSignal(this.ref.onDestroy, { injector: this.injector, initialValue: null });
+    const onCloseSig = toSignal<unknown>(this.ref.onClose, { injector: this.injector, initialValue: null });
+    const onDestroySig = toSignal<unknown>(this.ref.onDestroy, { injector: this.injector, initialValue: null });
 
     this.onRefEventsEffect = effect(
       () => {
