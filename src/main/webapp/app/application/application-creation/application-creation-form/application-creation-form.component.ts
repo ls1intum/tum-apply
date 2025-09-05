@@ -82,7 +82,7 @@ export default class ApplicationCreationFormComponent {
     linkedIn: '',
     street: '',
     city: '',
-    country: '',
+    country: undefined,
     postcode: '',
   });
   page2 = signal<ApplicationCreationPage2Data>({
@@ -151,7 +151,7 @@ export default class ApplicationCreationFormComponent {
               })();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.cancel',
+            label: 'entity.applicationSteps.buttons.back',
             changePanel: false,
             shouldTranslate: true,
           },
@@ -344,7 +344,7 @@ export default class ApplicationCreationFormComponent {
         bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
         masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
         city: this.page1().city,
-        country: this.page1().country,
+        country: this.page1().country?.value as string,
         postalCode: this.page1().postcode,
         street: this.page1().street,
         bachelorUniversity: this.page2().bachelorDegreeUniversity,
@@ -363,6 +363,7 @@ export default class ApplicationCreationFormComponent {
         this.toastService.showSuccess({ detail: 'Thank you for submitting your application' });
         location.back();
       }
+
     } catch (err) {
       const httpError = err as HttpErrorResponse;
       this.toastService.showError({ summary: 'Error', detail: 'Failed to submit your application: ' + httpError.statusText });

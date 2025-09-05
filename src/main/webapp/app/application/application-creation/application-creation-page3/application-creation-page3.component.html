@@ -22,6 +22,12 @@
     }
     <p-divider layout="horizontal">
       <span jhiTranslate="entity.applicationPage3.section.uploads"></span>
+      <fa-icon
+        icon="circle-info"
+        class="upload-info-icon mr-4"
+        pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
+        tooltipPosition="top"
+      />
     </p-divider>
 
     @if (applicationIdForDocuments(); as applicationId) {
@@ -34,6 +40,7 @@
             [documentIds]="computedDocumentIdsCvSet()"
           />
         </div>
+
         <div class="w-1/2 ml-1">
           <jhi-upload-button
             uploadKey="entity.upload.upload_instruction.REFERENCE"
