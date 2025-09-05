@@ -309,20 +309,12 @@ export class JobDetailComponent {
     const startDate = data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '';
     const endDate = data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '';
 
-    const researchGroupDescription = this.getResearchGroupField(
-      researchGroupDetails?.description,
-      isForm,
-      jobDetailDTO.researchGroup.description,
-    );
-    const researchGroupEmail = this.getResearchGroupField(researchGroupDetails?.email, isForm, jobDetailDTO.researchGroup.email);
-    const researchGroupWebsite = this.getResearchGroupField(researchGroupDetails?.website, isForm, jobDetailDTO.researchGroup.website);
-    const researchGroupStreet = this.getResearchGroupField(researchGroupDetails?.street, isForm, jobDetailDTO.researchGroup.street);
-    const researchGroupPostalCode = this.getResearchGroupField(
-      researchGroupDetails?.postalCode,
-      isForm,
-      jobDetailDTO.researchGroup.postalCode,
-    );
-    const researchGroupCity = this.getResearchGroupField(researchGroupDetails?.city, isForm, jobDetailDTO.researchGroup.city);
+    const researchGroupDescription = researchGroupDetails?.description ?? (!isForm ? (jobDetailDTO.researchGroup.description ?? '') : '');
+    const researchGroupEmail = researchGroupDetails?.email ?? (!isForm ? (jobDetailDTO.researchGroup.email ?? '') : '');
+    const researchGroupWebsite = researchGroupDetails?.website ?? (!isForm ? (jobDetailDTO.researchGroup.website ?? '') : '');
+    const researchGroupStreet = researchGroupDetails?.street ?? (!isForm ? (jobDetailDTO.researchGroup.street ?? '') : '');
+    const researchGroupPostalCode = researchGroupDetails?.postalCode ?? (!isForm ? (jobDetailDTO.researchGroup.postalCode ?? '') : '');
+    const researchGroupCity = researchGroupDetails?.city ?? (!isForm ? (jobDetailDTO.researchGroup.city ?? '') : '');
 
     return {
       supervisingProfessor,
@@ -352,17 +344,6 @@ export class JobDetailComponent {
       jobState: isForm ? 'DRAFT' : jobDetailDTO.state,
       belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
     };
-  }
-
-  // helper method to get research group field values with proper fallbacks
-  private getResearchGroupField(providedValue: string | undefined, isForm: boolean, fallbackValue?: string): string {
-    if (providedValue) {
-      return providedValue;
-    }
-    if (isForm) {
-      return '';
-    }
-    return fallbackValue ?? '';
   }
 
   private async loadJobDetailsFromForm(form: JobFormDTO): Promise<void> {
