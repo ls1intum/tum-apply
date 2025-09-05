@@ -135,14 +135,14 @@ const routes: Routes = [
   {
     path: 'application/create/:job_id',
     redirectTo(route) {
-      const jobId = route.params['job_id'];
+      const jobId = route.params.job_id;
       return `/application/form?job=${jobId}`;
     },
   },
   {
     path: 'application/edit/:application_id',
     redirectTo(route) {
-      const applicationId = route.params['application_id'];
+      const applicationId = route.params.application_id;
       return `/application/form?application=${applicationId}`;
     },
   },

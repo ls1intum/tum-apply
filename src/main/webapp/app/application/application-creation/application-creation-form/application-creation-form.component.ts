@@ -266,35 +266,21 @@ export default class ApplicationCreationFormComponent {
   async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
 
-    // Get query parameters
     const jobId = this.route.snapshot.queryParamMap.get('job');
     const applicationId = this.route.snapshot.queryParamMap.get('application');
 
     if (this.applicantId() === '') {
       this.initPageForLocalStorageCase(jobId);
     } else {
-      // logic for authenticated users
-      let application: ApplicationForApplicantDTO;
-
       try {
+        let application: ApplicationForApplicantDTO;
+
         if (applicationId) {
-          const fetchedApplication = await this.initPageLoadExistingApplication(applicationId);
-
-          if (fetchedApplication === undefined) {
-            return;
-          }
-          application = fetchedApplication;
+          application = await this.initPageLoadExistingApplication(applicationId);
         } else if (jobId) {
-          // Create mode - create new application
-          const createdApplication = await this.initPageCreateApplication(jobId);
-
-          if (createdApplication === undefined) {
-            return;
-          }
-          application = createdApplication;
+          application = await this.initPageCreateApplication(jobId);
         } else {
-          this.showInitErrorMessage('Error', 'Either job ID or application ID must be provided in the URL.');
-          return;
+          throw new Error('Either job ID or application ID must be provided in the URL.');
         }
 
         // Set job information
@@ -304,8 +290,6 @@ export default class ApplicationCreationFormComponent {
         }
 
         this.applicationState.set(application.applicationState);
-
-        // For authenticated users, don't use localStorage
         this.useLocalStorage.set(false);
 
         // Load data from application
@@ -314,9 +298,9 @@ export default class ApplicationCreationFormComponent {
         this.page3.set(getPage3FromApplication(application));
 
         this.updateDocumentInformation();
-      } catch (error) {
+      } catch (error: unknown) {
         const httpError = error as HttpErrorResponse;
-        this.showInitErrorMessage('Error', 'Failed to load application: ' + httpError.statusText);
+        this.showInitErrorMessage('Error', httpError.message || 'Failed to load application.');
       }
     }
   }
@@ -333,50 +317,42 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO | undefined> {
+  async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO> {
     const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
 
-    // Check if application state allows editing
     if (application.applicationState !== 'SAVED') {
       this.toastService.showError({
         summary: 'Error',
         detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
       });
       await this.router.navigate(['/application/detail', applicationId]);
-      return;
+      throw new Error('Application is not editable.');
     }
 
     this.applicationId.set(applicationId);
     return application;
   }
 
-  async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO | undefined> {
-    let application;
-    try {
-      application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
-      if (application.applicationState !== 'SAVED') {
-        this.toastService.showError({
-          summary: 'Error',
-          detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
-        });
-        await this.router.navigate(['/application/detail', application.applicationId]);
-        return;
-      }
-      this.applicationId.set(application.applicationId ?? '');
+  async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO> {
+    const application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
 
-      // Update URL to include the new applicationId
-      await this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { job: jobId, application: application.applicationId },
-        queryParamsHandling: 'merge',
-      });
-    } catch {
+    if (application.applicationState !== 'SAVED') {
       this.toastService.showError({
         summary: 'Error',
-        detail: 'Failed to create application. Please try again.',
+        detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
       });
-      return;
+      await this.router.navigate(['/application/detail', application.applicationId]);
+      throw new Error('Application is not editable.');
     }
+
+    this.applicationId.set(application.applicationId ?? '');
+
+    await this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { job: jobId, application: application.applicationId },
+      queryParamsHandling: 'merge',
+    });
+
     return application;
   }
 
