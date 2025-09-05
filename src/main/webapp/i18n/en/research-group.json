@@ -1,7 +1,7 @@
 {
   "researchGroup": {
     "header": "My Email Templates",
-    "memberHeader": "Your Members",
+    "memberHeader": "My Members",
 
     "emailTemplates": {
       "newTemplate": "New Template",
