@@ -23,10 +23,10 @@ export class OnboardingOrchestratorService {
   /** Prevents opening multiple dialogs concurrently. */
   private opened = false;
 
-  hookToAuth(userSignal: Signal<unknown>): void {
+  hookToAuth(loggedIn: Signal<boolean>): void {
     effect(() => {
-      const user = userSignal();
-      if (user == null || this.opened) {
+      const isLoggedIn = loggedIn();
+      if (!isLoggedIn || this.opened) {
         return;
       }
 
