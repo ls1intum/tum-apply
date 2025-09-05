@@ -11,11 +11,10 @@ import org.springframework.data.domain.Sort;
 
 public interface ApplicationEvaluationRepositoryCustom {
     List<Application> findApplications(
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Pageable pageable,
-        Map<String, List<?>> dynamicFilters
-    );
+            UUID researchGroupId,
+            Collection<ApplicationState> states,
+            Pageable pageable,
+            Map<String, List<?>> dynamicFilters, String searchQuery);
 
     long findIndexOfApplication(
         UUID applicationId,
@@ -25,5 +24,6 @@ public interface ApplicationEvaluationRepositoryCustom {
         Map<String, List<?>> dynamicFilters
     );
 
-    long countApplications(UUID researchGroupId, Collection<ApplicationState> states, Map<String, List<?>> dynamicFilters);
+    long countApplications(UUID researchGroupId, Collection<ApplicationState> states,
+            Map<String, List<?>> dynamicFilters, String searchQuery);
 }
