@@ -22,8 +22,8 @@ export default class ApplicationDetailForApplicantComponent {
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
 
   // actual application data fetched from the backend
-  actualDetailData = signal<ApplicationDetailDTO | undefined>(undefined);
-  actualDocumentData = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  actualDetailData = signal<ApplicationDetailDTO | null>(null);
+  actualDocumentData = signal<ApplicationDocumentIdsDTO | null>(null);
 
   applicationId = signal<string>('');
 

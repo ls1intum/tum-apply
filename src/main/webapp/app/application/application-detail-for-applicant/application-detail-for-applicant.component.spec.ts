@@ -105,7 +105,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   });
 
   it('should display "Application not found" when no application is available', () => {
-    component.actualDetailData.set(undefined);
+    component.actualDetailData.set(null);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
