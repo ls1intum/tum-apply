@@ -12,8 +12,7 @@ export class AuthDialogService {
   private readonly dialogService = inject(DialogService);
   private readonly orchestrator = inject(AuthOrchestratorService);
   private ref: DynamicDialogRef | null = null;
-  private onCloseEffect?: EffectRef;
-  private onDestroyEffect?: EffectRef;
+  private onRefEventsEffect?: EffectRef;
   private onOrchestratorEffect?: EffectRef;
 
   open(opts?: AuthOpenOptions): void {
@@ -57,21 +56,17 @@ export class AuthDialogService {
     const onCloseSig = toSignal(this.ref.onClose, { injector: this.injector, initialValue: null });
     const onDestroySig = toSignal(this.ref.onDestroy, { injector: this.injector, initialValue: null });
 
-    this.onCloseEffect = effect(
+    this.onRefEventsEffect = effect(
       () => {
-        if (onCloseSig() !== null) {
-          this.ref = null;
-          this.orchestrator.close();
-        }
-      },
-      { injector: this.injector },
-    );
-
-    this.onDestroyEffect = effect(
-      () => {
-        if (onDestroySig() !== null) {
-          this.onCloseEffect?.destroy();
-          this.onCloseEffect = undefined;
+        const closed = onCloseSig();
+        const destroyed = onDestroySig();
+        if ((closed !== null || destroyed !== null) && this.ref) {
+          try {
+            this.ref.close();
+          } finally {
+            this.ref = null;
+            this.orchestrator.close();
+          }
         }
       },
       { injector: this.injector },
@@ -89,14 +84,9 @@ export class AuthDialogService {
   }
 
   private destroyEffects(): void {
-    // Clean up any existing effects
-    if (this.onCloseEffect) {
-      this.onCloseEffect.destroy();
-      this.onCloseEffect = undefined;
-    }
-    if (this.onDestroyEffect) {
-      this.onDestroyEffect.destroy();
-      this.onDestroyEffect = undefined;
+    if (this.onRefEventsEffect) {
+      this.onRefEventsEffect.destroy();
+      this.onRefEventsEffect = undefined;
     }
     if (this.onOrchestratorEffect) {
       this.onOrchestratorEffect.destroy();
