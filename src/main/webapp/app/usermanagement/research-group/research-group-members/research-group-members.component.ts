@@ -1,14 +1,17 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ResearchGroupResourceService } from '../../../generated/api/researchGroupResource.service';
 import { UserShortDTO } from '../../../generated/model/userShortDTO';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
+import { AccountService } from '../../../core/auth/account.service';
 
 @Component({
   selector: 'jhi-research-group-members',
-  imports: [TranslateDirective],
+  imports: [TranslateDirective, FontAwesomeModule, TranslateModule],
   templateUrl: './research-group-members.component.html',
   styleUrl: './research-group-members.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +23,7 @@ export class ResearchGroupMembersComponent {
 
   private readonly researchGroupService = inject(ResearchGroupResourceService);
   private readonly toastService = inject(ToastService);
+  private readonly accountService = inject(AccountService);
 
   constructor() {
     void this.loadMembers();
@@ -48,6 +52,10 @@ export class ResearchGroupMembersComponent {
 
     // Capitalize first letter and make it singular
     return roles[0].charAt(0).toUpperCase() + roles[0].slice(1).toLowerCase();
+  }
+
+  protected isCurrentUser(member: UserShortDTO): boolean {
+    return member.userId === this.accountService.userId;
   }
 
   protected editMember(member: UserShortDTO): void {

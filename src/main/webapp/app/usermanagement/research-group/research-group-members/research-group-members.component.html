@@ -31,7 +31,12 @@
           <tbody>
             @for (member of members(); track member.userId) {
               <tr>
-                <td>{{ member.firstName }} {{ member.lastName }}</td>
+                <td>
+                  {{ member.firstName }} {{ member.lastName }}
+                  @if (isCurrentUser(member)) {
+                    <fa-icon icon="circle-user" class="current-user-icon" title="{{ 'researchGroup.members.me' | translate }}" />
+                  }
+                </td>
                 <td>{{ member.email }}</td>
                 <td>{{ formatRoles(member.roles) }}</td>
                 <td>

@@ -65,6 +65,7 @@
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
       "edit": "Bearbeiten",
+      "me": "Ich",
 
       "tableColumns": {
         "name": "Name",

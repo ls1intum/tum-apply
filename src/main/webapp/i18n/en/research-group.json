@@ -64,6 +64,7 @@
       "retry": "Retry",
       "noMembers": "No members found in this research group.",
       "edit": "Edit",
+      "me": "Me",
 
       "tableColumns": {
         "name": "Name",
