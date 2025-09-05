@@ -1,4 +1,4 @@
-import { EffectRef, Injectable, effect, inject } from '@angular/core';
+import { EffectRef, Injectable, Injector, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
@@ -8,6 +8,7 @@ import { AuthOpenOptions } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthDialogService {
+  private readonly injector = inject(Injector);
   private readonly dialogService = inject(DialogService);
   private readonly orchestrator = inject(AuthOrchestratorService);
   private ref: DynamicDialogRef | null = null;
@@ -55,22 +56,28 @@ export class AuthDialogService {
       showHeader: false,
     });
 
-    const onCloseSig = toSignal(this.ref.onClose, { initialValue: null });
-    const onDestroySig = toSignal(this.ref.onDestroy, { initialValue: null });
+    const onCloseSig = toSignal(this.ref.onClose, { injector: this.injector, initialValue: null });
+    const onDestroySig = toSignal(this.ref.onDestroy, { injector: this.injector, initialValue: null });
 
-    this.onCloseEffect = effect(() => {
-      if (onCloseSig() !== null) {
-        this.ref = null;
-        this.orchestrator.close();
-      }
-    });
+    this.onCloseEffect = effect(
+      () => {
+        if (onCloseSig() !== null) {
+          this.ref = null;
+          this.orchestrator.close();
+        }
+      },
+      { injector: this.injector },
+    );
 
-    this.onDestroyEffect = effect(() => {
-      if (onDestroySig() !== null) {
-        this.onCloseEffect?.destroy();
-        this.onCloseEffect = undefined;
-      }
-    });
+    this.onDestroyEffect = effect(
+      () => {
+        if (onDestroySig() !== null) {
+          this.onCloseEffect?.destroy();
+          this.onCloseEffect = undefined;
+        }
+      },
+      { injector: this.injector },
+    );
   }
 
   close(): void {
