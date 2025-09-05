@@ -158,7 +158,7 @@ export default class ApplicationCreationFormComponent {
               })();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.cancel',
+            label: 'entity.applicationSteps.buttons.back',
             changePanel: false,
             shouldTranslate: true,
           },
