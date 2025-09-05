@@ -551,6 +551,19 @@ export default class ApplicationCreationFormComponent {
     this.localStorageService.clearApplicationDraft(this.applicationId(), this.jobId());
   }
 
+  /* TODO
+   * `queueMicroTask` is here to fix a timing issue with the ToastService.
+   * on opening the webpage directly to this component, the Toastservice is not ready to be rendered in the DOM, so it's functions are being executed, but no toast is visible
+   * tried different strategies of fixing the timing issue:
+   *  - `afterNextRender`
+   *  - different LifecylceStrategies (constructor, constructor with effect, ngOnInit)
+   *
+   * What also works is `setTimeout(() => {})`
+   * This might be a problem of the Toastservice instead of this component. A waiting queue
+   * and a flag that waits for initialisation before executing the primeng messageservice did not fix the issue,
+   * because while the component was initialised (createGlobalToast had been executed and toastComponent was not empty)
+   * it was likely not ready being rendered in the DOM
+   */
   private showInitErrorMessage(summary: string, detail: string): void {
     queueMicrotask(() => {
       this.toastService.showError({
