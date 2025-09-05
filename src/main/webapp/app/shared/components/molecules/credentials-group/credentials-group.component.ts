@@ -36,7 +36,7 @@ import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestr
 export class CredentialsGroupComponent {
   authOrchestrator = inject(AuthOrchestratorService);
 
-  submitHandler = input.required<({ email, password, otp }: { email: string; password?: string; otp?: string }) => Promise<boolean>>();
+  submitHandler = input.required<(credentials: { email: string; password?: string; otp?: string }) => Promise<boolean>>();
   showPassword = input<boolean>(true);
   submitLabel = input<string>('auth.login.emailLogin.login');
 
