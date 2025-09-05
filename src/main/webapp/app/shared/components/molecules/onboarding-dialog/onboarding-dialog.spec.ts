@@ -8,9 +8,8 @@ describe('OnboardingDialog', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OnboardingDialog]
-    })
-    .compileComponents();
+      imports: [OnboardingDialog],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(OnboardingDialog);
     component = fixture.componentInstance;
