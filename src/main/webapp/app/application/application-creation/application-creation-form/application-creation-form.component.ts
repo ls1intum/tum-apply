@@ -99,7 +99,7 @@ export default class ApplicationCreationFormComponent {
   });
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
 
-  previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
+  previewData = computed(() => this.mapPagesToDTO());
 
   panel1 = viewChild<TemplateRef<ApplicationCreationPage1Component>>('panel1');
   panel2 = viewChild<TemplateRef<ApplicationCreationPage2Component>>('panel2');
@@ -361,7 +361,7 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    const updateApplication = this.mapPagesToDTO(state) as UpdateApplicationDTO;
+    const updateApplication = this.mapPagesToDTO(state);
 
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
@@ -400,6 +400,8 @@ export default class ApplicationCreationFormComponent {
     this.page3Valid.set(isValid);
   }
 
+  private mapPagesToDTO(state: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO;
+  private mapPagesToDTO(): ApplicationDetailDTO;
   private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
     const p1 = this.page1();
     const p2 = this.page2();
