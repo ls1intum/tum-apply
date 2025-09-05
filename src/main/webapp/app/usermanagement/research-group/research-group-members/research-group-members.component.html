@@ -1,1 +1,47 @@
-<p>research-group-members works!</p>
+<div class="research-group-members">
+  <div class="header">
+    <h1 jhiTranslate="researchGroup.memberHeader">Members</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center p-4">
+      <span jhiTranslate="researchGroup.members.loading">Loading members...</span>
+    </div>
+  } @else if (error()) {
+    <div class="error-text text-center p-4">
+      <p>{{ error() }}</p>
+      <button (click)="loadMembers()" jhiTranslate="researchGroup.members.retry">Retry</button>
+    </div>
+  } @else {
+    @if (members().length === 0) {
+      <div class="text-center p-4">
+        <span jhiTranslate="researchGroup.members.noMembers">No members found in this research group.</span>
+      </div>
+    } @else {
+      <div class="members-table">
+        <table>
+          <thead>
+            <tr>
+              <th jhiTranslate="researchGroup.members.tableColumns.name">Name</th>
+              <th jhiTranslate="researchGroup.members.tableColumns.email">Email</th>
+              <th jhiTranslate="researchGroup.members.tableColumns.role">Role</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (member of members(); track member.userId) {
+              <tr>
+                <td>{{ member.firstName }} {{ member.lastName }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ formatRoles(member.roles) }}</td>
+                <td>
+                  <button class="edit-btn" (click)="editMember(member)" jhiTranslate="researchGroup.members.edit">Edit</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

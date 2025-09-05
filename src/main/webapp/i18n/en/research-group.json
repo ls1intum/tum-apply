@@ -1,6 +1,7 @@
 {
   "researchGroup": {
     "header": "My Email Templates",
+    "memberHeader": "Your Members",
 
     "emailTemplates": {
       "newTemplate": "New Template",
@@ -55,6 +56,19 @@
         "SUPERVISING_PROFESSOR_LAST_NAME": "Supervising Professor Last Name",
         "JOB_TITLE": "Job Title",
         "RESEARCH_GROUP_NAME": "Research Group Name"
+      }
+    },
+
+    "members": {
+      "loading": "Loading members...",
+      "retry": "Retry",
+      "noMembers": "No members found in this research group.",
+      "edit": "Edit",
+
+      "tableColumns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role"
       }
     }
   }

@@ -1,6 +1,7 @@
 {
   "researchGroup": {
     "header": "Meine E-Mail-Vorlagen",
+    "memberHeader": "Deine Mitglieder",
 
     "emailTemplates": {
       "newTemplate": "Neue Vorlage",
@@ -56,6 +57,19 @@
         "SUPERVISING_PROFESSOR_LAST_NAME": "Nachname Professor:in",
         "JOB_TITLE": "Stellen Titel",
         "RESEARCH_GROUP_NAME": "Name Forschungsgruppe"
+      }
+    },
+
+    "members": {
+      "loading": "Mitglieder werden geladen...",
+      "retry": "Erneut versuchen",
+      "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
+      "edit": "Bearbeiten",
+
+      "tableColumns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle"
       }
     }
   }
