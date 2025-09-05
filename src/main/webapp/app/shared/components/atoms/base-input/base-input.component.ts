@@ -20,7 +20,6 @@ export abstract class BaseInputDirective<T> {
   tooltipText = input<string | undefined>(undefined);
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
-  translateErrorMessage = input<boolean | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
   isTouched = signal(false);
@@ -54,13 +53,10 @@ export abstract class BaseInputDirective<T> {
       maxlength: this.translate.instant('global.input.error.maxLength', { max: val?.requiredLength }),
       pattern: this.translate.instant('global.input.error.pattern'),
       email: this.translate.instant('global.input.error.email'),
+      invalidPostalCode: this.translate.instant('entity.applicationPage1.validation.postalCode'),
     };
-    if (defaults[key]) {
-      return defaults[key];
-    }
-    if (this.translateErrorMessage()) {
-      const unknownKey = Object.keys(errors)[0];
-      return this.translate.instant(errors[unknownKey]);
+    if (defaults.key) {
+      return defaults.key;
     }
     return `Invalid: ${key}`;
   });
