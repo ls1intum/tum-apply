@@ -84,7 +84,7 @@ export default class ApplicationCreationFormComponent {
     linkedIn: '',
     street: '',
     city: '',
-    country: '',
+    country: undefined,
     postcode: '',
   });
   page2 = signal<ApplicationCreationPage2Data>({
@@ -369,10 +369,10 @@ export default class ApplicationCreationFormComponent {
         this.toastService.showSuccess({ detail: 'Successfully saved application' });
         location.back();
       }
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
+    } catch (error) {
+      const httpError = error as HttpErrorResponse;
       this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
-      console.error('Failed to save application:', err);
+      console.error('Failed to save application:', error);
     }
   }
 
@@ -417,6 +417,7 @@ export default class ApplicationCreationFormComponent {
           website: p1.website,
           linkedinUrl: p1.linkedIn,
         },
+        country: p1.country?.value,
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
