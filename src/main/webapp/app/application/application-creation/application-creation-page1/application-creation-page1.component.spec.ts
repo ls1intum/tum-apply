@@ -31,7 +31,7 @@ const mockData: ApplicationCreationPage1Data = {
   linkedIn: 'https://www.linkedin.com/in/annaschmidt',
   street: 'Hauptstraße',
   city: 'Berlin',
-  country: 'Germany',
+  country: { name: 'GE', value: 'Germany' },
   postcode: '10115',
 };
 

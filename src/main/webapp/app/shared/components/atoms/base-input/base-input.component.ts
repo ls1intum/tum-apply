@@ -53,8 +53,12 @@ export abstract class BaseInputDirective<T> {
       maxlength: this.translate.instant('global.input.error.maxLength', { max: val?.requiredLength }),
       pattern: this.translate.instant('global.input.error.pattern'),
       email: this.translate.instant('global.input.error.email'),
+      invalidPostalCode: this.translate.instant('entity.applicationPage1.validation.postalCode'),
     };
-    return defaults[key] ?? `Invalid: ${key}`;
+    if (defaults.key) {
+      return defaults.key;
+    }
+    return `Invalid: ${key}`;
   });
 
   constructor() {
