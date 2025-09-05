@@ -6,6 +6,9 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
+import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
+import { TooltipModule } from 'primeng/tooltip';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
@@ -58,12 +61,17 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
     ReactiveFormsModule,
     StringInputComponent,
     TranslateModule,
+    NumberInputComponent,
+    TooltipModule,
+    FontAwesomeModule,
   ],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
   standalone: true,
 })
 export default class ApplicationCreationPage2Component {
+  BachelorGradingScaleEnumLocal = ApplicantDTO.BachelorGradingScaleEnum;
+  MasterGradingScaleEnumLocal = ApplicantDTO.MasterGradingScaleEnum;
   bachelorGradingScaleLocal = bachelorGradingScale;
   masterGradingScaleLocal = masterGradingScale;
 
@@ -76,10 +84,10 @@ export default class ApplicationCreationPage2Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
-  fb = inject(FormBuilder);
+  formbuilder = inject(FormBuilder);
   page2Form = computed(() => {
     const currentData = this.data();
-    return this.fb.group({
+    return this.formbuilder.group({
       bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
       bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
       bachelorGrade: [currentData.bachelorGrade, Validators.required],
@@ -113,6 +121,27 @@ export default class ApplicationCreationPage2Component {
         valueSubscription.unsubscribe();
         statusSubscription.unsubscribe();
       });
+    });
+  }
+
+  getBachelorGradeAsNumber(): number | undefined {
+    const bachelorGrade = this.data().bachelorGrade;
+    return bachelorGrade === '' ? undefined : Number.parseFloat(bachelorGrade.trim());
+  }
+  setBachelorGradeAsNumber(gradeInputValue: number | undefined): void {
+    this.data.set({
+      ...this.data(),
+      bachelorGrade: gradeInputValue !== undefined ? gradeInputValue.toString() : '',
+    });
+  }
+  getMasterGradeAsNumber(): number | undefined {
+    const masterGrade = this.data().masterGrade;
+    return masterGrade === '' ? undefined : Number.parseFloat(masterGrade.trim());
+  }
+  setMasterGradeAsNumber(gradeInputValue: number | undefined): void {
+    this.data.set({
+      ...this.data(),
+      masterGrade: gradeInputValue !== undefined ? gradeInputValue.toString() : '',
     });
   }
 }
