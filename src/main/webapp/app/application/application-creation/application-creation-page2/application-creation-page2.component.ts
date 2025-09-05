@@ -6,6 +6,8 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
+import { TooltipModule } from 'primeng/tooltip';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
@@ -58,6 +60,8 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
     ReactiveFormsModule,
     StringInputComponent,
     TranslateModule,
+    TooltipModule,
+    FontAwesomeModule,
   ],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
