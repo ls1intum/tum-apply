@@ -46,7 +46,7 @@ export class CredentialsGroupComponent {
   form = new FormGroup({
     email: new FormControl<string>(this.authOrchestrator.email(), {
       nonNullable: true,
-      validators: [Validators.required, Validators.email],
+      validators: [Validators.required, Validators.email, Validators.pattern(/.+\..{2,}$/)],
     }),
     password: new FormControl<string>(''),
     otp: new FormControl<string>('', [Validators.pattern(/^[A-Z0-9]*$/), Validators.maxLength(this.otpLength)]),
