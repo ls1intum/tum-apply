@@ -70,7 +70,7 @@ public class ApplicationService {
             return ApplicationForApplicantDTO.getFromEntity(application);
         }
 
-        Application existingApplication = applicationRepository.getByApplicant_User_UserIdAndJob_JobId(userId, jobId);
+        Application existingApplication = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
         if (existingApplication != null) {
             return ApplicationForApplicantDTO.getFromEntity(existingApplication);
         }
@@ -282,7 +282,7 @@ public class ApplicationService {
      * @return the total number of applications
      */
     public long getNumberOfTotalApplications(UUID applicantId) {
-        return this.applicationRepository.countByApplicant_User_UserId(applicantId);
+        return this.applicationRepository.countByApplicantId(applicantId);
     }
 
     /**

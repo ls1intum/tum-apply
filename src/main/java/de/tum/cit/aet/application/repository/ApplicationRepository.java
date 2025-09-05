@@ -319,13 +319,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     )
     void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
     
-    // Follows Spring Data JPA derived query naming convention — cannot rename method
-    @SuppressWarnings("checkstyle:MethodName")
-    Application getByApplicant_User_UserIdAndJob_JobId(UUID userId, UUID jobId);
+    @Query("SELECT a FROM Application a WHERE a.applicant.user.userId = :userId AND a.job.jobId = :jobId")
+    Application getByApplicantByUserIdAndJobId(@Param("userId") UUID userId, @Param("jobId") UUID jobId);
     
-    @SuppressWarnings("checkstyle:MethodName")
-    boolean existsByApplicant_User_UserIdAndJob_JobId(UUID applicantId, UUID jobId);
-    
-    @SuppressWarnings("checkstyle:MethodName")
-    long countByApplicant_User_UserId(UUID applicantId);
+    @Query("SELECT COUNT(a) FROM Application a WHERE a.applicant.user.userId = :applicantId")
+    long countByApplicantId(@Param("applicantId") UUID applicantId);
 }
