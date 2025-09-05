@@ -2,7 +2,6 @@ import { Component, computed, effect, input, model, output, signal } from '@angu
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { FilterField } from '../../../filter';
 import TranslateDirective from '../../../language/translate.directive';
@@ -15,7 +14,7 @@ export interface SortOption {
 
 @Component({
   selector: 'jhi-filter-sort-bar',
-  imports: [ButtonComponent, SelectComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
+  imports: [SelectComponent, FontAwesomeModule, TranslateModule, TranslateDirective],
   templateUrl: './filter-sort-bar.component.html',
   styleUrl: './filter-sort-bar.component.scss',
 })

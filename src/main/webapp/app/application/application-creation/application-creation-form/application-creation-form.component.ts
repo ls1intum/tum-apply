@@ -82,7 +82,7 @@ export default class ApplicationCreationFormComponent {
     linkedIn: '',
     street: '',
     city: '',
-    country: '',
+    country: undefined,
     postcode: '',
   });
   page2 = signal<ApplicationCreationPage2Data>({
@@ -149,7 +149,7 @@ export default class ApplicationCreationFormComponent {
               })();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.cancel',
+            label: 'entity.applicationSteps.buttons.back',
             changePanel: false,
             shouldTranslate: true,
           },
@@ -337,7 +337,7 @@ export default class ApplicationCreationFormComponent {
         bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
         masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
         city: this.page1().city,
-        country: this.page1().country,
+        country: this.page1().country?.value as string,
         postalCode: this.page1().postcode,
         street: this.page1().street,
         bachelorUniversity: this.page2().bachelorDegreeUniversity,
@@ -356,10 +356,10 @@ export default class ApplicationCreationFormComponent {
         this.toastService.showSuccess({ detail: 'Successfully saved application' });
         location.back();
       }
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
+    } catch (error) {
+      const httpError = error as HttpErrorResponse;
       this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
-      console.error('Failed to save application:', err);
+      console.error('Failed to save application:', error);
     }
   }
 

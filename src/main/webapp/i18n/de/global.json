@@ -210,7 +210,7 @@
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
       "buttons": {
-        "cancel": "Abbrechen",
+        "back": "Zurück",
         "next": "Weiter",
         "prev": "Zurück",
         "send": "Senden"
@@ -247,6 +247,9 @@
       },
       "tooltip": {
         "language": "Wähle deine bevorzugte Kommunikationssprache."
+      },
+      "validation": {
+        "postalCode": "Bitte gib eine gültige Postleitzahl für das ausgewählte Land ein."
       }
     },
     "applicationPage2": {
@@ -272,7 +275,8 @@
         "masterDegreeName": "Gib den Studiengang deines Masters an.",
         "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
         "masterGradingScale": "Wähle die Benotungsskala deines Masters.",
-        "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an."
+        "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
+        "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
       }
     },
     "applicationPage3": {
