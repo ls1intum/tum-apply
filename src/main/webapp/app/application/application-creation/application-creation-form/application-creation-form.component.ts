@@ -400,7 +400,7 @@ export default class ApplicationCreationFormComponent {
     this.page3Valid.set(isValid);
   }
 
-  private mapPagesToDTO(state?: ApplicationState | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
+  private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
     const p1 = this.page1();
     const p2 = this.page2();
     const p3 = this.page3();
