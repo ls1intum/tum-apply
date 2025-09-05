@@ -417,7 +417,6 @@ export default class ApplicationCreationFormComponent {
           website: p1.website,
           linkedinUrl: p1.linkedIn,
         },
-        country: p1.country?.value,
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
@@ -441,7 +440,7 @@ export default class ApplicationCreationFormComponent {
         applicant: {
           ...base.applicant,
           city: p1.city,
-          country: p1.country,
+          country: p1.country?.value,
           postalCode: p1.postcode,
           street: p1.street,
           user: {
