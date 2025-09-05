@@ -149,19 +149,19 @@ export class JobDetailComponent {
     return null;
   });
 
-  readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: 'jobState.draft',
-    PUBLISHED: 'jobState.published',
-    CLOSED: 'jobState.closed',
-    APPLICANT_FOUND: 'jobState.applicantFound',
-  }));
+  readonly stateTextMap = new Map<string, string>([
+    ['DRAFT', 'jobState.draft'],
+    ['PUBLISHED', 'jobState.published'],
+    ['CLOSED', 'jobState.closed'],
+    ['APPLICANT_FOUND', 'jobState.applicantFound'],
+  ]);
 
-  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
-    DRAFT: 'info',
-    PUBLISHED: 'success',
-    CLOSED: 'danger',
-    APPLICANT_FOUND: 'warn',
-  });
+  readonly stateSeverityMap = new Map<string, 'success' | 'warn' | 'danger' | 'info'>([
+    ['DRAFT', 'info'],
+    ['PUBLISHED', 'success'],
+    ['CLOSED', 'danger'],
+    ['APPLICANT_FOUND', 'warn'],
+  ]);
 
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
@@ -262,14 +262,12 @@ export class JobDetailComponent {
 
   get jobStateText(): string {
     const jobState = this.currentJobState;
-    if (!jobState) return 'Unknown';
-    const map = this.stateTextMap();
-    return jobState in map ? map[jobState] : 'jobState.unknown';
+    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
   }
 
   get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
     const jobState = this.currentJobState;
-    return jobState ? this.stateSeverityMap()[jobState] : 'info';
+    return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
   }
 
   private mapToJobDetails(
