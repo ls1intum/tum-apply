@@ -22,13 +22,25 @@ export default class ApplicationDetailForApplicantComponent {
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
 
   // actual application data fetched from the backend
+  actualDetailDataExists = signal<boolean>(false);
   actualDetailData = signal<ApplicationDetailDTO | null>(null);
+  actualDocumentDataExists = signal<boolean>(false);
   actualDocumentData = signal<ApplicationDocumentIdsDTO | null>(null);
 
   applicationId = signal<string>('');
 
-  application = computed(() => this.previewDetailData() ?? this.actualDetailData());
-  documentIds = computed(() => this.previewDocumentData() ?? this.actualDocumentData());
+  application = computed(() => {
+    const preview = this.previewDetailData();
+    if (preview) return preview;
+
+    return this.actualDetailDataExists() ? this.actualDetailData() : undefined;
+  });
+  documentIds = computed(() => {
+    const preview = this.previewDocumentData();
+    if (preview) return preview;
+
+    return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
+  });
 
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
@@ -50,10 +62,12 @@ export default class ApplicationDetailForApplicantComponent {
     }
     const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
     this.actualDetailData.set(application);
+    this.actualDetailDataExists.set(true);
 
     firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.actualDocumentData.set(ids);
+        this.actualDocumentDataExists.set(true);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }
