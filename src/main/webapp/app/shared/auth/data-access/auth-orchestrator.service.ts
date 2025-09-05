@@ -1,6 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { interval } from 'rxjs';
+import { Injectable, Injector, computed, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
 
 import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginSubState, RegisterStep } from '../models/auth.model';
 import { environment } from '../../../environments/environment';
@@ -10,25 +10,20 @@ export class AuthOrchestratorService {
   // high level dialog state
   readonly isOpen = signal(false);
   readonly mode = signal<AuthFlowMode>('login');
-
   // substates per flow
   readonly loginSub = signal<LoginSubState>('email');
   readonly registerStep = signal<RegisterStep>('email');
   readonly applyStep = signal<ApplyStep>('inline');
-
   // form state (shared across flows)
   readonly email = signal<string>('');
   readonly firstName = signal<string>('');
   readonly lastName = signal<string>('');
-
   // server context
   readonly registrationToken = signal<string | null>(null);
-
   // UX state
   readonly isBusy = signal(false);
   readonly isSendingCode = signal(false);
   readonly error = signal<string | null>(null);
-
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     switch (this.registerStep()) {
@@ -42,10 +37,28 @@ export class AuthOrchestratorService {
         return 1;
     }
   });
-
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
-  readonly _tick = toSignal(interval(250), { initialValue: 0 });
+  readonly injector = inject(Injector);
+  readonly _tick = toSignal(
+    toObservable(this.cooldownUntil).pipe(
+      switchMap(until => {
+        if (until == null) {
+          // No cooldown: no ticking, but keep initial value
+          return EMPTY;
+        }
+        const remaining = Math.max(0, until - Date.now());
+        if (remaining === 0) {
+          // Already expired: emit once to trigger recompute
+          return timer(0);
+        }
+        // Tick every 250ms until cooldown end, then emit one final value
+        return interval(250).pipe(takeUntil(timer(remaining)), endWith(0));
+      }),
+      startWith(0),
+    ),
+    { initialValue: 0, injector: this.injector },
+  );
   readonly cooldownSeconds = computed(() => {
     // depend on _tick so this recomputes ~4x per second
     this._tick();
@@ -56,7 +69,6 @@ export class AuthOrchestratorService {
     const ms = until - Date.now();
     return ms <= 0 ? 0 : Math.ceil(ms / 1000);
   });
-
   private onSuccessCb: (() => void) | undefined;
 
   // open the dialog in a specific mode; can be re-used from header or from job-apply forms.
