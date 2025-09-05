@@ -12,6 +12,13 @@ import { JobCardDTO } from 'app/generated';
 import SharedModule from '../../../shared/shared.module';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
+export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
+
+export const ApplicationStatusExtended = {
+  ...JobCardDTO.ApplicationStateEnum,
+  NotYetApplied: 'NOT_YET_APPLIED' as ApplicationStatusExtended,
+};
+
 @Component({
   selector: 'jhi-job-card',
   templateUrl: './job-card.component.html',
@@ -30,9 +37,7 @@ export class JobCardComponent {
   relativeTime = input<string>('');
   applicationId = input<string | undefined>(undefined);
 
-  // Suppressed because 'undefined' represents a valid state: no application exists yet
-  // codacy-disable-next-line
-  applicationState = input<JobCardDTO.ApplicationStateEnum | undefined>(undefined);
+  applicationState = input<ApplicationStatusExtended>(ApplicationStatusExtended.NotYetApplied);
 
   // TO-DO: Replace value of headerColor with a color corresponding to the field of study
   headerColor = input<string>('var(--p-secondary-color)');

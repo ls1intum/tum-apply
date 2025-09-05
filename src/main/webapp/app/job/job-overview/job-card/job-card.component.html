@@ -77,7 +77,7 @@
         variant="outlined"
       />
       @switch (applicationState()) {
-        @case (undefined) {
+        @case ('NOT_YET_APPLIED') {
           <jhi-button
             (click)="onApply()"
             [shouldTranslate]="true"

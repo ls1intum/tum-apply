@@ -19,7 +19,7 @@
         [startDate]="job.startDate?.toString() || undefined"
         [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"
         [applicationId]="job.applicationId"
-        [applicationState]="job.applicationState"
+        [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
       />
     }
   </div>
