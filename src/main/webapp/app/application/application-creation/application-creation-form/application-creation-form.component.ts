@@ -69,7 +69,7 @@ export default class ApplicationCreationFormComponent {
     linkedIn: '',
     street: '',
     city: '',
-    country: '',
+    country: undefined,
     postcode: '',
   });
 
@@ -410,7 +410,7 @@ export default class ApplicationCreationFormComponent {
         bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
         masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
         city: this.page1().city,
-        country: this.page1().country,
+        country: this.page1().country?.value as string,
         postalCode: this.page1().postcode,
         street: this.page1().street,
         bachelorUniversity: this.page2().bachelorDegreeUniversity,

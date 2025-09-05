@@ -40,14 +40,25 @@
       />
     </div>
     <div class="w-1/2 pr-4">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}"
-        [required]="true"
-        [(model)]="data().bachelorGrade"
-        [control]="page2Form().controls.bachelorGrade"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
-      />
+      @switch (data().bachelorGradingScale.value) {
+        @case (BachelorGradingScaleEnumLocal.OneToFour) {
+          <ng-container
+            *ngTemplateOutlet="
+              gradeInput;
+              context: {
+                labelKey: 'entity.applicationPage2.label.bachelorGrade',
+                tooltipKey: 'entity.applicationPage2.tooltip.bachelorGrade',
+                control: page2Form().controls.bachelorGrade,
+                model: getBachelorGradeAsNumber(),
+                modelChange: setBachelorGradeAsNumber,
+              }
+            "
+          />
+        }
+        @default {
+          <span>Not Implemented</span>
+        }
+      }
     </div>
   </div>
 
@@ -111,14 +122,25 @@
       />
     </div>
     <div class="w-1/2 pr-4">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.masterGrade' | translate }}"
-        [required]="true"
-        [(model)]="data().masterGrade"
-        [control]="page2Form().controls.masterGrade"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
-      />
+      @switch (data().masterGradingScale.value) {
+        @case (MasterGradingScaleEnumLocal.OneToFour) {
+          <ng-container
+            *ngTemplateOutlet="
+              gradeInput;
+              context: {
+                labelKey: 'entity.applicationPage2.label.masterGrade',
+                tooltipKey: 'entity.applicationPage2.tooltip.masterGrade',
+                control: page2Form().controls.masterGrade,
+                model: getMasterGradeAsNumber(),
+                modelChange: setMasterGradeAsNumber,
+              }
+            "
+          />
+        }
+        @default {
+          <span>Not Implemented</span>
+        }
+      }
     </div>
   </div>
 
@@ -141,3 +163,26 @@
     </div>
   }
 </form>
+
+<ng-template
+  #gradeInput
+  let-labelKey="labelKey"
+  let-tooltipKey="tooltipKey"
+  let-control="control"
+  let-model="model"
+  let-modelChange="modelChange"
+>
+  <jhi-number-input
+    [required]="true"
+    [label]="labelKey | translate"
+    [tooltipText]="tooltipKey | translate"
+    [control]="control"
+    [model]="model"
+    (modelChange)="modelChange($event)"
+    icon="circle-info"
+    [min]="1"
+    [max]="4"
+    [minFractionDigits]="0"
+    [maxFractionDigits]="1"
+  />
+</ng-template>
