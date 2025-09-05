@@ -263,12 +263,22 @@ export class JobDetailComponent {
   get jobStateText(): string {
     const jobState = this.currentJobState;
     if (!jobState) return 'Unknown';
-    return this.stateTextMap()[jobState] || 'jobState.unknown';
+
+    const textMap = this.stateTextMap();
+    if (jobState in textMap) {
+      return textMap[jobState];
+    }
+    return 'jobState.unknown';
   }
 
   get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
     const jobState = this.currentJobState;
-    return jobState ? this.stateSeverityMap()[jobState] : 'info';
+    const severityMap = this.stateSeverityMap();
+
+    if (jobState && jobState in severityMap) {
+      return severityMap[jobState];
+    }
+    return 'info';
   }
 
   private mapToJobDetails(
