@@ -36,8 +36,8 @@ export class Registration {
 
   readonly registerProgress = computed(() => this.authOrchestrator.registerProgress() * 100);
 
-  sendOtp = async (credentials: { email: string }): Promise<boolean> => {
-    const normalized = credentials.email.trim();
+  sendOtp = async (email: string): Promise<boolean> => {
+    const normalized = email.trim();
     if (!normalized) {
       return false;
     }

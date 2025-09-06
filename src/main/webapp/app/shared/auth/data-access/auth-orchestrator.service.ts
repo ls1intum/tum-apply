@@ -18,8 +18,6 @@ export class AuthOrchestratorService {
   readonly email = signal<string>('');
   readonly firstName = signal<string>('');
   readonly lastName = signal<string>('');
-  // server context
-  readonly registrationToken = signal<string | null>(null);
   // UX state
   readonly isBusy = signal(false);
   readonly isSendingCode = signal(false);
@@ -147,6 +145,5 @@ export class AuthOrchestratorService {
     this.isSendingCode.set(false);
     this.error.set(null);
     this.cooldownUntil.set(null);
-    this.registrationToken.set(null);
   }
 }

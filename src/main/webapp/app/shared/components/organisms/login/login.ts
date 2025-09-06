@@ -23,11 +23,11 @@ export class Login {
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
-  onEmailLogin = async (credentials: { email: string; password?: string }): Promise<boolean> => {
-    if (credentials.password == null || credentials.password.trim() === '') {
+  onEmailLogin = async (email: string, password?: string): Promise<boolean> => {
+    if (password == null || password.trim() === '') {
       return false;
     }
-    const response = await this.authFacadeService.loginWithEmail(credentials.email, credentials.password, this.redirectUri());
+    const response = await this.authFacadeService.loginWithEmail(email, password, this.redirectUri());
     if (!response) {
       this.toastService.showError({
         summary: this.translate.instant('auth.login.messages.error.header'),

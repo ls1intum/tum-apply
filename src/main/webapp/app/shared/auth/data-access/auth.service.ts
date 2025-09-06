@@ -125,10 +125,9 @@ export class AuthService {
     if (this.authOrchestration.isBusy()) return;
     this.authOrchestration.isBusy.set(true);
     try {
-      const res = await this.authGateway.verifyOtp(this.authOrchestration.email(), otp);
+      await this.authGateway.verifyOtp(this.authOrchestration.email(), otp);
 
       if (registration) {
-        this.authOrchestration.registrationToken.set(res?.registrationToken ?? null);
         this.authOrchestration.registerStep.set('profile');
       } else {
         // TODO: set token
