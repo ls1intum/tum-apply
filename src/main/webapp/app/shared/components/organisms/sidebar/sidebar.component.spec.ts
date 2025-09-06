@@ -9,7 +9,6 @@ import {
   TranslateStore,
 } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 
@@ -34,7 +33,6 @@ describe('SidebarComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
-        provideAnimations(),
         {
           provide: AccountService,
           useValue: {
