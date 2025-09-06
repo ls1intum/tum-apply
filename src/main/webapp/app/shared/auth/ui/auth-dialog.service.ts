@@ -1,4 +1,5 @@
 import { EffectRef, Injectable, Injector, effect, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
@@ -11,7 +12,12 @@ export class AuthDialogService {
   private readonly injector = inject(Injector);
   private readonly dialogService = inject(DialogService);
   private readonly orchestrator = inject(AuthOrchestratorService);
-  private ref: DynamicDialogRef | null = null;
+  private ref:
+    | (Omit<DynamicDialogRef, 'onClose' | 'onDestroy'> & {
+        onClose: Observable<unknown>;
+        onDestroy: Observable<unknown>;
+      })
+    | null = null;
   private onRefEventsEffect?: EffectRef;
   private onOrchestratorEffect?: EffectRef;
 
