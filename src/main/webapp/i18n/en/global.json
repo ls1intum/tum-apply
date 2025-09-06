@@ -209,6 +209,7 @@
       "personalInformation": "Personal Information",
       "education": "Education",
       "applicationDetails": "Application Details",
+      "summary": "Summary",
       "buttons": {
         "back": "Back",
         "next": "Next",
@@ -308,6 +309,10 @@
       "placeholder": {
         "selectStartDate": "Select a Start Date..."
       }
+    },
+    "applicationPage4": {
+      "title": "Overview",
+      "message": "Please review your entries before submitting the application."
     },
     "applicationOverview": {
       "header": "Your Applications",
