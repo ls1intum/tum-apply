@@ -4,10 +4,26 @@
 
   .header {
     font-weight: 700;
-    padding-bottom: 4rem;
+    padding-bottom: 2rem;
     font-size: 2rem;
     color: var(--p-primary-color);
     align-items: center;
+  }
+
+  .search-and-actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    jhi-search-filter-sort-bar {
+      flex: 1;
+    }
+
+    jhi-button {
+      flex-shrink: 0;
+      margin-top: 0;
+    }
   }
 
   .members-table {
@@ -39,13 +55,12 @@
 
     .edit-btn {
       background: none;
-      border: none;
       color: var(--p-primary-color);
       font-size: 0.875rem;
       font-weight: 500;
       cursor: pointer;
       padding: 0.25rem 0.5rem;
-      border-radius: 0.25rem;
+      border-radius: 0.5rem;
 
       &:hover {
         background-color: var(--p-primary-50);

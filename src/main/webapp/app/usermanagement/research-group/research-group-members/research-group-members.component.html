@@ -3,6 +3,18 @@
     <h1 jhiTranslate="researchGroup.memberHeader">Members</h1>
   </div>
 
+  <!-- Search bar with Add member button -->
+  <div class="search-and-actions">
+    <jhi-search-filter-sort-bar
+      [searchText]="'Search Research Group Member'"
+      [singleEntity]="''"
+      [multipleEntities]="''"
+      [showRecordCount]="false"
+      (searchOutput)="onSearch($event)"
+    />
+    <jhi-button icon="plus" label="Add member" [shouldTranslate]="false" severity="primary" (click)="addMember()" />
+  </div>
+
   @if (loading()) {
     <div class="text-center p-4">
       <span jhiTranslate="researchGroup.members.loading">Loading members...</span>
@@ -13,9 +25,13 @@
       <button (click)="loadMembers()" jhiTranslate="researchGroup.members.retry">Retry</button>
     </div>
   } @else {
-    @if (members().length === 0) {
+    @if (filteredMembers().length === 0) {
       <div class="text-center p-4">
-        <span jhiTranslate="researchGroup.members.noMembers">No members found in this research group.</span>
+        @if (searchQuery()) {
+          <span>No members found matching "{{ searchQuery() }}".</span>
+        } @else {
+          <span jhiTranslate="researchGroup.members.noMembers">No members found in this research group.</span>
+        }
       </div>
     } @else {
       <div class="members-table">
@@ -29,7 +45,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (member of members(); track member.userId) {
+            @for (member of filteredMembers(); track member.userId) {
               <tr>
                 <td>
                   {{ member.firstName }} {{ member.lastName }}
