@@ -65,6 +65,9 @@
       "noMembers": "No members found in this research group.",
       "edit": "Edit",
       "me": "Me",
+      "addMember": "Add member",
+      "searchGroupMember": "Search for research group member",
+      "noMembersQuery": "No members found for {{ query }}.",
 
       "tableColumns": {
         "name": "Name",

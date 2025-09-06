@@ -66,6 +66,9 @@
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
       "edit": "Bearbeiten",
       "me": "Ich",
+      "addMember": "Mitglied hinzufügen",
+      "searchGroupMember": "Nach Mitglied in Forschungsgruppe suchen",
+      "noMembersQuery": "Keine Mitglieder gefunden für {{ query }}.",
 
       "tableColumns": {
         "name": "Name",

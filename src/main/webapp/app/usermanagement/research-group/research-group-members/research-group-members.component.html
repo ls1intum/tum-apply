@@ -6,13 +6,13 @@
   <!-- Search bar with Add member button -->
   <div class="search-and-actions">
     <jhi-search-filter-sort-bar
-      [searchText]="'Search Research Group Member'"
+      [searchText]="'researchGroup.members.searchGroupMember' | translate"
       [singleEntity]="''"
       [multipleEntities]="''"
       [showRecordCount]="false"
       (searchOutput)="onSearch($event)"
     />
-    <jhi-button icon="plus" label="Add member" [shouldTranslate]="false" severity="primary" (click)="addMember()" />
+    <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" />
   </div>
 
   @if (loading()) {
@@ -28,7 +28,9 @@
     @if (filteredMembers().length === 0) {
       <div class="text-center p-4">
         @if (searchQuery()) {
-          <span>No members found matching "{{ searchQuery() }}".</span>
+          <span jhiTranslate="researchGroup.members.noMembersQuery" [translateValues]="{ query: searchQuery() }"
+            >No members found for {{ searchQuery() }}.</span
+          >
         } @else {
           <span jhiTranslate="researchGroup.members.noMembers">No members found in this research group.</span>
         }
