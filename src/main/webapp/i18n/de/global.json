@@ -342,6 +342,9 @@
       "motivation": "Motivation",
       "skills": "Fähigkeiten",
       "researchExperience": "Forschungserfahrung"
+    },
+    "comment": {
+      "placeholder": "Kommentar schreiben..."
     }
   },
   "error": {
