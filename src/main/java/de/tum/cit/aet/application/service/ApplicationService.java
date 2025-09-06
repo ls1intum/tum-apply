@@ -58,9 +58,21 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
+
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
         UUID userId = currentUserService.getUserId();
-        if (applicationRepository.existsByApplicant_User_UserIdAndJob_JobId(jobId, userId)) {
-            throw new OperationNotAllowedException("Applicant has already applied for this position");
+
+        if(userId == null) {
+            Application application = new Application();
+            application.setJob(job);
+            application.setState(ApplicationState.SAVED);
+            return ApplicationForApplicantDTO.getFromEntity(application);
+        }
+
+        Application existingApplication = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
+        if (existingApplication != null) {
+            return ApplicationForApplicantDTO.getFromEntity(existingApplication);
         }
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
         Applicant applicant;
@@ -70,9 +82,7 @@ public class ApplicationService {
             applicant = applicantOptional.get();
         }
 
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-
-        Application application = new Application(
+        Application newApplication = new Application(
             null,
             null, // no applicationReview yet
             applicant,
@@ -85,7 +95,7 @@ public class ApplicationService {
             new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
             new HashSet<>()
         );
-        Application savedApplication = applicationRepository.save(application);
+        Application savedApplication = applicationRepository.save(newApplication);
         return ApplicationForApplicantDTO.getFromEntity(savedApplication);
     }
 
@@ -272,7 +282,7 @@ public class ApplicationService {
      * @return the total number of applications
      */
     public long getNumberOfTotalApplications(UUID applicantId) {
-        return this.applicationRepository.countByApplicant_User_UserId(applicantId);
+        return this.applicationRepository.countByApplicantId(applicantId);
     }
 
     /**

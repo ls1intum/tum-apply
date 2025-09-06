@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationForApplicantDTO(
-    @NotNull UUID applicationId,
+    UUID applicationId,
     ApplicantDTO applicant,
     @NotNull JobCardDTO job,
     @NotNull ApplicationState applicationState,
@@ -42,6 +42,8 @@ public record ApplicationForApplicantDTO(
                 job.getFieldOfStudies(),
                 job.getLocation(),
                 job.getSupervisingProfessor().getLastName(),
+                application.getApplicationId(),
+                application.getState(),
                 job.getWorkload(),
                 job.getStartDate(),
                 job.getEndDate()
