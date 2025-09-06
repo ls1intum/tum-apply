@@ -13,7 +13,7 @@ import { PasswordInputComponent } from '../../atoms/password-input/password-inpu
 import { environment } from '../../../../environments/environment';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 
-type SubmitHandler = (_email: string, _password?: string) => Promise<boolean>;
+type SubmitHandler = (email: string, password?: string) => Promise<boolean>;
 
 @Component({
   selector: 'jhi-credentials-group',
