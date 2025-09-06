@@ -8,7 +8,6 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBriefcase, faCheck, faCommentAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
@@ -45,7 +44,6 @@ describe('ApplicationCardComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
-        provideAnimations(),
       ],
     }).compileComponents();
 
