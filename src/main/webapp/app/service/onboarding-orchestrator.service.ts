@@ -53,9 +53,10 @@ export class OnboardingOrchestratorService {
         this.opened = true;
 
         this.dialog.open(OnboardingDialog, {
-          header: this.translate.instant('onboarding.dialog.title'),
+          header: this.translate.instant('onboarding.title'),
           modal: true,
-          closable: false,
+          closable: true,
+          width: '80vw',
         });
       },
       { injector: this.injector },
