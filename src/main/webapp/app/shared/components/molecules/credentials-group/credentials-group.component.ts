@@ -13,6 +13,8 @@ import { PasswordInputComponent } from '../../atoms/password-input/password-inpu
 import { environment } from '../../../../environments/environment';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 
+type SubmitHandler = (email: string, password?: string) => Promise<boolean>;
+
 @Component({
   selector: 'jhi-credentials-group',
   standalone: true,
@@ -36,7 +38,7 @@ import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestr
 export class CredentialsGroupComponent {
   authOrchestrator = inject(AuthOrchestratorService);
 
-  submitHandler = input.required<(email: string, password?: string) => Promise<boolean>>();
+  submitHandler = input.required<SubmitHandler>();
   showPassword = input<boolean>(true);
   submitLabel = input<string>('auth.login.emailLogin.login');
 
