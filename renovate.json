@@ -45,13 +45,13 @@
       "matchManagers": [
         "gradle"
       ],
-      "matchSourceUrlPrefixes": [
-        "https://github.com/keycloak/"
-      ],
       "groupName": "vendor: Keycloak",
       "labels": [
         "dependencies",
         "ready for review"
+      ],
+      "matchPackagePatterns": [
+        "^org\\.keycloak:"
       ]
     },
     {
