@@ -1,0 +1,32 @@
+.faq-container {
+  display: flex;
+  padding: 6.25rem 3.125rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  align-self: stretch;
+
+  .title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--p-text-primary);
+  }
+
+  .subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--p-text-primary);
+  }
+
+  .p-accordionheader {
+    background: var(--p-background-default);
+    color: var(--p-text-secondary);
+    border: 0.0625rem solid var(--p-text-secondary);
+    border-radius: 0;
+  }
+
+  .p-accordioncontent-content {
+    color: var(--p-text-secondary);
+  }
+}

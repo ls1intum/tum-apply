@@ -19,8 +19,9 @@ const routes: Routes = [
     path: 'professor',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
-    loadComponent: () => import('./shared/pages/landing-page/landing-page.component').then(m => m.LandingPageComponent),
-    title: 'landingPage.title',
+    loadComponent: () =>
+      import('./shared/pages/professor-landing-page/professor-landing-page.component').then(m => m.ProfessorLandingPageComponent),
+    title: 'professorLandingPage.title',
   },
   {
     path: '',

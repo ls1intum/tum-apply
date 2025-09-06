@@ -1,0 +1,70 @@
+{
+  "professorLandingPage": {
+    "title": "TUMApply - Professor Portal",
+    "hero": {
+      "headline": "Finde deine nächsten Promovierenden",
+      "subline": "Optimiere den Einstellungsprozess deiner Forschungsgruppe mit TUMApply.",
+      "button": "Loslegen"
+    },
+    "platformBenefits": {
+      "headline": "Warum TUMApply nutzen?",
+      "text": "TUMApply bietet Dokumentenmanagement, Kandidatenbewertung und Interviewplanung für deinen Einstellungsprozess. Die Plattform hilft dir dabei, Bewerbungen zu organisieren, Kandidatenunterlagen zu prüfen und den Auswahlprozess zu koordinieren. Verfolge Bewerbungen und vergleiche Kandidat:innen systematisch an einem zentralen Ort.",
+      "button1": "Stellenausschreibungen anzeigen",
+      "button2": "Mehr erfahren"
+    },
+    "workflow": {
+      "headline": "Wie TUMApply für dich funktioniert",
+      "steps": {
+        "1": {
+          "title": "Stelle erstellen",
+          "description": "Definiere deine Forschungsstelle mit detaillierten Anforderungen und Qualifikationen"
+        },
+        "2": {
+          "title": "Bewerbungen prüfen",
+          "description": "Durchsuche qualifizierte Bewerber:innen und ihre eingereichten Dokumente"
+        },
+        "3": {
+          "title": "Bewerber:innen bewerten",
+          "description": "Nutze unser Bewertungssystem, um Bewerber:innen systematisch zu beurteilen und zu vergleichen"
+        },
+        "4": {
+          "title": "Interviews planen",
+          "description": "Plane Interviews mit qualifizierten Kandidat:innen und wähle die beste Bewerber:in für deine Forschungsgruppe"
+        }
+      }
+    },
+    "informationSection": {
+      "headline": "TUM-Ressourcen für deine Forschungsgruppe",
+      "tiles": {
+        "1": "Forschung",
+        "2": "Entwicklung",
+        "3": "Netzwerke",
+        "4": "Dienste",
+        "5": "Transfer",
+        "6": "Partnerschaften"
+      }
+    },
+    "faq": {
+      "headline": "Häufig gestellte Fragen",
+      "subheadline": "Finde Antworten auf häufige Fragen zur Nutzung von TUMApply",
+      "questions": {
+        "login": {
+          "title": "Wie melde ich mich bei TUMApply an?",
+          "content": "Du meldest dich mit deinen TUM SSO-Anmeldedaten an. Klicke auf den Anmelde-Button und du wirst zum TUMApply-Authentifizierungssystem weitergeleitet."
+        },
+        "multipleApplications": {
+          "title": "Kann ich mehrere Stellenausschreibungen verwalten?",
+          "content": "Ja, du kannst mehrere Stellenausschreibungen gleichzeitig erstellen und verwalten. Jede Ausschreibung kann ihre eigenen Anforderungen, Bewerbungen und Bewertungskriterien haben."
+        },
+        "documents": {
+          "title": "Welche Dokumente kann ich von Bewerber:innen verlangen?",
+          "content": "Du kannst verschiedene Dokumente verlangen, einschließlich Lebenslauf, Zeugnisse (Bachelor und Master) und Referenzschreiben. Passe die Anforderungen für jede Stelle an."
+        },
+        "status": {
+          "title": "Wie verfolge ich den Bewerbungsstatus?",
+          "content": "Verwende die Bewerbungsübersichtsseite, um alle Bewerbungen zu verfolgen. Du kannst Einreichungsdaten, Dokumentstatus und Bewertungsfortschritt für jeden Kandidaten sehen."
+        }
+      }
+    }
+  }
+}
