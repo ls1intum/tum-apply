@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,7 +16,6 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
   imports: [TranslateDirective, FontAwesomeModule, TranslateModule, SearchFilterSortBar, ButtonComponent],
   templateUrl: './research-group-members.component.html',
   styleUrl: './research-group-members.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchGroupMembersComponent {
   members = signal<UserShortDTO[]>([]);
