@@ -2,7 +2,9 @@
   "evaluation": {
     "overviewHeader": "Applications - Overview",
     "reviewHeader": "Applications - Review",
-
+    "searchFilterSortBar": {
+      "searchText": "Search Applications..."
+    },
     "ratings": {
       "very_bad": "Poor",
       "bad": "Fair",
@@ -34,10 +36,10 @@
       "IN_REVIEW": "In Review",
 
       "tooltips": {
-        "SENT": "The application has been submitted but not yet opened",
+        "SENT": "The application has not been opened yet",
         "ACCEPTED": "The application has been accepted",
         "REJECTED": "The application has been rejected",
-        "IN_REVIEW": "The application has been opened and is still under review"
+        "IN_REVIEW": "The application has been opened"
       }
     },
     "noApplicationsFound": "No applications found.",
