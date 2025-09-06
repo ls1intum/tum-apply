@@ -3,31 +3,151 @@
   "extends": [
     "config:recommended"
   ],
-  "prConcurrentLimit": 2,
-  "prHourlyLimit": 1,
   "schedule": [
     "every weekend"
   ],
+  "minimumReleaseAge": "3 days",
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": [
-      "security fix"
+      "security fix",
+      "ready for review"
     ]
   },
   "packageRules": [
     {
-      "groupName": "Weekly Dependency Updates",
-      "groupSlug": "weekly-updates",
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch",
-        "digest",
-        "pin",
-        "lockFileMaintenance"
+      "matchManagers": [
+        "github-actions"
       ],
-      "schedule": [
-        "every weekend"
+      "groupName": "ci: GitHub Actions",
+      "automerge": true,
+      "automergeType": "pr",
+      "prPriority": 10,
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchSourceUrlPrefixes": [
+        "https://github.com/FasterXML/"
+      ],
+      "groupName": "vendor: Jackson FasterXML",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchSourceUrlPrefixes": [
+        "https://github.com/keycloak/"
+      ],
+      "groupName": "vendor: Keycloak",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ]
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "groupName": "vendor: PrimeTek / PrimeUIX",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ],
+      "matchPackageNames": [
+        "primeng",
+        "primeicons",
+        "tailwindcss-primeui"
+      ],
+      "matchPackagePrefixes": [
+        "@primeuix/"
+      ]
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "groupName": "vendor: ngx-translate",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ],
+      "matchPackagePrefixes": [
+        "@ngx-translate/"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: JHipster",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ],
+      "matchPackagePatterns": [
+        "^tech\\.jhipster:"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Caffeine",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ],
+      "matchPackagePatterns": [
+        "^com\\.github\\.ben-manes\\.caffeine:"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Lombok",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ],
+      "matchPackagePatterns": [
+        "^org\\.projectlombok:lombok$"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: ArchUnit",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ],
+      "matchPackagePatterns": [
+        "^com\\.tngtech\\.archunit:"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Testcontainers",
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ],
+      "matchPackagePatterns": [
+        "^org\\.testcontainers:"
       ]
     }
   ]
