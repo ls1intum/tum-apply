@@ -8,6 +8,12 @@
   "schedule": [
     "every weekend"
   ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": [
+      "security"
+    ]
+  },
   "packageRules": [
     {
       "groupName": "Weekly Dependency Updates",
@@ -22,26 +28,6 @@
       ],
       "schedule": [
         "every weekend"
-      ]
-    },
-    {
-      "groupName": "Security Updates",
-      "groupSlug": "security-updates",
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "matchConfidenceLevels": [
-        "high"
-      ],
-      "labels": [
-        "security"
-      ],
-      "prPriority": 10,
-      "separateMultipleMajor": false,
-      "schedule": [
-        "at any time"
       ]
     }
   ]
