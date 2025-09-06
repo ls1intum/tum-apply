@@ -16,7 +16,7 @@
     "cleanup": "rimraf build/",
     "compile:ts": "npm run prebuild && tsc --project tsconfig.app.json",
     "compile:ts:tests": "npm run prebuild && tsc --project tsconfig.spec.json",
-    "postinstall": "husky",
+    "postinstall": "husky && patch-package && cp -R node_modules/jest-preset-angular node_modules/@angular-builders/jest/node_modules",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prettier:check": "prettier --check \"{,src/**/,webpack/,.blueprint/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java,html,css,scss}\"",
@@ -51,6 +51,7 @@
     "jsdom": "26.1.0",
     "rimraf": "6.0.1",
     "semver": "7.7.2",
+    "tmp": "0.2.5",
     "tough-cookie": "6.0.0",
     "vite": "7.1.4",
     "webpack": "5.101.3",
@@ -130,6 +131,7 @@
     "jest-preset-angular": "14.6.1",
     "jest-sonar": "0.2.16",
     "lint-staged": "16.1.6",
+    "patch-package": "8.0.0",
     "postcss": "8.5.6",
     "postinstall-postinstall": "2.1.0",
     "prettier": "3.6.2",
@@ -140,8 +142,7 @@
     "tailwindcss-primeui": "0.6.1",
     "ts-jest": "29.4.1",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.42.0",
-    "zone.js": "^0.15.1"
+    "typescript-eslint": "8.42.0"
   },
   "engines": {
     "node": ">=24.2.0",
