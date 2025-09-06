@@ -1,101 +1,103 @@
 def dotenvFile = file("${rootDir}/.env.local")
 if (!dotenvFile.exists()) {
-    throw new GradleException(".env.local file is missing in project root")
+  throw new GradleException(".env.local file is missing in project root")
 }
 
 def envVars = [:]
 dotenvFile.eachLine { line ->
-    if (!line.startsWith("#") && line.contains("=")) {
-        def (key, value) = line.split("=", 2)
-        envVars[key.trim()] = value.trim()
-    }
+  if (!line.startsWith("#") && line.contains("=")) {
+    def (key, value) = line.split("=", 2)
+    envVars[key.trim()] = value.trim()
+  }
 }
 
-def requiredVars = ["KEYCLOAK_URL", "KEYCLOAK_REALM", "KEYCLOAK_CLIENT_ID", "KEYCLOAK_ENABLE_LOGGING"]
+def requiredVars = ["KEYCLOAK_URL", "KEYCLOAK_REALM", "KEYCLOAK_CLIENT_ID", "KEYCLOAK_ENABLE_LOGGING", "OTP_LENGTH", "OTP_RESEND_COOLDOWN_SECONDS"]
 requiredVars.each { key ->
-    if (!envVars.containsKey(key) || envVars[key] == null) {
-        throw new GradleException("Missing required environment variable in .env.local: ${key}")
-    }
+  if (!envVars.containsKey(key) || envVars[key] == null) {
+    throw new GradleException("Missing required environment variable in .env.local: ${key}")
+  }
 }
 
 dependencies {
-    implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
-    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+  implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
+  testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+  testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
 }
 
 ext {
-    springProfiles = "dev" + springProfiles
+  springProfiles = "dev" + springProfiles
 }
 
 springBoot {
-    buildInfo {
-        excludes = ['time']
-    }
+  buildInfo {
+    excludes = ['time']
+  }
 }
 
 bootRun {
-    environment envVars
-    args = ["--spring.profiles.active=${springProfiles}"]
+  environment envVars
+  args = ["--spring.profiles.active=${springProfiles}"]
 }
 
 task webapp(type: NpmTask) {
-    inputs.property('appVersion', project.version)
-    inputs.files("build.gradle")
-            .withPropertyName('build.gradle')
-            .withPathSensitivity(PathSensitivity.RELATIVE)
-    inputs.files('angular.json', 'package-lock.json', 'package.json', 'tsconfig.app.json', 'tsconfig.json')
-            .withPropertyName('angular-build')
-            .withPathSensitivity(PathSensitivity.RELATIVE)
-    inputs.dir("src/main/webapp/")
-            .withPropertyName("src/main/webapp/")
-            .withPathSensitivity(PathSensitivity.RELATIVE)
-    outputs.dir("build/resources/main/static/")
-            .withPropertyName("webapp-build-dir")
+  inputs.property('appVersion', project.version)
+  inputs.files("build.gradle")
+    .withPropertyName('build.gradle')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  inputs.files('angular.json', 'package-lock.json', 'package.json', 'tsconfig.app.json', 'tsconfig.json')
+    .withPropertyName('angular-build')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  inputs.dir("src/main/webapp/")
+    .withPropertyName("src/main/webapp/")
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  outputs.dir("build/resources/main/static/")
+    .withPropertyName("webapp-build-dir")
 
-    dependsOn npmInstall
+  dependsOn npmInstall
 
-    args = ["run", "webapp:build"]
-    environment = [
-            "APP_VERSION"            : project.version,
-            "KEYCLOAK_URL"           : envVars["KEYCLOAK_URL"],
-            "KEYCLOAK_REALM"         : envVars["KEYCLOAK_REALM"],
-            "KEYCLOAK_CLIENT_ID"     : envVars["KEYCLOAK_CLIENT_ID"],
-            "KEYCLOAK_ENABLE_LOGGING": envVars["KEYCLOAK_ENABLE_LOGGING"],
-    ]
+  args = ["run", "webapp:build"]
+  environment = [
+    "APP_VERSION"                : project.version,
+    "KEYCLOAK_URL"               : envVars["KEYCLOAK_URL"],
+    "KEYCLOAK_REALM"             : envVars["KEYCLOAK_REALM"],
+    "KEYCLOAK_CLIENT_ID"         : envVars["KEYCLOAK_CLIENT_ID"],
+    "KEYCLOAK_ENABLE_LOGGING"    : envVars["KEYCLOAK_ENABLE_LOGGING"],
+    "OTP_LENGTH"                 : envVars["OTP_LENGTH"],
+    "OTP_RESEND_COOLDOWN_SECONDS": envVars["OTP_RESEND_COOLDOWN_SECONDS"]
+  ]
 }
 
 processResources {
-    inputs.property('version', version)
-    inputs.property('springProfiles', springProfiles)
-    filesMatching("**/application.yml") {
-        filter {
-            it.replace("@project.version@", version)
-        }
-        filter {
-            it.replace("@spring.profiles.active@", springProfiles)
-        }
+  inputs.property('version', version)
+  inputs.property('springProfiles', springProfiles)
+  filesMatching("**/application.yml") {
+    filter {
+      it.replace("@project.version@", version)
     }
+    filter {
+      it.replace("@spring.profiles.active@", springProfiles)
+    }
+  }
 }
 
 tasks.register("integrationTest", Test) {
-    maxHeapSize = "1G"
-    useJUnitPlatform()
-    description = "Execute integration tests."
-    group = "verification"
-    include "**/*IT*", "**/*IntTest*"
-    testLogging {
-        events = ['FAILED', 'SKIPPED']
-        exceptionFormat = "full"
-    }
-    systemProperty('spring.profiles.active', 'test,testdev')
-    systemProperty('java.security.egd', 'file:/dev/./urandom')
-    // uncomment if the tests reports are not generated
-    // see https://github.com/jhipster/generator-jhipster/pull/2771 and https://github.com/jhipster/generator-jhipster/pull/4484
-    // ignoreFailures true
-    reports {
-        html.required.set(false)
-    }
+  maxHeapSize = "1G"
+  useJUnitPlatform()
+  description = "Execute integration tests."
+  group = "verification"
+  include "**/*IT*", "**/*IntTest*"
+  testLogging {
+    events = ['FAILED', 'SKIPPED']
+    exceptionFormat = "full"
+  }
+  systemProperty('spring.profiles.active', 'test,testdev')
+  systemProperty('java.security.egd', 'file:/dev/./urandom')
+  // uncomment if the tests reports are not generated
+  // see https://github.com/jhipster/generator-jhipster/pull/2771 and https://github.com/jhipster/generator-jhipster/pull/4484
+  // ignoreFailures true
+  reports {
+    html.required.set(false)
+  }
 }
 integrationTest.dependsOn test
 
