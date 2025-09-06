@@ -20,10 +20,10 @@ plugins {
   id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
   id "io.spring.dependency-management" version "1.1.7"
   id "org.liquibase.gradle" version "${liquibasePluginVersion}"
-  id "org.sonarqube" version "6.2.0.5505"
+  id "org.sonarqube" version "6.3.1.5724"
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
-  id "org.openapi.generator" version "7.12.0"
+  id "org.openapi.generator" version "7.15.0"
 }
 
 group = "de.tum.cit.aet"
@@ -184,13 +184,16 @@ dependencies {
   // Defines low-level streaming API, and includes JSON-specific implementations
   implementation "com.fasterxml.jackson.core:jackson-core:${fasterxml_version}"
   // Contains standard Jackson annotations
-  implementation "com.fasterxml.jackson.core:jackson-annotations:${fasterxml_version}"
+  // TODO: change to ${fasterxml_version} in the next standardized version
+  implementation "com.fasterxml.jackson.core:jackson-annotations:2.20"
   // Implements data-binding (and object serialization) support
   implementation "com.fasterxml.jackson.core:jackson-databind:${fasterxml_version}"
   // Support for "Java 8 Dates"
   implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${fasterxml_version}"
   // Support JSON serialization and deserialization of Hibernate (https://hibernate.org) specific data types and properties; especially lazy-loading aspects
   implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:${fasterxml_version}"
+  implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:${fasterxml_version}"
+
 
   testImplementation("com.tngtech.archunit:archunit-junit5-api:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
@@ -198,7 +201,7 @@ dependencies {
   testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
-  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.2"
+  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.3"
   implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
   implementation "org.apache.commons:commons-lang3:3.18.0"
   annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -213,7 +216,6 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
   testImplementation "org.springframework.boot:spring-boot-starter-test"
   implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
-  implementation "org.springframework.boot:spring-boot-starter-undertow"
   implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
     exclude module: "spring-boot-starter-undertow"
   }
@@ -222,11 +224,9 @@ dependencies {
   testImplementation "org.springframework.boot:spring-boot-test"
   testImplementation "org.springframework.security:spring-security-test"
   implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-  implementation "org.springframework.security:spring-security-data"
+  implementation "org.springframework.security:spring-security-data:${springSecurityVersion}"
   implementation "com.mysql:mysql-connector-j:9.4.0"
-  implementation "com.zaxxer:HikariCP:7.0.0"
-  implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
-  implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
+  implementation "com.zaxxer:HikariCP:7.0.2"
   implementation "org.hibernate.orm:hibernate-core"
   implementation "org.hibernate.validator:hibernate-validator"
   implementation 'io.github.cdimascio:java-dotenv:5.2.2'
@@ -243,7 +243,7 @@ dependencies {
 
 
   // needed for OpenAPI generation
-  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12'
   runtimeOnly "com.h2database:h2"
 
 
@@ -255,21 +255,21 @@ dependencies {
   annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen:${hibernateVersion}"
   developmentOnly "org.springframework.boot:spring-boot-docker-compose"
   developmentOnly "org.springframework.boot:spring-boot-devtools"
-  compileOnly("org.projectlombok:lombok:1.18.38")
-  annotationProcessor("org.projectlombok:lombok:1.18.38")
+  compileOnly "org.projectlombok:lombok:${lombokVersion}"
+  annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-  testCompileOnly("org.projectlombok:lombok:1.18.38")
-  testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+  testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+  testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
   // FreeMarker
   implementation 'org.springframework.boot:spring-boot-starter-freemarker'
 
   // Jsoup for sanitizing HTML
-  implementation 'org.jsoup:jsoup:1.21.1'
+  implementation 'org.jsoup:jsoup:1.21.2'
 
   // Spring Retry
   implementation 'org.springframework.retry:spring-retry:2.0.12'
-  implementation 'org.springframework:spring-aspects'
+  implementation 'org.springframework:spring-aspects:6.2.10'
 
   // Keycloak
   implementation "org.keycloak:keycloak-admin-client:${keycloakVersion}"
