@@ -78,21 +78,21 @@ export class ResearchGroupMembersComponent {
     return member.userId === this.accountService.userId;
   }
 
-  editMember(member: UserShortDTO): void {
-    // TODO: Implement edit functionality
-    this.toastService.showInfo({
-      detail: `Edit functionality for ${member.firstName} ${member.lastName} will be implemented soon.`,
-    });
-  }
-
   onSearch(query: string): void {
     this.searchQuery.set(query);
   }
 
   addMember(): void {
-    // TODO: Implement add member functionality
+    // TODO: Implement add member functionality which opens a modal with a search input (which enables searching for users across keycloak)
     this.toastService.showInfo({
       detail: 'Add member functionality will be implemented soon.',
+    });
+  }
+
+  editMember(member: UserShortDTO): void {
+    // TODO: Implement edit or delete functionality
+    this.toastService.showInfo({
+      detail: `Edit functionality for ${member.firstName} ${member.lastName} will be implemented soon.`,
     });
   }
 }
