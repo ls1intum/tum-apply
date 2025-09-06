@@ -1,4 +1,4 @@
-import { Component, Renderer2, RendererFactory2, computed, inject, signal } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, afterNextRender, computed, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
@@ -9,6 +9,7 @@ import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sideba
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
 import { HeaderComponent } from '../../shared/components/organisms/header/header.component';
+import { OnboardingOrchestratorService } from '../../service/onboarding-orchestrator.service';
 
 @Component({
   selector: 'jhi-main',
@@ -20,16 +21,15 @@ import { HeaderComponent } from '../../shared/components/organisms/header/header
 export default class MainComponent {
   readonly accountService = inject(AccountService);
   readonly isSidebarCollapsed = signal(false);
-
   loggedIn = computed(() => {
     return this.accountService.signedIn();
   });
-
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
   private readonly translateService = inject(TranslateService);
   private readonly rootRenderer = inject(RendererFactory2);
+  private readonly onboardingOrchestratorService = inject(OnboardingOrchestratorService);
 
   constructor() {
     this.renderer = this.rootRenderer.createRenderer(document.querySelector('html'), null);
@@ -38,5 +38,6 @@ export default class MainComponent {
       dayjs.locale(langChangeEvent.lang);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
+    afterNextRender(() => this.onboardingOrchestratorService.hookToAuth(this.loggedIn));
   }
 }
