@@ -1,8 +1,9 @@
 import { Injectable, Injector, Signal, effect, inject } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
-import { take } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
+import { switchMap, take } from 'rxjs/operators';
 
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ProfOnboardingDTO, ProfOnboardingResourceService } from '../generated';
@@ -24,6 +25,13 @@ export class OnboardingOrchestratorService {
   /** Prevents opening multiple dialogs concurrently. */
   private opened = false;
 
+  private readonly checkTrigger$ = new Subject<void>();
+
+  private readonly checkResult = toSignal<ProfOnboardingDTO | null>(
+    this.checkTrigger$.pipe(switchMap(() => this.profOnboardingResourceService.check().pipe(take(1)))),
+    { initialValue: null },
+  );
+
   hookToAuth(loggedIn: Signal<boolean>): void {
     effect(
       () => {
@@ -31,33 +39,23 @@ export class OnboardingOrchestratorService {
         if (!isLoggedIn || this.opened) {
           return;
         }
+        this.checkTrigger$.next();
+      },
+      { injector: this.injector },
+    );
 
-        const checkSignal = toSignal<ProfOnboardingDTO | null>(this.profOnboardingResourceService.check().pipe(take(1)), {
-          initialValue: null,
-        });
+    effect(
+      () => {
+        const dto = this.checkResult();
+        if (dto === null || this.opened || dto.show !== true) {
+          return;
+        }
+        this.opened = true;
 
-        effect(() => {
-          const dto = checkSignal();
-          if (dto === null || this.opened || dto.show !== true) {
-            return;
-          }
-          this.opened = true;
-
-          const ref = this.dialog.open(OnboardingDialog, {
-            header: this.translate.instant('onboarding.dialog.title'),
-            modal: true,
-            closable: false,
-          });
-
-          const closed = toSignal<boolean | null>(ref.onClose.pipe(take(1)), { initialValue: null });
-          effect(
-            () => {
-              if (closed() === true) {
-                this.opened = false;
-              }
-            },
-            { injector: this.injector },
-          );
+        this.dialog.open(OnboardingDialog, {
+          header: this.translate.instant('onboarding.dialog.title'),
+          modal: true,
+          closable: false,
         });
       },
       { injector: this.injector },
