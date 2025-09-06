@@ -19,6 +19,9 @@ export class SearchFilterSortBar {
   totalRecords = input<number>(0);
   searchText = input<string | undefined>(undefined);
 
+  // option to hide the record count display
+  showRecordCount = input<boolean>(true);
+
   // translation keys used for the total number of records found
   // those fields should already be translated within the parent component
   singleEntity = input.required<string>();

@@ -1,0 +1,70 @@
+<div class="research-group-members">
+  <div class="header">
+    <h1 jhiTranslate="researchGroup.memberHeader">Members</h1>
+  </div>
+
+  <!-- Search bar with Add member button -->
+  <div class="search-and-actions">
+    <jhi-search-filter-sort-bar
+      [searchText]="'researchGroup.members.searchGroupMember' | translate"
+      [singleEntity]="''"
+      [multipleEntities]="''"
+      [showRecordCount]="false"
+      (searchOutput)="onSearch($event)"
+    />
+    <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" />
+  </div>
+
+  @if (loading()) {
+    <div class="text-center p-4">
+      <span jhiTranslate="researchGroup.members.loading">Loading members...</span>
+    </div>
+  } @else if (error()) {
+    <div class="error-text text-center p-4">
+      <p>{{ error() }}</p>
+      <button (click)="loadMembers()" jhiTranslate="researchGroup.members.retry">Retry</button>
+    </div>
+  } @else {
+    @if (filteredMembers().length === 0) {
+      <div class="text-center p-4">
+        @if (searchQuery()) {
+          <span jhiTranslate="researchGroup.members.noMembersQuery" [translateValues]="{ query: searchQuery() }"
+            >No members found for {{ searchQuery() }}.</span
+          >
+        } @else {
+          <span jhiTranslate="researchGroup.members.noMembers">No members found in this research group.</span>
+        }
+      </div>
+    } @else {
+      <div class="members-table">
+        <table>
+          <thead>
+            <tr>
+              <th jhiTranslate="researchGroup.members.tableColumns.name">Name</th>
+              <th jhiTranslate="researchGroup.members.tableColumns.email">Email</th>
+              <th jhiTranslate="researchGroup.members.tableColumns.role">Role</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (member of filteredMembers(); track member.userId) {
+              <tr>
+                <td>
+                  {{ member.firstName }} {{ member.lastName }}
+                  @if (isCurrentUser(member)) {
+                    <fa-icon icon="circle-user" class="current-user-icon" title="{{ 'researchGroup.members.me' | translate }}" />
+                  }
+                </td>
+                <td>{{ member.email }}</td>
+                <td>{{ formatRoles(member.roles) }}</td>
+                <td>
+                  <button class="edit-btn" (click)="editMember(member)" jhiTranslate="researchGroup.members.edit">Edit</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>
