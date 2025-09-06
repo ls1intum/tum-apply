@@ -37,6 +37,7 @@ export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
 export * from './pageResponseDTOEmailTemplateOverviewDTO';
 export * from './pageableObject';
+export * from './profOnboardingDTO';
 export * from './professorDTO';
 export * from './ratingDTO';
 export * from './ratingOverviewDTO';
