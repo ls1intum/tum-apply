@@ -7,6 +7,7 @@ import { Observable, firstValueFrom } from 'rxjs';
 
 import { ProfOnboardingResourceService } from '../../../../generated';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 /**
  * Professor onboarding dialog.
@@ -14,9 +15,9 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 @Component({
   selector: 'jhi-onboarding-dialog',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TranslateModule, ButtonComponent],
+  imports: [CommonModule, ButtonModule, TranslateModule, ButtonComponent, TranslateDirective],
   templateUrl: './onboarding-dialog.html',
-  styleUrl: './onboarding-dialog.scss',
+  styleUrls: ['./onboarding-dialog.scss'], // <-- PLURAL
 })
 export class OnboardingDialog {
   static readonly DOCS_URL = '/tum-apply/docs/professors/account-creation';
@@ -32,12 +33,7 @@ export class OnboardingDialog {
     this.handleApiCall(this.api.confirmOnboarding());
   }
 
-  /** Optional: User clicked "Remind me later": set onboarded=false. */
-  remindLater(): void {
-    this.handleApiCall(this.api.remindLater());
-  }
-
-  private handleApiCall(apiCall: Observable<any>): void {
+  private handleApiCall(apiCall: Observable<unknown>): void {
     firstValueFrom(apiCall)
       .then(() => {
         this.ref()?.close();

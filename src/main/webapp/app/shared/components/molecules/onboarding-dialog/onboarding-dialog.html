@@ -1,19 +1,8 @@
 <div class="dialog-body">
-  <h2 class="title">{{ 'onboarding.title' | translate }}</h2>
-
-  <p class="mb">
-    {{ 'onboarding.body.intro' | translate }}
-  </p>
-
-  <p class="mb">
-    <span>{{ 'onboarding.body.docsPrefix' | translate }}</span>
-    <a [href]="docsUrl" rel="noopener" target="_blank">{{ 'onboarding.body.docsLink' | translate }}</a
-    >.
-  </p>
+  <p class="mb" jhiTranslate="onboarding.body"></p>
 
   <div class="actions">
+    <jhi-button (click)="markOnboarded()" [label]="'onboarding.actions.imApplicant'" [shouldTranslate]="true" variant="outlined" />
     <jhi-button (click)="markOnboarded()" [label]="'onboarding.actions.sendEmail'" [shouldTranslate]="true" />
-    <jhi-button (click)="markOnboarded()" [label]="'onboarding.actions.imApplicant'" [shouldTranslate]="true" />
-    <jhi-button (click)="markOnboarded()" [label]="'onboarding.actions.remindLater'" [shouldTranslate]="true" />
   </div>
 </div>
