@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -21,7 +21,7 @@ import TranslateDirective from '../../../language/translate.directive';
   styleUrls: ['./onboarding-dialog.scss'],
 })
 export class OnboardingDialog {
-  ref = input<DynamicDialogRef | null>(null);
+  private readonly ref = inject(DynamicDialogRef, { optional: true });
   private readonly api = inject(ProfOnboardingResourceService);
   private readonly translate = inject(TranslateService);
 
@@ -31,9 +31,11 @@ export class OnboardingDialog {
     return `mailto:TUMApply Support <support-tum-apply.aet@xcit.tum.de>?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
-  markOnboarded(): void {
-    window.location.href = OnboardingDialog.buildMailto(this.translate);
+  markOnboarded(openEmail = true): void {
+    if (openEmail) {
+      window.location.href = OnboardingDialog.buildMailto(this.translate);
+    }
     void firstValueFrom(this.api.confirmOnboarding()).catch();
-    this.ref()?.close();
+    this.ref?.close();
   }
 }
