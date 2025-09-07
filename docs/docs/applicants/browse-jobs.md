@@ -71,7 +71,7 @@ Below listed are the key workflows for browsing and applying to positions.
 4. Note the *relative application deadlines* to prioritize opportunities that are near closing
 5. Click **"View"** on any position card to access detailed information
 
-**Tutorial**: https://live.rbg.tum.de/w/artemisintro/61935
+**Video**: https://live.rbg.tum.de/w/artemisintro/61935
 
 ---
 
@@ -90,7 +90,7 @@ Below listed are the key workflows for browsing and applying to positions.
 5. Review **Data Protection Information** for application privacy details
 6. Use **"Back"** button to return to position browsing for comparison
 
-**Tutorial**: https://live.rbg.tum.de/w/artemisintro/61934
+**Video**: https://live.rbg.tum.de/w/artemisintro/61934
 
 ---
 

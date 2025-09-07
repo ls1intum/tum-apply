@@ -100,7 +100,7 @@ This document outlines key workflows supported by the position management dashbo
   - Select **"Delete"** to remove unwanted draft positions
   - Choose **"Close"** to reject all applications for published positions
 
-**Tutorial**: https://live.rbg.tum.de/w/artemisintro/61932
+**Video**: https://live.rbg.tum.de/w/artemisintro/61932
 
 ---
 
@@ -120,7 +120,7 @@ This document outlines key workflows supported by the position management dashbo
   - Quick navigation back to the previous page
   - Direct access to editing functionality for draft positions
 
-**Tutorial**: https://live.rbg.tum.de/w/artemisintro/61933
+**Video**: https://live.rbg.tum.de/w/artemisintro/61933
 
 ---
 
@@ -138,7 +138,7 @@ This document outlines key workflows supported by the position management dashbo
   - Review all changes in the final step
   - Either publish immediately using the **"Publish"** button or leave the form and the position will be saved as a draft for later completion
 
-**Tutorial**: https://live.rbg.tum.de/w/artemisintro/61936
+**Video**: https://live.rbg.tum.de/w/artemisintro/61936
 
 ---
 
@@ -165,4 +165,4 @@ This document outlines key workflows supported by the position management dashbo
   - **Confirm deletion** only after ensuring valuable content is preserved elsewhere if needed
   - **Verify removal** from the dashboard table
 
-**Tutorial**: https://live.rbg.tum.de/w/artemisintro/61938
+**Video**: https://live.rbg.tum.de/w/artemisintro/61938
