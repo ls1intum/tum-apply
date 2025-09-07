@@ -29,7 +29,7 @@ This is the **primary entry point** for discovering doctorate opportunities.
 - **Start Date**: Estimated Start Date of Position
 ---
 
-## 📋 Job Details - Comprehensive Review
+## 📋 Job Details
 
 Used for **in-depth evaluation** of individual positions before applying.
 
@@ -38,7 +38,7 @@ Used for **in-depth evaluation** of individual positions before applying.
 - Includes comprehensive **data protection information** for GDPR compliance
 - Provides **direct application access** and easy navigation back to position browsing
 
-![Job Details Page 1](images/job-detail-applicant.png)
+![Job Details Page](images/job-detail-applicant.png)
 <div style={{textAlign:'center'}}>
   <em>Job Detail Page</em>
 </div>
