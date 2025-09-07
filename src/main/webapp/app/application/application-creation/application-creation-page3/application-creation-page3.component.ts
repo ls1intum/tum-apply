@@ -159,6 +159,6 @@ export default class ApplicationCreationPage3Component {
 
   private computeContentValid(): boolean {
     const f = this.page3Form.controls;
-    return f.experiences.valid && f['motivation'].valid && f['skills'].valid;
+    return f.experiences.valid && f.motivation.valid && f['skills'].valid;
   }
 }
