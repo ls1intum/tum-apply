@@ -1,7 +1,7 @@
 {
   "onboarding": {
-    "title": "Research Groups & Rights",
-    "body": "You are logged in but currently do not have professor rights. If you are a professor, please send us an email so we can create your Research Group and assign the correct rights.",
+    "title": "You are a professor?",
+    "body": "You are logged in but do not have professor rights yet. If you are a professor, please send us an email so that we can create your Research Group and assign the correct rights. Please click the button below to do so.",
     "actions": {
       "sendEmail": "Send email",
       "imApplicant": "I'm an applicant"

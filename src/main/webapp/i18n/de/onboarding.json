@@ -1,7 +1,7 @@
 {
   "onboarding": {
-    "title": "Research Groups & Rechte",
-    "body": "Sie sind eingeloggt, haben aber noch keine Professor-Rechte. Wenn Sie Professor:in sind, senden Sie uns bitte eine E-Mail, damit wir Ihre Research Group erstellen und die richtigen Rechte vergeben können.",
+    "title": "Du bist Professor:in?",
+    "body": "Du bist eingeloggt, hast aber noch keine Professor-Rechte. Wenn du Professor:in bist, sende uns bitte eine E-Mail, damit wir deine Research Group erstellen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
     "actions": {
       "sendEmail": "E-Mail schicken",
       "imApplicant": "Ich bin Bewerber:in"
