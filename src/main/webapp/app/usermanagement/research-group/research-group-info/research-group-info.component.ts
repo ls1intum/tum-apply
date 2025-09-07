@@ -11,6 +11,7 @@ import { ResearchGroupManagementService } from 'app/generated/api/researchGroupM
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
+import { TranslateDirective } from 'app/shared/language';
 
 export interface ResearchGroupFormData {
   name: string;
@@ -27,7 +28,7 @@ export interface ResearchGroupFormData {
 
 @Component({
   selector: 'jhi-research-group-info',
-  imports: [CommonModule, StringInputComponent, ButtonComponent, EditorComponent, TranslateModule, FontAwesomeModule],
+  imports: [CommonModule, StringInputComponent, ButtonComponent, EditorComponent, TranslateModule, FontAwesomeModule, TranslateDirective],
   templateUrl: './research-group-info.component.html',
   styleUrl: './research-group-info.component.scss',
 })

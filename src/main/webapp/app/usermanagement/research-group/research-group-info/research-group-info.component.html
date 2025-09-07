@@ -1,14 +1,19 @@
 <div class="content">
   <div class="header">
-    <h1>{{ 'researchGroup.groupInfoHeader' | translate }}</h1>
+    <h1 jhiTranslate="researchGroup.groupInfoHeader"></h1>
   </div>
   <div class="card">
     <div class="card-header">
-      <h2 class="text-primary text-2xl">{{ 'researchGroup.groupInfo.title' | translate }}</h2>
-      <jhi-button [label]="'researchGroup.groupInfo.saveButton' | translate" [disabled]="!isFormValid() || isSaving()" (click)="onSave()" />
+      <h2 jhiTranslate="researchGroup.groupInfo.title" class="text-primary text-2xl"></h2>
+      <jhi-button
+        [label]="'researchGroup.groupInfo.saveButton'"
+        [shouldTranslate]="true"
+        [disabled]="!isFormValid() || isSaving()"
+        (click)="onSave()"
+      />
     </div>
     <div class="card-body">
-      <p>{{ 'researchGroup.groupInfo.description' | translate }}</p>
+      <p jhiTranslate="researchGroup.groupInfo.description"></p>
       <hr class="divider" />
 
       <div class="space-y-4">
