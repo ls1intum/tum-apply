@@ -9,6 +9,8 @@ import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
+import de.tum.cit.aet.job.dto.JobDTO;
+import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -180,5 +182,152 @@ class JobResourceTest {
 
         assertThat(jobRepository.count()).isEqualTo(before);
     }
+
+    @Test
+    @WithMockUser
+    void updateJob_updatesCorrectly() {
+
+        Job job = jobRepository.findAll().getFirst();
+
+        JobFormDTO updatedPayload = new JobFormDTO(
+            job.getJobId(), "Updated Title", "Updated Area", "Updated Field",
+            professor.getUserId(), Campus.GARCHING_HOCHBRUECK,
+            LocalDate.of(2025,12,1), LocalDate.of(2026,6,30),
+            30, 6, FundingType.PARTIALLY_FUNDED,
+            "Updated Description", "Updated Tasks",
+            "Updated Requirements", JobState.DRAFT
+        );
+
+        JobFormDTO returnedJob = api.putAndReadOk("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class);
+
+        Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
+
+        assertThat(updatedJob.getTitle()).isEqualTo(updatedPayload.title());
+        assertThat(updatedJob.getResearchArea()).isEqualTo(updatedPayload.researchArea());
+        assertThat(updatedJob.getFieldOfStudies()).isEqualTo(updatedPayload.fieldOfStudies());
+        assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(updatedPayload.supervisingProfessor());
+        assertThat(updatedJob.getLocation()).isEqualTo(updatedPayload.location());
+        assertThat(updatedJob.getStartDate()).isEqualTo(updatedPayload.startDate());
+        assertThat(updatedJob.getEndDate()).isEqualTo(updatedPayload.endDate());
+        assertThat(updatedJob.getWorkload()).isEqualTo(updatedPayload.workload());
+        assertThat(updatedJob.getContractDuration()).isEqualTo(updatedPayload.contractDuration());
+        assertThat(updatedJob.getFundingType()).isEqualTo(updatedPayload.fundingType());
+        assertThat(updatedJob.getDescription()).isEqualTo(updatedPayload.description());
+        assertThat(updatedJob.getTasks()).isEqualTo(updatedPayload.tasks());
+        assertThat(updatedJob.getRequirements()).isEqualTo(updatedPayload.requirements());
+        assertThat(updatedJob.getState()).isEqualTo(updatedPayload.state());
+    }
+
+    @Test
+    @WithMockUser
+    void deleteJob_removesIt() {
+        Job job = jobRepository.findAll().getFirst();
+        assertThat(jobRepository.existsById(job.getJobId())).isTrue();
+
+        api.deleteAndReadOk("/api/jobs/" + job.getJobId(), null, Void.class);
+
+        assertThat(jobRepository.existsById(job.getJobId())).isFalse();
+    }
+
+    @Test
+    @WithMockUser
+    void changeJobState_updatesIt() {
+        Job job = jobRepository.findAll().getFirst();
+        assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
+
+        JobFormDTO returnedJob = api.putAndReadOk(
+            "/api/jobs/changeState/" + job.getJobId() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+            null,
+            JobFormDTO.class
+        );
+
+        Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
+        assertThat(updatedJob.getState()).isEqualTo(JobState.CLOSED);
+
+        //TODO: test that all applications have been rejected
+    }
+
+    @Test
+    @WithMockUser(username = "prof.doe@tum.de")
+    void getJobsByProfessor_returnsOwnJobs() {
+        PageResponse<JobCardDTO> page = api.getAndReadOk(
+            "/api/jobs/professor/" + professor.getUserId(),
+            Map.of("pageNumber", "0", "pageSize", "10"),
+            new TypeReference<>() {}
+        );
+
+        assertThat(page.totalElements()).isEqualTo(2);
+        assertThat(page.content()).hasSize(2);
+        assertThat(page.number()).isEqualTo(0);
+        assertThat(page.size()).isEqualTo(10);
+
+        JobCardDTO first = page.content().getFirst();
+        assertThat(first.title()).isEqualTo("Published Role");
+        assertThat(first.fieldOfStudies()).isEqualTo("CS");
+        assertThat(first.location()).isEqualTo("GARCHING");
+        assertThat(first.professorName()).isEqualTo("John Doe");
+        assertThat(first.workload()).isEqualTo(20);
+        assertThat(first.startDate()).isEqualTo(LocalDate.of(2025, 9, 1));
+
+        JobCardDTO second = page.content().get(1);
+        assertThat(second.title()).isEqualTo("Draft Role");
+        assertThat(second.fieldOfStudies()).isEqualTo("CS");
+        assertThat(second.location()).isEqualTo("GARCHING");
+        assertThat(second.professorName()).isEqualTo("John Doe");
+        assertThat(second.workload()).isEqualTo(20);
+        assertThat(second.startDate()).isEqualTo(LocalDate.of(2025,10, 1));
+    }
+
+    @Test
+    @WithMockUser
+    void getJobById_returnsCorrectJob() {
+        Job job = jobRepository.findAll().getFirst();
+
+        JobDTO returnedJob = api.getAndReadOk("/api/jobs/" + job.getJobId(), null, JobDTO.class);
+
+        assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
+        assertThat(returnedJob.title()).isEqualTo(job.getTitle());
+        assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
+        assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
+        assertThat(returnedJob.supervisingProfessor()).isEqualTo(job.getSupervisingProfessor().getUserId());
+        assertThat(returnedJob.location()).isEqualTo(job.getLocation());
+        assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
+        assertThat(returnedJob.endDate()).isEqualTo(job.getEndDate());
+        assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
+        assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
+        assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
+        assertThat(returnedJob.description()).isEqualTo(job.getDescription());
+        assertThat(returnedJob.tasks()).isEqualTo(job.getTasks());
+        assertThat(returnedJob.requirements()).isEqualTo(job.getRequirements());
+        assertThat(returnedJob.state()).isEqualTo(job.getState());
+    }
+
+    @Test
+    void getJobDetails_returnsCorrectJobDetails() {
+        Job job = jobRepository.findAll().getFirst();
+
+        JobDetailDTO returnedJob = api.getAndReadOk("/api/jobs/detail/" + job.getJobId(), null, new TypeReference<>() {});
+
+        assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
+        assertThat(returnedJob.supervisingProfessorName()).isEqualTo(job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName());
+        assertThat(returnedJob.researchGroup().getResearchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
+        assertThat(returnedJob.title()).isEqualTo(job.getTitle());
+        assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
+        assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
+        assertThat(returnedJob.location()).isEqualTo("Garching");
+        assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
+        assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
+        assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
+        assertThat(returnedJob.description()).isEqualTo(job.getDescription());
+        assertThat(returnedJob.tasks()).isEqualTo(job.getTasks());
+        assertThat(returnedJob.requirements()).isEqualTo(job.getRequirements());
+        assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
+        assertThat(returnedJob.endDate()).isEqualTo(job.getEndDate());
+        assertThat(returnedJob.createdAt()).isEqualTo(job.getCreatedAt());
+        assertThat(returnedJob.lastModifiedAt()).isEqualTo(job.getLastModifiedAt());
+        assertThat(returnedJob.state()).isEqualTo(job.getState());
+    }
+
+    // have a invalid test for all above cases
 
 }

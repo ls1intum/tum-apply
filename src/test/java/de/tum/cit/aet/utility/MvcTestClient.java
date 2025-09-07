@@ -99,7 +99,7 @@ public class MvcTestClient {
 
     private MvcResult deleteOk(String url, Object body, MediaType... accepts) {
         try {
-            return deleteJson(url, body, accepts).andExpect(status().isOk()).andReturn();
+            return deleteJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("DELETE " + url + " failed", e);
         }
