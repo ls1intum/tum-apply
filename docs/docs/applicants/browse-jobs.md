@@ -27,6 +27,7 @@ This is the **primary entry point** for discovering doctorate opportunities.
 - **Supervisor**: Professor who supervises the position
 - **Workload**: Time commitment given in hours / week
 - **Start Date**: Estimated Start Date of Position
+
 ---
 
 ## 📋 Job Details
@@ -73,7 +74,6 @@ Below listed are the key workflows for browsing and applying to positions.
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61935
 
----
 
 ### 📖 Workflow 2: Evaluating Position Details
 
@@ -92,7 +92,6 @@ Below listed are the key workflows for browsing and applying to positions.
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61934
 
----
 
 ### 📝 Workflow 3: Applying for Positions
 

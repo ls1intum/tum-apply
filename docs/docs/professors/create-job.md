@@ -26,7 +26,6 @@ This is the **comprehensive creation interface** for developing new doctorate po
 - **Timeline Configuration**: Application Deadline, Job Start date, workload in hours / week (up to 40 hours / week), contract duration in years (up to 6 years)
 - **Validation System**: Users can **only** navigate to the next step using the **"Next"** button after completing all required fields
 
----
 
 ### Step 2: Position Details
 
@@ -41,7 +40,7 @@ This is the **comprehensive creation interface** for developing new doctorate po
 - **Tasks & Responsibilities**: Detailed breakdown of expected duties and activities
 - **Formatting Tools**: Advanced text editing capabilities for professional presentation
 
----
+
 ### Step 3: Review Job Details
 
 ![Job Creation Form Step 3](images/job-creation-form-3.png)
@@ -62,13 +61,11 @@ This creation system ensures comprehensive position development while maintainin
 
 This document outlines key workflows for creating and publishing doctorate positions.
 
----
 
 ### 📌 Prerequisites
 
 - All workflows require professor account access with position creation permissions
 
----
 
 ### 📝 Workflow 1: Creating New Positions from Scratch
 

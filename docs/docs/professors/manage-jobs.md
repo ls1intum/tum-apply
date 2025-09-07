@@ -68,14 +68,12 @@ This integrated management system enables efficient oversight of the complete po
 
 This document outlines key workflows supported by the position management dashboard.
 
----
 
 ### 📌 Prerequisites
 
 - All workflows require professor account access
 - Position management capabilities vary based on current position status
 
----
 
 ### 📊 Workflow 1: My Positions Dashboard Overview
 
@@ -102,7 +100,6 @@ This document outlines key workflows supported by the position management dashbo
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61932
 
----
 
 ### 🔍 Workflow 2: Viewing Job Details
 
@@ -122,7 +119,6 @@ This document outlines key workflows supported by the position management dashbo
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61933
 
----
 
 ### ✏️ Workflow 3: Editing and Updating Existing Positions
 
@@ -140,7 +136,6 @@ This document outlines key workflows supported by the position management dashbo
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61936
 
----
 
 ### 🔒 Workflow 4: Closing and Deleting Positions
 
