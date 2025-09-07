@@ -20,12 +20,10 @@ import TranslateDirective from '../../../language/translate.directive';
   styleUrls: ['./onboarding-dialog.scss'], // <-- PLURAL
 })
 export class OnboardingDialog {
-  static readonly DOCS_URL = '/tum-apply/docs/professors/account-creation';
   // Prefilled mailto link
   static readonly MAILTO =
     `mailto:support-tum-apply.aet@xcit.tum.de?subject=${encodeURIComponent('Request for Research Group creation')}` +
     `&body=${encodeURIComponent('Research Group name:\n' + 'Head of Research Group (name + title):\n' + '(optional) Further details:\n')}`;
-  readonly docsUrl = OnboardingDialog.DOCS_URL;
   ref = input<DynamicDialogRef | null>(null);
   private api = inject(ProfOnboardingResourceService);
 
