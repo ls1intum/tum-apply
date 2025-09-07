@@ -1,9 +1,7 @@
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
@@ -19,7 +17,7 @@ function HomepageHeader() {
           The official guide for Applicants and Professors using TUMApply.
         </p>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/docs/intro">
+          <Link className="button button--secondary button--lg" to="/docs/faq">
             Get Started →
           </Link>
         </div>
@@ -31,7 +29,7 @@ function HomepageHeader() {
 export default function Home(): ReactNode {
   return (
     <Layout
-      title={`TumApply Documentation`}
+      title={`TUMApply Documentation`}
       description="Description will go into a meta tag in <head />">
       <HomepageHeader />
     </Layout>
