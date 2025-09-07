@@ -270,7 +270,7 @@ export default class ApplicationCreationFormComponent {
       this.mode = ApplicationFormModes.CREATE;
       const jobId = this.route.snapshot.paramMap.get('job_id');
       if (jobId === null) {
-        this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
+        this.toastService.showErrorKey('global.entity.toast.applyFlow.invalidJobId');
       } else {
         this.jobId.set(jobId);
       }
@@ -279,12 +279,12 @@ export default class ApplicationCreationFormComponent {
       this.mode = ApplicationFormModes.EDIT;
       const applicationId = this.route.snapshot.paramMap.get('application_id');
       if (applicationId === null) {
-        this.toastService.showError({ summary: 'Error', detail: 'This is no valid applicationId' });
+        this.toastService.showErrorKey('global.entity.toast.applyFlow.invalidApplicationId');
         return;
       }
       application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
     } else {
-      this.toastService.showError({ summary: 'Error', detail: 'This is no valid application page link' });
+      this.toastService.showErrorKey('global.entity.toast.applyFlow.invalidPageLink');
       return;
     }
     this.jobId.set(application.job.jobId);
@@ -348,17 +348,17 @@ export default class ApplicationCreationFormComponent {
       motivation: this.page3()?.motivation ?? '',
       specialSkills: this.page3()?.skills ?? '',
       projects: this.page3()?.experiences,
-      // answers: new Set(),
+      // answers: new Set(),n
     };
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
       if (rerouteToOtherPage) {
-        this.toastService.showSuccess({ detail: 'Successfully saved application' });
+        this.toastService.showSuccessKey('entity.toast.applyFlow.submitted');
         location.back();
       }
     } catch (error) {
       const httpError = error as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to save application: ' + httpError.statusText });
+      this.toastService.showErrorKey('entity.toast.applyFlow.saveFailedWithStatus', { status: httpError.statusText });
       console.error('Failed to save application:', error);
     }
   }
@@ -368,7 +368,7 @@ export default class ApplicationCreationFormComponent {
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+      .catch(() => this.toastService.showErrorKey('entity.toast.applyFlow.fetchDocumentIdsFailed'));
   }
 
   onValueChanged(): void {
