@@ -64,20 +64,20 @@ This integrated management system enables efficient oversight of the complete po
 
 ---
 
-# ⚙️ Position Management Workflows
+## ⚙️ Position Management Workflows
 
 This document outlines key workflows supported by the position management dashboard.
 
 ---
 
-## 📌 Prerequisites
+### 📌 Prerequisites
 
 - All workflows require professor account access
 - Position management capabilities vary based on current position status
 
 ---
 
-## 📊 Workflow 1: My Positions Dashboard Overview
+### 📊 Workflow 1: My Positions Dashboard Overview
 
 **Goal:** Access and navigate the centralized management dashboard to monitor all your positions.
 
@@ -104,7 +104,7 @@ This document outlines key workflows supported by the position management dashbo
 
 ---
 
-## 🔍 Workflow 2: Viewing Job Details
+### 🔍 Workflow 2: Viewing Job Details
 
 **Goal:** Access comprehensive position information with professor management capabilities.
 
@@ -124,7 +124,7 @@ This document outlines key workflows supported by the position management dashbo
 
 ---
 
-## ✏️ Workflow 3: Editing and Updating Existing Positions
+### ✏️ Workflow 3: Editing and Updating Existing Positions
 
 **Goal:** Modify position details to improve clarity, update requirements, or reflect changed circumstances.
 
@@ -142,7 +142,7 @@ This document outlines key workflows supported by the position management dashbo
 
 ---
 
-## 🔒 Workflow 4: Closing and Deleting Positions
+### 🔒 Workflow 4: Closing and Deleting Positions
 
 **Goal:** Properly manage position lifecycle endpoints through closure or deletion.
 

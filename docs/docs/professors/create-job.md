@@ -58,19 +58,19 @@ This creation system ensures comprehensive position development while maintainin
 
 ---
 
-# ⚙️ Position Creation Workflows
+## ⚙️ Position Creation Workflows
 
 This document outlines key workflows for creating and publishing doctorate positions.
 
 ---
 
-## 📌 Prerequisites
+### 📌 Prerequisites
 
 - All workflows require professor account access with position creation permissions
 
 ---
 
-## 📝 Workflow 1: Creating New Positions from Scratch
+### 📝 Workflow 1: Creating New Positions from Scratch
 
 **Goal:** Develop comprehensive position listings with all required information through the structured creation process.
 

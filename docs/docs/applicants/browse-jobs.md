@@ -56,11 +56,11 @@ This module streamlines the position discovery and application process, enabling
 
 ---
 
-# ⚙️ Position Discovery Workflows
+## ⚙️ Position Discovery Workflows
 
 Below listed are the key workflows for browsing and applying to positions.
 
-## 🔍 Workflow 1: Discovering Available Positions
+### 🔍 Workflow 1: Discovering Available Positions
 
 **Goal:** Browse all available doctorate positions and identify opportunities of interest.
 
@@ -75,7 +75,7 @@ Below listed are the key workflows for browsing and applying to positions.
 
 ---
 
-## 📖 Workflow 2: Evaluating Position Details
+### 📖 Workflow 2: Evaluating Position Details
 
 **Goal:** Thoroughly review position details, research group details, and application criteria.
 
@@ -94,7 +94,7 @@ Below listed are the key workflows for browsing and applying to positions.
 
 ---
 
-## 📝 Workflow 3: Applying for Positions
+### 📝 Workflow 3: Applying for Positions
 
 **Goal:** Submit applications for suitable positions with all required information.
 
