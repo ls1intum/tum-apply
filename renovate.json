@@ -11,10 +11,23 @@
     "enabled": true,
     "labels": [
       "security fix",
+      "dependencies",
       "ready for review"
     ]
   },
   "packageRules": [
+    {
+      "matchManagers": [
+        "npm",
+        "gradle",
+        "maven",
+        "github-actions"
+      ],
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ]
+    },
     {
       "matchManagers": [
         "github-actions"
@@ -22,23 +35,15 @@
       "groupName": "ci: GitHub Actions",
       "automerge": true,
       "automergeType": "pr",
-      "prPriority": 10,
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ]
+      "prPriority": 10
     },
     {
       "matchManagers": [
         "gradle"
       ],
+      "groupName": "vendor: Jackson FasterXML",
       "matchSourceUrlPrefixes": [
         "https://github.com/FasterXML/"
-      ],
-      "groupName": "vendor: Jackson FasterXML",
-      "labels": [
-        "dependencies",
-        "ready for review"
       ]
     },
     {
@@ -46,10 +51,6 @@
         "gradle"
       ],
       "groupName": "vendor: Keycloak",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackagePatterns": [
         "^org\\.keycloak:"
       ]
@@ -59,10 +60,6 @@
         "npm"
       ],
       "groupName": "vendor: PrimeTek / PrimeUIX",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackageNames": [
         "primeng",
         "primeicons",
@@ -77,10 +74,6 @@
         "npm"
       ],
       "groupName": "vendor: ngx-translate",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackagePrefixes": [
         "@ngx-translate/"
       ]
@@ -90,10 +83,6 @@
         "gradle"
       ],
       "groupName": "vendor: JHipster",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackagePatterns": [
         "^tech\\.jhipster:"
       ]
@@ -103,10 +92,6 @@
         "gradle"
       ],
       "groupName": "vendor: Caffeine",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackagePatterns": [
         "^com\\.github\\.ben-manes\\.caffeine:"
       ]
@@ -116,10 +101,6 @@
         "gradle"
       ],
       "groupName": "vendor: Lombok",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackagePatterns": [
         "^org\\.projectlombok:lombok$"
       ]
@@ -129,10 +110,6 @@
         "gradle"
       ],
       "groupName": "vendor: ArchUnit",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackagePatterns": [
         "^com\\.tngtech\\.archunit:"
       ]
@@ -142,10 +119,6 @@
         "gradle"
       ],
       "groupName": "vendor: Testcontainers",
-      "labels": [
-        "dependencies",
-        "ready for review"
-      ],
       "matchPackagePatterns": [
         "^org\\.testcontainers:"
       ]
