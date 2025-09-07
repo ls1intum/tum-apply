@@ -21,6 +21,7 @@ export type ApplicationCreationPage3Data = {
   motivation: string;
   skills: string;
   experiences: string;
+  privacyAccepted?: boolean;
 };
 
 export const getPage3FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage3Data => {
@@ -75,9 +76,11 @@ export default class ApplicationCreationPage3Component {
   applicationIdForDocuments = input<string | undefined>();
   documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
   documentIdsReferences = input<DocumentInformationHolderDTO[] | undefined>();
+  submitAttempted = input<boolean>(false);
 
   valid = output<boolean>();
   changed = output<boolean>();
+  privacyAcceptedChanged = output<boolean>();
 
   formbuilder = inject(FormBuilder);
 
@@ -88,6 +91,11 @@ export default class ApplicationCreationPage3Component {
     motivation: [this.data()?.motivation ?? '', Validators.required],
     skills: [this.data()?.skills ?? '', Validators.required],
     desiredStartDate: [this.data()?.desiredStartDate ?? ''],
+    privacyAccepted: [this.data()?.privacyAccepted ?? false],
+  });
+
+  privacyAcceptedSignal = toSignal(this.page3Form.controls['privacyAccepted'].valueChanges, {
+    initialValue: this.page3Form.controls['privacyAccepted'].value,
   });
 
   formValue = toSignal(this.page3Form.valueChanges.pipe(debounceTime(100)).pipe(distinctUntilChanged(deepEqual)), {
@@ -113,7 +121,7 @@ export default class ApplicationCreationPage3Component {
       this.data.set(newData);
       this.changed.emit(true);
     }
-    this.valid.emit(this.page3Form.valid);
+    this.valid.emit(this.computeContentValid());
   });
 
   private initializeFormEffect = effect(() => {
@@ -129,6 +137,11 @@ export default class ApplicationCreationPage3Component {
     this.hasInitialized.set(true);
   });
 
+  private emitPrivacyChangeEffect = effect(() => {
+    const accepted = !!this.privacyAcceptedSignal();
+    this.privacyAcceptedChanged.emit(accepted);
+  });
+
   emitChanged(): void {
     this.changed.emit(true);
   }
@@ -142,5 +155,10 @@ export default class ApplicationCreationPage3Component {
       });
     }
     this.emitChanged();
+  }
+
+  private computeContentValid(): boolean {
+    const f = this.page3Form.controls;
+    return f['experiences'].valid && f['motivation'].valid && f['skills'].valid;
   }
 }

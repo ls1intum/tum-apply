@@ -38,6 +38,8 @@
         [applicationIdForDocuments]="applicationId()"
         [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
         [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
+        [submitAttempted]="sendAttempted()"
+        (privacyAcceptedChanged)="onPrivacyAcceptedChanged($event)"
       />
     }
   </div>
