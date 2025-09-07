@@ -4,7 +4,6 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
 import { ResearchGroupManagementService } from 'app/generated/api/researchGroupManagement.service';
@@ -28,7 +27,7 @@ export interface ResearchGroupFormData {
 
 @Component({
   selector: 'jhi-research-group-info',
-  imports: [CommonModule, StringInputComponent, ButtonComponent, EditorComponent, TranslateModule, FontAwesomeModule, TranslateDirective],
+  imports: [CommonModule, StringInputComponent, ButtonComponent, EditorComponent, TranslateModule, TranslateDirective],
   templateUrl: './research-group-info.component.html',
   styleUrl: './research-group-info.component.scss',
 })
