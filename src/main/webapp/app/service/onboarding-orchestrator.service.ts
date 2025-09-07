@@ -3,10 +3,12 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { filter, map, startWith, switchMap, take } from 'rxjs/operators';
+import { NavigationEnd, Router } from '@angular/router';
 
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ProfOnboardingDTO, ProfOnboardingResourceService } from '../generated';
+import { AccountService } from '../core/auth/account.service';
 
 /**
  * Orchestrates the professor onboarding dialog on the client.
@@ -18,25 +20,39 @@ import { ProfOnboardingDTO, ProfOnboardingResourceService } from '../generated';
 @Injectable({ providedIn: 'root' })
 export class OnboardingOrchestratorService {
   private readonly injector = inject(Injector);
+  private readonly router = inject(Router);
+  private readonly accountService = inject(AccountService);
   private readonly translate = inject(TranslateService);
   private readonly dialog = inject(DialogService);
   private readonly profOnboardingResourceService = inject(ProfOnboardingResourceService);
 
-  /** Prevents opening multiple dialogs concurrently. */
+  // Prevents opening multiple dialogs concurrently.
   private opened = false;
 
   private readonly checkTrigger$ = new Subject<void>();
-
   private readonly checkResult = toSignal<ProfOnboardingDTO | null>(
     this.checkTrigger$.pipe(switchMap(() => this.profOnboardingResourceService.check().pipe(take(1)))),
     { initialValue: null },
+  );
+
+  private readonly currentUrl = toSignal<string | undefined>(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map(e => e.urlAfterRedirects),
+      startWith(this.router.url),
+    ),
+    { injector: this.injector, initialValue: undefined },
   );
 
   hookToAuth(loggedIn: Signal<boolean>): void {
     effect(
       () => {
         const isLoggedIn = loggedIn();
-        if (!isLoggedIn || this.opened) {
+        const url = this.currentUrl();
+        const onProfessorPage = typeof url === 'string' && url.startsWith('/professor');
+        const isApplicant = this.accountService.hasAnyAuthority(['APPLICANT']);
+
+        if (!isLoggedIn || this.opened || !isApplicant || !onProfessorPage) {
           return;
         }
         this.checkTrigger$.next();
