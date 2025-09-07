@@ -134,7 +134,7 @@ This document outlines key workflows supported by the position management dashbo
   - Step through the same multi-step process used in the job creation form
   - Review each section systematically for needed updates
   - Utilize auto-save functionality to preserve changes during editing
-3**Finalize updates**:
+3. **Finalize updates**:
   - Review all changes in the final step
   - Either publish immediately using the **"Publish"** button or leave the form and the position will be saved as a draft for later completion
 
