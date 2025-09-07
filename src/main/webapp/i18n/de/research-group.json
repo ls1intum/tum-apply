@@ -5,16 +5,16 @@
 
     "groupInfo": {
       "title": "Gruppeninformationen",
-      "description": "Bearbeite die grundlegenden Informationen über Deine Forschungsgruppe.",
+      "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
       "saveButton": "Speichern",
       "fields": {
         "name": "Name",
         "abbreviation": "Abkürzung",
-        "groupHead": "Gruppenleiter",
-        "school": "Fakultät",
-        "website": "Website",
+        "head": "Leitung",
+        "school": "School",
+        "website": "Webseite",
         "email": "E-Mail",
-        "address": "Adresse",
+        "address": "Straße und Hausnummer",
         "postalCode": "Postleitzahl",
         "city": "Stadt",
         "description": "Beschreibung"
@@ -22,13 +22,14 @@
       "placeholders": {
         "name": "z.B. Biomedizinische Ingenieurwissenschaften",
         "abbreviation": "z.B. BIM",
-        "groupHead": "z.B. Lina Zhang",
+        "head": "z.B. Prof. Lina Zhang",
         "email": "z.B. aniruddh.zaveri@tum.de",
         "website": "z.B. https://academics.nat.tum.de/msc/bemp",
         "school": "z.B. CIT",
         "address": "z.B. Boltzmannstraße 3",
         "postalCode": "z.B. 85748",
-        "city": "z.B. München"
+        "city": "z.B. München",
+        "description": "z.B. Die Biomedizinische Ingenieurwissenschaften Gruppe konzentriert sich auf die Schnittstelle von digitalen Werkzeugen und Lernwissenschaft. Unsere Arbeit umfasst Forschung in skalierbaren Lernplattformen, Nutzerbeteiligung und gamifizierte Lernerfahrungen. Wir zielen darauf ab, Lernen effektiver und zugänglich zu machen, indem wir Technologie einsetzen."
       }
     },
 

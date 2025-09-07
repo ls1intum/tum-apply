@@ -30,7 +30,6 @@
           <jhi-string-input
             [id]="'rg-abbreviation'"
             label="{{ 'researchGroup.groupInfo.fields.abbreviation' | translate }}"
-            [required]="true"
             [(model)]="formData().abbreviation"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.abbreviation' | translate }}"
           />
@@ -39,10 +38,10 @@
         <div class="grid grid-cols-2 gap-4">
           <jhi-string-input
             [id]="'rg-head'"
-            label="{{ 'researchGroup.groupInfo.fields.groupHead' | translate }}"
+            label="{{ 'researchGroup.groupInfo.fields.head' | translate }}"
             [required]="true"
-            [(model)]="formData().groupHead"
-            placeholder="{{ 'researchGroup.groupInfo.placeholders.groupHead' | translate }}"
+            [(model)]="formData().head"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.head' | translate }}"
           />
           <div></div>
         </div>
@@ -54,7 +53,6 @@
           <jhi-string-input
             [id]="'rg-school'"
             label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
-            [required]="true"
             [(model)]="formData().school"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.school' | translate }}"
           />
@@ -62,7 +60,6 @@
           <jhi-string-input
             [id]="'rg-website'"
             label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
-            [required]="true"
             [(model)]="formData().website"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.website' | translate }}"
           />
@@ -72,7 +69,6 @@
           <jhi-string-input
             [id]="'rg-email'"
             label="{{ 'researchGroup.groupInfo.fields.email' | translate }}"
-            [required]="true"
             [(model)]="formData().email"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
           />
@@ -109,7 +105,12 @@
 
         @if (hasInitialized()) {
           <label class="block mb-2" [for]="'rg-description'">{{ 'researchGroup.groupInfo.fields.description' | translate }}</label>
-          <jhi-editor [id]="'rg-description'" [characterLimit]="1000" [control]="descriptionControl" />
+          <jhi-editor
+            [id]="'rg-description'"
+            [characterLimit]="1000"
+            [control]="descriptionControl"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.description' | translate }}"
+          />
         }
       </div>
     </div>

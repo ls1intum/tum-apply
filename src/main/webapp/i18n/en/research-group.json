@@ -3,31 +3,32 @@
     "emailTemplatesHeader": "My Email Templates",
     "groupInfoHeader": "My Group",
     "groupInfo": {
-      "title": "Group Infomation",
+      "title": "Group Information",
       "description": "Edit the basic information about your research group.",
       "saveButton": "Save",
       "fields": {
         "name": "Name",
         "abbreviation": "Abbreviation",
-        "groupHead": "Group Head",
+        "head": "Head",
         "school": "School",
         "website": "Website",
         "email": "Email",
-        "address": "Address",
+        "address": "Street and House Number",
         "postalCode": "Postal Code",
         "city": "City",
         "description": "Description"
       },
       "placeholders": {
         "name": "e.g. Biomedical Engineering Group",
-        "groupHead": "e.g. Lina Zhang",
+        "head": "e.g. Prof. Lina Zhang",
         "email": "e.g. aniruddh.zaveri@tum.de",
         "website": "e.g. https://academics.nat.tum.de/msc/bemp",
         "abbreviation": "e.g. BEG",
         "school": "e.g. CIT",
         "address": "e.g. Boltzmannstraße 3",
         "postalCode": "e.g. 85748",
-        "city": "e.g. Munich"
+        "city": "e.g. Munich",
+        "description": "e.g. The Biomedical Engineering Group focuses on the intersection of digital tools and learning science. Our work includes research into scalable education platforms, user engagement, and gamified learning experiences. We aim to make education more effective and accessible using technology."
       }
     },
 

@@ -15,7 +15,7 @@ import { TranslateDirective } from 'app/shared/language';
 export interface ResearchGroupFormData {
   name: string;
   abbreviation: string;
-  groupHead: string;
+  head: string;
   school: string;
   website: string;
   email: string;
@@ -40,7 +40,7 @@ export class ResearchGroupInfoComponent {
   formData = signal<ResearchGroupFormData>({
     name: '',
     abbreviation: '',
-    groupHead: '',
+    head: '',
     school: '',
     website: '',
     email: '',
@@ -57,7 +57,7 @@ export class ResearchGroupInfoComponent {
   // Form validation computed
   isFormValid = computed(() => {
     const data = this.formData();
-    return !!(data.name && data.abbreviation && data.groupHead && data.school && data.website && data.email);
+    return !!(data.name && data.abbreviation && data.head && data.school && data.website && data.email);
   });
 
   // Separate form control for description since editor doesn't work with model binding
@@ -103,7 +103,7 @@ export class ResearchGroupInfoComponent {
       const updateData: ResearchGroupDTO = {
         name: data.name,
         abbreviation: data.abbreviation,
-        head: data.groupHead,
+        head: data.head,
         email: data.email,
         website: data.website,
         school: data.school,
@@ -161,7 +161,7 @@ export class ResearchGroupInfoComponent {
     const newFormData: ResearchGroupFormData = {
       name: data?.name ?? '',
       abbreviation: data?.abbreviation ?? '',
-      groupHead: data?.head ?? '',
+      head: data?.head ?? '',
       email: data?.email ?? '',
       website: data?.website ?? '',
       school: data?.school ?? '',
