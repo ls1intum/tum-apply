@@ -94,8 +94,8 @@ export default class ApplicationCreationPage3Component {
     privacyAccepted: [this.data()?.privacyAccepted ?? false],
   });
 
-  privacyAcceptedSignal = toSignal(this.page3Form.controls['privacyAccepted'].valueChanges, {
-    initialValue: this.page3Form.controls['privacyAccepted'].value,
+  privacyAcceptedSignal = toSignal(this.page3Form.controls.privacyAccepted.valueChanges, {
+    initialValue: this.page3Form.controls.privacyAccepted.value,
   });
 
   formValue = toSignal(this.page3Form.valueChanges.pipe(debounceTime(100)).pipe(distinctUntilChanged(deepEqual)), {
@@ -159,6 +159,6 @@ export default class ApplicationCreationPage3Component {
 
   private computeContentValid(): boolean {
     const f = this.page3Form.controls;
-    return f['experiences'].valid && f['motivation'].valid && f['skills'].valid;
+    return f.experiences.valid && f['motivation'].valid && f['skills'].valid;
   }
 }
