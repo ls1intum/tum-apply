@@ -1,7 +1,6 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -19,9 +18,7 @@ public record ResearchGroupDTO(
     String defaultFieldOfStudies,
     String street,
     String postalCode,
-    String city,
-    LocalDateTime createdAt,
-    LocalDateTime lastModifiedAt
+    String city
 ) {
     
     /**
@@ -45,9 +42,7 @@ public record ResearchGroupDTO(
             researchGroup.getDefaultFieldOfStudies(),
             researchGroup.getStreet(),
             researchGroup.getPostalCode(),
-            researchGroup.getCity(),
-            researchGroup.getCreatedAt(),
-            researchGroup.getLastModifiedAt()
+            researchGroup.getCity()
         );
     }
     
