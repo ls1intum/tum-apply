@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { OnboardingDialog } from './onboarding-dialog';
 
@@ -8,7 +11,8 @@ describe('OnboardingDialog', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OnboardingDialog],
+      imports: [OnboardingDialog, TranslateModule.forRoot()],
+      providers: [provideHttpClient(), provideAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OnboardingDialog);
