@@ -51,45 +51,4 @@ public record ResearchGroupDTO(
         );
     }
     
-    /**
-     * Updates a ResearchGroup entity with non-null values from this DTO.
-     * This supports partial updates by only setting fields that are not null.
-     *
-     * @param researchGroup the ResearchGroup entity to update
-     */
-    public void updateEntity(ResearchGroup researchGroup) {
-        if (name != null) {
-            researchGroup.setName(name);
-        }
-        if (abbreviation != null) {
-            researchGroup.setAbbreviation(abbreviation);
-        }
-        if (head != null) {
-            researchGroup.setHead(head);
-        }
-        if (email != null) {
-            researchGroup.setEmail(email);
-        }
-        if (website != null) {
-            researchGroup.setWebsite(website);
-        }
-        if (school != null) {
-            researchGroup.setSchool(school);
-        }
-        if (description != null) {
-            researchGroup.setDescription(description);
-        }
-        if (defaultFieldOfStudies != null) {
-            researchGroup.setDefaultFieldOfStudies(defaultFieldOfStudies);
-        }
-        if (street != null) {
-            researchGroup.setStreet(street);
-        }
-        if (postalCode != null) {
-            researchGroup.setPostalCode(postalCode);
-        }
-        if (city != null) {
-            researchGroup.setCity(city);
-        }
-    }
 }

@@ -6,6 +6,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class ResearchGroupService {
         log.debug("Creating new research group with name: {}", researchGroupDTO.name());
         
         ResearchGroup researchGroup = new ResearchGroup();
-        researchGroupDTO.updateEntity(researchGroup);
+        updateEntityFromDTO(researchGroup, researchGroupDTO);
         
         ResearchGroup savedResearchGroup = researchGroupRepository.save(researchGroup);
         return ResearchGroupDTO.getFromEntity(savedResearchGroup);
@@ -81,7 +82,7 @@ public class ResearchGroupService {
         log.debug("Updating research group with ID: {}", researchGroupId);
         
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(researchGroupId);
-        researchGroupDTO.updateEntity(researchGroup);
+        updateEntityFromDTO(researchGroup, researchGroupDTO);
         
         ResearchGroup updatedResearchGroup = researchGroupRepository.save(researchGroup);
         return ResearchGroupDTO.getFromEntity(updatedResearchGroup);
@@ -112,5 +113,37 @@ public class ResearchGroupService {
     @Transactional(readOnly = true)
     public boolean existsById(UUID researchGroupId) {
         return researchGroupRepository.existsById(researchGroupId);
+    }
+
+    /**
+     * Updates a ResearchGroup entity with values from the provided DTO.
+     * Handles both null values (from partial updates) and empty strings (from frontend forms).
+     * Only defaultFieldOfStudies can be null (as per frontend implementation).
+     */
+    private void updateEntityFromDTO(ResearchGroup entity, ResearchGroupDTO dto) {
+        // String fields: frontend sends empty strings, not nulls
+        entity.setName(dto.name());
+        entity.setAbbreviation(dto.abbreviation());
+        entity.setHead(dto.head());
+        entity.setEmail(dto.email());
+        entity.setWebsite(dto.website());
+        entity.setSchool(dto.school());
+        entity.setDescription(dto.description());
+        entity.setStreet(dto.street());
+        entity.setPostalCode(dto.postalCode());
+        entity.setCity(dto.city());
+        
+        // Only this field can be null (as per frontend: defaultFieldOfStudies: undefined)
+        updateIfNotNull(dto.defaultFieldOfStudies(), entity::setDefaultFieldOfStudies);
+    }
+
+    /**
+     * Helper method to update a field only if the value is not null.
+     * Used for fields that can actually be null from the frontend.
+     */
+    private <T> void updateIfNotNull(T value, Consumer<T> setter) {
+        if (value != null) {
+            setter.accept(value);
+        }
     }
 }
