@@ -1582,6 +1582,39 @@
         }
       }
     },
+    "/api/research-groups/search-available-users": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "searchAvailableUsers",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserShortDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/{jobId}": {
       "get": {
         "tags": [

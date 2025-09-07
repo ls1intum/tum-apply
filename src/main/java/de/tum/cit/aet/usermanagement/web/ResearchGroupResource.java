@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,5 +31,18 @@ public class ResearchGroupResource {
     public ResponseEntity<List<UserShortDTO>> getResearchGroupMembers() {
         List<UserShortDTO> members = researchGroupService.getCurrentUserResearchGroupMembers();
         return ResponseEntity.ok(members);
+    }
+
+    /**
+     * Searches for users that are not yet members of any research group.
+     *
+     * @param query the search query string
+     * @return the list of available users matching the search criteria
+     */
+    @GetMapping("/search-available-users")
+    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
+    public ResponseEntity<List<UserShortDTO>> searchAvailableUsers(@RequestParam String query) {
+        List<UserShortDTO> availableUsers = researchGroupService.searchAvailableUsers(query);
+        return ResponseEntity.ok(availableUsers);
     }
 }

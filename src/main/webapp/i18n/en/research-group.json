@@ -69,6 +69,16 @@
       "searchGroupMember": "Search for research group member",
       "noMembersQuery": "No members found for {{ query }}.",
 
+      "addMemberModal": {
+        "title": "Add people to Research Group",
+        "searchInstruction": "Search by username, full name, or email",
+        "searchPlaceholder": "Find people",
+        "noResults": "No users found matching your search.",
+        "selectedUsers": "Selected Users:",
+        "cancel": "Cancel",
+        "addToGroup": "Add to research group"
+      },
+
       "tableColumns": {
         "name": "Name",
         "email": "Email",

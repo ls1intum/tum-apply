@@ -70,6 +70,16 @@
       "searchGroupMember": "Nach Mitglied in Forschungsgruppe suchen",
       "noMembersQuery": "Keine Mitglieder gefunden für {{ query }}.",
 
+      "addMemberModal": {
+        "title": "Benutzer zur Forschungsgruppe hinzufügen",
+        "searchInstruction": "Suche nach Benutzernamen, vollständigem Namen oder E-Mail",
+        "searchPlaceholder": "Personen finden",
+        "noResults": "Keine Benutzer gefunden, die Deiner Suche entsprechen.",
+        "selectedUsers": "Ausgewählte Benutzer:",
+        "cancel": "Abbrechen",
+        "addToGroup": "Zur Forschungsgruppe hinzufügen"
+      },
+
       "tableColumns": {
         "name": "Name",
         "email": "E-Mail",

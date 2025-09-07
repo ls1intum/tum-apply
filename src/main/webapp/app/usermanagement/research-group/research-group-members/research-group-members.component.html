@@ -15,6 +15,7 @@
     <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" />
   </div>
 
+  <!-- Members Table -->
   @if (loading()) {
     <div class="text-center p-4">
       <span jhiTranslate="researchGroup.members.loading">Loading members...</span>
@@ -58,7 +59,7 @@
                 <td>{{ member.email }}</td>
                 <td>{{ formatRoles(member.roles) }}</td>
                 <td>
-                  <button class="edit-btn" (click)="editMember(member)" jhiTranslate="researchGroup.members.edit">Edit</button>
+                  <jhi-button class="edit-btn" (click)="editMember(member)" jhiTranslate="researchGroup.members.edit">Edit</jhi-button>
                 </td>
               </tr>
             }
@@ -68,3 +69,70 @@
     }
   }
 </div>
+
+<!-- Add Member Modal -->
+<p-dialog
+  [modal]="true"
+  [(visible)]="modalVisible"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  class="add-member-dialog"
+  [style]="{ width: '37.5rem' }"
+>
+  <ng-template #header>
+    <div class="dialog-header">
+      <h2 jhiTranslate="researchGroup.members.addMemberModal.title">Add people to Research Group</h2>
+    </div>
+  </ng-template>
+
+  <div class="dialog-content">
+    <p class="search-instruction" jhiTranslate="researchGroup.members.addMemberModal.searchInstruction">
+      Search by username, full name, or email
+    </p>
+
+    <jhi-search-filter-sort-bar
+      [searchText]="'researchGroup.members.addMemberModal.searchPlaceholder' | translate"
+      [singleEntity]="''"
+      [multipleEntities]="''"
+      [showRecordCount]="false"
+      (searchOutput)="onModalSearch($event)"
+    />
+
+    <!-- Search Results -->
+    @if (modalSearchQuery() && searchResults().length > 0) {
+      <div class="search-results-container">
+        <div class="search-results-list">
+          @for (user of searchResults(); track user.userId) {
+            <div class="search-result-item" [class.selected]="user.isSelected" (click)="toggleUserSelection(user)">
+              <div class="user-avatar">
+                <fa-icon icon="circle-user" class="user-icon" />
+              </div>
+              <div>
+                <div class="font-bold">{{ user.firstName }} {{ user.lastName }}</div>
+                <div>{{ user.email }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else if (modalSearchQuery() && searchResults().length === 0) {
+      <div class="no-results">
+        <p jhiTranslate="researchGroup.members.addMemberModal.noResults">No users found matching your search.</p>
+      </div>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-2">
+      <jhi-button label="researchGroup.members.addMemberModal.cancel" [shouldTranslate]="true" variant="outlined" (click)="closeModal()" />
+      <jhi-button
+        label="researchGroup.members.addMemberModal.addToGroup"
+        [shouldTranslate]="true"
+        severity="primary"
+        [disabled]="selectedUsers().length === 0"
+        (click)="addSelectedUsersToGroup()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
