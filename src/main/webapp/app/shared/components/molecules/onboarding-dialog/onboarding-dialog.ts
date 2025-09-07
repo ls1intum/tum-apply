@@ -4,6 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
+import { MessageModule } from 'primeng/message';
 
 import { ProfOnboardingResourceService } from '../../../../generated';
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -15,7 +16,7 @@ import TranslateDirective from '../../../language/translate.directive';
 @Component({
   selector: 'jhi-onboarding-dialog',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TranslateModule, ButtonComponent, TranslateDirective],
+  imports: [CommonModule, ButtonModule, TranslateModule, ButtonComponent, TranslateDirective, MessageModule],
   templateUrl: './onboarding-dialog.html',
   styleUrls: ['./onboarding-dialog.scss'], // <-- PLURAL
 })
