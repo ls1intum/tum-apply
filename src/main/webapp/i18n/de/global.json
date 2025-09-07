@@ -351,7 +351,7 @@
         },
         "submitted": {
           "summary": "Bewerbung eingereicht",
-          "detail": "Vielen Dank für das Einreichen deiner Bewerbung."
+          "detail": "Vielen Dank für deine Bewerbung."
         },
         "invalidJobId": {
           "summary": "Fehler",

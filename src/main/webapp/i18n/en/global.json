@@ -351,7 +351,7 @@
         },
         "submitted": {
           "summary": "Application submitted",
-          "detail": "Thank you for submitting your application."
+          "detail": "Thank you for your application."
         },
         "invalidJobId": {
           "summary": "Error",
