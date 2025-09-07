@@ -1,13 +1,19 @@
 package de.tum.cit.aet.usermanagement.dto;
 
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO for {@link ResearchGroup}
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ResearchGroupDTO(
-    UUID researchGroupId,
+    @NotNull UUID researchGroupId,
     String name,
     String abbreviation,
     String head,
@@ -24,10 +30,11 @@ public record ResearchGroupDTO(
     /**
      * @param researchGroup the ResearchGroup entity
      * @return the ResearchGroupDTO from the entity
+     * @throws EntityNotFoundException if the ResearchGroup entity is null
      */
     public static ResearchGroupDTO getFromEntity(ResearchGroup researchGroup) {
         if (researchGroup == null) {
-            return null;
+            throw new EntityNotFoundException("ResearchGroup entity should not be null");
         }
         
         return new ResearchGroupDTO(
