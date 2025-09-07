@@ -1,11 +1,15 @@
 {
   "onboarding": {
     "title": "Du bist Professor:in oder Mitarbeiter:in?",
-    "body": "Du bist eingeloggt, hast aber noch keine Rechte. Wenn du Professor:in oder Mitarbeiter'in bist, sende uns bitte eine E-Mail, damit wir dir deine Forschungsgruppe zuteilen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
+    "body": "Du bist eingeloggt, hast aber noch keine Rechte. Wenn du Professor:in oder Mitarbeiter:in bist, sende uns bitte eine E-Mail, damit wir dir deine Forschungsgruppe zuteilen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
     "disclaimer": "Wir werden dir eine E-Mail schicken, sobald dein Account freigeschaltet wurde. Das kann ein paar Tage dauern.",
     "actions": {
       "sendEmail": "Zugang anfragen",
       "imApplicant": "Ich bin Bewerber:in"
+    },
+    "email": {
+      "subject": "Anfrage: Zugriff zu Lehrstuhl / Professur in TUMApply",
+      "body": "=== WICHTIGE HINWEISE ===\n- Bitte ändere den Betreff dieser E-Mail nicht.\n- Fülle bitte alle notwendigen Felder unten aus.\n- Die optionalen Felder müssen nicht zwingend ausgefüllt werden.\n- Bitte sende diese E-Mail von deiner offiziellen TUM E-Mail-Adresse aus.\n=== WICHTIGE HINWEISE ===\n\n\n\n=== Notwendig ===\n\nPersönliche Informationen:\n- Titel (Prof./Dr./…): \n- Vorname: \n- Nachname: \n- TUM-ID (z. B. ab12cde): \n\nAngaben zum Lehrstuhl / zur Professur:\n- Leitung (Titel, Vor- und Nachname): \n- Name: \n\n\n=== Optional ===\n\nAngaben zum Lehrstuhl / zur Professur:\n- Abkürzung: \n- Kontakt E-Mail: \n- Webseite: \n- School: \n- Beschreibung: \n- Standard-Studienfach: \n- Adresse:\n  - Straße und Hausnummer: \n  - Postleitzahl: \n  - Stadt: "
     }
   }
 }
