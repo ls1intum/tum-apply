@@ -41,26 +41,26 @@ export class ToastService {
   }
 
   /** Key-based toast helpers for application messages (expects base key with .summary/.detail present) */
-  showSuccessKey(baseKey: string, params?: Record<string, any>): void {
+  showSuccessKey(baseKey: string, params?: Record<string, string>): void {
     this.showByBaseKey(baseKey, 'success', params);
   }
-  showErrorKey(baseKey: string, params?: Record<string, any>): void {
+  showErrorKey(baseKey: string, params?: Record<string, string>): void {
     this.showByBaseKey(baseKey, 'error', params);
   }
-  showInfoKey(baseKey: string, params?: Record<string, any>): void {
+  showInfoKey(baseKey: string, params?: Record<string, string>): void {
     this.showByBaseKey(baseKey, 'info', params);
   }
-  showWarnKey(baseKey: string, params?: Record<string, any>): void {
+  showWarnKey(baseKey: string, params?: Record<string, string>): void {
     this.showByBaseKey(baseKey, 'warn', params);
   }
 
-  private showByBaseKey(baseKey: string, severity: ToastSeverity, params?: Record<string, any>): void {
+  private showByBaseKey(baseKey: string, severity: ToastSeverity, params?: Record<string, string>): void {
     const summary = this.translateKey(`${baseKey}.summary`, params);
     const detail = this.translateKey(`${baseKey}.detail`, params);
     this.show({ summary, detail }, severity);
   }
 
-  private translateKey(key: string, params?: Record<string, any>): string {
+  private translateKey(key: string, params?: Record<string, string | number>): string {
     return this.translate.instant(key, params);
   }
 
