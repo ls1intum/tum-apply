@@ -4,20 +4,21 @@
   </div>
   <div class="card">
     <div class="card-header">
-      <h2 class="text-primary">{{ 'researchGroup.groupInfo.title' | translate }}</h2>
-      <jhi-button [label]="'researchGroup.groupInfo.saveButton' | translate" [disabled]="!form.valid" (click)="onSave()" />
+      <h2 class="text-primary text-2xl">{{ 'researchGroup.groupInfo.title' | translate }}</h2>
+      <jhi-button [label]="'researchGroup.groupInfo.saveButton' | translate" [disabled]="!isFormValid() || isSaving()" (click)="onSave()" />
     </div>
     <div class="card-body">
-      <p jhiTranslate="researchGroup.groupInfo.description"></p>
+      <p>{{ 'researchGroup.groupInfo.description' | translate }}</p>
       <hr class="divider" />
 
-      <form [formGroup]="form" class="space-y-4">
+      <div class="space-y-4">
+        <!-- Basic information section -->
         <div class="grid grid-cols-2 gap-4">
           <jhi-string-input
             [id]="'rg-name'"
             label="{{ 'researchGroup.groupInfo.fields.name' | translate }}"
             [required]="true"
-            [control]="form.controls.name"
+            [(model)]="formData().name"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.name' | translate }}"
           />
 
@@ -25,7 +26,7 @@
             [id]="'rg-abbreviation'"
             label="{{ 'researchGroup.groupInfo.fields.abbreviation' | translate }}"
             [required]="true"
-            [control]="form.controls.abbreviation"
+            [(model)]="formData().abbreviation"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.abbreviation' | translate }}"
           />
         </div>
@@ -35,27 +36,29 @@
             [id]="'rg-head'"
             label="{{ 'researchGroup.groupInfo.fields.groupHead' | translate }}"
             [required]="true"
-            [control]="form.controls.groupHead"
+            [(model)]="formData().groupHead"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.groupHead' | translate }}"
           />
           <div></div>
         </div>
+
         <hr class="divider" />
 
+        <!-- School and website section -->
         <div class="grid grid-cols-2 gap-4">
           <jhi-string-input
-            [id]="'rg-campus'"
-            label="{{ 'researchGroup.groupInfo.fields.campus' | translate }}"
+            [id]="'rg-school'"
+            label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
             [required]="true"
-            [control]="form.controls.campus"
-            placeholder="{{ 'researchGroup.groupInfo.placeholders.campus' | translate }}"
+            [(model)]="formData().school"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.school' | translate }}"
           />
 
           <jhi-string-input
             [id]="'rg-website'"
             label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
             [required]="true"
-            [control]="form.controls.website"
+            [(model)]="formData().website"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.website' | translate }}"
           />
         </div>
@@ -65,22 +68,45 @@
             [id]="'rg-email'"
             label="{{ 'researchGroup.groupInfo.fields.email' | translate }}"
             [required]="true"
-            [control]="form.controls.email"
+            [(model)]="formData().email"
             placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
           />
           <div></div>
         </div>
 
-        <jhi-string-input
-          [id]="'rg-address'"
-          label="{{ 'researchGroup.groupInfo.fields.address' | translate }}"
-          [control]="form.controls.address"
-          placeholder="{{ 'researchGroup.groupInfo.placeholders.address' | translate }}"
-        />
+        <hr class="divider" />
 
-        <label class="block mb-2" [for]="'rg-description'">{{ 'researchGroup.groupInfo.fields.description' | translate }}</label>
-        <jhi-editor [id]="'rg-description'" [characterLimit]="1000" />
-      </form>
+        <!-- Address section -->
+        <div class="grid grid-cols-2 gap-4">
+          <jhi-string-input
+            [id]="'rg-city'"
+            label="{{ 'researchGroup.groupInfo.fields.city' | translate }}"
+            [(model)]="formData().city"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.city' | translate }}"
+          />
+          <jhi-string-input
+            [id]="'rg-postalCode'"
+            label="{{ 'researchGroup.groupInfo.fields.postalCode' | translate }}"
+            [(model)]="formData().postalCode"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.postalCode' | translate }}"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <jhi-string-input
+            [id]="'rg-address'"
+            label="{{ 'researchGroup.groupInfo.fields.address' | translate }}"
+            [(model)]="formData().address"
+            placeholder="{{ 'researchGroup.groupInfo.placeholders.address' | translate }}"
+          />
+          <div></div>
+        </div>
+
+        @if (hasInitialized()) {
+          <label class="block mb-2" [for]="'rg-description'">{{ 'researchGroup.groupInfo.fields.description' | translate }}</label>
+          <jhi-editor [id]="'rg-description'" [characterLimit]="1000" [control]="descriptionControl" />
+        }
+      </div>
     </div>
   </div>
 </div>

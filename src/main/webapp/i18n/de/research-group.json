@@ -11,10 +11,12 @@
         "name": "Name",
         "abbreviation": "Abkürzung",
         "groupHead": "Gruppenleiter",
-        "campus": "Campus",
+        "school": "Fakultät",
         "website": "Website",
         "email": "E-Mail",
         "address": "Adresse",
+        "postalCode": "Postleitzahl",
+        "city": "Stadt",
         "description": "Beschreibung"
       },
       "placeholders": {
@@ -23,8 +25,10 @@
         "groupHead": "z.B. Lina Zhang",
         "email": "z.B. aniruddh.zaveri@tum.de",
         "website": "z.B. https://academics.nat.tum.de/msc/bemp",
-        "campus": "z.B. Garching",
-        "address": "z.B. Boltzmannstraße 3, 85748 Garching b. München"
+        "school": "z.B. CIT",
+        "address": "z.B. Boltzmannstraße 3",
+        "postalCode": "z.B. 85748",
+        "city": "z.B. München"
       }
     },
 

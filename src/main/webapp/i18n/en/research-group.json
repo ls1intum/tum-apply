@@ -10,10 +10,12 @@
         "name": "Name",
         "abbreviation": "Abbreviation",
         "groupHead": "Group Head",
-        "campus": "Campus",
+        "school": "School",
         "website": "Website",
         "email": "Email",
         "address": "Address",
+        "postalCode": "Postal Code",
+        "city": "City",
         "description": "Description"
       },
       "placeholders": {
@@ -22,8 +24,10 @@
         "email": "e.g. aniruddh.zaveri@tum.de",
         "website": "e.g. https://academics.nat.tum.de/msc/bemp",
         "abbreviation": "e.g. BEG",
-        "campus": "e.g. Garching",
-        "address": "e.g. Boltzmannstraße 3, 85748 Garching b. München"
+        "school": "e.g. CIT",
+        "address": "e.g. Boltzmannstraße 3",
+        "postalCode": "e.g. 85748",
+        "city": "e.g. Munich"
       }
     },
 

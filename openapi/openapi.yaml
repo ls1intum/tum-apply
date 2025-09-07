@@ -18,6 +18,10 @@
         "description": "Spring Boot Actuator Web API Documentation",
         "url": "https://docs.spring.io/spring-boot/docs/current/actuator-api/html/"
       }
+    },
+    {
+      "name": "Research Group Management",
+      "description": "Operations for managing research groups"
     }
   ],
   "paths": {
@@ -77,6 +81,125 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/research-groups/{id}": {
+      "get": {
+        "tags": [
+          "Research Group Management"
+        ],
+        "summary": "Get research group by ID",
+        "description": "Retrieves a specific research group by its unique identifier",
+        "operationId": "getResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the research group to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved research group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Research group not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Research Group Management"
+        ],
+        "summary": "Update research group",
+        "description": "Updates a research group. Supports partial updates - only provided fields will be modified.",
+        "operationId": "updateResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the research group to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchGroupDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Research group successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "403": {
+            "description": "Access denied - insufficient permissions"
+          },
+          "404": {
+            "description": "Research group not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Research Group Management"
+        ],
+        "summary": "Delete research group",
+        "description": "Deletes a research group by its ID",
+        "operationId": "deleteResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the research group to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Research group successfully deleted"
+          },
+          "403": {
+            "description": "Access denied - admin role required"
+          },
+          "404": {
+            "description": "Research group not found"
           }
         }
       }
@@ -604,6 +727,64 @@
         }
       }
     },
+    "/api/research-groups": {
+      "get": {
+        "tags": [
+          "Research Group Management"
+        ],
+        "summary": "Get all research groups",
+        "description": "Retrieves a list of all research groups in the system",
+        "operationId": "getAllResearchGroups",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved research groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Research Group Management"
+        ],
+        "summary": "Create a new research group",
+        "description": "Creates a new research group with the provided information",
+        "operationId": "createResearchGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchGroupDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Research group successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "403": {
+            "description": "Access denied - admin role required"
+          }
+        }
+      }
+    },
     "/api/jobs/create": {
       "post": {
         "tags": [
@@ -690,6 +871,52 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AcceptDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/verify-code": {
+      "post": {
+        "tags": [
+          "email-verification-resource"
+        ],
+        "operationId": "verify",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/send-code": {
+      "post": {
+        "tags": [
+          "email-verification-resource"
+        ],
+        "operationId": "send",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendCodeRequest"
               }
             }
           },
@@ -2557,6 +2784,56 @@
           }
         }
       },
+      "ResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "JobFormDTO": {
         "type": "object",
         "properties": {
@@ -3058,6 +3335,35 @@
           }
         }
       },
+      "VerifyCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "code",
+          "email"
+        ]
+      },
+      "SendCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
       "LoginRequestDTO": {
         "type": "object",
         "properties": {
@@ -3284,22 +3590,26 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "totalElements": {
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
             "type": "integer",
-            "format": "int64"
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "size": {
             "type": "integer",
@@ -3318,13 +3628,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "empty": {
             "type": "boolean"
           }
@@ -3333,11 +3636,17 @@
       "PageableObject": {
         "type": "object",
         "properties": {
-          "pageSize": {
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "pageNumber": {
+          "pageSize": {
             "type": "integer",
             "format": "int32"
           },
@@ -3347,25 +3656,19 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "paged": {
-            "type": "boolean"
           }
         }
       },
       "SortObject": {
         "type": "object",
         "properties": {
-          "empty": {
-            "type": "boolean"
-          },
           "sorted": {
             "type": "boolean"
           },
           "unsorted": {
+            "type": "boolean"
+          },
+          "empty": {
             "type": "boolean"
           }
         }
@@ -3971,22 +4274,26 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "totalElements": {
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
             "type": "integer",
-            "format": "int64"
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "size": {
             "type": "integer",
@@ -4004,13 +4311,6 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "empty": {
             "type": "boolean"
