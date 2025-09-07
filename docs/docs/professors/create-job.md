@@ -87,5 +87,6 @@ This document outlines key workflows for creating and publishing doctorate posit
    - Make any necessary edits by navigating back to previous steps
 5. **Finalize the position**:
    - Either publish immediately using the **"Publish"** button or leave the form and the position will be saved as a draft for later completion
+   - Positions that are saved as drafts are not visible to applicants
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61937
