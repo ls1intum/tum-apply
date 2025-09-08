@@ -1,10 +1,15 @@
 package de.tum.cit.aet.usermanagement.service;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
@@ -58,11 +63,10 @@ public class ResearchGroupService {
      *
      * @return list of all research group DTOs
      */
-    public List<ResearchGroupDTO> getAllResearchGroups() {
-        return researchGroupRepository.findAll()
-                .stream()
-                .map(ResearchGroupDTO::getFromEntity)
-                .toList();
+    public PageResponseDTO<ResearchGroupDTO> getAllResearchGroups(PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), Sort.by(Sort.Direction.ASC, "name"));
+        Page<ResearchGroup> page = researchGroupRepository.findAll(pageable);
+        return new PageResponseDTO<>(page.get().map(ResearchGroupDTO::getFromEntity).toList(), page.getTotalElements());
     }
 
     /**
