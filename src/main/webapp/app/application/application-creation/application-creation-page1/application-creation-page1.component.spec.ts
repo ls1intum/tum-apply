@@ -13,6 +13,8 @@ import {
   faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
+import { AccountService } from 'app/core/auth/account.service';
+import { of } from 'rxjs';
 
 import ApplicationCreationPage1Component, { ApplicationCreationPage1Data, selectLanguage } from './application-creation-page1.component';
 
@@ -29,7 +31,7 @@ const mockData: ApplicationCreationPage1Data = {
   linkedIn: 'https://www.linkedin.com/in/annaschmidt',
   street: 'Hauptstraße',
   city: 'Berlin',
-  country: 'Germany',
+  country: { name: 'GE', value: 'Germany' },
   postcode: '10115',
 };
 
@@ -41,6 +43,14 @@ describe('ApplicationCreationPage1Component', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationPage1Component, TranslateModule.forRoot()],
+      providers: [
+        {
+          provide: AccountService,
+          useValue: {
+            signedIn: jest.fn().mockReturnValue(of(true)),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationCreationPage1Component);
