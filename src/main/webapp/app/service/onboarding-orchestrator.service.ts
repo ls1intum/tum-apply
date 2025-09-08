@@ -30,9 +30,9 @@ export class OnboardingOrchestratorService {
   private opened = false;
 
   private readonly checkTrigger$ = new Subject<void>();
-  private readonly checkResult = toSignal<ProfOnboardingDTO | null>(
+  private readonly checkResult = toSignal<ProfOnboardingDTO | undefined>(
     this.checkTrigger$.pipe(switchMap(() => this.profOnboardingResourceService.check().pipe(take(1)))),
-    { initialValue: null },
+    { initialValue: undefined },
   );
 
   private readonly currentUrl = toSignal<string | undefined>(
@@ -63,7 +63,7 @@ export class OnboardingOrchestratorService {
     effect(
       () => {
         const dto = this.checkResult();
-        if (dto === null || this.opened || dto.show !== true) {
+        if (this.opened || dto?.show !== true) {
           return;
         }
         this.opened = true;
