@@ -1,39 +1,19 @@
+@use '../../../../../content/scss/layout' as layout;
+
 .login-header {
-  display: flex;
-  padding: 1rem 1rem;
-  justify-content: center;
-  align-items: center;
-  align-self: stretch;
+  @include layout.authentication-header-base;
   background: var(--p-primary-color);
   color: var(--p-text-on-primary);
-  font-weight: 700;
-  font-size: 2rem;
-  border-radius: 0.75rem 0.75rem 0 0;
 }
 
 .login-content {
-  display: flex;
-  padding: 1.5rem 2rem;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  align-self: stretch;
+  @include layout.section-col;
 
   .login-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    align-self: stretch;
+    @include layout.panel-col;
 
     .login-buttons {
-      display: flex;
-      flex: 1 1 auto;
-      align-self: stretch;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      @include layout.buttons-col;
 
       .login-credentials {
         width: 100%;
@@ -56,20 +36,6 @@
   }
 
   .login-footer {
-    padding: 1rem 0 0;
-    text-align: center;
-    font-size: 0.875rem;
-    font-weight: 400;
-    color: var(--p-text-primary);
-
-    a {
-      color: var(--p-primary-color);
-      font-weight: 700;
-      cursor: pointer;
-
-      &:hover {
-        color: var(--p-primary-hover);
-      }
-    }
+    @include layout.auth-footer;
   }
 }

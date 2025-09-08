@@ -1,0 +1,59 @@
+@mixin flex-col-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin buttons-col {
+  display: flex;
+  flex: 1 1 auto;
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin authentication-header-base {
+  display: flex;
+  padding: 1rem 1rem;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  font-weight: 700;
+  font-size: 2rem;
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+@mixin section-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  gap: 0.25rem;
+  align-self: stretch;
+}
+
+@mixin panel-col {
+  @include flex-col-center;
+  gap: 1rem;
+  align-self: stretch;
+}
+
+@mixin auth-footer {
+  padding: 1rem 0 0;
+  text-align: center;
+  font-size: .875rem;
+  font-weight: 400;
+  color: var(--p-text-primary);
+
+  a {
+    color: var(--p-primary-color);
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--p-primary-hover);
+    }
+  }
+}
