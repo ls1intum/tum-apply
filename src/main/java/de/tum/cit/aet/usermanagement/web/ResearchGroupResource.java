@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -54,7 +54,7 @@ public class ResearchGroupResource {
     @CheckAccess
     public ResponseEntity<ResearchGroupDTO> updateResearchGroup(
         @PathVariable UUID id,
-        @RequestBody ResearchGroupDTO researchGroupDTO
+        @Valid @RequestBody ResearchGroupDTO researchGroupDTO
     ) {
         ResearchGroupDTO updatedResearchGroup = researchGroupService.updateResearchGroup(id, researchGroupDTO);
         return ResponseEntity.ok(updatedResearchGroup);
