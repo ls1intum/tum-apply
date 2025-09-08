@@ -5,6 +5,7 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Va
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
+import { AccountService } from 'app/core/auth/account.service';
 import * as postalCodes from 'postal-codes-js';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
@@ -95,9 +96,12 @@ export default class ApplicationCreationPage1Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
+  disabledEmail = computed<boolean>(() => this.accountService.signedIn());
+
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
+  accountService = inject(AccountService);
   selectCountriesLocal = selectCountries;
 
   formbuilder = inject(FormBuilder);
