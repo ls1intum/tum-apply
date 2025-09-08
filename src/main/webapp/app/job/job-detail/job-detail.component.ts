@@ -175,7 +175,12 @@ export class JobDetailComponent {
   }
 
   onApply(): void {
-    this.router.navigate([`/application/create/${this.jobId()}`]);
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        job: this.jobId(),
+      },
+    });
+    // TODO - adjust to application state like in job overview page
   }
 
   onEditJob(): void {

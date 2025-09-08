@@ -146,7 +146,11 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onUpdateApplication(applicationId: string): void {
-    this.router.navigate([`/application/edit/${applicationId}`]);
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        application: applicationId,
+      },
+    });
   }
 
   onDeleteApplication(applicationId: string): void {
