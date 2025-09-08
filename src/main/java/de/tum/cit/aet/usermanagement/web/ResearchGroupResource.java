@@ -1,12 +1,15 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +30,8 @@ public class ResearchGroupResource {
      * @return the list of research groups
      */
     @GetMapping
-    public ResponseEntity<List<ResearchGroupDTO>> getAllResearchGroups() {
-        List<ResearchGroupDTO> researchGroups = researchGroupService.getAllResearchGroups();
+    public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getAllResearchGroups(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+        PageResponseDTO<ResearchGroupDTO> researchGroups = researchGroupService.getAllResearchGroups(pageDTO);
         return ResponseEntity.ok(researchGroups);
     }
 
