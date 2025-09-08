@@ -1,10 +1,10 @@
 {
   "researchGroup": {
     "emailTemplatesHeader": "Meine E-Mail-Vorlagen",
+    "groupInfoPage": "TUMApply - Meine Gruppe",
     "groupInfoHeader": "Meine Gruppe",
 
     "groupInfo": {
-      "title": "Gruppeninformationen",
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
       "saveButton": "Speichern",
       "fields": {

@@ -228,7 +228,7 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Professor] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-info/research-group-info.component').then(m => m.ResearchGroupInfoComponent),
-    title: 'researchGroup.groupInfoHeader',
+    title: 'researchGroup.groupInfoPage',
   },
 
   // ======================================================================================

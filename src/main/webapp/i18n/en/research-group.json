@@ -1,9 +1,10 @@
 {
   "researchGroup": {
     "emailTemplatesHeader": "My Email Templates",
+    "groupInfoPage": "TUMApply - My Group",
     "groupInfoHeader": "My Group",
+
     "groupInfo": {
-      "title": "Group Information",
       "description": "Edit the basic information about your research group.",
       "saveButton": "Save",
       "fields": {
