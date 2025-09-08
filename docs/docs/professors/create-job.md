@@ -29,7 +29,8 @@ This is the **comprehensive creation interface** for developing new doctorate po
 
 ### Step 2: Position Details
 
-![Job Creation Form Step 2](images/job-creation-form-2.png)
+![Job Creation Form Step 2 Section 1](images/job-creation-form-2-1.png)
+![Job Creation Form Step 2 Section 2](images/job-creation-form-2-2.png)
 <div style={{textAlign:'center'}}>
   <em>Job Creation Form Step 2: Position Details</em>
 </div>
@@ -43,7 +44,10 @@ This is the **comprehensive creation interface** for developing new doctorate po
 
 ### Step 3: Review Job Details
 
-![Job Creation Form Step 3](images/job-creation-form-3.png)
+![Job Creation Form Step 3 Section 1](images/job-creation-form-3-1.png)
+![Job Creation Form Step 3 Section 2](images/job-creation-form-3-2.png)
+![Job Creation Form Step 3 Section 3](images/job-creation-form-3-3.png)
+![Job Creation Form Step 3 Section 4](images/job-creation-form-3-4.png)
 <div style={{textAlign:'center'}}>
   <em>Job Creation Form Step 3: Review</em>
 </div>
