@@ -381,6 +381,30 @@
         "fetchDocumentIdsFailed": {
           "summary": "Fehler",
           "detail": "Fehler beim Laden der Dokument-IDs für diese Bewerbung."
+        },
+        "notEditable": {
+          "summary": "Fehler",
+          "detail": "Diese Bewerbung kann nicht bearbeitet werden, da sie bereits eingereicht oder kein Entwurf mehr ist."
+        },
+        "authRequired": {
+          "summary": "Fehler",
+          "detail": "Bewerbung kann nicht eingereicht werden: Benutzeranmeldung erforderlich."
+        },
+        "saveFailed": {
+          "summary": "Fehler",
+          "detail": "Bewerbung konnte nicht gespeichert werden."
+        },
+        "loadFailed": {
+          "summary": "Fehler",
+          "detail": "Bewerbung konnte nicht geladen werden."
+        },
+        "initLoadFailed": {
+          "summary": "Fehler",
+          "detail": "Bewerbung konnte nicht geladen werden."
+        },
+        "missingJobIdUnauthenticated": {
+          "summary": "Fehler",
+          "detail": "Job-ID muss angegeben werden, wenn keine Anmeldung vorliegt."
         }
       },
       "applicationOverview": {

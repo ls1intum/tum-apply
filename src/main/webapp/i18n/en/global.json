@@ -381,6 +381,30 @@
         "fetchDocumentIdsFailed": {
           "summary": "Error",
           "detail": "Failed to fetch document IDs for this application."
+        },
+        "notEditable": {
+          "summary": "Error",
+          "detail": "This application cannot be edited as it has already been submitted or is in a non-draft state."
+        },
+        "authRequired": {
+          "summary": "Error",
+          "detail": "Cannot submit application: User authentication required."
+        },
+        "saveFailed": {
+          "summary": "Error",
+          "detail": "Failed to save application."
+        },
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Failed to load application."
+        },
+        "initLoadFailed": {
+          "summary": "Error",
+          "detail": "Failed to load application."
+        },
+        "missingJobIdUnauthenticated": {
+          "summary": "Error",
+          "detail": "Job ID must be provided when not authenticated."
         }
       },
       "applicationOverview": {

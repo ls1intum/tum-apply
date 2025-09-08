@@ -353,7 +353,8 @@ export default class ApplicationCreationFormComponent {
         this.updateDocumentInformation();
       } catch (error: unknown) {
         const httpError = error as HttpErrorResponse;
-        this.showInitErrorMessage('Error', httpError.message || 'Failed to load application.');
+        this.showInitErrorMessage('entity.toast.applyFlow.initLoadFailed');
+        throw new Error(`Init failed with HTTP ${httpError.status} ${httpError.statusText}: ${httpError.message}`);
       }
     }
   }
@@ -366,7 +367,7 @@ export default class ApplicationCreationFormComponent {
       this.loadPage1FromLocalStorage(jobId);
       this.applicationState.set('SAVED');
     } else {
-      this.showInitErrorMessage('Error', 'Job ID must be provided when not authenticated.');
+      this.showInitErrorMessage('entity.toast.applyFlow.missingJobIdUnauthenticated');
     }
   }
 
@@ -374,10 +375,7 @@ export default class ApplicationCreationFormComponent {
     const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
 
     if (application.applicationState !== 'SAVED') {
-      this.toastService.showError({
-        summary: 'Error',
-        detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
-      });
+      this.toastService.showErrorKey('entity.toast.applyFlow.notEditable');
       await this.router.navigate(['/application/detail', applicationId]);
       throw new Error('Application is not editable.');
     }
@@ -390,10 +388,7 @@ export default class ApplicationCreationFormComponent {
     const application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
 
     if (application.applicationState !== 'SAVED') {
-      this.toastService.showError({
-        summary: 'Error',
-        detail: 'This application cannot be edited as it has already been submitted or is in a non-draft state.',
-      });
+      this.toastService.showErrorKey('entity.toast.applyFlow.notEditable');
       await this.router.navigate(['/application/detail', application.applicationId]);
       throw new Error('Application is not editable.');
     }
@@ -428,15 +423,13 @@ export default class ApplicationCreationFormComponent {
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
-      this.toastService.showError({ detail: 'There is an error with the applicationId' });
+      this.toastService.showErrorKey('entity.toast.applyFlow.errorApplicationId');
       return false;
     }
 
     // If using local storage, we can't send to server
     if (this.useLocalStorage()) {
-      this.toastService.showError({
-        detail: 'Cannot submit application: User authentication required.',
-      });
+      this.toastService.showErrorKey('entity.toast.applyFlow.authRequired');
       return false;
     }
 
@@ -449,15 +442,12 @@ export default class ApplicationCreationFormComponent {
       this.clearLocalStorage();
 
       if (rerouteToOtherPage) {
-        this.toastService.showSuccess({ detail: 'Successfully saved application' });
+        this.toastService.showSuccessKey('entity.toast.applyFlow.submitted');
         location.back();
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
-      this.toastService.showError({
-        summary: 'Error',
-        detail: 'Failed to save application: ' + httpError.statusText,
-      });
+      this.toastService.showErrorKey('entity.toast.applyFlow.saveFailedWithStatus', { status: httpError.statusText });
       return false;
     }
     return true;
@@ -473,12 +463,7 @@ export default class ApplicationCreationFormComponent {
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() =>
-        this.toastService.showError({
-          summary: 'Error',
-          detail: 'fetching the document ids for this application',
-        }),
-      );
+      .catch(() => this.toastService.showErrorKey('entity.toast.applyFlow.fetchDocumentIdsFailed'));
   }
 
   onValueChanged(): void {
@@ -566,14 +551,10 @@ export default class ApplicationCreationFormComponent {
       jobId: this.jobId(),
       timestamp: new Date().toISOString(),
     };
-
     try {
       this.localStorageService.saveApplicationDraft(applicationData);
     } catch {
-      this.toastService.showError({
-        summary: 'Error',
-        detail: 'Failed to save application data locally.',
-      });
+      this.toastService.showErrorKey('entity.toast.applyFlow.saveFailed');
       return false;
     }
     return true;
@@ -594,12 +575,10 @@ export default class ApplicationCreationFormComponent {
         this.applicationId.set(draft.applicationId);
         this.jobId.set(draft.jobId);
       }
-    } catch {
+    } catch (err) {
       queueMicrotask(() => {
-        this.toastService.showError({
-          detail: 'Error',
-          summary: 'Error retrieving the application data from the local storage',
-        });
+        this.toastService.showErrorKey('entity.toast.applyFlow.loadFailed');
+        throw new Error('Local load failed: ' + (err as Error).message);
       });
     }
   }
@@ -621,12 +600,11 @@ export default class ApplicationCreationFormComponent {
    * because while the component was initialised (createGlobalToast had been executed and toastComponent was not empty)
    * it was likely not ready being rendered in the DOM
    */
-  private showInitErrorMessage(summary: string, detail: string): void {
+  private showInitErrorMessage(key: string): void {
     queueMicrotask(() => {
-      this.toastService.showError({
-        summary,
-        detail,
-      });
+      // Use key-based toast instead of hardcoded text so messages are translated and consistent across the application.
+      this.toastService.showErrorKey(key);
+
       setTimeout(() => void this.router.navigate(['/job-overview']), 3000);
     });
   }
