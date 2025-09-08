@@ -16,7 +16,7 @@
 
 @mixin authentication-header-base {
   display: flex;
-  padding: 1rem 1rem;
+  padding: 1rem;
   justify-content: center;
   align-items: center;
   align-self: stretch;
@@ -36,6 +36,7 @@
 
 @mixin panel-col {
   @include flex-col-center;
+
   gap: 1rem;
   align-self: stretch;
 }

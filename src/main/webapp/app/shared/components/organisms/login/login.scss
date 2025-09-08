@@ -2,6 +2,7 @@
 
 .login-header {
   @include layout.authentication-header-base;
+  
   background: var(--p-primary-color);
   color: var(--p-text-on-primary);
 }
