@@ -27,6 +27,7 @@ public class ResearchGroupResource {
     /**
      * Get all research groups.
      *
+     * @param pageDTO the pagination parameters
      * @return the list of research groups
      */
     @GetMapping

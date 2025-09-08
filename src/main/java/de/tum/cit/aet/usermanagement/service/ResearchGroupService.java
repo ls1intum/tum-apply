@@ -61,6 +61,7 @@ public class ResearchGroupService {
     /**
      * Retrieves all research groups.
      *
+     * @param pageDTO the pagination parameters
      * @return list of all research group DTOs
      */
     public PageResponseDTO<ResearchGroupDTO> getAllResearchGroups(PageDTO pageDTO) {
