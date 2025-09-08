@@ -40,7 +40,8 @@ Used for **comprehensive position review** with full management capabilities and
 - Features **status-dependent action buttons** matching capabilities available in the dashboard interface
 - Includes **administrative context** and editing access not available in the applicant view
 
-![Job Details Page 1 (Professor)](images/job-detail-professor.png)
+![Job Details Page 1 (Professor)](images/job-detail-professor-1.png)
+![Job Details Page 2 (Professor)](images/job-detail-professor-2.png)
 <div style={{textAlign:'center'}}>
   <em>Job Detail Page</em>
 </div>

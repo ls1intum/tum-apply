@@ -39,7 +39,8 @@ Used for **in-depth evaluation** of individual positions before applying.
 - Includes comprehensive **data protection information** for GDPR compliance
 - Provides **direct application access** and easy navigation back to position browsing
 
-![Job Details Page](images/job-detail-applicant.png)
+![Job Details Page 1](images/job-detail-applicant-1.png)
+![Job Details Page 2](images/job-detail-applicant-2.png)
 <div style={{textAlign:'center'}}>
   <em>Job Detail Page</em>
 </div>
