@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -14,10 +16,10 @@ import jakarta.validation.constraints.NotNull;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ResearchGroupDTO(
     @NotNull UUID researchGroupId,
-    String name,
+    @NotBlank String name,
     String abbreviation,
-    String head,
-    String email,
+    @NotBlank String head,
+    @Email String email,
     String website,
     String school,
     String description,
