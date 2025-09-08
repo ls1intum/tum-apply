@@ -60,17 +60,16 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
       : this.translateService.instant('auth.common.otp.resend');
   }
 
-  onKeyDown(e: KeyboardEvent): void {
-    // Submit on Enter
-    if (e.key === 'Enter') {
-      e.preventDefault();
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
       this.onSubmit();
       return;
     }
 
     // Block any non-alphanumeric character keys (allows navigation keys, backspace, etc.)
-    if (e.key && e.key.length === 1 && !/[a-zA-Z0-9]/.test(e.key)) {
-      e.preventDefault();
+    if (event.key && event.key.length === 1 && !/[a-zA-Z0-9]/.test(event.key)) {
+      event.preventDefault();
     }
   }
 
