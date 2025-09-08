@@ -78,6 +78,17 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
+  // return all unique listed job names
+  readonly uniqueJobNames = computed<string[]>(() => {
+    const data = this.pageData();
+    const jobNames = data
+      .map(item => item.jobName)
+      .filter((jobName): jobName is string => !!jobName)
+      .filter((jobName, index, array) => array.indexOf(jobName) === index);
+
+    return jobNames.sort();
+  });
+
   protected readonly sortOptions = sortOptions;
 
   private isSearchInitiatedByUser = false;
