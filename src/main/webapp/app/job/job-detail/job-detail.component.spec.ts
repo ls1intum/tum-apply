@@ -8,6 +8,7 @@ import { faEnvelope, faGlobe, faLocationDot, faMicroscope, faUserTie } from '@fo
 import { of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { provideHttpClient } from '@angular/common/http';
 
 import { JobDetailDTO, JobResourceService } from '../../generated';
 import { AccountService } from '../../core/auth/account.service';
@@ -86,6 +87,7 @@ describe('JobDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [JobDetailComponent, TranslateModule.forRoot()],
       providers: [
+        provideHttpClient(),
         provideRouter([]),
         provideHttpClientTesting(),
         { provide: JobResourceService, useValue: mockJobService },
