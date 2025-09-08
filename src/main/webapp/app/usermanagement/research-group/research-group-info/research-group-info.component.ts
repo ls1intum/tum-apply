@@ -95,8 +95,7 @@ export class ResearchGroupInfoComponent {
       this.toastService.showSuccess({
         detail: 'Research group information updated successfully.',
       });
-    } catch (error) {
-      console.error('Error saving research group data:', error);
+    } catch {
       this.toastService.showError({
         detail: 'Failed to save research group information.',
       });
@@ -119,8 +118,7 @@ export class ResearchGroupInfoComponent {
 
       const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
       this.populateFormData(researchGroup);
-    } catch (error) {
-      console.error('Error loading research group data:', error);
+    } catch {
       this.toastService.showError({
         summary: 'Error Loading Data',
         detail: 'Failed to load research group information.',
