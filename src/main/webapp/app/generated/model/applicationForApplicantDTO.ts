@@ -13,7 +13,7 @@ import { ApplicantDTO } from './applicantDTO';
 
 
 export interface ApplicationForApplicantDTO { 
-    applicationId: string;
+    applicationId?: string;
     applicant?: ApplicantDTO;
     job: JobCardDTO;
     applicationState: ApplicationForApplicantDTO.ApplicationStateEnum;

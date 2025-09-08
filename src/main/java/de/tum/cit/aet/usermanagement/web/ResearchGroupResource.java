@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +42,17 @@ public class ResearchGroupResource {
     public ResponseEntity<ResearchGroupDTO> getResearchGroup(@PathVariable UUID id) {
         ResearchGroupDTO researchGroup = researchGroupService.getResearchGroup(id);
         return ResponseEntity.ok(researchGroup);
+    }
+
+    /**
+     * Get detailed information about a research group.
+     *
+     * @param researchGroupId the ID of the research group to get details for
+     * @return the detailed research group information
+     */
+    @GetMapping("/detail/{researchGroupId}")
+    public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
+        return ResponseEntity.ok(researchGroupService.getResearchGroupDetails(researchGroupId));
     }
 
     /**

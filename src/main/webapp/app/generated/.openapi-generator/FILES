@@ -2,7 +2,6 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/actuator.service.ts
 api/api.ts
 api/applicationEvaluationResource.service.ts
 api/applicationResource.service.ts
@@ -14,7 +13,7 @@ api/emailVerificationResource.service.ts
 api/internalCommentResource.service.ts
 api/jobResource.service.ts
 api/ratingResource.service.ts
-api/researchGroupManagement.service.ts
+api/researchGroupResource.service.ts
 api/userResource.service.ts
 configuration.ts
 encoder.ts
@@ -53,7 +52,6 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFilterOptionDTO.ts
 model/jobFormDTO.ts
-model/link.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/pageCreatedJobDTO.ts
@@ -65,7 +63,7 @@ model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
-model/researchGroupDTO.ts
+model/researchGroupLargeDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
 model/sortObject.ts
