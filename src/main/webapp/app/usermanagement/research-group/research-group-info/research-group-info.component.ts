@@ -54,7 +54,7 @@ export class ResearchGroupInfoComponent {
     head: new FormControl('', [Validators.required]),
     school: new FormControl(''),
     website: new FormControl(''),
-    email: new FormControl(''),
+    email: new FormControl('', [Validators.email, Validators.pattern(/.+\..{2,}$/)]),
     city: new FormControl(''),
     postalCode: new FormControl(''),
     address: new FormControl(''),
