@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateModule } from '@ngx-translate/core';
@@ -27,63 +27,52 @@ export interface ResearchGroupFormData {
 
 @Component({
   selector: 'jhi-research-group-info',
-  imports: [CommonModule, StringInputComponent, ButtonComponent, EditorComponent, TranslateModule, TranslateDirective],
+  imports: [CommonModule, StringInputComponent, ButtonComponent, EditorComponent, TranslateModule, TranslateDirective, ReactiveFormsModule],
   templateUrl: './research-group-info.component.html',
   styleUrl: './research-group-info.component.scss',
 })
 export class ResearchGroupInfoComponent {
+  // Effect to initialize when user data becomes available
+  initEffect = effect(() => {
+    const currentUser = this.currentUser();
+    if (currentUser && !this.hasInitialized()) {
+      void this.init();
+    }
+  });
+
   // State signals
   isSaving = signal<boolean>(false);
   hasInitialized = signal<boolean>(false);
 
-  // Form data signal
-  formData = signal<ResearchGroupFormData>({
-    name: '',
-    abbreviation: '',
-    head: '',
-    school: '',
-    website: '',
-    email: '',
-    city: '',
-    postalCode: '',
-    address: '',
-    description: '',
-  });
-
   // Computed properties
-  currentUser = computed(() => this.accountService.loadedUser());
   researchGroupId = computed(() => this.currentUser()?.researchGroup?.researchGroupId);
 
-  // Form validation computed
-  isFormValid = computed(() => {
-    const data = this.formData();
-    return !!(data.name && data.abbreviation && data.head && data.school && data.website && data.email);
+  // Reactive forms
+  form = new FormGroup({
+    name: new FormControl('', [Validators.required]),
+    abbreviation: new FormControl(''),
+    head: new FormControl('', [Validators.required]),
+    school: new FormControl(''),
+    website: new FormControl(''),
+    email: new FormControl(''),
+    city: new FormControl(''),
+    postalCode: new FormControl(''),
+    address: new FormControl(''),
+    description: new FormControl(''),
   });
-
-  // Separate form control for description since editor doesn't work with model binding
-  descriptionControl = new FormControl('');
 
   // Services
   private accountService = inject(AccountService);
   private researchGroupService = inject(ResearchGroupManagementService);
   private toastService = inject(ToastService);
 
-  constructor() {
-    // Effect to initialize when user data becomes available
-    effect(() => {
-      const currentUser = this.currentUser();
-      if (currentUser && !this.hasInitialized()) {
-        void this.init();
-      }
-    });
-  }
-
+  private currentUser = this.accountService.loadedUser;
   /**
    * Saves the research group data to the API.
    */
   // TODO: Avoid saving everything every time the form is saved. Only save the fields that have changed.
   async onSave(): Promise<void> {
-    if (!this.isFormValid()) {
+    if (!this.form.valid) {
       return;
     }
 
@@ -99,20 +88,7 @@ export class ResearchGroupInfoComponent {
     try {
       this.isSaving.set(true);
 
-      const data = this.formData();
-      const updateData: ResearchGroupDTO = {
-        name: data.name,
-        abbreviation: data.abbreviation,
-        head: data.head,
-        email: data.email,
-        website: data.website,
-        school: data.school,
-        description: this.descriptionControl.value ?? '',
-        defaultFieldOfStudies: undefined,
-        street: data.address,
-        postalCode: data.postalCode,
-        city: data.city,
-      };
+      const updateData: ResearchGroupDTO = this.form.value as ResearchGroupDTO;
 
       await firstValueFrom(this.researchGroupService.updateResearchGroup(researchGroupId, updateData));
 
@@ -158,7 +134,7 @@ export class ResearchGroupInfoComponent {
    * Populates the form data with the given research group data.
    */
   private populateFormData(data?: ResearchGroupDTO): void {
-    const newFormData: ResearchGroupFormData = {
+    this.form.patchValue({
       name: data?.name ?? '',
       abbreviation: data?.abbreviation ?? '',
       head: data?.head ?? '',
@@ -169,9 +145,7 @@ export class ResearchGroupInfoComponent {
       postalCode: data?.postalCode ?? '',
       address: data?.street ?? '',
       description: data?.description ?? '',
-    };
-
-    this.formData.set(newFormData);
-    this.descriptionControl.setValue(newFormData.description);
+    });
+    this.form.updateValueAndValidity();
   }
 }
