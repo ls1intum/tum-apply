@@ -2,7 +2,7 @@
 
 .login-header {
   @include layout.authentication-header-base;
-  
+
   background: var(--p-accent-color);
   color: var(--p-text-on-accent);
 }
