@@ -13,7 +13,13 @@
     .card-header {
       display: flex;
       justify-content: space-between;
-      padding: 2rem 0;
+      padding-bottom: 2rem;
+    }
+
+    .form-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
     }
   }
 }

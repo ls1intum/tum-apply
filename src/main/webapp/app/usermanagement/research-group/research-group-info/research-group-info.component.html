@@ -16,7 +16,7 @@
       <div class="space-y-4">
         <!-- Basic information section -->
         <form [formGroup]="form">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
             <jhi-string-input
               [id]="'rg-name'"
               label="{{ 'researchGroup.groupInfo.fields.name' | translate }}"
@@ -35,7 +35,7 @@
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
             <jhi-string-input
               [id]="'rg-head'"
               label="{{ 'researchGroup.groupInfo.fields.head' | translate }}"
@@ -48,7 +48,7 @@
           </div>
 
           <!-- School and website section -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
             <jhi-string-input
               [id]="'rg-school'"
               label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
@@ -66,7 +66,7 @@
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
             <jhi-string-input
               [id]="'rg-website'"
               label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
@@ -85,7 +85,7 @@
           </div>
 
           <!-- Address section -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
             <jhi-string-input
               [id]="'rg-city'"
               label="{{ 'researchGroup.groupInfo.fields.city' | translate }}"
@@ -102,7 +102,7 @@
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
             <jhi-string-input
               [id]="'rg-address'"
               label="{{ 'researchGroup.groupInfo.fields.address' | translate }}"
