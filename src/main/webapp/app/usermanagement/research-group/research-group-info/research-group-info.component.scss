@@ -10,22 +10,10 @@
   }
 
   .card {
-    border-radius: 0.5rem;
-    border: 0.1rem solid var(--p-border-default);
-
     .card-header {
       display: flex;
       justify-content: space-between;
-      padding: 1rem 1.5rem;
-    }
-
-    .card-body {
-      padding: 0 1.5rem 1.5rem;
-
-      .divider {
-        border-top: 0.1rem solid var(--p-border-default);
-        margin: 1rem 0 1.5rem;
-      }
+      padding: 2rem 0;
     }
   }
 }

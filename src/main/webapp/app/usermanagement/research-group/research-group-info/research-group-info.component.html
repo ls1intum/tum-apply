@@ -4,7 +4,7 @@
   </div>
   <div class="card">
     <div class="card-header">
-      <h2 jhiTranslate="researchGroup.groupInfo.title" class="text-primary text-2xl"></h2>
+      <p jhiTranslate="researchGroup.groupInfo.description"></p>
       <jhi-button
         [label]="'researchGroup.groupInfo.saveButton'"
         [shouldTranslate]="true"
@@ -13,9 +13,6 @@
       />
     </div>
     <div class="card-body">
-      <p jhiTranslate="researchGroup.groupInfo.description"></p>
-      <hr class="divider" />
-
       <div class="space-y-4">
         <!-- Basic information section -->
         <form [formGroup]="form">
@@ -49,8 +46,6 @@
             />
             <div></div>
           </div>
-
-          <hr class="divider" />
 
           <!-- School and website section -->
           <div class="grid grid-cols-2 gap-4">
