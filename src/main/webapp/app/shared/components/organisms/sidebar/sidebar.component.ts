@@ -124,7 +124,7 @@ export class SidebarComponent {
           title: 'sidebar.researchgroup.researchgroup',
           buttons: [
             { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
-            { icon: 'info-circle', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
+            { icon: 'flask', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
           ],
         },
       ],
