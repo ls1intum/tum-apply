@@ -6,6 +6,7 @@
   "schedule": [
     "every weekend"
   ],
+  "timezone": "Europe/Berlin",
   "minimumReleaseAge": "3 days",
   "vulnerabilityAlerts": {
     "enabled": true,
