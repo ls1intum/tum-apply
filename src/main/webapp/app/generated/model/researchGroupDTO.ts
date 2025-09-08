@@ -10,10 +10,9 @@
 
 
 export interface ResearchGroupDTO { 
-    researchGroupId?: string;
-    name?: string;
+    name: string;
     abbreviation?: string;
-    head?: string;
+    head: string;
     email?: string;
     website?: string;
     school?: string;
@@ -22,7 +21,5 @@ export interface ResearchGroupDTO {
     street?: string;
     postalCode?: string;
     city?: string;
-    createdAt?: string;
-    lastModifiedAt?: string;
 }
 
