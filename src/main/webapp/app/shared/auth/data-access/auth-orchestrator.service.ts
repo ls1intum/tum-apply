@@ -2,7 +2,7 @@ import { Injectable, Injector, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
 
-import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginSubState, RegisterStep } from '../models/auth.model';
+import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginSubState, REGISTER_STEPS, RegisterStep } from '../models/auth.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -24,16 +24,9 @@ export class AuthOrchestratorService {
   readonly error = signal<string | null>(null);
   // progress for registration dialog
   readonly registerProgress = computed(() => {
-    switch (this.registerStep()) {
-      case 'email':
-        return 0;
-      case 'verify':
-        return 0.33;
-      case 'profile':
-        return 0.66;
-      case 'password':
-        return 1;
-    }
+    const idx = REGISTER_STEPS.indexOf(this.registerStep());
+    if (idx < 0) return 0;
+    return (idx + 1) / REGISTER_STEPS.length;
   });
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);

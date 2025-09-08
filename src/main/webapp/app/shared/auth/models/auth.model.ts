@@ -28,7 +28,8 @@ export type LoginSubState = 'email' | 'password' | 'otp';
 // - 'verify'   : user verifies their email with a code
 // - 'profile'   : user enters first name, last name, and consents
 // - 'password' : optional step to set a password for future logins
-export type RegisterStep = 'email' | 'verify' | 'profile' | 'password';
+export const REGISTER_STEPS = ['email', 'verify', 'profile', 'password'] as const;
+export type RegisterStep = (typeof REGISTER_STEPS)[number];
 
 // Steps for the inline "apply" registration flow (during job application):
 // - 'inline'   : user provides email + names and requests a code
