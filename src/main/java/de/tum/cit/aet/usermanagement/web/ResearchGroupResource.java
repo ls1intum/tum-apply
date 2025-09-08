@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import java.util.List;
@@ -50,7 +51,7 @@ public class ResearchGroupResource {
      * @return the updated research group
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @CheckAccess(target = AccessTarget.RESEARCH_GROUP_ID, value = #id)")
+    @CheckAccess
     public ResponseEntity<ResearchGroupDTO> updateResearchGroup(
         @PathVariable UUID id,
         @RequestBody ResearchGroupDTO researchGroupDTO

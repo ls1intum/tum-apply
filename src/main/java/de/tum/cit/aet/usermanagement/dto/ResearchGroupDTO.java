@@ -2,20 +2,17 @@ package de.tum.cit.aet.usermanagement.dto;
 
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO for {@link ResearchGroup}
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ResearchGroupDTO(
-    @NotNull UUID researchGroupId,
     @NotBlank String name,
     String abbreviation,
     @NotBlank String head,
@@ -40,7 +37,6 @@ public record ResearchGroupDTO(
         }
         
         return new ResearchGroupDTO(
-            researchGroup.getResearchGroupId(),
             researchGroup.getName(),
             researchGroup.getAbbreviation(),
             researchGroup.getHead(),

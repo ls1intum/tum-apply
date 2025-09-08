@@ -63,15 +63,23 @@
             />
 
             <jhi-string-input
+              [id]="'rg-defaultFieldOfStudies'"
+              label="{{ 'researchGroup.groupInfo.fields.defaultFieldOfStudies' | translate }}"
+              [control]="form.controls.defaultFieldOfStudies"
+              [model]="form.controls.defaultFieldOfStudies.value || ''"
+              placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <jhi-string-input
               [id]="'rg-website'"
               label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
               [control]="form.controls.website"
               [model]="form.controls.website.value || ''"
               placeholder="{{ 'researchGroup.groupInfo.placeholders.website' | translate }}"
             />
-          </div>
 
-          <div class="grid grid-cols-2 gap-4">
             <jhi-string-input
               [id]="'rg-email'"
               label="{{ 'researchGroup.groupInfo.fields.email' | translate }}"
@@ -79,7 +87,6 @@
               [model]="form.controls.email.value || ''"
               placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
             />
-            <div></div>
           </div>
 
           <!-- Address section -->
