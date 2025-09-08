@@ -2,21 +2,18 @@
   <div class="label-top label-input-wrapper">
     @if (label(); as label) {
       <label class="custom-label" [for]="id()">
-        @if (shouldTranslate()) {
-          {{ label | translate }}
-        } @else {
-          {{ label }}
-        }
+        {{ shouldTranslate() ? (label | translate) : label }}
         @if (required()) {
           <span class="required">*</span>
         }
         @if (icon(); as icon) {
           @if (icon === 'circle-info' && tooltipText()) {
-            @if (shouldTranslate()) {
-              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
-            } @else {
-              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
-            }
+            <fa-icon
+              class="icon"
+              [icon]="['fas', icon]"
+              [pTooltip]="shouldTranslate() ? (tooltipText() ?? '' | translate) : (tooltipText() ?? '')"
+              tooltipPosition="top"
+            />
           } @else {
             <fa-icon class="icon" [icon]="['fas', icon ?? '']" />
           }
