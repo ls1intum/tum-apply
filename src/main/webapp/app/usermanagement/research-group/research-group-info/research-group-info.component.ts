@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
@@ -66,6 +66,9 @@ export class ResearchGroupInfoComponent {
   private accountService = inject(AccountService);
   private researchGroupService = inject(ResearchGroupManagementService);
   private toastService = inject(ToastService);
+  private translate = inject(TranslateService);
+
+  private readonly translationKey = 'researchGroup.groupInfo';
 
   private currentUser = this.accountService.loadedUser;
   /**
@@ -80,8 +83,8 @@ export class ResearchGroupInfoComponent {
     const researchGroupId = this.researchGroupId();
     if (researchGroupId == null || researchGroupId.trim() === '') {
       this.toastService.showError({
-        summary: 'Error',
-        detail: 'No research group ID available for saving.',
+        summary: this.translate.instant(`${this.translationKey}.toasts.saveFailed`),
+        detail: this.translate.instant(`${this.translationKey}.toasts.noId`),
       });
       return;
     }
@@ -107,11 +110,11 @@ export class ResearchGroupInfoComponent {
       await firstValueFrom(this.researchGroupService.updateResearchGroup(researchGroupId, updateData));
 
       this.toastService.showSuccess({
-        detail: 'Research group information updated successfully.',
+        detail: this.translate.instant(`${this.translationKey}.toasts.updated`),
       });
     } catch {
       this.toastService.showError({
-        detail: 'Failed to save research group information.',
+        detail: this.translate.instant(`${this.translationKey}.toasts.saveFailed`),
       });
     } finally {
       this.isSaving.set(false);
@@ -134,8 +137,8 @@ export class ResearchGroupInfoComponent {
       this.populateFormData(researchGroup);
     } catch {
       this.toastService.showError({
-        summary: 'Error Loading Data',
-        detail: 'Failed to load research group information.',
+        summary: this.translate.instant(`${this.translationKey}.toasts.loadFailed`),
+        detail: this.translate.instant(`${this.translationKey}.toasts.loadFailed`),
       });
     } finally {
       this.hasInitialized.set(true);

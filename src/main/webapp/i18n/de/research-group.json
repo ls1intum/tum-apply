@@ -32,6 +32,12 @@
         "postalCode": "z.B. 85748",
         "city": "z.B. München",
         "description": "z.B. Die Biomedizinische Ingenieurwissenschaften Gruppe konzentriert sich auf die Schnittstelle von digitalen Werkzeugen und Lernwissenschaft. Unsere Arbeit umfasst Forschung in skalierbaren Lernplattformen, Nutzerbeteiligung und gamifizierte Lernerfahrungen. Wir zielen darauf ab, Lernen effektiver und zugänglich zu machen, indem wir Technologie einsetzen."
+      },
+      "toasts": {
+        "updated": "Forschungsgruppeninformationen erfolgreich aktualisiert.",
+        "saveFailed": "Fehler beim Speichern der Forschungsgruppeninformationen.",
+        "loadFailed": "Fehler beim Laden der Forschungsgruppeninformationen.",
+        "noId": "Keine Forschungsgruppen-ID verfügbar für das Speichern."
       }
     },
 

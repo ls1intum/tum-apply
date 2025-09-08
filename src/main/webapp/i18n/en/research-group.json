@@ -31,6 +31,12 @@
         "postalCode": "e.g. 85748",
         "city": "e.g. Munich",
         "description": "e.g. The Biomedical Engineering Group focuses on the intersection of digital tools and learning science. Our work includes research into scalable education platforms, user engagement, and gamified learning experiences. We aim to make education more effective and accessible using technology."
+      },
+      "toasts": {
+        "updated": "Research group information successfully updated.",
+        "saveFailed": "Error saving research group information.",
+        "loadFailed": "Error loading research group information.",
+        "noId": "No research group ID available for saving."
       }
     },
 
