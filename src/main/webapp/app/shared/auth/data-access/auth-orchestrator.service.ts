@@ -25,8 +25,10 @@ export class AuthOrchestratorService {
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
-    if (idx < 0) return 0;
-    return (idx + 1) / REGISTER_STEPS.length;
+    if (idx < 0) {
+      return 0;
+    }
+    return Number((idx / (REGISTER_STEPS.length - 1)).toFixed(2));
   });
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
