@@ -190,7 +190,8 @@
     "cancel": "Cancel",
     "next": "Next",
     "back": "Back",
-    "saveDraft": "Save Draft"
+    "saveDraft": "Save Draft",
+    "viewApplication": "View Application"
   },
   "jobState": {
     "draft": "Draft",

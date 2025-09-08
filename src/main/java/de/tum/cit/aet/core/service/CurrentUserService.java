@@ -99,6 +99,19 @@ public class CurrentUserService {
     }
 
     /**
+     * Returns the current user's ID if available.
+     *
+     * @return an {@link Optional} containing the user ID, or empty if access is denied
+     */
+    public Optional<UUID> getUserIdIfAvailable() {
+        try {
+            return Optional.of(getUserId());
+        } catch (AccessDeniedException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Returns the research group ID if the current user is a professor.
      *
      * @return an Optional containing the research group ID if user is a professor, or empty otherwise

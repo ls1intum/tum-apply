@@ -2299,7 +2299,6 @@
           }
         },
         "required": [
-          "applicationId",
           "applicationState",
           "job"
         ]
@@ -2348,6 +2347,22 @@
           },
           "professorName": {
             "type": "string"
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
           },
           "workload": {
             "type": "integer",
@@ -2751,6 +2766,20 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },

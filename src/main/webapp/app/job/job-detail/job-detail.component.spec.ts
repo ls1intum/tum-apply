@@ -12,6 +12,7 @@ import { provideHttpClient } from '@angular/common/http';
 
 import { JobDetailDTO, JobResourceService } from '../../generated';
 import { AccountService } from '../../core/auth/account.service';
+import { ToastService } from '../../service/toast-service'; // Add this import
 
 import { JobDetailComponent } from './job-detail.component';
 
@@ -65,6 +66,23 @@ describe('JobDetailComponent', () => {
     loadedUser: jest.fn().mockReturnValue({ id: '222' }),
   };
 
+  // Mock ToastService
+  const mockToastService = {
+    showSuccess: jest.fn(),
+    showError: jest.fn(),
+    showInfo: jest.fn(),
+    showWarn: jest.fn(),
+  };
+
+  // Mock MessageService
+  const mockMessageService = {
+    add: jest.fn(),
+    addAll: jest.fn(),
+    clear: jest.fn(),
+    messageObserver: of([]),
+    clearObserver: of(''),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [JobDetailComponent, TranslateModule.forRoot()],
@@ -75,7 +93,8 @@ describe('JobDetailComponent', () => {
         { provide: JobResourceService, useValue: mockJobService },
         { provide: AccountService, useValue: mockAccountService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        MessageService,
+        { provide: MessageService, useValue: mockMessageService },
+        { provide: ToastService, useValue: mockToastService },
       ],
     }).compileComponents();
 
@@ -142,6 +161,6 @@ describe('JobDetailComponent', () => {
   it('should navigate to the application page on apply', () => {
     const spy = jest.spyOn(router, 'navigate');
     component.onApply();
-    expect(spy).toHaveBeenCalledWith(['/application/create/123']);
+    expect(spy).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: '123' } });
   });
 });
