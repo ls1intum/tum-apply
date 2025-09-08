@@ -377,6 +377,28 @@
           "summary": "Error",
           "detail": "Failed to fetch document IDs for this application."
         }
+      },
+      "applicationOverview": {
+        "delete": {
+          "success": {
+            "summary": "Draft deleted",
+            "detail": "The application draft was deleted successfully."
+          },
+          "error": {
+            "summary": "Delete failed",
+            "detail": "The draft could not be deleted. Please try again."
+          }
+        },
+        "withdraw": {
+          "success": {
+            "summary": "Application withdrawn",
+            "detail": "Your application was withdrawn successfully."
+          },
+          "error": {
+            "summary": "Withdrawal failed",
+            "detail": "The application could not be withdrawn. Please try again."
+          }
+        }
       }
     },
     "error": {

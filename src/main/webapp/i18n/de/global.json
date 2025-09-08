@@ -377,6 +377,28 @@
           "summary": "Fehler",
           "detail": "Fehler beim Laden der Dokument-IDs für diese Bewerbung."
         }
+      },
+      "applicationOverview": {
+        "delete": {
+          "success": {
+            "summary": "Entwurf gelöscht",
+            "detail": "Der Bewerbungsentwurf wurde erfolgreich gelöscht."
+          },
+          "error": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Der Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut."
+          }
+        },
+        "withdraw": {
+          "success": {
+            "summary": "Bewerbung zurückgezogen",
+            "detail": "Deine Bewerbung wurde erfolgreich zurückgezogen."
+          },
+          "error": {
+            "summary": "Zurückziehen fehlgeschlagen",
+            "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut."
+          }
+        }
       }
     },
     "error": {
