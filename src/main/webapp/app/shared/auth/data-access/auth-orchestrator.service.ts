@@ -67,14 +67,11 @@ export class AuthOrchestratorService {
     this.resetAll();
     if (opts?.mode) this.mode.set(opts.mode);
 
-    if (opts?.prefill?.email != null && opts.prefill.email.trim() !== '') {
-      this.email.set(opts.prefill.email.trim());
-    }
-    if (opts?.prefill?.firstName != null && opts.prefill.firstName.trim() !== '') {
-      this.firstName.set(opts.prefill.firstName.trim());
-    }
-    if (opts?.prefill?.lastName != null && opts.prefill.lastName.trim() !== '') {
-      this.lastName.set(opts.prefill.lastName.trim());
+    const prefill = opts?.prefill;
+    if (prefill) {
+      this.setIfPresent(prefill.email, value => this.email.set(value));
+      this.setIfPresent(prefill.firstName, value => this.firstName.set(value));
+      this.setIfPresent(prefill.lastName, value => this.lastName.set(value));
     }
 
     // choose sensible starting substates
@@ -131,6 +128,13 @@ export class AuthOrchestratorService {
     const cooldown = environment.otp.cooldown;
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);
+  }
+
+  private setIfPresent(input: string | undefined, setter: (value: string) => void): void {
+    const value = (input ?? '').replace(/\s+/g, ' ').trim();
+    if (value) {
+      setter(value);
+    }
   }
 
   private resetAll(): void {
