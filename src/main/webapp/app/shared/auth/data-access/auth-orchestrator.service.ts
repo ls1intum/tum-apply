@@ -33,18 +33,18 @@ export class AuthOrchestratorService {
   readonly injector = inject(Injector);
   readonly _tick = toSignal(
     toObservable(this.cooldownUntil).pipe(
-      switchMap(until => {
-        if (until == null) {
+      switchMap(cooldownUntilTimestamp => {
+        if (cooldownUntilTimestamp === null) {
           // No cooldown: no ticking, but keep initial value
           return EMPTY;
         }
-        const remaining = Math.max(0, until - Date.now());
-        if (remaining === 0) {
+        const remainingTimeInMs = Math.max(0, cooldownUntilTimestamp - Date.now());
+        if (remainingTimeInMs === 0) {
           // Already expired: emit once to trigger recompute
           return timer(0);
         }
         // Tick every 250ms until cooldown end, then emit one final value
-        return interval(250).pipe(takeUntil(timer(remaining)), endWith(0));
+        return interval(250).pipe(takeUntil(timer(remainingTimeInMs)), endWith(0));
       }),
       startWith(0),
     ),
@@ -53,12 +53,12 @@ export class AuthOrchestratorService {
   readonly cooldownSeconds = computed(() => {
     // depend on _tick so this recomputes ~4x per second
     this._tick();
-    const until = this.cooldownUntil();
-    if (until == null) {
+    const cooldownUntilTimestamp = this.cooldownUntil();
+    if (cooldownUntilTimestamp === null) {
       return 0;
     }
-    const ms = until - Date.now();
-    return ms <= 0 ? 0 : Math.ceil(ms / 1000);
+    const remainingTimeInMs = cooldownUntilTimestamp - Date.now();
+    return remainingTimeInMs <= 0 ? 0 : Math.ceil(remainingTimeInMs / 1000);
   });
   private onSuccessCb: (() => void) | undefined;
 
