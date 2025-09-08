@@ -50,7 +50,7 @@ public class ResearchGroupResource {
      * @return the updated research group
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @researchGroupService.existsById(#id) and hasRole('PROFESSOR')")
+    @PreAuthorize("hasRole('ADMIN') or @CheckAccess(target = AccessTarget.RESEARCH_GROUP_ID, value = #id)")
     public ResponseEntity<ResearchGroupDTO> updateResearchGroup(
         @PathVariable UUID id,
         @RequestBody ResearchGroupDTO researchGroupDTO
