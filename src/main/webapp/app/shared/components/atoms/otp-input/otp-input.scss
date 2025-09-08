@@ -11,8 +11,8 @@
 
   .buttons {
     display: flex;
-    justify-content: space-between; /* pushes first button left, last button right */
-    width: 100%; /* make sure the container spans full width */
-    gap: 2rem; /* minimum spacing between buttons */
+    justify-content: space-between;
+    width: 100%;
+    gap: 2rem;
   }
 }
