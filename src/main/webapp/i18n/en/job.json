@@ -194,6 +194,7 @@
     "viewApplication": "View Application"
   },
   "jobState": {
+    "preview": "Preview",
     "draft": "Draft",
     "published": "Published",
     "closed": "Closed",

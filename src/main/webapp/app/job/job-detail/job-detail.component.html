@@ -28,7 +28,7 @@
         <h1 class="job-title">{{ jobDetails()?.title }}</h1>
         <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
         @if (previewData()) {
-          <jhi-tag class="job-state-badge" [text]="'jobState.draft' | translate" [color]="'info'" />
+          <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
         } @else if (jobDetails()?.belongsToResearchGroup) {
           <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
         }

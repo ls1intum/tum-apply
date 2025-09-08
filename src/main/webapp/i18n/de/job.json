@@ -194,6 +194,7 @@
     "viewApplication": "Zur Bewerbung"
   },
   "jobState": {
+    "preview": "Vorschau",
     "draft": "Entwurf",
     "published": "Veröffentlicht",
     "closed": "Geschlossen",
