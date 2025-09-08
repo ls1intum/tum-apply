@@ -7,10 +7,26 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
 import TranslateDirective from '../../../language/translate.directive';
+import { FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
+
+// Interface for filter options which can be passed to the filter component
+export interface Filter {
+  filterLabel: string;
+  filterOptions: string[];
+}
 
 @Component({
   selector: 'jhi-search-filter-sort-bar',
-  imports: [FormsModule, InputTextModule, IconFieldModule, InputIconModule, FontAwesomeModule, TranslateModule, TranslateDirective],
+  imports: [
+    FormsModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    FontAwesomeModule,
+    TranslateModule,
+    TranslateDirective,
+    FilterMultiselect,
+  ],
   templateUrl: './search-filter-sort-bar.html',
   styleUrl: './search-filter-sort-bar.scss',
 })
@@ -18,6 +34,9 @@ export class SearchFilterSortBar {
   // total number of records found
   totalRecords = input<number>(0);
   searchText = input<string | undefined>(undefined);
+
+  // list of filters to be displayed
+  filters = input<Filter[]>([]);
 
   // translation keys used for the total number of records found
   // those fields should already be translated within the parent component

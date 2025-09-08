@@ -4,6 +4,11 @@
   gap: 1.5rem;
   padding-bottom: 1.5rem;
 
+  .functionality-bar {
+    display: flex;
+    flex-direction: row;
+  }
+
   .p-iconfield {
     width: 100%;
     flex: 1;
