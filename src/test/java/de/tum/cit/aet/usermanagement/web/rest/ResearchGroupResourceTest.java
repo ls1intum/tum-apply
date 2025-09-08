@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,6 +35,8 @@ public class ResearchGroupResourceTest {
     ObjectMapper objectMapper;
     @Autowired
     ResearchGroupRepository researchGroupRepository;
+    @Autowired
+    UserRepository userRepository;
 
     MvcTestClient api;
     ResearchGroup researchGroup;
@@ -41,6 +45,7 @@ public class ResearchGroupResourceTest {
     public void setup() {
         api = new MvcTestClient(mockMvc, objectMapper);
 
+        userRepository.deleteAll();
         researchGroupRepository.deleteAll();
 
         researchGroup = ResearchGroupTestData.savedAll(
