@@ -62,7 +62,7 @@ export class AuthOrchestratorService {
   });
   private onSuccessCb: (() => void) | undefined;
 
-  // open the dialog in a specific mode; can be re-used from header or from job-apply forms.
+  // open the dialog in a specific mode
   open(opts?: AuthOpenOptions): void {
     this.resetAll();
     if (opts?.mode) this.mode.set(opts.mode);
