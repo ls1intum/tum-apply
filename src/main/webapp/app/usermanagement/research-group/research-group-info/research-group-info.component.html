@@ -14,9 +14,9 @@
     </div>
     <div class="card-body">
       <div class="space-y-4">
-        <!-- Basic information section -->
         <form [formGroup]="form">
           <div class="form-group">
+            <!-- Basic information section -->
             <jhi-string-input
               [id]="'rg-name'"
               label="{{ 'researchGroup.groupInfo.fields.name' | translate }}"
@@ -33,9 +33,7 @@
               [model]="form.controls.abbreviation.value || ''"
               placeholder="{{ 'researchGroup.groupInfo.placeholders.abbreviation' | translate }}"
             />
-          </div>
 
-          <div class="form-group">
             <jhi-string-input
               [id]="'rg-head'"
               label="{{ 'researchGroup.groupInfo.fields.head' | translate }}"
@@ -45,10 +43,8 @@
               placeholder="{{ 'researchGroup.groupInfo.placeholders.head' | translate }}"
             />
             <div></div>
-          </div>
 
-          <!-- School and website section -->
-          <div class="form-group">
+            <!-- School and website section -->
             <jhi-string-input
               [id]="'rg-school'"
               label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
@@ -64,9 +60,7 @@
               [model]="form.controls.defaultFieldOfStudies.value || ''"
               placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
             />
-          </div>
 
-          <div class="form-group">
             <jhi-string-input
               [id]="'rg-website'"
               label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
@@ -82,10 +76,8 @@
               [model]="form.controls.email.value || ''"
               placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
             />
-          </div>
 
-          <!-- Address section -->
-          <div class="form-group">
+            <!-- Address section -->
             <jhi-string-input
               [id]="'rg-city'"
               label="{{ 'researchGroup.groupInfo.fields.city' | translate }}"
@@ -100,9 +92,7 @@
               [model]="form.controls.postalCode.value || ''"
               placeholder="{{ 'researchGroup.groupInfo.placeholders.postalCode' | translate }}"
             />
-          </div>
 
-          <div class="form-group">
             <jhi-string-input
               [id]="'rg-address'"
               label="{{ 'researchGroup.groupInfo.fields.address' | translate }}"
