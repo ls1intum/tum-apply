@@ -1,10 +1,11 @@
 import { Component, ViewEncapsulation, computed, input, signal } from '@angular/core';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-filter-multiselect',
-  imports: [MultiSelectModule, FormsModule],
+  imports: [MultiSelectModule, FormsModule, TranslateModule],
   templateUrl: './filter-multiselect.html',
   styleUrl: './filter-multiselect.scss',
   encapsulation: ViewEncapsulation.None,

@@ -1,1 +1,6 @@
-<p-multiselect [placeholder]="filterLabel()" [options]="sortedOptions()" [(ngModel)]="selectedValues" [displaySelectedLabel]="false" />
+<p-multiselect
+  [placeholder]="filterLabel() | translate"
+  [options]="sortedOptions()"
+  [(ngModel)]="selectedValues"
+  [displaySelectedLabel]="false"
+/>
