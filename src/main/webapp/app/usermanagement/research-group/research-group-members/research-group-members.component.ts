@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -7,6 +7,9 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ResearchGroupResourceService } from '../../../generated/api/researchGroupResource.service';
 import { UserShortDTO } from '../../../generated/model/userShortDTO';
@@ -16,16 +19,13 @@ import { AccountService } from '../../../core/auth/account.service';
 import { SearchFilterSortBar } from '../../../shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
-interface SearchableUser extends UserShortDTO {
-  isSelected?: boolean;
-}
-
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
     TranslateDirective,
     FontAwesomeModule,
     TranslateModule,
+    DynamicTableComponent,
     SearchFilterSortBar,
     ButtonComponent,
     DialogModule,
@@ -33,21 +33,22 @@ interface SearchableUser extends UserShortDTO {
     InputTextModule,
     IconFieldModule,
     InputIconModule,
+    ConfirmDialog,
   ],
   templateUrl: './research-group-members.component.html',
   styleUrl: './research-group-members.component.scss',
 })
 export class ResearchGroupMembersComponent {
   members = signal<UserShortDTO[]>([]);
+  totalRecords = signal<number>(0);
+  pageNumber = signal<number>(0);
+  pageSize = signal<number>(10);
   loading = signal(false);
   error = signal<string | null>(null);
   searchQuery = signal('');
 
   // Modal state
   modalVisible = signal(false);
-  modalSearchQuery = signal('');
-  selectedUsers = signal<SearchableUser[]>([]);
-  searchResults = signal<SearchableUser[]>([]);
 
   // Computed filtered members based on search query
   filteredMembers = computed(() => {
@@ -66,11 +67,45 @@ export class ResearchGroupMembersComponent {
     );
   });
 
+  readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
+  readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+
+  readonly columns = computed<DynamicTableColumn[]>(() => {
+    const nameTpl = this.nameTemplate();
+    const actionTpl = this.actionTemplate();
+
+    return [
+      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem', template: nameTpl },
+      { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
+      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
+      { field: 'actions', header: '', width: '5rem', template: actionTpl },
+    ];
+  });
+
+  // Transform members data for display
+  tableData = computed(() => {
+    return this.filteredMembers().map(member => ({
+      ...member,
+      name: `${member.firstName} ${member.lastName}`,
+      role: this.formatRoles(member.roles),
+      isCurrentUser: this.isCurrentUser(member),
+    }));
+  });
+
   private researchGroupService = inject(ResearchGroupResourceService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
 
   constructor() {
+    void this.loadMembers();
+  }
+
+  loadOnTableEmit(event: TableLazyLoadEvent): void {
+    const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
+    const size = event.rows ?? this.pageSize();
+
+    this.pageNumber.set(page);
+    this.pageSize.set(size);
     void this.loadMembers();
   }
 
@@ -113,32 +148,9 @@ export class ResearchGroupMembersComponent {
 
   closeModal(): void {
     this.modalVisible.set(false);
-    this.modalSearchQuery.set('');
-    this.selectedUsers.set([]);
-    this.searchResults.set([]);
-  }
-
-  onModalSearch(query: string): void {
-    this.modalSearchQuery.set(query);
-    void this.performUserSearch(query);
-  }
-
-  toggleUserSelection(user: SearchableUser): void {
-    const currentResults = this.searchResults();
-    const updatedResults = currentResults.map(u => (u.userId === user.userId ? { ...u, isSelected: !(u.isSelected ?? false) } : u));
-    this.searchResults.set(updatedResults);
-
-    // Update selected users list
-    const selectedUsers = updatedResults.filter(u => Boolean(u.isSelected));
-    this.selectedUsers.set(selectedUsers);
   }
 
   addSelectedUsersToGroup(): void {
-    const selectedUsers = this.selectedUsers();
-    if (selectedUsers.length === 0) {
-      return;
-    }
-
     // TODO: Implement actual API call to add users to research group
     this.toastService.showSuccess({
       detail: `Successfully added to the research group.`,
@@ -151,25 +163,22 @@ export class ResearchGroupMembersComponent {
     // await this.loadMembers();
   }
 
-  editMember(member: UserShortDTO): void {
-    // TODO: Implement edit or delete functionality
-    this.toastService.showInfo({
-      detail: `Edit functionality for ${member.firstName} ${member.lastName} will be implemented soon.`,
-    });
-  }
-
-  private async performUserSearch(query: string): Promise<void> {
-    if (!query.trim()) {
-      this.searchResults.set([]);
-      return;
-    }
-
+  async removeMember(member: UserShortDTO): Promise<void> {
     try {
-      const results = await firstValueFrom(this.researchGroupService.searchAvailableUsers(query));
-      this.searchResults.set(results.map(user => ({ ...user, isSelected: false })));
+      // TODO: Implement actual API call to remove user from research group
+      // await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId));
+
+      this.toastService.showSuccess({
+        detail: `${member.firstName} ${member.lastName} has been removed from the research group.`,
+      });
+
+      // Refresh the members list
+      await this.loadMembers();
     } catch (error) {
-      console.error('Error searching for users:', error);
-      this.searchResults.set([]);
+      console.error('Error removing member:', error);
+      this.toastService.showError({
+        detail: `Failed to remove ${member.firstName} ${member.lastName} from the research group.`,
+      });
     }
   }
 }

@@ -69,6 +69,8 @@
       "addMember": "Mitglied hinzufügen",
       "searchGroupMember": "Nach Mitglied in Forschungsgruppe suchen",
       "noMembersQuery": "Keine Mitglieder gefunden für {{ query }}.",
+      "member": "Mitglied",
+      "members": "Mitglieder",
 
       "addMemberModal": {
         "title": "Benutzer zur Forschungsgruppe hinzufügen",
@@ -84,6 +86,12 @@
         "name": "Name",
         "email": "E-Mail",
         "role": "Rolle"
+      },
+
+      "remove": "Entfernen",
+      "removeMemberModal": {
+        "title": "Mitglied entfernen",
+        "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
       }
     }
   }

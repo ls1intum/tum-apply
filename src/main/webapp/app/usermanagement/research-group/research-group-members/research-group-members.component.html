@@ -7,132 +7,88 @@
   <div class="search-and-actions">
     <jhi-search-filter-sort-bar
       [searchText]="'researchGroup.members.searchGroupMember' | translate"
-      [singleEntity]="''"
-      [multipleEntities]="''"
-      [showRecordCount]="false"
+      [totalRecords]="filteredMembers().length"
+      [singleEntity]="'researchGroup.members.member' | translate"
+      [multipleEntities]="'researchGroup.members.members' | translate"
+      [showRecordCount]="true"
       (searchOutput)="onSearch($event)"
     />
-    <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" />
+    <!-- TODO: Add functionality to add members to the research group -->
+    <!-- <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" /> -->
   </div>
 
   <!-- Members Table -->
-  @if (loading()) {
-    <div class="text-center p-4">
-      <span jhiTranslate="researchGroup.members.loading">Loading members...</span>
-    </div>
-  } @else if (error()) {
-    <div class="error-text text-center p-4">
-      <p>{{ error() }}</p>
-      <button (click)="loadMembers()" jhiTranslate="researchGroup.members.retry">Retry</button>
-    </div>
-  } @else {
-    @if (filteredMembers().length === 0) {
-      <div class="text-center p-4">
-        @if (searchQuery()) {
-          <span jhiTranslate="researchGroup.members.noMembersQuery" [translateValues]="{ query: searchQuery() }"
-            >No members found for {{ searchQuery() }}.</span
-          >
-        } @else {
-          <span jhiTranslate="researchGroup.members.noMembers">No members found in this research group.</span>
-        }
-      </div>
-    } @else {
-      <div class="members-table">
-        <table>
-          <thead>
-            <tr>
-              <th jhiTranslate="researchGroup.members.tableColumns.name">Name</th>
-              <th jhiTranslate="researchGroup.members.tableColumns.email">Email</th>
-              <th jhiTranslate="researchGroup.members.tableColumns.role">Role</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (member of filteredMembers(); track member.userId) {
-              <tr>
-                <td>
-                  {{ member.firstName }} {{ member.lastName }}
-                  @if (isCurrentUser(member)) {
-                    <fa-icon icon="circle-user" class="current-user-icon" title="{{ 'researchGroup.members.me' | translate }}" />
-                  }
-                </td>
-                <td>{{ member.email }}</td>
-                <td>{{ formatRoles(member.roles) }}</td>
-                <td>
-                  <jhi-button class="edit-btn" (click)="editMember(member)" jhiTranslate="researchGroup.members.edit">Edit</jhi-button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-  }
-</div>
-
-<!-- Add Member Modal -->
-<p-dialog
-  [modal]="true"
-  [(visible)]="modalVisible"
-  [closable]="true"
-  [draggable]="false"
-  [resizable]="false"
-  class="add-member-dialog"
-  [style]="{ width: '37.5rem' }"
->
-  <ng-template #header>
-    <div class="dialog-header">
-      <h2 jhiTranslate="researchGroup.members.addMemberModal.title">Add people to Research Group</h2>
-    </div>
-  </ng-template>
-
-  <div class="dialog-content">
-    <p class="search-instruction" jhiTranslate="researchGroup.members.addMemberModal.searchInstruction">
-      Search by username, full name, or email
-    </p>
-
-    <jhi-search-filter-sort-bar
-      [searchText]="'researchGroup.members.addMemberModal.searchPlaceholder' | translate"
-      [singleEntity]="''"
-      [multipleEntities]="''"
-      [showRecordCount]="false"
-      (searchOutput)="onModalSearch($event)"
+  <div class="table-wrapper">
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [totalRecords]="tableData().length"
+      [page]="0"
+      [rows]="10"
+      [selectable]="true"
     />
-
-    <!-- Search Results -->
-    @if (modalSearchQuery() && searchResults().length > 0) {
-      <div class="search-results-container">
-        <div class="search-results-list">
-          @for (user of searchResults(); track user.userId) {
-            <div class="search-result-item" [class.selected]="user.isSelected" (click)="toggleUserSelection(user)">
-              <div class="user-avatar">
-                <fa-icon icon="circle-user" class="user-icon" />
-              </div>
-              <div>
-                <div class="font-bold">{{ user.firstName }} {{ user.lastName }}</div>
-                <div>{{ user.email }}</div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    } @else if (modalSearchQuery() && searchResults().length === 0) {
-      <div class="no-results">
-        <p jhiTranslate="researchGroup.members.addMemberModal.noResults">No users found matching your search.</p>
-      </div>
-    }
   </div>
 
-  <ng-template pTemplate="footer">
-    <div class="flex gap-2">
-      <jhi-button label="researchGroup.members.addMemberModal.cancel" [shouldTranslate]="true" variant="outlined" (click)="closeModal()" />
-      <jhi-button
-        label="researchGroup.members.addMemberModal.addToGroup"
-        [shouldTranslate]="true"
-        severity="primary"
-        [disabled]="selectedUsers().length === 0"
-        (click)="addSelectedUsersToGroup()"
+  <!-- Add Member Modal -->
+  <p-dialog
+    [modal]="true"
+    [(visible)]="modalVisible"
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+    class="add-member-dialog"
+    [style]="{ width: '37.5rem' }"
+  >
+    <ng-template #header>
+      <div class="dialog-header">
+        <h2 jhiTranslate="researchGroup.members.addMemberModal.title">Add people to Research Group</h2>
+      </div>
+    </ng-template>
+
+    <div class="dialog-content">
+      <p class="search-instruction" jhiTranslate="researchGroup.members.addMemberModal.searchInstruction">
+        Search by username, full name, or email
+      </p>
+
+      <jhi-search-filter-sort-bar
+        [searchText]="'researchGroup.members.addMemberModal.searchPlaceholder' | translate"
+        [singleEntity]="''"
+        [multipleEntities]="''"
+        [showRecordCount]="false"
       />
     </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex gap-2">
+        <jhi-button
+          label="researchGroup.members.addMemberModal.cancel"
+          [shouldTranslate]="true"
+          variant="outlined"
+          (click)="closeModal()"
+        />
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Templates for dynamic table -->
+  <ng-template #nameTemplate let-member>
+    {{ member.name }}
+    @if (member.isCurrentUser) {
+      <fa-icon icon="circle-user" class="current-user-icon" title="{{ 'researchGroup.members.me' | translate }}" />
+    }
   </ng-template>
-</p-dialog>
+
+  <ng-template #actionTemplate let-member>
+    @if (!member.isCurrentUser) {
+      <jhi-confirm-dialog
+        [label]="'researchGroup.members.remove' | translate"
+        severity="danger"
+        variant="outlined"
+        [header]="'researchGroup.members.removeMemberModal.title' | translate"
+        [message]="'researchGroup.members.removeMemberModal.message' | translate"
+        (confirmed)="removeMember(member)"
+        confirmIcon="trash"
+      />
+    }
+  </ng-template>
+</div>

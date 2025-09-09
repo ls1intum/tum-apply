@@ -68,6 +68,8 @@
       "addMember": "Add member",
       "searchGroupMember": "Search for research group member",
       "noMembersQuery": "No members found for {{ query }}.",
+      "member": "member",
+      "members": "members",
 
       "addMemberModal": {
         "title": "Add people to Research Group",
@@ -83,6 +85,12 @@
         "name": "Name",
         "email": "Email",
         "role": "Role"
+      },
+
+      "remove": "Remove",
+      "removeMemberModal": {
+        "title": "Remove Member",
+        "message": "Are you sure you want to remove this member from the research group?"
       }
     }
   }
