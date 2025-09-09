@@ -18,6 +18,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
+  standalone: true,
   imports: [
     DynamicTableComponent,
     ButtonComponent,
