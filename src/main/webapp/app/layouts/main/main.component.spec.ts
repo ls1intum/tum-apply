@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
@@ -32,14 +32,14 @@ describe('MainComponent', () => {
 
   const navigateByUrlFn = (url: string) => () => router.navigateByUrl(url);
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MainComponent],
       providers: [Title, AccountService, { provide: TitleStrategy, useClass: AppPageTitleStrategy }],
     })
       .overrideTemplate(MainComponent, '')
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MainComponent);
@@ -68,28 +68,26 @@ describe('MainComponent', () => {
     });
 
     describe('navigation end', () => {
-      it('should set page title to default title if pageTitle is missing on routes', fakeAsync(() => {
+      it('should set page title to default title if pageTitle is missing on routes', async () => {
         // WHEN
-        void ngZone.run(navigateByUrlFn(''));
-        tick();
+        await ngZone.run(navigateByUrlFn(''));
 
         // THEN
         expect(document.title).toBe(`${defaultPageTitle} translated`);
-      }));
+      });
 
-      it('should set page title to root route pageTitle if there is no child routes', fakeAsync(() => {
+      it('should set page title to root route pageTitle if there is no child routes', async () => {
         // GIVEN
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        void ngZone.run(navigateByUrlFn(''));
-        tick();
+        await ngZone.run(navigateByUrlFn(''));
 
         // THEN
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
-      }));
+      });
 
-      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', fakeAsync(() => {
+      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', async () => {
         // GIVEN
         router.resetConfig([
           {
@@ -100,14 +98,13 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        void ngZone.run(navigateByUrlFn('home'));
-        tick();
+        await ngZone.run(navigateByUrlFn('home'));
 
         // THEN
         expect(document.title).toBe(`${childRoutePageTitle} translated`);
-      }));
+      });
 
-      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', fakeAsync(() => {
+      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', async () => {
         // GIVEN
         router.resetConfig([
           {
@@ -118,12 +115,11 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        void ngZone.run(navigateByUrlFn('home'));
-        tick();
+        await ngZone.run(navigateByUrlFn('home'));
 
         // THEN
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
-      }));
+      });
     });
 
     describe('language change', () => {
@@ -135,14 +131,13 @@ describe('MainComponent', () => {
         expect(document.title).toBe(`${defaultPageTitle} translated`);
       });
 
-      it('should set page title to root route pageTitle if there is no child routes', fakeAsync(() => {
+      it('should set page title to root route pageTitle if there is no child routes', async () => {
         // GIVEN
         routerState.snapshot.root.data = { pageTitle: parentRoutePageTitle };
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        void ngZone.run(navigateByUrlFn(''));
-        tick();
+        await ngZone.run(navigateByUrlFn(''));
 
         // THEN
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
@@ -155,9 +150,9 @@ describe('MainComponent', () => {
 
         // THEN
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
-      }));
+      });
 
-      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', fakeAsync(() => {
+      it('should set page title to child route pageTitle if child routes exist and pageTitle is set for child route', async () => {
         // GIVEN
         router.resetConfig([
           {
@@ -168,8 +163,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        void ngZone.run(navigateByUrlFn('home'));
-        tick();
+        await ngZone.run(navigateByUrlFn('home'));
 
         // THEN
         expect(document.title).toBe(`${childRoutePageTitle} translated`);
@@ -182,9 +176,9 @@ describe('MainComponent', () => {
 
         // THEN
         expect(document.title).toBe(`${childRoutePageTitle} translated`);
-      }));
+      });
 
-      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', fakeAsync(() => {
+      it('should set page title to parent route pageTitle if child routes exists but pageTitle is not set for child route data', async () => {
         // GIVEN
         router.resetConfig([
           {
@@ -195,8 +189,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        void ngZone.run(navigateByUrlFn('home'));
-        tick();
+        await ngZone.run(navigateByUrlFn('home'));
 
         // THEN
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
@@ -209,7 +202,7 @@ describe('MainComponent', () => {
 
         // THEN
         expect(document.title).toBe(`${parentRoutePageTitle} translated`);
-      }));
+      });
     });
   });
 

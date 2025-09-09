@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { ProfileInfo } from 'app/layouts/profiles/profile-info.model';
@@ -11,14 +11,14 @@ describe('Page Ribbon Component', () => {
   let fixture: ComponentFixture<PageRibbonComponent>;
   let profileService: ProfileService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [PageRibbonComponent],
       providers: [provideHttpClient()],
     })
       .overrideTemplate(PageRibbonComponent, '')
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PageRibbonComponent);

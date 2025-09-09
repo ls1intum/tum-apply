@@ -1,6 +1,6 @@
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService, User } from 'app/core/auth/account.service';
 
@@ -23,12 +23,12 @@ jest.mock('app/core/auth/keycloak.service', () => {
 describe('HasAnyAuthorityDirective tests', () => {
   let mockAccountService: AccountService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [TestHasAnyAuthorityDirectiveComponent, TranslateModule.forRoot()],
       providers: [provideHttpClient(), AccountService],
-    });
-  }));
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     mockAccountService = TestBed.inject(AccountService);

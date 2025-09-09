@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 
@@ -100,8 +100,8 @@ describe('PrivacyPageComponent EN', () => {
   let fixture: ComponentFixture<PrivacyPageComponent>;
   let translate: TranslateService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoaderEn },
@@ -112,7 +112,7 @@ describe('PrivacyPageComponent EN', () => {
 
     translate = TestBed.inject(TranslateService);
     translate.use('en');
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PrivacyPageComponent);
@@ -170,8 +170,8 @@ describe('PrivacyPageComponent DE', () => {
   let fixture: ComponentFixture<PrivacyPageComponent>;
   let translate: TranslateService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoaderDe },
@@ -182,7 +182,7 @@ describe('PrivacyPageComponent DE', () => {
 
     translate = TestBed.inject(TranslateService);
     translate.use('de');
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PrivacyPageComponent);
