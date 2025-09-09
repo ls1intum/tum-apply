@@ -1,6 +1,6 @@
 <div [class.sidebar-collapsed]="isSidebarCollapsed()" [class.sidebar]="!isSidebarCollapsed()">
   <div class="sidebar-content">
-    @for (category of categories; track category.title) {
+    @for (category of categories(); track category.title) {
       @if (isSidebarCollapsed()) {
         @if (!$first) {
           <p-divider class="section-divider" />
@@ -22,6 +22,7 @@
       </div>
     }
   </div>
+
   <div class="settings-content">
     <p-divider />
     <div class="settings-row">
