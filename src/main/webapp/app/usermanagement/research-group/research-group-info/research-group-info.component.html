@@ -109,7 +109,8 @@
               [id]="'rg-description'"
               [characterLimit]="1000"
               [control]="form.controls.description"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.description' | translate }}"
+              placeholder="researchGroup.groupInfo.placeholders.description"
+              [shouldTranslate]="true"
             />
           }
         </form>

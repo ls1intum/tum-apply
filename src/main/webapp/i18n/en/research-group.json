@@ -21,23 +21,23 @@
         "description": "Description"
       },
       "placeholders": {
-        "name": "e.g. Biomedical Engineering Group",
-        "head": "e.g. Prof. Lina Zhang",
-        "email": "e.g. aniruddh.zaveri@tum.de",
-        "website": "e.g. https://academics.nat.tum.de/msc/bemp",
-        "abbreviation": "e.g. BEG",
-        "school": "e.g. CIT",
-        "defaultFieldOfStudies": "e.g. Informatics",
-        "address": "e.g. Boltzmannstraße 3",
-        "postalCode": "e.g. 85748",
-        "city": "e.g. Munich",
-        "description": "e.g. The Biomedical Engineering Group focuses on the intersection of digital tools and learning science. Our work includes research into scalable education platforms, user engagement, and gamified learning experiences. We aim to make education more effective and accessible using technology."
+        "name": "e.g. Research Group for Artificial Intelligence",
+        "abbreviation": "e.g. AI",
+        "head": "e.g. Prof. Dr. Max Mustermann",
+        "email": "e.g. kontakt@forschung.de",
+        "website": "e.g. https://www.forschung.de/gruppe",
+        "school": "e.g. Informatics",
+        "defaultFieldOfStudies": "e.g. Computer Science",
+        "address": "e.g. Musterstraße 123",
+        "postalCode": "e.g. 12345",
+        "city": "e.g. Berlin",
+        "description": "e.g. Our research group focuses on innovative approaches in technology. We focus on interdisciplinary research and the development of new methods to solve complex problems."
       },
       "toasts": {
         "updated": "Research group information successfully updated.",
-        "saveFailed": "Error saving research group information.",
-        "loadFailed": "Error loading research group information.",
-        "noId": "No research group ID available for saving."
+        "saveFailed": "Error saving research group information. Please check your internet connection and try again. If the problem persists, please contact an admin.",
+        "loadFailed": "Error loading research group information. Please refresh the page or try again later. If the problem persists, please contact an admin.",
+        "noId": "No research group found. Please ensure you are assigned to a research group. Contact an admin if you are having issues."
       }
     },
 

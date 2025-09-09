@@ -21,23 +21,23 @@
         "description": "Beschreibung"
       },
       "placeholders": {
-        "name": "z.B. Biomedizinische Ingenieurwissenschaften",
-        "abbreviation": "z.B. BIM",
-        "head": "z.B. Prof. Lina Zhang",
-        "email": "z.B. aniruddh.zaveri@tum.de",
-        "website": "z.B. https://academics.nat.tum.de/msc/bemp",
-        "school": "z.B. CIT",
-        "defaultFieldOfStudies": "z.B. Informatik",
-        "address": "z.B. Boltzmannstraße 3",
-        "postalCode": "z.B. 85748",
-        "city": "z.B. München",
-        "description": "z.B. Die Biomedizinische Ingenieurwissenschaften Gruppe konzentriert sich auf die Schnittstelle von digitalen Werkzeugen und Lernwissenschaft. Unsere Arbeit umfasst Forschung in skalierbaren Lernplattformen, Nutzerbeteiligung und gamifizierte Lernerfahrungen. Wir zielen darauf ab, Lernen effektiver und zugänglich zu machen, indem wir Technologie einsetzen."
+        "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",
+        "abbreviation": "z.B. KI",
+        "head": "z.B. Prof. Dr. Max Mustermann",
+        "email": "z.B. kontakt@forschung.de",
+        "website": "z.B. https://www.forschung.de/gruppe",
+        "school": "z.B. Informatik",
+        "defaultFieldOfStudies": "z.B. Computer Science",
+        "address": "z.B. Musterstraße 123",
+        "postalCode": "z.B. 12345",
+        "city": "z.B. Berlin",
+        "description": "z.B. Unsere Forschungsgruppe beschäftigt sich mit innovativen Ansätzen in der Technologie. Wir konzentrieren uns auf interdisziplinäre Forschung und die Entwicklung neuer Methoden zur Lösung komplexer Probleme."
       },
       "toasts": {
         "updated": "Forschungsgruppeninformationen erfolgreich aktualisiert.",
-        "saveFailed": "Fehler beim Speichern der Forschungsgruppeninformationen.",
-        "loadFailed": "Fehler beim Laden der Forschungsgruppeninformationen.",
-        "noId": "Keine Forschungsgruppen-ID verfügbar für das Speichern."
+        "saveFailed": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte überprüfe deine Internetverbindung und versuche es erneut. Falls das Problem weiterhin besteht, kontaktiere einen Admin.",
+        "loadFailed": "Fehler beim Laden der Forschungsgruppeninformationen. Bitte lade die Seite neu oder versuche es später erneut. Falls das Problem weiterhin besteht, kontaktiere einen Admin.",
+        "noId": "Keine Forschungsgruppe gefunden. Bitte stelle sicher, dass du einer Forschungsgruppe zugeordnet bist. Kontaktiere deinen Admin, falls du Probleme hast."
       }
     },
 
