@@ -124,17 +124,28 @@ const routes: Routes = [
   // ======================================================================================
   // Application
   // ======================================================================================
+  // New unified application form route
+  {
+    path: 'application/form',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
+  },
+
+  // TODO temporary - Keep the old routes for backward compatibility
   {
     path: 'application/create/:job_id',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
-    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
+    redirectTo(route) {
+      const jobId = route.params.job_id;
+      return `/application/form?job=${jobId}`;
+    },
   },
   {
     path: 'application/edit/:application_id',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Applicant] },
-    loadComponent: () => import('./application/application-creation/application-creation-form/application-creation-form.component'),
+    redirectTo(route) {
+      const applicationId = route.params.application_id;
+      return `/application/form?application=${applicationId}`;
+    },
   },
   {
     path: 'application/overview',

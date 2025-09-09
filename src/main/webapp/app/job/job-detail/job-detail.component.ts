@@ -1,4 +1,4 @@
-import { Component, Signal, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, Signal, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-import { JobDetailDTO, JobResourceService } from '../../generated';
+import { JobDetailDTO, JobFormDTO, JobResourceService, ResearchGroupResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
@@ -60,6 +60,9 @@ export class JobDetailComponent {
   readonly deleteButtonSeverity = 'danger' as ButtonColor;
   readonly deleteButtonIcon = 'trash';
 
+  // Input for preview data, used in the job creation overview step
+  previewData = input<Signal<JobFormDTO | undefined>>();
+
   closeConfirmDialog = viewChild<ConfirmDialog>('closeConfirmDialog');
   deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');
 
@@ -78,6 +81,7 @@ export class JobDetailComponent {
   });
 
   readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
+    if (this.previewData()) return null;
     const job = this.jobDetails();
     if (!job) return null;
 
@@ -145,19 +149,19 @@ export class JobDetailComponent {
     return null;
   });
 
-  readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: 'jobState.draft',
-    PUBLISHED: 'jobState.published',
-    CLOSED: 'jobState.closed',
-    APPLICANT_FOUND: 'jobState.applicantFound',
-  }));
+  readonly stateTextMap = new Map<string, string>([
+    ['DRAFT', 'jobState.draft'],
+    ['PUBLISHED', 'jobState.published'],
+    ['CLOSED', 'jobState.closed'],
+    ['APPLICANT_FOUND', 'jobState.applicantFound'],
+  ]);
 
-  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
-    DRAFT: 'info',
-    PUBLISHED: 'success',
-    CLOSED: 'danger',
-    APPLICANT_FOUND: 'warn',
-  });
+  readonly stateSeverityMap = new Map<string, 'success' | 'warn' | 'danger' | 'info'>([
+    ['DRAFT', 'info'],
+    ['PUBLISHED', 'success'],
+    ['CLOSED', 'danger'],
+    ['APPLICANT_FOUND', 'warn'],
+  ]);
 
   private jobResourceService = inject(JobResourceService);
   private accountService = inject(AccountService);
@@ -165,17 +169,28 @@ export class JobDetailComponent {
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
+  private researchGroupService = inject(ResearchGroupResourceService);
 
-  constructor() {
-    this.init();
-  }
+  private previewOrInitEffect = effect(() => {
+    const previewDataValue = this.previewData()?.();
+    if (previewDataValue) {
+      void this.loadJobDetailsFromForm(previewDataValue);
+    } else {
+      void this.init();
+    }
+  });
 
   onBack(): void {
     this.location.back();
   }
 
   onApply(): void {
-    this.router.navigate([`/application/create/${this.jobId()}`]);
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        job: this.jobId(),
+      },
+    });
+    // TODO - adjust to application state like in job overview page
   }
 
   onEditJob(): void {
@@ -243,35 +258,109 @@ export class JobDetailComponent {
   }
 
   loadJobDetails(job: JobDetailDTO): void {
-    const loadedJob: JobDetails = {
-      supervisingProfessor: job.supervisingProfessorName,
-      researchGroup: job.researchGroup.name ?? '',
-      title: job.title,
-      fieldOfStudies: job.fieldOfStudies ?? '',
-      researchArea: job.researchArea ?? '',
-      location: job.location ?? '',
-      workload: job.workload?.toString() ?? '',
-      contractDuration: job.contractDuration?.toString() ?? '',
-      fundingType: job.fundingType ?? '',
-      description: job.description ?? '',
-      tasks: job.tasks ?? '',
-      requirements: job.requirements ?? '',
-      startDate: job.startDate !== undefined ? dayjs(job.startDate).format('DD.MM.YYYY') : '',
-      endDate: job.endDate !== undefined ? dayjs(job.endDate).format('DD.MM.YYYY') : '',
-      createdAt: dayjs(job.createdAt).format('DD.MM.YYYY'),
-      lastModifiedAt: dayjs(job.lastModifiedAt).format('DD.MM.YYYY'),
+    this.jobDetails.set(this.mapToJobDetails(job, this.accountService.loadedUser()));
+  }
 
-      researchGroupDescription: job.researchGroup.description ?? '',
-      researchGroupEmail: job.researchGroup.email ?? '',
-      researchGroupWebsite: job.researchGroup.website ?? '',
-      researchGroupStreet: job.researchGroup.street ?? '',
-      researchGroupPostalCode: job.researchGroup.postalCode ?? '',
-      researchGroupCity: job.researchGroup.city ?? '',
+  get currentJobState(): string | undefined {
+    return this.jobDetails()?.jobState;
+  }
 
-      jobState: job.state,
-      belongsToResearchGroup: job.researchGroup.researchGroupId === this.accountService.loadedUser()?.researchGroup?.researchGroupId,
+  get jobStateText(): string {
+    const jobState = this.currentJobState;
+    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
+  }
+
+  get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
+    const jobState = this.currentJobState;
+    return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
+  }
+
+  private mapToJobDetails(
+    data: JobDetailDTO | JobFormDTO,
+    user?: ReturnType<AccountService['loadedUser']>,
+    researchGroupDetails?: {
+      description?: string;
+      email?: string;
+      website?: string;
+      street?: string;
+      postalCode?: string;
+      city?: string;
+    },
+    isForm = false,
+  ): JobDetails {
+    const now = dayjs().format('DD.MM.YYYY');
+
+    const jobDetailDTO = data as JobDetailDTO;
+
+    let supervisingProfessor: string;
+    let researchGroup: string;
+    let createdAt: string;
+    let lastModifiedAt: string;
+
+    if (isForm) {
+      supervisingProfessor = user?.name ?? '';
+      researchGroup = user?.researchGroup?.name ?? '';
+      createdAt = now;
+      lastModifiedAt = now;
+    } else {
+      supervisingProfessor = jobDetailDTO.supervisingProfessorName;
+      researchGroup = jobDetailDTO.researchGroup.name ?? '';
+      createdAt = dayjs(jobDetailDTO.createdAt).format('DD.MM.YYYY');
+      lastModifiedAt = dayjs(jobDetailDTO.lastModifiedAt).format('DD.MM.YYYY');
+    }
+
+    const startDate = data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '';
+    const endDate = data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '';
+
+    const researchGroupDescription = researchGroupDetails?.description ?? (!isForm ? (jobDetailDTO.researchGroup.description ?? '') : '');
+    const researchGroupEmail = researchGroupDetails?.email ?? (!isForm ? (jobDetailDTO.researchGroup.email ?? '') : '');
+    const researchGroupWebsite = researchGroupDetails?.website ?? (!isForm ? (jobDetailDTO.researchGroup.website ?? '') : '');
+    const researchGroupStreet = researchGroupDetails?.street ?? (!isForm ? (jobDetailDTO.researchGroup.street ?? '') : '');
+    const researchGroupPostalCode = researchGroupDetails?.postalCode ?? (!isForm ? (jobDetailDTO.researchGroup.postalCode ?? '') : '');
+    const researchGroupCity = researchGroupDetails?.city ?? (!isForm ? (jobDetailDTO.researchGroup.city ?? '') : '');
+
+    return {
+      supervisingProfessor,
+      researchGroup,
+      title: data.title,
+      fieldOfStudies: data.fieldOfStudies ?? '',
+      researchArea: data.researchArea ?? '',
+      location: data.location ?? '',
+      workload: data.workload?.toString() ?? '',
+      contractDuration: data.contractDuration?.toString() ?? '',
+      fundingType: data.fundingType ?? '',
+      description: data.description ?? '',
+      tasks: data.tasks ?? '',
+      requirements: data.requirements ?? '',
+      startDate,
+      endDate,
+      createdAt,
+      lastModifiedAt,
+
+      researchGroupDescription,
+      researchGroupEmail,
+      researchGroupWebsite,
+      researchGroupStreet,
+      researchGroupPostalCode,
+      researchGroupCity,
+
+      jobState: isForm ? 'DRAFT' : jobDetailDTO.state,
+      belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
     };
+  }
 
-    this.jobDetails.set(loadedJob);
+  private async loadJobDetailsFromForm(form: JobFormDTO): Promise<void> {
+    const user = this.accountService.loadedUser();
+    let researchGroupDetails;
+    try {
+      researchGroupDetails = await firstValueFrom(
+        this.researchGroupService.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
+      );
+    } catch {
+      this.toastService.showError({ detail: `Error loading research Group details.` });
+    }
+
+    this.jobDetails.set(this.mapToJobDetails(form, user, researchGroupDetails, true));
+    this.dataLoaded.set(true);
   }
 }
