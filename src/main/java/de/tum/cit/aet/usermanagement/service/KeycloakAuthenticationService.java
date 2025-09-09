@@ -2,7 +2,7 @@ package de.tum.cit.aet.usermanagement.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.core.exception.UnauthorizedException;
-import de.tum.cit.aet.usermanagement.dto.AuthResponseDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

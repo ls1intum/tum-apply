@@ -1,15 +1,13 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
-import de.tum.cit.aet.usermanagement.dto.AuthResponseDTO;
-import de.tum.cit.aet.usermanagement.dto.LoginRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.LoginRequestDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.time.Duration;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -18,6 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
+import java.util.Map;
 
 /**
  * Sets authentication cookies based on tokens.
