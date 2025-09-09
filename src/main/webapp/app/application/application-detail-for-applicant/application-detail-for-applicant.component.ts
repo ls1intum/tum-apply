@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
@@ -17,9 +17,30 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
   styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
+  // preview application data passed from parent component (if any)
+  previewDetailData = input<ApplicationDetailDTO | undefined>();
+  previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
+
+  // actual application data fetched from the backend
+  actualDetailDataExists = signal<boolean>(false);
+  actualDetailData = signal<ApplicationDetailDTO | null>(null);
+  actualDocumentDataExists = signal<boolean>(false);
+  actualDocumentData = signal<ApplicationDocumentIdsDTO | null>(null);
+
   applicationId = signal<string>('');
-  application = signal<ApplicationDetailDTO | undefined>(undefined);
-  documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+
+  application = computed(() => {
+    const preview = this.previewDetailData();
+    if (preview) return preview;
+
+    return this.actualDetailDataExists() ? this.actualDetailData() : undefined;
+  });
+  documentIds = computed(() => {
+    const preview = this.previewDocumentData();
+    if (preview) return preview;
+
+    return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
+  });
 
   private applicationService = inject(ApplicationResourceService);
   private route = inject(ActivatedRoute);
@@ -27,7 +48,9 @@ export default class ApplicationDetailForApplicantComponent {
   private readonly router = inject(Router);
 
   constructor() {
-    this.init();
+    if (!this.previewDetailData()) {
+      this.init();
+    }
   }
 
   async init(): Promise<void> {
@@ -38,11 +61,13 @@ export default class ApplicationDetailForApplicantComponent {
       this.applicationId.set(applicationId);
     }
     const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
-    this.application.set(application);
+    this.actualDetailData.set(application);
+    this.actualDetailDataExists.set(true);
 
     firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
-        this.documentIds.set(ids);
+        this.actualDocumentData.set(ids);
+        this.actualDocumentDataExists.set(true);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }

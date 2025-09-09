@@ -1,7 +1,13 @@
 import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import { ApplicationDocumentIdsDTO, ApplicationForApplicantDTO, ApplicationResourceService, UpdateApplicationDTO } from 'app/generated';
+import {
+  ApplicationDetailDTO,
+  ApplicationDocumentIdsDTO,
+  ApplicationForApplicantDTO,
+  ApplicationResourceService,
+  UpdateApplicationDTO,
+} from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -12,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ApplicationDraftData, LocalStorageService } from 'app/service/localStorage.service';
+import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -46,6 +53,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     FontAwesomeModule,
     TranslateModule,
     ConfirmDialog,
+    ApplicationDetailForApplicantComponent,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -85,9 +93,13 @@ export default class ApplicationCreationFormComponent {
   });
 
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
-  panel1 = viewChild<TemplateRef<any>>('panel1');
-  panel2 = viewChild<TemplateRef<any>>('panel2');
-  panel3 = viewChild<TemplateRef<any>>('panel3');
+
+  previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
+
+  panel1 = viewChild<TemplateRef<ApplicationCreationPage1Component>>('panel1');
+  panel2 = viewChild<TemplateRef<ApplicationCreationPage2Component>>('panel2');
+  panel3 = viewChild<TemplateRef<ApplicationCreationPage3Component>>('panel3');
+  panel4 = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('panel4');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
 
@@ -116,10 +128,13 @@ export default class ApplicationCreationFormComponent {
     const panel1 = this.panel1();
     const panel2 = this.panel2();
     const panel3 = this.panel3();
+    const panel4 = this.panel4();
     const applicantId = this.applicantId();
     const page1Valid = this.page1Valid();
     const page2Valid = this.page2Valid();
+    const page3Valid = this.page3Valid();
     const page1And2Valid = page1Valid && page2Valid;
+    const page1And2And3Valid = page1Valid && page2Valid && page3Valid;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
@@ -221,6 +236,43 @@ export default class ApplicationCreationFormComponent {
         ],
         buttonGroupNext: [
           {
+            severity: 'primary',
+            icon: 'arrow-right',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: !page3Valid,
+            label: 'entity.applicationSteps.buttons.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        disabled: !page1And2Valid,
+        status: statusPanel,
+      });
+    }
+
+    if (panel4) {
+      steps.push({
+        name: 'entity.applicationSteps.summary',
+        shouldTranslate: true,
+        panelTemplate: panel4,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: false,
+            label: 'entity.applicationSteps.buttons.prev',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
             severity: this.sendButtonSeverity,
             icon: this.sendButtonIcon,
             onClick: () => {
@@ -232,7 +284,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
-        disabled: !page1And2Valid,
+        disabled: !page1And2And3Valid,
         status: statusPanel,
       });
     }
@@ -387,41 +439,7 @@ export default class ApplicationCreationFormComponent {
       return false;
     }
 
-    const updateApplication: UpdateApplicationDTO = {
-      applicationId,
-      applicant: {
-        user: {
-          birthday: this.page1().dateOfBirth,
-          firstName: this.page1().firstName,
-          lastName: this.page1().lastName,
-          email: this.page1().email,
-          gender: this.page1().gender?.value as string,
-          linkedinUrl: this.page1().linkedIn,
-          nationality: this.page1().nationality?.value as string,
-          phoneNumber: this.page1().phoneNumber,
-          website: this.page1().website,
-          selectedLanguage: this.page1().language?.value as string,
-          userId: this.applicantId(),
-        },
-        bachelorDegreeName: this.page2().bachelorDegreeName,
-        masterDegreeName: this.page2().masterDegreeName,
-        bachelorGrade: this.page2().bachelorGrade,
-        masterGrade: this.page2().masterGrade,
-        bachelorGradingScale: 'ONE_TO_FOUR', // this.page2.bachelorsGradingScale,
-        masterGradingScale: 'ONE_TO_FOUR', // this.page2.mastersGradingScale,
-        city: this.page1().city,
-        country: this.page1().country?.value as string,
-        postalCode: this.page1().postcode,
-        street: this.page1().street,
-        bachelorUniversity: this.page2().bachelorDegreeUniversity,
-        masterUniversity: this.page2().masterDegreeUniversity,
-      },
-      applicationState: state,
-      desiredDate: this.page3()?.desiredStartDate ?? '',
-      motivation: this.page3()?.motivation ?? '',
-      specialSkills: this.page3()?.skills ?? '',
-      projects: this.page3()?.experiences,
-    };
+    const updateApplication = this.mapPagesToDTO(state) as UpdateApplicationDTO;
 
     try {
       await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
@@ -476,6 +494,68 @@ export default class ApplicationCreationFormComponent {
 
   onPage3ValidityChanged(isValid: boolean): void {
     this.page3Valid.set(isValid);
+  }
+
+  private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
+    const p1 = this.page1();
+    const p2 = this.page2();
+    const p3 = this.page3();
+
+    const base = {
+      applicationId: this.applicationId(),
+      applicant: {
+        user: {
+          userId: this.applicantId(),
+          email: p1.email,
+          gender: p1.gender?.value as string,
+          nationality: p1.nationality?.value as string,
+          birthday: p1.dateOfBirth,
+          website: p1.website,
+          linkedinUrl: p1.linkedIn,
+        },
+        bachelorDegreeName: p2.bachelorDegreeName,
+        bachelorUniversity: p2.bachelorDegreeUniversity,
+        bachelorGrade: p2.bachelorGrade,
+        bachelorGradingScale: p2.bachelorGradingScale.value,
+        masterDegreeName: p2.masterDegreeName,
+        masterUniversity: p2.masterDegreeUniversity,
+        masterGrade: p2.masterGrade,
+        masterGradingScale: p2.masterGradingScale.value,
+      },
+      motivation: p3?.motivation ?? '',
+      specialSkills: p3?.skills ?? '',
+      desiredDate: p3?.desiredStartDate ?? '',
+      projects: p3?.experiences,
+      jobTitle: this.title(),
+    };
+
+    if (state !== undefined) {
+      return {
+        ...base,
+        applicationState: state,
+        applicant: {
+          ...base.applicant,
+          city: p1.city,
+          country: p1.country?.value,
+          postalCode: p1.postcode,
+          street: p1.street,
+          user: {
+            ...base.applicant.user,
+            firstName: p1.firstName,
+            lastName: p1.lastName,
+            phoneNumber: p1.phoneNumber,
+            selectedLanguage: p1.language?.value as string,
+          },
+          bachelorGradingScale: 'ONE_TO_FOUR',
+          masterGradingScale: 'ONE_TO_FOUR',
+        },
+      } as UpdateApplicationDTO;
+    }
+
+    return {
+      ...base,
+      applicationState: this.applicationState(),
+    } as ApplicationDetailDTO;
   }
 
   private saveToLocalStorage(): boolean {

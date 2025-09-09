@@ -1,12 +1,14 @@
 <div class="px-4 py-4 text-primary w-full h-remaining-viewheight flex flex-col">
   @if (application(); as application) {
     <header class="header flex justify-between items-center">
-      <h1
-        jhiTranslate="entity.application_detail.applicant.header"
-        [translateValues]="{ jobTitle: application.jobTitle }"
-        class="h1-text"
-      ></h1>
-      <jhi-application-state-for-applicants [state]="application.applicationState" />
+      @if (!previewDetailData()) {
+        <h1
+          jhiTranslate="entity.application_detail.applicant.header"
+          [translateValues]="{ jobTitle: application.jobTitle }"
+          class="h1-text"
+        ></h1>
+        <jhi-application-state-for-applicants [state]="application.applicationState" />
+      }
     </header>
     <jhi-application-detail-card [application]="application">
       <div class="slot-right-width" slot-vertical-right>
@@ -16,7 +18,7 @@
       </div>
     </jhi-application-detail-card>
     <div class="w-full flex justify-end">
-      @if (application.applicationState === 'SAVED') {
+      @if (!previewDetailData() && application.applicationState === 'SAVED') {
         <jhi-button
           [label]="'entity.applicationOverview.actions.update' | translate"
           severity="primary"

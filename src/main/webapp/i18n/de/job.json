@@ -8,7 +8,8 @@
       "steps": {
         "basicInfo": "Grundlegende Informationen",
         "positionDetails": "Stellenbeschreibung",
-        "additionalInfo": "Zusätzliche Informationen"
+        "additionalInfo": "Zusätzliche Informationen",
+        "summary": "Zusammenfassung"
       }
     },
     "basicInformationSection": {
@@ -91,6 +92,10 @@
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
       "message": "Bist du sicher, dass du diese Doktorandenstelle veröffentlichen möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+    },
+    "reviewPageSection": {
+      "title": "Übersicht",
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Doktorandenstelle veröffentlichst."
     }
   },
   "jobOverviewPage": {
@@ -189,6 +194,7 @@
     "viewApplication": "Zur Bewerbung"
   },
   "jobState": {
+    "preview": "Vorschau",
     "draft": "Entwurf",
     "published": "Veröffentlicht",
     "closed": "Geschlossen",
