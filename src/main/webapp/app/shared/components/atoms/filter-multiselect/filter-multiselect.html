@@ -3,4 +3,6 @@
   [options]="sortedOptions()"
   [(ngModel)]="selectedValues"
   [displaySelectedLabel]="false"
+  (ngModelChange)="selectedValues.set($event); onFilterChange()"
+  [appendTo]="'body'"
 />

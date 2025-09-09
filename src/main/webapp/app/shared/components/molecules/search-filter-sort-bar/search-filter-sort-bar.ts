@@ -15,6 +15,11 @@ export interface Filter {
   filterOptions: string[];
 }
 
+export interface FilterChange {
+  filterLabel: string;
+  selectedValues: string[];
+}
+
 @Component({
   selector: 'jhi-search-filter-sort-bar',
   imports: [
@@ -44,6 +49,7 @@ export class SearchFilterSortBar {
   multipleEntities = input.required<string>();
 
   searchOutput = output<string>();
+  filterOutput = output<FilterChange>();
 
   // text entered in the search input field
   inputText = '';
@@ -58,5 +64,9 @@ export class SearchFilterSortBar {
     this.debounceTimeout = setTimeout(() => {
       this.searchOutput.emit(this.inputText);
     }, 300);
+  }
+
+  onFilterChange(filterChange: FilterChange): void {
+    this.filterOutput.emit(filterChange);
   }
 }

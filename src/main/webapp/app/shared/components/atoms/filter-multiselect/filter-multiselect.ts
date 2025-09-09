@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, computed, input, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, input, output, signal } from '@angular/core';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,6 +15,9 @@ export class FilterMultiselect {
   filterOptions = input<string[]>([]);
 
   selectedValues = signal<string[]>([]);
+
+  // gives the selected values back to the parent component
+  filterChange = output<{ filterLabel: string; selectedValues: string[] }>();
 
   sortedOptions = computed(() => {
     const selected = this.selectedValues();
@@ -35,4 +38,11 @@ export class FilterMultiselect {
       return a.label.localeCompare(b.label);
     });
   });
+
+  onFilterChange(): void {
+    this.filterChange.emit({
+      filterLabel: this.filterLabel(),
+      selectedValues: this.selectedValues(),
+    });
+  }
 }

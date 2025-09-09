@@ -7,7 +7,11 @@
       <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
     </p-iconfield>
     @for (filter of filters(); track filter.filterLabel) {
-      <jhi-filter-multiselect [filterLabel]="filter.filterLabel" [filterOptions]="filter.filterOptions" />
+      <jhi-filter-multiselect
+        [filterLabel]="filter.filterLabel"
+        [filterOptions]="filter.filterOptions"
+        (filterChange)="onFilterChange($event)"
+      />
     }
   </div>
   <div
