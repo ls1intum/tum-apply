@@ -56,6 +56,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.endDate
@@ -115,6 +117,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.endDate
@@ -173,6 +177,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 j.fieldOfStudies,
                 j.location,
                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                a.applicationId,
+                a.state,
                 j.workload,
                 j.startDate,
                 j.endDate
@@ -191,10 +197,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     Set<ApplicationForApplicantDTO> findAllDtosByJobJobId(UUID jobId);
-
-    boolean existsByApplicant_User_UserIdAndJob_JobId(UUID applicantId, UUID jobId);
-
-    long countByApplicant_User_UserId(UUID applicantId);
 
     @Modifying
     @Query(
@@ -257,6 +259,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    a.applicationId,
+                    a.state,
                     j.workload,
                     j.startDate,
                     j.endDate
@@ -314,4 +318,10 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
+    
+    @Query("SELECT a FROM Application a WHERE a.applicant.user.userId = :userId AND a.job.jobId = :jobId")
+    Application getByApplicantByUserIdAndJobId(@Param("userId") UUID userId, @Param("jobId") UUID jobId);
+    
+    @Query("SELECT COUNT(a) FROM Application a WHERE a.applicant.user.userId = :applicantId")
+    long countByApplicantId(@Param("applicantId") UUID applicantId);
 }

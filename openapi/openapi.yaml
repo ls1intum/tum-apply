@@ -1585,6 +1585,37 @@
         }
       }
     },
+    "/api/research-groups/detail/{researchGroupId}": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResourceGroupDetails",
+        "parameters": [
+          {
+            "name": "researchGroupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupLargeDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me/prof-onboarding": {
       "get": {
         "tags": [
@@ -3013,7 +3044,6 @@
           }
         },
         "required": [
-          "applicationId",
           "applicationState",
           "job"
         ]
@@ -3062,6 +3092,22 @@
           },
           "professorName": {
             "type": "string"
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
           },
           "workload": {
             "type": "integer",
@@ -3270,6 +3316,29 @@
           },
           "researchGroup": {
             "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
+      },
+      "ResearchGroupLargeDTO": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
           }
         }
       },

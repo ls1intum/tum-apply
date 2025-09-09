@@ -209,8 +209,9 @@
       "personalInformation": "Personal Information",
       "education": "Education",
       "applicationDetails": "Application Details",
+      "summary": "Summary",
       "buttons": {
-        "cancel": "Cancel",
+        "back": "Back",
         "next": "Next",
         "prev": "Previous",
         "send": "Send"
@@ -247,6 +248,9 @@
       },
       "tooltip": {
         "language": "Choose your preferred communication language."
+      },
+      "validation": {
+        "postalCode": "Please enter a valid postal code for the selected country."
       }
     },
     "applicationPage2": {
@@ -272,7 +276,8 @@
         "masterDegreeName": "Specify the study program of your Master's Degree.",
         "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
         "masterGradingScale": "Choose the Grading Scale used for your Master's Degree.",
-        "masterGrade": "Enter your final Master's Grade according to your institution's grading system."
+        "masterGrade": "Enter your final Master's Grade according to your institution's grading system.",
+        "filenamePrivacy": "File names stay private and are not shown to professors."
       }
     },
     "applicationPage3": {
@@ -304,6 +309,10 @@
       "placeholder": {
         "selectStartDate": "Select a Start Date..."
       }
+    },
+    "applicationPage4": {
+      "title": "Overview",
+      "message": "Please review your entries before submitting the application."
     },
     "applicationOverview": {
       "header": "Your Applications",

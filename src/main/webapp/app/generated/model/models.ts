@@ -43,6 +43,7 @@ export * from './ratingDTO';
 export * from './ratingOverviewDTO';
 export * from './rejectDTO';
 export * from './researchGroup';
+export * from './researchGroupLargeDTO';
 export * from './researchGroupShortDTO';
 export * from './sendCodeRequest';
 export * from './sortObject';
