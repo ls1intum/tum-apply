@@ -31,7 +31,7 @@
         "address": "z.B. Musterstraße 123",
         "postalCode": "z.B. 12345",
         "city": "z.B. Berlin",
-        "description": "z.B. Unsere Forschungsgruppe beschäftigt sich mit innovativen Ansätzen in der Technologie. Wir konzentrieren uns auf interdisziplinäre Forschung und die Entwicklung neuer Methoden zur Lösung komplexer Probleme."
+        "description": "Beschreibe kurz die Forschungsrichtung, Ziele und Schwerpunkte deiner Gruppe."
       },
       "toasts": {
         "updated": "Forschungsgruppeninformationen erfolgreich aktualisiert.",

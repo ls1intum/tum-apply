@@ -31,7 +31,7 @@
         "address": "e.g. Musterstraße 123",
         "postalCode": "e.g. 12345",
         "city": "e.g. Berlin",
-        "description": "e.g. Our research group focuses on innovative approaches in technology. We focus on interdisciplinary research and the development of new methods to solve complex problems."
+        "description": "Describe briefly your group's research focus, goals, and key areas."
       },
       "toasts": {
         "updated": "Research group information successfully updated.",
