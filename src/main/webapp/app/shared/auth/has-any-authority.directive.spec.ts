@@ -3,9 +3,11 @@ import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService, User } from 'app/core/auth/account.service';
+import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 
 @Component({
-  imports: [],
+  standalone: true,
+  imports: [HasAnyAuthorityDirective],
   template: ` <div *jhiHasAnyAuthority="'ROLE_ADMIN'" #content></div> `,
 })
 class TestHasAnyAuthorityDirectiveComponent {
@@ -71,26 +73,26 @@ describe('HasAnyAuthorityDirective tests', () => {
           mockAccountService.hasAnyAuthority = jest.fn((): boolean => Boolean(currentAccount()));
           const fixture = TestBed.createComponent(TestHasAnyAuthorityDirectiveComponent);
           const comp = fixture.componentInstance;
-    
+
           // WHEN
           fixture.detectChanges();
-    
+
           // THEN
           expect(comp.content()).toBeDefined();
-    
+
           // GIVEN
           currentAccount.set(null);
-    
+
           // WHEN
           fixture.detectChanges();
-    
+
           // THEN
           expect(comp.content()).toBeUndefined();
-    
+
           // WHEN
           currentAccount.set({ activated: true, authorities: ['foo'] } as any);
           fixture.detectChanges();
-    
+
           // THEN
           expect(comp.content).toBeDefined();
         });
