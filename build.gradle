@@ -243,7 +243,7 @@ dependencies {
 
 
   // needed for OpenAPI generation
-  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12'
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
   runtimeOnly "com.h2database:h2"
 
 
