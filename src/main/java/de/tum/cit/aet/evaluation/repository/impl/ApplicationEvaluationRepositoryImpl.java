@@ -147,16 +147,14 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         Root<Application> root = query.from(Application.class);
         Join<Application, Job> jobJoin = root.join(Application_.JOB);
 
-        query.select(jobJoin.get(Job_.TITLE))
-                .distinct(true)
-                .where(cb.and(
-                        cb.equal(
-                                jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID),
-                                researchGroupId)
-                // root.get(Application_.STATE).in(VIEWABLE_STATES) // Nur Applications in
-                // sichtbaren States
-                ))
-                .orderBy(cb.asc(jobJoin.get(Job_.TITLE)));
+                query.select(jobJoin.get(Job_.TITLE))
+                                .distinct(true)
+                                .where(cb.and(
+                                                cb.equal(
+                                                                jobJoin.get(Job_.RESEARCH_GROUP)
+                                                                                .get(ResearchGroup_.RESEARCH_GROUP_ID),
+                                                                researchGroupId)))
+                                .orderBy(cb.asc(jobJoin.get(Job_.TITLE)));
 
         return em.createQuery(query).getResultList();
     }
