@@ -159,12 +159,12 @@ export default class ApplicationOverviewForApplicantComponent {
     // if (confirmDelete) {
     this.applicationService.deleteApplication(applicationId).subscribe({
       next: () => {
-        this.toastService.showSuccess({ detail: 'Application successfully deleted' });
+        this.toastService.showSuccessKey('entity.toast.applicationOverview.delete.success');
         const event = this.lastLazyLoadEvent();
         if (event) this.loadPage(event);
       },
       error: err => {
-        this.toastService.showError({ detail: 'Error deleting the application' });
+        this.toastService.showErrorKey('entity.toast.applicationOverview.delete.error');
         console.error('Delete failed', err);
       },
     });
@@ -173,12 +173,12 @@ export default class ApplicationOverviewForApplicantComponent {
   onWithdrawApplication(applicationId: string): void {
     this.applicationService.withdrawApplication(applicationId).subscribe({
       next: () => {
-        this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
+        this.toastService.showSuccessKey('entity.toast.applicationOverview.withdraw.success');
         const event = this.lastLazyLoadEvent();
         if (event) this.loadPage(event);
       },
       error: err => {
-        this.toastService.showError({ detail: 'Error withdrawing the application' });
+        this.toastService.showErrorKey('entity.toast.applicationOverview.withdraw.error');
         console.error('Withdraw failed', err);
       },
     });
