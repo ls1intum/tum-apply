@@ -73,7 +73,7 @@ public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<Em
      * @return number of rows updated (0 if already used/expired/not found)
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update EmailVerificationOtp e set e.attempts = e.attempts + 1, e.used = (case when e.attempts >= e.maxAttempts then true else e.used end) where e.id = :id and e.used = false and e.expiresAt > :now")
+    @Query("update EmailVerificationOtp e set e.used = (case when e.attempts >= e.maxAttempts - 1 then true else e.used end), e.attempts = e.attempts + 1 where e.id = :id and e.used = false and e.expiresAt > :now")
     int incrementAttemptsIfActive(@Param("id") UUID id, @Param("now") Instant now);
 
     /**

@@ -115,13 +115,6 @@ public class EmailVerificationService {
 
         var otp = activeOpt.get();
 
-        if (otp.getAttempts() >= otp.getMaxAttempts()) {
-            otp.setUsed(true); // lock this code
-            emailVerificationOtpRepository.save(otp);
-            LOGGER.warn("OTP max-attempts reached -> locked - emailId={} ip={} attempts={}/{}", emailLogId(email), ip, otp.getAttempts(), otp.getMaxAttempts());
-            throw new EmailVerificationFailedException("Validation failed");
-        }
-
         String cleanedCode = submittedCode == null ? "" : submittedCode.trim();
         String expected = OtpUtil.hmacSha256Base64(otpHmacSecret,
             cleanedCode + "|" + otp.getSalt() + "|" + email);
