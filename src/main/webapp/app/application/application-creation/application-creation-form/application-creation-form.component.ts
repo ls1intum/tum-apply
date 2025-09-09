@@ -14,11 +14,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ApplicationDraftData, LocalStorageService } from 'app/service/localStorage.service';
 import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { OtpInput } from 'app/shared/components/atoms/otp-input/otp-input';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -34,6 +36,8 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
+import { AuthOrchestratorService } from '../../../shared/auth/data-access/auth-orchestrator.service';
+import { AuthService } from '../../../shared/auth/data-access/auth.service';
 
 const SavingStates = {
   SAVED: 'SAVED',
@@ -57,9 +61,11 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
+  providers: [DialogService],
   standalone: true,
 })
 export default class ApplicationCreationFormComponent {
+  private static readonly MAX_OTP_WAIT_TIME_MS = 600_000; // 10 minutes
   readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
   readonly sendButtonSeverity = 'primary' as ButtonColor;
   readonly sendButtonIcon = 'paper-plane';
@@ -123,6 +129,8 @@ export default class ApplicationCreationFormComponent {
 
   useLocalStorage = signal<boolean>(false);
 
+  dialogService = inject(DialogService);
+  location = inject(Location);
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];
     const panel1 = this.panel1();
@@ -167,11 +175,13 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'primary',
             icon: 'arrow-right',
-            onClick() {},
-            disabled: !(page1Valid && applicantId !== ''),
+            onClick: () => {
+              this.handleNextFromStep1();
+            },
+            disabled: !page1Valid,
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
-            changePanel: true,
+            changePanel: this.applicantId() !== '',
           },
         ],
         status: statusPanel,
@@ -210,7 +220,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
-        disabled: !page1Valid,
+        disabled: !page1Valid || !applicantId,
         status: statusPanel,
       });
     }
@@ -247,7 +257,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
-        disabled: !page1And2Valid,
+        disabled: !page1And2Valid || !applicantId,
         status: statusPanel,
       });
     }
@@ -284,30 +294,30 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
-        disabled: !page1And2And3Valid,
+        disabled: !page1And2And3Valid || !applicantId,
         status: statusPanel,
       });
     }
     return steps;
   });
+  private readonly applicationResourceService = inject(ApplicationResourceService);
+  private readonly accountService = inject(AccountService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
+  private readonly authOrchestrator = inject(AuthOrchestratorService);
+  private readonly authService = inject(AuthService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly translateService = inject(TranslateService);
 
+  private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
-
-  private location = inject(Location);
-  private applicationResourceService = inject(ApplicationResourceService);
-  private accountService = inject(AccountService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private toastService = inject(ToastService);
-  private localStorageService = inject(LocalStorageService);
-
   private initEffect = effect(() => {
     if (!untracked(() => this.initCalled())) {
       this.initCalled.set(true);
       this.init();
     }
   });
-
   private automaticSaveEffect = effect(() => {
     const intervalId = setInterval(() => {
       this.performAutomaticSave();
@@ -494,6 +504,91 @@ export default class ApplicationCreationFormComponent {
 
   onPage3ValidityChanged(isValid: boolean): void {
     this.page3Valid.set(isValid);
+  }
+
+  // Handles the Next action from Step 1: runs OTP flow, refreshes user, and migrates draft
+  private handleNextFromStep1(): void {
+    if (this.applicantId()) {
+      return;
+    }
+
+    const email = this.page1().email;
+
+    void (async () => {
+      try {
+        await this.openOtpAndWaitForLogin(email);
+        // TODO change this to an API call
+        await this.accountService.loadUser();
+        this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
+        await this.migrateDraftIfNeeded();
+      } catch (err) {
+        this.toastService.showError({
+          summary: 'Error',
+          detail: (err as Error).message || 'Email verification failed. Please try again.',
+        });
+      }
+    })();
+  }
+
+  // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
+  private async openOtpAndWaitForLogin(email: string): Promise<void> {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid email address.' });
+      return;
+    }
+
+    this.authOrchestrator.email.set(normalizedEmail);
+    await this.authService.sendOtp(true);
+
+    this.otpDialogRef = this.dialogService.open(OtpInput, {
+      header: this.translateService.instant('auth.common.otp.title'),
+      data: { registration: true },
+      style: { background: 'var(--p-background-default)', maxWidth: '40rem' },
+      closable: true,
+      modal: true,
+    });
+
+    // TODO: maybe switch to creating the account in this component
+    // Poll account state until a user is available or timeout
+    const started = Date.now();
+    await new Promise<void>((resolve, reject) => {
+      const iv = setInterval(() => {
+        const hasUser = !!this.accountService.loadedUser()?.id;
+        if (hasUser) {
+          clearInterval(iv);
+          this.otpDialogRef?.close();
+          resolve();
+        } else if (Date.now() - started > ApplicationCreationFormComponent.MAX_OTP_WAIT_TIME_MS) {
+          clearInterval(iv);
+          this.otpDialogRef?.close();
+          reject(new Error('OTP verification timeout. Please try again.'));
+        }
+      }, 250);
+    });
+  }
+
+  // Migrates local draft (anonymous) to server-backed application after login and persists current data.
+  private async migrateDraftIfNeeded(): Promise<void> {
+    if (!this.useLocalStorage()) {
+      return;
+    }
+
+    const jobId = this.jobId();
+    if (!jobId) {
+      return;
+    }
+
+    try {
+      const application = await this.initPageCreateApplication(jobId);
+      this.useLocalStorage.set(false);
+      this.applicationId.set(application.applicationId ?? this.applicationId());
+      this.savingState.set(SavingStates.SAVING);
+      await this.sendCreateApplicationData(this.applicationState(), false);
+      // TODO: remove application from local storage
+    } catch {
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to migrate local draft to server.' });
+    }
   }
 
   private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
