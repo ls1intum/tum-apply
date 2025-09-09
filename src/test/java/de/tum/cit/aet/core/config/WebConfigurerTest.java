@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
@@ -34,15 +34,13 @@ class WebConfigurerTest {
 
     private WebConfigurer webConfigurer;
 
-    private MockServletContext servletContext;
-
     private MockEnvironment env;
 
     private JHipsterProperties props;
 
     @BeforeEach
     public void setup() {
-        servletContext = spy(new MockServletContext());
+        MockServletContext servletContext = spy(new MockServletContext());
         doReturn(mock(FilterRegistration.Dynamic.class)).when(servletContext).addFilter(anyString(), any(Filter.class));
         doReturn(mock(ServletRegistration.Dynamic.class)).when(servletContext).addServlet(anyString(), any(Servlet.class));
 
@@ -55,7 +53,7 @@ class WebConfigurerTest {
     @Test
     void shouldCustomizeServletContainer() {
         env.setActiveProfiles(JHipsterConstants.SPRING_PROFILE_PRODUCTION);
-        UndertowServletWebServerFactory container = new UndertowServletWebServerFactory();
+        TomcatServletWebServerFactory container = new TomcatServletWebServerFactory();
         webConfigurer.customize(container);
         //TODO: Check why this is necessary
         //assertThat(container.getMimeMappings().get("abs")).isEqualTo("audio/x-mpeg");
