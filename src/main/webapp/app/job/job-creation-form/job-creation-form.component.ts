@@ -484,8 +484,8 @@ export class JobCreationFormComponent {
   private async performAutoSave(): Promise<void> {
     // Only save if basic info form is valid
     if (!this.basicInfoValid()) {
-      this.savingState.set('SAVED');
-      return;
+      /* this.savingState.set('SAVED');
+      return;*/
     }
 
     const currentData = this.createJobDTO('DRAFT');
