@@ -35,9 +35,9 @@
       },
       "toasts": {
         "updated": "Research group information successfully updated.",
-        "saveFailed": "Error saving research group information. Please check your internet connection and try again. If the problem persists, please contact an admin.",
-        "loadFailed": "Error loading research group information. Please refresh the page or try again later. If the problem persists, please contact an admin.",
-        "noId": "No research group found. Please ensure you are assigned to a research group. Contact an admin if you are having issues."
+        "saveFailed": "Error saving. Please try again or contact an admin.",
+        "loadFailed": "Error loading. Please refresh the page or contact an admin.",
+        "noId": "No research group found. Contact an admin."
       }
     },
 

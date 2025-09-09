@@ -35,9 +35,9 @@
       },
       "toasts": {
         "updated": "Forschungsgruppeninformationen erfolgreich aktualisiert.",
-        "saveFailed": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte überprüfe deine Internetverbindung und versuche es erneut. Falls das Problem weiterhin besteht, kontaktiere einen Admin.",
-        "loadFailed": "Fehler beim Laden der Forschungsgruppeninformationen. Bitte lade die Seite neu oder versuche es später erneut. Falls das Problem weiterhin besteht, kontaktiere einen Admin.",
-        "noId": "Keine Forschungsgruppe gefunden. Bitte stelle sicher, dass du einer Forschungsgruppe zugeordnet bist. Kontaktiere deinen Admin, falls du Probleme hast."
+        "saveFailed": "Fehler beim Speichern. Bitte versuche es erneut oder kontaktiere einen Admin.",
+        "loadFailed": "Fehler beim Laden. Bitte lade die Seite neu oder kontaktiere einen Admin.",
+        "noId": "Keine Forschungsgruppe gefunden. Kontaktiere deinen Admin."
       }
     },
 
