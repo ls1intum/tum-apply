@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -128,4 +130,19 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         ORDER BY u.firstName, u.lastName
     """)
     List<User> findUsersWithRolesByIds(@Param("userIds") List<UUID> userIds);
+
+    /**
+     * Finds users by research group ID with pagination support.
+     *
+     * @param researchGroupId the research group ID
+     * @param pageable the pagination information
+     * @return page of users in the research group
+     */
+    @Query("""
+        SELECT u FROM User u 
+        JOIN u.researchGroupRoles rgr 
+        WHERE rgr.researchGroup.researchGroupId = :researchGroupId
+        ORDER BY u.firstName, u.lastName
+    """)
+    Page<User> findAllByResearchGroupResearchGroupId(@Param("researchGroupId") UUID researchGroupId, Pageable pageable);
 }

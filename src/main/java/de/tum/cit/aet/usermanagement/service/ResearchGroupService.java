@@ -1,67 +1,57 @@
 package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class ResearchGroupService {
     
-    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
 
     public ResearchGroupService(
-        UserResearchGroupRoleRepository userResearchGroupRoleRepository,
         UserRepository userRepository,
         CurrentUserService currentUserService,
         ResearchGroupRepository researchGroupRepository
     ) {
-        this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
         this.userRepository = userRepository;
         this.currentUserService = currentUserService;
         this.researchGroupRepository = researchGroupRepository;
     }
 
     /**
-     * Get all members of a research group.
-     *
-     * @param researchGroupId the research group ID
-     * @return list of research group members
-     */
-    public List<UserShortDTO> getResearchGroupMembers(UUID researchGroupId) {
-        Set<UserResearchGroupRole> userRoles = userResearchGroupRoleRepository
-            .findAllByResearchGroupResearchGroupId(researchGroupId);
-
-        return userRoles.stream()
-            .map(role -> new UserShortDTO(role.getUser()))
-            .collect(Collectors.toList());
-    }
-
-    /**
      * Get all members of the current user's research group.
      *
-     * @return list of research group members
+     * @param pageDTO pagination information
+     * @return paginated list of research group members
      */
-    public List<UserShortDTO> getCurrentUserResearchGroupMembers() {
-        ResearchGroup researchGroup = currentUserService.getResearchGroupIfProfessor();
-        return getResearchGroupMembers(researchGroup.getResearchGroupId());
+    public PageResponseDTO<UserShortDTO> getCurrentUserResearchGroupMembers(PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(
+            pageDTO.pageNumber(),
+            pageDTO.pageSize(),
+            Sort.by(Sort.Direction.ASC, "firstName", "lastName"));
+        Page<User> members = userRepository.findAllByResearchGroupResearchGroupId(currentUserService.getResearchGroupIdIfProfessor(), pageable);
+        return new PageResponseDTO<>(members.get().map(UserShortDTO::new).toList(), members.getTotalElements());
     }
 
     /**
