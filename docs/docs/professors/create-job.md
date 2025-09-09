@@ -78,13 +78,13 @@ This document outlines key workflows for creating and publishing doctorate posit
 **Steps:**
 1. Navigate to **"Create Position"** from the sidebar menu
 2. **Complete Step 1 - Basic Information**:
-  - Enter all required fields marked with red asterisks
-  - Enter any optional fields as needed
+   - Enter all required fields marked with red asterisks
+   - Enter any optional fields as needed
 3. **Complete Step 2 - Position Details**:
-  - Write comprehensive project description using the rich-text editor
-  - Define specific key tasks and responsibilities expected of the candidate
-  - List detailed eligibility criteria including academic qualifications and preferred skills
-  - Use formatting tools to enhance readability and professional presentation
+   - Write comprehensive project description using the rich-text editor
+   - Define specific key tasks and responsibilities expected of the candidate
+   - List detailed eligibility criteria including academic qualifications and preferred skills
+   - Use formatting tools to enhance readability and professional presentation
 4. **Complete Step 3 - Review Job Details**:
    - Preview the complete position as it will appear to applicants
    - Confirm mandatory data privacy terms and conditions

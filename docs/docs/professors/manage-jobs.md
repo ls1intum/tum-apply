@@ -83,21 +83,21 @@ This document outlines key workflows supported by the position management dashbo
 **Steps:**
 1. Navigate to **"My Positions"** from the sidebar menu
 2. **Review the position table** displaying all your created positions with:
-  - Position titles and supervising professor name
-  - Current status with color-coded visual indicators
-  - Estimated start date of position
-  - Creation dates and last modification timestamps
-  - Context-sensitive action buttons
+   - Position titles and supervising professor name
+   - Current status with color-coded visual indicators
+   - Estimated start date of position
+   - Creation dates and last modification timestamps
+   - Context-sensitive action buttons
 3. **Use the status indicators** to quickly assess position states:
-  - Draft positions needing completion or publication
-  - Published positions accepting applications
-  - Positions that have found a suitable applicant
-  - Closed positions that were previously published
+   - Draft positions needing completion or publication
+   - Published positions accepting applications
+   - Positions that have found a suitable applicant
+   - Closed positions that were previously published
 4. **Access quick actions** directly from the table:
-  - Click **"View"** to see detailed position information
-  - Use **"Edit"** for draft positions needing updates
-  - Select **"Delete"** to remove unwanted draft positions
-  - Choose **"Close"** to reject all applications for published positions
+   - Click **"View"** to see detailed position information
+   - Use **"Edit"** for draft positions needing updates
+   - Select **"Delete"** to remove unwanted draft positions
+   - Choose **"Close"** to reject all applications for published positions
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61932
 
@@ -109,14 +109,14 @@ This document outlines key workflows supported by the position management dashbo
 **Steps:**
 1. From the **My Positions** dashboard, click **"View"** on any position
 2. **Review the enhanced position details** including:
-  - Current status prominently displayed at the top
-  - Complete position information as seen by applicants
-  - Administrative details like creation and modification dates
-  - Research group information and contact details
+   - Current status prominently displayed at the top
+   - Complete position information as seen by applicants
+   - Administrative details like creation and modification dates
+   - Research group information and contact details
 3. **Access management controls** directly from the detail page:
-  - Status-appropriate action buttons based on current position state
-  - Quick navigation back to the previous page
-  - Direct access to editing functionality for draft positions
+   - Status-appropriate action buttons based on current position state
+   - Quick navigation back to the previous page
+   - Direct access to editing functionality for draft positions
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61933
 
@@ -128,12 +128,12 @@ This document outlines key workflows supported by the position management dashbo
 **Steps:**
 1. From the dashboard or position details page, click **"Edit"** to access the **Position Editing Interface**
 2. **Navigate pre-filled editing forms** containing all current position information:
-  - Step through the same multi-step process used in the job creation form
-  - Review each section systematically for needed updates
-  - Utilize auto-save functionality to preserve changes during editing
+   - Step through the same multi-step process used in the job creation form
+   - Review each section systematically for needed updates
+   - Utilize auto-save functionality to preserve changes during editing
 3. **Finalize updates**:
-  - Review all changes in the final step
-  - Either publish immediately using the **"Publish"** button or leave the form and the position will be saved as a draft for later completion
+   - Review all changes in the final step
+   - Either publish immediately using the **"Publish"** button or leave the form and the position will be saved as a draft for later completion
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61936
 
@@ -144,21 +144,22 @@ This document outlines key workflows supported by the position management dashbo
 
 **Steps:**
 1. **For Published Position Closure**:
-  - From dashboard or position details, click **"Close"** on published positions
-  - **Confirm closure understanding** that the position will:
-    - Change status from "Published" to "Closed"
-    - Automatically reject all unreviewed applications
-    - Send notifications to all applicants about position closure
-  - **Authorize the closure** knowing that no further applications will be accepted
-  - **Verify status change** is reflected in the dashboard with updated badges
+   - From dashboard or position details, click **"Close"** on published positions
+   - **Confirm closure understanding** that the position will:
+     - Change status from "Published" to "Closed"
+     - Automatically reject all unreviewed applications
+     - Send notifications to all applicants about position closure
+     - Not be able to be reopened once closed
+   - **Authorize the closure** knowing that no further applications will be accepted
+   - **Verify status change** is reflected in the dashboard with updated badges
 
 2. **For Draft Position Deletion**:
-  - From dashboard or position details, click **"Delete"** on draft positions
-  - **Review deletion implications** understanding that:
-    - The position will be permanently removed from the system
-    - All draft content will be lost and cannot be recovered
-    - This action is irreversible once confirmed
-  - **Confirm deletion** only after ensuring valuable content is preserved elsewhere if needed
-  - **Verify removal** from the dashboard table
+   - From dashboard or position details, click **"Delete"** on draft positions
+   - **Review deletion implications** understanding that:
+     - The position will be permanently removed from the system
+     - All draft content will be lost and cannot be recovered
+     - This action is irreversible once confirmed
+   - **Confirm deletion** only after ensuring valuable content is preserved elsewhere if needed
+   - **Verify removal** from the dashboard table
 
 **Video**: https://live.rbg.tum.de/w/artemisintro/61938
