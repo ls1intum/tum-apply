@@ -1,15 +1,18 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/research-groups")
@@ -44,5 +47,16 @@ public class ResearchGroupResource {
     public ResponseEntity<List<UserShortDTO>> searchAvailableUsers(@RequestParam String query) {
         List<UserShortDTO> availableUsers = researchGroupService.searchAvailableUsers(query);
         return ResponseEntity.ok(availableUsers);
+    }
+
+    /**
+     * Retrieves the details of a research group by its ID.
+     *
+     * @param researchGroupId the unique identifier of the research group
+     * @return the research group details
+     */
+    @GetMapping("/detail/{researchGroupId}")
+    public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
+        return ResponseEntity.ok(researchGroupService.getResearchGroupDetails(researchGroupId));
     }
 }

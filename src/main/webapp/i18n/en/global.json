@@ -31,18 +31,6 @@
       },
       "language": "Language"
     },
-    "form": {
-      "username.label": "Username",
-      "username.placeholder": "Your username",
-      "currentpassword.label": "Current password",
-      "currentpassword.placeholder": "Current password",
-      "newpassword.label": "New password",
-      "newpassword.placeholder": "New password",
-      "confirmpassword.label": "New password confirmation",
-      "confirmpassword.placeholder": "Confirm the new password",
-      "email.label": "Email",
-      "email.placeholder": "Your email"
-    },
     "messages": {
       "info": {
         "authenticated": {
@@ -209,6 +197,7 @@
       "personalInformation": "Personal Information",
       "education": "Education",
       "applicationDetails": "Application Details",
+      "summary": "Summary",
       "buttons": {
         "back": "Back",
         "next": "Next",
@@ -308,6 +297,10 @@
       "placeholder": {
         "selectStartDate": "Select a Start Date..."
       }
+    },
+    "applicationPage4": {
+      "title": "Overview",
+      "message": "Please review your entries before submitting the application."
     },
     "applicationOverview": {
       "header": "Your Applications",
