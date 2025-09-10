@@ -204,7 +204,7 @@ export class ApplicationOverviewComponent {
 
       const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
       const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey['job'] ?? []);
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey.job ?? []);
 
       const res = await firstValueFrom(
         this.evaluationResourceService.getApplicationsOverviews(
