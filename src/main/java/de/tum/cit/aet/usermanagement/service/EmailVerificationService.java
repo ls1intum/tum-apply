@@ -23,7 +23,6 @@ public class EmailVerificationService {
 
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
     private final AsyncEmailSender asyncEmailSender;
-    private final KeycloakUserService keycloakUserService;
 
     @Value("${security.otp.length:8}")
     private int otpLength;
@@ -39,11 +38,9 @@ public class EmailVerificationService {
 
     public EmailVerificationService(
         EmailVerificationOtpRepository emailVerificationOtpRepository,
-        AsyncEmailSender asyncEmailSender,
-        KeycloakUserService keycloakUserService) {
+        AsyncEmailSender asyncEmailSender) {
         this.emailVerificationOtpRepository = emailVerificationOtpRepository;
         this.asyncEmailSender = asyncEmailSender;
-        this.keycloakUserService = keycloakUserService;
     }
 
     /**
@@ -93,9 +90,10 @@ public class EmailVerificationService {
 
     /**
      * Verifies the submitted OTP code for the given email and IP address.
-     * Checks for active OTP, validates the code, increments attempt count if failed,
-     * marks the OTP as used if successful, and updates the user's email verification
-     * status in Keycloak, forcing logout for fresh tokens.
+     * <p>
+     * Security model: This method ONLY validates the OTP and marks it as used. It MUST NOT perform any side effects
+     * like creating users, logging users in, or changing Keycloak state. Those actions are handled by OtpFlowService
+     * after successful verification.
      *
      * @param rawEmail      the raw email address to verify
      * @param submittedCode the OTP code submitted by the user
@@ -132,11 +130,6 @@ public class EmailVerificationService {
             LOGGER.warn("OTP race: markUsedIfActive returned 0 - emailId={} ip={}", emailLogId(email), ip);
             throw new EmailVerificationFailedException("Validation failed");
         }
-
-        // Flip in Keycloak and force fresh tokens
-        String userId = keycloakUserService.ensureUser(email);
-        keycloakUserService.markEmailVerified(userId);
-        keycloakUserService.logout(userId);
     }
 
     /**
