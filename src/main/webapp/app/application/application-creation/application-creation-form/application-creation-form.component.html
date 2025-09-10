@@ -7,13 +7,15 @@
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
-  (confirmed)="sendCreateApplicationData('SENT', true)"
+  (confirmed)="onConfirmSend()"
 />
+
 <ng-template #panel1>
   <div class="panel">
     <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
   </div>
 </ng-template>
+
 <ng-template #panel2>
   <div class="panel">
     <jhi-application-creation-page2
@@ -27,6 +29,7 @@
     />
   </div>
 </ng-template>
+
 <ng-template #panel3>
   <div class="panel">
     @if (page3()) {
@@ -38,14 +41,14 @@
         [applicationIdForDocuments]="applicationId()"
         [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
         [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
-        [submitAttempted]="sendAttempted()"
-        (privacyAcceptedChanged)="onPrivacyAcceptedChanged($event)"
       />
     }
   </div>
 </ng-template>
+
 <ng-template #panel4>
   <div class="panel">
+    <!-- Summary panel -->
     <div class="summary_page">
       <h2>{{ 'entity.applicationPage4.title' | translate }}</h2>
       <p>{{ 'entity.applicationPage4.message' | translate }}</p>
@@ -53,6 +56,26 @@
       <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
     </div>
   </div>
+  <!-- Privacy-Consent-Block direkt UNTER dem Summary-Panel -->
+  <p-divider layout="horizontal">
+    <span>{{ 'privacy.privacyConsent.title' | translate }}</span>
+  </p-divider>
+
+  <div class="data-privacy-notice mb-2">
+    <p [innerHTML]="'privacy.privacyConsent.text' | translate"></p>
+  </div>
+
+  <div [formGroup]="additionalInfoForm">
+    <label>
+      <input type="checkbox" formControlName="privacyAccepted" />
+      <span>{{ 'privacy.privacyConsent.confirmationText' | translate }}</span>
+    </label>
+
+    @if (!privacyAcceptedSignal() && submitAttempted()) {
+      <div class="error-text mt-1">{{ 'privacy.privacyConsent.errorText' | translate }}</div>
+    }
+  </div>
+  <!-- /Privacy-Consent-Block -->
 </ng-template>
 
 <ng-template #saving_state_panel>
@@ -70,6 +93,7 @@
   </header>
   <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>
 </div>
+
 <div class="m-4 p-1">
   <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
 </div>

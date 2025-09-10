@@ -14,11 +14,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ApplicationDraftData, LocalStorageService } from 'app/service/localStorage.service';
 import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { DividerModule } from 'primeng/divider';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -46,6 +49,8 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   selector: 'jhi-application-creation-form',
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+    DividerModule,
     ProgressStepperComponent,
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
@@ -120,9 +125,17 @@ export default class ApplicationCreationFormComponent {
   page3Valid = signal<boolean>(false);
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-
+  readonly formbuilder = inject(FormBuilder);
   useLocalStorage = signal<boolean>(false);
 
+  additionalInfoForm = this.formbuilder.group({
+    privacyAccepted: [false, [Validators.required]],
+  });
+  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
+    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
+  });
+  submitAttempted = signal(false);
+  // Stepper config
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];
     const panel1 = this.panel1();
@@ -300,6 +313,7 @@ export default class ApplicationCreationFormComponent {
   private router = inject(Router);
   private toastService = inject(ToastService);
   private localStorageService = inject(LocalStorageService);
+  private readonly translate = inject(TranslateService);
 
   private initEffect = effect(() => {
     if (!untracked(() => this.initCalled())) {
@@ -420,6 +434,17 @@ export default class ApplicationCreationFormComponent {
         this.savingState.set(SavingStates.SAVED);
       }
     }
+  }
+  onConfirmSend(): void {
+    this.submitAttempted.set(true);
+    if (!this.privacyAcceptedSignal()) {
+      this.toastService.showError({
+        summary: this.translate.instant('privacy.privacyConsent.errorSummary'),
+        detail: this.translate.instant('privacy.privacyConsent.errorText'),
+      });
+      return;
+    }
+    void this.sendCreateApplicationData('SENT', true);
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
