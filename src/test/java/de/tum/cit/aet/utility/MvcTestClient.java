@@ -41,6 +41,10 @@ public class MvcTestClient {
     // Use these in tests by default.
 
     public <T> T getAndReadOk(String url, Map<String, String> params, Class<T> type, MediaType... accepts) {
+        if (type == Void.class) {
+            getOk(url, params, accepts);
+            return null;
+        }
         return read(getOk(url, params, accepts), type);
     }
 
@@ -49,6 +53,10 @@ public class MvcTestClient {
     }
 
     public <T> T postAndReadOk(String url, Object body, Class<T> type, MediaType... accepts) {
+        if (type == Void.class) {
+            postOk(url, body, accepts);
+            return null;
+        }
         return read(postOk(url, body, accepts), type);
     }
 
@@ -57,6 +65,10 @@ public class MvcTestClient {
     }
 
     public <T> T putAndReadOk(String url, Object body, Class<T> type, MediaType... accepts) {
+        if (type == Void.class) {
+            putOk(url, body, accepts);
+            return null;
+        }
         return read(putOk(url, body, accepts), type);
     }
 
@@ -65,6 +77,10 @@ public class MvcTestClient {
     }
 
     public <T> T deleteAndReadOk(String url, Object body, Class<T> type, MediaType... accepts) {
+        if (type == Void.class) {
+            deleteOk(url, body, accepts);
+            return null;
+        }
         return read(deleteOk(url, body, accepts), type);
     }
 
