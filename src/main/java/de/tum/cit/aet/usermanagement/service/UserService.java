@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,26 +30,25 @@ public class UserService {
         if (normalizedEmail.isBlank()) {
             return Optional.empty();
         }
-        return userRepository.findByEmailIgnoreCase(email);
+        return userRepository.findByEmailIgnoreCase(normalizedEmail);
     }
 
     /**
-     * Creates a new local user. If a user with the same email already exists, the existing user is returned unchanged.
+     * Creates a new local user. If a user with the same email already exists, no action is taken.
      *
-     * @param email     normalized or raw email address
-     * @param firstName optional first name (can be blank)
-     * @param lastName  optional last name (can be blank)
-     * @return the persisted (or existing) User entity
+     * @param request the OTP completion request containing email and optional profile information
      */
     @Transactional
-    public User createUser(String email, String firstName, String lastName) {
-        String normalizedEmail = StringUtil.normalize(email, true);
-        return findByEmail(normalizedEmail).orElseGet(() -> {
+    public void createUser(OtpCompleteDTO request) {
+        String normalizedEmail = StringUtil.normalize(request.email(), true);
+        if (findByEmail(normalizedEmail).isEmpty()) {
             User newUser = new User();
             newUser.setEmail(normalizedEmail);
-            newUser.setFirstName(StringUtil.normalize(firstName, false));
-            newUser.setLastName(StringUtil.normalize(lastName, false));
-            return userRepository.save(newUser);
-        });
+            if (request.profile() != null) {
+                newUser.setFirstName(StringUtil.normalize(request.profile().firstName(), false));
+                newUser.setLastName(StringUtil.normalize(request.profile().lastName(), false));
+            }
+            userRepository.save(newUser);
+        }
     }
 }
