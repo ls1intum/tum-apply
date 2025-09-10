@@ -87,16 +87,6 @@ public class ResearchGroupService {
     }
 
     /**
-     * Checks if a research group exists by its ID.
-     *
-     * @param researchGroupId the ID of the research group
-     * @return true if the research group exists, false otherwise
-     */
-    public boolean existsById(UUID researchGroupId) {
-        return researchGroupRepository.existsById(researchGroupId);
-    }
-
-    /**
      * Updates a ResearchGroup entity with values from the provided DTO.
      */
     private void updateEntityFromDTO(ResearchGroup entity, ResearchGroupDTO dto) {
