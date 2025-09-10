@@ -135,7 +135,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void createApplication_persists_andReturnsDto() throws Exception {
+    void createApplicationPersistsAndReturnsDto() throws Exception {
         mockMvc.perform(post("/api/applications/create/{jobId}", publishedJob2.getJobId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.job.jobId").value(publishedJob2.getJobId().toString()));
@@ -146,7 +146,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void updateApplication_changesState_andReturnsDto() throws Exception {
+    void updateApplicationChangesStateAndReturnsDto() throws Exception {
         UpdateApplicationDTO req = TestDataFactory.createUpdateApplicationDTO(sentApp.getApplicationId(),
                 applicant.getUserId(), publishedJob1.getJobId());
         req = new UpdateApplicationDTO(
@@ -170,7 +170,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void getApplicationById_returnsStoredApplication() throws Exception {
+    void getApplicationByIdReturnsStoredApplication() throws Exception {
         mockMvc.perform(get("/api/applications/{applicationId}", sentApp.getApplicationId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.applicationId").value(sentApp.getApplicationId().toString()))
@@ -179,7 +179,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void deleteApplication_removesEntry() throws Exception {
+    void deleteApplicationRemovesEntry() throws Exception {
         mockMvc.perform(delete("/api/applications/{applicationId}", sentApp.getApplicationId()))
                 .andExpect(status().isNoContent());
 
@@ -188,14 +188,14 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser(roles = "APPLICANT")
-    void deleteDocumentFromApplication_returnsNoContent() throws Exception {
+    void deleteDocumentFromApplicationReturnsNotFound() throws Exception {
         mockMvc.perform(delete("/api/applications/delete-document/{id}", UUID.randomUUID()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(roles = "APPLICANT")
-    void deleteDocumentBatchByType_returnsNoContent() throws Exception {
+    void deleteDocumentBatchByTypeReturnsNoContent() throws Exception {
         mockMvc.perform(delete("/api/applications/batch-delete-document/{applicationId}/{type}",
                 sentApp.getApplicationId(), DocumentType.CV))
                 .andExpect(status().isNoContent());
@@ -203,7 +203,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser(roles = "APPLICANT")
-    void renameDocument_returnsOk() throws Exception {
+    void renameDocumentReturnsOk() throws Exception {
         mockMvc.perform(put("/api/applications/rename-document/{id}", UUID.randomUUID())
                 .param("newName", "RenamedDoc"))
                 .andExpect(status().isOk());
@@ -211,7 +211,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void getAllApplicationsOfApplicant_returnsList() throws Exception {
+    void getAllApplicationsOfApplicantReturnsList() throws Exception {
         mockMvc.perform(get("/api/applications/applicant/{id}", applicant.getUserId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].applicationId").value(sentApp.getApplicationId().toString()));
@@ -219,7 +219,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void getAllApplicationsOfJob_returnsList() throws Exception {
+    void getAllApplicationsOfJobReturnsList() throws Exception {
         mockMvc.perform(get("/api/applications/job/{id}", publishedJob1.getJobId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].job.jobId").value(publishedJob1.getJobId().toString()));
@@ -227,7 +227,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void withdrawApplication_changesState_andSendsOk() throws Exception {
+    void withdrawApplicationChangesStateAndSendsOk() throws Exception {
         mockMvc.perform(put("/api/applications/withdraw/{applicationId}", sentApp.getApplicationId()))
                 .andExpect(status().isOk());
 
@@ -237,7 +237,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void getApplicationPages_returnsOverviewList() throws Exception {
+    void getApplicationPagesReturnsOverviewList() throws Exception {
         mockMvc.perform(get("/api/applications/pages")
                 .param("pageSize", "25")
                 .param("pageNumber", "0"))
@@ -247,7 +247,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void getApplicationPagesLength_returnsCorrectCount() throws Exception {
+    void getApplicationPagesLengthReturnsCorrectCount() throws Exception {
         mockMvc.perform(get("/api/applications/pages/length/{applicantId}", applicant.getUserId()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("2"));
@@ -263,7 +263,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser(roles = "APPLICANT")
-    void uploadDocuments_forCv_returnsOk() throws Exception {
+    void uploadDocumentsForCvReturnsOk() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "files", "cv.pdf", MediaType.APPLICATION_PDF_VALUE, "content".getBytes());
 
@@ -275,7 +275,7 @@ public class ApplicationResourceTest {
 
     @Test
     @WithMockUser
-    void getDocumentDictionaryIds_returnsDto() throws Exception {
+    void getDocumentDictionaryIdsReturnsDto() throws Exception {
         mockMvc.perform(get("/api/applications/getDocumentIds/{applicationId}", sentApp.getApplicationId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cvDocumentDictionaryId").doesNotExist());
