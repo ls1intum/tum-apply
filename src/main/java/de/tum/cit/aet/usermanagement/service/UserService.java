@@ -1,6 +1,6 @@
 package de.tum.cit.aet.usermanagement.service;
 
-import de.tum.cit.aet.core.security.otp.OtpUtil;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,8 @@ public class UserService {
      * @return optional user
      */
     public Optional<User> findByEmail(String email) {
-        String normalizedEmail = OtpUtil.normalizeEmail(email);
-        if (normalizedEmail == null || normalizedEmail.isBlank()) {
+        String normalizedEmail = StringUtil.normalize(email, true);
+        if (normalizedEmail.isBlank()) {
             return Optional.empty();
         }
         return userRepository.findByEmailIgnoreCase(email);
@@ -42,11 +42,12 @@ public class UserService {
      */
     @Transactional
     public User createUser(String email, String firstName, String lastName) {
-        return findByEmail(email).orElseGet(() -> {
+        String normalizedEmail = StringUtil.normalize(email, true);
+        return findByEmail(normalizedEmail).orElseGet(() -> {
             User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setFirstName(firstName);
-            newUser.setLastName(lastName);
+            newUser.setEmail(normalizedEmail);
+            newUser.setFirstName(StringUtil.normalize(firstName, false));
+            newUser.setLastName(StringUtil.normalize(lastName, false));
             return userRepository.save(newUser);
         });
     }
