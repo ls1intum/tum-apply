@@ -86,8 +86,8 @@ public class KeycloakAuthenticationService {
     }
 
     /**
-     * Authenticates an end user with email (username) and password using the OIDC password grant via Keycloak's
-     * Authorization Client. Returns access/refresh tokens.
+     * Authenticates an end user with email (username) and password using the OIDC password grant via
+     * Keycloak's Authorization Client. Returns access/refresh tokens.
      *
      * @param email    user's email (username)
      * @param password user's password
@@ -104,7 +104,7 @@ public class KeycloakAuthenticationService {
     }
 
     /**
-     * Logs out an end-user session by calling the realm's OIDC Logout Endpoint with the provided refresh token.
+     * Logs out an end-user session by calling the realm's OIDC Logout Endpoint using the provided refresh token.
      *
      * @param refreshToken the user's refresh token to invalidate
      * @throws UnauthorizedException if the logout request is rejected or fails
@@ -116,14 +116,14 @@ public class KeycloakAuthenticationService {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         addClientAuth(form, clientId, clientSecret);
         form.add("refresh_token", refreshToken);
-        postFormNoBody(getKeycloakUrl(false), form, "Failed to logout user");
+        callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user").toBodilessEntity().block(Duration.ofSeconds(5));
     }
 
     /**
      * Refreshes an end user's tokens using {@code grant_type=refresh_token} against the OIDC Token Endpoint.
      *
      * @param refreshToken the user's refresh token
-     * @return DTO with fresh access token, refresh token and lifetimes
+     * @return DTO with fresh access token, refresh token, and lifetimes
      * @throws UnauthorizedException if the request is rejected or fails
      */
     public AuthResponseDTO refreshTokens(String refreshToken) {
@@ -131,20 +131,19 @@ public class KeycloakAuthenticationService {
             throw new UnauthorizedException("Missing refresh token");
         }
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        addClientAuth(form, clientId, clientSecret);
         form.add("grant_type", "refresh_token");
         form.add("refresh_token", refreshToken);
-        addClientAuth(form, clientId, clientSecret);
-        AccessTokenResponse tokenResponse = postForm(getKeycloakUrl(true), form, AccessTokenResponse.class, "Failed to refresh token");
+        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Failed to refresh token").bodyToMono(AccessTokenResponse.class).block(Duration.ofSeconds(5));
         return getResponseFromToken(tokenResponse);
     }
 
     /**
-     * Exchanges the service-account token for end-user tokens using the OIDC Token Exchange grant
-     * (impersonation).
+     * Exchanges the service-account token for end-user tokens using the OIDC Token Exchange grant (impersonation).
      *
      * @param keycloakUserId the target user's Keycloak ID (UUID)
      * @return DTO with access token and optional refresh token
-     * @throws UnauthorizedException if obtaining the SA token or the exchange request fails
+     * @throws UnauthorizedException if obtaining the admin token or the exchange request fails
      */
     public AuthResponseDTO exchangeForUserTokens(String keycloakUserId) {
         String adminAccessToken;
@@ -155,82 +154,72 @@ public class KeycloakAuthenticationService {
         }
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
         addClientAuth(form, adminClientId, adminClientSecret);
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
         form.add("subject_token", adminAccessToken);
         form.add("requested_subject", keycloakUserId);
         form.add("requested_token_type", "urn:ietf:params:oauth:token-type:access_token");
         form.add("scope", "openid");
 
-        AccessTokenResponse tokenResponse = postForm(getKeycloakUrl(true), form, AccessTokenResponse.class, "Token " +
-            "exchange failed");
+        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Token exchange failed").bodyToMono(AccessTokenResponse.class).block(Duration.ofSeconds(5));
         return getResponseFromToken(tokenResponse);
     }
 
     // ===== Helpers =====
 
     /**
-     * Builds the OIDC keycloak endpoint URL for token retrieval or logout.
+     * Returns the fully qualified OIDC endpoint URL (token or logout) for the configured realm.
      */
-    private String getKeycloakUrl(boolean isToken) {
-        return keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/" + (isToken ? "/token" : "/logout");
+    private String endpointUrl(OidcEndpoint endpoint) {
+        String endpointPath = (endpoint == OidcEndpoint.TOKEN) ? "token" : "logout";
+        return keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/" + endpointPath;
     }
 
     /**
-     * Adds client authentication to the given form. If a secret is configured, it will be included.
+     * Adds client authentication parameters (client_id and client_secret) to the form.
      */
     private void addClientAuth(MultiValueMap<String, String> form, String id, String secret) {
         form.add("client_id", id);
-        if (secret != null && !secret.isBlank()) {
-            form.add("client_secret", secret);
-        }
+        form.add("client_secret", secret);
     }
 
     /**
-     * POSTs a application/x-www-form-urlencoded form and maps the response body to the given type.
+     * POSTs an application/x-www-form-urlencoded form to the given OIDC endpoint and returns the prepared
+     * {@link WebClient.ResponseSpec} with error mapping applied.
      */
-    private <T> T postForm(String url, MultiValueMap<String, String> form, Class<T> bodyType, String errorPrefix) {
+    private WebClient.ResponseSpec callKeycloak(OidcEndpoint endpoint, MultiValueMap<String, String> form, String errorPrefix) {
         try {
             return webClient.post()
-                .uri(url)
+                .uri(endpointUrl(endpoint))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(form))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, r -> r.bodyToMono(String.class)
                     .flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b))))
                 .onStatus(HttpStatusCode::is5xxServerError, r -> r.bodyToMono(String.class)
-                    .flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b))))
-                .bodyToMono(bodyType)
-                .block(Duration.ofSeconds(5));
+                    .flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b))));
         } catch (Exception e) {
             throw new UnauthorizedException(errorPrefix, e);
         }
     }
 
     /**
-     * POSTs a form where no response body is expected.
+     * Validates and converts a Keycloak {@link AccessTokenResponse} into the a {@link AuthResponseDTO}.
+     *
+     * @param tokenResponse the token response from Keycloak (must contain an access token)
+     * @return a DTO containing the access token, refresh token (can be empty), and lifetimes
+     * @throws UnauthorizedException if the response is null or lacks an access token
      */
-    private void postFormNoBody(String url, MultiValueMap<String, String> form, String errorPrefix) {
-        try {
-            webClient.post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters.fromFormData(form))
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, r -> r.bodyToMono(String.class)
-                    .flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b))))
-                .toBodilessEntity()
-                .block(Duration.ofSeconds(5));
-        } catch (Exception e) {
-            throw new UnauthorizedException(errorPrefix, e);
-        }
-    }
-
-    private AuthResponseDTO getResponseFromToken(AccessTokenResponse token) {
-        if (token == null || token.getToken() == null) {
+    private AuthResponseDTO getResponseFromToken(AccessTokenResponse tokenResponse) {
+        if (tokenResponse == null || tokenResponse.getToken() == null) {
             throw new UnauthorizedException("Token response is invalid");
         }
-        String refreshToken = token.getRefreshToken() != null ? token.getRefreshToken() : "";
-        return new AuthResponseDTO(token.getToken(), refreshToken, token.getExpiresIn(), token.getRefreshExpiresIn());
+        String refreshToken = tokenResponse.getRefreshToken() != null ? tokenResponse.getRefreshToken() : "";
+        return new AuthResponseDTO(tokenResponse.getToken(), refreshToken, tokenResponse.getExpiresIn(), tokenResponse.getRefreshExpiresIn());
     }
+
+    /**
+     * Internal OIDC endpoints used by this service.
+     */
+    private enum OidcEndpoint {TOKEN, LOGOUT}
 }
