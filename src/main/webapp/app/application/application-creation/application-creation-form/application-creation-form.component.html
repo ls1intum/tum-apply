@@ -44,6 +44,16 @@
     }
   </div>
 </ng-template>
+<ng-template #panel4>
+  <div class="panel">
+    <div class="summary_page">
+      <h2>{{ 'entity.applicationPage4.title' | translate }}</h2>
+      <p>{{ 'entity.applicationPage4.message' | translate }}</p>
+
+      <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
+    </div>
+  </div>
+</ng-template>
 
 <ng-template #saving_state_panel>
   <div [className]="savingBadgeCalculatedClass()">

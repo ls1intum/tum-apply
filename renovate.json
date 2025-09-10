@@ -3,31 +3,125 @@
   "extends": [
     "config:recommended"
   ],
-  "prConcurrentLimit": 2,
-  "prHourlyLimit": 1,
   "schedule": [
     "every weekend"
   ],
+  "timezone": "Europe/Berlin",
+  "minimumReleaseAge": "3 days",
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": [
-      "security fix"
+      "security fix",
+      "dependencies",
+      "ready for review"
     ]
   },
   "packageRules": [
     {
-      "groupName": "Weekly Dependency Updates",
-      "groupSlug": "weekly-updates",
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch",
-        "digest",
-        "pin",
-        "lockFileMaintenance"
+      "matchManagers": [
+        "npm",
+        "gradle",
+        "maven",
+        "github-actions"
       ],
-      "schedule": [
-        "every weekend"
+      "labels": [
+        "dependencies",
+        "ready for review"
+      ]
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "ci: GitHub Actions",
+      "automerge": true,
+      "automergeType": "pr",
+      "prPriority": 10
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Jackson FasterXML",
+      "matchSourceUrlPrefixes": [
+        "https://github.com/FasterXML/"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Keycloak",
+      "matchPackagePatterns": [
+        "^org\\.keycloak:"
+      ]
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "groupName": "vendor: PrimeTek / PrimeUIX",
+      "matchPackageNames": [
+        "primeng",
+        "primeicons",
+        "tailwindcss-primeui"
+      ],
+      "matchPackagePrefixes": [
+        "@primeuix/"
+      ]
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "groupName": "vendor: ngx-translate",
+      "matchPackagePrefixes": [
+        "@ngx-translate/"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: JHipster",
+      "matchPackagePatterns": [
+        "^tech\\.jhipster:"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Caffeine",
+      "matchPackagePatterns": [
+        "^com\\.github\\.ben-manes\\.caffeine:"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Lombok",
+      "matchPackagePatterns": [
+        "^org\\.projectlombok:lombok$"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: ArchUnit",
+      "matchPackagePatterns": [
+        "^com\\.tngtech\\.archunit:"
+      ]
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "vendor: Testcontainers",
+      "matchPackagePatterns": [
+        "^org\\.testcontainers:"
       ]
     }
   ]
