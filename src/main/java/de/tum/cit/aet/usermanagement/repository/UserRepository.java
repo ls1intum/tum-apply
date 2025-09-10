@@ -26,14 +26,14 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
 
     @EntityGraph(attributePaths = {"researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup"})
     Optional<User> findWithResearchGroupRolesByUserId(UUID userId);
-
+    
     Optional<User> findByEmailIgnoreCase(String email);
 
     @Modifying
     @Query(
         value = """
-            UPDATE users SET
-                email = :email,
+                UPDATE users SET
+                    email = :email,
                     first_name = :firstName,
                     last_name = :lastName,
                     gender = :gender,
