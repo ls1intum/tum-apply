@@ -1,65 +1,64 @@
 dependencies {
-    implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
-    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+  implementation "com.mysql:mysql-connector-j:${mysqlVersion}"
+  testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
 }
 
 ext {
-    springProfiles = "prod" + springProfiles
+  springProfiles = "prod" + springProfiles
 
-    if (project.hasProperty("api-docs")) {
-        springProfiles += ",api-docs"
-    }
+  if (project.hasProperty("api-docs")) {
+    springProfiles += ",api-docs"
+  }
 }
 
 springBoot {
-    buildInfo()
+  buildInfo()
 }
 
 bootRun {
-    args = ["--spring.profiles.active=${springProfiles}"]
+  args = ["--spring.profiles.active=${springProfiles}"]
 }
 
 tasks.register("webapp", NpmTask) {
-    dependsOn npmInstall
-    args = ["run", "webapp:prod"]
-    environment = [
-            "APP_VERSION"            : project.version,
-            "KEYCLOAK_URL"           : System.getenv("KEYCLOAK_URL"),
-            "KEYCLOAK_REALM"         : System.getenv("KEYCLOAK_REALM"),
-            "KEYCLOAK_CLIENT_ID"     : System.getenv("KEYCLOAK_CLIENT_ID"),
-            "KEYCLOAK_ENABLE_LOGGING": System.getenv("KEYCLOAK_ENABLE_LOGGING"),
-    ]
+  dependsOn npmInstall
+  args = ["run", "webapp:prod"]
+  environment = [
+    "APP_VERSION"                : project.version,
+    "KEYCLOAK_URL"               : System.getenv("KEYCLOAK_URL"),
+    "KEYCLOAK_REALM"             : System.getenv("KEYCLOAK_REALM"),
+    "KEYCLOAK_CLIENT_ID"         : System.getenv("KEYCLOAK_CLIENT_ID"),
+    "KEYCLOAK_ENABLE_LOGGING"    : System.getenv("KEYCLOAK_ENABLE_LOGGING"),
+    "OTP_LENGTH"                 : System.getenv("OTP_LENGTH"),
+    "OTP_RESEND_COOLDOWN_SECONDS": System.getenv("OTP_RESEND_COOLDOWN_SECONDS"),
+  ]
 }
 
 processResources {
-    inputs.property('version', version)
-    inputs.property('springProfiles', springProfiles)
-    filesMatching("**/application.yml") {
-        filter {
-            it.replace("@project.version@", version)
-        }
-        filter {
-            it.replace("@spring.profiles.active@", springProfiles)
-        }
+  inputs.property('version', version)
+  inputs.property('springProfiles', springProfiles)
+  filesMatching("**/application.yml") {
+    filter {
+      it.replace("@project.version@", version)
     }
+    filter {
+      it.replace("@spring.profiles.active@", springProfiles)
+    }
+  }
 }
 
 tasks.register("integrationTest", Test) {
-    maxHeapSize = "1G"
-    useJUnitPlatform()
-    description = "Execute integration tests."
-    group = "verification"
-    include "**/*IT*", "**/*IntTest*"
-    testLogging {
-        events = ['FAILED', 'SKIPPED']
-        exceptionFormat = "full"
-    }
-    systemProperty('spring.profiles.active', 'test,testprod')
-    systemProperty('java.security.egd', 'file:/dev/./urandom')
-    // uncomment if the tests reports are not generated
-    // see https://github.com/jhipster/generator-jhipster/pull/2771 and https://github.com/jhipster/generator-jhipster/pull/4484
-    // ignoreFailures true
-    reports.html.required = false
+  maxHeapSize = "1G"
+  useJUnitPlatform()
+  description = "Execute integration tests."
+  group = "verification"
+  include "**/*IT*", "**/*IntTest*"
+  testLogging {
+    events = ['FAILED', 'SKIPPED']
+    exceptionFormat = "full"
+  }
+  systemProperty('spring.profiles.active', 'test,testprod')
+  systemProperty('java.security.egd', 'file:/dev/./urandom')
+  reports.html.required = false
 }
 integrationTest.dependsOn test
 
