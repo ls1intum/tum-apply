@@ -87,7 +87,8 @@ export class FilterMultiselect {
   }
 
   onSearchChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
+    const target: HTMLInputElement | null = event.target as HTMLInputElement | null;
+    if (!target) return;
     this.searchTerm.set(target.value);
   }
 
