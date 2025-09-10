@@ -61,10 +61,11 @@ public class KeycloakUserService {
      * @throws IllegalStateException if user creation fails with an unexpected status code
      */
     public String ensureUser(String email) {
-        return findUserIdByEmail(email).orElseGet(() -> {
+        String normalizedEmail = StringUtil.normalize(email, true);
+        return findUserIdByEmail(normalizedEmail).orElseGet(() -> {
             UserRepresentation u = new UserRepresentation();
-            u.setUsername(email);
-            u.setEmail(email);
+            u.setUsername(normalizedEmail);
+            u.setEmail(normalizedEmail);
             u.setEnabled(true);
             u.setEmailVerified(true);
 
@@ -75,7 +76,7 @@ public class KeycloakUserService {
                 }
                 // If created concurrently we might see 409; try lookup again
                 if (resp.getStatus() == 409) {
-                    return findUserIdByEmail(email).orElseThrow();
+                    return findUserIdByEmail(normalizedEmail).orElseThrow();
                 }
                 throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
             }
