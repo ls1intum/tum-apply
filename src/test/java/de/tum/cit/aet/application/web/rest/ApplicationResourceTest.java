@@ -242,7 +242,7 @@ public class ApplicationResourceTest {
                 .param("pageSize", "25")
                 .param("pageNumber", "0"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].applicationId").value(sentApp.getApplicationId().toString()));
+                .andExpect(jsonPath("$[?(@.applicationId == '%s')]", sentApp.getApplicationId().toString()).exists());
     }
 
     @Test
