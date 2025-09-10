@@ -58,7 +58,7 @@ public class ResearchGroupResourceTest {
 
     @Test
     @WithMockUser
-    public void getResourceGroupDetails_existingId_returnsDetails() {
+    public void getResearchGroupDetails_existingId_returnsDetails() {
         ResearchGroupLargeDTO result = api.getAndReadOk(
                 "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
                 Map.of(),
