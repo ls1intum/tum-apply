@@ -12,6 +12,7 @@ import { FilterMultiselect } from '../../atoms/filter-multiselect/filter-multise
 // Interface for filter options which can be passed to the filter component
 export interface Filter {
   filterLabel: string;
+  filterSearchPlaceholder: string;
   filterOptions: string[];
 }
 

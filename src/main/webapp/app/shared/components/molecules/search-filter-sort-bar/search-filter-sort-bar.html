@@ -9,6 +9,7 @@
     @for (filter of filters(); track filter.filterLabel) {
       <jhi-filter-multiselect
         [filterLabel]="filter.filterLabel"
+        [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
         [filterOptions]="filter.filterOptions"
         (filterChange)="onFilterChange($event)"
       />

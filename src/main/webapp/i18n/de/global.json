@@ -146,9 +146,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Ausgewählt",
+      "noResults": "Keine Ergebnisse gefunden",
       "numberSelected": "{{selected}} ausgewählt",
-      "clear": "Entfernen",
-      "clearAll": "Alle entfernen",
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
