@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { registerLocaleData } from '@angular/common';
 import locale from '@angular/common/locales/en';
 import dayjs from 'dayjs/esm';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 
 import { DEBUG_INFO_ENABLED } from './app/app.constants';
@@ -20,7 +21,7 @@ if (!DEBUG_INFO_ENABLED) {
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
-  providers: [...appConfig.providers, MessageService],
+  providers: [...appConfig.providers, provideAnimations(), MessageService],
 })
   .then(app => {
     const dpConfig = app.injector.get(NgbDatepickerConfig);

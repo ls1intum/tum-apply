@@ -15,6 +15,7 @@ import './config/dayjs';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
@@ -53,6 +54,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(initializeAuth),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
+    provideAnimations(),
     providePrimeNG({
       theme: {
         preset: TUMApplyPreset,
