@@ -71,6 +71,7 @@ model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
+model/uploadDocumentsRequest.ts
 model/user.ts
 model/userDTO.ts
 model/userForApplicationDetailDTO.ts
@@ -80,6 +81,5 @@ model/verifyCodeRequest.ts
 ng-package.json
 package.json
 param.ts
-provide-api.ts
 tsconfig.json
 variables.ts

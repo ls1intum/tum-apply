@@ -931,6 +931,23 @@
               "schema": {
                 "$ref": "#/components/schemas/MultipartUploadRequest"
               }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
             }
           }
         },
@@ -3230,6 +3247,7 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "minLength": 1
           },
           "code": {
@@ -3247,6 +3265,7 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "minLength": 1
           }
         },
@@ -3259,6 +3278,7 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "minLength": 1
           },
           "password": {
@@ -3529,15 +3549,15 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -3590,10 +3610,10 @@
       "SortObject": {
         "type": "object",
         "properties": {
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
           "empty": {
@@ -4213,15 +4233,15 @@
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "size": {
             "type": "integer",

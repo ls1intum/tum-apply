@@ -16,9 +16,9 @@ export interface PageCreatedJobDTO {
     totalElements?: number;
     totalPages?: number;
     pageable?: PageableObject;
+    numberOfElements?: number;
     first?: boolean;
     last?: boolean;
-    numberOfElements?: number;
     size?: number;
     content?: Array<CreatedJobDTO>;
     number?: number;

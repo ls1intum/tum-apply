@@ -48,6 +48,7 @@ export * from './researchGroupShortDTO';
 export * from './sendCodeRequest';
 export * from './sortObject';
 export * from './updateApplicationDTO';
+export * from './uploadDocumentsRequest';
 export * from './user';
 export * from './userDTO';
 export * from './userForApplicationDetailDTO';

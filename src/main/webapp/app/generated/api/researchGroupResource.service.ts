@@ -82,13 +82,12 @@ export class ResearchGroupResourceService extends BaseService {
         }
 
         let localVarPath = `/api/research-groups/members`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<PageResponseDTOUserShortDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<PageResponseDTOUserShortDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -136,12 +135,11 @@ export class ResearchGroupResourceService extends BaseService {
         }
 
         let localVarPath = `/api/research-groups/detail/${this.configuration.encodeParam({name: "researchGroupId", value: researchGroupId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<ResearchGroupLargeDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<ResearchGroupLargeDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -193,13 +191,12 @@ export class ResearchGroupResourceService extends BaseService {
         }
 
         let localVarPath = `/api/research-groups/search-available-users`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<UserShortDTO>>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<Array<UserShortDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
