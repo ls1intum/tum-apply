@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
  * and authentication token handling.
  */
 @Service
-public class OtpService {
+public class OtpFlowService {
 
     private final UserService userService;
     private final KeycloakUserService keycloakUserService;
     private final KeycloakAuthenticationService keycloakAuthService;
 
-    public OtpService(UserService userService, KeycloakUserService keycloakUserService, KeycloakAuthenticationService keycloakAuthService) {
+    public OtpFlowService(UserService userService, KeycloakUserService keycloakUserService, KeycloakAuthenticationService keycloakAuthService) {
         this.userService = userService;
         this.keycloakUserService = keycloakUserService;
         this.keycloakAuthService = keycloakAuthService;
