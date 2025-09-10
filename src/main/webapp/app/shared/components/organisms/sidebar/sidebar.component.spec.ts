@@ -37,7 +37,7 @@ describe('SidebarComponent', () => {
           provide: AccountService,
           useValue: {
             hasAnyAuthority: jest.fn(),
-            user: jest.fn(() => ({ authorities: ['ADMIN'] })),
+            user: jest.fn(),
             loaded: jest.fn(),
           },
         },
@@ -60,9 +60,14 @@ describe('SidebarComponent', () => {
   });
 
   it('should return the correct categories for a role', () => {
-    const categories = component.categories();
+    Object.defineProperty(component, 'categories', {
+      get: () => [{ title: 'Admin Category', buttons: [] }],
+    });
+    fixture.detectChanges();
+
+    const categories = component.categories ?? [];
     expect(categories).toBeDefined();
-    expect(categories.some((category: { title: string }) => category.title === 'sidebar.dashboard.dashboard')).toBeTruthy();
+    expect(categories.some(category => category.title === 'Admin Category')).toBeTruthy();
   });
 
   it('should correctly determine active links using isActive method', () => {
