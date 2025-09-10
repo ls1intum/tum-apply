@@ -18,6 +18,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * This service is responsible for generating, sending, and verifying OTP codes
+ * sent to users' email addresses.
+ */
 @Service
 public class EmailVerificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailVerificationService.class);
