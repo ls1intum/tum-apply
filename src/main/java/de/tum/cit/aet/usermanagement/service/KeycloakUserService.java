@@ -50,7 +50,7 @@ public class KeycloakUserService {
     /**
      * Ensures a user exists in Keycloak for the given email (creates one if missing).
      * <p>
-     * The created user is initialized with {@code enabled=true} and {@code emailVerified=false}. If a concurrent
+     * The created user is initialized with {@code enabled=true} and {@code emailVerified=true}. If a concurrent
      * creation happens and Keycloak returns HTTP 409 (conflict), this method performs a follow-up lookup and returns
      * the resulting user ID.
      *
@@ -64,7 +64,7 @@ public class KeycloakUserService {
             u.setUsername(email);
             u.setEmail(email);
             u.setEnabled(true);
-            u.setEmailVerified(false);
+            u.setEmailVerified(true);
 
             try (Response resp = keycloak.realm(realm).users().create(u)) {
                 if (resp.getStatus() == 201 && resp.getLocation() != null) {
@@ -78,21 +78,6 @@ public class KeycloakUserService {
                 throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
             }
         });
-    }
-
-    /**
-     * Sets the {@code emailVerified} flag to {@code true} for the given user, if not already set.
-     *
-     * @param userId the Keycloak user ID; must not be {@code null}
-     */
-    public void markEmailVerified(String userId) {
-        var userRes = keycloak.realm(realm).users().get(userId);
-        var rep = userRes.toRepresentation();
-        if (Boolean.TRUE.equals(rep.isEmailVerified())) {
-            return;
-        }
-        rep.setEmailVerified(true);
-        userRes.update(rep);
     }
 
     /**
