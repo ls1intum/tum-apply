@@ -8,7 +8,7 @@ on:
       - 'CONTRIBUTING.md'
       - 'LICENSE'
       - 'SECURITY.md'
-      - 'docs/**'
+      - '../../docs-github/**'
       - '.github/**'
       - '!.github/workflows/test.yml'
   push:
@@ -21,7 +21,7 @@ on:
       - 'CONTRIBUTING.md'
       - 'LICENSE'
       - 'SECURITY.md'
-      - 'docs/**'
+      - '../../docs-github/**'
       - '.github/**'
       - '!.github/workflows/test.yml'
   release:
@@ -51,6 +51,8 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
+      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
       AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -143,6 +145,8 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
+      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -176,6 +180,8 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
+      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -215,6 +221,8 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
+      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -258,6 +266,8 @@ jobs:
       KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
+      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

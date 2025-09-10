@@ -8,21 +8,21 @@
       "applicant": {
         "submission": {
           "title": "Application Submission",
-          "description": "Receive confirmation when you submit or withdraw an application."
+          "description": "Receive confirmation by email when you submit or withdraw an application."
         },
         "outcome": {
           "title": "Application Outcome",
-          "description": "Be notified when your application is accepted or rejected."
+          "description": "Be notified by email when your application is accepted or rejected."
         }
       },
       "professor": {
         "new": {
           "title": "New Applications",
-          "description": "Get notified when a new application is received for your job posting."
+          "description": "Get notified by email when a new application is received for your job posting."
         },
         "accepted": {
           "title": "Application Accepted (BCC)",
-          "description": "Receive a copy when an applicant for your job is accepted."
+          "description": "Receive a copy by email when an applicant for your job is accepted."
         }
       }
     }

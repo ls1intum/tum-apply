@@ -40,6 +40,7 @@ public class GlobalExceptionHandler {
         Map.entry(InvalidParameterException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PARAMETER)),
         Map.entry(OperationNotAllowedException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.OPERATION_NOT_ALLOWED)),
         Map.entry(UploadException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.UPLOAD_FAILED)),
+        Map.entry(EmailVerificationFailedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(AccessDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(UnauthorizedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(MailingException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR)),
@@ -63,7 +64,7 @@ public class GlobalExceptionHandler {
      * @param request the current HTTP request
      * @return a ResponseEntity with a structured ApiError body
      */
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleRuntime(Exception ex, HttpServletRequest request) {
         if (ex instanceof HandlerMethodValidationException hmve) {
             log.warn("Handled handler-method validation: {} - Path: {}", hmve.getMessage(), request.getRequestURI());
@@ -137,6 +138,16 @@ public class GlobalExceptionHandler {
         if (ex instanceof EmailTemplateException ete) {
             log.warn("Handled email template exception: {} - Path: {}", ete.getClass().getSimpleName(), request.getRequestURI(), ex);
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.EMAIL_TEMPLATE_ERROR, ex, request.getRequestURI(), null);
+        }
+        if (ex instanceof EmailVerificationFailedException evfe) {
+            log.info("Handled OTP verification failure - Path: {}", request.getRequestURI());
+            return buildErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                ErrorCode.UNAUTHORIZED,
+                evfe,
+                request.getRequestURI(),
+                null
+            );
         }
         ExceptionMetadata metadata = EXCEPTION_METADATA.getOrDefault(
             ex.getClass(),
@@ -214,5 +225,6 @@ public class GlobalExceptionHandler {
      * @param status the HTTP status to return
      * @param code   the error code associated with the exception
      */
-    private record ExceptionMetadata(HttpStatus status, ErrorCode code) {}
+    private record ExceptionMetadata(HttpStatus status, ErrorCode code) {
+    }
 }

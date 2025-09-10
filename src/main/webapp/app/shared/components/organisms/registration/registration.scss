@@ -1,0 +1,64 @@
+@use '../../../../../content/scss/layout' as layout;
+
+.login-header {
+  @include layout.authentication-header-base;
+
+  background: var(--p-accent-color);
+  color: var(--p-text-on-accent);
+}
+
+.login-content {
+  @include layout.section-col;
+
+  .login-panel {
+    @include layout.panel-col;
+
+    .progressbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+
+      .progress-label {
+        width: 3.5rem;
+        text-align: right;
+        color: var(--p-text-primary);
+      }
+    }
+
+    .login-description {
+      max-width: 100%;
+      width: 100%;
+      word-break: break-word;
+      text-align: center;
+      box-sizing: border-box;
+      color: var(--p-text-primary);
+    }
+
+    .login-buttons {
+      @include layout.buttons-col;
+
+      .login-credentials {
+        width: 100%;
+      }
+
+      .p-divider-content {
+        background-color: var(--p-background-surface);
+      }
+
+      .divider-text {
+        color: var(--p-text-secondary);
+      }
+
+      .login-providers {
+        display: flex;
+        flex: 1 1 auto;
+        align-self: stretch;
+      }
+    }
+  }
+
+  .login-footer {
+    @include layout.auth-footer;
+  }
+}
