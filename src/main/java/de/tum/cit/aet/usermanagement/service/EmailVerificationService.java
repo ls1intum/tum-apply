@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.exception.EmailVerificationFailedException;
 import de.tum.cit.aet.core.security.otp.OtpUtil;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
@@ -52,7 +53,7 @@ public class EmailVerificationService {
      */
     @Transactional
     public void sendCode(String rawEmail, String ip) {
-        String emailAddress = OtpUtil.normalizeEmail(rawEmail);
+        String emailAddress = StringUtil.normalize(rawEmail, true);
 
         // Enforce single-active-code policy
         emailVerificationOtpRepository.invalidateAllForEmail(emailAddress);
@@ -102,7 +103,7 @@ public class EmailVerificationService {
      */
     @Transactional(noRollbackFor = EmailVerificationFailedException.class)
     public void verifyCode(String rawEmail, String submittedCode, String ip) {
-        String email = OtpUtil.normalizeEmail(rawEmail);
+        String email = StringUtil.normalize(rawEmail, true);
         Instant now = Instant.now();
 
         var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(email, now);
