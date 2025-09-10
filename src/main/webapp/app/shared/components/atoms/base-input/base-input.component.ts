@@ -55,7 +55,7 @@ export abstract class BaseInputDirective<T> {
       email: this.translate.instant('global.input.error.email'),
       invalidPostalCode: this.translate.instant('entity.applicationPage1.validation.postalCode'),
     };
-    if (defaults[key]) {
+    if (Object.prototype.hasOwnProperty.call(defaults, key)) {
       return defaults[key];
     }
     return `Invalid: ${key}`;
