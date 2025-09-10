@@ -81,4 +81,13 @@ public class ResearchGroupResourceTest {
                 "/api/research-groups/detail/" + nonExistingId, Map.of(),
                 ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
     }
+
+    @Test
+    @WithMockUser
+    void getResearchGroupDetails_noId_throwsException() {
+
+        assertThatThrownBy(() -> api.getAndReadOk(
+                "/api/research-groups/detail/", Map.of(),
+                ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
+    }
 }
