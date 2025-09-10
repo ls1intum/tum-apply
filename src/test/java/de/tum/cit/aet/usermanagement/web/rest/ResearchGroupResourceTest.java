@@ -74,7 +74,7 @@ public class ResearchGroupResourceTest {
 
     @Test
     @WithMockUser
-    void getResourceGroupDetails_nonExistingId_throwsException() {
+    void getResearchGroupDetails_nonExistingId_throwsException() {
         UUID nonExistingId = UUID.randomUUID();
 
         assertThatThrownBy(() -> api.getAndReadOk(
