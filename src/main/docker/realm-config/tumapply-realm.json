@@ -105,7 +105,12 @@
       "emailVerified": true,
       "serviceAccountClientId": "tumapply-otp-admin",
       "clientRoles": {
-        "realm-management": ["view-users", "query-users", "manage-users"]
+        "realm-management": [
+          "view-users",
+          "query-users",
+          "manage-users",
+          "impersonation"
+        ]
       }
     }
   ],
@@ -116,8 +121,12 @@
       "enabled": true,
       "publicClient": true,
       "protocol": "openid-connect",
-      "redirectUris": ["http://localhost:4200/*"],
-      "webOrigins": ["http://localhost:4200"],
+      "redirectUris": [
+        "http://localhost:4200/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200"
+      ],
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
       "attributes": {
