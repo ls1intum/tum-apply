@@ -1,9 +1,11 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.util.StringUtil;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -78,6 +80,26 @@ public class KeycloakUserService {
                 throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
             }
         });
+    }
+
+    /**
+     * Updates basic profile fields (firstName/lastName) of a Keycloak user.
+     */
+    public void updateProfile(String userId, String firstName, String lastName) {
+        UserResource userResource = keycloak.realm(realm).users().get(userId);
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        if (userRepresentation == null) {
+            return;
+        }
+        String normalizedFirstName = StringUtil.normalize(firstName, false);
+        if (!normalizedFirstName.isBlank()) {
+            userRepresentation.setFirstName(firstName);
+        }
+        String normalizedLastName = StringUtil.normalize(lastName, false);
+        if (!normalizedLastName.isBlank()) {
+            userRepresentation.setLastName(lastName);
+        }
+        userResource.update(userRepresentation);
     }
 
     /**
