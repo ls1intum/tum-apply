@@ -164,7 +164,6 @@ export class ApplicationOverviewComponent {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadPage();
-    } else {
     }
   }
 
