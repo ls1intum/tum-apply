@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public enum OtpPurpose {
     LOGIN,
     REGISTER,
-    APPLICATION_EMAIL_VERIFICATION;
+    APPLICATION;
 
     @JsonCreator
     public static OtpPurpose fromJson(String s) {

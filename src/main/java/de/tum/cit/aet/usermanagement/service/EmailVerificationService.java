@@ -108,7 +108,7 @@ public class EmailVerificationService {
         var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(email, now);
         if (activeOpt.isEmpty()) {
             LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(email), ip);
-            throw new EmailVerificationFailedException("Validation failed");
+            throw new EmailVerificationFailedException();
         }
 
         var otp = activeOpt.get();
@@ -122,13 +122,13 @@ public class EmailVerificationService {
         if (!ok) {
             // Atomically increment attempts and burn if limit is reached
             emailVerificationOtpRepository.incrementAttemptsIfActive(otp.getId(), now);
-            throw new EmailVerificationFailedException("Validation failed");
+            throw new EmailVerificationFailedException();
         }
 
         // Mark used atomically (race safety)
         if (emailVerificationOtpRepository.markUsedIfActive(otp.getId(), now) == 0) {
             LOGGER.warn("OTP race: markUsedIfActive returned 0 - emailId={} ip={}", emailLogId(email), ip);
-            throw new EmailVerificationFailedException("Validation failed");
+            throw new EmailVerificationFailedException();
         }
     }
 
