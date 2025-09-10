@@ -32,8 +32,8 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     @Modifying
     @Query(
         value = """
-                UPDATE users SET
-                    email = :email,
+            UPDATE users SET
+                email = :email,
                     first_name = :firstName,
                     last_name = :lastName,
                     gender = :gender,
