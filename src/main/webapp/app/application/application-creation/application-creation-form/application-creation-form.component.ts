@@ -423,7 +423,6 @@ export default class ApplicationCreationFormComponent {
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
-    const location = this.location;
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
@@ -449,7 +448,8 @@ export default class ApplicationCreationFormComponent {
 
       if (rerouteToOtherPage) {
         this.toastService.showSuccess({ detail: 'Successfully saved application' });
-        location.back();
+        // TODO: browser history is not working as expected for local.back()
+        this.router.navigate(['/application/overview'], { replaceUrl: true });
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
