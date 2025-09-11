@@ -15,6 +15,10 @@
         "overview": "TUMApply - Application Overview",
         "detail": "TUMApply - Application Detail"
       },
+      "evaluation": {
+        "overview": "TUMApply - Evaluation Overview",
+        "detail": "TUMApply - Application Evaluation"
+      },
       "footer": {
         "imprint": "TUMApply - Imprint",
         "privacy": "TUMApply - Privacy"

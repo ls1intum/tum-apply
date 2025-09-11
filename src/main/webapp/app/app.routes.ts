@@ -177,14 +177,14 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () =>
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
-    title: 'global.routes.application.overview',
+    title: 'global.routes.evaluation.overview',
   },
   {
     path: 'evaluation/application',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
     loadComponent: () => import('./evaluation/application-detail/application-detail.component').then(m => m.ApplicationDetailComponent),
-    title: 'global.routes.application.detail',
+    title: 'global.routes.evaluation.detail',
   },
 
   // ======================================================================================

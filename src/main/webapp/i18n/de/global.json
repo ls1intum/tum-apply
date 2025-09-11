@@ -15,6 +15,10 @@
         "overview": "TUMApply - Bewerbungsübersicht",
         "detail": "TUMApply - Bewerbungsdetail"
       },
+      "evaluation": {
+        "overview": "TUMApply - Evaluierungsübersicht",
+        "detail": "TUMApply - Bewerbungsevaluierung"
+      },
       "footer": {
         "imprint": "TUMApply - Impressum",
         "privacy": "TUMApply - Datenschutz"
