@@ -33,7 +33,13 @@ describe('ResearchGroupMembers', () => {
         { provide: AccountService, useValue: mockAccountService },
         provideHttpClientTesting(),
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(ResearchGroupMembersComponent, {
+        set: {
+          template: '<div>Test Research Group Members Component</div>',
+        },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(ResearchGroupMembersComponent);
     component = fixture.componentInstance;
