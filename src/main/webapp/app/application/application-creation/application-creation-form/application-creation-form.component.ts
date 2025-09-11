@@ -513,7 +513,7 @@ export default class ApplicationCreationFormComponent {
           birthday: p1.dateOfBirth,
           website: p1.website,
           linkedinUrl: p1.linkedIn,
-          preferredLanguage: p1.language?.value as string,
+          preferredLanguage: p1.language?.value,
         },
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
