@@ -59,9 +59,7 @@ export default class ApplicationDetailForApplicantComponent {
   async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
-
       this.toastService.showErrorKey('entity.toast.applyFlow.invalidApplicationId');
-
     } else {
       this.applicationId.set(applicationId);
     }
