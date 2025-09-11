@@ -155,7 +155,7 @@ export default class ApplicationCreationFormComponent {
             severity: 'info',
             icon: 'caret-left',
             onClick(): void {
-              (async () => {
+              void (async () => {
                 await performAutomaticSaveLocal();
                 location.back();
               })();
@@ -307,13 +307,13 @@ export default class ApplicationCreationFormComponent {
   private initEffect = effect(() => {
     if (!untracked(() => this.initCalled())) {
       this.initCalled.set(true);
-      this.init();
+      void this.init();
     }
   });
 
   private automaticSaveEffect = effect(() => {
     const intervalId = setInterval(() => {
-      this.performAutomaticSave();
+      void this.performAutomaticSave();
     }, 3000);
     return () => clearInterval(intervalId);
   });
