@@ -2,7 +2,7 @@ import { Component, TemplateRef, computed, inject, signal, viewChild } from '@an
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -40,11 +40,10 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
 })
 export class ResearchGroupMembersComponent {
   members = signal<UserShortDTO[]>([]);
-  totalRecords = signal<number>(0);
   pageNumber = signal<number>(0);
   pageSize = signal<number>(10);
+  total = signal<number>(0);
   loading = signal(false);
-  error = signal<string | null>(null);
   searchQuery = signal('');
 
   // Modal state
@@ -68,22 +67,22 @@ export class ResearchGroupMembersComponent {
   });
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
-  readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+  readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
-    const nameTpl = this.nameTemplate();
-    const actionTpl = this.actionTemplate();
+    const nameTemplate = this.nameTemplate();
+    const deleteTemplate = this.deleteTemplate();
 
     return [
-      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem', template: nameTpl },
+      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem', template: nameTemplate },
       { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
       { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
-      { field: 'actions', header: '', width: '5rem', template: actionTpl },
+      { field: 'actions', header: '', width: '5rem', template: deleteTemplate },
     ];
   });
 
   // Transform members data for display
-  tableData = computed(() => {
+  readonly tableData = computed(() => {
     return this.filteredMembers().map(member => ({
       ...member,
       name: `${member.firstName} ${member.lastName}`,
@@ -95,33 +94,30 @@ export class ResearchGroupMembersComponent {
   private researchGroupService = inject(ResearchGroupResourceService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
+  private translate = inject(TranslateService);
+
+  private readonly translationKey: string = 'researchGroup.members';
 
   constructor() {
     void this.loadMembers();
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
-    const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
-    const size = event.rows ?? this.pageSize();
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    this.pageNumber.set(first / rows);
 
-    this.pageNumber.set(page);
-    this.pageSize.set(size);
     void this.loadMembers();
   }
 
   async loadMembers(): Promise<void> {
     try {
-      this.loading.set(true);
-      this.error.set(null);
+      const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
 
-      const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers());
-      this.members.set(members);
-    } catch (error) {
-      console.error('Error loading research group members:', error);
-      this.error.set('Failed to load research group members');
+      this.members.set(members.content ?? []);
+      this.total.set(members.totalElements ?? 0);
+    } catch {
       this.toastService.showError({ detail: 'Failed to load research group members' });
-    } finally {
-      this.loading.set(false);
     }
   }
 
@@ -174,8 +170,7 @@ export class ResearchGroupMembersComponent {
 
       // Refresh the members list
       await this.loadMembers();
-    } catch (error) {
-      console.error('Error removing member:', error);
+    } catch {
       this.toastService.showError({
         detail: `Failed to remove ${member.firstName} ${member.lastName} from the research group.`,
       });

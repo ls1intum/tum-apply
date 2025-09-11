@@ -22,10 +22,11 @@
     <jhi-dynamic-table
       [columns]="columns()"
       [data]="tableData()"
-      [totalRecords]="tableData().length"
-      [page]="0"
-      [rows]="10"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      [rows]="pageSize()"
       [selectable]="true"
+      (lazyLoad)="loadOnTableEmit($event)"
     />
   </div>
 

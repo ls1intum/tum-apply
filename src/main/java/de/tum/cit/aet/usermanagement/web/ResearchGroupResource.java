@@ -37,7 +37,7 @@ public class ResearchGroupResource {
      * @return paginated list of members
      */
     @GetMapping("/members")
-    @CheckAccess
+    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
     public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         PageResponseDTO<UserShortDTO> members = researchGroupService.getCurrentUserResearchGroupMembers(pageDTO);
         return ResponseEntity.ok(members);
