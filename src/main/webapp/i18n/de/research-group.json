@@ -105,23 +105,7 @@
       "loading": "Mitglieder werden geladen...",
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
-      "edit": "Bearbeiten",
       "me": "Ich",
-      "addMember": "Mitglied hinzufügen",
-      "searchGroupMember": "Nach Mitglied in Forschungsgruppe suchen",
-      "noMembersQuery": "Keine Mitglieder gefunden für {{ query }}.",
-      "member": "Mitglied",
-      "members": "Mitglieder",
-
-      "addMemberModal": {
-        "title": "Benutzer zur Forschungsgruppe hinzufügen",
-        "searchInstruction": "Suche nach Benutzernamen, vollständigem Namen oder E-Mail",
-        "searchPlaceholder": "Personen finden",
-        "noResults": "Keine Benutzer gefunden, die Deiner Suche entsprechen.",
-        "selectedUsers": "Ausgewählte Benutzer:",
-        "cancel": "Abbrechen",
-        "addToGroup": "Zur Forschungsgruppe hinzufügen"
-      },
 
       "tableColumns": {
         "name": "Name",

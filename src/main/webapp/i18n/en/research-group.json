@@ -104,23 +104,7 @@
       "loading": "Loading members...",
       "retry": "Retry",
       "noMembers": "No members found in this research group.",
-      "edit": "Edit",
       "me": "Me",
-      "addMember": "Add member",
-      "searchGroupMember": "Search for research group member",
-      "noMembersQuery": "No members found for {{ query }}.",
-      "member": "member",
-      "members": "members",
-
-      "addMemberModal": {
-        "title": "Add people to Research Group",
-        "searchInstruction": "Search by username, full name, or email",
-        "searchPlaceholder": "Find people",
-        "noResults": "No users found matching your search.",
-        "selectedUsers": "Selected Users:",
-        "cancel": "Cancel",
-        "addToGroup": "Add to research group"
-      },
 
       "tableColumns": {
         "name": "Name",
