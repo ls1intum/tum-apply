@@ -160,7 +160,7 @@ coverage/
 # Package-lock.json and dist
 ######################
 dist
-package-lock.json
+
 
 ######################
 # File Storage
