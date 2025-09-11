@@ -39,7 +39,7 @@
       "text": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch beigefügt. Weitere Informationen findest du unter: <a class=\"link\" href=\"https://www.community.tum.de/de/datenschutz/\">TUM Datenschutzinformationen</a>.",
       "confirmationText": "Ich habe die Datenschutzerklärung gelesen und verstanden und willige in die Verarbeitung meiner personenbezogenen Daten gemäß dieser Erklärung ein.",
       "errorSummary": "Datenschutzerklärung erforderlich",
-      "errorText": "Bitte bestätige die Datenschutzerklärung, um fortzufahren."
+      "errorHeadline": "Bitte bestätige die Datenschutzerklärung, um fortzufahren."
     }
   }
 }

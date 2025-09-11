@@ -445,7 +445,7 @@ export default class ApplicationCreationFormComponent {
     if (!this.privacyAcceptedSignal()) {
       this.toastService.showError({
         summary: this.translate.instant('privacy.privacyConsent.errorSummary'),
-        detail: this.translate.instant('privacy.privacyConsent.errorText'),
+        detail: this.translate.instant('privacy.privacyConsent.errorHeadline'),
       });
       return;
     }
