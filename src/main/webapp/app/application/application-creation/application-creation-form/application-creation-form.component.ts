@@ -444,7 +444,7 @@ export default class ApplicationCreationFormComponent {
       this.clearLocalStorage();
 
       if (rerouteToOtherPage) {
-        this.toastService.showSuccessKey(`${applyflow}.applyFlow.submitted`);
+        this.toastService.showSuccessKey(`${applyflow}.submitted`);
         // TODO: browser history is not working as expected for location.back()
 
         location.back();
