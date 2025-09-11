@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
@@ -22,7 +22,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   // Check if error message should be displayed
-  isTouched = signal(false);
   isOverCharLimit = computed(() => {
     const count = this.characterCount();
     const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
@@ -65,12 +64,16 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   private htmlValue = signal('');
-  private hasFormControl = computed(() => !!this.formControl());
+  private hasFormControl = computed(() => this.control() !== undefined);
 
   constructor() {
     super();
 
-    this.htmlValue.set(this.editorValue());
+    // Effect to sync htmlValue when editorValue changes (e.g., from form patching)
+    effect(() => {
+      const currentEditorValue = this.editorValue();
+      this.htmlValue.set(currentEditorValue);
+    });
   }
 
   textChanged(event: ContentChange): void {
