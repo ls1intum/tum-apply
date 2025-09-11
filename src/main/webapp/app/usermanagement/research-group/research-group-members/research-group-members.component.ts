@@ -7,10 +7,10 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
+import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
+import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ResearchGroupResourceService } from '../../../generated/api/researchGroupResource.service';
 import { UserShortDTO } from '../../../generated/model/userShortDTO';
 import TranslateDirective from '../../../shared/language/translate.directive';
@@ -161,8 +161,8 @@ export class ResearchGroupMembersComponent {
 
   async removeMember(member: UserShortDTO): Promise<void> {
     try {
-      // TODO: Implement actual API call to remove user from research group
-      // await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId));
+      // Call the generated service method to remove the member from the research group
+      await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
 
       this.toastService.showSuccess({
         detail: `${member.firstName} ${member.lastName} has been removed from the research group.`,

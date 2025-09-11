@@ -104,16 +104,18 @@ public class ResearchGroupService {
 
     /**
      * Removes a member from the current user's research group.
-     *This operation removes both the direct research group membership and all associated roles.
+     * This operation removes both the direct research group membership and all associated roles.
      * @param userId the ID of the user to remove from the research group
      * @throws EntityNotFoundException if the user is not found or not in the same research group
      */
+    @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
         // Get the current user's research group ID
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
         
         // Verify that the user exists and belongs to the same research group
-        User userToRemove = userRepository.findByIdElseThrow(userId);
+        User userToRemove = userRepository.findWithResearchGroupRolesByUserId(userId)
+            .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         
         if (userToRemove.getResearchGroup() == null) {
             throw new EntityNotFoundException("User is not a member of any research group");

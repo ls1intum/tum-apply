@@ -2642,6 +2642,30 @@
         }
       }
     },
+    "/api/research-groups/members/{userId}": {
+      "delete": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "removeMemberFromResearchGroup",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications/delete-document/{documentDictionaryId}": {
       "delete": {
         "tags": [
@@ -3610,10 +3634,10 @@
       "SortObject": {
         "type": "object",
         "properties": {
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
           "empty": {
