@@ -13,26 +13,28 @@ import { WorkflowStepComponent } from './workflow-step/workflow-step.component';
   styleUrl: './professor-workflow-section.component.scss',
 })
 export class ProfessorWorkflowSectionComponent {
+  readonly translationKey = 'professorLandingPage.workflow.steps';
+
   steps = [
     {
       icon: 'file-pen',
-      title: 'professorLandingPage.workflow.steps.1.title',
-      description: 'professorLandingPage.workflow.steps.1.description',
+      title: `${this.translationKey}.1.title`,
+      description: `${this.translationKey}.1.description`,
     },
     {
       icon: 'folder-open',
-      title: 'professorLandingPage.workflow.steps.2.title',
-      description: 'professorLandingPage.workflow.steps.2.description',
+      title: `${this.translationKey}.2.title`,
+      description: `${this.translationKey}.2.description`,
     },
     {
       icon: 'star',
-      title: 'professorLandingPage.workflow.steps.3.title',
-      description: 'professorLandingPage.workflow.steps.3.description',
+      title: `${this.translationKey}.3.title`,
+      description: `${this.translationKey}.3.description`,
     },
     {
       icon: 'calendar-check',
-      title: 'professorLandingPage.workflow.steps.4.title',
-      description: 'professorLandingPage.workflow.steps.4.description',
+      title: `${this.translationKey}.4.title`,
+      description: `${this.translationKey}.4.description`,
     },
   ];
 }

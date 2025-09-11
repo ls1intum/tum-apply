@@ -13,7 +13,7 @@ import { InformationCardComponent } from '../../landing-page/information-section
 })
 export class ProfessorInformationSectionComponent {
   readonly translationKey = 'professorLandingPage.informationSection.tiles';
-  readonly imageSrc = '/content/images/professor-landing-page/information-section/';
+  readonly imageSrc = '/content/images/landing-page/information-section/professor/';
 
   cards = [
     {
