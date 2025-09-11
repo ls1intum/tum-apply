@@ -1001,6 +1001,23 @@
               "schema": {
                 "$ref": "#/components/schemas/MultipartUploadRequest"
               }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
             }
           }
         },
@@ -1635,16 +1652,35 @@
           "research-group-resource"
         ],
         "operationId": "getAllResearchGroups",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ResearchGroupDTO"
-                  }
+                  "$ref": "#/components/schemas/PageResponseDTOResearchGroupDTO"
                 }
               }
             }
@@ -2742,7 +2778,8 @@
             "minLength": 1
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "format": "email"
           },
           "website": {
             "type": "string"
@@ -3292,6 +3329,7 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "minLength": 1
           },
           "code": {
@@ -3309,6 +3347,7 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "minLength": 1
           }
         },
@@ -3321,6 +3360,7 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "minLength": 1
           },
           "password": {
@@ -3407,6 +3447,21 @@
           },
           "researchGroup": {
             "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
+      },
+      "PageResponseDTOResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchGroupDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -3565,26 +3620,19 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -3603,6 +3651,13 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -3611,6 +3666,13 @@
       "PageableObject": {
         "type": "object",
         "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
           "paged": {
             "type": "boolean"
           },
@@ -3624,26 +3686,19 @@
           },
           "unpaged": {
             "type": "boolean"
-          },
-          "offset": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
           }
         }
       },
       "SortObject": {
         "type": "object",
         "properties": {
+          "empty": {
+            "type": "boolean"
+          },
           "sorted": {
             "type": "boolean"
           },
           "unsorted": {
-            "type": "boolean"
-          },
-          "empty": {
             "type": "boolean"
           }
         }
@@ -4080,6 +4135,22 @@
               "CLOSED",
               "APPLICANT_FOUND"
             ]
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
           }
         },
         "required": [
@@ -4249,26 +4320,19 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
           "totalPages": {
             "type": "integer",
             "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -4286,6 +4350,13 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
           },
           "empty": {
             "type": "boolean"
