@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { ResearchGroupResourceService } from '../../../generated/api/researchGroupResource.service';
@@ -24,11 +26,12 @@ describe('ResearchGroupMembers', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ResearchGroupMembersComponent],
+      imports: [ResearchGroupMembersComponent, TranslateModule.forRoot()],
       providers: [
         { provide: ResearchGroupResourceService, useValue: mockResearchGroupService },
         { provide: ToastService, useValue: mockToastService },
         { provide: AccountService, useValue: mockAccountService },
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 
