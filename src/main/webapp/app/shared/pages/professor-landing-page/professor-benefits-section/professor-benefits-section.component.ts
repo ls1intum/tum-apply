@@ -31,7 +31,7 @@ export class ProfessorBenefitsSectionComponent {
         {
           label: 'professorLandingPage.platformBenefits.button2',
           severity: 'primary',
-          disabled: false,
+          disabled: true,
           isExternalLink: false,
           onClick: () => void this.router.navigate(['/job-overview']),
         },
