@@ -108,7 +108,7 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/auth/send-code")
                     .permitAll()
-                    .requestMatchers("/api/auth/verify-code")
+                    .requestMatchers("/api/auth/otp-complete")
                     .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()
