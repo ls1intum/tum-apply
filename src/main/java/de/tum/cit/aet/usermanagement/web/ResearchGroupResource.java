@@ -1,7 +1,6 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
-import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
@@ -11,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +39,7 @@ public class ResearchGroupResource {
     @GetMapping("/members")
     @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
     public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
-        PageResponseDTO<UserShortDTO> members = researchGroupService.getCurrentUserResearchGroupMembers(pageDTO);
+        PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembers(pageDTO);
         return ResponseEntity.ok(members);
     }
 
@@ -54,6 +54,19 @@ public class ResearchGroupResource {
     public ResponseEntity<List<UserShortDTO>> searchAvailableUsers(@RequestParam String query) {
         List<UserShortDTO> availableUsers = researchGroupService.searchAvailableUsers(query);
         return ResponseEntity.ok(availableUsers);
+    }
+
+    /**
+     * Removes a member from the current user's research group.
+     *
+     * @param userId the ID of the user to remove from the research group
+     * @return no content response
+     */
+    @DeleteMapping("/members/{userId}")
+    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
+    public ResponseEntity<Void> removeMemberFromResearchGroup(@PathVariable UUID userId) {
+        researchGroupService.removeMemberFromResearchGroup(userId);
+        return ResponseEntity.noContent().build();
     }
 
     /**

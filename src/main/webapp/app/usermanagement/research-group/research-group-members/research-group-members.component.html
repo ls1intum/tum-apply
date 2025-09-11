@@ -25,10 +25,32 @@
       [totalRecords]="total()"
       [page]="pageNumber()"
       [rows]="pageSize()"
-      [selectable]="true"
+      [selectable]="false"
       (lazyLoad)="loadOnTableEmit($event)"
     />
   </div>
+
+  <!-- Templates for dynamic table -->
+  <ng-template #nameTemplate let-member>
+    {{ member.name }}
+    @if (member.isCurrentUser) {
+      <fa-icon icon="circle-user" class="current-user-icon" title="'researchGroup.members.me' | translate" />
+    }
+  </ng-template>
+
+  <ng-template #deleteTemplate let-member>
+    @if (!member.isCurrentUser) {
+      <jhi-confirm-dialog
+        [label]="'researchGroup.members.remove' | translate"
+        severity="danger"
+        variant="outlined"
+        [header]="'researchGroup.members.removeMemberModal.title' | translate"
+        [message]="'researchGroup.members.removeMemberModal.message' | translate"
+        (confirmed)="removeMember(member)"
+        confirmIcon="trash"
+      />
+    }
+  </ng-template>
 
   <!-- Add Member Modal -->
   <p-dialog
@@ -70,26 +92,4 @@
       </div>
     </ng-template>
   </p-dialog>
-
-  <!-- Templates for dynamic table -->
-  <ng-template #nameTemplate let-member>
-    {{ member.name }}
-    @if (member.isCurrentUser) {
-      <fa-icon icon="circle-user" class="current-user-icon" title="{{ 'researchGroup.members.me' | translate }}" />
-    }
-  </ng-template>
-
-  <ng-template #actionTemplate let-member>
-    @if (!member.isCurrentUser) {
-      <jhi-confirm-dialog
-        [label]="'researchGroup.members.remove' | translate"
-        severity="danger"
-        variant="outlined"
-        [header]="'researchGroup.members.removeMemberModal.title' | translate"
-        [message]="'researchGroup.members.removeMemberModal.message' | translate"
-        (confirmed)="removeMember(member)"
-        confirmIcon="trash"
-      />
-    }
-  </ng-template>
 </div>

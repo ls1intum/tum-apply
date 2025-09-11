@@ -26,41 +26,6 @@
     }
   }
 
-  .members-table {
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      overflow: hidden;
-
-      th {
-        padding: 1rem 1.25rem;
-        text-align: left;
-        border-bottom: 0.0625rem solid var(--p-border-default);
-      }
-
-      td {
-        padding: 1rem 1.25rem;
-        border-bottom: 0.0625rem solid var(--divider-default);
-
-        &:nth-child(4) {
-          text-align: right;
-        }
-      }
-    }
-
-    .edit-btn {
-      color: var(--p-primary-color);
-      cursor: pointer;
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.5rem;
-
-      &:hover {
-        background-color: var(--p-primary-50);
-        color: var(--primary-hover);
-      }
-    }
-  }
-
   .current-user-icon {
     margin-left: 0.5rem;
     color: var(--p-primary-color);
