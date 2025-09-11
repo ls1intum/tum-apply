@@ -23,5 +23,11 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     @EntityGraph(attributePaths = {"researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup"})
     Optional<User> findWithResearchGroupRolesByUserId(UUID userId);
 
+    /**
+     * Finds a user by email in a case-insensitive manner.
+     *
+     * @param email normalized email address
+     * @return optional user
+     */
     Optional<User> findByEmailIgnoreCase(String email);
 }
