@@ -1,9 +1,7 @@
 {
   "researchGroup": {
     "emailTemplatesHeader": "My Email Templates",
-    "groupInfoPage": "TUMApply - My Group",
     "groupInfoHeader": "My Group",
-
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
       "saveButton": "Save",
@@ -40,39 +38,28 @@
         "noId": "No research group found. Contact an admin."
       }
     },
-
     "emailTemplates": {
       "newTemplate": "New Template",
       "signature": "Signature",
-
       "systemDefault": "System default",
-
       "tableColumns": {
         "templateName": "Template",
         "createdBy": "Created by"
       },
-
       "english": "English",
       "german": "German",
-
       "templateName": "Template",
       "addTemplateName": "Enter template name...",
-
       "sendWhen": "Send when",
       "selectSendWhen": "Select when to send the template...",
-
       "subject": "Subject",
       "addSubject": "Enter email subject...",
-
       "addVariable": "Press '$' to add a variable",
-
       "message": "Message",
-
       "back": "Back",
       "saved": "Saved",
       "saving": "Saving changes",
       "unsaved": "Changes not saved",
-
       "messageType": {
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_SENT": "Application received",
@@ -86,7 +73,6 @@
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
         "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason"
       },
-
       "variables": {
         "APPLICANT_FIRST_NAME": "Applicant First Name",
         "APPLICANT_LAST_NAME": "Applicant Last Name",
