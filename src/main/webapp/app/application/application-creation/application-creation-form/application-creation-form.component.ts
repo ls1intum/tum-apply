@@ -474,6 +474,7 @@ export default class ApplicationCreationFormComponent {
 
       if (rerouteToOtherPage) {
         this.toastService.showSuccess({ detail: 'Successfully saved application' });
+        // TODO: browser history is not working as expected for location.back()
         location.back();
       }
     } catch (err) {
