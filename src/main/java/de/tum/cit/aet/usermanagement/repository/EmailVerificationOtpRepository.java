@@ -40,11 +40,10 @@ public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<Em
      * which is acceptable and simplifies cleanup.
      *
      * @param email normalized email whose unused OTPs should be invalidated
-     * @return number of rows updated
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update EmailVerificationOtp e set e.used = true where e.email = :email and e.used = false")
-    int invalidateAllForEmail(@Param("email") String email);
+    void invalidateAllForEmail(@Param("email") String email);
 
     /**
      * Atomically marks a specific OTP as used if it is still active at the time of update.

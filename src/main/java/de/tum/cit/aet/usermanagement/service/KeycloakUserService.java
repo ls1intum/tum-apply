@@ -46,7 +46,7 @@ public class KeycloakUserService {
         if (res == null || res.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(res.get(0).getId());
+        return Optional.of(res.getFirst().getId());
     }
 
     /**
