@@ -1,9 +1,12 @@
 package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +17,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository) {
         this.userRepository = userRepository;
+        this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
     }
 
     /**
@@ -35,9 +40,11 @@ public class UserService {
     }
 
     /**
-     * Creates a new local user. If a user with the same email already exists, no action is taken.
+     * Creates a new local user and assigns the default applicant role if not present.
+     * If a user with the same email already exists, no action is taken.
      *
-     * @param body the OTP completion request containing email and optional profile information
+     * @param keycloakUserId the Keycloak user ID to associate with the new user
+     * @param body           OTP request with email and optional profile
      */
     @Transactional
     public void createUser(String keycloakUserId, OtpCompleteDTO body) {
@@ -50,36 +57,68 @@ public class UserService {
                 newUser.setFirstName(StringUtil.normalize(body.profile().firstName(), false));
                 newUser.setLastName(StringUtil.normalize(body.profile().lastName(), false));
             }
-            userRepository.save(newUser);
+            User savedUser = userRepository.save(newUser);
+            ensureApplicantRole(savedUser);
         }
     }
 
     /**
-     * Updates first/last name if the user exists.
-     * Does nothing if the user is not found.
-     *
-     * @param userId    ID of the user
-     * @param firstName optional first name (ignored if null/blank)
-     * @param lastName  optional last name (ignored if null/blank)
+     * Upserts a user from identity claims and optionally assigns the default applicant role.
+     * If the user exists, updates basic fields; if not, creates a new user.
+     * Returns the managed entity.
      */
     @Transactional
-    public void updateUser(UUID userId, String firstName, String lastName) {
-        userRepository.findById(userId).ifPresent(user -> {
-            boolean changed = false;
-            String normalizedFirstName = StringUtil.normalize(firstName, false);
-            String normalizedLastName = StringUtil.normalize(lastName, false);
+    public User upsertFromClaims(UUID userId, String email, String firstName, String lastName) {
+        String normalizedEmail = StringUtil.normalize(email, true);
+        String normalizedFirstName = StringUtil.normalize(firstName, false);
+        String normalizedLastName = StringUtil.normalize(lastName, false);
 
-            if (!normalizedFirstName.isBlank()) {
-                user.setFirstName(normalizedFirstName);
-                changed = true;
-            }
-            if (!normalizedLastName.isBlank()) {
-                user.setLastName(normalizedLastName);
-                changed = true;
-            }
-            if (changed) {
-                userRepository.save(user);
-            }
-        });
+        User user = userRepository.findWithResearchGroupRolesByUserId(userId).orElse(null);
+        boolean isNewUser = false;
+        if (user == null) {
+            user = new User();
+            user.setUserId(userId);
+            user.setEmail(normalizedEmail);
+            user.setFirstName(normalizedFirstName);
+            user.setLastName(normalizedLastName);
+            isNewUser = true;
+        }
+
+        boolean userUpdated = false;
+        if (!normalizedEmail.isBlank() && !normalizedEmail.equals(user.getEmail())) {
+            user.setEmail(normalizedEmail);
+            userUpdated = true;
+        }
+        if (!normalizedFirstName.isBlank() && !normalizedFirstName.equals(user.getFirstName())) {
+            user.setFirstName(normalizedFirstName);
+            userUpdated = true;
+        }
+        if (!normalizedLastName.isBlank() && !normalizedLastName.equals(user.getLastName())) {
+            user.setLastName(normalizedLastName);
+            userUpdated = true;
+        }
+
+        if (isNewUser || userUpdated) {
+            user = userRepository.save(user);
+        }
+
+        if (user.getResearchGroupRoles() == null || user.getResearchGroupRoles().isEmpty()) {
+            ensureApplicantRole(user);
+        }
+
+        return user;
+    }
+
+    /**
+     * Ensures that the user has at least the APPLICANT role.
+     * Call this method only if the user has no roles assigned.
+     *
+     * @param user the user entity for which to ensure the applicant role
+     */
+    private void ensureApplicantRole(User user) {
+        UserResearchGroupRole defaultRole = new UserResearchGroupRole();
+        defaultRole.setUser(user);
+        defaultRole.setRole(UserRole.APPLICANT);
+        userResearchGroupRoleRepository.save(defaultRole);
     }
 }
