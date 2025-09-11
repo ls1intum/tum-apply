@@ -59,6 +59,7 @@ model/models.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
+model/pageResponseDTOResearchGroupDTO.ts
 model/pageableObject.ts
 model/professorDTO.ts
 model/ratingDTO.ts
@@ -71,6 +72,7 @@ model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
+model/uploadDocumentsRequest.ts
 model/user.ts
 model/userDTO.ts
 model/userForApplicationDetailDTO.ts
