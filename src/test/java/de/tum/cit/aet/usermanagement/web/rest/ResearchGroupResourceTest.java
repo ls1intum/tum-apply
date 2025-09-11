@@ -90,7 +90,7 @@ public class ResearchGroupResourceTest {
 
     @Test
     @WithMockUser
-    public void getResearchGroupDetails_existingId_returnsDetails() {
+    public void getResearchGroupDetailsExistingIdReturnsDetails() {
         setupMockUserService(researchGroupUser);
         ResearchGroupLargeDTO result = api.getAndReadOk(
                 "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
@@ -107,7 +107,7 @@ public class ResearchGroupResourceTest {
 
     @Test
     @WithMockUser
-    void getResearchGroupDetails_nonExistingId_throwsException() {
+    void getResearchGroupDetailsNonExistingIdThrowsException() {
         UUID nonExistingId = UUID.randomUUID();
 
         assertThatThrownBy(() -> api.getAndReadOk(
@@ -117,7 +117,7 @@ public class ResearchGroupResourceTest {
 
     @Test
     @WithMockUser
-    void getResearchGroupDetails_noId_throwsException() {
+    void getResearchGroupDetailsNoIdThrowsException() {
 
         assertThatThrownBy(() -> api.getAndReadOk(
                 "/api/research-groups/detail/", Map.of(),
@@ -126,7 +126,7 @@ public class ResearchGroupResourceTest {
 
     @Test
     @WithMockUser
-    void getResearchGroupDetails_otherUsersGroup_returnsForbidden() {
+    void getResearchGroupDetailsOtherUsersGroupReturnsForbidden() {
 
         assertThatThrownBy(() -> api.getAndReadOk(
                 "/api/research-groups/detail/" + secondResearchGroup.getResearchGroupId(),
