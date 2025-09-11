@@ -1652,16 +1652,35 @@
           "research-group-resource"
         ],
         "operationId": "getAllResearchGroups",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ResearchGroupDTO"
-                  }
+                  "$ref": "#/components/schemas/PageResponseDTOResearchGroupDTO"
                 }
               }
             }
@@ -2825,7 +2844,8 @@
             "minLength": 1
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "format": "email"
           },
           "website": {
             "type": "string"
@@ -3496,6 +3516,21 @@
           }
         }
       },
+      "PageResponseDTOResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchGroupDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "PageResponseDTOUserShortDTO": {
         "type": "object",
         "properties": {
@@ -3666,22 +3701,22 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "numberOfElements": {
             "type": "integer",
@@ -3712,6 +3747,9 @@
       "PageableObject": {
         "type": "object",
         "properties": {
+          "unpaged": {
+            "type": "boolean"
+          },
           "paged": {
             "type": "boolean"
           },
@@ -3722,9 +3760,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
           },
           "offset": {
             "type": "integer",
@@ -3738,10 +3773,10 @@
       "SortObject": {
         "type": "object",
         "properties": {
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
           "empty": {
@@ -4350,22 +4385,22 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "numberOfElements": {
             "type": "integer",

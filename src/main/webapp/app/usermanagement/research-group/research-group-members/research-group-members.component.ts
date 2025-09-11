@@ -16,8 +16,6 @@ import { UserShortDTO } from '../../../generated/model/userShortDTO';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
-import { SearchFilterSortBar } from '../../../shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-research-group-members',
@@ -26,8 +24,6 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
     FontAwesomeModule,
     TranslateModule,
     DynamicTableComponent,
-    SearchFilterSortBar,
-    ButtonComponent,
     DialogModule,
     FormsModule,
     InputTextModule,
