@@ -31,8 +31,8 @@ public class EmailVerificationResource {
      * the sending of the code to the email verification service.
      *
      * @param body    the request body containing the email address
-     * @param request the HTTP servlet request used to extract the client IP address
-     * @return a ResponseEntity with HTTP status 202 (Accepted)
+     * @param request the HTTP servlet request, used to extract the client IP address
+     * @return HTTP 202 Accepted if the request to send a code was processed
      */
     @PostMapping("/send-code")
     public ResponseEntity<Void> send(@Valid @RequestBody SendCodeRequest body, HttpServletRequest request) {

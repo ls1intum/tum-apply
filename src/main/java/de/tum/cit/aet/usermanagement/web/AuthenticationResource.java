@@ -106,6 +106,11 @@ public class AuthenticationResource {
      * Completes an OTP flow by verifying the code and executing the requested purpose (LOGIN or REGISTER). On
      * success, authentication cookies are set and the response returns token lifetimes plus whether profile
      * completion is needed.
+     *
+     * @param body     the OTP completion request (email, code, purpose, optional profile data)
+     * @param request  the HTTP servlet request, used to determine client IP
+     * @param response the HTTP servlet response used to set authentication cookies
+     * @return DTO containing token lifetimes and profile completion flag
      */
     @PostMapping("/otp-complete")
     public AuthSessionInfoDTO otpComplete(@Valid @RequestBody OtpCompleteDTO body, HttpServletRequest request, HttpServletResponse response) {
