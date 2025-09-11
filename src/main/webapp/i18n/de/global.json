@@ -31,6 +31,18 @@
       },
       "language": "Sprache"
     },
+    "form": {
+      "username.label": "Benutzername",
+      "username.placeholder": "Dein Benutzername",
+      "currentpassword.label": "Aktuelles Passwort",
+      "currentpassword.placeholder": "Aktuelles Passwort",
+      "newpassword.label": "Neues Passwort",
+      "newpassword.placeholder": "Neues Passwort",
+      "confirmpassword.label": "Neues Passwort bestätigen",
+      "confirmpassword.placeholder": "Bestätige dein neues Passwort",
+      "email.label": "Email Adresse",
+      "email.placeholder": "Deine Email Adresse"
+    },
     "messages": {
       "info": {
         "authenticated": {
@@ -347,52 +359,52 @@
           "detail": "Vielen Dank für deine Bewerbung."
         },
         "invalidJobId": {
-          "summary": "Fehler",
-          "detail": "Dies ist keine gültige Job-ID."
+          "summary": "Ungültige Job-ID",
+          "detail": "Bitte prüfe die eingegebene Job-ID und versuche es erneut."
         },
         "invalidApplicationId": {
-          "summary": "Fehler",
-          "detail": "Dies ist keine gültige Bewerbungs-ID."
+          "summary": "Ungültige Bewerbungs-ID",
+          "detail": "Bitte prüfe die eingegebene Bewerbungs-ID und versuche es erneut."
         },
         "errorApplicationId": {
-          "summary": "Fehler",
-          "detail": "Es gibt ein Problem mit der Bewerbungs-ID."
+          "summary": "Fehlerhafte Bewerbungs-ID",
+          "detail": "Es liegt ein Problem mit der Bewerbungs-ID vor. Bitte lade die Seite neu oder versuche es später erneut."
         },
         "invalidPageLink": {
-          "summary": "Fehler",
-          "detail": "Dies ist kein gültiger Bewerbungslink."
+          "summary": "Ungültiger Seitenlink",
+          "detail": "Dieser Bewerbungslink ist nicht gültig. Bitte öffne die Seite über die Übersicht und versuche es erneut."
         },
         "saveFailedWithStatus": {
-          "summary": "Einreichen fehlgeschlagen",
-          "detail": "Bewerbung konnte nicht eingereicht werden: {{status}}"
+          "summary": "Übermittlung fehlgeschlagen",
+          "detail": "Bewerbung konnte nicht übermittelt werden: {{status}}"
         },
         "fetchDocumentIdsFailed": {
-          "summary": "Fehler",
-          "detail": "Fehler beim Laden der Dokument-IDs für diese Bewerbung."
+          "summary": "Dokumente nicht geladen",
+          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut."
         },
         "notEditable": {
-          "summary": "Fehler",
-          "detail": "Diese Bewerbung kann nicht bearbeitet werden, da sie bereits eingereicht oder kein Entwurf mehr ist."
+          "summary": "Nicht bearbeitbar",
+          "detail": "Diese Bewerbung kann nicht bearbeitet werden, da sie bereits eingereicht wurde oder kein Entwurf mehr ist."
         },
         "authRequired": {
-          "summary": "Fehler",
-          "detail": "Bewerbung kann nicht eingereicht werden: Benutzeranmeldung erforderlich."
+          "summary": "Anmeldung erforderlich",
+          "detail": "Bewerbung kann nicht eingereicht werden: Bitte melde dich an."
         },
         "saveFailed": {
-          "summary": "Fehler",
-          "detail": "Bewerbung konnte nicht gespeichert werden."
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut."
         },
         "loadFailed": {
-          "summary": "Fehler",
-          "detail": "Bewerbung konnte nicht geladen werden."
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite."
         },
         "initLoadFailed": {
-          "summary": "Fehler",
-          "detail": "Bewerbung konnte nicht geladen werden."
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut."
         },
         "missingJobIdUnauthenticated": {
-          "summary": "Fehler",
-          "detail": "Job-ID muss angegeben werden, wenn keine Anmeldung vorliegt."
+          "summary": "Job-ID fehlt",
+          "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
         }
       },
       "applicationOverview": {
