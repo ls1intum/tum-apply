@@ -3,7 +3,7 @@
   class="confirm-dialog"
   [header]="'entity.applicationSteps.confirmDialog.header' | translate"
   [message]="'entity.applicationSteps.confirmDialog.message' | translate"
-  [label]="sendButtonLabel | translate"
+  [label]="'entity.applicationSteps.buttons.send' | translate"
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
@@ -50,12 +50,13 @@
   <div class="panel">
     <!-- Summary panel -->
     <div class="summary_page">
-      <h2>{{ 'entity.applicationPage4.title' | translate }}</h2>
-      <p>{{ 'entity.applicationPage4.message' | translate }}</p>
+      <h2 jhiTranslate="entity.applicationPage4.title"></h2>
+      <p jhiTranslate="entity.applicationPage4.message"></p>
 
       <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
     </div>
   </div>
+
   <p-divider layout="horizontal">
     <span jhiTranslate="privacy.privacyConsent.title"></span>
   </p-divider>
@@ -71,7 +72,7 @@
     </label>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
-      <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorHeadline"></div>
+      <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
     }
   </div>
 </ng-template>
@@ -79,9 +80,7 @@
 <ng-template #saving_state_panel>
   <div [className]="savingBadgeCalculatedClass()">
     <fa-icon icon="save" />
-    <span class="font-bold">
-      {{ `entity.applicationSteps.status.${this.savingState()}` | translate }}
-    </span>
+    <span class="font-bold" [jhiTranslate]="'entity.applicationSteps.status.' + savingState()"></span>
   </div>
 </ng-template>
 

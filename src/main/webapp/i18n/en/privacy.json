@@ -38,9 +38,11 @@
       "title": "Privacy",
       "text": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>.",
       "confirmationText": "I have read and understood the Data Privacy Statement and consent to the processing of my personal data as described therein.",
-      "errorText": "Please confirm the Data Privacy Statement to proceed.",
-      "errorSummary": "Confirmation of privacy statement required",
-      "errorHeadline": "Please confirm the privacy statement to continue."
+      "errorText": "Please confirm the Data Privacy Statement.",
+      "toastError": {
+        "summary": "Privacy statement missing",
+        "detail": "Please confirm the Data Privacy Statement to proceed."
+      }
     }
   }
 }

@@ -37,6 +37,7 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
+import TranslateDirective from '../../../shared/language/translate.directive';
 
 const SavingStates = {
   SAVED: 'SAVED',
@@ -59,6 +60,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     TranslateModule,
     ConfirmDialog,
     ApplicationDetailForApplicantComponent,
+    TranslateDirective,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -445,7 +447,7 @@ export default class ApplicationCreationFormComponent {
     if (!this.privacyAcceptedSignal()) {
       this.toastService.showError({
         summary: this.translate.instant('privacy.privacyConsent.errorSummary'),
-        detail: this.translate.instant('privacy.privacyConsent.errorHeadline'),
+        detail: this.translate.instant('privacy.privacyConsent.errorText'),
       });
       return;
     }
