@@ -241,7 +241,7 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
       ),
-    title: 'Member Management',
+    title: 'researchGroup.memberPage',
   },
   {
     path: 'research-group/info',
