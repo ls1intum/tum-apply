@@ -1,11 +1,9 @@
 @use '../../../../../content/scss/breakpoints' as bp;
+@use '../../../../../content/scss/layout' as layout;
 
 .workflow-section {
-  display: flex;
+  @include layout.flex-col-center;
   padding: 4rem 0;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 3rem;
   align-self: stretch;
   background: var(--p-background-special);
