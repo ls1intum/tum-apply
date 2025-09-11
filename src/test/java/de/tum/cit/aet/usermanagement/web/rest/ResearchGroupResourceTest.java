@@ -2,7 +2,6 @@ package de.tum.cit.aet.usermanagement.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -10,6 +9,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -27,7 +27,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.convention.TestBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,19 +45,16 @@ public class ResearchGroupResourceTest {
     ResearchGroupRepository researchGroupRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ResearchGroupService researchGroupService;
 
-    @TestBean
-    CurrentUserService currentUserService;
+    private CurrentUserService mockCurrentUserService;
 
     MvcTestClient api;
     ResearchGroup researchGroup;
     ResearchGroup secondResearchGroup;
     User researchGroupUser;
     User secondResearchGroupUser;
-
-    static CurrentUserService currentUserService() {
-        return Mockito.mock(CurrentUserService.class);
-    }
 
     @BeforeEach
     public void setup() {
@@ -81,14 +78,20 @@ public class ResearchGroupResourceTest {
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
 
-        when(currentUserService.getUserIdIfAvailable())
-                .thenReturn(Optional.of(researchGroupUser.getUserId()));
+        mockCurrentUserService = Mockito.mock(CurrentUserService.class);
+        ReflectionTestUtils.setField(researchGroupService, "currentUserService", mockCurrentUserService);
 
+    }
+
+    private void setupMockUserService(User user) {
+        Mockito.when(mockCurrentUserService.getUserIdIfAvailable())
+                .thenReturn(Optional.of(user.getUserId()));
     }
 
     @Test
     @WithMockUser
     public void getResearchGroupDetails_existingId_returnsDetails() {
+        setupMockUserService(researchGroupUser);
         ResearchGroupLargeDTO result = api.getAndReadOk(
                 "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
                 Map.of(),
