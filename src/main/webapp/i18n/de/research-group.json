@@ -92,7 +92,16 @@
       "removeMemberModal": {
         "title": "Mitglied entfernen",
         "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
-      }
+      },
+
+      "toastMessages": {
+        "loadFailed": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin.",
+        "addSuccess": "Erfolgreich zur Forschungsgruppe hinzugefügt.",
+        "removeSuccess": "{{memberName}} wurde aus der Forschungsgruppe entfernt.",
+        "removeFailed": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
+      },
+
+      "noRole": "Keine Rolle"
     }
   }
 }

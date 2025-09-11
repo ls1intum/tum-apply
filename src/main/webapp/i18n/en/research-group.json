@@ -91,7 +91,16 @@
       "removeMemberModal": {
         "title": "Remove Member",
         "message": "Are you sure you want to remove this member from the research group?"
-      }
+      },
+
+      "toastMessages": {
+        "loadFailed": "Failed to load. Please try again or contact an admin.",
+        "addSuccess": "Successfully added to the research group.",
+        "removeSuccess": "{{memberName}} has been removed from the research group.",
+        "removeFailed": "Failed to remove. Please try again or contact an admin."
+      },
+
+      "noRole": "No role"
     }
   }
 }

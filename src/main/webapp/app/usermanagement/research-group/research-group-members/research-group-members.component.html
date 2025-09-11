@@ -4,18 +4,18 @@
   </div>
 
   <!-- Search bar with Add member button -->
-  <div class="search-and-actions">
+  <!-- TODO: Implement server-side search -->
+  <!-- <div class="search-and-actions">
     <jhi-search-filter-sort-bar
       [searchText]="'researchGroup.members.searchGroupMember' | translate"
       [totalRecords]="filteredMembers().length"
       [singleEntity]="'researchGroup.members.member' | translate"
       [multipleEntities]="'researchGroup.members.members' | translate"
       [showRecordCount]="true"
-      (searchOutput)="onSearch($event)"
     />
     <!-- TODO: Add functionality to add members to the research group -->
-    <!-- <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" /> -->
-  </div>
+  <!-- <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" /> -->
+  <!-- </div> -->
 
   <!-- Members Table -->
   <div class="table-wrapper">

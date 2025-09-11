@@ -44,27 +44,9 @@ export class ResearchGroupMembersComponent {
   pageSize = signal<number>(10);
   total = signal<number>(0);
   loading = signal(false);
-  searchQuery = signal('');
 
   // Modal state
   modalVisible = signal(false);
-
-  // Computed filtered members based on search query
-  filteredMembers = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    const allMembers = this.members();
-
-    if (!query) {
-      return allMembers;
-    }
-
-    return allMembers.filter(
-      member =>
-        `${member.firstName} ${member.lastName}`.toLowerCase().includes(query) ||
-        (member.email?.toLowerCase().includes(query) ?? false) ||
-        (member.roles?.some(role => role.toLowerCase().includes(query)) ?? false),
-    );
-  });
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -83,7 +65,7 @@ export class ResearchGroupMembersComponent {
 
   // Transform members data for display
   readonly tableData = computed(() => {
-    return this.filteredMembers().map(member => ({
+    return this.members().map(member => ({
       ...member,
       name: `${member.firstName} ${member.lastName}`,
       role: this.formatRoles(member.roles),
@@ -102,6 +84,7 @@ export class ResearchGroupMembersComponent {
     void this.loadMembers();
   }
 
+  // Load members on table emit
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
@@ -110,6 +93,7 @@ export class ResearchGroupMembersComponent {
     void this.loadMembers();
   }
 
+  // Load members from the research group
   async loadMembers(): Promise<void> {
     try {
       const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
@@ -117,13 +101,15 @@ export class ResearchGroupMembersComponent {
       this.members.set(members.content ?? []);
       this.total.set(members.totalElements ?? 0);
     } catch {
-      this.toastService.showError({ detail: 'Failed to load research group members' });
+      const errorMessage = this.translate.instant(`${this.translationKey}.toastMessages.loadFailed`);
+      this.toastService.showError({ detail: errorMessage });
     }
   }
 
+  // Format roles for display
   formatRoles(roles?: string[]): string {
     if (!roles || roles.length === 0) {
-      return 'No role';
+      return this.translate.instant(`${this.translationKey}.noRole`);
     }
 
     // Capitalize first letter and make it singular
@@ -134,10 +120,6 @@ export class ResearchGroupMembersComponent {
     return member.userId === this.accountService.userId;
   }
 
-  onSearch(query: string): void {
-    this.searchQuery.set(query);
-  }
-
   addMember(): void {
     this.modalVisible.set(true);
   }
@@ -146,10 +128,12 @@ export class ResearchGroupMembersComponent {
     this.modalVisible.set(false);
   }
 
+  // Add selected users to the research group
   addSelectedUsersToGroup(): void {
     // TODO: Implement actual API call to add users to research group
+    const successMessage = this.translate.instant(`${this.translationKey}.toastMessages.addSuccess`);
     this.toastService.showSuccess({
-      detail: `Successfully added to the research group.`,
+      detail: successMessage,
     });
 
     // Close modal and reset state
@@ -159,20 +143,26 @@ export class ResearchGroupMembersComponent {
     // await this.loadMembers();
   }
 
+  // Remove member from the research group
   async removeMember(member: UserShortDTO): Promise<void> {
     try {
-      // Call the generated service method to remove the member from the research group
       await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
 
+      const successMessage = this.translate.instant(`${this.translationKey}.toastMessages.removeSuccess`, {
+        memberName: `${member.firstName} ${member.lastName}`,
+      });
       this.toastService.showSuccess({
-        detail: `${member.firstName} ${member.lastName} has been removed from the research group.`,
+        detail: successMessage,
       });
 
       // Refresh the members list
       await this.loadMembers();
     } catch {
+      const errorMessage = this.translate.instant(`${this.translationKey}.toastMessages.removeFailed`, {
+        memberName: `${member.firstName} ${member.lastName}`,
+      });
       this.toastService.showError({
-        detail: `Failed to remove ${member.firstName} ${member.lastName} from the research group.`,
+        detail: errorMessage,
       });
     }
   }
