@@ -49,6 +49,7 @@ public class ResearchGroupResource {
     /**
      * Returns paginated members of the current user's research group.
      *
+     * @param pageDTO the pagination parameters
      * @return paginated list of members
      */
     @GetMapping("/members")
