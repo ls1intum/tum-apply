@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -11,6 +11,9 @@ import { CheckboxModule } from 'primeng/checkbox';
   templateUrl: './filter-multiselect.html',
   styleUrl: './filter-multiselect.scss',
   encapsulation: ViewEncapsulation.None,
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+  },
 })
 export class FilterMultiselect {
   filterLabel = input.required<string>();
@@ -94,7 +97,6 @@ export class FilterMultiselect {
   }
 
   // Close dropdown when clicking outside
-  @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     if (!this.elementRef.nativeElement.contains(event.target as Node)) {
       this.closeDropdown();
