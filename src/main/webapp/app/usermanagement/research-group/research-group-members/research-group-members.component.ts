@@ -44,8 +44,6 @@ export class ResearchGroupMembersComponent {
   pageSize = signal<number>(10);
   total = signal<number>(0);
   loading = signal(false);
-
-  // Modal state
   modalVisible = signal(false);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
@@ -80,44 +78,12 @@ export class ResearchGroupMembersComponent {
 
   private readonly translationKey: string = 'researchGroup.members';
 
-  constructor() {
-    void this.loadMembers();
-  }
-
-  // Load members on table emit
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
 
     void this.loadMembers();
-  }
-
-  // Load members from the research group
-  async loadMembers(): Promise<void> {
-    try {
-      const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
-
-      this.members.set(members.content ?? []);
-      this.total.set(members.totalElements ?? 0);
-    } catch {
-      const errorMessage = this.translate.instant(`${this.translationKey}.toastMessages.loadFailed`);
-      this.toastService.showError({ detail: errorMessage });
-    }
-  }
-
-  // Format roles for display
-  formatRoles(roles?: string[]): string {
-    if (!roles || roles.length === 0) {
-      return this.translate.instant(`${this.translationKey}.noRole`);
-    }
-
-    // Capitalize first letter and make it singular
-    return roles[0].charAt(0).toUpperCase() + roles[0].slice(1).toLowerCase();
-  }
-
-  isCurrentUser(member: UserShortDTO): boolean {
-    return member.userId === this.accountService.userId;
   }
 
   addMember(): void {
@@ -128,9 +94,8 @@ export class ResearchGroupMembersComponent {
     this.modalVisible.set(false);
   }
 
-  // Add selected users to the research group
+  // TODO: Implement actual API call to add users to research group
   addSelectedUsersToGroup(): void {
-    // TODO: Implement actual API call to add users to research group
     const successMessage = this.translate.instant(`${this.translationKey}.toastMessages.addSuccess`);
     this.toastService.showSuccess({
       detail: successMessage,
@@ -143,7 +108,6 @@ export class ResearchGroupMembersComponent {
     // await this.loadMembers();
   }
 
-  // Remove member from the research group
   async removeMember(member: UserShortDTO): Promise<void> {
     try {
       await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
@@ -165,5 +129,32 @@ export class ResearchGroupMembersComponent {
         detail: errorMessage,
       });
     }
+  }
+
+  /** Internal methods */
+
+  private async loadMembers(): Promise<void> {
+    try {
+      const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
+
+      this.members.set(members.content ?? []);
+      this.total.set(members.totalElements ?? 0);
+    } catch {
+      const errorMessage = this.translate.instant(`${this.translationKey}.toastMessages.loadFailed`);
+      this.toastService.showError({ detail: errorMessage });
+    }
+  }
+
+  private formatRoles(roles?: string[]): string {
+    if (!roles || roles.length === 0) {
+      return this.translate.instant(`${this.translationKey}.noRole`);
+    }
+
+    // Capitalize first letter and make it singular
+    return roles[0].charAt(0).toUpperCase() + roles[0].slice(1).toLowerCase();
+  }
+
+  private isCurrentUser(member: UserShortDTO): boolean {
+    return member.userId === this.accountService.userId;
   }
 }
