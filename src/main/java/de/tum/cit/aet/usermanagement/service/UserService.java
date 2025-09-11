@@ -40,10 +40,11 @@ public class UserService {
      * @param body the OTP completion request containing email and optional profile information
      */
     @Transactional
-    public void createUser(OtpCompleteDTO body) {
+    public void createUser(String keycloakUserId, OtpCompleteDTO body) {
         String normalizedEmail = StringUtil.normalize(body.email(), true);
         if (findByEmail(normalizedEmail).isEmpty()) {
             User newUser = new User();
+            newUser.setUserId(UUID.fromString(keycloakUserId));
             newUser.setEmail(normalizedEmail);
             if (body.profile() != null) {
                 newUser.setFirstName(StringUtil.normalize(body.profile().firstName(), false));
