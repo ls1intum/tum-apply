@@ -6,8 +6,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 public class AuthenticationService {
 
@@ -26,10 +24,9 @@ public class AuthenticationService {
      */
     @Transactional
     public User provisionUserIfMissing(Jwt jwt) {
-        UUID userId = UUID.fromString(jwt.getSubject());
         String email = jwt.getClaimAsString("email");
         String givenName = jwt.getClaimAsString("given_name");
         String familyName = jwt.getClaimAsString("family_name");
-        return userService.upsertFromClaims(userId, email, givenName, familyName);
+        return userService.upsertUser(jwt.getSubject(), email, givenName, familyName);
     }
 }

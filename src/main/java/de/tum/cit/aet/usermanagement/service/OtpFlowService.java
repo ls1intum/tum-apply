@@ -84,7 +84,9 @@ public class OtpFlowService {
      */
     private AuthSessionInfoDTO handleRegister(OtpCompleteDTO body, HttpServletResponse response) {
         String keycloakUserId = keycloakUserService.ensureUser(body);
-        userService.createUser(keycloakUserId, body);
+        String firstName = body.profile() != null ? body.profile().firstName() : null;
+        String lastName = body.profile() != null ? body.profile().lastName() : null;
+        userService.upsertUser(keycloakUserId, body.email(), firstName, lastName);
         return getTokens(keycloakUserId, response);
     }
 

@@ -4,7 +4,6 @@ import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
-import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import org.springframework.stereotype.Service;
@@ -40,35 +39,22 @@ public class UserService {
     }
 
     /**
-     * Creates a new local user and assigns the default applicant role if not present.
-     * If a user with the same email already exists, no action is taken.
+     * Upserts a user in the database and assigns the APPLICANT role.
+     * - Normalizes input values (never null, may be blank)
+     * - Creates a new user if missing, otherwise updates changed fields only
+     * - Assigns the APPLICANT role when no roles are present
+     * <p>
+     * Note: This method does not throw if names/emails are blank; callers may validate earlier.
      *
-     * @param keycloakUserId the Keycloak user ID to associate with the new user
-     * @param body           OTP request with email and optional profile
+     * @param keycloakUserId the Keycloak user ID to associate with the user
+     * @param email          the user's email (can be null/blank)
+     * @param firstName      optional first name (can be null/blank)
+     * @param lastName       optional last name (can be null/blank)
+     * @return the managed User entity
      */
     @Transactional
-    public void createUser(String keycloakUserId, OtpCompleteDTO body) {
-        String normalizedEmail = StringUtil.normalize(body.email(), true);
-        if (findByEmail(normalizedEmail).isEmpty()) {
-            User newUser = new User();
-            newUser.setUserId(UUID.fromString(keycloakUserId));
-            newUser.setEmail(normalizedEmail);
-            if (body.profile() != null) {
-                newUser.setFirstName(StringUtil.normalize(body.profile().firstName(), false));
-                newUser.setLastName(StringUtil.normalize(body.profile().lastName(), false));
-            }
-            User savedUser = userRepository.save(newUser);
-            ensureApplicantRole(savedUser);
-        }
-    }
-
-    /**
-     * Upserts a user from identity claims and optionally assigns the default applicant role.
-     * If the user exists, updates basic fields; if not, creates a new user.
-     * Returns the managed entity.
-     */
-    @Transactional
-    public User upsertFromClaims(UUID userId, String email, String firstName, String lastName) {
+    public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
+        UUID userId = UUID.fromString(keycloakUserId);
         String normalizedEmail = StringUtil.normalize(email, true);
         String normalizedFirstName = StringUtil.normalize(firstName, false);
         String normalizedLastName = StringUtil.normalize(lastName, false);
