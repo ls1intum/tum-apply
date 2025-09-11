@@ -2,7 +2,9 @@ package de.tum.cit.aet.usermanagement.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
@@ -10,6 +12,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import de.tum.cit.aet.utility.*;
@@ -18,11 +21,13 @@ import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.convention.TestBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,10 +46,18 @@ public class ResearchGroupResourceTest {
     @Autowired
     UserRepository userRepository;
 
+    @TestBean
+    CurrentUserService currentUserService;
+
     MvcTestClient api;
     ResearchGroup researchGroup;
     ResearchGroup secondResearchGroup;
+    User researchGroupUser;
     User secondResearchGroupUser;
+
+    static CurrentUserService currentUserService() {
+        return Mockito.mock(CurrentUserService.class);
+    }
 
     @BeforeEach
     public void setup() {
@@ -65,7 +78,11 @@ public class ResearchGroupResourceTest {
                 "Physics", "Other research", "contact@other.tum.de",
                 "80335", "TUM", "Otherstr. 10", "https://other.tum.de");
 
+        researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
+
+        when(currentUserService.getUserIdIfAvailable())
+                .thenReturn(Optional.of(researchGroupUser.getUserId()));
 
     }
 
@@ -105,7 +122,7 @@ public class ResearchGroupResourceTest {
     }
 
     @Test
-    @WithMockUser(username = "Test Group")
+    @WithMockUser
     void getResearchGroupDetails_otherUsersGroup_returnsForbidden() {
 
         assertThatThrownBy(() -> api.getAndReadOk(
