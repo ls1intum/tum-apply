@@ -40,7 +40,7 @@ const SavingStates = {
   SAVING: 'SAVING',
 } as const;
 
-const applyflow = 'entity.toast.applyFlow';
+const applyflow = 'entity.toast.applyFlow' as const;
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
 
@@ -369,7 +369,7 @@ export default class ApplicationCreationFormComponent {
       this.loadPage1FromLocalStorage(jobId);
       this.applicationState.set('SAVED');
     } else {
-      this.showInitErrorMessage('${applyflow}.missingJobIdUnauthenticated');
+      this.showInitErrorMessage(`${applyflow}.missingJobIdUnauthenticated`);
     }
   }
 
@@ -377,7 +377,7 @@ export default class ApplicationCreationFormComponent {
     const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
 
     if (application.applicationState !== 'SAVED') {
-      this.toastService.showErrorKey('${applyflow}.notEditable');
+      this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', applicationId]);
       throw new Error('Application is not editable.');
     }
@@ -390,7 +390,7 @@ export default class ApplicationCreationFormComponent {
     const application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
 
     if (application.applicationState !== 'SAVED') {
-      this.toastService.showErrorKey('${applyflow}.notEditable');
+      this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', application.applicationId]);
       throw new Error('Application is not editable.');
     }
@@ -425,13 +425,13 @@ export default class ApplicationCreationFormComponent {
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
-      this.toastService.showErrorKey('${applyflow}.errorApplicationId');
+      this.toastService.showErrorKey(`${applyflow}.errorApplicationId`);
       return false;
     }
 
     // If using local storage, we can't send to server
     if (this.useLocalStorage()) {
-      this.toastService.showErrorKey('${applyflow}.authRequired');
+      this.toastService.showErrorKey(`${applyflow}.authRequired`);
       return false;
     }
 
@@ -444,14 +444,14 @@ export default class ApplicationCreationFormComponent {
       this.clearLocalStorage();
 
       if (rerouteToOtherPage) {
-        this.toastService.showSuccessKey('${applyflow}.applyFlow.submitted');
+        this.toastService.showSuccessKey(`${applyflow}.applyFlow.submitted`);
         // TODO: browser history is not working as expected for location.back()
 
         location.back();
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
-      this.toastService.showErrorKey('${applyflow}.saveFailedWithStatus', { status: httpError.statusText });
+      this.toastService.showErrorKey(`${applyflow}.saveFailedWithStatus`, { status: httpError.statusText });
       return false;
     }
     return true;
@@ -467,7 +467,7 @@ export default class ApplicationCreationFormComponent {
       .then(ids => {
         this.documentIds.set(ids);
       })
-      .catch(() => this.toastService.showErrorKey('${applyflow}.fetchDocumentIdsFailed'));
+      .catch(() => this.toastService.showErrorKey(`${applyflow}.fetchDocumentIdsFailed`));
   }
 
   onValueChanged(): void {
@@ -558,7 +558,7 @@ export default class ApplicationCreationFormComponent {
     try {
       this.localStorageService.saveApplicationDraft(applicationData);
     } catch {
-      this.toastService.showErrorKey('${applyflow}.saveFailed');
+      this.toastService.showErrorKey(`${applyflow}.saveFailed`);
       return false;
     }
     return true;
@@ -581,7 +581,7 @@ export default class ApplicationCreationFormComponent {
       }
     } catch (err) {
       queueMicrotask(() => {
-        this.toastService.showErrorKey('${applyflow}.loadFailed');
+        this.toastService.showErrorKey(`${applyflow}.loadFailed`);
         throw new Error('Local load failed: ' + (err as Error).message);
       });
     }
