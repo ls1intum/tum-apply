@@ -87,9 +87,7 @@ export class FilterMultiselect {
   }
 
   onSearchChange(event: Event): void {
-    const inputElement: HTMLInputElement | null = event.target as HTMLInputElement | null;
-    if (!inputElement) return;
-    this.searchTerm.set(inputElement.value);
+    this.searchTerm.set((event.target as HTMLInputElement).value);
   }
 
   // Close dropdown when clicking outside
