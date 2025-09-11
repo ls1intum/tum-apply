@@ -4,14 +4,15 @@ import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A user.
@@ -73,4 +74,14 @@ public class User extends AbstractAuditingEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmailSetting> emailSettings = new HashSet<>();
+
+    /**
+     * Ensure defaults before persisting a new user.
+     */
+    @PrePersist
+    public void prePersist() {
+        if (this.selectedLanguage == null) {
+            this.selectedLanguage = "en";
+        }
+    }
 }
