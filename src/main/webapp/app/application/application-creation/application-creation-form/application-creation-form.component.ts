@@ -442,7 +442,12 @@ export default class ApplicationCreationFormComponent {
       this.clearLocalStorage();
 
       if (rerouteToOtherPage) {
+
         this.toastService.showSuccessKey('entity.toast.applyFlow.submitted');
+
+       
+        // TODO: browser history is not working as expected for location.back()
+
         location.back();
       }
     } catch (err) {
