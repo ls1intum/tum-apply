@@ -97,6 +97,8 @@ public class ResearchGroupResourceTest {
                 Map.of(),
                 ResearchGroupLargeDTO.class);
 
+        assertThat(researchGroupUser.getResearchGroup().getResearchGroupId())
+                .isEqualTo(researchGroup.getResearchGroupId());
         assertThat(result.description()).isEqualTo("We research ML algorithms");
         assertThat(result.email()).isEqualTo("contact@ml.tum.de");
         assertThat(result.website()).isEqualTo("https://ml.tum.de");
