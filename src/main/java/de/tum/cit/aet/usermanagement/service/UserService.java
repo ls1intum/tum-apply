@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -50,5 +51,34 @@ public class UserService {
             }
             userRepository.save(newUser);
         }
+    }
+
+    /**
+     * Updates first/last name if the user exists.
+     * Does nothing if the user is not found.
+     *
+     * @param userId    ID of the user
+     * @param firstName optional first name (ignored if null/blank)
+     * @param lastName  optional last name (ignored if null/blank)
+     */
+    @Transactional
+    public void updateUser(UUID userId, String firstName, String lastName) {
+        userRepository.findById(userId).ifPresent(user -> {
+            boolean changed = false;
+            String normalizedFirstName = StringUtil.normalize(firstName, false);
+            String normalizedLastName = StringUtil.normalize(lastName, false);
+
+            if (!normalizedFirstName.isBlank()) {
+                user.setFirstName(normalizedFirstName);
+                changed = true;
+            }
+            if (!normalizedLastName.isBlank()) {
+                user.setLastName(normalizedLastName);
+                changed = true;
+            }
+            if (changed) {
+                userRepository.save(user);
+            }
+        });
     }
 }
