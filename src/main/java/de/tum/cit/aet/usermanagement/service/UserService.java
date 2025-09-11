@@ -36,17 +36,17 @@ public class UserService {
     /**
      * Creates a new local user. If a user with the same email already exists, no action is taken.
      *
-     * @param request the OTP completion request containing email and optional profile information
+     * @param body the OTP completion request containing email and optional profile information
      */
     @Transactional
-    public void createUser(OtpCompleteDTO request) {
-        String normalizedEmail = StringUtil.normalize(request.email(), true);
+    public void createUser(OtpCompleteDTO body) {
+        String normalizedEmail = StringUtil.normalize(body.email(), true);
         if (findByEmail(normalizedEmail).isEmpty()) {
             User newUser = new User();
             newUser.setEmail(normalizedEmail);
-            if (request.profile() != null) {
-                newUser.setFirstName(StringUtil.normalize(request.profile().firstName(), false));
-                newUser.setLastName(StringUtil.normalize(request.profile().lastName(), false));
+            if (body.profile() != null) {
+                newUser.setFirstName(StringUtil.normalize(body.profile().firstName(), false));
+                newUser.setLastName(StringUtil.normalize(body.profile().lastName(), false));
             }
             userRepository.save(newUser);
         }

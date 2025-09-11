@@ -7,6 +7,7 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,27 +101,26 @@ public class EmailVerificationService {
      * like creating users, logging users in, or changing Keycloak state. Those actions are handled by OtpFlowService
      * after successful verification.
      *
-     * @param rawEmail      the raw email address to verify
-     * @param submittedCode the OTP code submitted by the user
-     * @param ip            the IP address of the client submitting the code
+     * @param body the OTP completion request containing email and code
+     * @param ip   the IP address of the client submitting the code
      * @throws EmailVerificationFailedException if verification fails for any reason
      */
     @Transactional(noRollbackFor = EmailVerificationFailedException.class)
-    public void verifyCode(String rawEmail, String submittedCode, String ip) {
-        String email = StringUtil.normalize(rawEmail, true);
+    public void verifyCode(OtpCompleteDTO body, String ip) {
+        String normalizedEmail = StringUtil.normalize(body.email(), true);
         Instant now = Instant.now();
 
-        var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(email, now);
+        var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(normalizedEmail, now);
         if (activeOpt.isEmpty()) {
-            LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(email), ip);
+            LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(normalizedEmail), ip);
             throw new EmailVerificationFailedException();
         }
 
         var otp = activeOpt.get();
 
-        String cleanedCode = submittedCode == null ? "" : submittedCode.trim();
+        String cleanedCode = body.code() == null ? "" : body.code().trim();
         String expected = OtpUtil.hmacSha256Base64(otpHmacSecret,
-            cleanedCode + "|" + otp.getSalt() + "|" + email);
+            cleanedCode + "|" + otp.getSalt() + "|" + normalizedEmail);
 
         boolean ok = OtpUtil.constantTimeEquals(expected, otp.getCodeHash());
 
@@ -132,7 +132,7 @@ public class EmailVerificationService {
 
         // Mark used atomically (race safety)
         if (emailVerificationOtpRepository.markUsedIfActive(otp.getId(), now) == 0) {
-            LOGGER.warn("OTP race: markUsedIfActive returned 0 - emailId={} ip={}", emailLogId(email), ip);
+            LOGGER.warn("OTP race: markUsedIfActive returned 0 - emailId={} ip={}", emailLogId(normalizedEmail), ip);
             throw new EmailVerificationFailedException();
         }
     }
