@@ -156,10 +156,8 @@ public class KeycloakAuthenticationService {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         addClientAuth(form, adminClientId, adminClientSecret);
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
-        form.add("subject_token", adminAccessToken);
         form.add("requested_subject", keycloakUserId);
-        form.add("requested_token_type", "urn:ietf:params:oauth:token-type:access_token");
-        form.add("scope", "openid");
+        form.add("audience", clientId);
 
         AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Token exchange failed").bodyToMono(AccessTokenResponse.class).block(Duration.ofSeconds(5));
         return getResponseFromToken(tokenResponse);
