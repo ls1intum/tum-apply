@@ -1,0 +1,25 @@
+.content {
+  padding: 2rem 4rem;
+  width: 100%;
+
+  .header {
+    font-weight: 700;
+    padding-bottom: 4rem;
+    font-size: 2rem;
+    color: var(--p-primary-color);
+  }
+
+  .card {
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 2rem;
+    }
+
+    .form-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 1.5rem;
+    }
+  }
+}
