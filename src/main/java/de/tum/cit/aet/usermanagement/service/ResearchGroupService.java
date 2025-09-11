@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -47,10 +48,9 @@ public class ResearchGroupService {
         // Get the current user's research group ID
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
         
-        // Create pageable without sorting since we can't order by firstName/lastName in the ID query
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         
-        // First query: Get paginated user IDs (ordering will be applied in second query)
+        // First query: Get paginated user IDs to avoid N+1 query problem
         Page<UUID> userIdsPage = userRepository.findUserIdsByResearchGroupId(researchGroupId, pageable);
         
         if (userIdsPage.isEmpty()) {
@@ -58,7 +58,6 @@ public class ResearchGroupService {
         }
         
         // Second query: Fetch full user data with collections for the paginated IDs
-        // Pass current user ID to sort current user first
         UUID currentUserId = currentUserService.getUserId();
         List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), currentUserId);
         
@@ -70,28 +69,26 @@ public class ResearchGroupService {
 
     /**
      * Removes a member from the current user's research group.
-     * This operation removes both the direct research group membership and all associated roles.
+     * This operation removes both associated roles and direct research group membership.
      * @param userId the ID of the user to remove from the research group
      * @throws EntityNotFoundException if the user is not found or not in the same research group
      */
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
-        // Get the current user's research group ID
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        // Get the current user's research group ID for validation
+        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
         
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository.findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-        
-        if (userToRemove.getResearchGroup() == null) {
-            throw new EntityNotFoundException("User is not a member of any research group");
+
+        // Ensure user belongs to the same research group
+        if (userToRemove.getResearchGroup() == null || 
+            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)) {
+            throw new AccessDeniedException("User is not a member of your research group");
         }
         
-        if (!userToRemove.getResearchGroup().getResearchGroupId().equals(researchGroupId)) {
-            throw new EntityNotFoundException("User is not a member of your research group");
-        }
-        
-        // Prevent removing oneself
+        // Prevent removing oneself (for now)
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
             throw new IllegalArgumentException("Cannot remove yourself from the research group");
@@ -101,7 +98,7 @@ public class ResearchGroupService {
         userToRemove.setResearchGroup(null);
         userRepository.save(userToRemove);
         
-        // Remove research group associations from user's roles (preserves role entries)
+        // Remove research group associations from user's roles
         userResearchGroupRoleRepository.removeResearchGroupFromUserRoles(userId);
     }
 
