@@ -141,7 +141,7 @@ export default class ApplicationCreationPage3Component {
         desiredStartDate: $event ?? '',
       });
     }
-    // Also update the form control to keep it in sync
+
     this.page3Form.patchValue({
       desiredStartDate: $event ?? '',
     });
