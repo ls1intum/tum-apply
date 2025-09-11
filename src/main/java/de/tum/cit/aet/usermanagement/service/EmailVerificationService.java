@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -110,13 +111,13 @@ public class EmailVerificationService {
         String normalizedEmail = StringUtil.normalize(body.email(), true);
         Instant now = Instant.now();
 
-        var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(normalizedEmail, now);
-        if (activeOpt.isEmpty()) {
+        Optional<EmailVerificationOtp> activeOtp = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(normalizedEmail, now);
+        if (activeOtp.isEmpty()) {
             LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(normalizedEmail), ip);
             throw new EmailVerificationFailedException();
         }
 
-        var otp = activeOpt.get();
+        EmailVerificationOtp otp = activeOtp.get();
 
         String cleanedCode = body.code() == null ? "" : body.code().trim();
         String expected = OtpUtil.hmacSha256Base64(otpHmacSecret,

@@ -52,11 +52,11 @@ public class KeycloakUserService {
     /**
      * Ensures a user exists in Keycloak for the given email (creates one if missing).
      * <p>
-     * The created user is initialized with {@code enabled=true} and {@code emailVerified=true}. If a concurrent
-     * creation happens and Keycloak returns HTTP 409 (conflict), this method performs a follow-up lookup and returns
-     * the resulting user ID.
+     * The created user is initialized with enabled=true and emailVerified=true.
+     * If a concurrent creation happens and Keycloak returns HTTP 409 (conflict), this method performs a follow-up
+     * lookup and returns the resulting user ID.
      *
-     * @param email the email address used as both username and email in Keycloak; must not be {@code null}
+     * @param email the email address used as both username and email in Keycloak; must not be null
      * @return the Keycloak user ID corresponding to the email
      * @throws IllegalStateException if user creation fails with an unexpected status code
      */
@@ -84,7 +84,13 @@ public class KeycloakUserService {
     }
 
     /**
-     * Updates basic profile fields (firstName/lastName) of a Keycloak user.
+     * Updates basic profile fields (firstName and lastName) of a Keycloak user.
+     * Blank or null inputs are ignored; existing values remain unchanged in that case.
+     * Names are normalized before being persisted.
+     *
+     * @param userId    Keycloak user ID
+     * @param firstName optional first name; ignored if null or blank
+     * @param lastName  optional last name; ignored if null or blank
      */
     public void updateProfile(String userId, String firstName, String lastName) {
         UserResource userResource = keycloak.realm(realm).users().get(userId);
@@ -94,11 +100,11 @@ public class KeycloakUserService {
         }
         String normalizedFirstName = StringUtil.normalize(firstName, false);
         if (!normalizedFirstName.isBlank()) {
-            userRepresentation.setFirstName(firstName);
+            userRepresentation.setFirstName(normalizedFirstName);
         }
         String normalizedLastName = StringUtil.normalize(lastName, false);
         if (!normalizedLastName.isBlank()) {
-            userRepresentation.setLastName(lastName);
+            userRepresentation.setLastName(normalizedLastName);
         }
         userResource.update(userRepresentation);
     }

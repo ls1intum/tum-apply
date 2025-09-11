@@ -30,9 +30,15 @@ public class OtpFlowService {
         this.emailVerificationService = emailVerificationService;
     }
 
-    /*
+    /**
      * Orchestrates the OTP completion: first verifies the OTP, then executes the requested purpose.
      * This method is the single entry point used by the controller.
+     *
+     * @param body     the OTP completion request including email, code, purpose and optional profile
+     * @param ip       client IP address used for audit and rate limiting
+     * @param response the HTTP servlet response to which authentication cookies will be attached
+     * @return an {@link AuthSessionInfoDTO} with token lifetimes
+     * @throws EmailVerificationFailedException if OTP verification fails or the user cannot be validated
      */
     public AuthSessionInfoDTO otpComplete(OtpCompleteDTO body, String ip, HttpServletResponse response) {
         emailVerificationService.verifyCode(body, ip);
