@@ -7,10 +7,19 @@ import org.springframework.http.ResponseCookie;
 
 import java.time.Duration;
 
+/**
+ * Helpers for writing and clearing cookies.
+ */
 public class CookieUtils {
+    private CookieUtils() {
+    }
+
     /**
-     * Sets or clears authentication cookies.
-     * If tokens is non-null, sets cookies; if null, clears them.
+     * Sets or clears authentication cookies. If {@code tokens} is non-null, new cookies are set;
+     * if {@code null}, existing cookies are cleared.
+     *
+     * @param response the HTTP response to append {@code Set-Cookie} headers to
+     * @param tokens   token payload (access & refresh); {@code null} clears cookies
      */
     public static void setAuthCookies(HttpServletResponse response, AuthResponseDTO tokens) {
         if (tokens != null) {

@@ -2,7 +2,13 @@ package de.tum.cit.aet.core.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Helpers for HTTP-related tasks.
+ */
 public class HttpUtils {
+    private HttpUtils() {
+    }
+
     /**
      * Resolves the client's IP address from the HTTP request.
      * Prefers the 'X-Forwarded-For' header if present to handle proxies,
