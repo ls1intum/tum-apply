@@ -2,6 +2,46 @@
   "researchGroup": {
     "header": "Meine E-Mail-Vorlagen",
     "memberHeader": "Meine Mitglieder",
+    "emailTemplatesHeader": "Meine E-Mail-Vorlagen",
+    "groupInfoPage": "TUMApply - Meine Gruppe",
+    "groupInfoHeader": "Meine Gruppe",
+
+    "groupInfo": {
+      "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
+      "saveButton": "Speichern",
+      "fields": {
+        "name": "Name",
+        "abbreviation": "Abkürzung",
+        "head": "Leitung",
+        "school": "School",
+        "defaultFieldOfStudies": "Studienrichtung",
+        "website": "Webseite",
+        "email": "E-Mail",
+        "address": "Straße und Hausnummer",
+        "postalCode": "Postleitzahl",
+        "city": "Stadt",
+        "description": "Beschreibung"
+      },
+      "placeholders": {
+        "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",
+        "abbreviation": "z.B. KI",
+        "head": "z.B. Prof. Dr. Max Mustermann",
+        "email": "z.B. kontakt@forschung.de",
+        "website": "z.B. https://www.forschung.de/gruppe",
+        "school": "z.B. Informatik",
+        "defaultFieldOfStudies": "z.B. Computer Science",
+        "address": "z.B. Musterstraße 123",
+        "postalCode": "z.B. 12345",
+        "city": "z.B. Berlin",
+        "description": "Beschreibe kurz die Forschungsrichtung, Ziele und Schwerpunkte deiner Gruppe."
+      },
+      "toasts": {
+        "updated": "Forschungsgruppeninformationen erfolgreich aktualisiert.",
+        "saveFailed": "Fehler beim Speichern. Bitte versuche es erneut oder kontaktiere einen Admin.",
+        "loadFailed": "Fehler beim Laden. Bitte lade die Seite neu oder kontaktiere einen Admin.",
+        "noId": "Keine Forschungsgruppe gefunden. Kontaktiere deinen Admin."
+      }
+    },
 
     "emailTemplates": {
       "newTemplate": "Neue Vorlage",

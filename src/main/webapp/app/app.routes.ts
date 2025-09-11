@@ -243,6 +243,14 @@ const routes: Routes = [
       ),
     title: 'Member Management',
   },
+  {
+    path: 'research-group/info',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-info/research-group-info.component').then(m => m.ResearchGroupInfoComponent),
+    title: 'researchGroup.groupInfoPage',
+  },
 
   // ======================================================================================
   // Error Handling

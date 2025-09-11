@@ -81,6 +81,76 @@
         }
       }
     },
+    "/api/research-groups/{id}": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "updateResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchGroupDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/update/{jobId}": {
       "put": {
         "tags": [
@@ -1576,6 +1646,29 @@
         }
       }
     },
+    "/api/research-groups": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getAllResearchGroups",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResearchGroupDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/research-groups/members": {
       "get": {
         "tags": [
@@ -2717,6 +2810,50 @@
           }
         }
       },
+      "ResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "head",
+          "name"
+        ]
+      },
       "JobFormDTO": {
         "type": "object",
         "properties": {
@@ -3537,10 +3674,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "first": {
             "type": "boolean"
           },
@@ -3549,6 +3682,10 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -4221,10 +4358,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "first": {
             "type": "boolean"
           },
@@ -4233,6 +4366,10 @@
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",

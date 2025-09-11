@@ -66,6 +66,7 @@ model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
+model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts

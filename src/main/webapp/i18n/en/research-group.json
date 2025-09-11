@@ -2,6 +2,46 @@
   "researchGroup": {
     "header": "My Email Templates",
     "memberHeader": "My Members",
+    "emailTemplatesHeader": "My Email Templates",
+    "groupInfoPage": "TUMApply - My Group",
+    "groupInfoHeader": "My Group",
+
+    "groupInfo": {
+      "description": "Edit the basic information about your research group.",
+      "saveButton": "Save",
+      "fields": {
+        "name": "Name",
+        "abbreviation": "Abbreviation",
+        "head": "Head",
+        "school": "School",
+        "defaultFieldOfStudies": "Field of Studies",
+        "website": "Website",
+        "email": "Email",
+        "address": "Street and House Number",
+        "postalCode": "Postal Code",
+        "city": "City",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "e.g. Research Group for Artificial Intelligence",
+        "abbreviation": "e.g. AI",
+        "head": "e.g. Prof. Dr. Max Mustermann",
+        "email": "e.g. kontakt@forschung.de",
+        "website": "e.g. https://www.forschung.de/gruppe",
+        "school": "e.g. Informatics",
+        "defaultFieldOfStudies": "e.g. Computer Science",
+        "address": "e.g. Musterstraße 123",
+        "postalCode": "e.g. 12345",
+        "city": "e.g. Berlin",
+        "description": "Describe briefly your group's research focus, goals, and key areas."
+      },
+      "toasts": {
+        "updated": "Research group information successfully updated.",
+        "saveFailed": "Error saving. Please try again or contact an admin.",
+        "loadFailed": "Error loading. Please refresh the page or contact an admin.",
+        "noId": "No research group found. Contact an admin."
+      }
+    },
 
     "emailTemplates": {
       "newTemplate": "New Template",
