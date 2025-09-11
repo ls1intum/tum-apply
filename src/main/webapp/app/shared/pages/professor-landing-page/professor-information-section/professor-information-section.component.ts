@@ -12,35 +12,38 @@ import { InformationCardComponent } from '../../landing-page/information-section
   styleUrl: './professor-information-section.component.scss',
 })
 export class ProfessorInformationSectionComponent {
+  readonly translationKey = 'professorLandingPage.informationSection.tiles';
+  readonly imageSrc = '/content/images/professor-landing-page/information-section/';
+
   cards = [
     {
-      imageSrc: '/content/images/professor-landing-page/information-section/research.webp',
-      text: 'professorLandingPage.informationSection.tiles.1',
+      imageSrc: `${this.imageSrc}research.webp`,
+      text: `${this.translationKey}.1`,
       link: 'https://www.tum.de/en/research',
     },
     {
-      imageSrc: '/content/images/professor-landing-page/information-section/development.webp',
-      text: 'professorLandingPage.informationSection.tiles.2',
+      imageSrc: `${this.imageSrc}development.webp`,
+      text: `${this.translationKey}.2`,
       link: 'https://www.tum.de/en/lifelong-learning/all-employees',
     },
     {
-      imageSrc: '/content/images/professor-landing-page/information-section/networks.webp',
-      text: 'professorLandingPage.informationSection.tiles.3',
+      imageSrc: `${this.imageSrc}networks.webp`,
+      text: `${this.translationKey}.3`,
       link: 'https://web.tum.de/en/inw/home/',
     },
     {
-      imageSrc: '/content/images/professor-landing-page/information-section/services.webp',
-      text: 'professorLandingPage.informationSection.tiles.4',
+      imageSrc: `${this.imageSrc}services.webp`,
+      text: `${this.translationKey}.4`,
       link: 'https://www.tum.de/en/research/support-for-researchers',
     },
     {
-      imageSrc: '/content/images/professor-landing-page/information-section/transfer.webp',
-      text: 'professorLandingPage.informationSection.tiles.5',
+      imageSrc: `${this.imageSrc}transfer.webp`,
+      text: `${this.translationKey}.5`,
       link: 'https://www.tum.de/en/innovation/patents-and-licenses',
     },
     {
-      imageSrc: '/content/images/professor-landing-page/information-section/partnerships.webp',
-      text: 'professorLandingPage.informationSection.tiles.6',
+      imageSrc: `${this.imageSrc}partnerships.webp`,
+      text: `${this.translationKey}.6`,
       link: 'https://www.international.tum.de/en/global/partnerships-initiatives/',
     },
   ];

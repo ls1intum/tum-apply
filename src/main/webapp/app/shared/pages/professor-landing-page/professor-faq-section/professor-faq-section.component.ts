@@ -11,26 +11,28 @@ import TranslateDirective from '../../../language/translate.directive';
   styleUrl: './professor-faq-section.component.scss',
 })
 export class ProfessorFaqSectionComponent {
+  readonly translationKey = 'professorLandingPage.faq.questions';
+
   tabs = [
     {
       value: 'login',
-      title: 'professorLandingPage.faq.questions.login.title',
-      content: 'professorLandingPage.faq.questions.login.content',
+      title: `${this.translationKey}.login.title`,
+      content: `${this.translationKey}.login.content`,
     },
     {
       value: 'multiple-applications',
-      title: 'professorLandingPage.faq.questions.multipleApplications.title',
-      content: 'professorLandingPage.faq.questions.multipleApplications.content',
+      title: `${this.translationKey}.multipleApplications.title`,
+      content: `${this.translationKey}.multipleApplications.content`,
     },
     {
       value: 'documents',
-      title: 'professorLandingPage.faq.questions.documents.title',
-      content: 'professorLandingPage.faq.questions.documents.content',
+      title: `${this.translationKey}.documents.title`,
+      content: `${this.translationKey}.documents.content`,
     },
     {
       value: 'status',
-      title: 'professorLandingPage.faq.questions.status.title',
-      content: 'professorLandingPage.faq.questions.status.content',
+      title: `${this.translationKey}.status.title`,
+      content: `${this.translationKey}.status.content`,
     },
   ];
 }
