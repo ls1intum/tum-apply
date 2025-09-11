@@ -10,80 +10,9 @@
     align-items: center;
   }
 
-  .search-and-actions {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 2rem;
-
-    jhi-search-filter-sort-bar {
-      flex: 1;
-    }
-
-    jhi-button {
-      flex-shrink: 0;
-      margin-top: 0;
-    }
-  }
-
   .current-user-icon {
     margin-left: 0.5rem;
     color: var(--p-primary-color);
     font-size: 1rem;
-  }
-}
-
-// Modal styles
-.add-member-dialog {
-  .dialog-content {
-    .search-instruction {
-      margin: 0 0 1rem;
-      color: var(--p-text-secondary);
-      font-size: 0.9rem;
-    }
-
-    .search-results-container {
-      max-height: 20rem;
-      overflow-y: auto;
-      border: 0.0625rem solid var(--p-border-default);
-      border-radius: 0.5rem;
-
-      .search-results-list {
-        .search-result-item {
-          display: flex;
-          align-items: center;
-          padding: 0.75rem 1rem;
-          cursor: pointer;
-          border-bottom: 0.0625rem solid var(--p-border-default);
-
-          &:last-child {
-            border-bottom: none;
-          }
-
-          &:hover {
-            background-color: var(--p-background-surface-alt);
-          }
-
-          &.selected {
-            background-color: var(--p-primary-50);
-            border-left: 0.1875rem solid var(--p-primary-color);
-          }
-
-          .user-icon {
-            margin-right: 0.75rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            color: var(--p-primary-color);
-            font-size: 2.5rem;
-          }
-        }
-      }
-    }
-
-    .no-results {
-      text-align: center;
-      padding: 2rem;
-      color: var(--p-text-secondary);
-    }
   }
 }

@@ -43,8 +43,6 @@ export class ResearchGroupMembersComponent {
   pageNumber = signal<number>(0);
   pageSize = signal<number>(10);
   total = signal<number>(0);
-  loading = signal(false);
-  modalVisible = signal(false);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -84,28 +82,6 @@ export class ResearchGroupMembersComponent {
     this.pageNumber.set(first / rows);
 
     void this.loadMembers();
-  }
-
-  addMember(): void {
-    this.modalVisible.set(true);
-  }
-
-  closeModal(): void {
-    this.modalVisible.set(false);
-  }
-
-  // TODO: Implement actual API call to add users to research group
-  addSelectedUsersToGroup(): void {
-    const successMessage = this.translate.instant(`${this.translationKey}.toastMessages.addSuccess`);
-    this.toastService.showSuccess({
-      detail: successMessage,
-    });
-
-    // Close modal and reset state
-    this.closeModal();
-
-    // TODO: Refresh the members list after successful addition
-    // await this.loadMembers();
   }
 
   async removeMember(member: UserShortDTO): Promise<void> {

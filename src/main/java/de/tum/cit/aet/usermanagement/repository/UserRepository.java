@@ -99,25 +99,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     );
 
     /**
-     * Searches for user IDs that are not members of any research group.
-     * The search is case-insensitive and searches in first name, last name, and email.
-     * Results are limited to 8 users.
-     *
-     * @param query the search query
-     * @return list of user IDs not in any research group matching the search criteria (max 8 results)
-     */
-    @Query("""
-        SELECT u.userId FROM User u 
-        WHERE u.researchGroup IS NULL 
-        AND (LOWER(u.firstName) LIKE LOWER(CONCAT('%', :query, '%')) 
-             OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :query, '%')) 
-             OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')))
-        ORDER BY u.firstName, u.lastName
-        LIMIT 8
-    """)
-    List<UUID> findAvailableUserIdsByQuery(@Param("query") String query);
-
-    /**
      * Finds users by their IDs with eagerly loaded research group roles.
      *
      * @param userIds the list of user IDs

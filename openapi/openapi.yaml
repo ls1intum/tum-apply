@@ -1576,39 +1576,6 @@
         }
       }
     },
-    "/api/research-groups/search-available-users": {
-      "get": {
-        "tags": [
-          "research-group-resource"
-        ],
-        "operationId": "searchAvailableUsers",
-        "parameters": [
-          {
-            "name": "query",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserShortDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/research-groups/members": {
       "get": {
         "tags": [
@@ -3570,9 +3537,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
@@ -3582,6 +3546,9 @@
           },
           "last": {
             "type": "boolean"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "size": {
             "type": "integer",
@@ -4254,9 +4221,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
@@ -4266,6 +4230,9 @@
           },
           "last": {
             "type": "boolean"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "size": {
             "type": "integer",

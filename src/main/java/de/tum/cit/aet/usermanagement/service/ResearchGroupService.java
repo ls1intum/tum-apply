@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ResearchGroupService {
@@ -71,35 +70,6 @@ public class ResearchGroupService {
             members.stream().map(UserShortDTO::new).toList(), 
             userIdsPage.getTotalElements()
         );
-    }
-
-    /**
-     * Search for database users that are not yet members of any research group.
-     * Results are limited to 8 users maximum.
-     *
-     * @param query the search query string
-     * @return list of available users not in research groups (max 8 results)
-     */
-    @Transactional(readOnly = true)
-    public List<UserShortDTO> searchAvailableUsers(String query) {
-        if (query == null || query.trim().isEmpty()) {
-            return List.of();
-        }
-
-        // First, get the user IDs (with limit applied at database level)
-        List<UUID> userIds = userRepository.findAvailableUserIdsByQuery(query.trim());
-        
-        if (userIds.isEmpty()) {
-            return List.of();
-        }
-
-        // Then, fetch the full users with their collections eagerly loaded
-        List<User> availableUsers = userRepository.findUsersWithRolesByIds(userIds);
-
-        // Convert to UserShortDTO
-        return availableUsers.stream()
-            .map(UserShortDTO::new)
-            .collect(Collectors.toList());
     }
 
     /**

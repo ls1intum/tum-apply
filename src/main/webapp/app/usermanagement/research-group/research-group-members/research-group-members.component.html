@@ -3,20 +3,6 @@
     <h1 jhiTranslate="researchGroup.memberHeader">Members</h1>
   </div>
 
-  <!-- Search bar with Add member button -->
-  <!-- TODO: Implement server-side search -->
-  <!-- <div class="search-and-actions">
-    <jhi-search-filter-sort-bar
-      [searchText]="'researchGroup.members.searchGroupMember' | translate"
-      [totalRecords]="filteredMembers().length"
-      [singleEntity]="'researchGroup.members.member' | translate"
-      [multipleEntities]="'researchGroup.members.members' | translate"
-      [showRecordCount]="true"
-    />
-    <!-- TODO: Add functionality to add members to the research group -->
-  <!-- <jhi-button icon="plus" label="researchGroup.members.addMember" [shouldTranslate]="true" severity="primary" (click)="addMember()" /> -->
-  <!-- </div> -->
-
   <!-- Members Table -->
   <div class="table-wrapper">
     <jhi-dynamic-table
@@ -51,45 +37,4 @@
       />
     }
   </ng-template>
-
-  <!-- Add Member Modal -->
-  <p-dialog
-    [modal]="true"
-    [(visible)]="modalVisible"
-    [closable]="true"
-    [draggable]="false"
-    [resizable]="false"
-    class="add-member-dialog"
-    [style]="{ width: '37.5rem' }"
-  >
-    <ng-template #header>
-      <div class="dialog-header">
-        <h2 jhiTranslate="researchGroup.members.addMemberModal.title">Add people to Research Group</h2>
-      </div>
-    </ng-template>
-
-    <div class="dialog-content">
-      <p class="search-instruction" jhiTranslate="researchGroup.members.addMemberModal.searchInstruction">
-        Search by username, full name, or email
-      </p>
-
-      <jhi-search-filter-sort-bar
-        [searchText]="'researchGroup.members.addMemberModal.searchPlaceholder' | translate"
-        [singleEntity]="''"
-        [multipleEntities]="''"
-        [showRecordCount]="false"
-      />
-    </div>
-
-    <ng-template pTemplate="footer">
-      <div class="flex gap-2">
-        <jhi-button
-          label="researchGroup.members.addMemberModal.cancel"
-          [shouldTranslate]="true"
-          variant="outlined"
-          (click)="closeModal()"
-        />
-      </div>
-    </ng-template>
-  </p-dialog>
 </div>

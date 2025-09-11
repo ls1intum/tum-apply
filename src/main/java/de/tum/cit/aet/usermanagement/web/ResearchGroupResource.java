@@ -44,19 +44,6 @@ public class ResearchGroupResource {
     }
 
     /**
-     * Searches for users that are not yet members of any research group.
-     *
-     * @param query the search query string
-     * @return the list of available users matching the search criteria
-     */
-    @GetMapping("/search-available-users")
-    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
-    public ResponseEntity<List<UserShortDTO>> searchAvailableUsers(@RequestParam String query) {
-        List<UserShortDTO> availableUsers = researchGroupService.searchAvailableUsers(query);
-        return ResponseEntity.ok(availableUsers);
-    }
-
-    /**
      * Removes a member from the current user's research group.
      *
      * @param userId the ID of the user to remove from the research group
