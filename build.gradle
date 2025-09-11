@@ -269,7 +269,7 @@ dependencies {
 
   // Spring Retry
   implementation 'org.springframework.retry:spring-retry:2.0.12'
-  implementation 'org.springframework:spring-aspects:6.2.10'
+  implementation 'org.springframework:spring-aspects:6.2.11'
 
   // Keycloak
   implementation "org.keycloak:keycloak-admin-client:${keycloakVersion}"
