@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -56,20 +57,22 @@ public class KeycloakUserService {
      * If a concurrent creation happens and Keycloak returns HTTP 409 (conflict), this method performs a follow-up
      * lookup and returns the resulting user ID.
      *
-     * @param email the email address used as both username and email in Keycloak; must not be null
+     * @param body the OTP completion request containing email and optional profile information
      * @return the Keycloak user ID corresponding to the email
      * @throws IllegalStateException if user creation fails with an unexpected status code
      */
-    public String ensureUser(String email) {
-        String normalizedEmail = StringUtil.normalize(email, true);
+    public String ensureUser(OtpCompleteDTO body) {
+        String normalizedEmail = StringUtil.normalize(body.email(), true);
         return findUserIdByEmail(normalizedEmail).orElseGet(() -> {
-            UserRepresentation u = new UserRepresentation();
-            u.setUsername(normalizedEmail);
-            u.setEmail(normalizedEmail);
-            u.setEnabled(true);
-            u.setEmailVerified(true);
+            UserRepresentation newUserRepresentation = new UserRepresentation();
+            newUserRepresentation.setUsername(normalizedEmail);
+            newUserRepresentation.setEmail(normalizedEmail);
+            newUserRepresentation.setFirstName(StringUtil.normalize(body.profile() != null ? body.profile().firstName() : null, false));
+            newUserRepresentation.setLastName(StringUtil.normalize(body.profile() != null ? body.profile().lastName() : null, false));
+            newUserRepresentation.setEnabled(true);
+            newUserRepresentation.setEmailVerified(true);
 
-            try (Response resp = keycloak.realm(realm).users().create(u)) {
+            try (Response resp = keycloak.realm(realm).users().create(newUserRepresentation)) {
                 if (resp.getStatus() == 201 && resp.getLocation() != null) {
                     String path = resp.getLocation().getPath();
                     return path.substring(path.lastIndexOf('/') + 1);

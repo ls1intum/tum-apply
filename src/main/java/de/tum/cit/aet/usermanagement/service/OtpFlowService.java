@@ -66,9 +66,8 @@ public class OtpFlowService {
      * @throws EmailVerificationFailedException if the user is not found
      */
     private AuthSessionInfoDTO handleLogin(OtpCompleteDTO body, HttpServletResponse response) {
-        String email = body.email();
-        userService.findByEmail(email).orElseThrow(EmailVerificationFailedException::new);
-        String keycloakUserId = keycloakUserService.ensureUser(email);
+        userService.findByEmail(body.email()).orElseThrow(EmailVerificationFailedException::new);
+        String keycloakUserId = keycloakUserService.ensureUser(body);
         return getTokens(keycloakUserId, response);
     }
 
@@ -84,8 +83,8 @@ public class OtpFlowService {
      * @return an {@link AuthSessionInfoDTO} with token lifetimes and a flag indicating if profile completion is needed
      */
     private AuthSessionInfoDTO handleRegister(OtpCompleteDTO body, HttpServletResponse response) {
-        userService.createUser(body);
-        String keycloakUserId = keycloakUserService.ensureUser(body.email());
+        String keycloakUserId = keycloakUserService.ensureUser(body);
+        userService.createUser(keycloakUserId, body);
         return getTokens(keycloakUserId, response);
     }
 
