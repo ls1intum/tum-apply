@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.exception.EmailVerificationFailedException;
 import de.tum.cit.aet.core.util.CookieUtils;
+import de.tum.cit.aet.usermanagement.constants.OtpPurpose;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthSessionInfoDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
@@ -19,14 +20,33 @@ public class OtpFlowService {
     private final UserService userService;
     private final KeycloakUserService keycloakUserService;
     private final KeycloakAuthenticationService keycloakAuthService;
+    private final EmailVerificationService emailVerificationService;
 
-    public OtpFlowService(UserService userService, KeycloakUserService keycloakUserService, KeycloakAuthenticationService keycloakAuthService) {
+    public OtpFlowService(UserService userService, KeycloakUserService keycloakUserService,
+                          KeycloakAuthenticationService keycloakAuthService, EmailVerificationService emailVerificationService) {
         this.userService = userService;
         this.keycloakUserService = keycloakUserService;
         this.keycloakAuthService = keycloakAuthService;
+        this.emailVerificationService = emailVerificationService;
+    }
+
+    /*
+     * Orchestrates the OTP completion: first verifies the OTP, then executes the requested purpose.
+     * This method is the single entry point used by the controller.
+     */
+    public AuthSessionInfoDTO otpComplete(OtpCompleteDTO body, String ip, HttpServletResponse response) {
+        emailVerificationService.verifyCode(body, ip);
+
+        OtpPurpose purpose = body.purpose();
+        return switch (purpose) {
+            case LOGIN -> handleLogin(body, response);
+            case REGISTER -> handleRegister(body, response);
+        };
     }
 
     /**
+     * /**
+     * /**
      * Handles the OTP completion flow for user login.
      * <p>
      * Ensures the user exists, marks their email as verified in Keycloak, and returns token lifetimes.
@@ -34,13 +54,13 @@ public class OtpFlowService {
      * No new user is created; if the user is not found, validation fails and an
      * {@link EmailVerificationFailedException} is thrown.
      *
-     * @param request  the OTP completion request
+     * @param body     the OTP completion request
      * @param response the HTTP response to which authentication cookies will be added via Keycloak token exchange
      * @return an {@link AuthSessionInfoDTO} with token lifetimes
      * @throws EmailVerificationFailedException if the user is not found
      */
-    private AuthSessionInfoDTO handleLogin(OtpCompleteDTO request, HttpServletResponse response) {
-        String email = request.email();
+    private AuthSessionInfoDTO handleLogin(OtpCompleteDTO body, HttpServletResponse response) {
+        String email = body.email();
         userService.findByEmail(email).orElseThrow(EmailVerificationFailedException::new);
         String keycloakUserId = keycloakUserService.ensureUser(email);
         return getTokens(keycloakUserId, response);
@@ -53,13 +73,13 @@ public class OtpFlowService {
      * ensures the user exists in Keycloak and marks the email as verified.
      * Returns whether the user needs to complete their profile.
      *
-     * @param request  the OTP completion request containing optional profile
+     * @param body     the OTP completion request containing optional profile
      * @param response the HTTP response to which authentication cookies may be added
      * @return an {@link AuthSessionInfoDTO} with token lifetimes and a flag indicating if profile completion is needed
      */
-    private AuthSessionInfoDTO handleRegister(OtpCompleteDTO request, HttpServletResponse response) {
-        userService.createUser(request);
-        String keycloakUserId = keycloakUserService.ensureUser(request.email());
+    private AuthSessionInfoDTO handleRegister(OtpCompleteDTO body, HttpServletResponse response) {
+        userService.createUser(body);
+        String keycloakUserId = keycloakUserService.ensureUser(body.email());
         return getTokens(keycloakUserId, response);
     }
 

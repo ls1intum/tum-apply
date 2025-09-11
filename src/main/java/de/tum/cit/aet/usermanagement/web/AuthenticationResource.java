@@ -2,10 +2,13 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.core.util.CookieUtils;
+import de.tum.cit.aet.core.util.HttpUtils;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthSessionInfoDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.LoginRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
+import de.tum.cit.aet.usermanagement.service.OtpFlowService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationResource {
 
     private final KeycloakAuthenticationService keycloakAuthenticationService;
+    private final OtpFlowService otpFlowService;
 
     /**
      * Authenticates a user via email and password and sets an access token as an HttpOnly cookie.
@@ -96,5 +100,15 @@ public class AuthenticationResource {
 
         CookieUtils.setAuthCookies(response, tokens);
         return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());
+    }
+
+    /**
+     * Completes an OTP flow by verifying the code and executing the requested purpose (LOGIN or REGISTER). On
+     * success, authentication cookies are set and the response returns token lifetimes plus whether profile
+     * completion is needed.
+     */
+    @PostMapping("/otp-complete")
+    public AuthSessionInfoDTO otpComplete(@Valid @RequestBody OtpCompleteDTO body, HttpServletRequest request, HttpServletResponse response) {
+        return otpFlowService.otpComplete(body, HttpUtils.getClientIp(request), response);
     }
 }
