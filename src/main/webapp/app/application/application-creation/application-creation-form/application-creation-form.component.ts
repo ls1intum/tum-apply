@@ -128,13 +128,18 @@ export default class ApplicationCreationFormComponent {
   readonly formbuilder = inject(FormBuilder);
   useLocalStorage = signal<boolean>(false);
 
-  additionalInfoForm = this.formbuilder.group({
-    privacyAccepted: [false, [Validators.required]],
+  readonly additionalInfoForm = this.formbuilder.nonNullable.group({
+    privacyAccepted: this.formbuilder.nonNullable.control(false, {
+      validators: Validators.requiredTrue,
+    }),
   });
-  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
-    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
+
+  readonly privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls.privacyAccepted.valueChanges, {
+    initialValue: this.additionalInfoForm.controls.privacyAccepted.value,
   });
+
   submitAttempted = signal(false);
+
   // Stepper config
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];

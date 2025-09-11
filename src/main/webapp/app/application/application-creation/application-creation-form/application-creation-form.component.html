@@ -56,26 +56,24 @@
       <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
     </div>
   </div>
-  <!-- Privacy-Consent-Block direkt UNTER dem Summary-Panel -->
   <p-divider layout="horizontal">
-    <span>{{ 'privacy.privacyConsent.title' | translate }}</span>
+    <span jhiTranslate="privacy.privacyConsent.title"></span>
   </p-divider>
 
   <div class="data-privacy-notice mb-2">
-    <p [innerHTML]="'privacy.privacyConsent.text' | translate"></p>
+    <p jhiTranslate="privacy.privacyConsent.text"></p>
   </div>
 
   <div [formGroup]="additionalInfoForm">
     <label>
       <input type="checkbox" formControlName="privacyAccepted" />
-      <span>{{ 'privacy.privacyConsent.confirmationText' | translate }}</span>
+      <span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
     </label>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
-      <div class="error-text mt-1">{{ 'privacy.privacyConsent.errorText' | translate }}</div>
+      <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
     }
   </div>
-  <!-- /Privacy-Consent-Block -->
 </ng-template>
 
 <ng-template #saving_state_panel>
