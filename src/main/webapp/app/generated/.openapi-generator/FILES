@@ -61,6 +61,7 @@ model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
+model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
 model/profOnboardingDTO.ts
 model/professorDTO.ts
