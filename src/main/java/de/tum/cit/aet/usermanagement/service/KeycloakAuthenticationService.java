@@ -4,9 +4,6 @@ import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.representations.AccessTokenResponse;
@@ -34,7 +31,6 @@ import java.util.Map;
 public class KeycloakAuthenticationService {
 
     private final AuthzClient authzClient;
-    private final Keycloak adminClient;
 
     private final String keycloakUrl;
     private final String realm;
@@ -60,13 +56,6 @@ public class KeycloakAuthenticationService {
             Map.of("secret", clientSecret),
             null
         ));
-        this.adminClient = KeycloakBuilder.builder()
-            .serverUrl(keycloakUrl)
-            .realm(realm)
-            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-            .clientId(adminClientId)
-            .clientSecret(adminClientSecret)
-            .build();
 
         this.keycloakUrl = keycloakUrl;
         this.realm = realm;
@@ -146,13 +135,6 @@ public class KeycloakAuthenticationService {
      * @throws UnauthorizedException if obtaining the admin token or the exchange request fails
      */
     public AuthResponseDTO exchangeForUserTokens(String keycloakUserId) {
-        String adminAccessToken;
-        try {
-            adminAccessToken = adminClient.tokenManager().getAccessTokenString();
-        } catch (Exception e) {
-            throw new UnauthorizedException("Failed to obtain service-account token via Keycloak client", e);
-        }
-
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         addClientAuth(form, adminClientId, adminClientSecret);
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
