@@ -1,24 +1,12 @@
 package de.tum.cit.aet.core.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletRegistration;
-import java.io.File;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
@@ -27,6 +15,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tech.jhipster.config.JHipsterConstants;
 import tech.jhipster.config.JHipsterProperties;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Unit tests for the {@link WebConfigurer} class.
  */
@@ -34,15 +35,13 @@ class WebConfigurerTest {
 
     private WebConfigurer webConfigurer;
 
-    private MockServletContext servletContext;
-
     private MockEnvironment env;
 
     private JHipsterProperties props;
 
     @BeforeEach
     public void setup() {
-        servletContext = spy(new MockServletContext());
+        MockServletContext servletContext = spy(new MockServletContext());
         doReturn(mock(FilterRegistration.Dynamic.class)).when(servletContext).addFilter(anyString(), any(Filter.class));
         doReturn(mock(ServletRegistration.Dynamic.class)).when(servletContext).addServlet(anyString(), any(Servlet.class));
 
@@ -53,18 +52,18 @@ class WebConfigurerTest {
     }
 
     @Test
-    void shouldCustomizeServletContainer() {
+    void shouldCustomizeServletContainer() throws Exception {
         env.setActiveProfiles(JHipsterConstants.SPRING_PROFILE_PRODUCTION);
-        UndertowServletWebServerFactory container = new UndertowServletWebServerFactory();
+        TomcatServletWebServerFactory container = new TomcatServletWebServerFactory();
         webConfigurer.customize(container);
         //TODO: Check why this is necessary
         //assertThat(container.getMimeMappings().get("abs")).isEqualTo("audio/x-mpeg");
         assertThat(container.getMimeMappings().get("html")).isEqualTo("text/html;charset=utf-8");
         assertThat(container.getMimeMappings().get("json")).isEqualTo("text/html;charset=utf-8");
         if (container.getDocumentRoot() != null) {
-            File actual = container.getDocumentRoot().getAbsoluteFile();
-            File expected = Path.of("build", "resources", "main", "static").toAbsolutePath().toFile();
-            assertThat(actual).isEqualTo(expected);
+            Path actual = container.getDocumentRoot().toPath().toRealPath();
+            Path expected = Path.of("build", "resources", "main", "static").toAbsolutePath().toRealPath();
+            assertThat(Files.isSameFile(actual, expected)).isTrue();
         }
     }
 
