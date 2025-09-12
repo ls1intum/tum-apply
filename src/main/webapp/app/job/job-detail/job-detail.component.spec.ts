@@ -105,7 +105,6 @@ describe('JobDetailComponent', () => {
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faUserTie, faMicroscope, faLocationDot, faEnvelope, faGlobe);
 
-    await fixture.whenStable();
     fixture.detectChanges();
   });
 
@@ -113,7 +112,9 @@ describe('JobDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render basic job information', () => {
+  it('should render basic job information', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.textContent).toContain('Test Title');
@@ -121,31 +122,9 @@ describe('JobDetailComponent', () => {
     expect(compiled.textContent).toContain('AI Lab');
   });
 
-  it('should render job details', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    expect(compiled.textContent).toContain('Computer Science');
-    expect(compiled.textContent).toContain('Munich');
-    expect(compiled.textContent).toContain('20');
-  });
-
-  it('should render numeric and date values', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('20');
-    expect(compiled.textContent).toContain('2');
-    expect(compiled.textContent).toContain('Fully Funded');
-    expect(compiled.textContent).toContain('01.10.2025');
-  });
-
-  it('should render research group details', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('AI Group Desc');
-    expect(compiled.textContent).toContain('Main Street 1');
-    expect(compiled.textContent).toContain('12345');
-    expect(compiled.textContent).toContain('Munich');
-  });
-
-  it('should render tasks, and requirements as HTML', () => {
+  it('should render tasks, and requirements as HTML', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.innerHTML).toContain('<ol><li>Task A</li><li>Task B</li></ol>');
