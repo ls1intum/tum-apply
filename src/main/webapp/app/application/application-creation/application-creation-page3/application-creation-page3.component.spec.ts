@@ -69,10 +69,10 @@ describe('ApplicationCreationPage3Component', () => {
   });
 
   it('should initialize form with provided data', () => {
-    expect(component.page3Form.controls['motivation'].value).toBe('I need more experiences');
-    expect(component.page3Form.controls['experiences'].value).toBe('I have experiences');
-    expect(component.page3Form.controls['skills'].value).toBe('I can make experiences');
-    expect(component.page3Form.controls['desiredStartDate'].value).toBe('2032-3-2');
+    expect(component.page3Form.controls.motivation.value).toBe('I need more experiences');
+    expect(component.page3Form.controls.experiences.value).toBe('I have experiences');
+    expect(component.page3Form.controls.skills.value).toBe('I can make experiences');
+    expect(component.page3Form.controls.desiredStartDate.value).toBe('2032-3-2');
   });
 
   it('should reflect user input in the bound model', async () => {
