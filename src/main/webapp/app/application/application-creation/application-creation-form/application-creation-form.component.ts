@@ -546,7 +546,7 @@ export default class ApplicationCreationFormComponent {
             firstName: p1.firstName,
             lastName: p1.lastName,
             phoneNumber: p1.phoneNumber,
-            preferredLanguage: p1.language?.value as string,
+            preferredLanguage: p1.language?.value,
           },
           bachelorGradingScale: 'ONE_TO_FOUR',
           masterGradingScale: 'ONE_TO_FOUR',
