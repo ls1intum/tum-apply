@@ -47,7 +47,7 @@ export class AuthService {
     if (this.authOrchestration.isBusy()) return;
     this.authOrchestration.isBusy.set(true);
     try {
-      await this.authGateway.verifyOtp(this.authOrchestration.email(), otp);
+      await this.authGateway.verifyOtp(this.authOrchestration.email(), otp, registration);
 
       if (registration) {
         this.authOrchestration.registerStep.set('profile');

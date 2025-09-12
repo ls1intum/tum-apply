@@ -5,6 +5,7 @@ import { map } from 'rxjs';
 import { InputOtpChangeEvent, InputOtpModule } from 'primeng/inputotp';
 import { ButtonModule } from 'primeng/button';
 import { TranslateService } from '@ngx-translate/core';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 import { environment } from '../../../../environments/environment';
 import { BaseInputDirective } from '../base-input/base-input.component';
@@ -25,21 +26,18 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   authOrchestratorService = inject(AuthOrchestratorService);
   translateService = inject(TranslateService);
   breakpointObserver = inject(BreakpointObserver);
+  dynamicDialogConfig = inject(DynamicDialogConfig);
 
   // if the otp is for registration (true) or login (false)
   registration = input<boolean>(false);
-
   // Number of characters the OTP should have
   length = environment.otp.length;
-
   // Cooldown in seconds for the resend button
   cooldownSeconds = computed(() => this.authOrchestratorService.cooldownSeconds());
   onCooldown = computed(() => this.cooldownSeconds() > 0);
   isBusy: Signal<boolean> = computed(() => this.authOrchestratorService.isBusy());
-
   // local state of the current OTP value
   readonly otpValue = signal<string>('');
-
   // disable resend if busy or in cooldown
   readonly disableResend: Signal<boolean> = computed(() => this.isBusy() || this.onCooldown());
   // derived states
@@ -53,6 +51,19 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
       .pipe(map(r => (r.breakpoints[Breakpoints.XLarge] ? 'large' : r.breakpoints[Breakpoints.XSmall] ? 'small' : null))),
     { initialValue: null },
   );
+  private readonly registrationOverride = signal<boolean | null>(null);
+  private readonly isRegistration = computed(() => {
+    const o = this.registrationOverride();
+    return o ?? this.registration();
+  });
+
+  constructor() {
+    super();
+    const registration = this.dynamicDialogConfig.data?.registration;
+    if (typeof registration === 'boolean') {
+      this.registrationOverride.set(registration);
+    }
+  }
 
   get resendLabel(): string {
     return this.onCooldown()
@@ -94,7 +105,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
 
   onResend(): void {
     if (!this.disableResend()) {
-      void this.authService.sendOtp(this.registration());
+      void this.authService.sendOtp(this.isRegistration());
     }
   }
 }
