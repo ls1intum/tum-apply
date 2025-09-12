@@ -74,11 +74,12 @@ export class RatingResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/ratings`;
-        return this.httpClient.request<RatingOverviewDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<RatingOverviewDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -131,12 +132,13 @@ export class RatingResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/ratings`;
-        return this.httpClient.request<RatingOverviewDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<RatingOverviewDTO>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,

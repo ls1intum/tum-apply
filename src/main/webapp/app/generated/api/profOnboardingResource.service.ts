@@ -70,11 +70,12 @@ export class ProfOnboardingResourceService extends BaseService {
         }
 
         let localVarPath = `/api/me/prof-onboarding`;
-        return this.httpClient.request<ProfOnboardingDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<ProfOnboardingDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -117,11 +118,12 @@ export class ProfOnboardingResourceService extends BaseService {
         }
 
         let localVarPath = `/api/me/prof-onboarding/confirm`;
-        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -164,11 +166,12 @@ export class ProfOnboardingResourceService extends BaseService {
         }
 
         let localVarPath = `/api/me/prof-onboarding/remind`;
-        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,

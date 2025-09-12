@@ -89,12 +89,13 @@ export class InternalCommentResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/comments`;
-        return this.httpClient.request<InternalCommentDTO>('post', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<InternalCommentDTO>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: internalCommentUpdateDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -141,11 +142,12 @@ export class InternalCommentResourceService extends BaseService {
         }
 
         let localVarPath = `/api/comments/${this.configuration.encodeParam({name: "commentId", value: commentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -193,11 +195,12 @@ export class InternalCommentResourceService extends BaseService {
         }
 
         let localVarPath = `/api/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/comments`;
-        return this.httpClient.request<Array<InternalCommentDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<InternalCommentDTO>>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -258,12 +261,13 @@ export class InternalCommentResourceService extends BaseService {
         }
 
         let localVarPath = `/api/comments/${this.configuration.encodeParam({name: "commentId", value: commentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<InternalCommentDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<InternalCommentDTO>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: internalCommentUpdateDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
