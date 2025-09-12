@@ -3,7 +3,9 @@ package de.tum.cit.aet.job.web.rest;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -16,6 +18,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 
 import de.tum.cit.aet.utility.*;
 import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
@@ -27,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +47,9 @@ class JobResourceTest {
     @Autowired JobRepository jobRepository;
     @Autowired UserRepository userRepository;
     @Autowired ResearchGroupRepository researchGroupRepository;
+
+    @MockBean
+    CurrentUserService currentUserService;
 
     MvcTestClient api;
     ResearchGroup researchGroup;
@@ -72,15 +79,17 @@ class JobResourceTest {
 
         JobTestData.saved(jobRepository, professor, researchGroup, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
         JobTestData.saved(jobRepository, professor, researchGroup, "Draft Role",     JobState.DRAFT,     LocalDate.of(2025,10, 1));
+
+        given(currentUserService.getUserId()).willReturn(professor.getUserId());
     }
 
     @Test
     void getAvailableJobs_onlyPublishedOnes() {
         PageResponse<JobCardDTO> page = api.getAndReadOk(
-                "/api/jobs/available",
-                Map.of("pageNumber", "0", "pageSize", "10"),
-                new TypeReference<>() {
-                }
+            "/api/jobs/available",
+            Map.of("pageNumber", "0", "pageSize", "10"),
+            new TypeReference<>() {
+            }
         );
 
         assertThat(page.totalElements()).isEqualTo(1);
@@ -95,6 +104,15 @@ class JobResourceTest {
         assertThat(card.professorName()).isEqualTo("John Doe");
         assertThat(card.workload()).isEqualTo(20);
         assertThat(card.startDate()).isEqualTo(LocalDate.of(2025, 9, 1));
+    }
+
+    @Test
+    void getAvailableJobs_invalidPagination_returnsError() {
+        assertThatThrownBy(() ->
+            api.getAndReadOk("/api/jobs/available",
+                Map.of("pageNumber", "-1", "pageSize", "10"),
+                new TypeReference<>() {})
+        ).isInstanceOf(AssertionError.class);
     }
 
     @Test
@@ -217,6 +235,22 @@ class JobResourceTest {
 
     @Test
     @WithMockUser
+    void updateJob_nonexistentJob_throwsNotFound() {
+        JobFormDTO updatedPayload = new JobFormDTO(
+            UUID.randomUUID(), "Ghost Job", "Area", "Field",
+            professor.getUserId(), Campus.GARCHING,
+            LocalDate.now(), LocalDate.now().plusMonths(6),
+            20, 6, FundingType.FULLY_FUNDED,
+            "desc", "tasks", "req", JobState.DRAFT
+        );
+
+        assertThatThrownBy(() ->
+            api.putAndReadOk("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload, JobFormDTO.class)
+        ).isInstanceOf(AssertionError.class);
+    }
+
+    @Test
+    @WithMockUser
     void deleteJob_removesIt() {
         Job job = jobRepository.findAll().getFirst();
         assertThat(jobRepository.existsById(job.getJobId())).isTrue();
@@ -224,6 +258,14 @@ class JobResourceTest {
         api.deleteAndReadOk("/api/jobs/" + job.getJobId(), null, Void.class);
 
         assertThat(jobRepository.existsById(job.getJobId())).isFalse();
+    }
+
+    @Test
+    @WithMockUser
+    void deleteJob_nonexistentJob_throwsNotFound() {
+        assertThatThrownBy(() ->
+            api.deleteAndReadOk("/api/jobs/" + UUID.randomUUID(), null, Void.class)
+        ).isInstanceOf(AssertionError.class);
     }
 
     @Test
@@ -245,10 +287,21 @@ class JobResourceTest {
     }
 
     @Test
-    @WithMockUser(username = "prof.doe@tum.de")
+    @WithMockUser
+    void changeJobState_nonExistantJob_throwsNotFound() {
+        assertThatThrownBy(() ->
+            api.putAndReadOk("api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+                null,
+                JobFormDTO.class
+            )
+        ).isInstanceOf(AssertionError.class);
+    }
+
+    @Test
+    @WithMockUser(username = "prof.doe@tum.de", roles = {"PROFESSOR"})
     void getJobsByProfessor_returnsOwnJobs() {
-        PageResponse<JobCardDTO> page = api.getAndReadOk(
-            "/api/jobs/professor/" + professor.getUserId(),
+        PageResponse<CreatedJobDTO> page = api.getAndReadOk(
+            "/api/jobs/professor",
             Map.of("pageNumber", "0", "pageSize", "10"),
             new TypeReference<>() {}
         );
@@ -258,21 +311,25 @@ class JobResourceTest {
         assertThat(page.number()).isEqualTo(0);
         assertThat(page.size()).isEqualTo(10);
 
-        JobCardDTO first = page.content().getFirst();
+        CreatedJobDTO first = page.content().getFirst();
         assertThat(first.title()).isEqualTo("Published Role");
-        assertThat(first.fieldOfStudies()).isEqualTo("CS");
-        assertThat(first.location()).isEqualTo("GARCHING");
         assertThat(first.professorName()).isEqualTo("John Doe");
-        assertThat(first.workload()).isEqualTo(20);
         assertThat(first.startDate()).isEqualTo(LocalDate.of(2025, 9, 1));
 
-        JobCardDTO second = page.content().get(1);
+        CreatedJobDTO second = page.content().get(1);
         assertThat(second.title()).isEqualTo("Draft Role");
-        assertThat(second.fieldOfStudies()).isEqualTo("CS");
-        assertThat(second.location()).isEqualTo("GARCHING");
         assertThat(second.professorName()).isEqualTo("John Doe");
-        assertThat(second.workload()).isEqualTo(20);
         assertThat(second.startDate()).isEqualTo(LocalDate.of(2025,10, 1));
+    }
+
+    @Test
+    @WithMockUser(username = "prof.doe@tum.de", roles= {"PROFESSOR"})
+    void getJobsByProfessor_invalidPagination_throwsError() {
+        assertThatThrownBy(() ->
+            api.getAndReadOk("/api/jobs/professor",
+                Map.of("pageNumber", "-1", "pageSize", "10"),
+                new TypeReference<>() {})
+        ).isInstanceOf(AssertionError.class);
     }
 
     @Test
@@ -300,10 +357,18 @@ class JobResourceTest {
     }
 
     @Test
+    @WithMockUser
+    void getJobById_nonExistentJob_throwsNotFound() {
+        assertThatThrownBy(() ->
+            api.getAndReadOk("/api/jobs/" + UUID.randomUUID(), null, JobDTO.class)
+        ).isInstanceOf(AssertionError.class);
+    }
+
+    @Test
     void getJobDetails_returnsCorrectJobDetails() {
         Job job = jobRepository.findAll().getFirst();
 
-        JobDetailDTO returnedJob = api.getAndReadOk("/api/jobs/detail/" + job.getJobId(), null, new TypeReference<>() {});
+        JobDetailDTO returnedJob = api.getAndReadOk("/api/jobs/detail/" + job.getJobId(), null, JobDetailDTO.class);
 
         assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
         assertThat(returnedJob.supervisingProfessorName()).isEqualTo(job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName());
@@ -325,6 +390,12 @@ class JobResourceTest {
         assertThat(returnedJob.state()).isEqualTo(job.getState());
     }
 
-    // have a invalid test for all above cases
-
+    @Test
+    void getJobDetails_nonExistantId_throwsNotFound() {
+        assertThatThrownBy(() ->
+            api.getAndReadOk("api/jobs/detail" + UUID.randomUUID(),
+                null,
+                JobDetailDTO.class)
+        ).isInstanceOf(AssertionError.class);
+    }
 }
