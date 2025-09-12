@@ -48,7 +48,10 @@ export default class ApplicationDetailForApplicantComponent {
   private readonly router = inject(Router);
 
   constructor() {
-    if (!this.previewDetailData()) {
+    // Only initialize if we're on a detail page route (has application_id param)
+    // and not in preview mode
+    const applicationId = this.route.snapshot.paramMap.get('application_id');
+    if (applicationId && !this.previewDetailData()) {
       this.init();
     }
   }
@@ -56,10 +59,11 @@ export default class ApplicationDetailForApplicantComponent {
   async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
-      this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
+      this.toastService.showError({ summary: 'Error', detail: 'This is no valid applicationId' });
     } else {
       this.applicationId.set(applicationId);
     }
+
     const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
     this.actualDetailData.set(application);
     this.actualDetailDataExists.set(true);
