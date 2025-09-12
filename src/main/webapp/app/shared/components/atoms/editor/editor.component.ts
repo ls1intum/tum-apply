@@ -34,7 +34,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   errorMessage = computed(() => {
     this.langChange();
 
-    if (this.isEmpty()) {
+    if (this.isEmpty() && this.required()) {
       return this.translate.instant('global.input.error.required');
     }
     if (this.isOverCharLimit()) {

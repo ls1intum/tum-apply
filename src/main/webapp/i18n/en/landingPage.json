@@ -81,7 +81,7 @@
       "questions": {
         "login": {
           "title": "How do I log in to TUMApply?",
-          "content": "You can log in using your TUM credentials, or alternatively via Microsoft, Google or Apple Single Sign-On."
+          "content": "You can log in using your TUM credentials, or alternatively via Google or Apple Single Sign-On."
         },
         "multipleApplications": {
           "title": "Can I apply for multiple Doctoral positions at once?",

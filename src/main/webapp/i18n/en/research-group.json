@@ -1,6 +1,48 @@
 {
   "researchGroup": {
     "header": "My Email Templates",
+    "memberPage": "My Members",
+    "memberHeader": "My Members",
+    "emailTemplatesHeader": "My Email Templates",
+    "groupInfoPage": "TUMApply - My Group",
+    "groupInfoHeader": "My Group",
+
+    "groupInfo": {
+      "description": "Edit the basic information about your research group.",
+      "saveButton": "Save",
+      "fields": {
+        "name": "Name",
+        "abbreviation": "Abbreviation",
+        "head": "Head",
+        "school": "School",
+        "defaultFieldOfStudies": "Field of Studies",
+        "website": "Website",
+        "email": "Email",
+        "address": "Street and House Number",
+        "postalCode": "Postal Code",
+        "city": "City",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "e.g. Research Group for Artificial Intelligence",
+        "abbreviation": "e.g. AI",
+        "head": "e.g. Prof. Dr. Max Mustermann",
+        "email": "e.g. kontakt@forschung.de",
+        "website": "e.g. https://www.forschung.de/gruppe",
+        "school": "e.g. Informatics",
+        "defaultFieldOfStudies": "e.g. Computer Science",
+        "address": "e.g. Musterstraße 123",
+        "postalCode": "e.g. 12345",
+        "city": "e.g. Berlin",
+        "description": "Describe briefly your group's research focus, goals, and key areas."
+      },
+      "toasts": {
+        "updated": "Research group information successfully updated.",
+        "saveFailed": "Error saving. Please try again or contact an admin.",
+        "loadFailed": "Error loading. Please refresh the page or contact an admin.",
+        "noId": "No research group found. Contact an admin."
+      }
+    },
 
     "emailTemplates": {
       "newTemplate": "New Template",
@@ -56,6 +98,34 @@
         "JOB_TITLE": "Job Title",
         "RESEARCH_GROUP_NAME": "Research Group Name"
       }
+    },
+
+    "members": {
+      "loading": "Loading members...",
+      "retry": "Retry",
+      "noMembers": "No members found in this research group.",
+      "me": "Me",
+
+      "tableColumns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role"
+      },
+
+      "remove": "Remove",
+      "removeMemberModal": {
+        "title": "Remove Member",
+        "message": "Are you sure you want to remove this member from the research group?"
+      },
+
+      "toastMessages": {
+        "loadFailed": "Failed to load. Please try again or contact an admin.",
+        "addSuccess": "Successfully added to the research group.",
+        "removeSuccess": "{{memberName}} has been removed from the research group.",
+        "removeFailed": "Failed to remove. Please try again or contact an admin."
+      },
+
+      "noRole": "No role"
     }
   }
 }
