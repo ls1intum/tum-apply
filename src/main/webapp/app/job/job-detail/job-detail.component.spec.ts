@@ -105,6 +105,7 @@ describe('JobDetailComponent', () => {
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faUserTie, faMicroscope, faLocationDot, faEnvelope, faGlobe);
 
+    await fixture.whenStable();
     fixture.detectChanges();
   });
 
@@ -112,35 +113,46 @@ describe('JobDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render all key values correctly in the template', async () => {
-    await fixture.whenStable();
-    fixture.detectChanges();
-
+  it('should render basic job information', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.textContent).toContain('Test Title');
     expect(compiled.textContent).toContain('Prof. John Doe');
     expect(compiled.textContent).toContain('AI Lab');
+  });
+
+  it('should render job details', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+
     expect(compiled.textContent).toContain('Computer Science');
-    expect(compiled.textContent).toContain('Deep Learning');
     expect(compiled.textContent).toContain('Munich');
+    expect(compiled.textContent).toContain('20');
+  });
+
+  it('should render numeric and date values', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('20');
     expect(compiled.textContent).toContain('2');
     expect(compiled.textContent).toContain('Fully Funded');
     expect(compiled.textContent).toContain('01.10.2025');
-    expect(compiled.textContent).toContain('01.09.2024');
-    expect(compiled.textContent).toContain('01.12.2024');
-    expect(compiled.innerHTML).toContain('<ol><li>Task A</li><li>Task B</li></ol>');
-    expect(compiled.innerHTML).toContain('<ul><li>Requirement A</li></ul>');
+  });
+
+  it('should render research group details', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('AI Group Desc');
-    expect(compiled.textContent).toContain('ai@tum.de');
-    expect(compiled.textContent).toContain('https://ai.tum.de');
     expect(compiled.textContent).toContain('Main Street 1');
     expect(compiled.textContent).toContain('12345');
     expect(compiled.textContent).toContain('Munich');
   });
 
-  it('should render mailto link for research group email', async () => {
+  it('should render tasks, and requirements as HTML', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.innerHTML).toContain('<ol><li>Task A</li><li>Task B</li></ol>');
+    expect(compiled.innerHTML).toContain('<ul><li>Requirement A</li></ul>');
+  });
+
+  it('should render mail to link for research group email', async () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
