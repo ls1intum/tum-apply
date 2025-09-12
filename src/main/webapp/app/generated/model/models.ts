@@ -39,6 +39,7 @@ export * from './pageResponseDTOEmailTemplateOverviewDTO';
 export * from './pageResponseDTOResearchGroupDTO';
 export * from './pageResponseDTOUserShortDTO';
 export * from './pageableObject';
+export * from './profOnboardingDTO';
 export * from './professorDTO';
 export * from './ratingDTO';
 export * from './ratingOverviewDTO';

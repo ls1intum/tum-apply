@@ -9,9 +9,7 @@
  */
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface ProfOnboardingDTO { 
+    show?: boolean;
 }
 
