@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 
+import { UserProfileDTO } from '../../../generated';
+
 import { AuthOrchestratorService } from './auth-orchestrator.service';
 import { AuthGateway } from './auth-gateway.service';
 
@@ -47,7 +49,13 @@ export class AuthService {
     if (this.authOrchestration.isBusy()) return;
     this.authOrchestration.isBusy.set(true);
     try {
-      await this.authGateway.verifyOtp(this.authOrchestration.email(), otp, registration);
+      const userProfile: UserProfileDTO | undefined = registration
+        ? {
+            firstName: this.authOrchestration.firstName(),
+            lastName: this.authOrchestration.lastName(),
+          }
+        : undefined;
+      await this.authGateway.verifyOtp(this.authOrchestration.email(), otp, registration, userProfile);
 
       if (registration) {
         this.authOrchestration.registerStep.set('profile');

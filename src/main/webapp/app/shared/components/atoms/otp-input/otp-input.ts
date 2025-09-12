@@ -53,8 +53,8 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   );
   private readonly registrationOverride = signal<boolean | null>(null);
   private readonly isRegistration = computed(() => {
-    const o = this.registrationOverride();
-    return o ?? this.registration();
+    const registrationOverride = this.registrationOverride();
+    return registrationOverride ?? this.registration();
   });
 
   constructor() {
@@ -99,7 +99,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   onSubmit(): void {
     if (!this.disabledSubmit()) {
       const otp = this.otpValue();
-      void this.authService.verifyOtp(otp, this.registration());
+      void this.authService.verifyOtp(otp, this.isRegistration());
     }
   }
 
