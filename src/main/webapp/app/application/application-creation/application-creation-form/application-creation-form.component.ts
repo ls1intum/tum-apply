@@ -514,10 +514,12 @@ export default class ApplicationCreationFormComponent {
     }
 
     const email = this.page1().email;
+    const firstName = this.page1().firstName;
+    const lastName = this.page1().lastName;
 
     void (async () => {
       try {
-        await this.openOtpAndWaitForLogin(email);
+        await this.openOtpAndWaitForLogin(email, firstName, lastName);
         // TODO change this to an API call
         await this.accountService.loadUser();
         this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
@@ -532,14 +534,26 @@ export default class ApplicationCreationFormComponent {
   }
 
   // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
-  private async openOtpAndWaitForLogin(email: string): Promise<void> {
+  private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
     const normalizedEmail = email.trim();
     if (!normalizedEmail) {
       this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid email address.' });
       return;
     }
+    const normalizedFirstName = firstName.trim();
+    if (!normalizedFirstName) {
+      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid first name.' });
+      return;
+    }
+    const normalizedLastName = lastName.trim();
+    if (!normalizedLastName) {
+      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid last name.' });
+      return;
+    }
 
     this.authOrchestrator.email.set(normalizedEmail);
+    this.authOrchestrator.firstName.set(normalizedFirstName);
+    this.authOrchestrator.lastName.set(normalizedLastName);
     await this.authService.sendOtp(true);
 
     this.otpDialogRef = this.dialogService.open(OtpInput, {
