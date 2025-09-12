@@ -13,6 +13,7 @@ api/emailTemplateResource.service.ts
 api/emailVerificationResource.service.ts
 api/internalCommentResource.service.ts
 api/jobResource.service.ts
+api/profOnboardingResource.service.ts
 api/ratingResource.service.ts
 api/researchGroupResource.service.ts
 api/userResource.service.ts
@@ -62,6 +63,7 @@ model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
 model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
+model/profOnboardingDTO.ts
 model/professorDTO.ts
 model/ratingDTO.ts
 model/ratingOverviewDTO.ts
@@ -83,5 +85,6 @@ model/verifyCodeRequest.ts
 ng-package.json
 package.json
 param.ts
+provide-api.ts
 tsconfig.json
 variables.ts
