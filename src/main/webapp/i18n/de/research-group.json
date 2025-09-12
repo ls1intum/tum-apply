@@ -1,5 +1,8 @@
 {
   "researchGroup": {
+    "header": "Meine E-Mail-Vorlagen",
+    "memberPage": "Meine Mitglieder",
+    "memberHeader": "Meine Mitglieder",
     "emailTemplatesHeader": "Meine E-Mail-Vorlagen",
     "groupInfoPage": "TUMApply - Meine Gruppe",
     "groupInfoHeader": "Meine Gruppe",
@@ -96,6 +99,34 @@
         "JOB_TITLE": "Stellen Titel",
         "RESEARCH_GROUP_NAME": "Name Forschungsgruppe"
       }
+    },
+
+    "members": {
+      "loading": "Mitglieder werden geladen...",
+      "retry": "Erneut versuchen",
+      "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
+      "me": "Ich",
+
+      "tableColumns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle"
+      },
+
+      "remove": "Entfernen",
+      "removeMemberModal": {
+        "title": "Mitglied entfernen",
+        "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
+      },
+
+      "toastMessages": {
+        "loadFailed": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin.",
+        "addSuccess": "Erfolgreich zur Forschungsgruppe hinzugefügt.",
+        "removeSuccess": "{{memberName}} wurde aus der Forschungsgruppe entfernt.",
+        "removeFailed": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
+      },
+
+      "noRole": "Keine Rolle"
     }
   }
 }

@@ -9,9 +9,7 @@
  */
 
 
-export interface SortObject { 
-    unsorted?: boolean;
-    sorted?: boolean;
-    empty?: boolean;
+export interface UploadDocumentsRequest { 
+    files: Array<Blob>;
 }
 

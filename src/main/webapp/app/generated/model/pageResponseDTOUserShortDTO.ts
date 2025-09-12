@@ -7,11 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { UserShortDTO } from './userShortDTO';
 
 
-export interface SortObject { 
-    unsorted?: boolean;
-    sorted?: boolean;
-    empty?: boolean;
+export interface PageResponseDTOUserShortDTO { 
+    content?: Array<UserShortDTO>;
+    totalElements?: number;
 }
 
