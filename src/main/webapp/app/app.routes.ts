@@ -19,8 +19,9 @@ const routes: Routes = [
     path: 'professor',
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
-    loadComponent: () => import('./shared/pages/landing-page/landing-page.component').then(m => m.LandingPageComponent),
-    title: 'landingPage.title',
+    loadComponent: () =>
+      import('./shared/pages/professor-landing-page/professor-landing-page.component').then(m => m.ProfessorLandingPageComponent),
+    title: 'professorLandingPage.title',
   },
   {
     path: '',
@@ -232,6 +233,14 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-template-edit/research-group-template-edit').then(
         m => m.ResearchGroupTemplateEdit,
       ),
+  },
+  {
+    path: 'research-group/info',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-info/research-group-info.component').then(m => m.ResearchGroupInfoComponent),
+    title: 'researchGroup.groupInfoPage',
   },
 
   // ======================================================================================

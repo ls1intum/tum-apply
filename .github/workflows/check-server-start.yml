@@ -2,7 +2,7 @@ name: Check Server Startup
 
 on:
   pull_request:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -28,6 +28,8 @@ jobs:
           KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
           KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
           KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
+          OTP_LENGTH: ${{ vars.OTP_LENGTH }}
+          OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
           AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
         run: |
           ./gradlew -Pprod bootRun > boot.log 2>&1 & SERVER_PID=$!

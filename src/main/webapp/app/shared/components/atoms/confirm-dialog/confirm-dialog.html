@@ -10,14 +10,7 @@
       </p>
 
       <div class="confirm-buttons">
-        <jhi-button
-          class="cancel"
-          icon="ban"
-          [shouldTranslate]="true"
-          label="entity.action.cancel"
-          (click)="onReject()"
-          variant="outlined"
-        />
+        <jhi-button class="cancel" [shouldTranslate]="true" label="entity.action.cancel" (click)="onReject()" variant="outlined" />
         <jhi-button
           class="confirm"
           [icon]="confirmIcon()"

@@ -81,7 +81,7 @@
       "questions": {
         "login": {
           "title": "Wie melde ich mich bei TUMApply an?",
-          "content": "Du kannst dich mit deinen TUM-Zugangsdaten oder alternativ über Microsoft, Google oder Apple Single Sign-On anmelden."
+          "content": "Du kannst dich mit deinen TUM-Zugangsdaten oder alternativ über Google oder Apple Single Sign-On anmelden."
         },
         "multipleApplications": {
           "title": "Kann ich mich gleichzeitig auf mehrere Promotionsstellen bewerben?",

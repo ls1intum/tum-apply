@@ -26,7 +26,12 @@ public class PageUtil {
         /**
          * Sortable columns used in job listings by professors.
          */
-        PROFESSOR_JOBS(Set.of("title", "state", "startDate", "createdAt", "lastModifiedAt"));
+        PROFESSOR_JOBS(Set.of("title", "state", "startDate", "createdAt", "lastModifiedAt")),
+
+        /**
+         * Sortable columns used in research group listings.
+         */
+        RESEARCH_GROUPS(Set.of("head", "name", "abbreviation", "email", "website", "school", "description", "defaultFieldOfStudies", "street", "postalCode", "city"));
 
         private final Set<String> sortableColumns;
 
