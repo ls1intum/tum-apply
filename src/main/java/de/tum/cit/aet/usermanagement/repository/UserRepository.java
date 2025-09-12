@@ -114,8 +114,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
 
     /**
      * Finds user IDs by research group ID with pagination support.
-     * First query to get paginated user IDs without fetching collections.
-     * Ordering will be applied in the second query that fetches full user data.
      *
      * @param researchGroupId the research group ID
      * @param pageable the pagination information
@@ -130,7 +128,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
 
     /**
      * Finds users by their IDs with eagerly loaded research group roles and research group.
-     * Second query to fetch full user data with collections for the paginated IDs.
      * Orders results with the current user first, then alphabetically.
      *
      * @param userIds the list of user IDs

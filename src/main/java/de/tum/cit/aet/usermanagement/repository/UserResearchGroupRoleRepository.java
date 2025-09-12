@@ -18,7 +18,6 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
 
     /**
      * Removes research group association from all roles for a specific user.
-     * Sets the research group to null while preserving the role entries.
      *
      * @param userId the ID of the user whose research group associations should be removed
      */
