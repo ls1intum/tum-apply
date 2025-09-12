@@ -7,11 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ResearchGroupDTO } from './researchGroupDTO';
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface PageResponseDTOResearchGroupDTO { 
+    content?: Array<ResearchGroupDTO>;
+    totalElements?: number;
 }
 

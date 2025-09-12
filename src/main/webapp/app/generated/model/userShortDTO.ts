@@ -19,12 +19,12 @@ export interface UserShortDTO {
     researchGroup?: ResearchGroupShortDTO;
 }
 export namespace UserShortDTO {
-    export type RolesEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';
     export const RolesEnum = {
-        Applicant: 'APPLICANT' as RolesEnum,
-        Professor: 'PROFESSOR' as RolesEnum,
-        Admin: 'ADMIN' as RolesEnum
-    };
+        Applicant: 'APPLICANT',
+        Professor: 'PROFESSOR',
+        Admin: 'ADMIN'
+    } as const;
+    export type RolesEnum = typeof RolesEnum[keyof typeof RolesEnum];
 }
 
 

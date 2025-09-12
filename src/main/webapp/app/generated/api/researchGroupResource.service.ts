@@ -17,6 +17,8 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { PageResponseDTOResearchGroupDTO } from '../model/pageResponseDTOResearchGroupDTO';
+// @ts-ignore
 import { ResearchGroupDTO } from '../model/researchGroupDTO';
 // @ts-ignore
 import { ResearchGroupLargeDTO } from '../model/researchGroupLargeDTO';
@@ -38,13 +40,21 @@ export class ResearchGroupResourceService extends BaseService {
     }
 
     /**
+     * @param pageSize 
+     * @param pageNumber 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAllResearchGroups(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ResearchGroupDTO>>;
-    public getAllResearchGroups(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ResearchGroupDTO>>>;
-    public getAllResearchGroups(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ResearchGroupDTO>>>;
-    public getAllResearchGroups(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getAllResearchGroups(pageSize?: number, pageNumber?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOResearchGroupDTO>;
+    public getAllResearchGroups(pageSize?: number, pageNumber?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOResearchGroupDTO>>;
+    public getAllResearchGroups(pageSize?: number, pageNumber?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOResearchGroupDTO>>;
+    public getAllResearchGroups(pageSize?: number, pageNumber?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageSize, 'pageSize');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageNumber, 'pageNumber');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -72,11 +82,13 @@ export class ResearchGroupResourceService extends BaseService {
         }
 
         let localVarPath = `/api/research-groups`;
-        return this.httpClient.request<Array<ResearchGroupDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PageResponseDTOResearchGroupDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -124,11 +136,12 @@ export class ResearchGroupResourceService extends BaseService {
         }
 
         let localVarPath = `/api/research-groups/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<ResearchGroupDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<ResearchGroupDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -176,11 +189,12 @@ export class ResearchGroupResourceService extends BaseService {
         }
 
         let localVarPath = `/api/research-groups/detail/${this.configuration.encodeParam({name: "researchGroupId", value: researchGroupId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<ResearchGroupLargeDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<ResearchGroupLargeDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -241,12 +255,13 @@ export class ResearchGroupResourceService extends BaseService {
         }
 
         let localVarPath = `/api/research-groups/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<ResearchGroupDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<ResearchGroupDTO>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: researchGroupDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
