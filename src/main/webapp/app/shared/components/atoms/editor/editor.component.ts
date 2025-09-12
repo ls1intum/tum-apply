@@ -66,15 +66,11 @@ export class EditorComponent extends BaseInputDirective<string> {
   private htmlValue = signal('');
   private hasFormControl = computed(() => this.control() !== undefined);
 
-  constructor() {
-    super();
-
-    // Effect to sync htmlValue when editorValue changes (e.g., from form patching)
-    effect(() => {
-      const currentEditorValue = this.editorValue();
-      this.htmlValue.set(currentEditorValue);
-    });
-  }
+  // Effect to sync htmlValue when editorValue changes (e.g., from form patching)
+  private syncHtmlValueEffect = effect(() => {
+    const currentEditorValue = this.editorValue();
+    this.htmlValue.set(currentEditorValue);
+  });
 
   textChanged(event: ContentChange): void {
     const { source, oldDelta, editor } = event;
