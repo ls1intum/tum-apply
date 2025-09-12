@@ -103,9 +103,7 @@ export class ResearchGroupMembersComponent {
     }
   }
 
-  /** Internal methods */
-
-  private async loadMembers(): Promise<void> {
+  async loadMembers(): Promise<void> {
     try {
       const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
 
@@ -116,6 +114,8 @@ export class ResearchGroupMembersComponent {
       this.toastService.showError({ detail: errorMessage });
     }
   }
+
+  /** Internal methods */
 
   private formatRoles(roles?: string[]): string {
     if (!roles || roles.length === 0) {

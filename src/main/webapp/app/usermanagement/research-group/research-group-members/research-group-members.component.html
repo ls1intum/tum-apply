@@ -20,7 +20,7 @@
   <ng-template #nameTemplate let-member>
     {{ member.name }}
     @if (member.isCurrentUser) {
-      <fa-icon icon="circle-user" class="current-user-icon" title="'researchGroup.members.me' | translate" />
+      <fa-icon icon="circle-user" class="current-user-icon" [title]="'researchGroup.members.me' | translate" />
     }
   </ng-template>
 

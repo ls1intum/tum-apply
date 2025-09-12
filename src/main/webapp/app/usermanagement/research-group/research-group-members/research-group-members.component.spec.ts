@@ -91,7 +91,7 @@ describe('ResearchGroupMembersComponent', () => {
   });
 
   it('should load members successfully', async () => {
-    await component['loadMembers']();
+    await component.loadMembers();
 
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
     expect(component.members()).toEqual(mockMembers);
