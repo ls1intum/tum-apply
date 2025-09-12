@@ -9,8 +9,11 @@ import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Service
 public class UserService {
@@ -55,56 +58,79 @@ public class UserService {
     @Transactional
     public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
         UUID userId = UUID.fromString(keycloakUserId);
-        String normalizedEmail = StringUtil.normalize(email, true);
-        String normalizedFirstName = StringUtil.normalize(firstName, false);
-        String normalizedLastName = StringUtil.normalize(lastName, false);
+        final String normalizedEmail = StringUtil.normalize(email, true);
+        final String normalizedFirstName = StringUtil.normalize(firstName, false);
+        final String normalizedLastName = StringUtil.normalize(lastName, false);
 
-        User user = userRepository.findWithResearchGroupRolesByUserId(userId).orElse(null);
-        boolean isNewUser = false;
-        if (user == null) {
-            user = new User();
-            user.setUserId(userId);
-            user.setEmail(normalizedEmail);
-            user.setFirstName(normalizedFirstName);
-            user.setLastName(normalizedLastName);
-            isNewUser = true;
-        }
+        Optional<User> existingUser = userRepository.findWithResearchGroupRolesByUserId(userId);
+        final boolean isNewUser = existingUser.isEmpty();
 
-        boolean userUpdated = false;
-        if (!normalizedEmail.isBlank() && !normalizedEmail.equals(user.getEmail())) {
-            user.setEmail(normalizedEmail);
-            userUpdated = true;
-        }
-        if (!normalizedFirstName.isBlank() && !normalizedFirstName.equals(user.getFirstName())) {
-            user.setFirstName(normalizedFirstName);
-            userUpdated = true;
-        }
-        if (!normalizedLastName.isBlank() && !normalizedLastName.equals(user.getLastName())) {
-            user.setLastName(normalizedLastName);
-            userUpdated = true;
-        }
+        User user = existingUser.orElseGet(() ->
+            createNewUser(userId, normalizedEmail, normalizedFirstName, normalizedLastName)
+        );
 
-        if (isNewUser || userUpdated) {
+        boolean updated = isNewUser;
+        updated |= setIfPresentAndChanged(user::getEmail, user::setEmail, normalizedEmail);
+        updated |= setIfPresentAndChanged(user::getFirstName, user::setFirstName, normalizedFirstName);
+        updated |= setIfPresentAndChanged(user::getLastName, user::setLastName, normalizedLastName);
+
+        if (updated) {
             user = userRepository.save(user);
         }
 
-        if (user.getResearchGroupRoles() == null || user.getResearchGroupRoles().isEmpty()) {
-            ensureApplicantRole(user);
-        }
-
+        assignApplicantRoleIfEmpty(user);
         return user;
     }
 
     /**
-     * Ensures that the user has at least the APPLICANT role.
-     * Call this method only if the user has no roles assigned.
+     * Ensures the user has at least one role by assigning {@link UserRole APPLICANT} when none are present.
      *
-     * @param user the user entity for which to ensure the applicant role
+     * @param user the managed user entity to update; must not be {@code null}
      */
-    private void ensureApplicantRole(User user) {
-        UserResearchGroupRole defaultRole = new UserResearchGroupRole();
-        defaultRole.setUser(user);
-        defaultRole.setRole(UserRole.APPLICANT);
-        userResearchGroupRoleRepository.save(defaultRole);
+    private void assignApplicantRoleIfEmpty(User user) {
+        if (user.getResearchGroupRoles() == null || user.getResearchGroupRoles().isEmpty()) {
+            UserResearchGroupRole defaultRole = new UserResearchGroupRole();
+            defaultRole.setUser(user);
+            defaultRole.setRole(UserRole.APPLICANT);
+            userResearchGroupRoleRepository.save(defaultRole);
+        }
+    }
+
+    /**
+     * Factory for a new {@link User} with normalized values.
+     *
+     * @param userId    the persistent user identifier (Keycloak UUID)
+     * @param email     normalized email
+     * @param firstName normalized first name
+     * @param lastName  normalized last name
+     * @return a new {@link User} instance
+     */
+    private User createNewUser(UUID userId, String email, String firstName, String lastName) {
+        User newUser = new User();
+        newUser.setUserId(userId);
+        newUser.setEmail(email);
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
+        return newUser;
+    }
+
+    /**
+     * Updates a string field if the proposed value is non-blank and different from the current value.     *
+     *
+     * @param getter   supplier of the current field value
+     * @param setter   consumer used to set the new value
+     * @param newValue the proposed new value; updates only when non-blank and not equal to the current value
+     * @return {@code true} if the field was updated; {@code false} otherwise
+     */
+    private boolean setIfPresentAndChanged(Supplier<String> getter, Consumer<String> setter, String newValue) {
+        if (newValue == null || newValue.isBlank()) {
+            return false;
+        }
+        String current = getter.get();
+        if (Objects.equals(current, newValue)) {
+            return false;
+        }
+        setter.accept(newValue);
+        return true;
     }
 }
