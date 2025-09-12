@@ -4,7 +4,6 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;
@@ -20,8 +19,12 @@ public interface ResearchGroupRepository extends TumApplyJpaRepository<ResearchG
     }
 
     @NotNull
-    default ResearchGroup findByUniversityIDElseThrow(String universityID) {
-        return getArbitraryValueElseThrow(findByUniversityID(universityID));
+    default ResearchGroup findByUniversityIdElseThrow(String universityId) {
+        return getArbitraryValueElseThrow(findByUniversityId(universityId));
     }
-    Optional<ResearchGroup> findByUniversityID(String universityID);
+    Optional<ResearchGroup> findByUniversityId(String universityId);
+
+
+    boolean existsByNameIgnoreCase(String name);
+    Optional<ResearchGroup> findByNameIgnoreCase(String name);
 }

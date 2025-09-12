@@ -94,4 +94,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         @Param("linkedinUrl") String linkedinUrl,
         @Param("selectedLanguage") String selectedLanguage
     );
+
+    Optional<User> findByUniversityIdIgnoreCase(String universityId);
 }

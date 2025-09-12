@@ -2,6 +2,8 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupCreationDTO;
 import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
@@ -13,6 +15,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
 
 /**
  * REST controller for managing research groups.
@@ -75,4 +79,12 @@ public class ResearchGroupResource {
         ResearchGroupDTO updatedResearchGroup = researchGroupService.updateResearchGroup(id, researchGroupDTO);
         return ResponseEntity.ok(updatedResearchGroup);
     }
+
+    @PostMapping("/admin/researchGroup/create")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<ResearchGroup> createResearchGroup(@Valid @RequestBody ResearchGroupCreationDTO researchGroupCreationDTO) {
+        return ResponseEntity.ok(researchGroupService.createResearchGroup(researchGroupCreationDTO));
+    }
 }
+

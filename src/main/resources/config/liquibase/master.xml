@@ -10,6 +10,7 @@
   <include file="changelog/00000000000003_add_email-templates.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000004_add_ratings.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000005_add_email_verification_otp.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000007_add_university_id.xml" relativeToChangelogFile="true"/>
 
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->

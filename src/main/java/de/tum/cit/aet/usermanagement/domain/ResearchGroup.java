@@ -58,8 +58,8 @@ public class ResearchGroup extends AbstractAuditingEntity {
     @Column(name = "city")
     private String city;
 
-    @Column (name = "universityID")
-    private String universityID;
+    @Column(name = "university_id")
+    private String universityId;
 
     @OneToMany(mappedBy = "researchGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserResearchGroupRole> userRoles = new HashSet<>();
