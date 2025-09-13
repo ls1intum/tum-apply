@@ -9,9 +9,8 @@
  */
 
 
-export interface SortObject { 
-    empty?: boolean;
-    sorted?: boolean;
-    unsorted?: boolean;
+export interface UserProfileDTO { 
+    firstName?: string;
+    lastName?: string;
 }
 

@@ -59,7 +59,7 @@ export default class ApplicationDetailForApplicantComponent {
   async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
-      this.toastService.showError({ summary: 'Error', detail: 'This is no valid applicationId' });
+      this.toastService.showErrorKey('entity.toast.applyFlow.invalidApplicationId');
     } else {
       this.applicationId.set(applicationId);
     }
@@ -73,7 +73,7 @@ export default class ApplicationDetailForApplicantComponent {
         this.actualDocumentData.set(ids);
         this.actualDocumentDataExists.set(true);
       })
-      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+      .catch(() => this.toastService.showErrorKey('entity.toast.applyFlow.fetchDocumentIdsFailed'));
   }
 
   onUpdateApplication(): void {
