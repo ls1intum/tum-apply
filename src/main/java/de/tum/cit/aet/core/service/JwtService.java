@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+/**
+ * Service for handling JWT operations such as decoding and extracting claims.
+ */
 @Service
 public class JwtService {
     private final JwtDecoder decoder;
