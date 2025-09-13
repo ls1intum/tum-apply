@@ -1,0 +1,23 @@
+meta {
+  name: Provision ResearchGroup – GroupNotFound
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/api/admin/research-groups/provision
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Imaginary Research Group",
+    "headName": "Prof. John Doe",
+    "universityID": "ab12cde"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
