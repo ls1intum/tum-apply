@@ -70,7 +70,7 @@
           </label>
           <div class="icon-input-wrapper mb-6">
             <fa-icon [icon]="['fas', 'user']" class="input-icon" />
-            <input [disabled]="true" value="Stephan Krusche" id="supervisingProfessor" type="text" />
+            <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
           </div>
         </div>
 
