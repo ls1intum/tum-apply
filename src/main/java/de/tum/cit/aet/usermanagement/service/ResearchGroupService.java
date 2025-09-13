@@ -50,14 +50,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ResearchGroupService {
-    
+
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
 
-
-
-    private final UserRepository userRepository;
 
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
@@ -70,22 +67,22 @@ public class ResearchGroupService {
     public PageResponseDTO<UserShortDTO> getResearchGroupMembers(PageDTO pageDTO) {
         // Get the current user's research group ID
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
-        
+
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
-        
+
         // First query: Get paginated user IDs to avoid N+1 query problem
         Page<UUID> userIdsPage = userRepository.findUserIdsByResearchGroupId(researchGroupId, pageable);
-        
+
         if (userIdsPage.isEmpty()) {
             return new PageResponseDTO<>(List.of(), 0L);
         }
-        
+
         // Second query: Fetch full user data with collections for the paginated IDs
         UUID currentUserId = currentUserService.getUserId();
         List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), currentUserId);
-        
+
         return new PageResponseDTO<>(
-            members.stream().map(UserShortDTO::new).toList(), 
+            members.stream().map(UserShortDTO::new).toList(),
             userIdsPage.getTotalElements()
         );
     }
@@ -100,27 +97,27 @@ public class ResearchGroupService {
     public void removeMemberFromResearchGroup(UUID userId) {
         // Get the current user's research group ID for validation
         UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
-        
+
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository.findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
         // Ensure user belongs to the same research group
-        if (userToRemove.getResearchGroup() == null || 
+        if (userToRemove.getResearchGroup() == null ||
             !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)) {
             throw new AccessDeniedException("User is not a member of your research group");
         }
-        
+
         // Prevent removing oneself (for now)
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
             throw new IllegalArgumentException("Cannot remove yourself from the research group");
         }
-        
+
         // Remove the direct research group membership
         userToRemove.setResearchGroup(null);
         userRepository.save(userToRemove);
-        
+
         // Remove research group associations from user's roles
         userResearchGroupRoleRepository.removeResearchGroupFromUserRoles(userId);
     }
@@ -216,33 +213,42 @@ public class ResearchGroupService {
      * @throws EntityNotFoundException if the user or the group does not exist
      */
     @Transactional
-    public void provisionResearchGroup(ResearchGroupCreationDTO dto) {
-        // 1) Find target user by TUM id (NOT the admin account)
+    public ResearchGroup provisionResearchGroup(ResearchGroupCreationDTO dto) {
+        // --- 1) Find user by universityId (case-insensitive)
         User user = userRepository.findByUniversityIdIgnoreCase(dto.universityID())
             .orElseThrow(() -> new EntityNotFoundException(
-                "User with TUM id '%s' not found".formatted(dto.universityID())
+                "User with universityId '%s' not found".formatted(dto.universityID())
             ));
 
-        // 2) Ensure research group exists (created manually beforehand)
+        // --- 2) Find research group by name (must exist; created manually by admins)
         ResearchGroup group = researchGroupRepository.findByNameIgnoreCase(dto.name())
             .orElseThrow(() -> new EntityNotFoundException(
-                "ResearchGroup with name '%s' not found – must be created manually first".formatted(dto.name())
+                "ResearchGroup with name '%s' not found (must be created manually).".formatted(dto.name())
             ));
 
-        // 3) Upsert PROFESSOR role idempotently
-        var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
-        if (existing.isPresent()) {
-            if (existing.get().getRole() != UserRole.PROFESSOR) {
-                existing.get().setRole(UserRole.PROFESSOR);
-                userResearchGroupRoleRepository.save(existing.get());
-            }
-            return;
+        // --- 3) Assign the user to the research group if not yet assigned or assigned elsewhere
+        if (user.getResearchGroup() == null
+            || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
+            user.setResearchGroup(group);
+            userRepository.save(user);
         }
 
-        UserResearchGroupRole mapping = new UserResearchGroupRole();
-        mapping.setUser(user);
-        mapping.setResearchGroup(group);
-        mapping.setRole(UserRole.PROFESSOR);
-        userResearchGroupRoleRepository.save(mapping);
+        // --- 4) Upsert PROFESSOR role for (user, group) in an idempotent way
+        var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
+        if (existing.isEmpty()) {
+            // Create new mapping
+            UserResearchGroupRole mapping = new UserResearchGroupRole();
+            mapping.setUser(user);
+            mapping.setResearchGroup(group);
+            mapping.setRole(UserRole.PROFESSOR);
+            userResearchGroupRoleRepository.save(mapping);
+        } else if (existing.get().getRole() != UserRole.PROFESSOR) {
+            // Elevate role to PROFESSOR if different
+            existing.get().setRole(UserRole.PROFESSOR);
+            userResearchGroupRoleRepository.save(existing.get());
+        }
+
+        // --- 5) Return the group as a simple, stable response
+        return group;
     }
 }

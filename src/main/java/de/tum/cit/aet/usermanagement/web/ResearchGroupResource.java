@@ -25,8 +25,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.http.HttpStatus;
+
 
 /**
  * REST controller for managing research groups.
@@ -114,13 +113,6 @@ public class ResearchGroupResource {
     ) {
         ResearchGroupDTO updatedResearchGroup = researchGroupService.updateResearchGroup(id, researchGroupDTO);
         return ResponseEntity.ok(updatedResearchGroup);
-    }
-
-    @PostMapping("/admin/researchGroup/create")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<ResearchGroup> createResearchGroup(@Valid @RequestBody ResearchGroupCreationDTO researchGroupCreationDTO) {
-        return ResponseEntity.ok(researchGroupService.createResearchGroup(researchGroupCreationDTO));
     }
 }
 
