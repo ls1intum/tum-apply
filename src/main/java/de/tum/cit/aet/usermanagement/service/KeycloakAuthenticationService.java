@@ -107,10 +107,12 @@ public class KeycloakAuthenticationService {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new UnauthorizedException("Missing refresh token");
         }
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        addClientAuth(form, clientId, clientSecret);
-        form.add("refresh_token", refreshToken);
-        callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user").toBodilessEntity().block(Duration.ofSeconds(5));
+
+        if (!logoutWithClient(this.clientId, this.clientSecret, refreshToken)) {
+            if (!logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)) {
+                throw new UnauthorizedException("Failed to logout user");
+            }
+        }
     }
 
     /**
@@ -127,30 +129,51 @@ public class KeycloakAuthenticationService {
      */
     public AuthResponseDTO refreshTokens(String accessToken, String refreshToken) {
         final Jwt jwt = jwtService.decode(accessToken);
-        final Jwt refreshJwt = jwtService.decodeRefreshToken(refreshToken);
-        String authorizedParty = jwtService.getAuthorizedParty(jwt, refreshJwt);
 
-        if (refreshToken != null && !refreshToken.isBlank() && authorizedParty != null) {
+        // If no refresh token is provided, return current access token if still valid, else error
+        if (refreshToken == null || refreshToken.isBlank()) {
+            if (jwt != null && jwtService.isActive(jwt)) {
+                int accessTtl = (int) Duration.between(Instant.now(), jwt.getExpiresAt()).getSeconds();
+                return new AuthResponseDTO(accessToken, "", accessTtl, 0);
+            }
+            throw new UnauthorizedException("Session expired");
+        }
+
+        // If there is a valid access token, check its authorized party to determine the client that issued it.
+        if (jwt != null && jwtService.isActive(jwt)) {
+            String authorizedParty = jwt.getClaimAsString("azp");
             if (clientId.equals(authorizedParty)) {
-                // Case A: Tokens issued for server client
-                return refreshTokensWithClient(clientId, clientSecret, refreshToken);
-            } else if (adminClientId.equals(authorizedParty)) {
-                // Case B: Tokens issued for otp client
-                String keycloakUserId = jwtService.getSubject(jwt, refreshJwt);
+                // Standard refresh with server client
+                return getResponseFromToken(refreshTokensWithClient(clientId, clientSecret, refreshToken));
+            }
+            if (adminClientId.equals(authorizedParty)) {
+                // Subject-only refresh via otp client
+                String keycloakUserId = jwt.getSubject();
                 if (keycloakUserId == null || keycloakUserId.isBlank()) {
-                    throw new UnauthorizedException("Access token has no subject");
+                    throw new UnauthorizedException("Access token missing subject");
                 }
                 return exchangeForUserTokens(keycloakUserId);
             }
+            throw new UnauthorizedException("Unauthorized client for refresh");
         }
 
-        // No refresh token available but access token still valid => Do not get new tokens.
-        if (jwt != null && jwtService.isActive(jwt)) {
-            int accessTtl = (int) Duration.between(Instant.now(), jwt.getExpiresAt()).getSeconds();
-            return new AuthResponseDTO(accessToken, "", accessTtl, 0);
+        // No valid access token present. Probe the issuing client by attempting a refresh with both clients.
+        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(clientId, clientSecret, refreshToken);
+        if (serverRefresh != null) {
+            return getResponseFromToken(serverRefresh);
         }
 
-        throw new UnauthorizedException("Session expired");
+        AccessTokenResponse otpRefresh = tryRefreshTokensWithClient(adminClientId, adminClientSecret, refreshToken);
+        if (otpRefresh != null) {
+            Jwt otpJwt = jwtService.decode(otpRefresh.getToken());
+            String keycloakUserId = otpJwt.getSubject();
+            if (keycloakUserId == null || keycloakUserId.isBlank()) {
+                throw new UnauthorizedException("Access token missing subject");
+            }
+            return exchangeForUserTokens(keycloakUserId);
+        }
+
+        throw new UnauthorizedException("Unable to refresh");
     }
 
     /**
@@ -174,6 +197,29 @@ public class KeycloakAuthenticationService {
     // ===== Helpers =====
 
     /**
+     * Helper to call the OIDC Logout Endpoint with the given client credentials and refresh token.
+     *
+     * @param clientId     the client ID to authenticate as
+     * @param clientSecret the client secret to authenticate with
+     * @param refreshToken the user's refresh token
+     * @return true if logout succeeded, false if it was rejected (4xx)
+     */
+    private boolean logoutWithClient(String clientId, String clientSecret, String refreshToken) {
+        try {
+            MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+            addClientAuth(form, clientId, clientSecret);
+            form.add("refresh_token", refreshToken);
+            callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user")
+                .toBodilessEntity()
+                .block(Duration.ofSeconds(5));
+            return true;
+        } catch (UnauthorizedException ex) {
+            log.debug("Logout with client {} failed: {}", clientId, ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Refreshes an end user's tokens using {@code grant_type=refresh_token} against the OIDC Token Endpoint.
      *
      * @param clientId     the client ID to authenticate as
@@ -182,7 +228,7 @@ public class KeycloakAuthenticationService {
      * @return DTO with fresh access token, refresh token, and lifetimes
      * @throws UnauthorizedException if the request is rejected or fails
      */
-    private AuthResponseDTO refreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
+    private AccessTokenResponse refreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new UnauthorizedException("Missing refresh token");
         }
@@ -190,8 +236,21 @@ public class KeycloakAuthenticationService {
         addClientAuth(form, clientId, clientSecret);
         form.add("grant_type", "refresh_token");
         form.add("refresh_token", refreshToken);
-        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Failed to refresh token").bodyToMono(AccessTokenResponse.class).block(Duration.ofSeconds(5));
-        return getResponseFromToken(tokenResponse);
+        return callKeycloak(OidcEndpoint.TOKEN, form, "Failed to refresh token")
+            .bodyToMono(AccessTokenResponse.class)
+            .block(Duration.ofSeconds(5));
+    }
+
+    /**
+     * Tries to refresh tokens and returns the response, or null if the server rejects the request (4xx).
+     */
+    private AccessTokenResponse tryRefreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
+        try {
+            return refreshTokensWithClient(clientId, clientSecret, refreshToken);
+        } catch (UnauthorizedException ex) {
+            log.debug("Refresh with client {} failed: {}", clientId, ex.getMessage());
+            return null;
+        }
     }
 
     /**
