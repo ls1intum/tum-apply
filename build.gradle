@@ -214,6 +214,7 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-mail"
   implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
   implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
   testImplementation "org.springframework.boot:spring-boot-starter-test"
   implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
   implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
@@ -273,6 +274,7 @@ dependencies {
 
   // Keycloak
   implementation "org.keycloak:keycloak-admin-client:${keycloakVersion}"
+  implementation "org.keycloak:keycloak-authz-client:${keycloakVersion}"
 }
 
 tasks.register("cleanResources", Delete) {
