@@ -33,23 +33,23 @@ export interface JobDetailDTO {
     applicationState?: JobDetailDTO.ApplicationStateEnum;
 }
 export namespace JobDetailDTO {
-    export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {
-        Draft: 'DRAFT' as StateEnum,
-        Published: 'PUBLISHED' as StateEnum,
-        Closed: 'CLOSED' as StateEnum,
-        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
-    };
-    export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
+        Draft: 'DRAFT',
+        Published: 'PUBLISHED',
+        Closed: 'CLOSED',
+        ApplicantFound: 'APPLICANT_FOUND'
+    } as const;
+    export type StateEnum = typeof StateEnum[keyof typeof StateEnum];
     export const ApplicationStateEnum = {
-        Saved: 'SAVED' as ApplicationStateEnum,
-        Sent: 'SENT' as ApplicationStateEnum,
-        Accepted: 'ACCEPTED' as ApplicationStateEnum,
-        InReview: 'IN_REVIEW' as ApplicationStateEnum,
-        Rejected: 'REJECTED' as ApplicationStateEnum,
-        Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
-        JobClosed: 'JOB_CLOSED' as ApplicationStateEnum
-    };
+        Saved: 'SAVED',
+        Sent: 'SENT',
+        Accepted: 'ACCEPTED',
+        InReview: 'IN_REVIEW',
+        Rejected: 'REJECTED',
+        Withdrawn: 'WITHDRAWN',
+        JobClosed: 'JOB_CLOSED'
+    } as const;
+    export type ApplicationStateEnum = typeof ApplicationStateEnum[keyof typeof ApplicationStateEnum];
 }
 
 

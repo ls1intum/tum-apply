@@ -45,7 +45,8 @@
     "noApplicationsFound": "No applications found.",
     "filterOptions": {
       "job": "Job",
-      "status": "Status"
+      "status": "Status",
+      "jobSearchPlaceholder": "Search Positions..."
     },
 
     "application": "Application",

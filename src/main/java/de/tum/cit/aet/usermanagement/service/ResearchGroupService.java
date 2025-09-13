@@ -1,20 +1,29 @@
 package de.tum.cit.aet.usermanagement.service;
 
-import java.util.UUID;
+import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import de.tum.cit.aet.core.dto.PageDTO;
-import de.tum.cit.aet.core.dto.PageResponseDTO;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import java.util.List;
+import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -23,8 +32,75 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ResearchGroupService {
-
+    
+    private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
+    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+
+    /**
+     * Get all members of the current user's research group.
+     *
+     * @param pageDTO pagination information
+     * @return paginated list of research group members
+     */
+    public PageResponseDTO<UserShortDTO> getResearchGroupMembers(PageDTO pageDTO) {
+        // Get the current user's research group ID
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+        
+        // First query: Get paginated user IDs to avoid N+1 query problem
+        Page<UUID> userIdsPage = userRepository.findUserIdsByResearchGroupId(researchGroupId, pageable);
+        
+        if (userIdsPage.isEmpty()) {
+            return new PageResponseDTO<>(List.of(), 0L);
+        }
+        
+        // Second query: Fetch full user data with collections for the paginated IDs
+        UUID currentUserId = currentUserService.getUserId();
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), currentUserId);
+        
+        return new PageResponseDTO<>(
+            members.stream().map(UserShortDTO::new).toList(), 
+            userIdsPage.getTotalElements()
+        );
+    }
+
+    /**
+     * Removes a member from the current user's research group.
+     * This operation removes both associated roles and direct research group membership.
+     * @param userId the ID of the user to remove from the research group
+     * @throws EntityNotFoundException if the user is not found or not in the same research group
+     */
+    @Transactional
+    public void removeMemberFromResearchGroup(UUID userId) {
+        // Get the current user's research group ID for validation
+        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        
+        // Verify that the user exists and belongs to the same research group
+        User userToRemove = userRepository.findWithResearchGroupRolesByUserId(userId)
+            .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+
+        // Ensure user belongs to the same research group
+        if (userToRemove.getResearchGroup() == null || 
+            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)) {
+            throw new AccessDeniedException("User is not a member of your research group");
+        }
+        
+        // Prevent removing oneself (for now)
+        UUID currentUserId = currentUserService.getUserId();
+        if (userId.equals(currentUserId)) {
+            throw new IllegalArgumentException("Cannot remove yourself from the research group");
+        }
+        
+        // Remove the direct research group membership
+        userToRemove.setResearchGroup(null);
+        userRepository.save(userToRemove);
+        
+        // Remove research group associations from user's roles
+        userResearchGroupRoleRepository.removeResearchGroupFromUserRoles(userId);
+    }
 
     /**
      * Retrieves a research group by its ID.

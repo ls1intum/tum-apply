@@ -2,7 +2,7 @@ package de.tum.cit.aet.core.config;
 
 import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
-import de.tum.cit.aet.usermanagement.dto.AuthResponseDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import jakarta.servlet.http.Cookie;
 import org.springframework.context.annotation.Bean;
@@ -108,7 +108,7 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/auth/send-code")
                     .permitAll()
-                    .requestMatchers("/api/auth/verify-code")
+                    .requestMatchers("/api/auth/otp-complete")
                     .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()
