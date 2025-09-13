@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.core.service.JwtService;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,6 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -32,6 +32,9 @@ import java.util.Map;
 @Slf4j
 @Service
 public class KeycloakAuthenticationService {
+
+    private static final String GRANT_TYPE_TOKEN_EXCHANGE = "urn:ietf:params:oauth:grant-type:token-exchange";
+    private static final String GRANT_TYPE_REFRESH = "refresh_token";
 
     private final AuthzClient authzClient;
 
@@ -108,10 +111,10 @@ public class KeycloakAuthenticationService {
             throw new UnauthorizedException("Missing refresh token");
         }
 
-        if (!logoutWithClient(this.clientId, this.clientSecret, refreshToken)) {
-            if (!logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)) {
-                throw new UnauthorizedException("Failed to logout user");
-            }
+        if (!logoutWithClient(this.clientId, this.clientSecret, refreshToken)
+            && !logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)) {
+            throw new UnauthorizedException("Failed to logout user");
+
         }
     }
 
@@ -130,34 +133,33 @@ public class KeycloakAuthenticationService {
     public AuthResponseDTO refreshTokens(String accessToken, String refreshToken) {
         final Jwt jwt = jwtService.decode(accessToken);
 
-        // If no refresh token is provided, return current access token if still valid, else error
-        if (refreshToken == null || refreshToken.isBlank()) {
+        // 1) No refresh token: accept valid access token, else session expired
+        if (StringUtil.isBlank(refreshToken)) {
             if (jwt != null && jwtService.isActive(jwt)) {
-                int accessTtl = (int) Duration.between(Instant.now(), jwt.getExpiresAt()).getSeconds();
-                return new AuthResponseDTO(accessToken, "", accessTtl, 0);
+                return new AuthResponseDTO(accessToken, "", jwtService.secondsUntilExpiry(jwt), 0);
             }
             throw new UnauthorizedException("Session expired");
         }
 
-        // If there is a valid access token, check its authorized party to determine the client that issued it.
+        // 2) Valid access token present: choose path based on azp
         if (jwt != null && jwtService.isActive(jwt)) {
-            String authorizedParty = jwt.getClaimAsString("azp");
+            final String authorizedParty = jwtService.getAuthorizedParty(jwt);
             if (clientId.equals(authorizedParty)) {
-                // Standard refresh with server client
+                // Default refresh with server client
                 return getResponseFromToken(refreshTokensWithClient(clientId, clientSecret, refreshToken));
             }
             if (adminClientId.equals(authorizedParty)) {
                 // Subject-only refresh via otp client
-                String keycloakUserId = jwt.getSubject();
-                if (keycloakUserId == null || keycloakUserId.isBlank()) {
+                final String subject = jwt.getSubject();
+                if (StringUtil.isBlank(subject)) {
                     throw new UnauthorizedException("Access token missing subject");
                 }
-                return exchangeForUserTokens(keycloakUserId);
+                return exchangeForUserTokens(subject);
             }
             throw new UnauthorizedException("Unauthorized client for refresh");
         }
 
-        // No valid access token present. Probe the issuing client by attempting a refresh with both clients.
+        // 3) No valid access token: try to refresh with both clients
         AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(clientId, clientSecret, refreshToken);
         if (serverRefresh != null) {
             return getResponseFromToken(serverRefresh);
@@ -167,7 +169,7 @@ public class KeycloakAuthenticationService {
         if (otpRefresh != null) {
             Jwt otpJwt = jwtService.decode(otpRefresh.getToken());
             String keycloakUserId = otpJwt.getSubject();
-            if (keycloakUserId == null || keycloakUserId.isBlank()) {
+            if (StringUtil.isBlank(keycloakUserId)) {
                 throw new UnauthorizedException("Access token missing subject");
             }
             return exchangeForUserTokens(keycloakUserId);
@@ -186,11 +188,13 @@ public class KeycloakAuthenticationService {
     public AuthResponseDTO exchangeForUserTokens(String keycloakUserId) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         addClientAuth(form, adminClientId, adminClientSecret);
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
+        form.add("grant_type", GRANT_TYPE_TOKEN_EXCHANGE);
         form.add("requested_subject", keycloakUserId);
         form.add("audience", clientId);
 
-        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Token exchange failed").bodyToMono(AccessTokenResponse.class).block(Duration.ofSeconds(5));
+        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Token exchange failed")
+            .bodyToMono(AccessTokenResponse.class)
+            .block(Duration.ofSeconds(5));
         return getResponseFromToken(tokenResponse);
     }
 
@@ -234,7 +238,7 @@ public class KeycloakAuthenticationService {
         }
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         addClientAuth(form, clientId, clientSecret);
-        form.add("grant_type", "refresh_token");
+        form.add("grant_type", GRANT_TYPE_REFRESH);
         form.add("refresh_token", refreshToken);
         return callKeycloak(OidcEndpoint.TOKEN, form, "Failed to refresh token")
             .bodyToMono(AccessTokenResponse.class)
@@ -242,7 +246,12 @@ public class KeycloakAuthenticationService {
     }
 
     /**
-     * Tries to refresh tokens and returns the response, or null if the server rejects the request (4xx).
+     * Tries to refresh an end user's tokens using {@code grant_type=refresh_token} against the OIDC Token Endpoint.
+     *
+     * @param clientId     the client ID to authenticate as
+     * @param clientSecret the client secret to authenticate with
+     * @param refreshToken the user's refresh token
+     * @return DTO with fresh access token, refresh token, and lifetimes or null if exception
      */
     private AccessTokenResponse tryRefreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
         try {

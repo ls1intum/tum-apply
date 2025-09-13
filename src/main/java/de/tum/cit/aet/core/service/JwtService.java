@@ -5,6 +5,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 
 /**
@@ -32,6 +33,27 @@ public class JwtService {
         } catch (Exception e) {
             throw new UnauthorizedException("Invalid access token", e);
         }
+    }
+
+    /**
+     * Extracts the 'authorized party' (azp) claim from the given JWT.
+     *
+     * @param jwt the Jwt from which to extract the claim
+     * @return the authorized party as a String, or null if the Jwt is null
+     */
+    public String getAuthorizedParty(Jwt jwt) {
+        return jwt == null ? null : jwt.getClaimAsString("azp");
+    }
+
+    /**
+     * Calculates the number of seconds until the given JWT expires.
+     *
+     * @param jwt the Jwt to check
+     * @return the number of seconds until expiry, or 0 if the Jwt is null or has no expiry
+     */
+    public int secondsUntilExpiry(Jwt jwt) {
+        if (jwt == null || jwt.getExpiresAt() == null) return 0;
+        return (int) Duration.between(Instant.now(), jwt.getExpiresAt()).getSeconds();
     }
 
     /**
