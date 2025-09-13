@@ -105,7 +105,7 @@
       "emailVerified": true,
       "serviceAccountClientId": "tumapply-otp-admin",
       "clientRoles": {
-        "realm-management": ["view-users", "query-users", "manage-users", "impersonation"]
+        "realm-management": ["view-users", "query-users", "manage-users"]
       }
     }
   ],
@@ -140,7 +140,6 @@
       ]
     },
     {
-      "id": "107dba4e-53c9-4a2a-9a27-a75a4e8f9719",
       "clientId": "tumapply-server-client",
       "name": "TUMApply Server Service",
       "enabled": true,
@@ -197,112 +196,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "c1f2a7eb-dad0-4d65-96d5-6e5dfaffaf0d",
-      "clientId": "realm-management",
-      "name": "${client_realm-management}",
-      "surrogateAuthRequired": false,
-      "enabled": true,
-      "alwaysDisplayInConsole": false,
-      "clientAuthenticatorType": "client-secret",
-      "redirectUris": [],
-      "webOrigins": [],
-      "notBefore": 0,
-      "bearerOnly": true,
-      "consentRequired": false,
-      "standardFlowEnabled": true,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
-      "serviceAccountsEnabled": false,
-      "authorizationServicesEnabled": true,
-      "publicClient": false,
-      "frontchannelLogout": false,
-      "protocol": "openid-connect",
-      "attributes": {
-        "realm_client": "true"
-      },
-      "authenticationFlowBindingOverrides": {},
-      "fullScopeAllowed": false,
-      "nodeReRegistrationTimeout": 0,
-      "defaultClientScopes": ["web-origins", "acr", "profile", "roles", "basic", "email"],
-      "optionalClientScopes": ["address", "phone", "offline_access", "organization", "microprofile-jwt"],
-      "authorizationSettings": {
-        "policyEnforcementMode": "ENFORCING",
-        "allowRemoteResourceManagement": false,
-        "resources": [
-          {
-            "name": "Users",
-            "ownerManagedAccess": false,
-            "attributes": {},
-            "uris": [],
-            "scopes": [
-              {
-                "name": "impersonate"
-              },
-              {
-                "name": "user-impersonated"
-              }
-            ]
-          },
-          {
-            "name": "client.resource.107dba4e-53c9-4a2a-9a27-a75a4e8f9719",
-            "type": "Client",
-            "ownerManagedAccess": false,
-            "attributes": {},
-            "uris": [],
-            "scopes": [
-              {
-                "name": "token-exchange"
-              }
-            ]
-          }
-        ],
-        "policies": [
-          {
-            "name": "client-impersonators",
-            "type": "client",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "clients": "[\"tumapply-otp-admin\"]"
-            }
-          },
-          {
-            "name": "admin-impersonating.permission.users",
-            "type": "scope",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "resources": "[\"Users\"]",
-              "scopes": "[\"impersonate\",\"user-impersonated\"]",
-              "applyPolicies": "[\"client-impersonators\"]"
-            }
-          },
-          {
-            "name": "user-impersonated.permission.users",
-            "type": "scope",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "resources": "[\"Users\"]",
-              "scopes": "[\"user-impersonated\"]"
-            }
-          },
-          {
-            "name": "token-exchange.permission.client.107dba4e-53c9-4a2a-9a27-a75a4e8f9719",
-            "type": "scope",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "resources": "[\"client.resource.107dba4e-53c9-4a2a-9a27-a75a4e8f9719\"]",
-              "scopes": "[\"token-exchange\"]",
-              "applyPolicies": "[\"client-impersonators\"]"
-            }
-          }
-        ],
-        "decisionStrategy": "UNANIMOUS"
-      }
     }
   ]
 }
