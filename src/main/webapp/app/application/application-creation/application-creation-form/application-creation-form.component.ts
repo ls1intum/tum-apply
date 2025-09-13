@@ -453,12 +453,13 @@ export default class ApplicationCreationFormComponent {
       }
     }
   }
+
   onConfirmSend(): void {
     this.submitAttempted.set(true);
     if (!this.privacyAcceptedSignal()) {
       this.toastService.showError({
-        summary: this.translate.instant('privacy.privacyConsent.errorSummary'),
-        detail: this.translate.instant('privacy.privacyConsent.errorText'),
+        summary: this.translateService.instant('privacy.privacyConsent.errorSummary'),
+        detail: this.translateService.instant('privacy.privacyConsent.errorText'),
       });
       return;
     }

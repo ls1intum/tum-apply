@@ -27,7 +27,9 @@ public class JwtService {
      * @throws UnauthorizedException if the token is invalid
      */
     public Jwt decode(String accessToken) {
-        if (accessToken == null || accessToken.isBlank()) return null;
+        if (accessToken == null || accessToken.isBlank()) {
+            return null;
+        }
         try {
             return decoder.decode(accessToken);
         } catch (Exception e) {
@@ -52,7 +54,9 @@ public class JwtService {
      * @return the number of seconds until expiry, or 0 if the Jwt is null or has no expiry
      */
     public int secondsUntilExpiry(Jwt jwt) {
-        if (jwt == null || jwt.getExpiresAt() == null) return 0;
+        if (jwt == null || jwt.getExpiresAt() == null) {
+            return 0;
+        }
         return (int) Duration.between(Instant.now(), jwt.getExpiresAt()).getSeconds();
     }
 
