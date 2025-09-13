@@ -186,10 +186,12 @@ public class ResearchGroupService {
     }
 
     /**
-     * Creates a research group if current user is professor; returns existing if found.
+     * Creates a research group if the current user is professor; returns existing if found.
+     *
+     * @param dto the research group creation request DTO
+     * @return the created or existing research group
      */
     public ResearchGroup createResearchGroup(ResearchGroupCreationDTO dto) {
-
         Optional<ResearchGroup> existing = researchGroupRepository.findByUniversityId(dto.universityID());
         if (existing.isPresent()) {
             return existing.get();
@@ -210,6 +212,8 @@ public class ResearchGroupService {
      * - Uses dto.universityID as the user's TUM id (e.g., "ab12cde").
      * - Idempotent: if mapping exists with PROFESSOR, no-op.
      *
+     * @param dto the research group + user information to provision
+     * @return the research group after provisioning
      * @throws EntityNotFoundException if the user or the group does not exist
      */
     @Transactional
