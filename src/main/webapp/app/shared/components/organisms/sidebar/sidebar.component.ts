@@ -100,7 +100,7 @@ export class SidebarComponent {
         {
           title: 'sidebar.manage.manage',
           buttons: [
-            { icon: 'home', text: 'sidebar.manage.home', link: '/' },
+            { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
             { icon: 'list', text: 'sidebar.manage.mypositions', link: '/my-positions' },
             { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job/create' },
           ],
