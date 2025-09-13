@@ -606,9 +606,7 @@ export default class ApplicationCreationFormComponent {
    */
   private showInitErrorMessage(key: string): void {
     queueMicrotask(() => {
-      // Use key-based toast instead of hardcoded text so messages are translated and consistent across the application.
       this.toastService.showErrorKey(key);
-
       setTimeout(() => void this.router.navigate(['/job-overview']), 3000);
     });
   }
