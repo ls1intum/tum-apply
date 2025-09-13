@@ -2,12 +2,10 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.exception.EmailVerificationFailedException;
 import de.tum.cit.aet.core.security.otp.OtpUtil;
-import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,19 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
-/**
- * This service is responsible for generating, sending, and verifying OTP codes
- * sent to users' email addresses.
- */
 @Service
 public class EmailVerificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailVerificationService.class);
 
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
     private final AsyncEmailSender asyncEmailSender;
+    private final KeycloakUserService keycloakUserService;
 
     @Value("${security.otp.length:8}")
     private int otpLength;
@@ -45,9 +39,11 @@ public class EmailVerificationService {
 
     public EmailVerificationService(
         EmailVerificationOtpRepository emailVerificationOtpRepository,
-        AsyncEmailSender asyncEmailSender) {
+        AsyncEmailSender asyncEmailSender,
+        KeycloakUserService keycloakUserService) {
         this.emailVerificationOtpRepository = emailVerificationOtpRepository;
         this.asyncEmailSender = asyncEmailSender;
+        this.keycloakUserService = keycloakUserService;
     }
 
     /**
@@ -59,7 +55,7 @@ public class EmailVerificationService {
      */
     @Transactional
     public void sendCode(String rawEmail, String ip) {
-        String emailAddress = StringUtil.normalize(rawEmail, true);
+        String emailAddress = OtpUtil.normalizeEmail(rawEmail);
 
         // Enforce single-active-code policy
         emailVerificationOtpRepository.invalidateAllForEmail(emailAddress);
@@ -97,45 +93,57 @@ public class EmailVerificationService {
 
     /**
      * Verifies the submitted OTP code for the given email and IP address.
-     * <p>
-     * Security model: This method ONLY validates the OTP and marks it as used. It MUST NOT perform any side effects
-     * like creating users, logging users in, or changing Keycloak state. Those actions are handled by OtpFlowService
-     * after successful verification.
+     * Checks for active OTP, validates the code, increments attempt count if failed,
+     * marks the OTP as used if successful, and updates the user's email verification
+     * status in Keycloak, forcing logout for fresh tokens.
      *
-     * @param body the OTP completion request containing email and code
-     * @param ip   the IP address of the client submitting the code
+     * @param rawEmail      the raw email address to verify
+     * @param submittedCode the OTP code submitted by the user
+     * @param ip            the IP address of the client submitting the code
      * @throws EmailVerificationFailedException if verification fails for any reason
      */
     @Transactional(noRollbackFor = EmailVerificationFailedException.class)
-    public void verifyCode(OtpCompleteDTO body, String ip) {
-        String normalizedEmail = StringUtil.normalize(body.email(), true);
+    public void verifyCode(String rawEmail, String submittedCode, String ip) {
+        String email = OtpUtil.normalizeEmail(rawEmail);
         Instant now = Instant.now();
 
-        Optional<EmailVerificationOtp> activeOtp = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(normalizedEmail, now);
-        if (activeOtp.isEmpty()) {
-            LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(normalizedEmail), ip);
-            throw new EmailVerificationFailedException();
+        var activeOpt = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(email, now);
+        if (activeOpt.isEmpty()) {
+            LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(email), ip);
+            throw new EmailVerificationFailedException("Validation failed");
         }
 
-        EmailVerificationOtp otp = activeOtp.get();
+        var otp = activeOpt.get();
 
-        String cleanedCode = body.code() == null ? "" : body.code().trim();
+        if (otp.getAttempts() >= otp.getMaxAttempts()) {
+            otp.setUsed(true); // lock this code
+            emailVerificationOtpRepository.save(otp);
+            LOGGER.warn("OTP max-attempts reached -> locked - emailId={} ip={} attempts={}/{}", emailLogId(email), ip, otp.getAttempts(), otp.getMaxAttempts());
+            throw new EmailVerificationFailedException("Validation failed");
+        }
+
+        String cleanedCode = submittedCode == null ? "" : submittedCode.trim();
         String expected = OtpUtil.hmacSha256Base64(otpHmacSecret,
-            cleanedCode + "|" + otp.getSalt() + "|" + normalizedEmail);
+            cleanedCode + "|" + otp.getSalt() + "|" + email);
 
         boolean ok = OtpUtil.constantTimeEquals(expected, otp.getCodeHash());
 
         if (!ok) {
             // Atomically increment attempts and burn if limit is reached
             emailVerificationOtpRepository.incrementAttemptsIfActive(otp.getId(), now);
-            throw new EmailVerificationFailedException();
+            throw new EmailVerificationFailedException("Validation failed");
         }
 
         // Mark used atomically (race safety)
         if (emailVerificationOtpRepository.markUsedIfActive(otp.getId(), now) == 0) {
-            LOGGER.warn("OTP race: markUsedIfActive returned 0 - emailId={} ip={}", emailLogId(normalizedEmail), ip);
-            throw new EmailVerificationFailedException();
+            LOGGER.warn("OTP race: markUsedIfActive returned 0 - emailId={} ip={}", emailLogId(email), ip);
+            throw new EmailVerificationFailedException("Validation failed");
         }
+
+        // Flip in Keycloak and force fresh tokens
+        String userId = keycloakUserService.ensureUser(email);
+        keycloakUserService.markEmailVerified(userId);
+        keycloakUserService.logout(userId);
     }
 
     /**
