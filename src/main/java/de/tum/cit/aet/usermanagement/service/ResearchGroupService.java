@@ -27,26 +27,21 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
 
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 
 import lombok.RequiredArgsConstructor;
 
 /**
  * Service for managing research groups.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ResearchGroupService {
@@ -205,6 +200,12 @@ public class ResearchGroupService {
     public ResearchGroup createResearchGroup(ResearchGroupCreationDTO dto) {
         Optional<ResearchGroup> existing = researchGroupRepository.findByUniversityId(dto.universityID());
         if (existing.isPresent()) {
+            log.info("AUDIT research-group.create reused by={} groupId={} name={} headName={} universityId={}",
+                currentUserService.getUserId(),
+                existing.get().getResearchGroupId(),
+                dto.name(),
+                dto.headName(),
+                dto.universityID());
             return existing.get();
         }
 
@@ -212,8 +213,15 @@ public class ResearchGroupService {
         newResearchGroup.setName(dto.name());
         newResearchGroup.setHead(dto.headName());
         newResearchGroup.setUniversityId(dto.universityID());
-        // map other fields if necessary
-        return researchGroupRepository.save(newResearchGroup);
+        ResearchGroup saved = researchGroupRepository.save(newResearchGroup);
+        log.info("AUDIT research-group.create created by={} groupId={} name={} headName={} universityId={}",
+            currentUserService.getUserId(),
+            saved.getResearchGroupId(),
+            dto.name(),
+            dto.headName(),
+            dto.universityID());
+        return saved;
+
     }
 
     /**
@@ -229,26 +237,25 @@ public class ResearchGroupService {
      */
     @Transactional
     public ResearchGroup provisionResearchGroup(ResearchGroupCreationDTO dto) {
-        // Find user by universityId (case-insensitive)
         User user = userRepository.findByUniversityIdIgnoreCase(dto.universityID())
             .orElseThrow(() -> new EntityNotFoundException(
                 "User with universityId '%s' not found".formatted(dto.universityID())
             ));
 
-        // Find research group by name (must exist; created manually by admins)
         ResearchGroup group = researchGroupRepository.findByNameIgnoreCase(dto.name())
             .orElseThrow(() -> new EntityNotFoundException(
                 "ResearchGroup with name '%s' not found (must be created manually).".formatted(dto.name())
             ));
 
-        //  Assign the user to the research group if not yet assigned or assigned elsewhere
+        boolean userGroupChanged = false;
         if (user.getResearchGroup() == null
             || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
+            userGroupChanged = true;
         }
 
-        //  Upsert PROFESSOR role for (user, group) in an idempotent way
+        String roleOutcome = "unchanged";
         var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
             UserResearchGroupRole mapping = new UserResearchGroupRole();
@@ -256,12 +263,22 @@ public class ResearchGroupService {
             mapping.setResearchGroup(group);
             mapping.setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(mapping);
+            roleOutcome = "created";
         } else if (existing.get().getRole() != UserRole.PROFESSOR) {
-            // Elevate role to PROFESSOR if different
             existing.get().setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(existing.get());
+            roleOutcome = "updated";
         }
 
+
+        log.info("AUDIT research-group.provision by={} targetUserId={} targetUniId={} groupId={} groupName={} userGroupChanged={} roleOutcome={}",
+            currentUserService.getUserId(),
+            user.getUserId(),
+            dto.universityID(),
+            group.getResearchGroupId(),
+            group.getName(),
+            userGroupChanged,
+            roleOutcome);
 
         return group;
     }
