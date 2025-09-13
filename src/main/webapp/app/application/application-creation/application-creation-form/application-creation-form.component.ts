@@ -44,7 +44,7 @@ const SavingStates = {
   SAVING: 'SAVING',
 } as const;
 
-const applyflow = 'entity.toast.applyFlow' as const;
+const applyflow = 'entity.toast.applyFlow';
 
 type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
 
