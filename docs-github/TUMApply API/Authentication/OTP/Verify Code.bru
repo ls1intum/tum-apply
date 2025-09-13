@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/auth/otp-complete
+  url: {{baseUrl}}/api/auth/verify-code
   body: json
   auth: none
 }
@@ -13,12 +13,7 @@ post {
 body:json {
   {
     "email":"test@tumapply.local",
-    "code": "5NYCP6SS",
-    "purpose": "REGISTER",
-    "profile": {
-      "firstName": "Test",
-      "lastName": "User"
-    }
+    "code": "90OK5EDX"
   }
 }
 
