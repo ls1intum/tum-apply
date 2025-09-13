@@ -1,0 +1,70 @@
+{
+  "professorLandingPage": {
+    "title": "TUMApply - Professor Portal",
+    "hero": {
+      "headline": "Find Your Next Doctoral Candidates",
+      "subline": "Streamline your research group's hiring process with TUMApply.",
+      "button": "Get Started"
+    },
+    "platformBenefits": {
+      "headline": "Why Use TUMApply?",
+      "text": "TUMApply provides document management, candidate evaluation, and interview scheduling for your hiring process. The platform helps you organize applications, review candidate materials, and coordinate the selection process. Track applications and compare candidates systematically in one centralized location.",
+      "button1": "View Job Postings",
+      "button2": "Learn More"
+    },
+    "workflow": {
+      "headline": "How TUMApply Works for You",
+      "steps": {
+        "1": {
+          "title": "Create Job Posting",
+          "description": "Define your research position with detailed requirements and qualifications"
+        },
+        "2": {
+          "title": "Review Applications",
+          "description": "Browse through qualified applicants and their submitted documents"
+        },
+        "3": {
+          "title": "Evaluate Applicants",
+          "description": "Use our rating system to assess and compare applicants systematically"
+        },
+        "4": {
+          "title": "Schedule Interviews",
+          "description": "Schedule interviews with qualified candidates and select the best applicant for your research group"
+        }
+      }
+    },
+    "informationSection": {
+      "headline": "TUM Resources for Your Research Group",
+      "tiles": {
+        "1": "Research",
+        "2": "Development",
+        "3": "Networks",
+        "4": "Services",
+        "5": "Transfer",
+        "6": "Partnerships"
+      }
+    },
+    "faq": {
+      "headline": "Frequently Asked Questions",
+      "subheadline": "Find answers to common questions about using TUMApply",
+      "questions": {
+        "login": {
+          "title": "How do I log in to TUMApply?",
+          "content": "You log in using your TUM SSO credentials. Click the login button and you'll be redirected to the TUMApply authentication system."
+        },
+        "multipleApplications": {
+          "title": "Can I manage multiple job postings?",
+          "content": "Yes, you can create and manage multiple job postings simultaneously. Each posting can have its own requirements, applications, and evaluation criteria."
+        },
+        "documents": {
+          "title": "What documents can I require from candidates?",
+          "content": "You can require various documents including CV, transcripts (Bachelor and Master), and reference letters. Customize requirements for each position."
+        },
+        "status": {
+          "title": "How do I track application status?",
+          "content": "Use the application overview page to track all applications. You can see submission dates, document status, and evaluation progress for each candidate."
+        }
+      }
+    }
+  }
+}

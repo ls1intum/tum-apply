@@ -33,6 +33,16 @@
     "emailSec": {
       "headline": "E-Mail-Sicherheit",
       "text": "Wenn Sie uns eine E-Mail schicken, so wird Ihre E-Mail-Adresse nur für die Korrespondenz mit Ihnen verwendet. Bitte beachten Sie, dass die Datenübertragung im Internet Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich."
+    },
+    "privacyConsent": {
+      "title": "Datenschutz",
+      "text": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch beigefügt. Weitere Informationen findest du unter: <a class=\"link\" href=\"https://www.community.tum.de/de/datenschutz/\">TUM Datenschutzinformationen</a>.",
+      "confirmationText": "Ich habe die Datenschutzerklärung gelesen und verstanden und willige in die Verarbeitung meiner personenbezogenen Daten gemäß dieser Erklärung ein.",
+      "errorText": "Bitte bestätigen Sie die Datenschutzerklärung.",
+      "toastError": {
+        "summary": "Datenschutzerklärung fehlt",
+        "detail": "Bitte bestätige die Datenschutzerklärung, um fortzufahren."
+      }
     }
   }
 }

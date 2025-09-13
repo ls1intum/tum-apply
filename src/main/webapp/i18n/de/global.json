@@ -2,6 +2,35 @@
   "global": {
     "title": "TUMApply",
     "browsehappy": "Du benutzt einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisiere deinen Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+    "routes": {
+      "job": {
+        "detail": "TUMApply - Positionsdetails",
+        "creation": "TUMApply - Positionserstellung",
+        "edit": "TUMApply - Positiosbearbeitung",
+        "overview": "TUMApply - Positionsübersicht",
+        "myPositions": "TUMApply - Meine Positionen"
+      },
+      "application": {
+        "creation": "TUMApply - Bewerbungserstellung",
+        "overview": "TUMApply - Bewerbungsübersicht",
+        "detail": "TUMApply - Bewerbungsdetail"
+      },
+      "evaluation": {
+        "overview": "TUMApply - Evaluierungsübersicht",
+        "detail": "TUMApply - Bewerbungsevaluierung"
+      },
+      "footer": {
+        "imprint": "TUMApply - Impressum",
+        "privacy": "TUMApply - Datenschutz"
+      },
+      "settings": "TUMApply - Einstellungen",
+      "researchGroup": {
+        "templates": "TUMApply - Meine Vorlagen",
+        "templateCreation": "TUMApply - Vorlagenserstellung",
+        "templateEdit": "TUMApply - Vorlagenbearbeitung",
+        "info": "TUMApply - Meine Gruppe"
+      }
+    },
     "menu": {
       "home": "Startseite",
       "colorTheme": "Farbschema ändern",
@@ -146,9 +175,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Ausgewählt",
+      "noResults": "Keine Ergebnisse gefunden",
       "numberSelected": "{{selected}} ausgewählt",
-      "clear": "Entfernen",
-      "clearAll": "Alle entfernen",
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },

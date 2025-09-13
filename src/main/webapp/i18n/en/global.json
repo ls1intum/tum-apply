@@ -2,6 +2,35 @@
   "global": {
     "title": "TUMApply",
     "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
+    "routes": {
+      "job": {
+        "detail": "TUMApply - Job Details",
+        "creation": "TUMApply - Job Creation",
+        "edit": "TUMApply - Job Edit",
+        "overview": "TUMApply - Job Overview",
+        "myPositions": "TUMApply - My Positions"
+      },
+      "application": {
+        "creation": "TUMApply - Application Creation",
+        "overview": "TUMApply - Application Overview",
+        "detail": "TUMApply - Application Detail"
+      },
+      "evaluation": {
+        "overview": "TUMApply - Evaluation Overview",
+        "detail": "TUMApply - Application Evaluation"
+      },
+      "footer": {
+        "imprint": "TUMApply - Imprint",
+        "privacy": "TUMApply - Privacy"
+      },
+      "settings": "TUMApply - Settings",
+      "researchGroup": {
+        "templates": "TUMApply - My Templates",
+        "templateCreation": "TUMApply - New Template",
+        "templateEdit": "TUMApply - Edit Template",
+        "info": "TUMApply - My Group"
+      }
+    },
     "menu": {
       "home": "Home",
       "colorTheme": "Change Color Theme",
@@ -146,9 +175,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Selected",
+      "noResults": "No results found",
       "numberSelected": "{{selected}} selected",
-      "clear": "Clear",
-      "clearAll": "Clear all",
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },

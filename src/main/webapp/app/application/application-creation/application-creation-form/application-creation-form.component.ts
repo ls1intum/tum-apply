@@ -14,11 +14,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ApplicationDraftData, LocalStorageService } from 'app/service/localStorage.service';
 import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { DividerModule } from 'primeng/divider';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -34,6 +37,7 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
+import TranslateDirective from '../../../shared/language/translate.directive';
 
 const SavingStates = {
   SAVED: 'SAVED',
@@ -48,6 +52,8 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   selector: 'jhi-application-creation-form',
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+    DividerModule,
     ProgressStepperComponent,
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
@@ -56,6 +62,7 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
     TranslateModule,
     ConfirmDialog,
     ApplicationDetailForApplicantComponent,
+    TranslateDirective,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -123,9 +130,22 @@ export default class ApplicationCreationFormComponent {
   savingTick = signal<number>(0);
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-
+  readonly formbuilder = inject(FormBuilder);
   useLocalStorage = signal<boolean>(false);
 
+  readonly additionalInfoForm = this.formbuilder.nonNullable.group({
+    privacyAccepted: this.formbuilder.nonNullable.control(false, {
+      validators: Validators.requiredTrue,
+    }),
+  });
+
+  readonly privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls.privacyAccepted.valueChanges, {
+    initialValue: this.additionalInfoForm.controls.privacyAccepted.value,
+  });
+
+  submitAttempted = signal(false);
+
+  // Stepper config
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];
     const panel1 = this.panel1();
@@ -303,6 +323,7 @@ export default class ApplicationCreationFormComponent {
   private router = inject(Router);
   private toastService = inject(ToastService);
   private localStorageService = inject(LocalStorageService);
+  private readonly translate = inject(TranslateService);
 
   private initEffect = effect(() => {
     if (!untracked(() => this.initCalled())) {
@@ -419,6 +440,17 @@ export default class ApplicationCreationFormComponent {
       }
     }
   }
+  onConfirmSend(): void {
+    this.submitAttempted.set(true);
+    if (!this.privacyAcceptedSignal()) {
+      this.toastService.showError({
+        summary: this.translate.instant('privacy.privacyConsent.errorSummary'),
+        detail: this.translate.instant('privacy.privacyConsent.errorText'),
+      });
+      return;
+    }
+    void this.sendCreateApplicationData('SENT', true);
+  }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
     const location = this.location;
@@ -502,6 +534,7 @@ export default class ApplicationCreationFormComponent {
           birthday: p1.dateOfBirth,
           website: p1.website,
           linkedinUrl: p1.linkedIn,
+          preferredLanguage: p1.language?.value,
         },
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
@@ -534,7 +567,7 @@ export default class ApplicationCreationFormComponent {
             firstName: p1.firstName,
             lastName: p1.lastName,
             phoneNumber: p1.phoneNumber,
-            selectedLanguage: p1.language?.value as string,
+            preferredLanguage: p1.language?.value,
           },
           bachelorGradingScale: 'ONE_TO_FOUR',
           masterGradingScale: 'ONE_TO_FOUR',

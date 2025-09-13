@@ -141,6 +141,10 @@ export default class ApplicationCreationPage3Component {
         desiredStartDate: $event ?? '',
       });
     }
+
+    this.page3Form.patchValue({
+      desiredStartDate: $event ?? '',
+    });
     this.emitChanged();
   }
 }
