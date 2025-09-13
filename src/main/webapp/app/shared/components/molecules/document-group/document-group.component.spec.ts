@@ -66,6 +66,14 @@ describe('DocumentGroupComponent', () => {
 
     hostFixture = TestBed.createComponent(TestHostComponent);
     hostComponent = hostFixture.componentInstance;
+
+    hostComponent.mockDocumentIds = {
+      bachelorDocumentDictionaryIds: [
+        { id: 'bachelor-id-1', size: 1234 },
+        { id: 'bachelor-id-2', size: 5678 },
+      ],
+    };
+
     hostFixture.detectChanges();
   });
 

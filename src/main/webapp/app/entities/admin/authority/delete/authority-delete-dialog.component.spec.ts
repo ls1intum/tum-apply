@@ -1,6 +1,6 @@
 jest.mock('@ng-bootstrap/ng-bootstrap');
 
-import { ComponentFixture, TestBed, fakeAsync, inject, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -29,21 +29,17 @@ describe('Authority Management Delete Component', () => {
   });
 
   describe('confirmDelete', () => {
-    it('Should call delete service on confirmDelete', inject(
-      [],
-      fakeAsync(() => {
-        // GIVEN
-        jest.spyOn(service, 'delete').mockReturnValue(of(new HttpResponse({ body: {} })));
+    it('Should call delete service on confirmDelete', inject([], () => {
+      // GIVEN
+      jest.spyOn(service, 'delete').mockReturnValue(of(new HttpResponse({ body: {} })));
 
-        // WHEN
-        comp.confirmDelete('ABC');
-        tick();
+      // WHEN
+      comp.confirmDelete('ABC');
 
-        // THEN
-        expect(service.delete).toHaveBeenCalledWith('ABC');
-        expect(mockActiveModal.close).toHaveBeenCalledWith('deleted');
-      }),
-    ));
+      // THEN
+      expect(service.delete).toHaveBeenCalledWith('ABC');
+      expect(mockActiveModal.close).toHaveBeenCalledWith('deleted');
+    }));
 
     it('Should not call delete service on clear', () => {
       // GIVEN

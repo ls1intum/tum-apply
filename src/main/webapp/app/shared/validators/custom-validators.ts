@@ -17,7 +17,7 @@ export function htmlTextRequiredValidator(control: AbstractControl): ValidationE
   // TODO: investigate whether DOM dependency should be removed
   const temp = document.createElement('div');
   temp.innerHTML = htmlText;
-  const plainText = temp.textContent ?? temp.innerText;
+  const plainText = (temp.textContent as string | null | undefined) ?? temp.innerText;
 
-  return !plainText ? { required: true } : undefined;
+  return plainText.length === 0 ? { required: true } : undefined;
 }

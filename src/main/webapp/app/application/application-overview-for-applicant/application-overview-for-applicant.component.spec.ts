@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ApplicationForApplicantDTO, ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, Subject, of, throwError } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import {
   MissingTranslationHandler,
@@ -13,6 +13,10 @@ import {
 } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { MessageService } from 'primeng/api';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { provideLocationMocks } from '@angular/common/testing';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
@@ -25,7 +29,6 @@ class MockApplicationResourceService {
     const pagedData: ApplicationOverviewDTO[] = mockApplications.slice(start, end);
     return of(pagedData);
   }
-
   getApplicationPagesLength(): Observable<number> {
     return of(mockApplications.length);
   }
@@ -33,7 +36,7 @@ class MockApplicationResourceService {
 
 class FakeLoader implements TranslateLoader {
   getTranslation(): Observable<{}> {
-    return of({}); // return an empty object or mock translations
+    return of({});
   }
 }
 
@@ -41,7 +44,6 @@ class MockTranslateService {
   onLangChange = new Subject();
   onTranslationChange = new Subject();
   onDefaultLangChange = new Subject();
-
   get = jest.fn().mockImplementation((key: string) => of(key));
 }
 
@@ -109,6 +111,17 @@ describe('ApplicationOverviewForApplicantComponent', () => {
           provide: ApplicationResourceService,
           useClass: MockApplicationResourceService,
         },
+        provideRouter([]),
+        provideLocationMocks(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: convertToParamMap({}) },
+            queryParamMap: of(convertToParamMap({})),
+            params: of({}),
+            queryParams: of({}),
+          },
+        },
         TranslateStore,
         TranslateLoader,
         TranslateCompiler,
@@ -117,21 +130,23 @@ describe('ApplicationOverviewForApplicantComponent', () => {
           provide: MissingTranslationHandler,
           useValue: { handle: jest.fn() },
         },
-        TranslateService,
+        { provide: TranslateService, useClass: MockTranslateService },
         {
           provide: AccountService,
           useValue: {
-            loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
+            loadedUser: jest.fn().mockReturnValue({ id: 'id_for_test' }),
           },
         },
         {
           provide: MissingTranslationHandler,
           useValue: { handle: jest.fn() },
         },
-        { provide: TranslateService, useClass: MockTranslateService },
         MessageService,
       ],
     }).compileComponents();
+
+    const faLib = TestBed.inject(FaIconLibrary);
+    faLib.addIconPacks(fas);
 
     fixture = TestBed.createComponent(ApplicationOverviewForApplicantComponent);
     component = fixture.componentInstance;
@@ -184,7 +199,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
   it('should delete application and reload data', () => {
     const applicationService = TestBed.inject(ApplicationResourceService);
-
     const reloadSpy = jest.spyOn(component, 'loadPage').mockImplementation();
 
     jest.spyOn(global, 'confirm').mockReturnValue(true);
@@ -224,11 +238,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   it('should handle error in loadPage()', async () => {
     const applicationService = TestBed.inject(ApplicationResourceService);
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(applicationService, 'getApplicationPages').mockReturnValueOnce(
-      of(() => {
-        throw new Error('Oops');
-      }) as any,
-    );
+    jest.spyOn(applicationService, 'getApplicationPages').mockReturnValueOnce(throwError(() => new Error('Oops')));
 
     await component.loadPage({ first: 0, rows: 10 });
     expect(component.loading()).toBe(false);

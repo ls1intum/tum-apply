@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import TranslateDirective from './translate.directive';
@@ -14,11 +14,11 @@ describe('TranslateDirective Tests', () => {
   let fixture: ComponentFixture<TestTranslateDirectiveComponent>;
   let translateService: TranslateService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), TestTranslateDirectiveComponent],
-    });
-  }));
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     translateService = TestBed.inject(TranslateService);

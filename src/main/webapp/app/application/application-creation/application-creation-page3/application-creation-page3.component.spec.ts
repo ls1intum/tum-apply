@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendar, faChevronDown, faChevronUp, faCloudArrowUp, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ComponentRef } from '@angular/core';
@@ -30,7 +30,21 @@ describe('ApplicationCreationPage3Component', () => {
           },
         }),
       ],
-    }).compileComponents();
+    })
+      .overrideTemplate(
+        ApplicationCreationPage3Component,
+        `
+        <div>
+          <form [formGroup]="page3Form">
+            <textarea formControlName="motivation"></textarea>
+            <textarea formControlName="experiences"></textarea>
+            <textarea formControlName="skills"></textarea>
+            <input formControlName="desiredStartDate" />
+          </form>
+        </div>
+      `,
+      )
+      .compileComponents();
 
     fixture = TestBed.createComponent(ApplicationCreationPage3Component);
     component = fixture.componentInstance;
@@ -54,13 +68,23 @@ describe('ApplicationCreationPage3Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should reflect user input in the bound model', waitForAsync(async () => {
+  it('should initialize form with provided data', () => {
+    expect(component.page3Form.controls.motivation.value).toBe('I need more experiences');
+    expect(component.page3Form.controls.experiences.value).toBe('I have experiences');
+    expect(component.page3Form.controls.skills.value).toBe('I can make experiences');
+    expect(component.page3Form.controls.desiredStartDate.value).toBe('2032-3-2');
+  });
+
+  it('should reflect user input in the bound model', async () => {
     const newValue = 'Driven by innovation';
     component.page3Form.controls['motivation'].setValue(newValue);
 
+    // Wait for the debounced form value changes and effects to process
     await fixture.whenStable();
     await new Promise(resolve => setTimeout(resolve, 150)); // Wait for debounceTime(100)
     fixture.detectChanges();
+
+    // The data model should be updated (not just the form control)
     expect(component.data()?.motivation).toBe('Driven by innovation');
-  }));
+  });
 });

@@ -57,7 +57,7 @@ describe('ButtonComponent', () => {
 
     const badge: HTMLElement | null = fixture.nativeElement.querySelector('.button-overlay');
     expect(badge).not.toBeNull();
-    expect(badge!.textContent!.trim()).toBe('7');
+    expect(badge!.textContent.trim()).toBe('7');
   });
 
   it('should render a rounded button when label is undefined', () => {

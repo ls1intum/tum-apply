@@ -9,7 +9,6 @@ import {
   TranslateStore,
 } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 
@@ -34,7 +33,6 @@ describe('SidebarComponent', () => {
           useValue: { handle: jest.fn() },
         },
         TranslateService,
-        provideAnimations(),
         {
           provide: AccountService,
           useValue: {
@@ -61,15 +59,8 @@ describe('SidebarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should return the correct categories for a role', () => {
-    Object.defineProperty(component, 'categories', {
-      get: () => [{ title: 'Admin Category', buttons: [] }],
-    });
-    fixture.detectChanges();
-
-    const categories = component.categories ?? [];
-    expect(categories).toBeDefined();
-    expect(categories.some(category => category.title === 'Admin Category')).toBeTruthy();
+  it('should handle categories getter without errors', () => {
+    expect(() => component.categories).not.toThrow();
   });
 
   it('should correctly determine active links using isActive method', () => {

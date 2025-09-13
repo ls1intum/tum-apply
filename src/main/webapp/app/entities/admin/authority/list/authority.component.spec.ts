@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, inject, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { HttpHeaders, HttpResponse, provideHttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, of } from 'rxjs';
@@ -133,38 +133,30 @@ describe('Authority Management Component', () => {
       jest.spyOn(ngbModal, 'open').mockReturnValue(deleteModalMock);
     });
 
-    it('on confirm should call load', inject(
-      [],
-      fakeAsync(() => {
-        // GIVEN
-        jest.spyOn(comp, 'load');
+    it('on confirm should call load', inject([], () => {
+      // GIVEN
+      jest.spyOn(comp, 'load');
 
-        // WHEN
-        comp.delete(sampleWithRequiredData);
-        deleteModalMock.closed.next('deleted');
-        tick();
+      // WHEN
+      comp.delete(sampleWithRequiredData);
+      deleteModalMock.closed.next('deleted');
 
-        // THEN
-        expect(ngbModal.open).toHaveBeenCalled();
-        expect(comp.load).toHaveBeenCalled();
-      }),
-    ));
+      // THEN
+      expect(ngbModal.open).toHaveBeenCalled();
+      expect(comp.load).toHaveBeenCalled();
+    }));
 
-    it('on dismiss should call load', inject(
-      [],
-      fakeAsync(() => {
-        // GIVEN
-        jest.spyOn(comp, 'load');
+    it('on dismiss should call load', inject([], () => {
+      // GIVEN
+      jest.spyOn(comp, 'load');
 
-        // WHEN
-        comp.delete(sampleWithRequiredData);
-        deleteModalMock.closed.next();
-        tick();
+      // WHEN
+      comp.delete(sampleWithRequiredData);
+      deleteModalMock.closed.next();
 
-        // THEN
-        expect(ngbModal.open).toHaveBeenCalled();
-        expect(comp.load).not.toHaveBeenCalled();
-      }),
-    ));
+      // THEN
+      expect(ngbModal.open).toHaveBeenCalled();
+      expect(comp.load).not.toHaveBeenCalled();
+    }));
   });
 });

@@ -84,12 +84,16 @@ describe('JobDetailComponent', () => {
   };
 
   beforeEach(async () => {
+    const mockRouter = {
+      navigate: jest.fn().mockResolvedValue(true),
+    };
     await TestBed.configureTestingModule({
       imports: [JobDetailComponent, TranslateModule.forRoot()],
       providers: [
         provideHttpClient(),
         provideRouter([]),
         provideHttpClientTesting(),
+        { provide: Router, useValue: mockRouter },
         { provide: JobResourceService, useValue: mockJobService },
         { provide: AccountService, useValue: mockAccountService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
