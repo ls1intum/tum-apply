@@ -122,6 +122,10 @@ export class AuthOrchestratorService {
 
   // -------- Helpers ----------
 
+  clearError(): void {
+    this.error.set(null);
+  }
+
   setError(msg: string | null): void {
     this.error.set(msg);
   }

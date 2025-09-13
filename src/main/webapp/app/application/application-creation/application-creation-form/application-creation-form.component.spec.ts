@@ -15,7 +15,7 @@ import {
   faInfoCircle,
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
-import { HttpResponse } from '@angular/common/http';
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { MessageService } from 'primeng/api';
@@ -48,6 +48,7 @@ describe('ApplicationCreationFormComponent create', () => {
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationFormComponent, TranslateModule.forRoot()],
       providers: [
+        provideHttpClient(),
         {
           provide: ActivatedRoute,
           useValue: {

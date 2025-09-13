@@ -1,8 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AuthenticationResourceService } from 'app/generated/api/authenticationResource.service';
-
-import { AuthSessionInfoDTO } from '../../generated/model/authSessionInfoDTO';
+import { AuthSessionInfoDTO } from 'app/generated/model/authSessionInfoDTO';
 
 import { AccountService } from './account.service';
 
@@ -40,7 +39,7 @@ export class AuthenticationService {
   }
 
   // Schedules a token refresh if the user is authenticated
-  private scheduleRefresh(expiresInSec: number | undefined): void {
+  scheduleRefresh(expiresInSec: number | undefined): void {
     if (expiresInSec === undefined) {
       return;
     }

@@ -9,6 +9,11 @@
     color: var(--p-text-primary);
   }
 
+  .error-container {
+    min-height: 1.5rem;
+    color: var(--p-danger-color);
+  }
+
   .buttons {
     display: flex;
     justify-content: space-between;

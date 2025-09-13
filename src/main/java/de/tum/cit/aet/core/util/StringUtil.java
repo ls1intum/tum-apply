@@ -28,4 +28,8 @@ public class StringUtil {
         }
         return value.replaceAll("\\s+", " ");
     }
+
+    public static boolean isBlank(String input) {
+        return input == null || input.trim().isEmpty();
+    }
 }
