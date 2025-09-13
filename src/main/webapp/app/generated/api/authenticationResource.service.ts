@@ -87,7 +87,7 @@ export class AuthenticationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/auth/login`;
-        return this.httpClient.request<{ [key: string]: number; }>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<AuthSessionInfoDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: loginRequestDTO,
@@ -196,13 +196,12 @@ export class AuthenticationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/auth/otp-complete`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<AuthSessionInfoDTO>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<AuthSessionInfoDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: otpCompleteDTO,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -246,7 +245,7 @@ export class AuthenticationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/auth/refresh`;
-        return this.httpClient.request<{ [key: string]: number; }>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<AuthSessionInfoDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
