@@ -45,7 +45,7 @@ public class Job extends AbstractAuditingEntity {
     private String researchArea;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "location", nullable = false)
+    @Column(name = "location")
     private Campus location;
 
     @Column(name = "workload")
