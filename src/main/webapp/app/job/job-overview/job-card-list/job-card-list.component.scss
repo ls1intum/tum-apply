@@ -5,10 +5,12 @@
   padding: 1rem 5rem;
   justify-content: center;
 }
+
 .job-card-grid > * {
   flex: 0 0 auto;
-  width: clamp(15rem, 20vw, 20rem);
+  width: clamp(16.5rem, 20vw, 20rem);
 }
+
 .no-jobs-text {
   text-align: center;
   padding: 2rem;

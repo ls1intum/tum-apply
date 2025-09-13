@@ -15,9 +15,24 @@ export interface JobCardDTO {
     fieldOfStudies: string;
     location: string;
     professorName: string;
+    applicationId?: string;
+    applicationState?: JobCardDTO.ApplicationStateEnum;
     workload?: number;
     startDate?: string;
     relativeTimeEnglish?: string;
     relativeTimeGerman?: string;
 }
+export namespace JobCardDTO {
+    export const ApplicationStateEnum = {
+        Saved: 'SAVED',
+        Sent: 'SENT',
+        Accepted: 'ACCEPTED',
+        InReview: 'IN_REVIEW',
+        Rejected: 'REJECTED',
+        Withdrawn: 'WITHDRAWN',
+        JobClosed: 'JOB_CLOSED'
+    } as const;
+    export type ApplicationStateEnum = typeof ApplicationStateEnum[keyof typeof ApplicationStateEnum];
+}
+
 

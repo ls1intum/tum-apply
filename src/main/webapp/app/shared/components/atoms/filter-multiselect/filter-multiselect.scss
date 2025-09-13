@@ -1,0 +1,127 @@
+.filter-multiselect {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  .p-divider {
+    &.p-divider-horizontal {
+      margin: 0.1rem 0;
+    }
+
+    .divider-text {
+      font-size: 0.75rem;
+      color: var(--p-background-disabled);
+    }
+  }
+
+  .p-checkbox {
+    .p-checkbox-box {
+      background: transparent;
+    }
+
+    &.p-checkbox-checked {
+      .p-checkbox-box {
+        background: var(--p-primary-color);
+        border-color: #fff;
+      }
+
+      .p-checkbox-icon {
+        color: #fff;
+      }
+    }
+  }
+
+  .filter-button {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border: var(--p-border-default) solid 0.1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 2.9rem;
+
+    span {
+      margin-right: 1rem;
+    }
+
+    .filter-icon {
+      transition: transform 0.2s ease;
+
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+
+    &:hover {
+      border-color: var(--p-primary-color);
+    }
+  }
+
+  .filter-dropdown {
+    position: absolute;
+    width: max-content;
+    max-width: 30rem;
+    right: 0;
+    top: 100%;
+    z-index: 1000;
+    background: var(--p-background-default);
+    border: var(--p-border-default) solid 0.1rem;
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+    max-height: 20rem;
+    display: flex;
+    flex-direction: column;
+
+    .panel-header {
+      padding: 0.6rem 0.75rem 0.4rem;
+      display: flex;
+      flex-direction: row;
+
+      .search-input {
+        width: 100%;
+        padding-left: 0.75rem;
+        outline: none;
+        box-shadow: none;
+
+        &::placeholder {
+          color: var(--p-background-disabled);
+        }
+      }
+    }
+
+    .options-container {
+      flex: 1;
+      overflow-y: auto;
+
+      .options-list {
+        .option-item {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem;
+          cursor: pointer;
+
+          &:hover {
+            background: var(--p-primary-color);
+
+            .option-label {
+              color: #fff;
+            }
+          }
+
+          .option-label {
+            padding-left: 0.5rem;
+            flex: 1;
+          }
+        }
+
+        .no-results {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.5rem;
+        }
+      }
+    }
+  }
+}

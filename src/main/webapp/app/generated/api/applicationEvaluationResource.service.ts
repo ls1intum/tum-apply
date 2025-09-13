@@ -94,12 +94,13 @@ export class ApplicationEvaluationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/evaluation/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/accept`;
-        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: acceptDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -136,10 +137,59 @@ export class ApplicationEvaluationResourceService extends BaseService {
 
 
         let localVarPath = `/api/evaluation/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/documents-download`;
-        return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: "blob",
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getAllJobNames(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<string>>;
+    public getAllJobNames(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<string>>>;
+    public getAllJobNames(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<string>>>;
+    public getAllJobNames(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/evaluation/job-names`;
+        return this.httpClient.request<Array<string>>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
@@ -156,13 +206,14 @@ export class ApplicationEvaluationResourceService extends BaseService {
      * @param direction 
      * @param status 
      * @param job 
+     * @param search 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationDetailListDTO>;
-    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationDetailListDTO>>;
-    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationDetailListDTO>>;
-    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationDetailListDTO>;
+    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationDetailListDTO>>;
+    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationDetailListDTO>>;
+    public getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
@@ -185,6 +236,8 @@ export class ApplicationEvaluationResourceService extends BaseService {
                   <any>element, 'job');
             })
         }
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>search, 'search');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -212,12 +265,13 @@ export class ApplicationEvaluationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/evaluation/application-details`;
-        return this.httpClient.request<ApplicationEvaluationDetailListDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<ApplicationEvaluationDetailListDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -233,13 +287,14 @@ export class ApplicationEvaluationResourceService extends BaseService {
      * @param direction 
      * @param status 
      * @param job 
+     * @param search 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationDetailListDTO>;
-    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationDetailListDTO>>;
-    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationDetailListDTO>>;
-    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationDetailListDTO>;
+    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationDetailListDTO>>;
+    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationDetailListDTO>>;
+    public getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (applicationId === null || applicationId === undefined) {
             throw new Error('Required parameter applicationId was null or undefined when calling getApplicationsDetailsWindow.');
         }
@@ -268,6 +323,8 @@ export class ApplicationEvaluationResourceService extends BaseService {
                   <any>element, 'job');
             })
         }
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>search, 'search');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -295,12 +352,13 @@ export class ApplicationEvaluationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/evaluation/application-details/window`;
-        return this.httpClient.request<ApplicationEvaluationDetailListDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<ApplicationEvaluationDetailListDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -316,13 +374,14 @@ export class ApplicationEvaluationResourceService extends BaseService {
      * @param direction 
      * @param status 
      * @param job 
+     * @param search 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationOverviewListDTO>;
-    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationOverviewListDTO>>;
-    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationOverviewListDTO>>;
-    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApplicationEvaluationOverviewListDTO>;
+    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApplicationEvaluationOverviewListDTO>>;
+    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApplicationEvaluationOverviewListDTO>>;
+    public getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
@@ -345,6 +404,8 @@ export class ApplicationEvaluationResourceService extends BaseService {
                   <any>element, 'job');
             })
         }
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>search, 'search');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -372,12 +433,13 @@ export class ApplicationEvaluationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/evaluation/applications`;
-        return this.httpClient.request<ApplicationEvaluationOverviewListDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<ApplicationEvaluationOverviewListDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -421,11 +483,12 @@ export class ApplicationEvaluationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/evaluation/jobs`;
-        return this.httpClient.request<Array<JobFilterOptionDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<JobFilterOptionDTO>>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -472,11 +535,12 @@ export class ApplicationEvaluationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/evaluation/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/open`;
-        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -536,12 +600,13 @@ export class ApplicationEvaluationResourceService extends BaseService {
         }
 
         let localVarPath = `/api/evaluation/applications/${this.configuration.encodeParam({name: "applicationId", value: applicationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/reject`;
-        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: rejectDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,

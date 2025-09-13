@@ -8,7 +8,8 @@
       "steps": {
         "basicInfo": "Grundlegende Informationen",
         "positionDetails": "Stellenbeschreibung",
-        "additionalInfo": "Zusätzliche Informationen"
+        "additionalInfo": "Zusätzliche Informationen",
+        "summary": "Zusammenfassung"
       }
     },
     "basicInformationSection": {
@@ -51,7 +52,7 @@
       "contractDuration": {
         "label": "Vertragslaufzeit",
         "placeholder": "Gib eine Vertragslaufzeit an (in Jahren)...",
-        "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 5 Jahre eingeben."
+        "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
       "fundingType": {
         "label": "Finanzierungsart",
@@ -91,6 +92,10 @@
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
       "message": "Bist du sicher, dass du diese Doktorandenstelle veröffentlichen möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+    },
+    "reviewPageSection": {
+      "title": "Übersicht",
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Doktorandenstelle veröffentlichst."
     }
   },
   "jobOverviewPage": {
@@ -185,9 +190,11 @@
     "cancel": "Abbrechen",
     "next": "Weiter",
     "back": "Zurück",
-    "saveDraft": "Entwurf speichern"
+    "saveDraft": "Entwurf speichern",
+    "viewApplication": "Zur Bewerbung"
   },
   "jobState": {
+    "preview": "Vorschau",
     "draft": "Entwurf",
     "published": "Veröffentlicht",
     "closed": "Geschlossen",

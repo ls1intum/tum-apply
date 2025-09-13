@@ -1,12 +1,7 @@
 package de.tum.cit.aet.core.service;
 
-import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
-import java.util.Locale;
-import java.util.UUID;
+import de.tum.cit.aet.usermanagement.service.UserService;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,47 +9,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthenticationService {
 
-    private final UserRepository userRepository;
-    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final UserService userService;
 
-    public AuthenticationService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository) {
-        this.userRepository = userRepository;
-        this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
+    public AuthenticationService(UserService userService) {
+        this.userService = userService;
     }
 
     /**
-     * Provisions a new user in the database if it does not already exist.
-     * The user ID is taken from the JWT subject. This method avoids
-     * updating the user if already present to prevent concurrent modification errors.
+     * Provisions a user from the JWT claims and assigns the default APPLICANT role if missing.
+     * If the user already exists, basic fields are updated. Returns the managed entity.
      *
      * @param jwt The decoded JWT token.
      * @return the existing or newly created {@link User} entity
      */
     @Transactional
     public User provisionUserIfMissing(Jwt jwt) {
-        UUID userId = UUID.fromString(jwt.getSubject());
-        User user = userRepository
-            .findWithResearchGroupRolesByUserId(userId)
-            .orElseGet(() -> {
-                User newUser = new User();
-                newUser.setUserId(userId);
-                newUser.setSelectedLanguage("en");
-                return newUser;
-            });
-
-        user.setEmail(jwt.getClaimAsString("email").toLowerCase(Locale.ROOT));
-        user.setFirstName(jwt.getClaimAsString("given_name"));
-        user.setLastName(jwt.getClaimAsString("family_name"));
-        userRepository.save(user);
-
-        boolean hasRoles = userResearchGroupRoleRepository.existsByUserUserId(user.getUserId());
-        if (!hasRoles) {
-            UserResearchGroupRole defaultRole = new UserResearchGroupRole();
-            defaultRole.setUser(user);
-            defaultRole.setRole(UserRole.APPLICANT);
-            userResearchGroupRoleRepository.save(defaultRole);
-        }
-
-        return user;
+        String email = jwt.getClaimAsString("email");
+        String givenName = jwt.getClaimAsString("given_name");
+        String familyName = jwt.getClaimAsString("family_name");
+        return userService.upsertUser(jwt.getSubject(), email, givenName, familyName);
     }
 }

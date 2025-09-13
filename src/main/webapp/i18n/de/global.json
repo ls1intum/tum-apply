@@ -2,6 +2,35 @@
   "global": {
     "title": "TUMApply",
     "browsehappy": "Du benutzt einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisiere deinen Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+    "routes": {
+      "job": {
+        "detail": "TUMApply - Positionsdetails",
+        "creation": "TUMApply - Positionserstellung",
+        "edit": "TUMApply - Positiosbearbeitung",
+        "overview": "TUMApply - Positionsübersicht",
+        "myPositions": "TUMApply - Meine Positionen"
+      },
+      "application": {
+        "creation": "TUMApply - Bewerbungserstellung",
+        "overview": "TUMApply - Bewerbungsübersicht",
+        "detail": "TUMApply - Bewerbungsdetail"
+      },
+      "evaluation": {
+        "overview": "TUMApply - Evaluierungsübersicht",
+        "detail": "TUMApply - Bewerbungsevaluierung"
+      },
+      "footer": {
+        "imprint": "TUMApply - Impressum",
+        "privacy": "TUMApply - Datenschutz"
+      },
+      "settings": "TUMApply - Einstellungen",
+      "researchGroup": {
+        "templates": "TUMApply - Meine Vorlagen",
+        "templateCreation": "TUMApply - Vorlagenserstellung",
+        "templateEdit": "TUMApply - Vorlagenbearbeitung",
+        "info": "TUMApply - Meine Gruppe"
+      }
+    },
     "menu": {
       "home": "Startseite",
       "colorTheme": "Farbschema ändern",
@@ -30,18 +59,6 @@
         "database": "Datenbank"
       },
       "language": "Sprache"
-    },
-    "form": {
-      "username.label": "Benutzername",
-      "username.placeholder": "Dein Benutzername",
-      "currentpassword.label": "Aktuelles Passwort",
-      "currentpassword.placeholder": "Aktuelles Passwort",
-      "newpassword.label": "Neues Passwort",
-      "newpassword.placeholder": "Neues Passwort",
-      "confirmpassword.label": "Neues Passwort bestätigen",
-      "confirmpassword.placeholder": "Bestätige dein neues Passwort",
-      "email.label": "Email Adresse",
-      "email.placeholder": "Deine Email Adresse"
     },
     "messages": {
       "info": {
@@ -158,9 +175,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Ausgewählt",
+      "noResults": "Keine Ergebnisse gefunden",
       "numberSelected": "{{selected}} ausgewählt",
-      "clear": "Entfernen",
-      "clearAll": "Alle entfernen",
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
@@ -209,8 +226,9 @@
       "personalInformation": "Persönliche Informationen",
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
+      "summary": "Zusammenfassung",
       "buttons": {
-        "cancel": "Abbrechen",
+        "back": "Zurück",
         "next": "Weiter",
         "prev": "Zurück",
         "send": "Senden"
@@ -247,6 +265,9 @@
       },
       "tooltip": {
         "language": "Wähle deine bevorzugte Kommunikationssprache."
+      },
+      "validation": {
+        "postalCode": "Bitte gib eine gültige Postleitzahl für das ausgewählte Land ein."
       }
     },
     "applicationPage2": {
@@ -272,7 +293,8 @@
         "masterDegreeName": "Gib den Studiengang deines Masters an.",
         "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
         "masterGradingScale": "Wähle die Benotungsskala deines Masters.",
-        "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an."
+        "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
+        "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
       }
     },
     "applicationPage3": {
@@ -304,6 +326,10 @@
       "placeholder": {
         "selectStartDate": "Startdatum auswählen..."
       }
+    },
+    "applicationPage4": {
+      "title": "Übersicht",
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst."
     },
     "applicationOverview": {
       "header": "Deine Bewerbungen",

@@ -65,7 +65,6 @@
 // Styles for the Dynamic Table component
 .p-datatable .p-datatable-tbody > tr > td,
 .p-datatable .p-datatable-thead > tr > th {
-  border-bottom: none;
   background: var(--p-background-default);
 }
 
@@ -313,6 +312,13 @@
   .fa-circle-info {
     color: var(--p-primary-color);
   }
+}
+
+/* Styles for the tooltip icon in the Upload component */
+.upload-info-icon {
+  color: var(--p-primary-color);
+  margin-left: 0.5rem;
+  font-size: 1rem;
 }
 
 /* Styling for links */

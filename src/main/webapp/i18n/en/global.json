@@ -2,6 +2,35 @@
   "global": {
     "title": "TUMApply",
     "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
+    "routes": {
+      "job": {
+        "detail": "TUMApply - Job Details",
+        "creation": "TUMApply - Job Creation",
+        "edit": "TUMApply - Job Edit",
+        "overview": "TUMApply - Job Overview",
+        "myPositions": "TUMApply - My Positions"
+      },
+      "application": {
+        "creation": "TUMApply - Application Creation",
+        "overview": "TUMApply - Application Overview",
+        "detail": "TUMApply - Application Detail"
+      },
+      "evaluation": {
+        "overview": "TUMApply - Evaluation Overview",
+        "detail": "TUMApply - Application Evaluation"
+      },
+      "footer": {
+        "imprint": "TUMApply - Imprint",
+        "privacy": "TUMApply - Privacy"
+      },
+      "settings": "TUMApply - Settings",
+      "researchGroup": {
+        "templates": "TUMApply - My Templates",
+        "templateCreation": "TUMApply - New Template",
+        "templateEdit": "TUMApply - Edit Template",
+        "info": "TUMApply - My Group"
+      }
+    },
     "menu": {
       "home": "Home",
       "colorTheme": "Change Color Theme",
@@ -30,18 +59,6 @@
         "database": "Database"
       },
       "language": "Language"
-    },
-    "form": {
-      "username.label": "Username",
-      "username.placeholder": "Your username",
-      "currentpassword.label": "Current password",
-      "currentpassword.placeholder": "Current password",
-      "newpassword.label": "New password",
-      "newpassword.placeholder": "New password",
-      "confirmpassword.label": "New password confirmation",
-      "confirmpassword.placeholder": "Confirm the new password",
-      "email.label": "Email",
-      "email.placeholder": "Your email"
     },
     "messages": {
       "info": {
@@ -158,9 +175,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Selected",
+      "noResults": "No results found",
       "numberSelected": "{{selected}} selected",
-      "clear": "Clear",
-      "clearAll": "Clear all",
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },
@@ -209,8 +226,9 @@
       "personalInformation": "Personal Information",
       "education": "Education",
       "applicationDetails": "Application Details",
+      "summary": "Summary",
       "buttons": {
-        "cancel": "Cancel",
+        "back": "Back",
         "next": "Next",
         "prev": "Previous",
         "send": "Send"
@@ -247,6 +265,9 @@
       },
       "tooltip": {
         "language": "Choose your preferred communication language."
+      },
+      "validation": {
+        "postalCode": "Please enter a valid postal code for the selected country."
       }
     },
     "applicationPage2": {
@@ -272,7 +293,8 @@
         "masterDegreeName": "Specify the study program of your Master's Degree.",
         "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
         "masterGradingScale": "Choose the Grading Scale used for your Master's Degree.",
-        "masterGrade": "Enter your final Master's Grade according to your institution's grading system."
+        "masterGrade": "Enter your final Master's Grade according to your institution's grading system.",
+        "filenamePrivacy": "File names stay private and are not shown to professors."
       }
     },
     "applicationPage3": {
@@ -304,6 +326,10 @@
       "placeholder": {
         "selectStartDate": "Select a Start Date..."
       }
+    },
+    "applicationPage4": {
+      "title": "Overview",
+      "message": "Please review your entries before submitting the application."
     },
     "applicationOverview": {
       "header": "Your Applications",

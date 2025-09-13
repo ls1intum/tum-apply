@@ -70,11 +70,12 @@ export class EmailSettingResourceService extends BaseService {
         }
 
         let localVarPath = `/api/settings/emails`;
-        return this.httpClient.request<Array<EmailSettingDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<EmailSettingDTO>>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -131,12 +132,13 @@ export class EmailSettingResourceService extends BaseService {
         }
 
         let localVarPath = `/api/settings/emails`;
-        return this.httpClient.request<Array<EmailSettingDTO>>('put', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<EmailSettingDTO>>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: emailSettingDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,

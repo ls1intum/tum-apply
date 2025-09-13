@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import SharedModule from '../../../shared/shared.module';
-import { JobCardComponent } from '../job-card/job-card.component';
+import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 
 @Component({
@@ -19,6 +19,8 @@ import { Sort, SortBarComponent, SortOption } from '../../../shared/components/m
   styleUrls: ['./job-card-list.component.scss'],
 })
 export class JobCardListComponent {
+  ApplicationStatusExtendedLocal = ApplicationStatusExtended;
+
   jobs = signal<JobCardDTO[]>([]);
   totalRecords = signal<number>(0);
   page = signal<number>(0);
