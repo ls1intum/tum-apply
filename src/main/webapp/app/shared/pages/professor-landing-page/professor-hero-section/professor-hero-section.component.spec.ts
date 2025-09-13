@@ -8,6 +8,8 @@ import {
   TranslateService,
   TranslateStore,
 } from '@ngx-translate/core';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { ProfessorHeroSectionComponent } from './professor-hero-section.component';
 
@@ -19,6 +21,8 @@ describe('ProfessorHeroSectionComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ProfessorHeroSectionComponent, TranslateModule.forRoot()],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         TranslateStore,
         TranslateLoader,
         TranslateCompiler,

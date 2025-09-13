@@ -11,6 +11,8 @@ import {
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCalendarCheck, faFilePen, faFolderOpen, faStar } from '@fortawesome/free-solid-svg-icons';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { ProfessorLandingPageComponent } from './professor-landing-page.component';
 
@@ -22,6 +24,8 @@ describe('ProfessorLandingPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ProfessorLandingPageComponent, TranslateModule.forRoot(), FontAwesomeModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         TranslateStore,
         TranslateLoader,
         TranslateCompiler,

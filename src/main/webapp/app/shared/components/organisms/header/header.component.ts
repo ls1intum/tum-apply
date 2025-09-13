@@ -84,7 +84,7 @@ export class HeaderComponent {
   private authDialogService = inject(AuthDialogService);
 
   navigateToHome(): void {
-    if (this.accountService.hasAnyAuthority(['PROFESSOR'])) {
+    if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
       this.redirectToProfessorLandingPage();
     } else {
       this.redirectToApplicantLandingPage();
