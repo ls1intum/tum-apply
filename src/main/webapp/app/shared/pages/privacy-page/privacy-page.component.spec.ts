@@ -92,7 +92,7 @@ class FakeLoaderDe implements TranslateLoader {
 
 function expectTextToContain(el: Element | null, expected: string): void {
   expect(el).toBeTruthy();
-  const normalizedText = el!.textContent.replace(/\s+/g, ' ').toLowerCase();
+  const normalizedText = el?.textContent.replace(/\s+/g, ' ').toLowerCase();
   expect(normalizedText).toContain(expected.toLowerCase());
 }
 
