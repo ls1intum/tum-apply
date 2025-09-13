@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Carousel } from 'primeng/carousel';
 import { TranslateModule } from '@ngx-translate/core';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { Router } from '@angular/router';
 
 import { ButtonComponent } from '../../../components/atoms/button/button.component';
@@ -8,7 +9,6 @@ import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-hero-section',
-  standalone: true,
   imports: [ButtonComponent, Carousel, TranslateModule, TranslateDirective],
   templateUrl: './professor-hero-section.component.html',
   styleUrl: './professor-hero-section.component.scss',
@@ -20,10 +20,10 @@ export class ProfessorHeroSectionComponent {
     { image: 'professor-landing-page-hero-section-3', backgroundClass: 'hero-background-professor-landing-page-hero-section-3' },
   ];
 
+  private authFacadeService = inject(AuthFacadeService);
   private router = inject(Router);
 
-  // TODO: replace link with, e.g. my-positions
-  navigateToGetStarted(): void {
-    this.router.navigate(['/job-overview']);
+  async navigateToGetStarted(): Promise<void> {
+    await this.authFacadeService.loginWithTUM('/job/create');
   }
 }
