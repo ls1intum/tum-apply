@@ -96,7 +96,7 @@ public class AuthenticationResource {
                 }
             }
         }
-        AuthResponseDTO tokens = keycloakAuthenticationService.normalizeTokensForServer(accessToken, refreshToken);
+        AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(accessToken, refreshToken);
 
         CookieUtils.setAuthCookies(response, tokens);
         return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());

@@ -152,7 +152,7 @@ public class SecurityConfiguration {
             if (accessCookie != null && accessCookie.getValue() != null) {
                 return accessCookie.getValue();
             } else if ((accessCookie == null || accessCookie.getValue() == null) && refreshCookie != null) {
-                AuthResponseDTO tokens = keycloakAuthenticationService.normalizeTokensForServer(null, refreshCookie.getValue());
+                AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(null, refreshCookie.getValue());
                 return tokens.accessToken();
             }
             return defaultResolver.resolve(request);

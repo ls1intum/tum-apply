@@ -1,10 +1,15 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 /**
@@ -13,24 +18,50 @@ import java.time.Instant;
 @Service
 public class JwtService {
     private final JwtDecoder decoder;
+    private final JwtDecoder refreshTokenDecoder;
 
-    public JwtService(JwtDecoder decoder) {
+    public JwtService(
+        JwtDecoder decoder,
+        @Value("${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}") String adminClientSecret,
+        @Value("${KEYCLOAK_SERVER_CLIENT_ID:server-client}") String clientId
+    ) {
         this.decoder = decoder;
+        this.refreshTokenDecoder = (adminClientSecret == null || adminClientSecret.isBlank())
+            ? null
+            : NimbusJwtDecoder.withSecretKey(new SecretKeySpec(adminClientSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"))
+            .macAlgorithm(MacAlgorithm.HS256)
+            .build();
     }
 
     /**
-     * Decodes the given JWT token string.
+     * Decodes the given JWT access token string.
      *
-     * @param token the JWT token string
-     * @return the decoded Jwt, or null if the token is null or blank
+     * @param accessToken the JWT token string
+     * @return the decoded  Jwt, or null if the token is null or blank
      * @throws UnauthorizedException if the token is invalid
      */
-    public Jwt decode(String token) {
-        if (token == null || token.isBlank()) return null;
+    public Jwt decode(String accessToken) {
+        if (accessToken == null || accessToken.isBlank()) return null;
         try {
-            return decoder.decode(token);
+            return decoder.decode(accessToken);
         } catch (Exception e) {
-            throw new UnauthorizedException("Invalid token", e);
+            throw new UnauthorizedException("Invalid access token", e);
+        }
+    }
+
+    /**
+     * Decodes the given JWT refresh token string.
+     *
+     * @param refreshToken the JWT token string
+     * @return the decoded  Jwt, or null if the token is null or blank
+     * @throws UnauthorizedException if the token is invalid
+     */
+    public Jwt decodeRefreshToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) return null;
+        try {
+            return refreshTokenDecoder.decode(refreshToken);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid refresh token", e);
         }
     }
 
