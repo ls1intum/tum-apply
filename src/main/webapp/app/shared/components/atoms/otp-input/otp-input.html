@@ -16,6 +16,7 @@
       (click)="onSubmit()"
       [disabled]="disabledSubmit()"
       [fullWidth]="true"
+      [loading]="isBusy()"
       [shouldTranslate]="true"
       label="auth.common.otp.submit"
     />
