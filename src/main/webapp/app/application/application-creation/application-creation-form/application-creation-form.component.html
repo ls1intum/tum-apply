@@ -3,17 +3,19 @@
   class="confirm-dialog"
   [header]="'entity.applicationSteps.confirmDialog.header' | translate"
   [message]="'entity.applicationSteps.confirmDialog.message' | translate"
-  [label]="sendButtonLabel | translate"
+  [label]="'entity.applicationSteps.buttons.send' | translate"
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
-  (confirmed)="sendCreateApplicationData('SENT', true)"
+  (confirmed)="onConfirmSend()"
 />
+
 <ng-template #panel1>
   <div class="panel">
     <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
   </div>
 </ng-template>
+
 <ng-template #panel2>
   <div class="panel">
     <jhi-application-creation-page2
@@ -27,6 +29,7 @@
     />
   </div>
 </ng-template>
+
 <ng-template #panel3>
   <div class="panel">
     @if (page3()) {
@@ -42,23 +45,42 @@
     }
   </div>
 </ng-template>
+
 <ng-template #panel4>
   <div class="panel">
+    <!-- Summary panel -->
     <div class="summary_page">
-      <h2>{{ 'entity.applicationPage4.title' | translate }}</h2>
-      <p>{{ 'entity.applicationPage4.message' | translate }}</p>
+      <h2 jhiTranslate="entity.applicationPage4.title"></h2>
+      <p jhiTranslate="entity.applicationPage4.message"></p>
 
       <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
     </div>
+  </div>
+
+  <p-divider layout="horizontal">
+    <span jhiTranslate="privacy.privacyConsent.title"></span>
+  </p-divider>
+
+  <div class="data-privacy-notice mb-2">
+    <p jhiTranslate="privacy.privacyConsent.text"></p>
+  </div>
+
+  <div [formGroup]="additionalInfoForm">
+    <label>
+      <input type="checkbox" formControlName="privacyAccepted" />
+      <span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
+    </label>
+
+    @if (!privacyAcceptedSignal() && submitAttempted()) {
+      <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
+    }
   </div>
 </ng-template>
 
 <ng-template #saving_state_panel>
   <div [className]="savingBadgeCalculatedClass()">
     <fa-icon icon="save" />
-    <span class="font-bold">
-      {{ `entity.applicationSteps.status.${this.savingState()}` | translate }}
-    </span>
+    <span class="font-bold" [jhiTranslate]="'entity.applicationSteps.status.' + savingState()"></span>
   </div>
 </ng-template>
 
@@ -68,6 +90,7 @@
   </header>
   <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>
 </div>
+
 <div class="m-4 p-1">
   <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
 </div>

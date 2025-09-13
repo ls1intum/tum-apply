@@ -674,6 +674,32 @@
         }
       }
     },
+    "/api/me/prof-onboarding/remind": {
+      "post": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "remindLater",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/prof-onboarding/confirm": {
+      "post": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "confirmOnboarding",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
     "/api/jobs/create": {
       "post": {
         "tags": [
@@ -1687,6 +1713,48 @@
         }
       }
     },
+    "/api/research-groups/members": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResearchGroupMembers",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOUserShortDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/research-groups/detail/{researchGroupId}": {
       "get": {
         "tags": [
@@ -1711,6 +1779,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchGroupLargeDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/prof-onboarding": {
+      "get": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfOnboardingDTO"
                 }
               }
             }
@@ -2016,6 +2104,29 @@
                     "$ref": "#/components/schemas/JobFilterOptionDTO"
                   },
                   "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/job-names": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getAllJobNames",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -2674,6 +2785,30 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/research-groups/members/{userId}": {
+      "delete": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "removeMemberFromResearchGroup",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -3499,6 +3634,21 @@
           }
         }
       },
+      "PageResponseDTOUserShortDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserShortDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "ResearchGroupLargeDTO": {
         "type": "object",
         "properties": {
@@ -3519,6 +3669,14 @@
           },
           "city": {
             "type": "string"
+          }
+        }
+      },
+      "ProfOnboardingDTO": {
+        "type": "object",
+        "properties": {
+          "show": {
+            "type": "boolean"
           }
         }
       },
@@ -3707,9 +3865,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "paged": {
             "type": "boolean"
           },
@@ -3720,6 +3875,9 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -3729,10 +3887,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }
@@ -4168,6 +4326,22 @@
               "PUBLISHED",
               "CLOSED",
               "APPLICANT_FOUND"
+            ]
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           }
         },

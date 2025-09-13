@@ -65,7 +65,6 @@
 // Styles for the Dynamic Table component
 .p-datatable .p-datatable-tbody > tr > td,
 .p-datatable .p-datatable-thead > tr > th {
-  border-bottom: none;
   background: var(--p-background-default);
 }
 
@@ -331,6 +330,16 @@
     text-decoration: underline;
   }
 }
+/* Override PrimeNG Styling for search border in select component */
+.p-select-filter.p-component.p-inputtext {
+  border: 0.1rem solid var(--p-border-default);
+
+  &:enabled:focus,
+  &:enabled:hover {
+    box-shadow: none;
+    border-color: var(--p-primary-color);
+  }
+}
 
 /* Styles for overriding list styles in Job Detail Page */
 .description-text ol,
@@ -397,4 +406,12 @@
 .p-select-option.p-select-option-selected {
   background: var(--p-background-surface-alt);
   color: var(--p-text-primary);
+}
+
+/* -------------------------------
+ Style primeNg filter select component.
+-------------------------------
+ */
+.p-select-list-container {
+  max-height: 11.5rem !important;
 }

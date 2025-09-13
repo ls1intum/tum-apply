@@ -1,9 +1,10 @@
 {
   "researchGroup": {
+    "header": "My Email Templates",
+    "memberPage": "My Members",
+    "memberHeader": "My Members",
     "emailTemplatesHeader": "My Email Templates",
-    "groupInfoPage": "TUMApply - My Group",
     "groupInfoHeader": "My Group",
-
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
       "saveButton": "Save",
@@ -40,39 +41,28 @@
         "noId": "No research group found. Contact an admin."
       }
     },
-
     "emailTemplates": {
       "newTemplate": "New Template",
       "signature": "Signature",
-
       "systemDefault": "System default",
-
       "tableColumns": {
         "templateName": "Template",
         "createdBy": "Created by"
       },
-
       "english": "English",
       "german": "German",
-
       "templateName": "Template",
       "addTemplateName": "Enter template name...",
-
       "sendWhen": "Send when",
       "selectSendWhen": "Select when to send the template...",
-
       "subject": "Subject",
       "addSubject": "Enter email subject...",
-
       "addVariable": "Press '$' to add a variable",
-
       "message": "Message",
-
       "back": "Back",
       "saved": "Saved",
       "saving": "Saving changes",
       "unsaved": "Changes not saved",
-
       "messageType": {
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_SENT": "Application received",
@@ -86,7 +76,6 @@
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
         "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason"
       },
-
       "variables": {
         "APPLICANT_FIRST_NAME": "Applicant First Name",
         "APPLICANT_LAST_NAME": "Applicant Last Name",
@@ -95,6 +84,34 @@
         "JOB_TITLE": "Job Title",
         "RESEARCH_GROUP_NAME": "Research Group Name"
       }
+    },
+
+    "members": {
+      "loading": "Loading members...",
+      "retry": "Retry",
+      "noMembers": "No members found in this research group.",
+      "me": "Me",
+
+      "tableColumns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role"
+      },
+
+      "remove": "Remove",
+      "removeMemberModal": {
+        "title": "Remove Member",
+        "message": "Are you sure you want to remove this member from the research group?"
+      },
+
+      "toastMessages": {
+        "loadFailed": "Failed to load. Please try again or contact an admin.",
+        "addSuccess": "Successfully added to the research group.",
+        "removeSuccess": "{{memberName}} has been removed from the research group.",
+        "removeFailed": "Failed to remove. Please try again or contact an admin."
+      },
+
+      "noRole": "No role"
     }
   }
 }

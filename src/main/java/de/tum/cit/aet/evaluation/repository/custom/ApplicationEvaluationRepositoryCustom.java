@@ -17,13 +17,14 @@ public interface ApplicationEvaluationRepositoryCustom {
             Map<String, List<?>> dynamicFilters, String searchQuery);
 
     long findIndexOfApplication(
-        UUID applicationId,
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Sort sort,
-        Map<String, List<?>> dynamicFilters
-    );
+            UUID applicationId,
+            UUID researchGroupId,
+            Collection<ApplicationState> states,
+            Sort sort,
+            Map<String, List<?>> dynamicFilters);
 
     long countApplications(UUID researchGroupId, Collection<ApplicationState> states,
             Map<String, List<?>> dynamicFilters, String searchQuery);
+
+    List<String> findAllUniqueJobNames(UUID researchGroupId);
 }
