@@ -1,0 +1,15 @@
+{
+  "onboarding": {
+    "title": "You are a professor or staff?",
+    "body": "You are logged in but do not have any rights yet. If you are a professor or staff, please send us an email so that we can assign you to your research group and grant the appropriate rights. Please click the button below to do so.",
+    "disclaimer": "We will send you an email when your account has been activated. This may take a few days.",
+    "actions": {
+      "sendEmail": "Request access",
+      "imApplicant": "I'm an applicant"
+    },
+    "email": {
+      "subject": "Request: Access to research group in TUMApply",
+      "body": "=== IMPORTANT NOTES ===\n- Please do not change the subject of this email.\n- Please fill out all required fields below.\n- The optional fields do not have to be filled out.\n- Please send this email from your official TUM email address.\n=== IMPORTANT NOTES ===\n\n\n\n=== Required ===\n\nPersonal information:\n- Title (Prof./Dr./…): \n- First name: \n- Last name: \n- TUM ID (e.g. ab12cde): \n\nInformation about the research group:\n- Head (title, first and last name): \n- Name: \n\n\n=== Optional ===\n\nInformation about the research group:\n- Abbreviation: \n- Contact email: \n- Website: \n- School: \n- Description: \n- Default field of studies: \n- Address:\n  - Street and number: \n  - Postal code: \n  - City: "
+    }
+  }
+}
