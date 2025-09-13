@@ -18,6 +18,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
+  standalone: true,
   imports: [
     DynamicTableComponent,
     ButtonComponent,
@@ -167,7 +168,6 @@ export default class ApplicationOverviewForApplicantComponent {
         console.error('Delete failed', err);
       },
     });
-    // }
   }
 
   onWithdrawApplication(applicationId: string): void {

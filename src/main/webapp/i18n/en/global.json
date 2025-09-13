@@ -2,6 +2,35 @@
   "global": {
     "title": "TUMApply",
     "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
+    "routes": {
+      "job": {
+        "detail": "TUMApply - Job Details",
+        "creation": "TUMApply - Job Creation",
+        "edit": "TUMApply - Job Edit",
+        "overview": "TUMApply - Job Overview",
+        "myPositions": "TUMApply - My Positions"
+      },
+      "application": {
+        "creation": "TUMApply - Application Creation",
+        "overview": "TUMApply - Application Overview",
+        "detail": "TUMApply - Application Detail"
+      },
+      "evaluation": {
+        "overview": "TUMApply - Evaluation Overview",
+        "detail": "TUMApply - Application Evaluation"
+      },
+      "footer": {
+        "imprint": "TUMApply - Imprint",
+        "privacy": "TUMApply - Privacy"
+      },
+      "settings": "TUMApply - Settings",
+      "researchGroup": {
+        "templates": "TUMApply - My Templates",
+        "templateCreation": "TUMApply - New Template",
+        "templateEdit": "TUMApply - Edit Template",
+        "info": "TUMApply - My Group"
+      }
+    },
     "menu": {
       "home": "Home",
       "colorTheme": "Change Color Theme",
@@ -146,9 +175,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Selected",
+      "noResults": "No results found",
       "numberSelected": "{{selected}} selected",
-      "clear": "Clear",
-      "clearAll": "Clear all",
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },
@@ -335,6 +364,88 @@
       "motivation": "Motivation",
       "skills": "Skills",
       "researchExperience": "Research Experience"
+    },
+    "toast": {
+      "applyFlow": {
+        "saved": {
+          "summary": "Application saved",
+          "detail": "Your application was successfully saved."
+        },
+        "submitted": {
+          "summary": "Application submitted",
+          "detail": "Thank you for your application."
+        },
+        "invalidJobId": {
+          "summary": "Error",
+          "detail": "This is not a valid jobId."
+        },
+        "invalidApplicationId": {
+          "summary": "Error",
+          "detail": "This is not a valid applicationId."
+        },
+        "errorApplicationId": {
+          "summary": "Error",
+          "detail": "There is an error with the applicationId."
+        },
+        "invalidPageLink": {
+          "summary": "Error",
+          "detail": "This is not a valid application page link."
+        },
+        "saveFailedWithStatus": {
+          "summary": "Submission failed",
+          "detail": "Failed to submit application: {{status}}"
+        },
+        "fetchDocumentIdsFailed": {
+          "summary": "Error",
+          "detail": "Failed to fetch document IDs for this application."
+        },
+        "notEditable": {
+          "summary": "Error",
+          "detail": "This application cannot be edited as it has already been submitted or is in a non-draft state."
+        },
+        "authRequired": {
+          "summary": "Error",
+          "detail": "Cannot submit application: User authentication required."
+        },
+        "saveFailed": {
+          "summary": "Error",
+          "detail": "Failed to save application."
+        },
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Failed to load application."
+        },
+        "initLoadFailed": {
+          "summary": "Error",
+          "detail": "Failed to load application."
+        },
+        "missingJobIdUnauthenticated": {
+          "summary": "Error",
+          "detail": "Job ID must be provided when not authenticated."
+        }
+      },
+      "applicationOverview": {
+        "delete": {
+          "success": {
+            "summary": "Draft deleted",
+            "detail": "The application draft was deleted successfully."
+          },
+          "error": {
+            "summary": "Delete failed",
+            "detail": "The draft could not be deleted. Please try again."
+          }
+        },
+        "withdraw": {
+          "success": {
+            "summary": "Application withdrawn",
+            "detail": "Your application was withdrawn successfully."
+          },
+          "error": {
+            "summary": "Withdrawal failed",
+            "detail": "The application could not be withdrawn. Please try again."
+          }
+        }
+      }
     }
   },
   "error": {
