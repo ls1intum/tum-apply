@@ -35,7 +35,6 @@ model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
-model/authSessionInfoDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
@@ -58,7 +57,6 @@ model/jobFormDTO.ts
 model/link.ts
 model/loginRequestDTO.ts
 model/models.ts
-model/otpCompleteDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
@@ -81,9 +79,9 @@ model/uploadDocumentsRequest.ts
 model/user.ts
 model/userDTO.ts
 model/userForApplicationDetailDTO.ts
-model/userProfileDTO.ts
 model/userResearchGroupRole.ts
 model/userShortDTO.ts
+model/verifyCodeRequest.ts
 ng-package.json
 package.json
 param.ts
