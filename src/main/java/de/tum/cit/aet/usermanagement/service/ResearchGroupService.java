@@ -124,6 +124,9 @@ public class ResearchGroupService {
 
     /**
      * Retrieves a research group by its ID.
+     *
+     * @param researchGroupId the ID of the research group to retrieve
+     * @return the research group DTO
      */
     public ResearchGroupDTO getResearchGroup(UUID researchGroupId) {
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(researchGroupId);
@@ -132,7 +135,11 @@ public class ResearchGroupService {
 
     /**
      * Retrieves the details of a research group by its ID.
+     *
+     * @param researchGroupId the ID of the research group
+     * @return the detailed research group DTO
      */
+
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
                 .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
@@ -160,6 +167,10 @@ public class ResearchGroupService {
 
     /**
      * Updates an existing research group.
+     *
+     * @param researchGroupId the ID of the research group to update
+     * @param researchGroupDTO the research group data to apply
+     * @return the updated research group DTO
      */
     public ResearchGroupDTO updateResearchGroup(UUID researchGroupId, ResearchGroupDTO researchGroupDTO) {
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(researchGroupId);
@@ -218,29 +229,28 @@ public class ResearchGroupService {
      */
     @Transactional
     public ResearchGroup provisionResearchGroup(ResearchGroupCreationDTO dto) {
-        // --- 1) Find user by universityId (case-insensitive)
+        // Find user by universityId (case-insensitive)
         User user = userRepository.findByUniversityIdIgnoreCase(dto.universityID())
             .orElseThrow(() -> new EntityNotFoundException(
                 "User with universityId '%s' not found".formatted(dto.universityID())
             ));
 
-        // --- 2) Find research group by name (must exist; created manually by admins)
+        // Find research group by name (must exist; created manually by admins)
         ResearchGroup group = researchGroupRepository.findByNameIgnoreCase(dto.name())
             .orElseThrow(() -> new EntityNotFoundException(
                 "ResearchGroup with name '%s' not found (must be created manually).".formatted(dto.name())
             ));
 
-        // --- 3) Assign the user to the research group if not yet assigned or assigned elsewhere
+        //  Assign the user to the research group if not yet assigned or assigned elsewhere
         if (user.getResearchGroup() == null
             || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
         }
 
-        // --- 4) Upsert PROFESSOR role for (user, group) in an idempotent way
+        //  Upsert PROFESSOR role for (user, group) in an idempotent way
         var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
-            // Create new mapping
             UserResearchGroupRole mapping = new UserResearchGroupRole();
             mapping.setUser(user);
             mapping.setResearchGroup(group);
@@ -252,7 +262,7 @@ public class ResearchGroupService {
             userResearchGroupRoleRepository.save(existing.get());
         }
 
-        // --- 5) Return the group as a simple, stable response
+
         return group;
     }
 }
