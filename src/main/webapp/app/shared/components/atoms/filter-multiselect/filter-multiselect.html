@@ -1,0 +1,63 @@
+<div class="filter-multiselect" [class.open]="isOpen()">
+  <div class="filter-button" (click)="toggleDropdown()" tabindex="0">
+    <span>{{ filterLabel() | translate }}</span>
+    <fa-icon class="filter-icon" [icon]="['fas', 'chevron-down']" [ngClass]="{ rotated: isOpen() }" />
+  </div>
+
+  @if (isOpen()) {
+    <div class="filter-dropdown">
+      <div class="panel-header">
+        <fa-icon class="filter-icon" [icon]="['fas', 'search']" />
+        <input
+          type="text"
+          class="search-input"
+          [placeholder]="filterSearchPlaceholder() | translate"
+          [value]="searchTerm()"
+          (input)="onSearchChange($event)"
+        />
+      </div>
+
+      <!-- Divider between search bar and listed options -->
+      <p-divider />
+
+      <div class="options-container">
+        <div class="options-list">
+          <!-- List all selected options -->
+          @if (hasSelectedItems()) {
+            <p-divider align="left">
+              <span class="divider-text">{{ 'entity.filters.selected' | translate }}</span>
+            </p-divider>
+            @for (option of selectedOptions(); track option.value) {
+              <div class="option-item selected" (click)="toggleOption(option.value)">
+                <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
+                <span class="option-label">{{ option.label }}</span>
+              </div>
+            }
+          }
+
+          <!-- Divider between selected and unselected options -->
+          @if (hasSelectedItems() && hasUnselectedItems()) {
+            <p-divider />
+          }
+
+          <!-- List all unselected options -->
+          @if (hasUnselectedItems()) {
+            @for (option of unselectedOptions(); track option.value) {
+              <div class="option-item" (click)="toggleOption(option.value)">
+                <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
+                <span class="option-label">{{ option.label }}</span>
+              </div>
+            }
+          }
+
+          <!-- Display that no results were found-->
+          @if (filteredOptions().length === 0) {
+            <div class="no-results">
+              <span>{{ 'entity.filters.noResults' | translate }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

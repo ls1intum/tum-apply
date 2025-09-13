@@ -140,6 +140,27 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         }
     }
 
+    /**
+     * Retrieves all distinct job titles of applications that belong to the given
+     * research group.
+     * The result list is ordered alphabetically by job title.
+     *
+     * @param researchGroupId the UUID of the research group
+     * @return a list of unique job titles sorted in ascending order
+     */
+    @Override
+    public List<String> findAllUniqueJobNames(UUID researchGroupId) {
+        return em.createQuery(
+                "SELECT DISTINCT j.title " +
+                        "FROM Application a " +
+                        "JOIN a.job j " +
+                        "WHERE j.researchGroup.researchGroupId = :researchGroupId " +
+                        "ORDER BY j.title ASC",
+                String.class)
+                .setParameter("researchGroupId", researchGroupId)
+                .getResultList();
+    }
+
         /**
          * Builds a list of common predicates for filtering applications based on
          * research group,

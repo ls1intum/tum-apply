@@ -4,6 +4,12 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +28,122 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
 
     @EntityGraph(attributePaths = {"researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup"})
     Optional<User> findWithResearchGroupRolesByUserId(UUID userId);
+
+    boolean existsByEmailIgnoreCase(String email);
+
+    @Modifying
+    @Query(
+        value = """
+            UPDATE users SET
+                email = :email,
+                first_name = :firstName,
+                last_name = :lastName,
+                gender = :gender,
+                nationality = :nationality,
+                birthday = :birthday,
+                phone_number = :phoneNumber,
+                website = :website,
+                linkedin_url = :linkedinUrl,
+                selected_language = :selectedLanguage
+            WHERE user_id = :userId
+        """,
+        nativeQuery = true
+    )
+    void updateUser(
+        @Param("email") String email,
+        @Param("firstName") String firstName,
+        @Param("lastName") String lastName,
+        @Param("gender") String gender,
+        @Param("nationality") String nationality,
+        @Param("birthday") LocalDate birthday,
+        @Param("phoneNumber") String phoneNumber,
+        @Param("website") String website,
+        @Param("linkedinUrl") String linkedinUrl,
+        @Param("selectedLanguage") String selectedLanguage,
+        @Param("userId") UUID userId
+    );
+
+    @Modifying
+    @Query(
+        value = """
+            INSERT INTO users (
+                email,
+                first_name, last_name, gender, nationality, birthday, phone_number,
+                website, linkedin_url, selected_language
+            ) VALUES (
+                :email,
+                :firstName,
+                :lastName,
+                :gender,
+                :nationality,
+                :birthday,
+                :phoneNumber,
+                :website,
+                :linkedinUrl,
+                :selectedLanguage
+            )
+        """,
+        nativeQuery = true
+    )
+    void insertUser(
+        @Param("email") String email,
+        @Param("firstName") String firstName,
+        @Param("lastName") String lastName,
+        @Param("gender") String gender,
+        @Param("nationality") String nationality,
+        @Param("birthday") LocalDate birthday,
+        @Param("phoneNumber") String phoneNumber,
+        @Param("website") String website,
+        @Param("linkedinUrl") String linkedinUrl,
+        @Param("selectedLanguage") String selectedLanguage
+    );
+
+    /**
+     * Finds users by their IDs with eagerly loaded research group roles.
+     *
+     * @param userIds the list of user IDs
+     * @return list of users with eagerly loaded collections
+     */
+    @Query("""
+        SELECT u FROM User u
+        LEFT JOIN FETCH u.researchGroupRoles
+        WHERE u.userId IN :userIds
+        ORDER BY u.firstName, u.lastName
+    """)
+    List<User> findUsersWithRolesByIds(@Param("userIds") List<UUID> userIds);
+
+    /**
+     * Finds user IDs by research group ID with pagination support.
+     *
+     * @param researchGroupId the research group ID
+     * @param pageable the pagination information
+     * @return page of user IDs in the research group
+     */
+    @Query("""
+        SELECT DISTINCT u.userId FROM User u
+        JOIN u.researchGroupRoles rgr
+        WHERE rgr.researchGroup.researchGroupId = :researchGroupId
+    """)
+    Page<UUID> findUserIdsByResearchGroupId(@Param("researchGroupId") UUID researchGroupId, Pageable pageable);
+
+    /**
+     * Finds users by their IDs with eagerly loaded research group roles and research group.
+     * Orders results with the current user first, then alphabetically.
+     *
+     * @param userIds the list of user IDs
+     * @param currentUserId the current user's ID to display first
+     * @return list of users with eagerly loaded collections
+     */
+    @Query("""
+        SELECT u FROM User u
+        LEFT JOIN FETCH u.researchGroupRoles
+        LEFT JOIN FETCH u.researchGroup
+        WHERE u.userId IN :userIds
+        ORDER BY
+        CASE WHEN u.userId = :currentUserId THEN 0 ELSE 1 END,
+        u.firstName, u.lastName
+    """)
+    List<User> findUsersWithRolesByIdsForResearchGroup(@Param("userIds") List<UUID> userIds, @Param("currentUserId") UUID currentUserId);
 
     /**
      * Finds a user by email in a case-insensitive manner.

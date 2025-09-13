@@ -34,7 +34,7 @@ export class EvaluationService {
     return this.filterFields;
   }
 
-  collectFiltersByKey(filters: FilterField[]): Record<string, Set<string>> {
+  collectFiltersByKey(filters: FilterField[]): Record<string, Set<string> | undefined> {
     const filtersByKey: Record<string, Set<string>> = {};
 
     filters.forEach(f => {
