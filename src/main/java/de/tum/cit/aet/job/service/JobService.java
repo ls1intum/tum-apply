@@ -18,11 +18,12 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.Set;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class JobService {
@@ -114,6 +115,7 @@ public class JobService {
                 .language(Language.fromCode(user.getSelectedLanguage()))
                 .emailType(EmailType.APPLICATION_REJECTED)
                 .templateName(reason.getValue())
+                .researchGroup(application.getJob().getResearchGroup())
                 .content(application)
                 .build();
             sender.sendAsync(email);
