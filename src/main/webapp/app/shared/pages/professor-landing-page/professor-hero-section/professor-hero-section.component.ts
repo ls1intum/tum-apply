@@ -24,6 +24,6 @@ export class ProfessorHeroSectionComponent {
   private router = inject(Router);
 
   async navigateToGetStarted(): Promise<void> {
-    await this.authFacadeService.loginWithTUM('/job/create');
+    await this.authFacadeService.loginWithTUM('/my-positions');
   }
 }
