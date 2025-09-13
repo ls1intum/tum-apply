@@ -10,6 +10,11 @@
     inputmode="latin"
     styleClass="otp-input"
   />
+  <div class="error-container">
+    @if (showError()) {
+      <span jhiTranslate="auth.common.otp.error"></span>
+    }
+  </div>
   <div class="buttons">
     <jhi-button (click)="onResend()" [disabled]="disableResend()" [fullWidth]="true" [label]="resendLabel" variant="text" />
     <jhi-button

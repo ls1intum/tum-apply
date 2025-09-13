@@ -36,12 +36,13 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   cooldownSeconds = computed(() => this.authOrchestratorService.cooldownSeconds());
   onCooldown = computed(() => this.cooldownSeconds() > 0);
   isBusy: Signal<boolean> = computed(() => this.authOrchestratorService.isBusy());
+  showError: Signal<boolean> = computed(() => this.authOrchestratorService.error() !== null);
   // local state of the current OTP value
   readonly otpValue = signal<string>('');
   // disable resend if busy or in cooldown
   readonly disableResend: Signal<boolean> = computed(() => this.isBusy() || this.onCooldown());
   // derived states
-  readonly disabledSubmit = computed(() => this.isBusy() || this.otpValue().length !== this.length);
+  readonly disabledSubmit = computed(() => this.showError() || this.isBusy() || this.otpValue().length !== this.length);
 
   // TODO: show error messages from server
   // determine size of the OTP input based on screen size
@@ -85,6 +86,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   }
 
   onChange(event: InputOtpChangeEvent): void {
+    this.authOrchestratorService.clearError();
     const raw = (event.value ?? '').toString();
     // Normalize to uppercase and strip any non-alphanumerics
     const normalized = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -97,6 +99,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   }
 
   onSubmit(): void {
+    this.authOrchestratorService.clearError();
     if (!this.disabledSubmit()) {
       const otp = this.otpValue();
       void this.authService.verifyOtp(otp, this.isRegistration());
@@ -104,6 +107,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   }
 
   onResend(): void {
+    this.authOrchestratorService.clearError();
     if (!this.disableResend()) {
       void this.authService.sendOtp(this.isRegistration());
     }
