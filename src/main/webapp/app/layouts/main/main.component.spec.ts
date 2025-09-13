@@ -5,9 +5,10 @@ import { DOCUMENT } from '@angular/common';
 import { Component, NgZone, signal } from '@angular/core';
 import { of } from 'rxjs';
 import { InterpolatableTranslationObject, LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AccountService } from 'app/core/auth/account.service';
+import { AccountService, User } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
-import { User } from 'app/core/auth/account.service';
+import { DialogService } from 'primeng/dynamicdialog';
+import { provideHttpClient } from '@angular/common/http';
 
 import MainComponent from './main.component';
 
@@ -35,7 +36,19 @@ describe('MainComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MainComponent],
-      providers: [Title, AccountService, { provide: TitleStrategy, useClass: AppPageTitleStrategy }],
+      providers: [
+        provideHttpClient(),
+        Title,
+        AccountService,
+        { provide: TitleStrategy, useClass: AppPageTitleStrategy },
+        {
+          provide: DialogService,
+          useValue: {
+            open: jest.fn(),
+            dialogComponentRefMap: new Map(),
+          },
+        },
+      ],
     })
       .overrideTemplate(MainComponent, '')
       .compileComponents();

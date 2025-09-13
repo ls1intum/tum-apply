@@ -1,0 +1,70 @@
+@use '../../../../../content/scss/breakpoints' as bp;
+@use '../../../../../content/scss/layout' as layout;
+
+.workflow-section {
+  @include layout.flex-col-center;
+  padding: 4rem 0;
+  gap: 3rem;
+  align-self: stretch;
+  background: var(--p-background-special);
+
+  .title {
+    color: var(--p-text-primary);
+    text-align: center;
+    font-size: 2.25rem;
+    font-weight: 700;
+  }
+
+  .workflow-steps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+  }
+}
+
+@media (max-width: bp.$lg) {
+  .workflow-section {
+    padding: 3rem 2rem;
+    gap: 2.5rem;
+
+    .title {
+      font-size: 2rem;
+    }
+
+    .workflow-steps {
+      .steps {
+        padding: 0 1.5rem;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+}
+
+@media (max-width: bp.$md) {
+  .workflow-section {
+    padding: 2rem 1rem;
+    gap: 2rem;
+
+    .title {
+      font-size: 1.75rem;
+    }
+
+    .workflow-steps {
+      gap: 1.5rem;
+
+      .steps {
+        flex-direction: column;
+        padding: 0;
+        gap: 1rem;
+        width: 100%;
+      }
+    }
+  }
+}

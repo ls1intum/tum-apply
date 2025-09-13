@@ -24,7 +24,7 @@ public class EvaluationFilterDTO implements AbstractFilterDTO {
             filters.put("state", status);
         }
         if (job != null) {
-            filters.put("job.jobId", job);
+            filters.put("job.title", job);
         }
         return filters;
     }

@@ -45,7 +45,8 @@
     "noApplicationsFound": "Keine Bewerbungen gefunden.",
     "filterOptions": {
       "job": "Stelle",
-      "status": "Status"
+      "status": "Status",
+      "jobSearchPlaceholder": "Suche Positionen..."
     },
 
     "application": "Bewerbung",
