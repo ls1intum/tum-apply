@@ -23,6 +23,10 @@
       &::placeholder {
         color: var(--p-background-disabled);
       }
+
+      &:hover {
+        border-color: var(--p-primary-color);
+      }
     }
   }
 }
