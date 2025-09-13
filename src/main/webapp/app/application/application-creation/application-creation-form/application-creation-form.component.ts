@@ -554,8 +554,8 @@ export default class ApplicationCreationFormComponent {
     this.authOrchestrator.email.set(normalizedEmail);
     this.authOrchestrator.firstName.set(normalizedFirstName);
     this.authOrchestrator.lastName.set(normalizedLastName);
+    this.authOrchestrator.clearError();
     await this.authService.sendOtp(true);
-
     this.otpDialogRef = this.dialogService.open(OtpInput, {
       header: this.translateService.instant('auth.common.otp.title'),
       data: { registration: true },
