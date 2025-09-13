@@ -17,11 +17,11 @@ export interface OtpCompleteDTO {
     profile?: UserProfileDTO;
 }
 export namespace OtpCompleteDTO {
+    export type PurposeEnum = 'LOGIN' | 'REGISTER';
     export const PurposeEnum = {
-        Login: 'LOGIN',
-        Register: 'REGISTER'
-    } as const;
-    export type PurposeEnum = typeof PurposeEnum[keyof typeof PurposeEnum];
+        Login: 'LOGIN' as PurposeEnum,
+        Register: 'REGISTER' as PurposeEnum
+    };
 }
 
 

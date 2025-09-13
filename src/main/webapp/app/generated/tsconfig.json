@@ -7,8 +7,6 @@
         "module": "es6",
         "moduleResolution": "node",
         "removeComments": true,
-        "strictNullChecks": true,
-        "exactOptionalPropertyTypes": true,
         "sourceMap": true,
         "outDir": "./dist",
         "noLib": false,

@@ -33,6 +33,7 @@ export interface JobDetailDTO {
     applicationState?: JobDetailDTO.ApplicationStateEnum;
 }
 export namespace JobDetailDTO {
+    export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {
         Draft: 'DRAFT',
         Published: 'PUBLISHED',
