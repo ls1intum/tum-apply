@@ -108,6 +108,7 @@ export default class ApplicationCreationFormComponent {
   panel4 = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('panel4');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
+  progressStepper = viewChild<ProgressStepperComponent>(ProgressStepperComponent);
 
   title = signal<string>('');
   jobId = signal<string>('');
@@ -521,7 +522,8 @@ export default class ApplicationCreationFormComponent {
       try {
         await this.openOtpAndWaitForLogin(email, firstName, lastName);
         this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-        await this.migrateDraftIfNeeded();
+        void this.migrateDraftIfNeeded();
+        this.progressStepper()?.goToStep(2);
       } catch (err) {
         this.toastService.showError({
           summary: 'Error',
