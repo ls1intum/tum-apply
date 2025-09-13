@@ -89,4 +89,17 @@ public final class OtpUtil {
         }
         return r == 0;
     }
+
+    /**
+     * Normalizes an email address by trimming leading and trailing whitespace and converting to lowercase.
+     *
+     * @param email the email address to normalize; may be {@code null}
+     * @return the normalized email address, or {@code null} if the input was {@code null}
+     */
+    public static String normalizeEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        return email.trim().toLowerCase();
+    }
 }
