@@ -84,19 +84,19 @@ public class AuthenticationResource {
      */
     @PostMapping("/refresh")
     public AuthSessionInfoDTO refresh(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = null;
         String refreshToken = null;
-        if (request.getCookies() != null) {
-            for (Cookie c : request.getCookies()) {
-                if ("refresh_token".equals(c.getName())) {
-                    refreshToken = c.getValue();
-                    break;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("access_token".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                } else if ("refresh_token".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
                 }
             }
         }
-        if (refreshToken == null) {
-            throw new UnauthorizedException("Refresh token is missing");
-        }
-        AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(refreshToken);
+        AuthResponseDTO tokens = keycloakAuthenticationService.normalizeTokensForServer(accessToken, refreshToken);
 
         CookieUtils.setAuthCookies(response, tokens);
         return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());
