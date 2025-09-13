@@ -1,0 +1,13 @@
+<div class="dialog-body">
+  <div class="content">
+    <p jhiTranslate="onboarding.body"></p>
+    <p-message severity="warn">
+      <p jhiTranslate="onboarding.disclaimer"></p>
+    </p-message>
+  </div>
+
+  <div class="actions">
+    <jhi-button (click)="markOnboarded(false)" [shouldTranslate]="true" label="onboarding.actions.imApplicant" variant="outlined" />
+    <jhi-button (click)="markOnboarded()" [shouldTranslate]="true" label="onboarding.actions.sendEmail" />
+  </div>
+</div>

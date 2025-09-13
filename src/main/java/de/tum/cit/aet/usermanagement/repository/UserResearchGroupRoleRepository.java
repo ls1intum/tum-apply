@@ -8,6 +8,9 @@ import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,4 +20,14 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
     Set<UserResearchGroupRole> findAllByUser(User user);
 
     Optional<UserResearchGroupRole> findByUserAndResearchGroup(User user, ResearchGroup researchGroup);
+
+    /**
+     * Removes research group association from all roles for a specific user.
+     *
+     * @param userId the ID of the user whose research group associations should be removed
+     */
+    @Modifying
+    @Query("UPDATE UserResearchGroupRole urgr SET urgr.researchGroup = null WHERE urgr.user.userId = :userId")
+    void removeResearchGroupFromUserRoles(@Param("userId") UUID userId);
+
 }

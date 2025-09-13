@@ -1,9 +1,10 @@
 {
   "researchGroup": {
+    "header": "Meine E-Mail-Vorlagen",
+    "memberPage": "Meine Mitglieder",
+    "memberHeader": "Meine Mitglieder",
     "emailTemplatesHeader": "Meine E-Mail-Vorlagen",
-    "groupInfoPage": "TUMApply - Meine Gruppe",
     "groupInfoHeader": "Meine Gruppe",
-
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
       "saveButton": "Speichern",
@@ -40,45 +41,33 @@
         "noId": "Keine Forschungsgruppe gefunden. Kontaktiere deinen Admin."
       }
     },
-
     "emailTemplates": {
       "newTemplate": "Neue Vorlage",
       "signature": "Signatur",
-
       "systemDefault": "Systemvorlage",
-
       "tableColumns": {
         "templateName": "Vorlage",
         "createdBy": "Erstellt von"
       },
-
       "english": "Englisch",
       "german": "Deutsch",
-
       "templateName": "Vorlage",
       "addTemplateName": "Name der Vorlage ein...",
-
       "sendWhen": "Wird gesendet wenn",
       "selectSendWhen": "Nachricht der Vorlage...",
-
       "subject": "Betreff",
       "addSubject": "Betreff der Email...",
-
       "addVariable": "Drücke '$', um eine Variable einzufügen",
-
       "message": "Nachricht",
-
       "back": "Zurück",
       "saved": "Gespeichert",
       "saving": "Änderungen werden gespeichert",
       "unsaved": "Änderungen nicht gespeichert",
-
       "messageType": {
         "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
         "APPLICATION_SENT": "Bewerbung empfangen",
         "APPLICATION_REJECTED": "Bewerbung abgelehnt"
       },
-
       "default": {
         "APPLICATION_ACCEPTED": "Bewerbung angenommen",
         "APPLICATION_SENT": "Bewerbungseingang Bestätigung",
@@ -87,7 +76,6 @@
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
         "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund"
       },
-
       "variables": {
         "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",
         "APPLICANT_LAST_NAME": "Nachname Bewerber:in",
@@ -96,6 +84,34 @@
         "JOB_TITLE": "Stellen Titel",
         "RESEARCH_GROUP_NAME": "Name Forschungsgruppe"
       }
+    },
+
+    "members": {
+      "loading": "Mitglieder werden geladen...",
+      "retry": "Erneut versuchen",
+      "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
+      "me": "Ich",
+
+      "tableColumns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle"
+      },
+
+      "remove": "Entfernen",
+      "removeMemberModal": {
+        "title": "Mitglied entfernen",
+        "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
+      },
+
+      "toastMessages": {
+        "loadFailed": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin.",
+        "addSuccess": "Erfolgreich zur Forschungsgruppe hinzugefügt.",
+        "removeSuccess": "{{memberName}} wurde aus der Forschungsgruppe entfernt.",
+        "removeFailed": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
+      },
+
+      "noRole": "Keine Rolle"
     }
   }
 }

@@ -9,6 +9,14 @@
       [singleEntity]="'evaluation.application' | translate"
       [multipleEntities]="'evaluation.applications' | translate"
       (searchOutput)="loadOnSearchEmit($event)"
+      (filterOutput)="loadOnJobFilterEmit($event)"
+      [filters]="[
+        {
+          filterLabel: 'evaluation.tableHeaders.job',
+          filterSearchPlaceholder: 'evaluation.filterOptions.jobSearchPlaceholder',
+          filterOptions: allAvailableJobNames(),
+        },
+      ]"
     />
 
     <jhi-dynamic-table
