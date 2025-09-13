@@ -39,7 +39,7 @@ export class AuthenticationService {
   }
 
   // Schedules a token refresh if the user is authenticated
-  private scheduleRefresh(expiresInSec: number | undefined): void {
+  scheduleRefresh(expiresInSec: number | undefined): void {
     if (expiresInSec === undefined) {
       return;
     }

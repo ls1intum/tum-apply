@@ -520,8 +520,6 @@ export default class ApplicationCreationFormComponent {
     void (async () => {
       try {
         await this.openOtpAndWaitForLogin(email, firstName, lastName);
-        // TODO change this to an API call
-        await this.accountService.loadUser();
         this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
         await this.migrateDraftIfNeeded();
       } catch (err) {
@@ -569,7 +567,7 @@ export default class ApplicationCreationFormComponent {
     const started = Date.now();
     await new Promise<void>((resolve, reject) => {
       const iv = setInterval(() => {
-        const hasUser = !!this.accountService.loadedUser()?.id;
+        const hasUser = this.accountService.loadedUser()?.id != null;
         if (hasUser) {
           clearInterval(iv);
           this.otpDialogRef?.close();
