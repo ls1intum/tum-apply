@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
   <!-- research_groups.university_id -->
-  <changeSet id="rg-add-university_id" author="you">
+  <changeSet id="rg-add-university_id" author="abinayasivaguru">
     <preConditions onFail="MARK_RAN" onError="MARK_RAN">
       <not>
         <columnExists tableName="research_groups" columnName="university_id"/>
@@ -17,7 +17,7 @@
   </changeSet>
 
   <!-- users.university_id -->
-  <changeSet id="users-add-university_id" author="you">
+  <changeSet id="users-add-university_id" author="abinayasivaguru">
     <preConditions onFail="MARK_RAN" onError="MARK_RAN">
       <not>
         <columnExists tableName="users" columnName="university_id"/>
@@ -29,7 +29,7 @@
   </changeSet>
 
 
-  <changeSet id="users-ux-university_id" author="you">
+  <changeSet id="users-ux-university_id" author="abinayasivaguru">
     <preConditions onFail="MARK_RAN" onError="MARK_RAN">
       <and>
         <columnExists tableName="users" columnName="university_id"/>
