@@ -16,5 +16,6 @@ export const environment = {
   otp: {
     length: 6,
     cooldown: 60,
+    ttlSeconds: 900,
   },
 };
