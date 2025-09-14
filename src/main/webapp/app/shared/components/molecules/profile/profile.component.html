@@ -1,12 +1,10 @@
 <div class="profile-card">
-  <p jhiTranslate="auth.register.texts.profile.text"></p>
-
   <form (ngSubmit)="submitHandler()()" [formGroup]="form" class="form">
     <jhi-string-input
       [control]="form.controls.firstName"
       [shouldTranslate]="true"
-      label="auth.register.profile.firstName.label"
-      placeholder="auth.register.profile.firstName.placeholder"
+      label="auth.register.texts.profile.firstName.label"
+      placeholder="auth.register.texts.profile.firstName.placeholder"
     />
 
     <jhi-string-input
