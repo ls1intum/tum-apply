@@ -48,35 +48,8 @@
   .registration-panel {
     @include layout.panel-col;
 
-    .registration-description {
-      max-width: 100%;
+    .registration-credentials {
       width: 100%;
-      word-break: break-word;
-      text-align: center;
-      box-sizing: border-box;
-      color: var(--p-text-primary);
-    }
-
-    .registration-buttons {
-      @include layout.buttons-col;
-
-      .registration-credentials {
-        width: 100%;
-      }
-
-      .p-divider-content {
-        background-color: var(--p-background-surface);
-      }
-
-      .divider-text {
-        color: var(--p-text-secondary);
-      }
-
-      .registration-providers {
-        display: flex;
-        flex: 1 1 auto;
-        align-self: stretch;
-      }
     }
   }
 

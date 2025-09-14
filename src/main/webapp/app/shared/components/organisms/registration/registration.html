@@ -1,5 +1,5 @@
 <div class="registration-header">
-  <h1 jhiTranslate="auth.register.texts.title"></h1>
+  <h1 jhiTranslate="auth.common.title"></h1>
 </div>
 <div class="registration-steps">
   <div class="steps">
@@ -17,32 +17,21 @@
 </div>
 <div class="registration-content">
   <div class="registration-panel">
-    <div class="registration-buttons">
-      @switch (authOrchestrator.registerStep()) {
-        @case ('email') {
-          <jhi-credentials-group
-            [showPassword]="false"
-            [submitHandler]="sendOtp"
-            class="login-credentials"
-            [submitLabel]="'auth.register.buttons.continue'"
-          />
-          <p-divider align="center">
-            <span class="divider-text" jhiTranslate="auth.register.texts.or"></span>
-          </p-divider>
-          <jhi-auth-idp-buttons class="registration-providers" />
-        }
-        @case ('verify') {
-          <jhi-otp-input [registration]="true" />
-        }
-        @case ('profile') {}
-        @case ('password') {}
+    @switch (authOrchestrator.registerStep()) {
+      @case ('email') {
+        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials" />
       }
-    </div>
+      @case ('verify') {
+        <jhi-otp-input [registration]="true" />
+      }
+      @case ('profile') {}
+      @case ('password') {}
+    }
   </div>
   @if (authOrchestrator.registerStep() === 'email') {
     <p class="registration-footer">
-      <span jhiTranslate="auth.register.texts.accountMissing.prefix"></span>
-      <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountMissing.link"></a>
+      <span jhiTranslate="auth.register.texts.accountPresent.prefix"></span>
+      <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountPresent.link"></a>
     </p>
   }
 </div>
