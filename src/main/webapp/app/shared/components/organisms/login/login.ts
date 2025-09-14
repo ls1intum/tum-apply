@@ -7,10 +7,11 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 import { TranslateDirective } from '../../../language';
 import { AuthService } from '../../../auth/data-access/auth.service';
+import { OtpInput } from '../../atoms/otp-input/otp-input';
 
 @Component({
   selector: 'jhi-login',
-  imports: [CredentialsGroupComponent, TranslateDirective],
+  imports: [CredentialsGroupComponent, TranslateDirective, OtpInput],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

@@ -3,14 +3,18 @@
 </div>
 <div class="login-content">
   <div class="login-panel">
-    <jhi-credentials-group
-      [secondButtonHandler]="secondButtonHandler"
-      [showPassword]="showPassword()"
-      [showSecondButton]="!showPassword()"
-      [submitHandler]="submitHandler"
-      class="login-credentials"
-      secondButtonLabel="auth.login.buttons.continueWithPassword"
-    />
+    @if (this.authOrchestrator.loginStep() !== 'otp') {
+      <jhi-credentials-group
+        [secondButtonHandler]="secondButtonHandler"
+        [showPassword]="showPassword()"
+        [showSecondButton]="!showPassword()"
+        [submitHandler]="submitHandler"
+        class="login-credentials"
+        secondButtonLabel="auth.login.buttons.continueWithPassword"
+      />
+    } @else {
+      <jhi-otp-input />
+    }
   </div>
   <p class="login-footer">
     <span jhiTranslate="auth.login.texts.accountMissing.prefix"></span>
