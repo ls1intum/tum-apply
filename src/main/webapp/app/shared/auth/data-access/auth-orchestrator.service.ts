@@ -25,11 +25,9 @@ export class AuthOrchestratorService {
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
-    if (idx < 0) {
-      return 0;
-    }
-    return Number((idx / (REGISTER_STEPS.length - 1)).toFixed(2));
+    return Math.max(idx + 1, 1);
   });
+  readonly totalRegisterSteps = REGISTER_STEPS.length;
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
   readonly injector = inject(Injector);
@@ -115,13 +113,6 @@ export class AuthOrchestratorService {
     this.registerStep.set('email');
   }
 
-  switchToApplyRegister(): void {
-    this.mode.set('apply-register');
-    this.applyStep.set('inline');
-  }
-
-  // -------- Helpers ----------
-
   clearError(): void {
     this.error.set(null);
   }
@@ -130,11 +121,27 @@ export class AuthOrchestratorService {
     this.error.set(msg);
   }
 
+  nextRegisterStep(): void {
+    const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
+    if (currentIndex < REGISTER_STEPS.length - 1) {
+      this.registerStep.set(REGISTER_STEPS[currentIndex + 1]);
+    }
+  }
+
+  previousRegisterStep(): void {
+    const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
+    if (currentIndex > 0) {
+      this.registerStep.set(REGISTER_STEPS[currentIndex - 1]);
+    }
+  }
+
   startCooldown(): void {
     const cooldown = environment.otp.cooldown;
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);
   }
+
+  // -------- Helpers ----------
 
   private setIfPresent(input: string | undefined, setter: (value: string) => void): void {
     const value = (input ?? '').replace(/\s+/g, ' ').trim();

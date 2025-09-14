@@ -34,7 +34,13 @@ export class Registration {
   authService = inject(AuthService);
   authOrchestrator = inject(AuthOrchestratorService);
 
-  readonly registerProgress = computed(() => this.authOrchestrator.registerProgress() * 100);
+  readonly registerProgress = computed(() => this.authOrchestrator.registerProgress());
+  readonly totalRegisterSteps = this.authOrchestrator.totalRegisterSteps;
+  readonly registerProgressInPercent = computed(() => ((this.registerProgress() - 1) / (this.totalRegisterSteps - 1)) * 100);
+  readonly showBackButton = computed(() => this.authOrchestrator.registerStep() === 'verify');
+  readonly showSkipButton = computed(
+    () => this.authOrchestrator.registerStep() === 'profile' || this.authOrchestrator.registerStep() === 'password',
+  );
 
   sendOtp = async (email: string): Promise<boolean> => {
     const normalized = email.trim();
@@ -47,6 +53,10 @@ export class Registration {
   };
 
   onBack = (): void => {
-    this.authOrchestrator.registerStep.set('email');
+    this.authOrchestrator.previousRegisterStep();
+  };
+
+  onSkip = (): void => {
+    this.authOrchestrator.nextRegisterStep();
   };
 }
