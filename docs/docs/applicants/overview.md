@@ -1,6 +1,10 @@
+---
+sidebar_label: Application Dashboard
+---
+
 # Staying on Top of Your Applications: Your Personal Dashboard Guide
 
-Welcome to your Application Overview page – your command center for managing all your doctoral applications at TUM! Think of this as your personal mission control where you can track, organize, and manage every application you've submitted or are working on. Whether you're applying to multiple positions or keeping tabs on a single dream opportunity, this dashboard keeps everything organized and accessible.
+Welcome to your Application Overview page – your command center for managing all your doctoral applications at TUM! Think of this as your personal mission control where you can track, organize, and manage every application you've submitted or are working on. Whether you're [applying](applying.md) to multiple positions or keeping tabs on a single dream opportunity, this dashboard keeps everything organized and accessible.
 
 ## Getting to Your Dashboard
 
@@ -35,7 +39,6 @@ Each application appears as its own card, giving you a snapshot of the most impo
 Each draft application card offers several action buttons:
 
 **Continue Editing**: Jump right back to where you left off in the application form
-- Takes you to the exact page where you stopped
 - All your previous work is automatically saved
 - Progress stepper shows how much you've completed
 
@@ -93,4 +96,4 @@ Each draft application card offers several action buttons:
 - **Supervisor notification**: Your application appears in their review queue
 - **Status tracking**: Regular updates as your application progresses
 
-Your Application Overview page is designed to reduce stress and keep you informed throughout the entire process. By staying organized and engaged with your dashboard, you'll never miss an important update or deadline. Remember, applying for doctoral positions is a journey – this dashboard is your trusted companion along the way!
+Your Application Overview page is designed to reduce stress and keep you informed throughout the entire process. By staying organized and engaged with your dashboard, you'll never miss an important update or deadline. Remember, [applying for doctoral positions](applying.md) is a journey – this dashboard is your trusted companion along the way!

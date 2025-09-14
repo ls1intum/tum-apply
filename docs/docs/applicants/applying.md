@@ -1,3 +1,7 @@
+---
+sidebar_label: Apply
+---
+
 # How to Apply for a Doctoral Position: Step-by-Step Guide
 
 ## Getting Started
@@ -8,7 +12,7 @@ Welcome to the TUMApply Doctoral Portal application system! This guide will walk
 
 1. **Navigate to Available Positions**
    - Log into the TUMApply Doctoral Portal using your credentials
-   - Go to the "Doctoral Applications" section
+   - Go to the "Find Positions" section
    - Browse available positions filtered by your academic background and research interests
 
 2. **Select Your Position**
@@ -66,12 +70,12 @@ You have two choices on the final page:
 - Simply exit the application form
 - Application is saved with all current progress
 - You can return anytime to continue editing
-- Draft applications appear in your "My Applications" dashboard
+- Draft applications appear in your ["My Applications" dashboard](overview.md)
 
 ## Step 4: After Submission
 
 ### Immediate Actions
-- You're redirected to your **Application Dashboard**
+- You're redirected to your [**Application Dashboard**](overview.md)
 - Submission confirmation is displayed
 - Application status changes to "Submitted"
 
