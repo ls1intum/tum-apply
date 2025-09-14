@@ -85,13 +85,12 @@ export class EmailTemplateResourceService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<EmailTemplateDTO>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<EmailTemplateDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: emailTemplateDTO,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -138,12 +137,11 @@ export class EmailTemplateResourceService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates/${this.configuration.encodeParam({name: "templateId", value: templateId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -191,12 +189,11 @@ export class EmailTemplateResourceService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates/${this.configuration.encodeParam({name: "templateId", value: templateId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<EmailTemplateDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<EmailTemplateDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -248,13 +245,12 @@ export class EmailTemplateResourceService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<PageResponseDTOEmailTemplateOverviewDTO>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<PageResponseDTOEmailTemplateOverviewDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
@@ -311,13 +307,12 @@ export class EmailTemplateResourceService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<EmailTemplateDTO>('put', `${basePath}${localVarPath}`,
+        return this.httpClient.request<EmailTemplateDTO>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: emailTemplateDTO,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
                 transferCache: localVarTransferCache,
