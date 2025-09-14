@@ -90,26 +90,37 @@ public class KeycloakUserService {
      * Updates basic profile fields (firstName and lastName) of a Keycloak user.
      * Blank or null inputs are ignored; existing values remain unchanged in that case.
      * Names are normalized before being persisted.
+     * Only updates fields if the new value is non-blank and different from the current value.
      *
      * @param userId    Keycloak user ID
      * @param firstName optional first name; ignored if null or blank
      * @param lastName  optional last name; ignored if null or blank
+     * @return {@code true} if any field was updated, {@code false} otherwise
      */
-    public void updateProfile(String userId, String firstName, String lastName) {
+    public boolean updateProfile(String userId, String firstName, String lastName) {
         UserResource userResource = keycloak.realm(realm).users().get(userId);
         UserRepresentation userRepresentation = userResource.toRepresentation();
         if (userRepresentation == null) {
-            return;
+            return false;
         }
+        boolean updated = false;
+
         String normalizedFirstName = StringUtil.normalize(firstName, false);
-        if (!normalizedFirstName.isBlank()) {
+        if (!normalizedFirstName.isBlank() && !normalizedFirstName.equals(userRepresentation.getFirstName())) {
             userRepresentation.setFirstName(normalizedFirstName);
+            updated = true;
         }
+
         String normalizedLastName = StringUtil.normalize(lastName, false);
-        if (!normalizedLastName.isBlank()) {
+        if (!normalizedLastName.isBlank() && !normalizedLastName.equals(userRepresentation.getLastName())) {
             userRepresentation.setLastName(normalizedLastName);
+            updated = true;
         }
-        userResource.update(userRepresentation);
+
+        if (updated) {
+            userResource.update(userRepresentation);
+        }
+        return updated;
     }
 
     /**

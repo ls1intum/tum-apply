@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -20,10 +21,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final KeycloakUserService keycloakUserService;
 
-    public UserService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository) {
+    public UserService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository, KeycloakUserService keycloakUserService) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
+        this.keycloakUserService = keycloakUserService;
     }
 
     /**
@@ -80,6 +83,19 @@ public class UserService {
 
         assignApplicantRoleIfEmpty(user);
         return user;
+    }
+
+    @Transactional
+    public void updateNames(String userId, String firstName, String lastName) {
+        boolean updated = keycloakUserService.updateProfile(userId, firstName, lastName);
+        if (updated) {
+            User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+
+            userRepository.save(user);
+        }
     }
 
     /**
