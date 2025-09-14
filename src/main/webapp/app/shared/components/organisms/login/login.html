@@ -4,9 +4,10 @@
 <div class="login-content">
   <div class="login-panel">
     <jhi-credentials-group
-      [showPassword]="false"
-      [showSecondButton]="true"
-      [submitHandler]="onEmailLogin"
+      [secondButtonHandler]="secondButtonHandler"
+      [showPassword]="showPassword()"
+      [showSecondButton]="!showPassword()"
+      [submitHandler]="submitHandler"
       class="login-credentials"
       secondButtonLabel="auth.login.buttons.continueWithPassword"
     />

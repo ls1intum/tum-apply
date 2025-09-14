@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -6,6 +6,7 @@ import { CredentialsGroupComponent } from '../../molecules/credentials-group/cre
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
 import { TranslateDirective } from '../../../language';
+import { AuthService } from '../../../auth/data-access/auth.service';
 
 @Component({
   selector: 'jhi-login',
@@ -16,10 +17,24 @@ import { TranslateDirective } from '../../../language';
 export class Login {
   authFacadeService = inject(AuthFacadeService);
   authOrchestrator = inject(AuthOrchestratorService);
+  authService = inject(AuthService);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
-  loginWithPassword = signal<boolean>(false);
+  showPassword = computed(() => this.authOrchestrator.loginStep() === 'password');
+
+  submitHandler = async (email: string, password?: string): Promise<boolean> => {
+    if (this.showPassword()) {
+      return this.onEmailLogin(email, password);
+    }
+    this.authOrchestrator.email.set(email);
+    await this.authService.sendOtp(false);
+    return Promise.resolve(true);
+  };
+
+  secondButtonHandler = (): void => {
+    this.authOrchestrator.loginStep.set('password');
+  };
 
   onEmailLogin = async (email: string, password?: string): Promise<boolean> => {
     if (password == null || password.trim() === '') {
