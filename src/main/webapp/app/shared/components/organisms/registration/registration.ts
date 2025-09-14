@@ -33,7 +33,7 @@ export class Registration {
   authService = inject(AuthService);
   authOrchestrator = inject(AuthOrchestratorService);
   userResource = inject(UserResourceService);
-  accuntService = inject(AccountService);
+  accountService = inject(AccountService);
 
   readonly registerProgress = computed(() => this.authOrchestrator.registerProgress());
   readonly totalRegisterSteps = this.authOrchestrator.totalRegisterSteps;
@@ -71,7 +71,7 @@ export class Registration {
           lastName: normalizedLastName,
         }),
       );
-      await this.accuntService.loadUser();
+      await this.accountService.loadUser();
       this.authOrchestrator.nextRegisterStep();
     } catch {
       this.authOrchestrator.setError('Could not update your profile name. Please try again.');
@@ -80,11 +80,11 @@ export class Registration {
     }
   };
 
-  onSubmitPassword = (): void => {
+  onSubmitPassword = async (): Promise<void> => {
     const { password } = this.passwordForm.getRawValue();
     const trimmedPassword = password.trim();
     if (trimmedPassword) {
-      // TODO: set password for user in Keycloak
+      await firstValueFrom(this.userResource.updatePassword({ newPassword: trimmedPassword }));
     }
     this.authOrchestrator.nextRegisterStep();
   };
