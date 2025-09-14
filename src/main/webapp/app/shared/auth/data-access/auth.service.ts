@@ -65,9 +65,9 @@ export class AuthService {
 
       if (registration) {
         this.authOrchestration.registerStep.set('profile');
+      } else {
+        this.authOrchestration.authSuccess();
       }
-
-      this.authOrchestration.authSuccess();
     } catch {
       this.authOrchestration.setError('Code invalid or expired.');
     } finally {
