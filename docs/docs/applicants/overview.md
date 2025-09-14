@@ -4,13 +4,12 @@ Welcome to your Application Overview page – your command center for managing a
 
 ## Getting to Your Dashboard
 
+![Application Dashboard](images/application-overview.png)
+
 Your Application Overview is your home base in the TUMApply system:
 
 1. **From anywhere in the portal**: Click on "My Applications" in the main navigation
 2. **After submitting an application**: You're automatically redirected here to see your updated status
-3. **From the main dashboard**: Use the "Manage Applications" tile
-
-![Application Dashboard](images/application-overview.png)
 
 ## Understanding Your Application Overview Table
 
@@ -55,11 +54,10 @@ Each draft application card offers several action buttons:
 **View Application Details**: See your complete submitted application
 - Read-only view of everything you submitted
 - Includes all uploaded documents
-- Shows submission timestamp and confirmation details
 
 **Track Progress**: Monitor where your application stands
 - See status updates from supervisors
-- Access any feedback or communications
+- See where you need to take action (e.g. submit draft)
 
 **Withdraw Application**: Remove yourself from consideration
 - Professional way to decline if you've accepted elsewhere
