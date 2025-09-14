@@ -21,6 +21,7 @@ export type Button = {
   fullWidth?: boolean;
   onClick: VoidFunction;
   shouldTranslate?: boolean;
+  textLeft?: boolean;
 };
 
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -46,6 +47,7 @@ export class ButtonComponent {
   type = input<'button' | 'submit' | 'reset'>('button');
   loading = input<boolean>(false);
   size = input<ButtonSize>('lg');
+  labelLeft = input<boolean>(false);
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 
