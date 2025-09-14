@@ -21,6 +21,29 @@
     }
   ],
   "paths": {
+    "/api/users/password": {
+      "put": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "updatePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/users/name": {
       "put": {
         "tags": [
@@ -2902,6 +2925,18 @@
   },
   "components": {
     "schemas": {
+      "UpdatePasswordDTO": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
       "UpdateUserNameDTO": {
         "type": "object",
         "properties": {
