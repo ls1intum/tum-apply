@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ProgressBar } from 'primeng/progressbar';
 
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
@@ -46,17 +47,21 @@ export class Registration {
     return true;
   };
 
-  setProfile = (firstName: string, lastName: string): void => {
+  setProfile = async (firstName: string, lastName: string): Promise<void> => {
     const normalizedFirstName = firstName.trim();
     const normalizedLastName = lastName.trim();
-    if (this.authOrchestrator.isBusy()) return;
     this.authOrchestrator.isBusy.set(true);
     try {
-      this.userResource.updateUserName({ firstName: normalizedFirstName, lastName: normalizedLastName });
+      await firstValueFrom(
+        this.userResource.updateUserName({
+          firstName: normalizedFirstName,
+          lastName: normalizedLastName,
+        }),
+      );
       // TODO: set name in header
       this.authOrchestrator.nextRegisterStep();
     } catch {
-      this.authOrchestrator.setError('Invalid credentials.');
+      this.authOrchestrator.setError('Could not update your profile name. Please try again.');
     } finally {
       this.authOrchestrator.isBusy.set(false);
     }

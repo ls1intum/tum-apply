@@ -1,5 +1,5 @@
 <div class="profile-card">
-  <form (ngSubmit)="submitHandler()()" [formGroup]="form" class="form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="form">
     <jhi-string-input
       [control]="form.controls.firstName"
       [required]="true"
@@ -16,6 +16,13 @@
       placeholder="auth.register.texts.profile.lastName.placeholder"
     />
 
-    <jhi-button [fullWidth]="true" [shouldTranslate]="true" label="auth.register.buttons.continue" type="submit" />
+    <jhi-button
+      [disabled]="form.invalid || loading()"
+      [fullWidth]="true"
+      [loading]="loading()"
+      [shouldTranslate]="true"
+      label="auth.register.buttons.continue"
+      type="submit"
+    />
   </form>
 </div>

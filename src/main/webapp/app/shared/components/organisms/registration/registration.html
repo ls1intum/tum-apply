@@ -25,7 +25,7 @@
         <jhi-otp-input [registration]="true" />
       }
       @case ('profile') {
-        <jhi-profile class="profile" />
+        <jhi-profile class="profile" [submitHandler]="setProfile" />
       }
       @case ('password') {
         <div class="password">
