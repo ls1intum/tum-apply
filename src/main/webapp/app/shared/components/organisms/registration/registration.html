@@ -25,7 +25,9 @@
         <jhi-otp-input [registration]="true" />
       }
       @case ('profile') {}
-      @case ('password') {}
+      @case ('password') {
+        <jhi-password-input [showStrength]="true" />
+      }
     }
   </div>
   @if (authOrchestrator.registerStep() === 'email') {

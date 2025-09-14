@@ -7,10 +7,11 @@ import { AuthService } from '../../../auth/data-access/auth.service';
 import { TranslateDirective } from '../../../language';
 import { OtpInput } from '../../atoms/otp-input/otp-input';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { PasswordInputComponent } from '../../atoms/password-input/password-input';
 
 @Component({
   selector: 'jhi-registration',
-  imports: [ButtonComponent, CredentialsGroupComponent, OtpInput, ProgressBar, TranslateDirective],
+  imports: [ButtonComponent, CredentialsGroupComponent, OtpInput, ProgressBar, TranslateDirective, PasswordInputComponent],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
 })
