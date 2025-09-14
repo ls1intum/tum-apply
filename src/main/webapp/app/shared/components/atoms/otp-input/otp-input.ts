@@ -90,12 +90,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     const raw = (event.value ?? '').toString();
     // Normalize to uppercase and strip any non-alphanumerics
     const normalized = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    this.otpValue.set(normalized);
-    this.modelChange.emit(normalized);
-    const ctrl = this.formControl();
-    ctrl.setValue(normalized);
-    ctrl.markAsDirty();
-    ctrl.updateValueAndValidity();
+    this.setValue(normalized);
   }
 
   onSubmit(): void {
@@ -107,9 +102,23 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   }
 
   onResend(): void {
-    this.authOrchestratorService.clearError();
     if (!this.disableResend()) {
+      this.authOrchestratorService.clearError();
+      this.setValue('');
       void this.authService.sendOtp(this.isRegistration());
     }
+  }
+
+  private setValue(value: string): void {
+    this.otpValue.set(value);
+    this.modelChange.emit(value);
+    const ctrl = this.formControl();
+    ctrl.setValue(value);
+    if (value === '') {
+      ctrl.markAsPristine();
+    } else {
+      ctrl.markAsDirty();
+    }
+    ctrl.updateValueAndValidity();
   }
 }
