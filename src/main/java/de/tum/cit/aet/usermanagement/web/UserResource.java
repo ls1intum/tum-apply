@@ -46,7 +46,11 @@ public class UserResource {
     }
 
     /**
-     * Update the first and last name of a user.
+     * Allows the currently authenticated user to update their first and last name.
+     *
+     * @param jwt               the JWT of the authenticated user
+     * @param updateUserNameDTO contains the new first and last name
+     * @return 204 No Content if updated successfully
      */
     @PutMapping("/name")
     public ResponseEntity<Void> updateUserName(@AuthenticationPrincipal Jwt jwt,

@@ -85,6 +85,13 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Updates the user's first and last name in both Keycloak and the local database.
+     *
+     * @param userId    the Keycloak user ID
+     * @param firstName the new first name
+     * @param lastName  the new last name
+     */
     @Transactional
     public void updateNames(String userId, String firstName, String lastName) {
         boolean updated = keycloakUserService.updateProfile(userId, firstName, lastName);
