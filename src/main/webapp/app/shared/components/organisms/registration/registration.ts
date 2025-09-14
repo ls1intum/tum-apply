@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ProgressBar } from 'primeng/progressbar';
 
@@ -23,6 +24,7 @@ import { AccountService } from '../../../../core/auth/account.service';
     TranslateDirective,
     PasswordInputComponent,
     ProfileComponent,
+    ReactiveFormsModule,
   ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
@@ -38,6 +40,15 @@ export class Registration {
   readonly registerProgressInPercent = computed(() => ((this.registerProgress() - 1) / (this.totalRegisterSteps - 1)) * 100);
   readonly showBackButton = computed(() => this.authOrchestrator.registerStep() === 'verify');
   readonly showSkipButton = computed(() => this.authOrchestrator.registerStep() === 'password');
+
+  passwordForm: FormGroup<{ password: FormControl<string> }>;
+
+  constructor() {
+    const fb = inject(FormBuilder);
+    this.passwordForm = fb.nonNullable.group({
+      password: [''],
+    });
+  }
 
   sendOtp = async (email: string): Promise<boolean> => {
     const normalized = email.trim();
@@ -61,7 +72,6 @@ export class Registration {
         }),
       );
       await this.accuntService.loadUser();
-      // TODO: set name in header
       this.authOrchestrator.nextRegisterStep();
     } catch {
       this.authOrchestrator.setError('Could not update your profile name. Please try again.');
@@ -70,12 +80,13 @@ export class Registration {
     }
   };
 
-  submitPassword = (password: string): void => {
-    const trimmed = password.trim();
-    if (!trimmed) {
-      return;
+  onSubmitPassword = (): void => {
+    const { password } = this.passwordForm.getRawValue();
+    const trimmedPassword = password.trim();
+    if (trimmedPassword) {
+      // TODO: set password for user in Keycloak
     }
-    // TODO: set password for user in Keycloak
+    this.authOrchestrator.nextRegisterStep();
   };
 
   onBack = (): void => {

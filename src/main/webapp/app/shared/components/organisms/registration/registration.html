@@ -28,10 +28,15 @@
         <jhi-profile class="profile" [submitHandler]="setProfile" />
       }
       @case ('password') {
-        <div class="password">
-          <jhi-password-input label="auth.common.password.label" [shouldTranslate]="true" [showStrength]="true" />
-          <jhi-button (click)="onSkip()" [shouldTranslate]="true" label="auth.register.buttons.continue" [fullWidth]="true" />
-        </div>
+        <form class="password" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+          <jhi-password-input
+            label="auth.common.password.label"
+            [shouldTranslate]="true"
+            [showStrength]="true"
+            [control]="passwordForm.controls.password"
+          />
+          <jhi-button type="submit" [shouldTranslate]="true" label="auth.register.buttons.continue" [fullWidth]="true" />
+        </form>
       }
     }
   </div>
