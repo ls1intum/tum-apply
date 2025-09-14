@@ -3,7 +3,13 @@
 </div>
 <div class="login-content">
   <div class="login-panel">
-    <jhi-credentials-group [submitHandler]="onEmailLogin" class="login-credentials" />
+    <jhi-credentials-group
+      [showPassword]="false"
+      [showSecondButton]="true"
+      [submitHandler]="onEmailLogin"
+      class="login-credentials"
+      secondButtonLabel="auth.login.buttons.continueWithPassword"
+    />
   </div>
   <p class="login-footer">
     <span jhiTranslate="auth.login.texts.accountMissing.prefix"></span>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -18,6 +18,8 @@ export class Login {
   authOrchestrator = inject(AuthOrchestratorService);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
+
+  loginWithPassword = signal<boolean>(false);
 
   onEmailLogin = async (email: string, password?: string): Promise<boolean> => {
     if (password == null || password.trim() === '') {
