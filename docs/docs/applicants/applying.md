@@ -30,7 +30,7 @@ The application form is designed as a **4-page wizard** to make the process mana
 ![Application Form Page 1](images/application-form-page1.png)
 
 ### Page 2: Academic Background & Documents
-- **University information**: Previous degrees, institutions attended
+- **University information**: Previous degrees and their grades, institutions attended
 - **Upload academic documents**: 
   - Degree certificates (PDF format, max 10MB)
 - **Document validation**: The system checks file format and size
@@ -40,10 +40,8 @@ The application form is designed as a **4-page wizard** to make the process mana
 ### Page 3: Application Questions & Additional Documents
 - **Answer position-specific questions**: These vary by supervisor and research area
 - **Upload supporting documents**:
-  - CV/Resume (required)
-  - Research proposal (if applicable)
+  - CV/Resume
   - Reference letters
-  - Portfolio or work samples
 - **Progress indicator**: Shows completion status of each section
 ![Application Form Page 3](images/application-form-page3_1.png)
 ![Application Form Page 3](images/application-form-page3_2.png)
@@ -65,7 +63,7 @@ You have two choices on the final page:
 - You'll receive a confirmation email with submission details
 
 ### Option B: Save as Draft
-- Click **"Save as Draft"** to complete later
+- Simply exit the application form
 - Application is saved with all current progress
 - You can return anytime to continue editing
 - Draft applications appear in your "My Applications" dashboard
