@@ -19,7 +19,7 @@
   <div class="registration-panel">
     @switch (authOrchestrator.registerStep()) {
       @case ('email') {
-        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials" />
+        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials" [isLogin]="false" />
       }
       @case ('verify') {
         <jhi-otp-input [registration]="true" />
