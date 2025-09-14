@@ -77,6 +77,7 @@ model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
+model/updateUserNameDTO.ts
 model/uploadDocumentsRequest.ts
 model/user.ts
 model/userDTO.ts
