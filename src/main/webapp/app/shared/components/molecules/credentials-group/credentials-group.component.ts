@@ -40,6 +40,8 @@ export class CredentialsGroupComponent {
   isLogin = input<boolean>(true);
   submitHandler = input.required<SubmitHandler>();
   showPassword = input<boolean>(true);
+  showSecondButton = input<boolean>(false);
+  secondButtonLabel = input<string>('');
 
   submitLabel = computed(() => (this.isLogin() ? 'auth.login.buttons.continue' : 'auth.register.buttons.continue'));
   dividerLabel = computed(() => (this.isLogin() ? 'auth.login.texts.or' : 'auth.register.texts.or'));
