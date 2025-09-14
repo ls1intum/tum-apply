@@ -82,4 +82,14 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      * @return optional user
      */
     Optional<User> findByEmailIgnoreCase(String email);
+
+    /**
+     * Checks if a user exists with the given email in a case-insensitive manner.
+     *
+     * @param email normalized email address
+     * @return true if a user exists with the email, false otherwise
+     */
+    boolean existsByEmailIgnoreCase(String email);
+
+    String email(String email);
 }
