@@ -4,8 +4,10 @@ import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
+import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,10 +19,12 @@ public class UserResource {
 
     private final AuthenticationService authenticationService;
     private final UserService userService;
+    private final KeycloakUserService keycloakUserService;
 
-    public UserResource(AuthenticationService authenticationService, UserService userService) {
+    public UserResource(AuthenticationService authenticationService, UserService userService, KeycloakUserService keycloakUserService) {
         this.authenticationService = authenticationService;
         this.userService = userService;
+        this.keycloakUserService = keycloakUserService;
     }
 
     /**
@@ -49,5 +53,23 @@ public class UserResource {
                                                @Valid @RequestBody UpdateUserNameDTO updateUserNameDTO) {
         userService.updateNames(jwt.getSubject(), updateUserNameDTO.firstName(), updateUserNameDTO.lastName());
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Allows the currently authenticated user to set or change their password in Keycloak.
+     *
+     * @param jwt the JWT of the authenticated user
+     * @param dto contains the new password
+     * @return 204 No Content if updated successfully, 400 Bad Request if update fails
+     */
+    @PutMapping("/password")
+    public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
+        boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
+        return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
+    }
+
+    public record UpdatePasswordDTO(
+        @NotBlank String newPassword
+    ) {
     }
 }

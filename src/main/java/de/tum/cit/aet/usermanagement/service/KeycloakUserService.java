@@ -7,6 +7,7 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -121,6 +122,35 @@ public class KeycloakUserService {
             userResource.update(userRepresentation);
         }
         return updated;
+    }
+
+    /**
+     * Sets the password for a Keycloak user.
+     *
+     * @param userId      the Keycloak user ID
+     * @param newPassword the new password (must be non-blank)
+     * @return {@code true} if the password was updated, {@code false} if input invalid or user not found
+     */
+    public boolean setPassword(String userId, String newPassword) {
+        String trimmedPassword = newPassword.trim();
+        if (userId == null || trimmedPassword.isBlank()) {
+            return false;
+        }
+        UserResource userResource = keycloak.realm(realm).users().get(userId);
+        if (userResource == null) {
+            return false;
+        }
+        try {
+            CredentialRepresentation cred = new CredentialRepresentation();
+            cred.setType(CredentialRepresentation.PASSWORD);
+            cred.setValue(trimmedPassword);
+            cred.setTemporary(false);
+
+            userResource.resetPassword(cred);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
