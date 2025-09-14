@@ -1,21 +1,17 @@
-import { Component, ViewEncapsulation, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
-import { DividerModule } from 'primeng/divider';
 
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
-import { AuthIdpButtons } from '../../molecules/auth-idp-buttons/auth-idp-buttons';
 import { TranslateDirective } from '../../../language';
 
 @Component({
   selector: 'jhi-login',
-  standalone: true,
-  imports: [AuthIdpButtons, CredentialsGroupComponent, DividerModule, TranslateDirective],
+  imports: [CredentialsGroupComponent, TranslateDirective],
   templateUrl: './login.html',
   styleUrl: './login.scss',
-  encapsulation: ViewEncapsulation.None,
 })
 export class Login {
   authFacadeService = inject(AuthFacadeService);
@@ -31,7 +27,7 @@ export class Login {
     if (!response) {
       this.toastService.showError({
         summary: this.translate.instant('auth.login.messages.error.header'),
-        detail: this.translate.instant('auth.login.messages.error.message'),
+        detail: this.translate.instant('auth.login.messages.error.wrongCredentials'),
       });
     }
     return response;
