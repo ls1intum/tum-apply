@@ -1,5 +1,8 @@
 <div class="otp-wrapper">
-  <span class="otp-instruction" jhiTranslate="auth.common.otp.instructions"></span>
+  <div class="instructions">
+    <span class="otp-instruction" jhiTranslate="auth.common.otp.instructions"></span>
+    <span [translateValues]="{ minutes: ttlMinutes }" jhiTranslate="auth.common.otp.minutes"></span>
+  </div>
   <p-inputotp
     (keydown)="onKeyDown($event)"
     (onChange)="onChange($any($event))"

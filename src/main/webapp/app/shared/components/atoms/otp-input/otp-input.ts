@@ -32,6 +32,9 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   registration = input<boolean>(false);
   // Number of characters the OTP should have
   length = environment.otp.length;
+  ttlSeconds = environment.otp.ttlSeconds;
+  // Time-to-live for the OTP in minutes
+  readonly ttlMinutes: number = Math.max(1, Math.ceil(this.ttlSeconds / 60));
   // Cooldown in seconds for the resend button
   cooldownSeconds = computed(() => this.authOrchestratorService.cooldownSeconds());
   onCooldown = computed(() => this.cooldownSeconds() > 0);
@@ -43,8 +46,6 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   readonly disableResend: Signal<boolean> = computed(() => this.isBusy() || this.onCooldown());
   // derived states
   readonly disabledSubmit = computed(() => this.showError() || this.isBusy() || this.otpValue().length !== this.length);
-
-  // TODO: show error messages from server
   // determine size of the OTP input based on screen size
   readonly otpSize = toSignal<'small' | 'large' | null>(
     this.breakpointObserver
@@ -52,6 +53,8 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
       .pipe(map(r => (r.breakpoints[Breakpoints.XLarge] ? 'large' : r.breakpoints[Breakpoints.XSmall] ? 'small' : null))),
     { initialValue: null },
   );
+
+  // TODO: show error messages from server
   private readonly registrationOverride = signal<boolean | null>(null);
   private readonly isRegistration = computed(() => {
     const registrationOverride = this.registrationOverride();
@@ -64,6 +67,11 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     if (typeof registration === 'boolean') {
       this.registrationOverride.set(registration);
     }
+  }
+
+  // Localized instruction including TTL
+  get instructionText(): string {
+    return this.translateService.instant('auth.common.otp.instructions', { minutes: this.ttlMinutes });
   }
 
   get resendLabel(): string {
