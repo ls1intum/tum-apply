@@ -125,6 +125,8 @@ export class AuthOrchestratorService {
     const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
     if (currentIndex < REGISTER_STEPS.length - 1) {
       this.registerStep.set(REGISTER_STEPS[currentIndex + 1]);
+    } else {
+      this.close();
     }
   }
 
