@@ -2,6 +2,7 @@
   <form (ngSubmit)="submitHandler()()" [formGroup]="form" class="form">
     <jhi-string-input
       [control]="form.controls.firstName"
+      [required]="true"
       [shouldTranslate]="true"
       label="auth.register.texts.profile.firstName.label"
       placeholder="auth.register.texts.profile.firstName.placeholder"
@@ -9,6 +10,7 @@
 
     <jhi-string-input
       [control]="form.controls.lastName"
+      [required]="true"
       [shouldTranslate]="true"
       label="auth.register.texts.profile.lastName.label"
       placeholder="auth.register.texts.profile.lastName.placeholder"
