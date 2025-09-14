@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { InputOtpChangeEvent, InputOtpModule } from 'primeng/inputotp';
 import { ButtonModule } from 'primeng/button';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
@@ -17,7 +18,7 @@ import TranslateDirective from '../../../language/translate.directive';
 @Component({
   selector: 'jhi-otp-input',
   standalone: true,
-  imports: [InputOtpModule, ButtonModule, ButtonComponent, TranslateDirective],
+  imports: [InputOtpModule, ButtonModule, ButtonComponent, TranslateDirective, ReactiveFormsModule],
   templateUrl: './otp-input.html',
   styleUrl: './otp-input.scss',
 })
