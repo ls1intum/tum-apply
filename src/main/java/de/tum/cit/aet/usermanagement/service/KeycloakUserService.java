@@ -22,10 +22,10 @@ public class KeycloakUserService {
     private final String realm;
 
     public KeycloakUserService(
-        @Value("${KEYCLOAK_URL:http://localhost:9080}") String url,
-        @Value("${KEYCLOAK_REALM:tumapply}") String realm,
-        @Value("${KEYCLOAK_ADMIN_CLIENT_ID:tumapply-otp-admin}") String clientId,
-        @Value("${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}") String clientSecret
+        @Value("${keycloak.url}") String url,
+        @Value("${keycloak.realm}") String realm,
+        @Value("${keycloak.admin.client-id}") String clientId,
+        @Value("${keycloak.admin.client-secret}") String clientSecret
     ) {
         this.realm = realm;
         this.keycloak = KeycloakBuilder.builder()

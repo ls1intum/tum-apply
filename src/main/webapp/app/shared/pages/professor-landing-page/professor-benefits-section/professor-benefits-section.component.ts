@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
-import ButtonGroupComponent, { ButtonGroupData } from '../../../components/molecules/button-group/button-group.component';
+import { ButtonGroupData } from '../../../components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-benefits-section',
-  imports: [CommonModule, TranslateModule, ButtonGroupComponent, TranslateDirective],
+  imports: [CommonModule, TranslateModule, TranslateDirective],
   templateUrl: './professor-benefits-section.component.html',
   styleUrl: './professor-benefits-section.component.scss',
 })
