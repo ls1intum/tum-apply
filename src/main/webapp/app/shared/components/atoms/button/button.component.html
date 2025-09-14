@@ -18,26 +18,9 @@
     [type]="type()"
     [variant]="variant()"
   >
-    @if (labelLeft()) {
-      <ng-container [ngTemplateOutlet]="labelTemplate" />
-      <ng-container [ngTemplateOutlet]="iconTemplate" />
-    } @else {
-      <ng-container [ngTemplateOutlet]="iconTemplate" />
-      <ng-container [ngTemplateOutlet]="labelTemplate" />
-    }
-
-    @if (isExternalLink()) {
-      <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" aria-hidden="true" />
-    }
-  </p-button>
-
-  <ng-template #iconTemplate>
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
     }
-  </ng-template>
-
-  <ng-template #labelTemplate>
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -45,5 +28,8 @@
         {{ label() }}
       }
     }
-  </ng-template>
+    @if (isExternalLink()) {
+      <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" aria-hidden="true" />
+    }
+  </p-button>
 </ng-template>
