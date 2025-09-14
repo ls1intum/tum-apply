@@ -36,7 +36,7 @@ export class AuthService {
   async sendOtp(registration = false): Promise<void> {
     this.authOrchestration.isSendingCode.set(true);
     try {
-      await this.authGateway.sendOtp(this.authOrchestration.email());
+      await this.authGateway.sendOtp(this.authOrchestration.email(), registration);
       this.authOrchestration.startCooldown();
       if (registration) {
         this.authOrchestration.registerStep.set('verify');
