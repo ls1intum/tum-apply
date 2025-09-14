@@ -41,7 +41,7 @@ export class AuthService {
       if (registration) {
         this.authOrchestration.registerStep.set('verify');
       } else {
-        this.authOrchestration.loginSub.set('otp');
+        this.authOrchestration.loginStep.set('otp');
       }
     } finally {
       this.authOrchestration.isSendingCode.set(false);

@@ -21,7 +21,7 @@ export interface AuthOpenOptions {
 // - 'email'    : user enters their email (decides between password or OTP)
 // - 'password' : user is prompted for their password
 // - 'otp'      : user enters a one-time code sent by email
-export type LoginSubState = 'email' | 'password' | 'otp';
+export type LoginStep = 'email' | 'password' | 'otp';
 
 // Steps within the registration flow:
 // - 'email'    : user enters their email
