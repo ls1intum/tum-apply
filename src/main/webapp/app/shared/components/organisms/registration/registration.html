@@ -24,9 +24,14 @@
       @case ('verify') {
         <jhi-otp-input [registration]="true" />
       }
-      @case ('profile') {}
+      @case ('profile') {
+        <jhi-profile class="profile" />
+      }
       @case ('password') {
-        <jhi-password-input [showStrength]="true" />
+        <div class="password">
+          <jhi-password-input label="auth.common.password.label" [shouldTranslate]="true" [showStrength]="true" />
+          <jhi-button (click)="onSkip()" [shouldTranslate]="true" label="auth.register.buttons.continue" [fullWidth]="true" />
+        </div>
       }
     }
   </div>

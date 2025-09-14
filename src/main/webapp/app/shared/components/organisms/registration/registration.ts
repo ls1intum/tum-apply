@@ -8,10 +8,19 @@ import { TranslateDirective } from '../../../language';
 import { OtpInput } from '../../atoms/otp-input/otp-input';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { PasswordInputComponent } from '../../atoms/password-input/password-input';
+import { ProfileComponent } from '../../molecules/profile/profile.component';
 
 @Component({
   selector: 'jhi-registration',
-  imports: [ButtonComponent, CredentialsGroupComponent, OtpInput, ProgressBar, TranslateDirective, PasswordInputComponent],
+  imports: [
+    ButtonComponent,
+    CredentialsGroupComponent,
+    OtpInput,
+    ProgressBar,
+    TranslateDirective,
+    PasswordInputComponent,
+    ProfileComponent,
+  ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
 })

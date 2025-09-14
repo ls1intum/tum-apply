@@ -49,7 +49,9 @@
   .registration-panel {
     @include layout.panel-col;
 
-    .registration-credentials {
+    .registration-credentials,
+    .profile,
+    .password {
       width: 100%;
     }
   }
