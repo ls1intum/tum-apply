@@ -120,8 +120,7 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Development",
-      "prod": "Demo"
+      "dev": "Development"
     },
     "item-count": "Showing {{first}} - {{second}} of {{total}} items."
   },
