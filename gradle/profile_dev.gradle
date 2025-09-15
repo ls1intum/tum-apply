@@ -11,7 +11,8 @@ dotenvFile.eachLine { line ->
   }
 }
 
-def requiredVars = ["KEYCLOAK_URL", "KEYCLOAK_REALM", "KEYCLOAK_CLIENT_ID", "KEYCLOAK_ENABLE_LOGGING", "OTP_LENGTH", "OTP_RESEND_COOLDOWN_SECONDS"]
+def requiredVars = ["KEYCLOAK_URL", "KEYCLOAK_REALM", "KEYCLOAK_CLIENT_ID", "KEYCLOAK_ENABLE_LOGGING", "OTP_LENGTH",
+                    "OTP_RESEND_COOLDOWN_SECONDS", "OTP_TTL_SECONDS"]
 requiredVars.each { key ->
   if (!envVars.containsKey(key) || envVars[key] == null) {
     throw new GradleException("Missing required environment variable in .env.local: ${key}")
@@ -63,7 +64,8 @@ task webapp(type: NpmTask) {
     "KEYCLOAK_CLIENT_ID"         : envVars["KEYCLOAK_CLIENT_ID"],
     "KEYCLOAK_ENABLE_LOGGING"    : envVars["KEYCLOAK_ENABLE_LOGGING"],
     "OTP_LENGTH"                 : envVars["OTP_LENGTH"],
-    "OTP_RESEND_COOLDOWN_SECONDS": envVars["OTP_RESEND_COOLDOWN_SECONDS"]
+    "OTP_RESEND_COOLDOWN_SECONDS": envVars["OTP_RESEND_COOLDOWN_SECONDS"],
+    "OTP_TTL_SECONDS"            : envVars["OTP_TTL_SECONDS"]
   ]
 }
 

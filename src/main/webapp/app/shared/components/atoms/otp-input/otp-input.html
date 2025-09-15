@@ -1,5 +1,8 @@
 <div class="otp-wrapper">
-  <span class="otp-instruction" jhiTranslate="auth.common.otp.instructions"></span>
+  <div class="instructions">
+    <span class="otp-instruction" jhiTranslate="auth.common.otp.instructions"></span>
+    <span [translateValues]="{ minutes: ttlMinutes }" jhiTranslate="auth.common.otp.minutes"></span>
+  </div>
   <p-inputotp
     (keydown)="onKeyDown($event)"
     (onChange)="onChange($any($event))"
@@ -10,12 +13,18 @@
     inputmode="latin"
     styleClass="otp-input"
   />
+  <div class="error-container">
+    @if (showError()) {
+      <span jhiTranslate="auth.common.otp.error"></span>
+    }
+  </div>
   <div class="buttons">
     <jhi-button (click)="onResend()" [disabled]="disableResend()" [fullWidth]="true" [label]="resendLabel" variant="text" />
     <jhi-button
       (click)="onSubmit()"
       [disabled]="disabledSubmit()"
       [fullWidth]="true"
+      [loading]="isBusy()"
       [shouldTranslate]="true"
       label="auth.common.otp.submit"
     />
