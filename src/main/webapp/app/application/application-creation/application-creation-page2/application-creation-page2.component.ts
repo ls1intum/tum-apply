@@ -16,11 +16,11 @@ export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
   bachelorGradingScale: SelectOption;
-  bachelorGrade: string;
+  bachelorGrade?: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
   masterGradingScale: SelectOption;
-  masterGrade: string;
+  masterGrade?: string;
 };
 
 export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
@@ -126,7 +126,7 @@ export default class ApplicationCreationPage2Component {
 
   getBachelorGradeAsNumber(): number | undefined {
     const bachelorGrade = this.data().bachelorGrade;
-    return bachelorGrade === '' ? undefined : Number.parseFloat(bachelorGrade.trim());
+    return bachelorGrade === '' || bachelorGrade === undefined ? undefined : Number.parseFloat(bachelorGrade.trim());
   }
   setBachelorGradeAsNumber(gradeInputValue: number | undefined): void {
     this.data.set({
@@ -136,7 +136,7 @@ export default class ApplicationCreationPage2Component {
   }
   getMasterGradeAsNumber(): number | undefined {
     const masterGrade = this.data().masterGrade;
-    return masterGrade === '' ? undefined : Number.parseFloat(masterGrade.trim());
+    return masterGrade === '' || masterGrade === undefined ? undefined : Number.parseFloat(masterGrade.trim());
   }
   setMasterGradeAsNumber(gradeInputValue: number | undefined): void {
     this.data.set({
