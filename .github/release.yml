@@ -3,12 +3,6 @@ changelog:
     labels:
       - "invalid"
       - "wontfix"
-      - "stale"
-      - "question"
-      - "help wanted"
-      - "good first issue"
-      - "ready for review"
-      - "ready for merge"
       - "prototype"
 
   categories:
@@ -52,7 +46,7 @@ changelog:
 
     - title: 🧱 Application
       labels: [ "application" ]
-    - title: 🧱 Client (TypeScript)
+    - title: 🧱 Client (Angular)
       labels: [ "client" ]
     - title: 🧱 Server (Java)
       labels: [ "server" ]
