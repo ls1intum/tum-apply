@@ -1,3 +1,5 @@
+@import '../../../content/scss/_header.scss';
+
 .confirm-dialog {
   display: none;
 }
@@ -15,6 +17,10 @@
   border: 0.1rem solid var(--p-border-default);
 }
 
+.header {
+  padding-bottom: 0;
+}
+
 .header-row {
   display: flex;
   justify-content: space-between;
@@ -22,12 +28,6 @@
   flex-wrap: wrap;
   margin-bottom: 1rem;
   gap: 1rem;
-}
-
-.job-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--p-primary-color);
 }
 
 .job-meta {

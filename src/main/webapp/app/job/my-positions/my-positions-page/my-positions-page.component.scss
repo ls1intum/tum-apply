@@ -1,15 +1,20 @@
+@import '../../../../content/scss/_header.scss';
+
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem 0 0;
+  padding: 2rem 0;
+
+  .header {
+    padding-bottom: 0; // Override the 4rem padding from _header.scss to keep items on same row
+
+    h1 {
+      margin: 0; // Remove default h1 margins
+    }
+  }
 }
 
-h1 {
-  font-weight: 700;
-  font-size: 2rem;
-  color: var(--p-primary-color);
-}
 .my-positions-container {
   .body {
     padding: 0 1rem;

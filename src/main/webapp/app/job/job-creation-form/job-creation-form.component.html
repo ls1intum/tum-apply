@@ -11,9 +11,9 @@
 />
 @if (!isLoading()) {
   <div class="doctorate-form-container">
-    <header>
+    <div class="header">
       <h1 jhiTranslate="{{ pageTitle() }}"></h1>
-    </header>
+    </div>
 
     <div class="m-4 p-1">
       <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />

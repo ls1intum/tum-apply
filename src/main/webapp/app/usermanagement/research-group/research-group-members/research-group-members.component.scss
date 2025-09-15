@@ -1,14 +1,8 @@
+@import '../../../../content/scss/_header.scss';
+
 .research-group-members {
   padding: 2rem 4rem;
   width: 100%;
-
-  .header {
-    font-weight: 700;
-    padding-bottom: 2rem;
-    font-size: 2rem;
-    color: var(--p-primary-color);
-    align-items: center;
-  }
 
   .current-user-icon {
     margin-left: 0.5rem;
