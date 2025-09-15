@@ -1,8 +1,13 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
 import de.tum.cit.aet.core.service.AuthenticationService;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +38,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserResourceTest {
 
     @Autowired
+    UserRepository userRepository;
+    @Autowired
+    ResearchGroupRepository researchGroupRepository;
+    ResearchGroup researchGroup;
+    User user;
+    @Autowired
     private MockMvc mockMvc;
     @Autowired
     private AuthenticationService authenticationService;
-    @Autowired
-    private UserRepository userRepository;
+
+    @BeforeEach
+    void setup() {
+        researchGroupRepository.deleteAll();
+        userRepository.deleteAll();
+
+        researchGroup = ResearchGroupTestData.savedAll(
+                researchGroupRepository,
+                "Algorithms Group", "Prof. Doe", "alg@example.com", "ALG",
+                "CS", "We do cool stuff", "alg@example.com",
+                "80333", "CIT", "Arcisstr. 21", "https://alg.tum.de"
+        );
+        user = UserTestData.savedProfessorAll(
+                userRepository, researchGroup,
+                UUID.randomUUID(), "prof.doe@tum.de", "John", "Doe", "en",
+                "+49 89 1234", "https://doe.tum.de", "https://linkedin.com/in/doe",
+                "DE", null, "männlich"
+        );
+    }
 
     @Test
     void getCurrentUserWithoutJwtReturnsUnauthorized() throws Exception {
@@ -50,12 +78,11 @@ class UserResourceTest {
 
     @Test
     void getCurrentUserWithJwtProvisionsAndReturnsUser() throws Exception {
-        String userId = UUID.randomUUID().toString();
-        Jwt jwt = Jwt.withTokenValue("token").header("alg", "none").claim("sub", userId).build();
-
-        User user = createMinimalUser(UUID.fromString(userId));
-        User savedUser = userRepository.save(user);
-        when(authenticationService.provisionUserIfMissing(any(Jwt.class))).thenReturn(savedUser);
+        Jwt jwt = Jwt.withTokenValue("token")
+                .header("alg", "none")
+                .claim("sub", user.getUserId())
+                .build();
+        when(authenticationService.provisionUserIfMissing(any(Jwt.class))).thenReturn(user);
 
         MvcResult result = mockMvc.perform(get("/api/users/me")
                         .with(jwt().jwt(jwt))
@@ -64,19 +91,6 @@ class UserResourceTest {
                 .andReturn();
         assertThat(result.getResponse().getContentAsString()).isNotBlank();
         verify(authenticationService).provisionUserIfMissing(any(Jwt.class));
-    }
-
-    /**
-     * Helper method to create a User with all required fields set.
-     */
-    private User createMinimalUser(UUID userId) {
-        User user = new User();
-        user.setUserId(userId);
-        user.setEmail("test@example.com");
-        user.setFirstName("First");
-        user.setLastName("Last");
-        user.setSelectedLanguage("en");
-        return user;
     }
 
     @TestConfiguration
