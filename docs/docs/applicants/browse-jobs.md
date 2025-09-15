@@ -58,11 +58,11 @@ This module streamlines the position discovery and application process, enabling
 
 ---
 
-## ⚙️ Position Discovery Workflows
+## ⚙️ Steps for Discovering Positions
 
-Below listed are the key workflows for browsing and applying to positions.
+Below listed are the key steps for browsing and applying to positions.
 
-### 🔍 Workflow 1: Discovering Available Positions
+### 🔍 Step 1: Discovering Available Positions
 
 **Goal:** Browse all available doctorate positions and identify opportunities of interest.
 
@@ -76,7 +76,7 @@ Below listed are the key workflows for browsing and applying to positions.
 **Video**: https://live.rbg.tum.de/w/artemisintro/61935
 
 
-### 📖 Workflow 2: Evaluating Position Details
+### 📖 Step 2: Evaluating Position Details
 
 **Goal:** Thoroughly review position details, research group details, and application criteria.
 
@@ -94,7 +94,7 @@ Below listed are the key workflows for browsing and applying to positions.
 **Video**: https://live.rbg.tum.de/w/artemisintro/61934
 
 
-### 📝 Workflow 3: Applying for Positions
+### 📝 Step 3: Applying for Positions
 
 **Goal:** Submit applications for suitable positions with all required information.
 
