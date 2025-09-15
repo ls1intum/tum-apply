@@ -100,11 +100,11 @@ export default class ApplicationCreationFormComponent {
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
     bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: '',
+    bachelorGrade: undefined,
     masterDegreeName: '',
     masterDegreeUniversity: '',
     masterGradingScale: masterGradingScale[0],
-    masterGrade: '',
+    masterGrade: undefined,
   });
 
   page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
