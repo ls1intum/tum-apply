@@ -472,7 +472,6 @@ export default class ApplicationCreationFormComponent {
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
-    const location = this.location;
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
@@ -496,9 +495,7 @@ export default class ApplicationCreationFormComponent {
 
       if (rerouteToOtherPage) {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
-        // TODO: browser history is not working as expected for location.back()
-
-        location.back();
+        await this.router.navigate(['/application/overview']);
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
