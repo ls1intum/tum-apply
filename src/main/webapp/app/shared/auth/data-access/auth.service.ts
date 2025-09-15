@@ -36,12 +36,12 @@ export class AuthService {
   async sendOtp(registration = false): Promise<void> {
     this.authOrchestration.isSendingCode.set(true);
     try {
-      await this.authGateway.sendOtp(this.authOrchestration.email());
+      await this.authGateway.sendOtp(this.authOrchestration.email(), registration);
       this.authOrchestration.startCooldown();
       if (registration) {
         this.authOrchestration.registerStep.set('verify');
       } else {
-        this.authOrchestration.loginSub.set('otp');
+        this.authOrchestration.loginStep.set('otp');
       }
     } finally {
       this.authOrchestration.isSendingCode.set(false);
@@ -65,9 +65,9 @@ export class AuthService {
 
       if (registration) {
         this.authOrchestration.registerStep.set('profile');
+      } else {
+        this.authOrchestration.authSuccess();
       }
-
-      this.authOrchestration.authSuccess();
     } catch {
       this.authOrchestration.setError('Code invalid or expired.');
     } finally {

@@ -30,19 +30,20 @@ public class EmailVerificationResource {
      * Extracts the email and client IP address from the request, then delegates
      * the sending of the code to the email verification service.
      *
-     * @param body    the request body containing the email address
+     * @param body    the request body containing the email address and optional registration flag
      * @param request the HTTP servlet request, used to extract the client IP address
      * @return HTTP 202 Accepted if the request to send a code was processed
      */
     @PostMapping("/send-code")
     public ResponseEntity<Void> send(@Valid @RequestBody SendCodeRequest body, HttpServletRequest request) {
         String email = body.email();
-        service.sendCode(email, HttpUtils.getClientIp(request));
+        service.sendCode(email, HttpUtils.getClientIp(request), body.registration);
         return ResponseEntity.accepted().build();
     }
 
     public record SendCodeRequest(
-        @NotBlank @Email String email
+        @NotBlank @Email String email,
+        boolean registration
     ) {
     }
 }

@@ -7,6 +7,7 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -90,26 +91,66 @@ public class KeycloakUserService {
      * Updates basic profile fields (firstName and lastName) of a Keycloak user.
      * Blank or null inputs are ignored; existing values remain unchanged in that case.
      * Names are normalized before being persisted.
+     * Only updates fields if the new value is non-blank and different from the current value.
      *
      * @param userId    Keycloak user ID
      * @param firstName optional first name; ignored if null or blank
      * @param lastName  optional last name; ignored if null or blank
+     * @return {@code true} if any field was updated, {@code false} otherwise
      */
-    public void updateProfile(String userId, String firstName, String lastName) {
+    public boolean updateProfile(String userId, String firstName, String lastName) {
         UserResource userResource = keycloak.realm(realm).users().get(userId);
         UserRepresentation userRepresentation = userResource.toRepresentation();
         if (userRepresentation == null) {
-            return;
+            return false;
         }
+        boolean updated = false;
+
         String normalizedFirstName = StringUtil.normalize(firstName, false);
-        if (!normalizedFirstName.isBlank()) {
+        if (!normalizedFirstName.isBlank() && !normalizedFirstName.equals(userRepresentation.getFirstName())) {
             userRepresentation.setFirstName(normalizedFirstName);
+            updated = true;
         }
+
         String normalizedLastName = StringUtil.normalize(lastName, false);
-        if (!normalizedLastName.isBlank()) {
+        if (!normalizedLastName.isBlank() && !normalizedLastName.equals(userRepresentation.getLastName())) {
             userRepresentation.setLastName(normalizedLastName);
+            updated = true;
         }
-        userResource.update(userRepresentation);
+
+        if (updated) {
+            userResource.update(userRepresentation);
+        }
+        return updated;
+    }
+
+    /**
+     * Sets the password for a Keycloak user.
+     *
+     * @param userId      the Keycloak user ID
+     * @param newPassword the new password (must be non-blank)
+     * @return {@code true} if the password was updated, {@code false} if input invalid or user not found
+     */
+    public boolean setPassword(String userId, String newPassword) {
+        String trimmedPassword = newPassword.trim();
+        if (userId == null || trimmedPassword.isBlank()) {
+            return false;
+        }
+        UserResource userResource = keycloak.realm(realm).users().get(userId);
+        if (userResource == null) {
+            return false;
+        }
+        try {
+            CredentialRepresentation cred = new CredentialRepresentation();
+            cred.setType(CredentialRepresentation.PASSWORD);
+            cred.setValue(trimmedPassword);
+            cred.setTemporary(false);
+
+            userResource.resetPassword(cred);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
