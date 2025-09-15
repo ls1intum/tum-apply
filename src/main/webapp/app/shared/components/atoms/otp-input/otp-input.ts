@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { InputOtpChangeEvent, InputOtpModule } from 'primeng/inputotp';
 import { ButtonModule } from 'primeng/button';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
@@ -17,7 +18,7 @@ import TranslateDirective from '../../../language/translate.directive';
 @Component({
   selector: 'jhi-otp-input',
   standalone: true,
-  imports: [InputOtpModule, ButtonModule, ButtonComponent, TranslateDirective],
+  imports: [InputOtpModule, ButtonModule, ButtonComponent, TranslateDirective, ReactiveFormsModule],
   templateUrl: './otp-input.html',
   styleUrl: './otp-input.scss',
 })
@@ -98,12 +99,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     const raw = (event.value ?? '').toString();
     // Normalize to uppercase and strip any non-alphanumerics
     const normalized = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    this.otpValue.set(normalized);
-    this.modelChange.emit(normalized);
-    const ctrl = this.formControl();
-    ctrl.setValue(normalized);
-    ctrl.markAsDirty();
-    ctrl.updateValueAndValidity();
+    this.setValue(normalized);
   }
 
   onSubmit(): void {
@@ -115,9 +111,23 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   }
 
   onResend(): void {
-    this.authOrchestratorService.clearError();
     if (!this.disableResend()) {
+      this.authOrchestratorService.clearError();
+      this.setValue('');
       void this.authService.sendOtp(this.isRegistration());
     }
+  }
+
+  private setValue(value: string): void {
+    this.otpValue.set(value);
+    this.modelChange.emit(value);
+    const ctrl = this.formControl();
+    ctrl.setValue(value);
+    if (value === '') {
+      ctrl.markAsPristine();
+    } else {
+      ctrl.markAsDirty();
+    }
+    ctrl.updateValueAndValidity();
   }
 }

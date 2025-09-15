@@ -7,9 +7,9 @@
     (keydown)="onKeyDown($event)"
     (onChange)="onChange($any($event))"
     [autofocus]="true"
+    [formControl]="formControl()"
     [length]="length"
     [size]="$any(otpSize())"
-    formControlName="otp"
     inputmode="latin"
     styleClass="otp-input"
   />
