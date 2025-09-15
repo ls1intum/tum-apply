@@ -458,8 +458,8 @@ export default class ApplicationCreationFormComponent {
     this.submitAttempted.set(true);
     if (!this.privacyAcceptedSignal()) {
       this.toastService.showError({
-        summary: this.translateService.instant('privacy.privacyConsent.errorSummary'),
-        detail: this.translateService.instant('privacy.privacyConsent.errorText'),
+        summary: this.translateService.instant('privacy.privacyConsent.toastError.summary'),
+        detail: this.translateService.instant('privacy.privacyConsent.toastError.detail'),
       });
       return;
     }
