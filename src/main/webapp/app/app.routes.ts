@@ -13,7 +13,7 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [] },
     loadComponent: () => import('./shared/pages/landing-page/landing-page.component').then(m => m.LandingPageComponent),
-    title: 'landingPage.title',
+    title: 'global.routes.landingPage.applicant',
   },
   {
     path: 'professor',
@@ -21,7 +21,7 @@ const routes: Routes = [
     data: { authorities: [] },
     loadComponent: () =>
       import('./shared/pages/professor-landing-page/professor-landing-page.component').then(m => m.ProfessorLandingPageComponent),
-    title: 'professorLandingPage.title',
+    title: 'global.routes.landingPage.professor',
   },
   {
     path: '',
