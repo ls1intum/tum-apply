@@ -32,7 +32,7 @@ public class UserResource {
      * If the user does not exist yet, a new user is created and assigned a default role.
      * If no JWT is present, or it is not valid, the response will HTTP 401 Unauthorized.
      *
-     * @param jwt the JWT of the authenticated user, injected by Spring Security
+     * @param jwt of the authenticated user
      * @return the user data as {@link UserShortDTO}, or an empty response if unauthenticated
      */
     @GetMapping("/me")
@@ -48,7 +48,7 @@ public class UserResource {
     /**
      * Allows the currently authenticated user to update their first and last name.
      *
-     * @param jwt               the JWT of the authenticated user
+     * @param jwt               of the authenticated user
      * @param updateUserNameDTO contains the new first and last name
      * @return 204 No Content if updated successfully
      */
@@ -62,7 +62,7 @@ public class UserResource {
     /**
      * Allows the currently authenticated user to set or change their password in Keycloak.
      *
-     * @param jwt the JWT of the authenticated user
+     * @param jwt of the authenticated user
      * @param dto contains the new password
      * @return 204 No Content if updated successfully, 400 Bad Request if update fails
      */
