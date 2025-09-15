@@ -126,16 +126,17 @@ export default class ApplicationCreationPage2Component {
     });
   }
 
-  setBachelorGradeAsNumber(gradeInputValue: number | undefined): void {
+  setBachelorGradeAsNumber = (gradeInputValue: number | undefined): void => {
     this.data.set({
       ...this.data(),
       bachelorGrade: gradeInputValue,
     });
-  }
-  setMasterGradeAsNumber(gradeInputValue: number | undefined): void {
+  };
+
+  setMasterGradeAsNumber = (gradeInputValue: number | undefined): void => {
     this.data.set({
       ...this.data(),
       masterGrade: gradeInputValue,
     });
-  }
+  };
 }
