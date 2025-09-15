@@ -15,11 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,26 +40,30 @@ class UserResourceTest {
     private UserRepository userRepository;
 
     @Test
-    void getCurrentUser_withoutJwt_returnsUnauthorized() throws Exception {
-        mockMvc.perform(get("/api/users/me")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+    void getCurrentUserWithoutJwtReturnsUnauthorized() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/users/me").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+        assertThat(result.getResponse().getContentAsString()).isBlank();
+        verify(authenticationService, never()).provisionUserIfMissing(any(Jwt.class));
     }
 
     @Test
-    void getCurrentUser_withJwt_provisionsAndReturnsUser() throws Exception {
+    void getCurrentUserWithJwtProvisionsAndReturnsUser() throws Exception {
         String userId = UUID.randomUUID().toString();
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claim("sub", userId)
-                .build();
+        Jwt jwt = Jwt.withTokenValue("token").header("alg", "none").claim("sub", userId).build();
 
         User user = createMinimalUser(UUID.fromString(userId));
         User savedUser = userRepository.save(user);
         when(authenticationService.provisionUserIfMissing(any(Jwt.class))).thenReturn(savedUser);
 
-        mockMvc.perform(get("/api/users/me").with(jwt().jwt(jwt)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        MvcResult result = mockMvc.perform(get("/api/users/me")
+                        .with(jwt().jwt(jwt))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertThat(result.getResponse().getContentAsString()).isNotBlank();
+        verify(authenticationService).provisionUserIfMissing(any(Jwt.class));
     }
 
     /**
