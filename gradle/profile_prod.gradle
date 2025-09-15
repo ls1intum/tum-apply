@@ -30,6 +30,7 @@ tasks.register("webapp", NpmTask) {
     "KEYCLOAK_ENABLE_LOGGING"    : System.getenv("KEYCLOAK_ENABLE_LOGGING"),
     "OTP_LENGTH"                 : System.getenv("OTP_LENGTH"),
     "OTP_RESEND_COOLDOWN_SECONDS": System.getenv("OTP_RESEND_COOLDOWN_SECONDS"),
+    "OTP_TTL_SECONDS"            : System.getenv("OTP_TTL_SECONDS"),
   ]
 }
 

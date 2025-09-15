@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
+import de.tum.cit.aet.core.service.JwtService;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -30,6 +33,9 @@ import java.util.Map;
 @Service
 public class KeycloakAuthenticationService {
 
+    private static final String GRANT_TYPE_TOKEN_EXCHANGE = "urn:ietf:params:oauth:grant-type:token-exchange";
+    private static final String GRANT_TYPE_REFRESH = "refresh_token";
+
     private final AuthzClient authzClient;
 
     private final String keycloakUrl;
@@ -41,13 +47,15 @@ public class KeycloakAuthenticationService {
     private final String adminClientSecret;
 
     private final WebClient webClient;
+    private final JwtService jwtService;
 
-    public KeycloakAuthenticationService(@Value("${KEYCLOAK_URL:http://localhost:9080}") String keycloakUrl,
-                                         @Value("${KEYCLOAK_REALM:tumapply}") String realm,
-                                         @Value("${KEYCLOAK_SERVER_CLIENT_ID:server-client}") String clientId,
-                                         @Value("${KEYCLOAK_SERVER_CLIENT_SECRET:my-secret}") String clientSecret,
-                                         @Value("${KEYCLOAK_ADMIN_CLIENT_ID:tumapply-otp-admin}") String adminClientId,
-                                         @Value("${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}") String adminClientSecret
+    public KeycloakAuthenticationService(@Value("${keycloak.url}") String keycloakUrl,
+                                         @Value("${keycloak.realm}") String realm,
+                                         @Value("${keycloak.server.client-id}") String clientId,
+                                         @Value("${keycloak.server.client-secret}") String clientSecret,
+                                         @Value("${keycloak.admin.client-id}") String adminClientId,
+                                         @Value("${keycloak.admin.client-secret}") String adminClientSecret,
+                                         JwtService jwtService
     ) {
         this.authzClient = AuthzClient.create(new Configuration(
             keycloakUrl,
@@ -72,6 +80,7 @@ public class KeycloakAuthenticationService {
         this.webClient = WebClient.builder()
             .clientConnector(new ReactorClientHttpConnector(httpClient))
             .build();
+        this.jwtService = jwtService;
     }
 
     /**
@@ -102,29 +111,72 @@ public class KeycloakAuthenticationService {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new UnauthorizedException("Missing refresh token");
         }
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        addClientAuth(form, clientId, clientSecret);
-        form.add("refresh_token", refreshToken);
-        callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user").toBodilessEntity().block(Duration.ofSeconds(5));
+
+        if (!logoutWithClient(this.clientId, this.clientSecret, refreshToken)
+            && !logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)) {
+            throw new UnauthorizedException("Failed to logout user");
+
+        }
     }
 
     /**
-     * Refreshes an end user's tokens using {@code grant_type=refresh_token} against the OIDC Token Endpoint.
+     * Normalizes incoming cookie tokens to tokens minted for the configured application client ({@code clientId}).
+     * <p>
+     * - If the provided access token's authorized party (azp) is NOT {@code clientId}, we perform a subject-only
+     * Token Exchange (impersonation) to mint fresh Access/Refresh tokens for {@code clientId}.
+     * - Else, if a refresh token is present, we perform a standard OIDC refresh to keep TTL semantics.
+     * - Else, we still perform a subject-only Token Exchange to mint a fresh pair with correct azp.
      *
-     * @param refreshToken the user's refresh token
-     * @return DTO with fresh access token, refresh token, and lifetimes
-     * @throws UnauthorizedException if the request is rejected or fails
+     * @param accessToken  the bearer token from the HttpOnly cookie (required)
+     * @param refreshToken optional refresh token from the HttpOnly cookie
+     * @return DTO with access token, refresh token and lifetimes for {@code clientId}
      */
-    public AuthResponseDTO refreshTokens(String refreshToken) {
-        if (refreshToken == null || refreshToken.isBlank()) {
-            throw new UnauthorizedException("Missing refresh token");
+    public AuthResponseDTO refreshTokens(String accessToken, String refreshToken) {
+        final Jwt jwt = jwtService.decode(accessToken);
+
+        // 1) No refresh token: accept valid access token, else session expired
+        if (StringUtil.isBlank(refreshToken)) {
+            if (jwt != null && jwtService.isActive(jwt)) {
+                return new AuthResponseDTO(accessToken, "", jwtService.secondsUntilExpiry(jwt), 0);
+            }
+            throw new UnauthorizedException("Session expired");
         }
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        addClientAuth(form, clientId, clientSecret);
-        form.add("grant_type", "refresh_token");
-        form.add("refresh_token", refreshToken);
-        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Failed to refresh token").bodyToMono(AccessTokenResponse.class).block(Duration.ofSeconds(5));
-        return getResponseFromToken(tokenResponse);
+
+        // 2) Valid access token present: choose path based on azp
+        if (jwt != null && jwtService.isActive(jwt)) {
+            final String authorizedParty = jwtService.getAuthorizedParty(jwt);
+            if (clientId.equals(authorizedParty)) {
+                // Default refresh with server client
+                return getResponseFromToken(refreshTokensWithClient(clientId, clientSecret, refreshToken));
+            }
+            if (adminClientId.equals(authorizedParty)) {
+                // Subject-only refresh via otp client
+                final String subject = jwt.getSubject();
+                if (StringUtil.isBlank(subject)) {
+                    throw new UnauthorizedException("Access token missing subject");
+                }
+                return exchangeForUserTokens(subject);
+            }
+            throw new UnauthorizedException("Unauthorized client for refresh");
+        }
+
+        // 3) No valid access token: try to refresh with both clients
+        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(clientId, clientSecret, refreshToken);
+        if (serverRefresh != null) {
+            return getResponseFromToken(serverRefresh);
+        }
+
+        AccessTokenResponse otpRefresh = tryRefreshTokensWithClient(adminClientId, adminClientSecret, refreshToken);
+        if (otpRefresh != null) {
+            Jwt otpJwt = jwtService.decode(otpRefresh.getToken());
+            String keycloakUserId = otpJwt.getSubject();
+            if (StringUtil.isBlank(keycloakUserId)) {
+                throw new UnauthorizedException("Access token missing subject");
+            }
+            return exchangeForUserTokens(keycloakUserId);
+        }
+
+        throw new UnauthorizedException("Unable to refresh");
     }
 
     /**
@@ -137,15 +189,79 @@ public class KeycloakAuthenticationService {
     public AuthResponseDTO exchangeForUserTokens(String keycloakUserId) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         addClientAuth(form, adminClientId, adminClientSecret);
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
+        form.add("grant_type", GRANT_TYPE_TOKEN_EXCHANGE);
         form.add("requested_subject", keycloakUserId);
         form.add("audience", clientId);
 
-        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Token exchange failed").bodyToMono(AccessTokenResponse.class).block(Duration.ofSeconds(5));
+        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Token exchange failed")
+            .bodyToMono(AccessTokenResponse.class)
+            .block(Duration.ofSeconds(5));
         return getResponseFromToken(tokenResponse);
     }
 
     // ===== Helpers =====
+
+    /**
+     * Helper to call the OIDC Logout Endpoint with the given client credentials and refresh token.
+     *
+     * @param clientId     the client ID to authenticate as
+     * @param clientSecret the client secret to authenticate with
+     * @param refreshToken the user's refresh token
+     * @return true if logout succeeded, false if it was rejected (4xx)
+     */
+    private boolean logoutWithClient(String clientId, String clientSecret, String refreshToken) {
+        try {
+            MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+            addClientAuth(form, clientId, clientSecret);
+            form.add("refresh_token", refreshToken);
+            callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user")
+                .toBodilessEntity()
+                .block(Duration.ofSeconds(5));
+            return true;
+        } catch (UnauthorizedException ex) {
+            log.debug("Logout with client {} failed: {}", clientId, ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Refreshes an end user's tokens using {@code grant_type=refresh_token} against the OIDC Token Endpoint.
+     *
+     * @param clientId     the client ID to authenticate as
+     * @param clientSecret the client secret to authenticate with
+     * @param refreshToken the user's refresh token
+     * @return DTO with fresh access token, refresh token, and lifetimes
+     * @throws UnauthorizedException if the request is rejected or fails
+     */
+    private AccessTokenResponse refreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new UnauthorizedException("Missing refresh token");
+        }
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        addClientAuth(form, clientId, clientSecret);
+        form.add("grant_type", GRANT_TYPE_REFRESH);
+        form.add("refresh_token", refreshToken);
+        return callKeycloak(OidcEndpoint.TOKEN, form, "Failed to refresh token")
+            .bodyToMono(AccessTokenResponse.class)
+            .block(Duration.ofSeconds(5));
+    }
+
+    /**
+     * Tries to refresh an end user's tokens using {@code grant_type=refresh_token} against the OIDC Token Endpoint.
+     *
+     * @param clientId     the client ID to authenticate as
+     * @param clientSecret the client secret to authenticate with
+     * @param refreshToken the user's refresh token
+     * @return DTO with fresh access token, refresh token, and lifetimes or null if exception
+     */
+    private AccessTokenResponse tryRefreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
+        try {
+            return refreshTokensWithClient(clientId, clientSecret, refreshToken);
+        } catch (UnauthorizedException ex) {
+            log.debug("Refresh with client {} failed: {}", clientId, ex.getMessage());
+            return null;
+        }
+    }
 
     /**
      * Returns the fully qualified OIDC endpoint URL (token or logout) for the configured realm.
@@ -154,6 +270,7 @@ public class KeycloakAuthenticationService {
         String endpointPath = (endpoint == OidcEndpoint.TOKEN) ? "token" : "logout";
         return keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/" + endpointPath;
     }
+
 
     /**
      * Adds client authentication parameters (client_id and client_secret) to the form.

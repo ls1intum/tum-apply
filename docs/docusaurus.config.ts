@@ -85,7 +85,7 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Apply Docs',
+      title: 'Apply User Docs',
       logo: {
         alt: 'TUM Logo',
         src: 'img/tum-logo-blue.svg'

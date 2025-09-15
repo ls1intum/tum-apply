@@ -4,9 +4,21 @@
   gap: 1rem;
   align-items: center;
 
-  .otp-instruction {
+  .instructions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     text-align: center;
-    color: var(--p-text-primary);
+
+    .otp-instruction {
+      text-align: center;
+      color: var(--p-text-primary);
+    }
+  }
+
+  .error-container {
+    min-height: 1.5rem;
+    color: var(--p-danger-color);
   }
 
   .buttons {
