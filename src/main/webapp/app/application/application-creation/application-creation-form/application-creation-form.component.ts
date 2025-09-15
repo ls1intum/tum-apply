@@ -107,7 +107,12 @@ export default class ApplicationCreationFormComponent {
     masterGrade: undefined,
   });
 
-  page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
+  page3 = signal<ApplicationCreationPage3Data>({
+    desiredStartDate: '',
+    motivation: '',
+    skills: '',
+    experiences: '',
+  });
 
   previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
 
@@ -467,7 +472,6 @@ export default class ApplicationCreationFormComponent {
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
-    const location = this.location;
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
@@ -491,9 +495,7 @@ export default class ApplicationCreationFormComponent {
 
       if (rerouteToOtherPage) {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
-        // TODO: browser history is not working as expected for location.back()
-
-        location.back();
+        await this.router.navigate(['/application/overview']);
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
@@ -657,10 +659,10 @@ export default class ApplicationCreationFormComponent {
         masterGrade: p2.masterGrade,
         masterGradingScale: p2.masterGradingScale.value,
       },
-      motivation: p3?.motivation ?? '',
-      specialSkills: p3?.skills ?? '',
-      desiredDate: p3?.desiredStartDate ?? '',
-      projects: p3?.experiences,
+      motivation: p3.motivation,
+      specialSkills: p3.skills,
+      desiredDate: p3.desiredStartDate,
+      projects: p3.experiences,
       jobTitle: this.title(),
     };
 
