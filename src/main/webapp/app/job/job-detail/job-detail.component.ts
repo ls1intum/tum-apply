@@ -132,7 +132,6 @@ export class JobDetailComponent {
                 onClick: () => this.onViewApplication(),
                 disabled: false,
                 shouldTranslate: true,
-                icon: 'file-circle-check',
                 variant: 'outlined',
               },
             ],
