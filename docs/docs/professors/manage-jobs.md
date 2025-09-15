@@ -59,24 +59,24 @@ Used for **comprehensive position review** with full management capabilities and
 **Comprehensive editing system** for updating and improving unpublished positions.
 
 - **Pre-filled forms** containing all previously saved information for efficient updating
-- **Multi-step editing process** matching the creation workflow for consistency
+- **Multi-step editing process** matching the job creation process for consistency
 
 This integrated management system enables efficient oversight of the complete position lifecycle from creation through successful candidate placement.
 
 ---
 
-## ⚙️ Position Management Workflows
+## ⚙️ Steps for Managing Positions
 
-This document outlines key workflows supported by the position management dashboard.
+This document outlines key steps for managing positions via the position management dashboard.
 
 
 ### 📌 Prerequisites
 
-- All workflows require professor account access
+- All steps require professor account access
 - Position management capabilities vary based on current position status
 
 
-### 📊 Workflow 1: My Positions Dashboard Overview
+### 📊 Step 1: My Positions Dashboard Overview
 
 **Goal:** Access and navigate the centralized management dashboard to monitor all your positions.
 
@@ -102,7 +102,7 @@ This document outlines key workflows supported by the position management dashbo
 **Video**: https://live.rbg.tum.de/w/artemisintro/61932
 
 
-### 🔍 Workflow 2: Viewing Job Details
+### 🔍 Step 2: Viewing Job Details
 
 **Goal:** Access comprehensive position information with professor management capabilities.
 
@@ -121,7 +121,7 @@ This document outlines key workflows supported by the position management dashbo
 **Video**: https://live.rbg.tum.de/w/artemisintro/61933
 
 
-### ✏️ Workflow 3: Editing and Updating Existing Positions
+### ✏️ Step 3: Editing and Updating Existing Positions
 
 **Goal:** Modify position details to improve clarity, update requirements, or reflect changed circumstances.
 
@@ -138,7 +138,7 @@ This document outlines key workflows supported by the position management dashbo
 **Video**: https://live.rbg.tum.de/w/artemisintro/61936
 
 
-### 🔒 Workflow 4: Closing and Deleting Positions
+### 🔒 Step 4: Closing and Deleting Positions
 
 **Goal:** Properly manage position lifecycle endpoints through closure or deletion.
 
