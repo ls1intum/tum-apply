@@ -35,5 +35,6 @@
     "fullTemplateTypeCheck": true,
     "strictTemplates": true,
     "preserveWhitespaces": true
-  }
+  },
+  "exclude": ["node_modules", "src/main/resources"]
 }
