@@ -9,8 +9,7 @@
  */
 
 
-export interface SendCodeRequest { 
-    email: string;
-    registration?: boolean;
+export interface UpdatePasswordDTO { 
+    newPassword: string;
 }
 

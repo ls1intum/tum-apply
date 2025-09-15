@@ -19,8 +19,8 @@ export class AuthGateway {
   // --------- Shared -----------
 
   // Sends an OTP (one-time password) via email.
-  sendOtp(email: string): Promise<unknown> {
-    return firstValueFrom(this.verificationApi.send({ email }));
+  sendOtp(email: string, registration: boolean): Promise<unknown> {
+    return firstValueFrom(this.verificationApi.send({ email, registration }));
   }
 
   // Verifies OTP code for login or registration.
