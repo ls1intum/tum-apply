@@ -21,7 +21,7 @@ export class AccountService {
     const user = this.user();
     return this.loaded() && user !== undefined;
   });
-  userResourceService = inject(UserResourceService);
+  private readonly userResourceService = inject(UserResourceService);
 
   /**
    * Returns the id of the signed-in user, or undefined if no user is loaded.
@@ -79,6 +79,25 @@ export class AccountService {
     } else {
       this.user.set(undefined);
       this.loaded.set(true);
+    }
+  }
+
+  async updateUser(firstName: string, lastName: string): Promise<void> {
+    const normalizedFirstName = firstName.trim();
+    const normalizedLastName = lastName.trim();
+    await firstValueFrom(
+      this.userResourceService.updateUserName({
+        firstName: normalizedFirstName,
+        lastName: normalizedLastName,
+      }),
+    );
+    await this.loadUser();
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    const trimmedPassword = password.trim();
+    if (trimmedPassword) {
+      await firstValueFrom(this.userResourceService.updatePassword({ newPassword: trimmedPassword }));
     }
   }
 
