@@ -134,12 +134,12 @@ public ResponseEntity<?> getJobsForProfessor(@PathVariable UUID professorId) {
 
 ### 🧠 When to Use What?
 
-| Use case                                | Use `@PreAuthorize` | Use `hasAccessTo(...)` | Use `@CheckAccess`       |
-| --------------------------------------- | ------------------- | ---------------------- | ------------------------ |
-| Block roles like APPLICANT early        | ✅ Yes              | ❌ No                  | ❌ No                    |
-| Check if user owns a Job or Application | ❌ No               | ✅ Yes                 | ✅ If param ID is passed |
-| POST with researchGroupId in path       | ❌ No               | ❌ No                  | ✅ Yes                   |
-| Service logic with full object          | ❌ No               | ✅ Yes                 | ❌ No                    |
+| Use case                                | Use `@PreAuthorize` | Use `hasAccessTo(...)` | Use `@CheckAccess`      |
+|-----------------------------------------|---------------------|------------------------|-------------------------|
+| Block roles like APPLICANT early        | ✅ Yes               | ❌ No                   | ❌ No                    |
+| Check if user owns a Job or Application | ❌ No                | ✅ Yes                  | ✅ If param ID is passed |
+| POST with researchGroupId in path       | ❌ No                | ❌ No                   | ✅ Yes                   |
+| Service logic with full object          | ❌ No                | ✅ Yes                  | ❌ No                    |
 
 All approaches work together – use them **in combination** for best clarity and security.
 
@@ -200,7 +200,7 @@ The `GET /api/users/me` endpoint allows the client to fetch details of the curre
 
 ### 📁 Related Files
 
-- `AuthenticationService.java` – user creation and role loading
+- `ServerAuthenticationService.java` – user creation and role loading
 - `CustomJwtAuthenticationConverter.java` – maps JWT to authorities
 - `SecurityConfiguration.java` – configures access restrictions
 - `UserRepository.java` – uses `@EntityGraph` to preload roles

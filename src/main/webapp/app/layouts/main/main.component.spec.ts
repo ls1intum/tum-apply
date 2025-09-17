@@ -13,8 +13,8 @@ import { provideHttpClient } from '@angular/common/http';
 import MainComponent from './main.component';
 
 jest.mock('app/core/auth/account.service');
-jest.mock('app/core/auth/keycloak.service', () => {
-  const { MockKeycloakService } = jest.requireActual('app/core/auth/keycloak.service.mock');
+jest.mock('app/core/auth/keycloak-authentication.service', () => {
+  const { MockKeycloakService } = jest.requireActual('app/core/auth/tests/keycloak.service.mock');
   return {
     keycloakService: new MockKeycloakService(),
   };
