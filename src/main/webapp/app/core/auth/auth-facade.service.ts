@@ -26,12 +26,10 @@ export class AuthFacadeService {
   async initAuth(): Promise<boolean> {
     return this.runAuthAction(async () => {
       // 1) Email-Authentication-Flow (server session)
-      try {
-        await this.serverAuthenticationService.refreshTokens();
+      const refreshed = await this.serverAuthenticationService.refreshTokens();
+      if (refreshed) {
         await this.loadUser();
         return true;
-      } catch {
-        // no valid email session, continue with Keycloak
       }
 
       // 2) Keycloak-Flow

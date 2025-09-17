@@ -109,13 +109,15 @@ export class ServerAuthenticationService {
    *
    * @returns Promise resolving to AuthSessionInfoDTO with new session expiry.
    */
-  async refreshTokens(): Promise<void> {
+  async refreshTokens(): Promise<boolean> {
     try {
       const response: AuthSessionInfoDTO = await firstValueFrom(this.authenticationApi.refresh());
       this.startTokenRefreshScheduler(response.expiresIn);
+      return true;
     } catch {
       this.stopTokenRefreshScheduler();
     }
+    return false;
   }
 
   /**
