@@ -8,10 +8,6 @@ changelog:
   categories:
     - title: 🧱 Application
       labels: [ "application" ]
-    - title: 🧱 Client (Angular)
-      labels: [ "client" ]
-    - title: 🧱 Server (Java)
-      labels: [ "server" ]
     - title: 🧱 Database
       labels: [ "database" ]
     - title: 🧱 Job
