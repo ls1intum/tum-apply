@@ -3,6 +3,10 @@
     "title": "TUMApply",
     "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
     "routes": {
+      "landingPage": {
+        "applicant": "TUMApply - Applicant Portal",
+        "professor": "TUMApply - Professor Portal"
+      },
       "job": {
         "detail": "TUMApply - Job Details",
         "creation": "TUMApply - Job Creation",
@@ -120,8 +124,7 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Development",
-      "prod": "Demo"
+      "dev": "Development"
     },
     "item-count": "Showing {{first}} - {{second}} of {{total}} items."
   },

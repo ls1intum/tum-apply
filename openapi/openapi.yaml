@@ -21,6 +21,52 @@
     }
   ],
   "paths": {
+    "/api/users/password": {
+      "put": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "updatePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/users/name": {
+      "put": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "updateUserName",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserNameDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/settings/emails": {
       "get": {
         "tags": [
@@ -798,29 +844,6 @@
         }
       }
     },
-    "/api/auth/verify-code": {
-      "post": {
-        "tags": [
-          "email-verification-resource"
-        ],
-        "operationId": "verify",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VerifyCodeRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/auth/send-code": {
       "post": {
         "tags": [
@@ -856,11 +879,37 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "integer",
-                    "format": "int64"
-                  }
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/otp-complete": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "otpComplete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpCompleteDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
                 }
               }
             }
@@ -903,11 +952,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "integer",
-                    "format": "int64"
-                  }
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
                 }
               }
             }
@@ -2880,6 +2925,33 @@
   },
   "components": {
     "schemas": {
+      "UpdatePasswordDTO": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
+      "UpdateUserNameDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName"
+        ]
+      },
       "EmailSettingDTO": {
         "type": "object",
         "properties": {
@@ -3459,7 +3531,36 @@
           }
         }
       },
-      "VerifyCodeRequest": {
+      "SendCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "registration": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AuthSessionInfoDTO": {
+        "type": "object",
+        "properties": {
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "refreshExpiresIn": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "OtpCompleteDTO": {
         "type": "object",
         "properties": {
           "email": {
@@ -3470,25 +3571,34 @@
           "code": {
             "type": "string",
             "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "LOGIN",
+              "REGISTER"
+            ]
+          },
+          "profile": {
+            "$ref": "#/components/schemas/UserProfileDTO"
           }
         },
         "required": [
           "code",
-          "email"
+          "email",
+          "purpose"
         ]
       },
-      "SendCodeRequest": {
+      "UserProfileDTO": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "minLength": 1
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
           }
-        },
-        "required": [
-          "email"
-        ]
+        }
       },
       "LoginRequestDTO": {
         "type": "object",
@@ -3831,9 +3941,6 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "paged": {
             "type": "boolean"
           },
@@ -3844,6 +3951,9 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -4292,6 +4402,22 @@
               "PUBLISHED",
               "CLOSED",
               "APPLICANT_FOUND"
+            ]
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
             ]
           }
         },

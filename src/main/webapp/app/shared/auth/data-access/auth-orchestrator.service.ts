@@ -2,7 +2,7 @@ import { Injectable, Injector, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
 
-import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginSubState, REGISTER_STEPS, RegisterStep } from '../models/auth.model';
+import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep } from '../models/auth.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -11,9 +11,9 @@ export class AuthOrchestratorService {
   readonly isOpen = signal(false);
   readonly mode = signal<AuthFlowMode>('login');
   // substates per flow
-  readonly loginSub = signal<LoginSubState>('email');
-  readonly registerStep = signal<RegisterStep>('email');
-  readonly applyStep = signal<ApplyStep>('inline');
+  loginStep = signal<LoginStep>('email');
+  registerStep = signal<RegisterStep>('email');
+  applyStep = signal<ApplyStep>('inline');
   // form state (shared across flows)
   readonly email = signal<string>('');
   readonly firstName = signal<string>('');
@@ -25,11 +25,9 @@ export class AuthOrchestratorService {
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
-    if (idx < 0) {
-      return 0;
-    }
-    return Number((idx / (REGISTER_STEPS.length - 1)).toFixed(2));
+    return Math.max(idx + 1, 1);
   });
+  readonly totalRegisterSteps = REGISTER_STEPS.length;
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
   readonly injector = inject(Injector);
@@ -78,7 +76,7 @@ export class AuthOrchestratorService {
 
     // choose sensible starting substates
     if (this.mode() === 'login') {
-      this.loginSub.set('email');
+      this.loginStep.set('email');
     }
     if (this.mode() === 'register') {
       this.registerStep.set('email');
@@ -107,7 +105,7 @@ export class AuthOrchestratorService {
 
   switchToLogin(): void {
     this.mode.set('login');
-    this.loginSub.set('email');
+    this.loginStep.set('email');
   }
 
   switchToRegister(): void {
@@ -115,15 +113,28 @@ export class AuthOrchestratorService {
     this.registerStep.set('email');
   }
 
-  switchToApplyRegister(): void {
-    this.mode.set('apply-register');
-    this.applyStep.set('inline');
+  clearError(): void {
+    this.error.set(null);
   }
-
-  // -------- Helpers ----------
 
   setError(msg: string | null): void {
     this.error.set(msg);
+  }
+
+  nextRegisterStep(): void {
+    const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
+    if (currentIndex < REGISTER_STEPS.length - 1) {
+      this.registerStep.set(REGISTER_STEPS[currentIndex + 1]);
+    } else {
+      this.close();
+    }
+  }
+
+  previousRegisterStep(): void {
+    const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
+    if (currentIndex > 0) {
+      this.registerStep.set(REGISTER_STEPS[currentIndex - 1]);
+    }
   }
 
   startCooldown(): void {
@@ -131,6 +142,8 @@ export class AuthOrchestratorService {
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);
   }
+
+  // -------- Helpers ----------
 
   private setIfPresent(input: string | undefined, setter: (value: string) => void): void {
     const value = (input ?? '').replace(/\s+/g, ' ').trim();

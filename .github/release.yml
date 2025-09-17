@@ -1,0 +1,64 @@
+changelog:
+  exclude:
+    labels:
+      - "invalid"
+      - "wontfix"
+      - "prototype"
+
+  categories:
+    - title: 🚀 Features
+      labels:
+        - "enhancement"
+        - "ui/ux improvement"
+
+    - title: 🐛 Bug fixes
+      labels:
+        - "bug"
+
+    - title: 🔐 Security
+      labels:
+        - "security fix"
+        - "Mend: dependency security vulnerability"
+        - "Mend: configuration error"
+
+    - title: 📦 Dependencies
+      labels:
+        - "dependencies"
+
+    - title: 📝 Documentation
+      labels:
+        - "documentation"
+
+    - title: 🧪 Tests
+      labels:
+        - "tests"
+
+    - title: 🧰 Maintenance & Config
+      labels:
+        - "task"
+        - "config-change"
+        - "shared"
+
+    - title: 🏗 DevOps / Infra
+      labels:
+        - "docker"
+        - "keycloak"
+
+    - title: 🧱 Application
+      labels: [ "application" ]
+    - title: 🧱 Client (Angular)
+      labels: [ "client" ]
+    - title: 🧱 Server (Java)
+      labels: [ "server" ]
+    - title: 🧱 Database
+      labels: [ "database" ]
+    - title: 🧱 Job
+      labels: [ "job" ]
+    - title: 🧱 User management
+      labels: [ "user management" ]
+    - title: 🧱 Evaluation
+      labels: [ "evaluation" ]
+
+    - title: Other changes
+      labels:
+        - "*"
