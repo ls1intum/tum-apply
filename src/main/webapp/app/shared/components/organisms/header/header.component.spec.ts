@@ -41,7 +41,6 @@ describe('HeaderComponent', () => {
           useValue: {
             isAuthenticated: false,
             logout: jest.fn(),
-            loginWithTUM: jest.fn(),
             loginWithEmail: jest.fn(),
           },
         },

@@ -12,8 +12,9 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
-import { AuthDialogService } from '../../../auth/ui/auth-dialog.service';
+import { AuthDialogService } from '../../../../core/auth/auth-dialog.service';
 import TranslateDirective from '../../../language/translate.directive';
+import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
 
 @Component({
   selector: 'jhi-header',
@@ -117,7 +118,7 @@ export class HeaderComponent {
   }
 
   async onTUMSSOLogin(): Promise<void> {
-    await this.authFacadeService.loginWithTUM(this.router.url);
+    await this.authFacadeService.loginWithProvider(IdpProvider.TUM, this.router.url);
   }
 
   logout(): void {
