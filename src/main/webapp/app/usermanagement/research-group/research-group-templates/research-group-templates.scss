@@ -1,17 +1,12 @@
-@use '../../../../content/scss/_header.scss';
-
-.content {
-  padding: 2rem 4rem;
+.page-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
 
   .table-wrapper {
     display: flex;
     flex-direction: column;
     gap: 2rem;
     width: 100%;
-    max-width: 50rem;
     align-self: center;
 
     .actions {

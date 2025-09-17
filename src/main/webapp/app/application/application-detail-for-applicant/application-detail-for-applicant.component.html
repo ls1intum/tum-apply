@@ -1,15 +1,13 @@
-<div class="px-4 py-4 text-primary w-full h-remaining-viewheight flex flex-col">
+<div class="page-container">
   @if (application(); as application) {
-    <header class="header flex justify-between items-center">
+    <div class="header-container">
       @if (!previewDetailData()) {
-        <h1
-          jhiTranslate="entity.application_detail.applicant.header"
-          [translateValues]="{ jobTitle: application.jobTitle }"
-          class="h1-text"
-        ></h1>
+        <div class="header">
+          <h1 jhiTranslate="entity.application_detail.applicant.header" [translateValues]="{ jobTitle: application.jobTitle }"></h1>
+        </div>
         <jhi-application-state-for-applicants [state]="application.applicationState" />
       }
-    </header>
+    </div>
     <jhi-application-detail-card [application]="application">
       <div class="slot-right-width" slot-vertical-right>
         @if (documentIds(); as documentIds) {

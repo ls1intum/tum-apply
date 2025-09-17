@@ -10,12 +10,11 @@
   (confirmed)="publishJob()"
 />
 @if (!isLoading()) {
-  <div class="doctorate-form-container">
+  <div class="page-container">
     <div class="header">
       <h1 jhiTranslate="{{ pageTitle() }}"></h1>
     </div>
-
-    <div class="m-4 p-1">
+    <div>
       <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
     </div>
   </div>

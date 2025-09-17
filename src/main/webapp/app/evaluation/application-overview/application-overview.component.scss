@@ -1,9 +1,4 @@
-@use '../../../content/scss/_header.scss';
-
-.content {
-  padding: 2rem 4rem;
-  width: 100%;
-
+.page-container {
   .body {
     display: flex;
     flex-direction: column;

@@ -58,3 +58,13 @@
     }
   }
 }
+
+@mixin content-container {
+  padding: 2rem 4rem;
+  width: 100%;
+}
+
+.page-container {
+  padding: 2rem 4rem;
+  width: 100%;
+}
