@@ -18,6 +18,7 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
+  standalone: true,
   imports: [
     DynamicTableComponent,
     ButtonComponent,
@@ -146,7 +147,11 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onUpdateApplication(applicationId: string): void {
-    this.router.navigate([`/application/edit/${applicationId}`]);
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        application: applicationId,
+      },
+    });
   }
 
   onDeleteApplication(applicationId: string): void {
@@ -163,7 +168,6 @@ export default class ApplicationOverviewForApplicantComponent {
         console.error('Delete failed', err);
       },
     });
-    // }
   }
 
   onWithdrawApplication(applicationId: string): void {

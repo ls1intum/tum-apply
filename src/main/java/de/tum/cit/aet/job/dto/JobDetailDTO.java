@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
@@ -30,7 +31,9 @@ public record JobDetailDTO(
     LocalDate endDate,
     @NotNull LocalDateTime createdAt,
     @NotNull LocalDateTime lastModifiedAt,
-    JobState state
+    JobState state,
+    UUID applicationId,
+    ApplicationState applicationState
     // TODO: Adjust this to a List of CustomFields
     // CustomField customFields
 ) {
@@ -52,7 +55,9 @@ public record JobDetailDTO(
         LocalDate endDate,
         @NotNull LocalDateTime createdAt,
         @NotNull LocalDateTime lastModifiedAt,
-        JobState state
+        JobState state,
+        UUID applicationId,
+        ApplicationState applicationState
     ) {
         this(
             jobId,
@@ -72,7 +77,9 @@ public record JobDetailDTO(
             endDate,
             createdAt,
             lastModifiedAt,
-            state
+            state,
+            applicationId,
+            applicationState
         );
     }
 }

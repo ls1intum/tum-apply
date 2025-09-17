@@ -22,7 +22,7 @@
     <jhi-string-input
       label="{{ 'entity.applicationPage1.label.email' | translate }}"
       icon="envelope"
-      [disabled]="true"
+      [disabled]="disabledEmail()"
       id="email"
       [required]="true"
       [(model)]="data().email"
@@ -45,7 +45,7 @@
         [items]="selectGenderLocal"
         id="gender"
         [(selected)]="data().gender"
-        (selectedChange)="emitChanged()"
+        (selectedChange)="updateSelect('gender', $event)"
       />
     </div>
     <div class="w-1/2 pr-4">
@@ -69,7 +69,7 @@
         [items]="selectLanguageLocal"
         id="language"
         [(selected)]="data().language"
-        (selectedChange)="emitChanged()"
+        (selectedChange)="updateSelect('language', $event)"
         icon="circle-info"
         [tooltipText]="'entity.applicationPage1.tooltip.language' | translate"
       />
@@ -125,12 +125,15 @@
 
   <div class="form-row">
     <div class="w-1/2 pr-4">
-      <jhi-string-input
+      <jhi-select
         label="{{ 'entity.applicationPage1.label.country' | translate }}"
         id="country"
         [required]="true"
-        [(model)]="data().country"
-        [control]="page1Form().controls.country"
+        [(selected)]="data().country"
+        width="100%"
+        [items]="selectCountriesLocal"
+        (selectedChange)="updateSelect('country', $event)"
+        [filter]="true"
       />
     </div>
     <div class="w-1/2 pr-4">

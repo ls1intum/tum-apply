@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AuthenticationResourceService } from 'app/generated/api/authenticationResource.service';
+import { AuthSessionInfoDTO } from 'app/generated/model/authSessionInfoDTO';
 
 import { AccountService } from './account.service';
 
@@ -14,7 +15,12 @@ export class AuthenticationService {
   // Login with email and password, schedule token refresh, and load user profile.
   async login(email: string, password: string): Promise<void> {
     // Call backend login endpoint: sets cookies and returns token lifetimes
-    const resp = await firstValueFrom(this.authenticationResourceService.login({ email, password }));
+    const resp: AuthSessionInfoDTO = await firstValueFrom(
+      this.authenticationResourceService.login({
+        email,
+        password,
+      }),
+    );
     // Schedule a refresh 60 seconds before the access token expires
     this.scheduleRefresh(resp.expiresIn);
   }
@@ -33,9 +39,14 @@ export class AuthenticationService {
   }
 
   // Schedules a token refresh if the user is authenticated
-  private scheduleRefresh(expiresInSec: number): void {
+  scheduleRefresh(expiresInSec: number | undefined): void {
+    if (expiresInSec === undefined) {
+      return;
+    }
     // clear any existing timer
-    if (this.refreshTimerId != null) clearTimeout(this.refreshTimerId);
+    if (this.refreshTimerId != null) {
+      clearTimeout(this.refreshTimerId);
+    }
 
     // refresh 60 seconds before token expiration
     const delayInMs = Math.max(0, (expiresInSec - 60) * 1000);

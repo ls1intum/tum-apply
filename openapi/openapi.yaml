@@ -21,6 +21,52 @@
     }
   ],
   "paths": {
+    "/api/users/password": {
+      "put": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "updatePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/users/name": {
+      "put": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "updateUserName",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserNameDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/settings/emails": {
       "get": {
         "tags": [
@@ -74,6 +120,76 @@
                     "$ref": "#/components/schemas/EmailSettingDTO"
                   },
                   "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/{id}": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "updateResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchGroupDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
                 }
               }
             }
@@ -604,6 +720,32 @@
         }
       }
     },
+    "/api/me/prof-onboarding/remind": {
+      "post": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "remindLater",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/prof-onboarding/confirm": {
+      "post": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "confirmOnboarding",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
     "/api/jobs/create": {
       "post": {
         "tags": [
@@ -702,6 +844,29 @@
         }
       }
     },
+    "/api/auth/send-code": {
+      "post": {
+        "tags": [
+          "email-verification-resource"
+        ],
+        "operationId": "send",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/auth/refresh": {
       "post": {
         "tags": [
@@ -714,11 +879,37 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "integer",
-                    "format": "int64"
-                  }
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/otp-complete": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "otpComplete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpCompleteDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
                 }
               }
             }
@@ -761,11 +952,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "integer",
-                    "format": "int64"
-                  }
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
                 }
               }
             }
@@ -884,6 +1071,23 @@
             "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/MultipartUploadRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ]
               }
             }
           }
@@ -1513,6 +1717,141 @@
         }
       }
     },
+    "/api/research-groups": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getAllResearchGroups",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/members": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResearchGroupMembers",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOUserShortDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/detail/{researchGroupId}": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResourceGroupDetails",
+        "parameters": [
+          {
+            "name": "researchGroupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupLargeDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/prof-onboarding": {
+      "get": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfOnboardingDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/{jobId}": {
       "get": {
         "tags": [
@@ -1818,6 +2157,29 @@
         }
       }
     },
+    "/api/evaluation/job-names": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getAllJobNames",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/evaluation/applications": {
       "get": {
         "tags": [
@@ -1885,6 +2247,14 @@
               "items": {
                 "type": "string"
               }
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -2002,6 +2372,14 @@
                 "type": "string"
               }
             }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2083,6 +2461,14 @@
               "items": {
                 "type": "string"
               }
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -2449,6 +2835,30 @@
         }
       }
     },
+    "/api/research-groups/members/{userId}": {
+      "delete": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "removeMemberFromResearchGroup",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/applications/delete-document/{documentDictionaryId}": {
       "delete": {
         "tags": [
@@ -2515,6 +2925,33 @@
   },
   "components": {
     "schemas": {
+      "UpdatePasswordDTO": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
+      "UpdateUserNameDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName"
+        ]
+      },
       "EmailSettingDTO": {
         "type": "object",
         "properties": {
@@ -2532,6 +2969,51 @@
             "type": "boolean"
           }
         }
+      },
+      "ResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "head",
+          "name"
+        ]
       },
       "JobFormDTO": {
         "type": "object",
@@ -2897,7 +3379,6 @@
           }
         },
         "required": [
-          "applicationId",
           "applicationState",
           "job"
         ]
@@ -2946,6 +3427,22 @@
           },
           "professorName": {
             "type": "string"
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
           },
           "workload": {
             "type": "integer",
@@ -3034,11 +3531,81 @@
           }
         }
       },
+      "SendCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "registration": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AuthSessionInfoDTO": {
+        "type": "object",
+        "properties": {
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "refreshExpiresIn": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "OtpCompleteDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "LOGIN",
+              "REGISTER"
+            ]
+          },
+          "profile": {
+            "$ref": "#/components/schemas/UserProfileDTO"
+          }
+        },
+        "required": [
+          "code",
+          "email",
+          "purpose"
+        ]
+      },
+      "UserProfileDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        }
+      },
       "LoginRequestDTO": {
         "type": "object",
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "minLength": 1
           },
           "password": {
@@ -3125,6 +3692,67 @@
           },
           "researchGroup": {
             "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
+      },
+      "PageResponseDTOResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchGroupDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PageResponseDTOUserShortDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserShortDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ResearchGroupLargeDTO": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        }
+      },
+      "ProfOnboardingDTO": {
+        "type": "object",
+        "properties": {
+          "show": {
+            "type": "boolean"
           }
         }
       },
@@ -3260,22 +3888,19 @@
       "PageCreatedJobDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "size": {
             "type": "integer",
@@ -3294,12 +3919,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -3309,14 +3934,6 @@
       "PageableObject": {
         "type": "object",
         "properties": {
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
           "offset": {
             "type": "integer",
             "format": "int64"
@@ -3324,10 +3941,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
+          "paged": {
             "type": "boolean"
           },
-          "paged": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
             "type": "boolean"
           }
         }
@@ -3778,6 +4403,22 @@
               "CLOSED",
               "APPLICANT_FOUND"
             ]
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
           }
         },
         "required": [
@@ -3947,22 +4588,19 @@
       "PageJobCardDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "size": {
             "type": "integer",
@@ -3981,12 +4619,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"

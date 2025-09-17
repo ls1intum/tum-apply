@@ -1,0 +1,40 @@
+<div class="research-group-members">
+  <div class="header">
+    <h1 jhiTranslate="researchGroup.memberHeader">Members</h1>
+  </div>
+
+  <!-- Members Table -->
+  <div class="table-wrapper">
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      [rows]="pageSize()"
+      [selectable]="false"
+      (lazyLoad)="loadOnTableEmit($event)"
+    />
+  </div>
+
+  <!-- Templates for dynamic table -->
+  <ng-template #nameTemplate let-member>
+    {{ member.name }}
+    @if (member.isCurrentUser) {
+      <fa-icon icon="circle-user" class="current-user-icon" [title]="'researchGroup.members.me' | translate" />
+    }
+  </ng-template>
+
+  <ng-template #deleteTemplate let-member>
+    @if (!member.isCurrentUser) {
+      <jhi-confirm-dialog
+        [label]="'researchGroup.members.remove' | translate"
+        severity="danger"
+        variant="outlined"
+        [header]="'researchGroup.members.removeMemberModal.title' | translate"
+        [message]="'researchGroup.members.removeMemberModal.message' | translate"
+        (confirmed)="removeMember(member)"
+        confirmIcon="trash"
+      />
+    }
+  </ng-template>
+</div>

@@ -1,7 +1,40 @@
 {
   "global": {
     "title": "TUMApply",
-    "browsehappy": "Sie benutzen einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisieren Sie Ihren Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+    "browsehappy": "Du benutzt einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisiere deinen Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+    "routes": {
+      "landingPage": {
+        "applicant": "TUMApply - Bewerber Portal",
+        "professor": "TUMApply - Professor Portal"
+      },
+      "job": {
+        "detail": "TUMApply - Positionsdetails",
+        "creation": "TUMApply - Positionserstellung",
+        "edit": "TUMApply - Positiosbearbeitung",
+        "overview": "TUMApply - Positionsübersicht",
+        "myPositions": "TUMApply - Meine Positionen"
+      },
+      "application": {
+        "creation": "TUMApply - Bewerbungserstellung",
+        "overview": "TUMApply - Bewerbungsübersicht",
+        "detail": "TUMApply - Bewerbungsdetail"
+      },
+      "evaluation": {
+        "overview": "TUMApply - Evaluierungsübersicht",
+        "detail": "TUMApply - Bewerbungsevaluierung"
+      },
+      "footer": {
+        "imprint": "TUMApply - Impressum",
+        "privacy": "TUMApply - Datenschutz"
+      },
+      "settings": "TUMApply - Einstellungen",
+      "researchGroup": {
+        "templates": "TUMApply - Meine Vorlagen",
+        "templateCreation": "TUMApply - Vorlagenserstellung",
+        "templateEdit": "TUMApply - Vorlagenbearbeitung",
+        "info": "TUMApply - Meine Gruppe"
+      }
+    },
     "menu": {
       "home": "Startseite",
       "colorTheme": "Farbschema ändern",
@@ -31,28 +64,16 @@
       },
       "language": "Sprache"
     },
-    "form": {
-      "username.label": "Benutzername",
-      "username.placeholder": "Ihr Benutzername",
-      "currentpassword.label": "Aktuelles Passwort",
-      "currentpassword.placeholder": "Aktuelles Passwort",
-      "newpassword.label": "Neues Passwort",
-      "newpassword.placeholder": "Neues Passwort",
-      "confirmpassword.label": "Neues Passwort bestätigen",
-      "confirmpassword.placeholder": "Bestätigen Sie Ihr neues Passwort",
-      "email.label": "Email Adresse",
-      "email.placeholder": "Ihre Email Adresse"
-    },
     "messages": {
       "info": {
         "authenticated": {
-          "prefix": "Wenn Sie sich ",
+          "prefix": "Wenn du dich ",
           "link": "anmelden",
-          "suffix": " möchten, versuchen Sie es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
+          "suffix": " möchtest, versuche es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
         },
         "register": {
-          "noaccount": "Sie haben noch keinen Zugang?",
-          "link": "Registrieren Sie sich"
+          "noaccount": "Du hast noch keinen Zugang?",
+          "link": "Registriere dich"
         }
       },
       "error": {
@@ -66,15 +87,15 @@
           "strength": "Passwortstärke:"
         },
         "confirmpassword": {
-          "required": "Sie müssen das Passwort bestätigen.",
+          "required": "Du musst das Passwort bestätigen.",
           "minlength": "Das bestätigte Passwort muss mindestens 4 Zeichen lang sein",
           "maxlength": "Das bestätigte Passwort darf nicht länger als 50 Zeichen sein"
         },
         "email": {
-          "required": "Ihre Email Adresse wird benötigt.",
-          "invalid": "Ihre Email Adresse ist ungültig.",
-          "minlength": "Ihre Email Adresse muss mindestens 5 Zeichen lang sein",
-          "maxlength": "Ihre Email Adresse darf nicht länger als 50 Zeichen sein"
+          "required": "Deine Email Adresse wird benötigt.",
+          "invalid": "Deine Email Adresse ist ungültig.",
+          "minlength": "Deine Email Adresse muss mindestens 5 Zeichen lang sein",
+          "maxlength": "Deine Email Adresse darf nicht länger als 50 Zeichen sein"
         }
       }
     },
@@ -103,8 +124,7 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Entwicklung",
-      "prod": "Demo"
+      "dev": "Entwicklung"
     },
     "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
   },
@@ -158,9 +178,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Ausgewählt",
+      "noResults": "Keine Ergebnisse gefunden",
       "numberSelected": "{{selected}} ausgewählt",
-      "clear": "Entfernen",
-      "clearAll": "Alle entfernen",
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
@@ -168,17 +188,17 @@
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",
       "upload_instruction": {
-        "BACHELOR_TRANSCRIPT": "Bitte laden Sie Ihr Bachelor-Zeugnis hoch",
-        "MASTER_TRANSCRIPT": "Bitte laden Sie Ihr Master-Zeugnis hoch",
-        "REFERENCE": "Bitte laden Sie Ihre Empfehlungsschreiben hoch",
-        "CV": "Bitte laden Sie Ihren Lebenslauf hoch"
+        "BACHELOR_TRANSCRIPT": "Bitte lade dein Bachelor-Zeugnis hoch",
+        "MASTER_TRANSCRIPT": "Bitte lade dein Master-Zeugnis hoch",
+        "REFERENCE": "Bitte lade deine Empfehlungsschreiben hoch",
+        "CV": "Bitte lade deinen Lebenslauf hoch"
       },
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
       "add": "Hinzufügen",
       "clear": "Alles löschen",
       "upload": "Hochladen",
-      "instruction": "Hier klicken oder Dateien hinziehen ziehen, um sie hochzuladen.",
+      "instruction": "Hier klicken oder Dateien hinziehen, um sie hochzuladen.",
       "max_size": "Maximale Upload-Größe:",
       "upload_progress": "Upload-Fortschritt: ",
       "document_type": {
@@ -209,15 +229,16 @@
       "personalInformation": "Persönliche Informationen",
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
+      "summary": "Zusammenfassung",
       "buttons": {
-        "cancel": "Abbrechen",
+        "back": "Zurück",
         "next": "Weiter",
         "prev": "Zurück",
         "send": "Senden"
       },
       "confirmDialog": {
         "header": "Bewerbung abschicken",
-        "message": "Sind Sie sicher, dass Sie Ihre Bewerbung absenden möchten? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+        "message": "Bist du sicher, dass du deine Bewerbung absenden möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
       },
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
@@ -247,6 +268,9 @@
       },
       "tooltip": {
         "language": "Wähle deine bevorzugte Kommunikationssprache."
+      },
+      "validation": {
+        "postalCode": "Bitte gib eine gültige Postleitzahl für das ausgewählte Land ein."
       }
     },
     "applicationPage2": {
@@ -265,28 +289,29 @@
         "masterGrade": "Master-Abschlussnote"
       },
       "tooltip": {
-        "bachelorDegreeName": "Geben Sie den Studiengang Ihres Bachelors an.",
-        "bachelorDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Bachelor absolviert haben.",
-        "bachelorGradingScale": "Wählen Sie die Benotungsskala Ihres Bachelors.",
-        "bachelorGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an.",
-        "masterDegreeName": "Geben Sie den Studiengang Ihres Masters an.",
-        "masterDegreeUniversity": "Geben Sie den Namen der Universität an, an der Sie Ihren Master absolviert haben.",
-        "masterGradingScale": "Wählen Sie die Benotungsskala Ihres Masters.",
-        "masterGrade": "Geben Sie Ihre Abschlussnote laut der Notenskala Ihrer Universität an."
+        "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
+        "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
+        "bachelorGradingScale": "Wähle die Benotungsskala deines Bachelors.",
+        "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
+        "masterDegreeName": "Gib den Studiengang deines Masters an.",
+        "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
+        "masterGradingScale": "Wähle die Benotungsskala deines Masters.",
+        "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
+        "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
       }
     },
     "applicationPage3": {
       "label": {
         "desiredStartDate": "Gewünschter Starttermin",
-        "motivation": "Was motiviert Sie für diese Position?",
-        "skills": "Welche Fähigkeiten bringen Sie mit?",
-        "experiences": "Welche Forschungserfahrungen haben Sie bereits gesammelt?"
+        "motivation": "Was motiviert dich für diese Position?",
+        "skills": "Welche Fähigkeiten bringst du mit?",
+        "experiences": "Welche Forschungserfahrungen hast du bereits gesammelt?"
       },
       "tooltip": {
-        "desiredStartDate": "Wählen Sie das bevorzugte Startdatum für die Position.",
-        "motivation": "Erläutern Sie, wie diese Position zu Ihren beruflichen oder wissenschaftlichen Zielen passt.",
-        "skills": "Beschreiben Sie Ihre Forschungserfahrungen und wie diese zur Position passen.",
-        "experiences": "Heben Sie Ergebnisse oder Erkenntnisse hervor, die Ihre Forschungserfahrung geprägt haben."
+        "desiredStartDate": "Wähle das bevorzugte Startdatum für die Position.",
+        "motivation": "Erläutere, wie diese Position zu deinen beruflichen oder wissenschaftlichen Zielen passt.",
+        "skills": "Beschreibe deine Forschungserfahrungen und wie diese zur Position passen.",
+        "experiences": "Hebe Ergebnisse oder Erkenntnisse hervor, die deine Forschungserfahrung geprägt haben."
       },
       "floatlabel": {
         "motivation": "Berufliche oder persönliche Gründe angeben",
@@ -294,9 +319,9 @@
         "experiences": "Frühere Forschungsprojekte, Abschlussarbeiten oder Veröffentlichungen erläutern"
       },
       "sublabel": {
-        "motivation": "Halten Sie es kurz, aber informativ ...",
-        "skills": "Warum passen Sie gut zu diesem Programm oder Labor?",
-        "experiences": "Beschreiben Sie Ihre Rolle, verwendete Methoden, Ergebnisse, Themen, Projekte usw."
+        "motivation": "Halte es kurz, aber informativ ...",
+        "skills": "Warum passt du gut zu diesem Programm oder Labor?",
+        "experiences": "Beschreibe deine Rolle, verwendete Methoden, Ergebnisse, Themen, Projekte usw."
       },
       "section": {
         "uploads": "Dateiuploads"
@@ -305,8 +330,12 @@
         "selectStartDate": "Startdatum auswählen..."
       }
     },
+    "applicationPage4": {
+      "title": "Übersicht",
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst."
+    },
     "applicationOverview": {
-      "header": "Ihre Bewerbungen",
+      "header": "Deine Bewerbungen",
       "state": {
         "draft": "Entwurf",
         "submitted": "Eingereicht",
@@ -329,15 +358,97 @@
       },
       "dialogs": {
         "withdrawHeader": "Zurückziehen bestätigen",
-        "withdrawMessage": "Sind Sie sicher, dass Sie diese Bewerbung zurückziehen möchten? Sobald sie zurückgezogen wurde, ist sie für den Professor/die Professorin nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
+        "withdrawMessage": "Bist du sicher, dass du diese Bewerbung zurückziehen möchtest? Sobald sie zurückgezogen wurde, ist sie für den Professor nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
         "deleteHeader": "Löschvorgang bestätigen",
-        "deleteMessage": "Sind Sie sicher, dass Sie diesen Entwurf dauerhaft löschen möchten? Diese Aktion kann NICHT rückgängig gemacht werden!"
+        "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
       }
     },
     "applicationDetail": {
       "motivation": "Motivation",
       "skills": "Fähigkeiten",
       "researchExperience": "Forschungserfahrung"
+    },
+    "toast": {
+      "applyFlow": {
+        "saved": {
+          "summary": "Bewerbung gespeichert",
+          "detail": "Deine Bewerbung wurde erfolgreich gespeichert."
+        },
+        "submitted": {
+          "summary": "Bewerbung eingereicht",
+          "detail": "Vielen Dank für deine Bewerbung."
+        },
+        "invalidJobId": {
+          "summary": "Ungültige Job-ID",
+          "detail": "Bitte prüfe die eingegebene Job-ID und versuche es erneut."
+        },
+        "invalidApplicationId": {
+          "summary": "Ungültige Bewerbungs-ID",
+          "detail": "Bitte prüfe die eingegebene Bewerbungs-ID und versuche es erneut."
+        },
+        "errorApplicationId": {
+          "summary": "Fehlerhafte Bewerbungs-ID",
+          "detail": "Es liegt ein Problem mit der Bewerbungs-ID vor. Bitte lade die Seite neu oder versuche es später erneut."
+        },
+        "invalidPageLink": {
+          "summary": "Ungültiger Seitenlink",
+          "detail": "Dieser Bewerbungslink ist nicht gültig. Bitte öffne die Seite über die Übersicht und versuche es erneut."
+        },
+        "saveFailedWithStatus": {
+          "summary": "Übermittlung fehlgeschlagen",
+          "detail": "Bewerbung konnte nicht übermittelt werden: {{status}}"
+        },
+        "fetchDocumentIdsFailed": {
+          "summary": "Dokumente nicht geladen",
+          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut."
+        },
+        "notEditable": {
+          "summary": "Nicht bearbeitbar",
+          "detail": "Diese Bewerbung kann nicht bearbeitet werden, da sie bereits eingereicht wurde oder kein Entwurf mehr ist."
+        },
+        "authRequired": {
+          "summary": "Anmeldung erforderlich",
+          "detail": "Bewerbung kann nicht eingereicht werden: Bitte melde dich an."
+        },
+        "saveFailed": {
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite."
+        },
+        "initLoadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut."
+        },
+        "missingJobIdUnauthenticated": {
+          "summary": "Job-ID fehlt",
+          "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+        }
+      },
+      "applicationOverview": {
+        "delete": {
+          "success": {
+            "summary": "Entwurf gelöscht",
+            "detail": "Der Bewerbungsentwurf wurde erfolgreich gelöscht."
+          },
+          "error": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Der Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut."
+          }
+        },
+        "withdraw": {
+          "success": {
+            "summary": "Bewerbung zurückgezogen",
+            "detail": "Deine Bewerbung wurde erfolgreich zurückgezogen."
+          },
+          "error": {
+            "summary": "Zurückziehen fehlgeschlagen",
+            "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut."
+          }
+        }
+      }
     }
   },
   "error": {

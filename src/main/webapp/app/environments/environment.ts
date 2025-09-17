@@ -13,4 +13,9 @@ export const environment = {
     clientId: 'tumapply-client',
     enableLogging: true,
   },
+  otp: {
+    length: 6,
+    cooldown: 60,
+    ttlSeconds: 900,
+  },
 };

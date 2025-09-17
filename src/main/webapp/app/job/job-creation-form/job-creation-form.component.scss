@@ -4,10 +4,6 @@
   display: none;
 }
 
-// Variables
-
-$shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
-
 // Base styles
 body {
   background-color: var(--p-background-surface);
@@ -20,7 +16,6 @@ body {
   margin: 0 auto;
   padding: 1.25rem;
   background-color: var(--p-background-default);
-  box-shadow: $shadow;
   border-radius: 0.25rem;
 }
 
@@ -206,20 +201,6 @@ header {
   justify-content: space-between;
   margin-top: 1rem;
   padding-top: 1rem;
-}
-
-// Extras section
-.extras-section {
-  h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.625rem;
-  }
-
-  p {
-    color: var(--p-text-disabled);
-    font-size: 1rem;
-    margin-bottom: 1.25rem;
-  }
 }
 
 .ng-fa-icon {
