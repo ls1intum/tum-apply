@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faApple, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import {
   MissingTranslationHandler,
   TranslateCompiler,
@@ -24,6 +26,8 @@ describe('CredentialsGroupComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
+        FontAwesomeModule,
         CredentialsGroupComponent,
         TranslateModule.forRoot(),
         ReactiveFormsModule,
@@ -32,7 +36,6 @@ describe('CredentialsGroupComponent', () => {
         PasswordInputComponent,
       ],
       providers: [
-        provideHttpClientTesting(),
         TranslateStore,
         TranslateLoader,
         TranslateCompiler,
@@ -44,6 +47,12 @@ describe('CredentialsGroupComponent', () => {
         TranslateService,
       ],
     }).compileComponents();
+
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const faLibrary = TestBed.inject(FaIconLibrary);
+    faLibrary.addIcons(faGoogle);
+    faLibrary.addIcons(faApple);
 
     fixture = TestBed.createComponent(CredentialsGroupComponent);
     component = fixture.componentInstance;

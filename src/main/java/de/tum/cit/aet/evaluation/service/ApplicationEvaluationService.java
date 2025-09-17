@@ -177,14 +177,16 @@ public class ApplicationEvaluationService {
      * and the total number of matching records
      */
     public ApplicationEvaluationOverviewListDTO getAllApplicationsOverviews(
-        UUID researchGroupId,
-        OffsetPageDTO offsetPageDTO,
-        SortDTO sortDTO,
-        EvaluationFilterDTO filterDTO
-    ) {
-        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters());
-        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters());
+            UUID researchGroupId,
+            OffsetPageDTO offsetPageDTO,
+            SortDTO sortDTO,
+            EvaluationFilterDTO filterDTO) {
+        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(),
+                sortDTO.toSpringSort(SORTABLE_FIELDS));
+        String searchQuery = filterDTO.getSearch();
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
+                searchQuery);
+        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
 
         return ApplicationEvaluationOverviewListDTO.fromApplications(applicationsPage, totalRecords);
     }
@@ -203,13 +205,12 @@ public class ApplicationEvaluationService {
      * @throws IllegalArgumentException if the window size is not a positive odd integer
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetailsWindow(
-        UUID applicationId,
-        Integer windowSize,
-        UUID researchGroupId,
-        SortDTO sortDTO,
-        EvaluationFilterDTO filterDTO
-    ) {
-        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters());
+            UUID applicationId,
+            Integer windowSize,
+            UUID researchGroupId,
+            SortDTO sortDTO,
+            EvaluationFilterDTO filterDTO) {
+        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), null);
 
         if (windowSize == null || windowSize <= 0 || (windowSize % 2) != 1) {
             throw new IllegalArgumentException("Window size must be a positive and odd integer");
@@ -237,8 +238,10 @@ public class ApplicationEvaluationService {
         // Create a Pageable with an offset (start index), limit (window size), and the sort criteria
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
 
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters());
-        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx, windowIndex);
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
+                null);
+        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx,
+                windowIndex);
     }
 
     /**
@@ -258,8 +261,9 @@ public class ApplicationEvaluationService {
     ) {
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
 
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters());
-        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters());
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
+                null);
+        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), null);
         return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null);
     }
 
@@ -400,10 +404,13 @@ public class ApplicationEvaluationService {
      * @param researchGroupId the ID of the research group to filter applications by
      * @param pageable        the {@link Pageable} object containing pagination and sorting information
      * @param dynamicFilters  additional dynamic filters to apply
+     * @param searchQuery     optional search query to filter
      * @return a list of matching {@link Application} entities
      */
-    private List<Application> getApplicationsDetails(UUID researchGroupId, Pageable pageable, Map<String, List<?>> dynamicFilters) {
-        return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable, dynamicFilters);
+    private List<Application> getApplicationsDetails(UUID researchGroupId, Pageable pageable,
+            Map<String, List<?>> dynamicFilters, String searchQuery) {
+        return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable,
+                dynamicFilters, searchQuery);
     }
 
     /**
@@ -412,9 +419,23 @@ public class ApplicationEvaluationService {
      *
      * @param researchGroupId the ID of the research group to filter applications by
      * @param dynamicFilters  additional dynamic filters to apply
+     * @param searchQuery     optional search query to filter
      * @return the total count of matching applications
      */
-    private long getTotalRecords(UUID researchGroupId, Map<String, List<?>> dynamicFilters) {
-        return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters);
+    private long getTotalRecords(UUID researchGroupId, Map<String, List<?>> dynamicFilters, String searchQuery) {
+        return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters,
+                searchQuery);
+    }
+
+    /**
+     * Retrieves all unique job names for the given research group.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @param researchGroupId the {@link UUID} for which to retrieve all job names
+     * @return a list of all unique job names sorted alphabetically
+     */
+    public List<String> getAllJobNames(UUID researchGroupId) {
+        return applicationEvaluationRepository.findAllUniqueJobNames(researchGroupId);
     }
 }

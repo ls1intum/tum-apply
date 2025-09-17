@@ -7,18 +7,29 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, fromEventPattern, map } from 'rxjs';
-import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { AuthCardComponent } from '../auth-card/auth-card.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import { AuthDialogService } from '../../../auth/ui/auth-dialog.service';
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    TranslateModule,
+    CommonModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    TranslateModule,
+    DynamicDialogModule,
+    TranslateDirective,
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -39,7 +50,6 @@ export class HeaderComponent {
   languages = LANGUAGES.map(lang => lang.toUpperCase());
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
-  ref: DynamicDialogRef | undefined;
   router = inject(Router);
 
   routeAuthorities = toSignal(
@@ -70,11 +80,11 @@ export class HeaderComponent {
     );
   });
 
-  private dialogService = inject(DialogService);
   private authFacadeService = inject(AuthFacadeService);
+  private authDialogService = inject(AuthDialogService);
 
   navigateToHome(): void {
-    if (this.accountService.hasAnyAuthority(['PROFESSOR'])) {
+    if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
       this.redirectToProfessorLandingPage();
     } else {
       this.redirectToApplicantLandingPage();
@@ -90,24 +100,11 @@ export class HeaderComponent {
   }
 
   openLoginDialog(): void {
-    this.ref = this.dialogService.open(AuthCardComponent, {
-      style: {
-        border: 'none',
-        overflow: 'auto',
-        background: 'transparent',
-        boxShadow: 'none',
+    this.authDialogService.open({
+      mode: 'login',
+      onSuccess() {
+        // TODO: reload or show toast
       },
-      data: {
-        professor: this.isProfessorPage(),
-        redirectUri: this.router.url,
-      },
-      modal: true,
-      contentStyle: {
-        padding: '0',
-      },
-      dismissableMask: true,
-      closeOnEscape: true,
-      showHeader: false,
     });
   }
 
@@ -128,10 +125,12 @@ export class HeaderComponent {
     void this.authFacadeService.logout(redirectUri);
   }
 
-  /*  toggleColorScheme(): void {
-            const className = 'tum-apply-dark-mode';
-            document.body.classList.toggle(className);
-          }*/
+  /*
+  toggleColorScheme(): void {
+    const className = 'tum-apply-dark-mode';
+    document.body.classList.toggle(className);
+  }
+  */
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {
