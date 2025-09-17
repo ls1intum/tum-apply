@@ -76,6 +76,24 @@ export class KeycloakAuthenticationService {
     }
   }
 
+  /**
+   * Returns the current authentication token.
+   *
+   * @returns The current token string if available, otherwise undefined.
+   */
+  getToken(): string | undefined {
+    return this.keycloak.token;
+  }
+
+  /**
+   * Checks if the user is currently authenticated.
+   *
+   * @returns True if the user is authenticated, false otherwise.
+   */
+  isLoggedIn(): boolean {
+    return Boolean(this.keycloak.authenticated);
+  }
+
   // --------------------------- Login ----------------------------
 
   /**
@@ -149,12 +167,14 @@ export class KeycloakAuthenticationService {
     return this.refreshInFlight;
   }
 
+  // --------------------------- Helpers ----------------------------
+
   /**
    * Starts a timer to refresh the session tokens before they expire.
    *
    * @param expiresInSec - Number of seconds until the session expires.
    */
-  startTokenRefreshScheduler(intervalMs = 30000): void {
+  private startTokenRefreshScheduler(intervalMs = 30000): void {
     if (this.refreshIntervalId) {
       return;
     }
@@ -166,31 +186,11 @@ export class KeycloakAuthenticationService {
   /**
    * Cancels any scheduled token refresh schedulers.
    */
-  stopTokenRefreshScheduler(): void {
+  private stopTokenRefreshScheduler(): void {
     if (this.refreshIntervalId) {
       clearInterval(this.refreshIntervalId);
       this.refreshIntervalId = undefined;
     }
-  }
-
-  // --------------------------- Helpers ----------------------------
-
-  /**
-   * Returns the current authentication token.
-   *
-   * @returns The current token string if available, otherwise undefined.
-   */
-  getToken(): string | undefined {
-    return this.keycloak.token;
-  }
-
-  /**
-   * Checks if the user is currently authenticated.
-   *
-   * @returns True if the user is authenticated, false otherwise.
-   */
-  isLoggedIn(): boolean {
-    return Boolean(this.keycloak.authenticated);
   }
 
   /**

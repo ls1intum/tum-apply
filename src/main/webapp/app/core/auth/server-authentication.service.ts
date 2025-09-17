@@ -52,7 +52,7 @@ export class ServerAuthenticationService {
         password,
       }),
     );
-    this.startTokenRefreshScheduler(response.expiresIn);
+    this.startTokenRefreshTimeout(response.expiresIn);
   }
 
   // --------------------------- Email/OTP ----------------------------
@@ -86,7 +86,7 @@ export class ServerAuthenticationService {
         purpose,
       }),
     );
-    this.startTokenRefreshScheduler(response.expiresIn);
+    this.startTokenRefreshTimeout(response.expiresIn);
   }
 
   // --------------------------- Logout ----------------------------
@@ -97,7 +97,7 @@ export class ServerAuthenticationService {
    */
   async logout(): Promise<void> {
     // Clear any scheduled refresh first
-    this.stopTokenRefreshScheduler();
+    this.stopTokenRefreshTimeout();
     await firstValueFrom(this.authenticationApi.logout());
     this.accountService.user.set(undefined);
     this.accountService.loaded.set(true);
@@ -112,22 +112,12 @@ export class ServerAuthenticationService {
   async refreshTokens(): Promise<boolean> {
     try {
       const response: AuthSessionInfoDTO = await firstValueFrom(this.authenticationApi.refresh());
-      this.startTokenRefreshScheduler(response.expiresIn);
+      this.startTokenRefreshTimeout(response.expiresIn);
       return true;
     } catch {
-      this.stopTokenRefreshScheduler();
+      this.stopTokenRefreshTimeout();
     }
     return false;
-  }
-
-  /**
-   * Cancels any scheduled token refresh schedulers.
-   */
-  stopTokenRefreshScheduler(): void {
-    if (this.refreshTimerId != null) {
-      clearTimeout(this.refreshTimerId);
-      this.refreshTimerId = undefined;
-    }
   }
 
   /**
@@ -135,16 +125,26 @@ export class ServerAuthenticationService {
    *
    * @param expiresInSec - Number of seconds until the session expires.
    */
-  private startTokenRefreshScheduler(expiresInSec: number | undefined): void {
+  private startTokenRefreshTimeout(expiresInSec: number | undefined): void {
     if (expiresInSec == null) {
       return;
     }
     // Clear any existing timer
-    this.stopTokenRefreshScheduler();
+    this.stopTokenRefreshTimeout();
 
     const timerInMs = Math.max(0, (expiresInSec - 30) * 1000);
     this.refreshTimerId = window.setTimeout(() => {
       void this.refreshTokens();
     }, timerInMs);
+  }
+
+  /**
+   * Cancels any scheduled token refreshes.
+   */
+  private stopTokenRefreshTimeout(): void {
+    if (this.refreshTimerId != null) {
+      clearTimeout(this.refreshTimerId);
+      this.refreshTimerId = undefined;
+    }
   }
 }
