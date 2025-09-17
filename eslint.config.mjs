@@ -17,7 +17,7 @@ import importPlugin from 'eslint-plugin-import';
 export default [
   // 🔒 Completely ignore all generated files BEFORE any other config runs
   {
-    ignores: ['src/main/webapp/app/generated/**', 'docs/**', 'src/main/webapp/app/openapi/**'],
+    ignores: ['src/main/webapp/app/generated/**', 'docs/**'],
   },
   // 🌐 Base ignore and global config
   ...tseslint.config(

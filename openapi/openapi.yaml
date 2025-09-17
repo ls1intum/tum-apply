@@ -1778,16 +1778,16 @@ components:
       properties:
         offset: {type: integer, format: int64}
         sort: {$ref: '#/components/schemas/SortObject'}
+        unpaged: {type: boolean}
         paged: {type: boolean}
         pageNumber: {type: integer, format: int32}
         pageSize: {type: integer, format: int32}
-        unpaged: {type: boolean}
     SortObject:
       type: object
       properties:
         empty: {type: boolean}
-        sorted: {type: boolean}
         unsorted: {type: boolean}
+        sorted: {type: boolean}
     Applicant:
       type: object
       properties:

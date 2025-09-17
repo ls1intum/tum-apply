@@ -43,7 +43,7 @@ openApi {
 openApiGenerate {
   generatorName = "typescript-angular"
   inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
-  outputDir = "${rootDir}/src/main/webapp/app/openapi"
+  outputDir = "${rootDir}/src/main/webapp/app/generated"
   apiPackage = "api"
   modelPackage = "model"
   // sets are not properly converted to JSON objects, so we need to use Array instead https://github.com/OpenAPITools/openapi-generator/issues/14055
@@ -204,7 +204,7 @@ tasks.named('openApiGenerate') {
 }
 tasks.named("openApiGenerate") {
   doFirst {
-    def openapiDir = file("$rootDir/src/main/webapp/app/openapi")
+    def openapiDir = file("$rootDir/src/main/webapp/app/generated")
     if (openapiDir.exists()) {
       delete fileTree(dir: openapiDir, exclude: ".openapi-generator-ignore")
       println "✔ Deleted everything under openapi/ except .openapi-generator-ignore"
@@ -215,11 +215,11 @@ tasks.named("openApiGenerate") {
 
 
 tasks.register('postProcessTsFiles', Exec) {
-  description = "Removes unused imports from generated OpenAPI TypeScript files and cleans numeric suffixes from method names"
+  description = "Post-process generated OpenAPI TypeScript files"
 
-  if (System.getProperty("os.name").toLowerCase().contains("win")) {
-    commandLine "cmd", "/c", "npx tsx gradle/scripts/openapi-post-processing.ts"
-  } else {
-    commandLine "npx", "tsx", "gradle/scripts/openapi-post-processing.ts"
-  }
+  def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+  def npxExecutable = isWindows ? "npx.cmd" : "npx"
+  def npxPath = "${projectDir}/node_modules/.bin/${npxExecutable}"
+
+  commandLine npxPath, "tsx", "gradle/scripts/openapi-post-processing.ts"
 }

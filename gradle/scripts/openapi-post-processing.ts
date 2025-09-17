@@ -40,7 +40,7 @@ const normalizeLineEndings = (text: string, lineEnding: "CRLF" | "LF" = "CRLF") 
 
 const main = async () => {
     const isWindows = process.platform === "win32";
-    const directory = "src/main/webapp/app/openapi";
+    const directory = "src/main/webapp/app/generated";
     const files = getAllOpenApiFiles(directory);
 
     const project = new Project({
