@@ -7,6 +7,7 @@ export enum IdpProvider {
   Google = 'google',
   Microsoft = 'microsoft',
   Apple = 'apple',
+  TUM = 'tum',
 }
 
 export interface UserProfile {
@@ -16,9 +17,26 @@ export interface UserProfile {
   family_name: string;
 }
 
+/**
+ * Purpose
+ * -------
+ * Handles all communication from the client to Keycloak for Keycloak‑based authentication and access token lifecycle.
+ *
+ * Responsibilities
+ * ----------------
+ * - Initialize the Keycloak client and determine authentication state (SSO/redirect).
+ * - Perform login and logout flows (including provider‑specific login and email login).
+ * - Keep Keycloak access tokens fresh by scheduling automatic refreshes.
+ * - Expose helpers to read the current token, basic user profile, and login state.
+ * - Provide safe start/stop controls for the refresh timer.
+ *
+ * Notes
+ * -----
+ * - This service deals exclusively with Keycloak; it does not handle server‑issued tokens.
+ * - No routing or UI logic; navigation and user loading are handled by the AuthFacade.
+ */
 @Injectable({ providedIn: 'root' })
-export class KeycloakService {
-  profile: UserProfile | undefined;
+export class KeycloakAuthenticationService {
   private readonly keycloak = new Keycloak({
     url: environment.keycloak.url,
     realm: environment.keycloak.realm,
@@ -50,8 +68,7 @@ export class KeycloakService {
         console.warn('Keycloak not authenticated.');
         return authenticated;
       }
-      this.profile = (await this.keycloak.loadUserInfo()) as unknown as UserProfile;
-      this.startTokenRefresh();
+      this.startTokenRefreshScheduler();
       return authenticated;
     } catch (err) {
       console.error('🔁 Keycloak init failed:', err);
@@ -59,22 +76,7 @@ export class KeycloakService {
     }
   }
 
-  /**
-   * Triggers the Keycloak login flow.
-   * Optionally redirects to the specified URI after login.
-   *
-   * @param redirectUri Optional URI to redirect to after login. Defaults to the app root.
-   */
-  async login(redirectUri?: string): Promise<void> {
-    try {
-      await this.keycloak.login({
-        redirectUri: this.buildRedirectUri(redirectUri),
-      });
-      this.startTokenRefresh();
-    } catch (err) {
-      console.error('Login failed:', err);
-    }
-  }
+  // --------------------------- Login ----------------------------
 
   /**
    * Triggers the Keycloak login flow for a specific identity provider.
@@ -87,13 +89,15 @@ export class KeycloakService {
     try {
       await this.keycloak.login({
         redirectUri: this.buildRedirectUri(redirectUri),
-        idpHint: provider,
+        idpHint: provider !== IdpProvider.TUM ? provider : undefined,
       });
-      this.startTokenRefresh();
+      this.startTokenRefreshScheduler();
     } catch (err) {
       console.error(`Login with provider ${provider} failed:`, err);
     }
   }
+
+  // --------------------------- Logout ----------------------------
 
   /**
    * Triggers the Keycloak logout flow.
@@ -103,11 +107,7 @@ export class KeycloakService {
    */
   async logout(redirectUri?: string): Promise<void> {
     try {
-      // Stop refresh timer regardless
-      if (this.refreshIntervalId) {
-        clearInterval(this.refreshIntervalId);
-        this.refreshIntervalId = undefined;
-      }
+      this.stopTokenRefreshScheduler();
       // If Keycloak hasn't been initialized yet, we cannot call kc.logout safely.
       if (!this.hasInitialized) {
         console.warn('Logout called before Keycloak init; skipping Keycloak logout call.');
@@ -119,14 +119,7 @@ export class KeycloakService {
     }
   }
 
-  /**
-   * Returns the current authentication token.
-   *
-   * @returns The current token string if available, otherwise undefined.
-   */
-  getToken(): string | undefined {
-    return this.keycloak.token;
-  }
+  // --------------------------- Refresh ----------------------------
 
   /**
    * Ensures the access token is valid for at least x seconds. Otherwise, it attempts to refresh it.
@@ -135,9 +128,9 @@ export class KeycloakService {
    * @param minValidity Minimum required validity of the token in seconds. Default is 20 seconds.
    * @throws An error if the token refresh fails.
    */
-  public async ensureFreshToken(minValidity = 20): Promise<void> {
-    if (!this.hasInitialized || !this.keycloak.authenticated) {
-      return; // nothing to refresh yet
+  async ensureFreshToken(minValidity = 20): Promise<void> {
+    if (!this.hasInitialized || this.keycloak.authenticated === false) {
+      return;
     }
     if (this.refreshInFlight) {
       return this.refreshInFlight;
@@ -157,6 +150,41 @@ export class KeycloakService {
   }
 
   /**
+   * Starts a timer to refresh the session tokens before they expire.
+   *
+   * @param expiresInSec - Number of seconds until the session expires.
+   */
+  startTokenRefreshScheduler(intervalMs = 30000): void {
+    if (this.refreshIntervalId) {
+      return;
+    }
+    this.refreshIntervalId = setInterval(() => {
+      void this.ensureFreshToken();
+    }, intervalMs);
+  }
+
+  /**
+   * Cancels any scheduled token refresh schedulers.
+   */
+  stopTokenRefreshScheduler(): void {
+    if (this.refreshIntervalId) {
+      clearInterval(this.refreshIntervalId);
+      this.refreshIntervalId = undefined;
+    }
+  }
+
+  // --------------------------- Helpers ----------------------------
+
+  /**
+   * Returns the current authentication token.
+   *
+   * @returns The current token string if available, otherwise undefined.
+   */
+  getToken(): string | undefined {
+    return this.keycloak.token;
+  }
+
+  /**
    * Checks if the user is currently authenticated.
    *
    * @returns True if the user is authenticated, false otherwise.
@@ -171,43 +199,5 @@ export class KeycloakService {
    */
   private buildRedirectUri(redirectUri?: string): string {
     return redirectUri?.startsWith('http') === true ? redirectUri : window.location.origin + (redirectUri ?? '/');
-  }
-
-  /**
-   * Starts a periodic token refresh to keep the session active.
-   * Refreshes the token every specified interval in milliseconds.
-   *
-   * @param intervalMs Interval in milliseconds between token refresh attempts. Default is 60000 ms.
-   */
-  private startTokenRefresh(intervalMs = 30000): void {
-    const start = (): void => {
-      if (this.refreshIntervalId) {
-        return;
-      }
-      void this.ensureFreshToken();
-      this.refreshIntervalId = setInterval(() => {
-        void this.ensureFreshToken();
-      }, intervalMs);
-    };
-
-    const stop = (): void => {
-      if (this.refreshIntervalId) {
-        clearInterval(this.refreshIntervalId);
-        this.refreshIntervalId = undefined;
-      }
-    };
-
-    const onVisibility = (): void => {
-      if (document.visibilityState === 'visible') {
-        start();
-      } else {
-        stop();
-      }
-    };
-
-    onVisibility();
-
-    document.removeEventListener('visibilitychange', onVisibility);
-    document.addEventListener('visibilitychange', onVisibility, { passive: true });
   }
 }
