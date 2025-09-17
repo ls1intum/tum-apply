@@ -16,7 +16,7 @@
     "cleanup": "rimraf build/",
     "compile:ts": "npm run prebuild && tsc --project tsconfig.app.json",
     "compile:ts:tests": "npm run prebuild && tsc --project tsconfig.spec.json",
-    "postinstall": "husky && patch-package && cp -R node_modules/jest-preset-angular node_modules/@angular-builders/jest/node_modules",
+    "postinstall": "husky && patch-package && node supporting_scripts/copy-jest-preset.js",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prettier:check": "prettier --check \"{,src/**/,webpack/,.blueprint/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java,html,css,scss}\"",
