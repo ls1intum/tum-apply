@@ -28,14 +28,14 @@ export class AuthFacadeService {
       // 1) Email-Authentication-Flow (server session)
       const refreshed = await this.serverAuthenticationService.refreshTokens();
       if (refreshed) {
-        await this.loadUser();
+        await this.accountService.loadUser();
         return true;
       }
 
       // 2) Keycloak-Flow
       const keycloakInitialized = await this.keycloakAuthenticationService.init();
       if (keycloakInitialized) {
-        await this.loadUser();
+        await this.accountService.loadUser();
         return true;
       }
 
@@ -53,7 +53,7 @@ export class AuthFacadeService {
     return this.runAuthAction(
       async () => {
         await this.serverAuthenticationService.login(email, password);
-        await this.loadUser();
+        await this.accountService.loadUser();
         this.redirectToPage(redirectUri);
         return true;
       },
@@ -85,7 +85,7 @@ export class AuthFacadeService {
     return this.runAuthAction(
       async () => {
         await this.serverAuthenticationService.verifyOtp(email, code, purpose, profile);
-        await this.loadUser();
+        await this.accountService.loadUser();
         this.redirectToPage(redirectUri);
         if (registration) {
           this.authOrchestrator.nextStep();
@@ -137,12 +137,6 @@ export class AuthFacadeService {
   }
 
   // --------------- Helpers ---------------
-  /**
-   * Loads the current user profile via AccountService.
-   */
-  private async loadUser(): Promise<void> {
-    await this.accountService.loadUser();
-  }
 
   /**
    * Navigates to an absolute or app-relative URL.
