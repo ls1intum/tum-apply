@@ -6,6 +6,7 @@
       [selected]="selectedSelectOption()"
       (selectedChange)="onSortFieldChange($event)"
       [translateItems]="true"
+      [width]="'8rem'"
     />
     <jhi-button [icon]="getSortIcon()" variant="text" (click)="toggleDirection()" size="md" />
   </div>
