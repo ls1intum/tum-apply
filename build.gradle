@@ -53,7 +53,7 @@ spotless {
   }
 }
 
-//apply from: "gradle/openapi.gradle"
+apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
 if (project.hasProperty("prod")) {
@@ -128,47 +128,6 @@ checkstyleMain.source = "src/main/java"
 
 configurations {
   providedRuntime
-}
-
-openApi {
-  apiDocsUrl.set("http://localhost:8080/api-docs")
-  outputDir.set(file("$rootDir/openapi"))
-  outputFileName.set("openapi.yaml")
-  waitTimeInSeconds.set(120)
-  customBootRun {
-    jvmArgs = [
-      "-Dspring.profiles.active=dev,no-liquibase",
-      "-Dspringdoc.packages-to-scan=de.tum.cit.aet", // all packages inside of de.tum.cit.aet will be scanned
-      "-Dspringdoc.paths-to-match=/api/**", // paths must start with "/api" to be scanned
-      "-Dspring.docker.compose.enabled=false",
-      "-Dspring.docker.compose.lifecycle-management=none"
-    ]
-    args.set([
-      "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-      "--spring.datasource.username=sa",
-      "--spring.datasource.password=",
-      "--spring.datasource.driver-class-name=org.h2.Driver"
-    ])
-  }
-}
-
-openApiGenerate {
-  generatorName = "typescript-angular"
-  inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
-  outputDir.set("${rootDir}/src/main/webapp/app/generated")
-  apiPackage = "api"
-  modelPackage = "model"
-  invokerPackage = "invoker"
-  validateSpec.set(false)
-  typeMappings = [
-    "set": "Array"
-  ]
-  configOptions = [
-    serviceSuffix: "Service",
-    supportsES6  : "true",
-    npmName      : "@tumapply/api-client",
-    npmVersion   : "${project.version}"
-  ]
 }
 
 repositories {
@@ -277,6 +236,12 @@ dependencies {
 
   // needed for OpenAPI generation
   implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13"
+  implementation("org.yaml:snakeyaml") {
+    version {
+      strictly "${snakeyaml_version}"
+      // needed to reduce the number of vulnerabilities, also see https://mvnrepository.com/artifact/org.yaml/snakeyaml
+    }
+  }
   runtimeOnly "com.h2database:h2:2.3.232"
 
 
