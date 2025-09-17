@@ -3,9 +3,10 @@ import { Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
-import { AuthOrchestratorService } from '../data-access/auth-orchestrator.service';
-import { AuthCardComponent } from '../../components/templates/auth-card/auth-card.component';
-import { AuthOpenOptions } from '../models/auth.model';
+import { AuthCardComponent } from '../../shared/components/templates/auth-card/auth-card.component';
+
+import { AuthOrchestratorService } from './auth-orchestrator.service';
+import { AuthOpenOptions } from './models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthDialogService {
