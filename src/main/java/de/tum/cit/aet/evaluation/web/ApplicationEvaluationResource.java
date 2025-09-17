@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -168,5 +169,19 @@ public class ApplicationEvaluationResource {
     @GetMapping(path = "/applications/{applicationId}/documents-download", produces = "application/zip")
     public void downloadAll(@PathVariable("applicationId") UUID applicationId, HttpServletResponse response) throws IOException {
         applicationEvaluationService.downloadAllDocumentsForApplication(applicationId, response);
+    }
+
+    /**
+     * Get all unique job names for the current research group.
+     * Used for filter dropdown options.
+     *
+     * @return ResponseEntity with list of job names
+     */
+    @GetMapping("/job-names")
+    public ResponseEntity<List<String>> getAllJobNames() {
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+
+        List<String> jobNames = applicationEvaluationService.getAllJobNames(researchGroupId);
+        return ResponseEntity.ok(jobNames);
     }
 }

@@ -11,7 +11,7 @@ function HomepageHeader() {
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className="hero__title">
-          Welcome to TUMApply Documentation
+          Welcome to the TUMApply User Documentation
         </Heading>
         <p className="hero__subtitle">
           The official guide for Applicants and Professors using TUMApply.

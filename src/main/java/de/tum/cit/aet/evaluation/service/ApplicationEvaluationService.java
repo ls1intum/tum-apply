@@ -423,4 +423,16 @@ public class ApplicationEvaluationService {
         return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters,
                 searchQuery);
     }
+
+    /**
+     * Retrieves all unique job names for the given research group.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @param researchGroupId the {@link UUID} for which to retrieve all job names
+     * @return a list of all unique job names sorted alphabetically
+     */
+    public List<String> getAllJobNames(UUID researchGroupId) {
+        return applicationEvaluationRepository.findAllUniqueJobNames(researchGroupId);
+    }
 }

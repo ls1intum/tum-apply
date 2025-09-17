@@ -11,5 +11,6 @@
 
 export interface SendCodeRequest { 
     email: string;
+    registration?: boolean;
 }
 
