@@ -10,7 +10,7 @@ import { FilterChange, SearchFilterSortBar } from 'app/shared/components/molecul
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
-import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
+import { Sort, SortOption } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
@@ -70,9 +70,10 @@ export class ApplicationOverviewComponent {
   });
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'Applied at', field: 'createdAt', type: 'NUMBER' },
-    { displayName: 'Name', field: 'applicant.lastName', type: 'TEXT' },
-    { displayName: 'Rating', field: 'rating', type: 'NUMBER' },
+    { displayName: 'evaluation.tableHeaders.appliedAt', fieldName: 'createdAt', type: 'NUMBER' },
+    { displayName: 'evaluation.tableHeaders.name', fieldName: 'applicant.lastName', type: 'TEXT' },
+    { displayName: 'evaluation.tableHeaders.status', fieldName: 'status', type: 'TEXT' },
+    { displayName: 'evaluation.tableHeaders.job', fieldName: 'job', type: 'TEXT' },
   ];
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
@@ -101,7 +102,7 @@ export class ApplicationOverviewComponent {
 
       const rawSize = qp.get('pageSize');
       this.pageSize.set(rawSize !== null && !isNaN(+rawSize) ? Math.max(1, +rawSize) : 10);
-      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].field);
+      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
 
       const rawSD = qp.get('sortDir');
       this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
@@ -170,7 +171,7 @@ export class ApplicationOverviewComponent {
   loadOnSortEmit(event: Sort): void {
     this.page.set(0);
 
-    this.sortBy.set(event.field ?? this.sortableFields[0].field);
+    this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
 
     void this.loadPage();

@@ -14,6 +14,7 @@
         (filterChange)="onFilterChange($event)"
       />
     }
+    <jhi-sorting [sortableFields]="sortableFields()" (sortChange)="onSortChange($event)" />
   </div>
   <div
     class="record-count"
