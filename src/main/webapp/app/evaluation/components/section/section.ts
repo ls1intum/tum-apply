@@ -8,6 +8,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   templateUrl: './section.html',
 })
 export class Section {
-  title = input.required<string>();
+  titleKey = input.required<string>();
   icon = input<string | undefined>(undefined);
 }

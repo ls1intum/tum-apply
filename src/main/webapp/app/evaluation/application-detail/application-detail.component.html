@@ -50,10 +50,10 @@
       <div class="w-full">
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
           <div>
-            <jhi-section title="evaluation.details.applicantTitle" icon="user">
+            <jhi-section titleKey="evaluation.details.applicantTitle" icon="user">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Applicant Information -->
-                <jhi-sub-section title="evaluation.details.applicantInformation">
+                <jhi-sub-section titleKey="evaluation.details.applicantInformation">
                   <jhi-description-list
                     [items]="[
                       { labelKey: 'evaluation.details.applicantName', value: application.applicationDetailDTO.applicant?.user?.name },
@@ -79,7 +79,7 @@
                 </jhi-sub-section>
 
                 <!-- Links -->
-                <jhi-sub-section title="evaluation.details.applicantLinks">
+                <jhi-sub-section titleKey="evaluation.details.applicantLinks">
                   <jhi-link-list
                     [links]="[
                       {
@@ -102,10 +102,10 @@
             <p-divider />
 
             <!-- Education -->
-            <jhi-section title="evaluation.details.educationTitle" icon="building-columns">
+            <jhi-section titleKey="evaluation.details.educationTitle" icon="building-columns">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Bachelor -->
-                <jhi-sub-section title="evaluation.details.educationBachelors">
+                <jhi-sub-section titleKey="evaluation.details.educationBachelors">
                   <jhi-description-list
                     [items]="[
                       {
@@ -122,7 +122,7 @@
                 </jhi-sub-section>
 
                 <!-- Master -->
-                <jhi-sub-section title="evaluation.details.educationMasters">
+                <jhi-sub-section titleKey="evaluation.details.educationMasters">
                   <jhi-description-list
                     [items]="[
                       {
@@ -143,26 +143,26 @@
             <p-divider />
 
             <!-- Application -->
-            <jhi-section title="evaluation.details.applicationTitle" icon="file-lines">
-              <jhi-sub-section title="evaluation.details.applicationDesiredStartDate">
+            <jhi-section titleKey="evaluation.details.applicationTitle" icon="file-lines">
+              <jhi-sub-section titleKey="evaluation.details.applicationDesiredStartDate">
                 <span class="text-sm"> {{ application.applicationDetailDTO.desiredDate || '—' }} </span>
               </jhi-sub-section>
 
-              <jhi-sub-section title="evaluation.details.applicationMotivation">
+              <jhi-sub-section titleKey="evaluation.details.applicationMotivation">
                 <jhi-prose [text]="application.applicationDetailDTO.motivation" />
               </jhi-sub-section>
 
-              <jhi-sub-section title="evaluation.details.applicationSkills">
+              <jhi-sub-section titleKey="evaluation.details.applicationSkills">
                 <jhi-prose [text]="application.applicationDetailDTO.specialSkills" />
               </jhi-sub-section>
 
-              <jhi-sub-section title="evaluation.details.applicationProjects">
+              <jhi-sub-section titleKey="evaluation.details.applicationProjects">
                 <jhi-prose [text]="application.applicationDetailDTO.projects" />
               </jhi-sub-section>
             </jhi-section>
           </div>
           <div>
-            <jhi-section title="evaluation.details.documentTitle" icon="folder">
+            <jhi-section titleKey="evaluation.details.documentTitle" icon="folder">
               <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
@@ -170,12 +170,12 @@
         <p-divider />
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
-            <jhi-section title="evaluation.details.ratingTitle" icon="thumbs-up">
+            <jhi-section titleKey="evaluation.details.ratingTitle" icon="thumbs-up">
               <jhi-rating-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
           <div>
-            <jhi-section title="evaluation.details.commentTitle" icon="comments">
+            <jhi-section titleKey="evaluation.details.commentTitle" icon="comments">
               <jhi-comment-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>

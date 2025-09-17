@@ -1,5 +1,5 @@
 @for (document of documents(); track document.id) {
-  <jhi-sub-section [title]="document.label">
+  <jhi-sub-section [titleKey]="document.label">
     <div class="h-60 w-full">
       <jhi-document-viewer [documentDictionaryId]="document.id" />
     </div>

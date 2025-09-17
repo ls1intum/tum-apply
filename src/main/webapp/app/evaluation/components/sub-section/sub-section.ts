@@ -7,5 +7,5 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './sub-section.html',
 })
 export class SubSection {
-  title = input.required<string>();
+  titleKey = input.required<string>();
 }

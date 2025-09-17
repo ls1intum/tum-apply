@@ -6,7 +6,7 @@
       @for (c of comments(); track c.commentId) {
         <jhi-comment
           class="flex-1"
-          [commentId]="c.commentId!"
+          [commentId]="c.commentId"
           [author]="c.author ?? ''"
           [createdAt]="c.createdAt ?? ''"
           [canEdit]="c.canEdit ?? false"

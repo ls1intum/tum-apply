@@ -3,7 +3,7 @@
     @if (icon(); as icon) {
       <fa-icon class="text-[var(--p-primary-color)]" [icon]="icon" />
     }
-    <h2 class="text-lg font-bold">{{ title() | translate }}</h2>
+    <h2 class="text-lg font-bold">{{ titleKey() | translate }}</h2>
     <ng-content select="[actions]" />
   </header>
   <div class="ml-3 mt-3">
