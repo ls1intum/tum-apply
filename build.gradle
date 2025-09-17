@@ -33,8 +33,9 @@ version = "1.0.0"
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_21
-  targetCompatibility = JavaVersion.VERSION_21
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
 }
 
 ext {
@@ -42,7 +43,7 @@ ext {
 }
 
 wrapper {
-  gradleVersion = "8.13"
+  gradleVersion = "9.0.0"
 }
 
 spotless {
@@ -261,8 +262,6 @@ dependencies {
 
   implementation "com.mysql:mysql-connector-j:9.4.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
-  implementation "org.hibernate.orm:hibernate-core"
-  implementation "org.hibernate.validator:hibernate-validator"
   implementation "io.github.cdimascio:java-dotenv:5.2.2"
 
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
