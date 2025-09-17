@@ -6,7 +6,22 @@ changelog:
       - "prototype"
 
   categories:
-    - title: 🚀 Features
+    - title: 🧱 Application
+      labels: [ "application" ]
+    - title: 🧱 Client (Angular)
+      labels: [ "client" ]
+    - title: 🧱 Server (Java)
+      labels: [ "server" ]
+    - title: 🧱 Database
+      labels: [ "database" ]
+    - title: 🧱 Job
+      labels: [ "job" ]
+    - title: 🧱 User management
+      labels: [ "user management" ]
+    - title: 🧱 Evaluation
+      labels: [ "evaluation" ]
+
+    - title: 🚀 General Improvements
       labels:
         - "enhancement"
         - "ui/ux improvement"
@@ -43,21 +58,6 @@ changelog:
       labels:
         - "docker"
         - "keycloak"
-
-    - title: 🧱 Application
-      labels: [ "application" ]
-    - title: 🧱 Client (Angular)
-      labels: [ "client" ]
-    - title: 🧱 Server (Java)
-      labels: [ "server" ]
-    - title: 🧱 Database
-      labels: [ "database" ]
-    - title: 🧱 Job
-      labels: [ "job" ]
-    - title: 🧱 User management
-      labels: [ "user management" ]
-    - title: 🧱 Evaluation
-      labels: [ "evaluation" ]
 
     - title: Other changes
       labels:
