@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ToastService } from 'app/service/toast-service';
@@ -9,6 +8,9 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
+import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
+import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
@@ -42,7 +44,7 @@ export default class ApplicationDetailForApplicantComponent {
     return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
   });
 
-  private applicationService = inject(ApplicationResourceService);
+  private applicationService = inject(ApplicationResourceApiService);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
