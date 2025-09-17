@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
             return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 ErrorCode.VALIDATION_ERROR,
-                hmve,
+                ex,
                 request.getRequestURI(),
                 extractFieldErrors(hmve)
             );

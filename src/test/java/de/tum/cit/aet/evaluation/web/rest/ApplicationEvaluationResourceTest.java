@@ -177,7 +177,7 @@ public class ApplicationEvaluationResourceTest {
 
     @Test
     @WithMockUser
-    void getApplicationsDetailsWindow_validOddSize_containsTarget() {
+    void getApplicationsDetailsWindow_validOddSize() {
         var win = api.getAndReadOk(
             "/api/evaluation/application-details/window",
             Map.ofEntries(
@@ -187,7 +187,6 @@ public class ApplicationEvaluationResourceTest {
             new TypeReference<ApplicationEvaluationDetailListDTO>() {
             }
         );
-
         assertThat(win.applications().size()).isBetween(1, 3);
     }
 
@@ -196,8 +195,9 @@ public class ApplicationEvaluationResourceTest {
     void getApplicationsDetails_limitIsApplied() {
         var details = api.getAndReadOk(
             "/api/evaluation/application-details",
-            Map.of("offset","0","limit","1"),
-            new TypeReference<ApplicationEvaluationDetailListDTO>() {}
+            Map.of("offset", "0", "limit", "1"),
+            new TypeReference<ApplicationEvaluationDetailListDTO>() {
+            }
         );
         assertThat(details.totalRecords()).isGreaterThanOrEqualTo(2);
         assertThat(details.applications()).hasSize(1);
