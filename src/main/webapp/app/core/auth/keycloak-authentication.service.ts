@@ -10,13 +10,6 @@ export enum IdpProvider {
   TUM = 'tum',
 }
 
-export interface UserProfile {
-  sub: string;
-  email: string;
-  given_name: string;
-  family_name: string;
-}
-
 /**
  * Purpose
  * -------
@@ -44,7 +37,7 @@ export class KeycloakAuthenticationService {
   });
   private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
   private refreshInFlight: Promise<void> | null = null;
-  private hasInitialized = false;
+  private windowListenersActive = false;
 
   /**
    * Initializes the Keycloak client and determines login status.
@@ -63,12 +56,12 @@ export class KeycloakAuthenticationService {
 
     try {
       const authenticated = await this.keycloak.init(options);
-      this.hasInitialized = true;
       if (!authenticated) {
         console.warn('Keycloak not authenticated.');
         return authenticated;
       }
       this.startTokenRefreshScheduler();
+      this.bindWindowListeners();
       return authenticated;
     } catch (err) {
       console.error('🔁 Keycloak init failed:', err);
@@ -110,6 +103,7 @@ export class KeycloakAuthenticationService {
         idpHint: provider !== IdpProvider.TUM ? provider : undefined,
       });
       this.startTokenRefreshScheduler();
+      this.bindWindowListeners();
     } catch (err) {
       console.error(`Login with provider ${provider} failed:`, err);
     }
@@ -126,11 +120,7 @@ export class KeycloakAuthenticationService {
   async logout(redirectUri?: string): Promise<void> {
     try {
       this.stopTokenRefreshScheduler();
-      // If Keycloak hasn't been initialized yet, we cannot call kc.logout safely.
-      if (!this.hasInitialized) {
-        console.warn('Logout called before Keycloak init; skipping Keycloak logout call.');
-        return;
-      }
+      this.unbindWindowListeners();
       await this.keycloak.logout({ redirectUri: this.buildRedirectUri(redirectUri) });
     } catch (err) {
       console.error('Logout failed:', err);
@@ -146,7 +136,7 @@ export class KeycloakAuthenticationService {
    * @throws An error if the token refresh fails.
    */
   async ensureFreshToken(): Promise<void> {
-    if (!this.hasInitialized || this.keycloak.authenticated === false) {
+    if (this.keycloak.authenticated === false) {
       return;
     }
     if (this.refreshInFlight) {
@@ -166,8 +156,6 @@ export class KeycloakAuthenticationService {
     return this.refreshInFlight;
   }
 
-  // --------------------------- Helpers ----------------------------
-
   /**
    * Starts a timer to refresh the session tokens periodically.
    */
@@ -178,7 +166,50 @@ export class KeycloakAuthenticationService {
     this.refreshIntervalId = setInterval(() => {
       void this.ensureFreshToken();
       this.startTokenRefreshScheduler();
-    }, 30000);
+    }, 30_000);
+  }
+
+  private onVisibilityChange?: () => void = () => {};
+  private onFocus?: () => void = () => {};
+  private onOnline?: () => void = () => {};
+
+  /** Bind window listeners so a returning user gets a fresh token without being logged out. */
+  private bindWindowListeners(): void {
+    if (this.windowListenersActive) {
+      return;
+    }
+
+    const updateToken = (): void => {
+      this.keycloak.updateToken(20).catch((err: unknown) => console.error('Window-triggered token update failed', err));
+    };
+
+    this.onVisibilityChange = () => {
+      if (!document.hidden) {
+        updateToken();
+      }
+    };
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+    window.addEventListener('focus', () => updateToken());
+    window.addEventListener('online', () => updateToken());
+
+    this.windowListenersActive = true;
+  }
+
+  /** Unbind window listeners; call on logout to avoid leaks. */
+  private unbindWindowListeners(): void {
+    if (!this.windowListenersActive) {
+      return;
+    }
+    if (this.onVisibilityChange) {
+      document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    }
+    if (this.onFocus) {
+      window.removeEventListener('focus', this.onFocus);
+    }
+    if (this.onOnline) {
+      window.removeEventListener('online', this.onOnline);
+    }
+    this.windowListenersActive = false;
   }
 
   /**
