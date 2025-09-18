@@ -30,11 +30,13 @@ import PurposeEnum = OtpCompleteDTO.PurposeEnum;
 @Injectable({ providedIn: 'root' })
 export class ServerAuthenticationService {
   private refreshTimerId?: number;
+  private refreshInFlight: Promise<boolean> | null = null;
 
   private readonly authenticationApi = inject(AuthenticationResourceService);
   private readonly emailVerificationApi = inject(EmailVerificationResourceService);
 
   private readonly accountService = inject(AccountService);
+  private windowListenersActive = false;
 
   // --------------------------- Email/Password ----------------------------
   /**
@@ -108,14 +110,22 @@ export class ServerAuthenticationService {
    * @returns Promise resolving to AuthSessionInfoDTO with new session expiry.
    */
   async refreshTokens(): Promise<boolean> {
-    try {
-      const response: AuthSessionInfoDTO = await firstValueFrom(this.authenticationApi.refresh());
-      this.startTokenRefreshTimeout(response.expiresIn);
-      return true;
-    } catch {
-      this.stopTokenRefreshTimeout();
+    if (this.refreshInFlight) {
+      return this.refreshInFlight;
     }
-    return false;
+    this.refreshInFlight = firstValueFrom(this.authenticationApi.refresh())
+      .then((response: AuthSessionInfoDTO) => {
+        this.startTokenRefreshTimeout(response.expiresIn);
+        return true;
+      })
+      .catch((e: unknown) => {
+        console.warn('Failed to refresh token, logging out...', e);
+        return false;
+      })
+      .finally(() => {
+        this.refreshInFlight = null;
+      });
+    return this.refreshInFlight;
   }
 
   /**
@@ -129,7 +139,7 @@ export class ServerAuthenticationService {
     }
     // Clear any existing timer
     this.stopTokenRefreshTimeout();
-
+    this.bindWindowListeners();
     const timerInMs = Math.max(0, (expiresInSec - 30) * 1000);
     this.refreshTimerId = window.setTimeout(() => {
       void this.refreshTokens();
@@ -140,9 +150,56 @@ export class ServerAuthenticationService {
    * Cancels any scheduled token refreshes.
    */
   private stopTokenRefreshTimeout(): void {
+    this.unbindWindowListeners();
     if (this.refreshTimerId != null) {
       clearTimeout(this.refreshTimerId);
       this.refreshTimerId = undefined;
     }
+  }
+
+  private onVisibilityChange?: () => void = () => {};
+  private onFocus?: () => void = () => {};
+  private onOnline?: () => void = () => {};
+
+  /** Bind window listeners so a returning user gets a fresh token without being logged out. */
+  private bindWindowListeners(): void {
+    if (this.windowListenersActive) {
+      return;
+    }
+
+    this.onVisibilityChange = () => {
+      if (!document.hidden) {
+        void this.refreshTokens();
+      }
+    };
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+
+    this.onFocus = () => {
+      void this.refreshTokens();
+    };
+    this.onOnline = () => {
+      void this.refreshTokens();
+    };
+    window.addEventListener('focus', this.onFocus);
+    window.addEventListener('online', this.onOnline);
+
+    this.windowListenersActive = true;
+  }
+
+  /** Unbind window listeners; call on logout to avoid leaks. */
+  private unbindWindowListeners(): void {
+    if (!this.windowListenersActive) {
+      return;
+    }
+    if (this.onVisibilityChange) {
+      document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    }
+    if (this.onFocus) {
+      window.removeEventListener('focus', this.onFocus);
+    }
+    if (this.onOnline) {
+      window.removeEventListener('online', this.onOnline);
+    }
+    this.windowListenersActive = false;
   }
 }
