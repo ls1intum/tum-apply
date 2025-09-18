@@ -151,7 +151,7 @@ export class AuthFacadeService {
     if (!redirectUri) return;
     if (/^http?:\/\//.test(redirectUri)) {
       if (window.location.href !== redirectUri) {
-        window.location.href = redirectUri;
+        window.location.href = encodeURI(redirectUri);
       }
     } else if (this.router.url !== redirectUri) {
       void this.router.navigateByUrl(redirectUri);
