@@ -143,10 +143,9 @@ export class KeycloakAuthenticationService {
    * Ensures the access token is valid for at least x seconds. Otherwise, it attempts to refresh it.
    * If the refresh fails, the user is logged out.
    *
-   * @param minValidity Minimum required validity of the token in seconds. Default is 20 seconds.
    * @throws An error if the token refresh fails.
    */
-  async ensureFreshToken(minValidity = 20): Promise<void> {
+  async ensureFreshToken(): Promise<void> {
     if (!this.hasInitialized || this.keycloak.authenticated === false) {
       return;
     }
@@ -154,7 +153,7 @@ export class KeycloakAuthenticationService {
       return this.refreshInFlight;
     }
     this.refreshInFlight = this.keycloak
-      .updateToken(minValidity)
+      .updateToken(20)
       .then(() => {})
       .catch(async (e: unknown) => {
         console.warn('Failed to refresh token, logging out...', e);
@@ -170,17 +169,16 @@ export class KeycloakAuthenticationService {
   // --------------------------- Helpers ----------------------------
 
   /**
-   * Starts a timer to refresh the session tokens before they expire.
-   *
-   * @param expiresInSec - Number of seconds until the session expires.
+   * Starts a timer to refresh the session tokens periodically.
    */
-  private startTokenRefreshScheduler(intervalMs = 30000): void {
+  private startTokenRefreshScheduler(): void {
     if (this.refreshIntervalId) {
       return;
     }
     this.refreshIntervalId = setInterval(() => {
       void this.ensureFreshToken();
-    }, intervalMs);
+      this.startTokenRefreshScheduler();
+    }, 30000);
   }
 
   /**
