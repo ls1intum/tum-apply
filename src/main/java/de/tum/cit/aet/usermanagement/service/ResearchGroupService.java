@@ -133,6 +133,7 @@ public class ResearchGroupService {
      *
      * @param researchGroupId the ID of the research group
      * @return the detailed research group DTO
+     * @throws EntityNotFoundException if the research group is not found
      */
 
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
