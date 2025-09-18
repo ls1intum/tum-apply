@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AuthenticationResourceService } from 'app/generated/api/authenticationResource.service';
 import { AuthSessionInfoDTO } from 'app/generated/model/authSessionInfoDTO';
+
+import { AuthenticationResourceApiService } from '../../generated/api/authenticationResourceApi.service';
 
 import { AccountService } from './account.service';
 
@@ -9,7 +10,7 @@ import { AccountService } from './account.service';
 export class AuthenticationService {
   private refreshTimerId?: number;
 
-  private authenticationResourceService = inject(AuthenticationResourceService);
+  private authenticationResourceService = inject(AuthenticationResourceApiService);
   private accountService = inject(AccountService);
 
   // Login with email and password, schedule token refresh, and load user profile.

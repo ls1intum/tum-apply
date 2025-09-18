@@ -1,7 +1,9 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentInformationHolderDTO, DocumentResourceService } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
+
+import { DocumentResourceApiService } from '../../../../generated/api/documentResourceApi.service';
+import { DocumentInformationHolderDTO } from '../../../../generated/model/documentInformationHolderDTO';
 
 @Component({
   selector: 'jhi-document-viewer',
@@ -15,7 +17,7 @@ export class DocumentViewerComponent {
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
-  private documentService = inject(DocumentResourceService);
+  private documentService = inject(DocumentResourceApiService);
   private sanitizer = inject(DomSanitizer);
 
   constructor() {

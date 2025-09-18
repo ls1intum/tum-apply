@@ -2,7 +2,6 @@ import { Component, TemplateRef, computed, effect, inject, signal, viewChild } f
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule, Location } from '@angular/common';
-import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
@@ -15,7 +14,6 @@ import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validato
 import { HttpErrorResponse } from '@angular/common/http';
 
 import SharedModule from '../../shared/shared.module';
-import { JobDTO, JobFormDTO } from '../../generated';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
@@ -25,6 +23,9 @@ import { NumberInputComponent } from '../../shared/components/atoms/number-input
 import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
 import { ToastService } from '../../service/toast-service';
 import { JobDetailComponent } from '../job-detail/job-detail.component';
+import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
+import { JobFormDTO } from '../../generated/model/jobFormDTO';
+import { JobDTO } from '../../generated/model/jobDTO';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -50,7 +51,7 @@ type SavingState = 'SAVED' | 'SAVING';
     ConfirmDialog,
     JobDetailComponent,
   ],
-  providers: [JobResourceService],
+  providers: [JobResourceApiService],
 })
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
@@ -60,7 +61,7 @@ export class JobCreationFormComponent {
   readonly publishButtonIcon = 'paper-plane';
   // Services
   private fb = inject(FormBuilder);
-  private jobResourceService = inject(JobResourceService);
+  private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private autoSaveTimer: number | undefined;
   private router = inject(Router);
