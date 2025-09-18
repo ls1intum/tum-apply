@@ -9,11 +9,12 @@ import {
   faLink,
   faRocket,
 } from '@fortawesome/free-solid-svg-icons';
-import { ApplicationDetailDTO } from 'app/generated';
 import { ComponentRef } from '@angular/core';
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { MissingTranslationHandler, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { missingTranslationHandler } from 'app/config/translation.config';
+
+import { ApplicationDetailDTO } from '../../../../generated/model/applicationDetailDTO';
 
 import { ApplicationDetailCardComponent } from './application-detail-card.component';
 

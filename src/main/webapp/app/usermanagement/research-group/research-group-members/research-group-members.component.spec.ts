@@ -5,9 +5,9 @@ import { MessageService } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
 
 import { AccountService } from '../../../core/auth/account.service';
-import { ResearchGroupResourceService } from '../../../generated/api/researchGroupResource.service';
 import { UserShortDTO } from '../../../generated/model/userShortDTO';
 import { ToastService } from '../../../service/toast-service';
+import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
 
 import { ResearchGroupMembersComponent } from './research-group-members.component';
 
@@ -56,7 +56,7 @@ describe('ResearchGroupMembersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: ResearchGroupResourceService, useClass: MockResearchGroupResourceService },
+        { provide: ResearchGroupResourceApiService, useClass: MockResearchGroupResourceService },
         { provide: ToastService, useClass: MockToastService },
         { provide: AccountService, useClass: MockAccountService },
         { provide: TranslateService, useClass: MockTranslateService },
@@ -64,7 +64,7 @@ describe('ResearchGroupMembersComponent', () => {
       ],
     }).compileComponents();
 
-    mockResearchGroupService = TestBed.inject(ResearchGroupResourceService) as unknown as MockResearchGroupResourceService;
+    mockResearchGroupService = TestBed.inject(ResearchGroupResourceApiService) as unknown as MockResearchGroupResourceService;
     mockToastService = TestBed.inject(ToastService) as unknown as MockToastService;
 
     fixture = TestBed.createComponent(ResearchGroupMembersComponent);

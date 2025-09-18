@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ApplicationForApplicantDTO, ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import {
@@ -17,6 +16,10 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { provideLocationMocks } from '@angular/common/testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+
+import { ApplicationOverviewDTO } from '../../generated/model/applicationOverviewDTO';
+import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
+import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
 
 import ApplicationOverviewForApplicantComponent from './application-overview-for-applicant.component';
 
@@ -108,7 +111,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       ],
       providers: [
         {
-          provide: ApplicationResourceService,
+          provide: ApplicationResourceApiService,
           useClass: MockApplicationResourceService,
         },
         provideRouter([]),
@@ -158,7 +161,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   });
 
   it('should fetch total record count on init', () => {
-    const applicationService = TestBed.inject(ApplicationResourceService);
+    const applicationService = TestBed.inject(ApplicationResourceApiService);
     const spy = jest
       .spyOn(applicationService, 'getApplicationPagesLength')
       .mockReturnValue(of(new HttpResponse({ body: 42, status: 200 })));
@@ -178,7 +181,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   });
 
   it('should load data and set pageData', async () => {
-    const applicationService = TestBed.inject(ApplicationResourceService);
+    const applicationService = TestBed.inject(ApplicationResourceApiService);
     jest.spyOn(applicationService, 'getApplicationPages');
     fixture = TestBed.createComponent(ApplicationOverviewForApplicantComponent);
     component = fixture.componentInstance;
@@ -198,7 +201,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   });
 
   it('should delete application and reload data', () => {
-    const applicationService = TestBed.inject(ApplicationResourceService);
+    const applicationService = TestBed.inject(ApplicationResourceApiService);
     const reloadSpy = jest.spyOn(component, 'loadPage').mockImplementation();
 
     jest.spyOn(global, 'confirm').mockReturnValue(true);
@@ -212,7 +215,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   });
 
   it('should withdraw application and reload data', () => {
-    const applicationService = TestBed.inject(ApplicationResourceService);
+    const applicationService = TestBed.inject(ApplicationResourceApiService);
     const reloadSpy = jest.spyOn(component, 'loadPage').mockImplementation();
 
     jest.spyOn(global, 'confirm').mockReturnValue(true);
@@ -236,7 +239,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   });
 
   it('should handle error in loadPage()', async () => {
-    const applicationService = TestBed.inject(ApplicationResourceService);
+    const applicationService = TestBed.inject(ApplicationResourceApiService);
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(applicationService, 'getApplicationPages').mockReturnValueOnce(throwError(() => new Error('Oops')));
 

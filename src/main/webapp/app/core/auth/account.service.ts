@@ -1,8 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { UserResourceService } from 'app/generated/api/userResource.service';
 
-import { ResearchGroupShortDTO, UserShortDTO } from '../../generated';
+import { ResearchGroupShortDTO } from '../../generated/model/researchGroupShortDTO';
+import { UserResourceApiService } from '../../generated/api/userResourceApi.service';
+import { UserShortDTO } from '../../generated/model/userShortDTO';
 
 export interface User {
   id: string;
@@ -21,7 +22,7 @@ export class AccountService {
     const user = this.user();
     return this.loaded() && user !== undefined;
   });
-  private readonly userResourceService = inject(UserResourceService);
+  private readonly userResourceService = inject(UserResourceApiService);
 
   /**
    * Returns the id of the signed-in user, or undefined if no user is loaded.
