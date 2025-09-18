@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, model, output } from '@angular/core';
-import { ApplicationForApplicantDTO } from 'app/generated';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,6 +10,7 @@ import * as postalCodes from 'postal-codes-js';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
+import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 
 import { selectCountries, selectNationality } from './nationalities';
 

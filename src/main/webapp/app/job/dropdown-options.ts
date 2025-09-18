@@ -1,4 +1,4 @@
-import { JobFormDTO } from '../generated';
+import { JobFormDTO } from '../generated/model/jobFormDTO';
 
 /**
  * Dropdown options used in the Job Creation Form
