@@ -9,8 +9,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { EditorComponent } from '../../atoms/editor/editor.component';
-import { AcceptDTO, ApplicationEvaluationDetailDTO, RejectDTO } from '../../../../generated';
 import TranslateDirective from '../../../language/translate.directive';
+import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO';
+import { AcceptDTO } from '../../../../generated/model/acceptDTO';
+import { RejectDTO } from '../../../../generated/model/rejectDTO';
 
 import ReasonEnum = RejectDTO.ReasonEnum;
 

@@ -11,11 +11,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-import { ApplicationForApplicantDTO, JobDetailDTO, JobFormDTO, JobResourceService, ResearchGroupResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
+import { ResearchGroupResourceApiService } from '../../generated/api/researchGroupResourceApi.service';
+import { JobFormDTO } from '../../generated/model/jobFormDTO';
+import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
+import { JobDetailDTO } from '../../generated/model/jobDetailDTO';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -201,13 +205,13 @@ export class JobDetailComponent {
     ['APPLICANT_FOUND', 'warn'],
   ]);
 
-  private jobResourceService = inject(JobResourceService);
+  private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private researchGroupService = inject(ResearchGroupResourceService);
+  private researchGroupService = inject(ResearchGroupResourceApiService);
 
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();

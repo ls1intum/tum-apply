@@ -1,13 +1,6 @@
 import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import {
-  ApplicationDetailDTO,
-  ApplicationDocumentIdsDTO,
-  ApplicationForApplicantDTO,
-  ApplicationResourceService,
-  UpdateApplicationDTO,
-} from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -42,6 +35,11 @@ import ApplicationCreationPage2Component, {
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthOrchestratorService } from '../../../shared/auth/data-access/auth-orchestrator.service';
 import { AuthService } from '../../../shared/auth/data-access/auth.service';
+import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
+import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
+import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
 
 const SavingStates = {
   SAVED: 'SAVED',
@@ -330,7 +328,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  private readonly applicationResourceService = inject(ApplicationResourceService);
+  private readonly applicationResourceService = inject(ApplicationResourceApiService);
   private readonly accountService = inject(AccountService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

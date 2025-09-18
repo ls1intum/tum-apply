@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCheck, faCloudArrowUp, faFileCircleCheck, faPlus, faTimes, faUpload } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -14,6 +13,9 @@ import {
   TranslateStore,
 } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
+
+import { DocumentInformationHolderDTO } from '../../../../generated/model/documentInformationHolderDTO';
+import { ApplicationResourceApiService } from '../../../../generated/api/applicationResourceApi.service';
 
 import { UploadButtonComponent } from './upload-button.component';
 
@@ -39,7 +41,7 @@ describe('UploadButtonComponent', () => {
         TranslateLoader,
         TranslateCompiler,
         TranslateParser,
-        { provide: ApplicationResourceService, useClass: MockApplicationResourceService },
+        { provide: ApplicationResourceApiService, useClass: MockApplicationResourceService },
         {
           provide: MissingTranslationHandler,
           useValue: { handle: jest.fn() },
@@ -86,7 +88,7 @@ describe('UploadButtonComponent', () => {
     const doc = { id: '123', name: 'Old Name', size: 1024 };
     component.documentIds.set([doc]);
 
-    const service = TestBed.inject(ApplicationResourceService);
+    const service = TestBed.inject(ApplicationResourceApiService);
     const spy = jest.spyOn(service, 'renameDocument').mockReturnValue(of({} as any));
 
     const updatedDoc = { ...doc, name: 'New Name' };
@@ -101,7 +103,7 @@ describe('UploadButtonComponent', () => {
     const doc = { id: 'abc', name: 'doc1', size: 500 };
     component.documentIds.set([doc]);
 
-    const spy = jest.spyOn(TestBed.inject(ApplicationResourceService), 'deleteDocumentFromApplication').mockReturnValue(of({} as any));
+    const spy = jest.spyOn(TestBed.inject(ApplicationResourceApiService), 'deleteDocumentFromApplication').mockReturnValue(of({} as any));
 
     await component.deleteDictionary(doc);
 
