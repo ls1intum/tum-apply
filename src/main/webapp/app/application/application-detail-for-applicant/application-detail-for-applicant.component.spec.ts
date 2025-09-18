@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { ApplicationResourceService } from 'app/generated';
 import { ActivatedRoute } from '@angular/router';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
@@ -17,6 +16,8 @@ import { MissingTranslationHandler, TranslateModule, TranslateService } from '@n
 import { missingTranslationHandler } from 'app/config/translation.config';
 import { MessageService } from 'primeng/api';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 
 import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 
@@ -57,7 +58,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
           },
         },
         {
-          provide: ApplicationResourceService,
+          provide: ApplicationResourceApiService,
           useClass: MockApplicationResourceService,
         },
         MessageService,

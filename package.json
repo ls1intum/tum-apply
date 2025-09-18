@@ -131,6 +131,7 @@
     "jest-preset-angular": "14.6.1",
     "jest-sonar": "0.2.16",
     "lint-staged": "16.1.6",
+    "npx": "^10.2.2",
     "patch-package": "8.0.0",
     "postcss": "8.5.6",
     "postinstall-postinstall": "2.1.0",
@@ -141,6 +142,8 @@
     "tailwindcss": "4.1.13",
     "tailwindcss-primeui": "0.6.1",
     "ts-jest": "29.4.2",
+    "ts-morph": "^27.0.0",
+    "tsx": "^4.20.5",
     "typescript": "5.9.2",
     "typescript-eslint": "8.44.0"
   },
