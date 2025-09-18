@@ -8,6 +8,8 @@ import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentic
 import { AccountService } from './account.service';
 import { AuthOrchestratorService } from './auth-orchestrator.service';
 
+type AuthMethod = 'none' | 'server' | 'keycloak';
+
 @Injectable({ providedIn: 'root' })
 export class AuthFacadeService {
   private readonly serverAuthenticationService = inject(ServerAuthenticationService);
@@ -15,6 +17,8 @@ export class AuthFacadeService {
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
+
+  private authMethod: AuthMethod = 'none';
 
   /**
    * Try to refresh the authentication session.
@@ -29,6 +33,7 @@ export class AuthFacadeService {
       const refreshed = await this.serverAuthenticationService.refreshTokens();
       if (refreshed) {
         await this.accountService.loadUser();
+        this.authMethod = 'server';
         return true;
       }
 
@@ -36,6 +41,7 @@ export class AuthFacadeService {
       const keycloakInitialized = await this.keycloakAuthenticationService.init();
       if (keycloakInitialized) {
         await this.accountService.loadUser();
+        this.authMethod = 'keycloak';
         return true;
       }
 
@@ -55,6 +61,7 @@ export class AuthFacadeService {
         await this.serverAuthenticationService.login(email, password);
         await this.accountService.loadUser();
         this.redirectToPage(redirectUri);
+        this.authMethod = 'server';
         return true;
       },
       'Email sign-in failed. Please check your credentials and try again.',
@@ -90,6 +97,7 @@ export class AuthFacadeService {
         if (registration) {
           this.authOrchestrator.nextStep();
         }
+        this.authMethod = 'server';
         return true;
       },
       'The code is invalid or expired. Please request a new one.',
@@ -106,33 +114,29 @@ export class AuthFacadeService {
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
     return this.runAuthAction(async () => {
       await this.keycloakAuthenticationService.loginWithProvider(provider, redirectUri);
+      this.authMethod = 'keycloak';
     }, 'Provider sign-in failed. Please try again.');
   }
 
   // --------------- Logout ---------------
   // Logout the user from both email and Keycloak sessions.
   async logout(redirectUri?: string): Promise<void> {
+    if (this.authMethod === 'none') {
+      this.redirectToPage();
+      return;
+    }
     return this.runAuthAction(async () => {
-      // Email-Logout (server session)
-      try {
+      if (this.authMethod === 'server') {
+        this.authMethod = 'none';
         await this.serverAuthenticationService.logout();
-      } catch {}
-
-      // Keycloak-Logout (SSO session)
-      try {
+        this.redirectToPage(redirectUri);
+      } else if (this.authMethod === 'keycloak') {
+        this.authMethod = 'none';
         await this.keycloakAuthenticationService.logout(redirectUri);
-      } catch {}
-
-      // Reset local account state
+      }
+      // Reset states
       this.accountService.user.set(undefined);
       this.accountService.loaded.set(true);
-
-      // Single redirect at the end
-      if (redirectUri !== undefined) {
-        this.redirectToPage(redirectUri);
-      } else {
-        await this.router.navigate(['/']);
-      }
     }, 'Logout failed.');
   }
 
@@ -142,9 +146,15 @@ export class AuthFacadeService {
    * Navigates to an absolute or app-relative URL.
    * If the URL does not start with http, it is resolved against window.location.origin.
    */
-  private redirectToPage(redirectUri?: string): void {
-    if (redirectUri === undefined) return;
-    window.location.href = redirectUri.startsWith('http') ? redirectUri : window.location.origin + redirectUri;
+  private redirectToPage(redirectUri = '/'): void {
+    if (!redirectUri) return;
+    if (/^http?:\/\//.test(redirectUri)) {
+      if (window.location.href !== redirectUri) {
+        window.location.href = redirectUri;
+      }
+    } else if (this.router.url !== redirectUri) {
+      void this.router.navigateByUrl(redirectUri);
+    }
   }
 
   /**
