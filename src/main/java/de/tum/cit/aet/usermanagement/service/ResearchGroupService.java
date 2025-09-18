@@ -4,6 +4,7 @@ package de.tum.cit.aet.usermanagement.service;
 import java.util.Optional;
 import java.util.UUID;
 
+import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -207,7 +208,9 @@ public class ResearchGroupService {
                 dto.name(),
                 dto.headName(),
                 dto.universityId());
-            return existing.get();
+            throw new ResourceAlreadyExistsException(
+                "ResearchGroup for head with universityId '" + dto.universityId() + "' already exists"
+            );
         }
 
         ResearchGroup newResearchGroup = new ResearchGroup();
