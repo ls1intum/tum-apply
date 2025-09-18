@@ -47,7 +47,9 @@
 </ng-template>
 
 <ng-template #panel4>
-  <h2 jhiTranslate="entity.applicationPage4.title"></h2>
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage4.title"></span>
+  </p-divider>
   <p jhiTranslate="entity.applicationPage4.message"></p>
   <!-- Summary panel -->
   <div class="summary_page">
@@ -82,7 +84,7 @@
 </ng-template>
 
 <div class="page-container">
-  <div class="header">
+  <div class="page-header">
     <h1>{{ this.title() }}</h1>
   </div>
   <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>

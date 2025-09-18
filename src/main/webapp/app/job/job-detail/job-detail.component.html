@@ -23,9 +23,9 @@
 />
 @if (dataLoaded()) {
   <div class="page-container">
-    <header class="page-header">
+    <header class="page-header-body">
       <div class="header-row">
-        <h1 class="header">{{ jobDetails()?.title }}</h1>
+        <h1 class="page-header">{{ jobDetails()?.title }}</h1>
         <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
         @if (previewData()) {
           <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />

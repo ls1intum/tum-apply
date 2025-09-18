@@ -31,8 +31,8 @@
     </p-divider>
 
     @if (applicationIdForDocuments(); as applicationId) {
-      <div class="flex mb-4">
-        <div class="w-1/2 mr-1">
+      <div class="form-row mb-6">
+        <div class="form-field">
           <jhi-upload-button
             uploadKey="entity.upload.upload_instruction.CV"
             documentType="CV"
@@ -41,7 +41,7 @@
           />
         </div>
 
-        <div class="w-1/2 ml-1">
+        <div class="form-field">
           <jhi-upload-button
             uploadKey="entity.upload.upload_instruction.REFERENCE"
             documentType="REFERENCE"
@@ -53,45 +53,51 @@
     }
     @if (hasInitialized()) {
       <div class="form-row">
-        <jhi-editor
-          label="entity.applicationPage3.label.motivation"
-          [control]="page3Form.controls.motivation"
-          [required]="true"
-          helperText="entity.applicationPage3.sublabel.motivation"
-          tooltipText="entity.applicationPage3.tooltip.motivation"
-          placeholder="entity.applicationPage3.floatlabel.motivation"
-          [characterLimit]="1000"
-          icon="circle-info"
-          [shouldTranslate]="true"
-        />
+        <div class="form-field">
+          <jhi-editor
+            label="entity.applicationPage3.label.motivation"
+            [control]="page3Form.controls.motivation"
+            [required]="true"
+            helperText="entity.applicationPage3.sublabel.motivation"
+            tooltipText="entity.applicationPage3.tooltip.motivation"
+            placeholder="entity.applicationPage3.floatlabel.motivation"
+            [characterLimit]="1000"
+            icon="circle-info"
+            [shouldTranslate]="true"
+          />
+        </div>
       </div>
 
       <div class="form-row">
-        <jhi-editor
-          label="entity.applicationPage3.label.skills"
-          [control]="page3Form.controls.skills"
-          [required]="true"
-          helperText="entity.applicationPage3.sublabel.skills"
-          tooltipText="entity.applicationPage3.tooltip.skills"
-          placeholder="entity.applicationPage3.floatlabel.skills"
-          [characterLimit]="1000"
-          icon="circle-info"
-          [shouldTranslate]="true"
-        />
+        <div class="form-field">
+          <jhi-editor
+            label="entity.applicationPage3.label.skills"
+            [control]="page3Form.controls.skills"
+            [required]="true"
+            helperText="entity.applicationPage3.sublabel.skills"
+            tooltipText="entity.applicationPage3.tooltip.skills"
+            placeholder="entity.applicationPage3.floatlabel.skills"
+            [characterLimit]="1000"
+            icon="circle-info"
+            [shouldTranslate]="true"
+          />
+        </div>
       </div>
 
       <div class="form-row">
-        <jhi-editor
-          label="entity.applicationPage3.label.experiences"
-          [control]="page3Form.controls.experiences"
-          [required]="true"
-          helperText="entity.applicationPage3.sublabel.experiences"
-          tooltipText="entity.applicationPage3.tooltip.experiences"
-          placeholder="entity.applicationPage3.floatlabel.experiences"
-          [characterLimit]="1000"
-          icon="circle-info"
-          [shouldTranslate]="true"
-        />
+        <div class="form-field">
+          <jhi-editor
+            label="entity.applicationPage3.label.experiences"
+            [control]="page3Form.controls.experiences"
+            [required]="true"
+            helperText="entity.applicationPage3.sublabel.experiences"
+            tooltipText="entity.applicationPage3.tooltip.experiences"
+            placeholder="entity.applicationPage3.floatlabel.experiences"
+            [characterLimit]="1000"
+            icon="circle-info"
+            [shouldTranslate]="true"
+          />
+        </div>
       </div>
     }
   </form>

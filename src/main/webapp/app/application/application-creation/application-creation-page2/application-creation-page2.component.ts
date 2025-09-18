@@ -9,6 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 
@@ -66,6 +67,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
     NumberInputComponent,
     TooltipModule,
     FontAwesomeModule,
+    TranslateDirective,
   ],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',

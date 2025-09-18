@@ -11,7 +11,7 @@
 />
 @if (!isLoading()) {
   <div class="page-container">
-    <div class="header">
+    <div class="page-header">
       <h1 jhiTranslate="{{ pageTitle() }}"></h1>
     </div>
     <div>
@@ -22,7 +22,9 @@
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
     <form [formGroup]="basicInfoForm">
-      <h2 jhiTranslate="jobCreationForm.header.steps.basicInfo"></h2>
+      <p-divider layout="horizontal">
+        <span jhiTranslate="jobCreationForm.header.steps.basicInfo"></span>
+      </p-divider>
       <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
       <br />
       <div class="form-field">
@@ -161,7 +163,9 @@
   <!-- Step 2: Position Details -->
   <ng-template #panel2>
     <form [formGroup]="positionDetailsForm">
-      <h2 jhiTranslate="jobCreationForm.header.steps.positionDetails"></h2>
+      <p-divider layout="horizontal">
+        <span jhiTranslate="jobCreationForm.header.steps.positionDetails"></span>
+      </p-divider>
       <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
       <br />
       <div class="form-field">
@@ -227,10 +231,14 @@
   <!-- Step 4: Review Page -->
   <ng-template #panel4>
     <div class="extras-section">
-      <h2 jhiTranslate="jobCreationForm.reviewPageSection.title"></h2>
+      <p-divider layout="horizontal">
+        <span jhiTranslate="jobCreationForm.reviewPageSection.title"></span>
+      </p-divider>
       <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>
     </div>
-    <jhi-job-detail [previewData]="currentJobData" />
+    <div class="summary_page">
+      <jhi-job-detail [previewData]="currentJobData" class="w-full" />
+    </div>
     <div class="data-privacy-notice">
       <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
     </div>

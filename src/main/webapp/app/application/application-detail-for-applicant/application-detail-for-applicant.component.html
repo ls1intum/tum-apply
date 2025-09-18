@@ -2,7 +2,7 @@
   @if (application(); as application) {
     <div class="header-container">
       @if (!previewDetailData()) {
-        <div class="header">
+        <div class="page-header">
           <h1 jhiTranslate="entity.application_detail.applicant.header" [translateValues]="{ jobTitle: application.jobTitle }"></h1>
         </div>
         <jhi-application-state-for-applicants [state]="application.applicationState" />
