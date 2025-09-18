@@ -33,15 +33,13 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
-import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
-import { AuthOrchestratorService } from '../../../shared/auth/data-access/auth-orchestrator.service';
-import { AuthService } from '../../../shared/auth/data-access/auth.service';
 import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
 import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
+import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
 const SavingStates = {
   SAVED: 'SAVED',

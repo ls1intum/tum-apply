@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AuthenticationResourceService } from 'app/generated/api/authenticationResource.service';
 import { AuthSessionInfoDTO } from 'app/generated/model/authSessionInfoDTO';
 
-import { EmailVerificationResourceService, OtpCompleteDTO, UserProfileDTO } from '../../generated';
-
-import { AccountService } from './account.service';
+import { AuthenticationResourceApiService } from '../../generated/api/authenticationResourceApi.service';
+import { EmailVerificationResourceApiService } from '../../generated/api/emailVerificationResourceApi.service';
+import { UserProfileDTO } from '../../generated/model/userProfileDTO';
+import { OtpCompleteDTO } from '../../generated/model/otpCompleteDTO';
 
 import PurposeEnum = OtpCompleteDTO.PurposeEnum;
 
@@ -32,10 +32,9 @@ export class ServerAuthenticationService {
   private refreshTimerId?: number;
   private refreshInFlight: Promise<boolean> | null = null;
 
-  private readonly authenticationApi = inject(AuthenticationResourceService);
-  private readonly emailVerificationApi = inject(EmailVerificationResourceService);
+  private readonly authenticationApi = inject(AuthenticationResourceApiService);
+  private readonly emailVerificationApi = inject(EmailVerificationResourceApiService);
 
-  private readonly accountService = inject(AccountService);
   private windowListenersActive = false;
 
   // --------------------------- Email/Password ----------------------------

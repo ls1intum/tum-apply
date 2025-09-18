@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { OtpCompleteDTO, UserProfileDTO } from '../../generated';
+import { OtpCompleteDTO } from '../../generated/model/otpCompleteDTO';
+import { UserProfileDTO } from '../../generated/model/userProfileDTO';
 
 import { ServerAuthenticationService } from './server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentication.service';
