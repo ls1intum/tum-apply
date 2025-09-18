@@ -7,6 +7,26 @@ import { environment } from '../../environments/environment';
 import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep } from './models/auth.model';
 
 @Injectable({ providedIn: 'root' })
+/**
+ * Purpose
+ * -------
+ * Central state machine and coordinator for the authentication dialog (login & registration flows).
+ *
+ * Responsibilities
+ * ----------------
+ *  - Maintains all high-level state for the modal dialog: open/close, current mode (login/register),
+ *    current sub-step for each flow (email, otp, etc.).
+ *  - Holds the shared form state (email, firstName, lastName) and UI state (busy flag, error messages).
+ *  - Computes progress indicators for multi-step registration and exposes a reactive cooldown timer
+ *    for OTP resend.
+ *  - Automatically starts the OTP cooldown whenever the user reaches the OTP step in login or register flow.
+ *  - Provides helper methods to switch flows, navigate between steps, and reset state.
+ *
+ * Notes
+ * -----
+ *  - Pure client-side state container: does not perform any network requests itself.
+ *  - Intended to be used by `AuthDialogService` and other UI components to drive the authentication UI.
+ */
 export class AuthOrchestratorService {
   // high level dialog state
   readonly isOpen = signal(false);

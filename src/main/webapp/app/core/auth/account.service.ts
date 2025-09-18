@@ -13,6 +13,26 @@ export interface User {
   authorities?: string[];
 }
 
+/**
+ * Purpose
+ * -------
+ * Provides a reactive, application-wide source of truth for the currently signed-in user.
+ *
+ * Responsibilities
+ * ----------------
+ *  - Loads the current user's information from the server (`loadUser`).
+ *  - Exposes reactive signals (`user`, `loaded`, `signedIn`) to let components react to changes in user state.
+ *  - Provides convenience getters for user properties such as id, email, name, research group and authorities.
+ *  - Allows updates to the user profile (`updateUser`) and password (`updatePassword`).
+ *  - Offers role-based checks (`hasAnyAuthority`) to simplify authorization logic in the UI.
+ *
+ * Notes
+ * -----
+ *  - This service does not handle authentication itself; it assumes that the server session or Keycloak
+ *    has already established an authenticated context.
+ *  - It relies on `UserResourceApiService` for all server communication.
+ *  - Errors when fetching the user are logged and result in `user` being set to `undefined` while `loaded` is true.
+ */
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   loaded = signal<boolean>(false);

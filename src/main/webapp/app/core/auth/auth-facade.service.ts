@@ -12,6 +12,28 @@ import { AuthOrchestratorService } from './auth-orchestrator.service';
 type AuthMethod = 'none' | 'server' | 'keycloak';
 
 @Injectable({ providedIn: 'root' })
+/**
+ * Purpose
+ * -------
+ * Single entry point that orchestrates *both* authentication domains:
+ *  - Server-issued session (email/password/OTP, cookie-based)
+ *  - Keycloak SSO (IdP providers, header-based)
+ *
+ * Responsibilities
+ * ----------------
+ *  - Tries to establish/refresh an authenticated session on app start (`initAuth`).
+ *  - Delegates login flows to the respective domain services (server or Keycloak).
+ *  - Performs coordinated logout that clears server session and/or Keycloak SSO.
+ *  - Loads the current user profile after successful authentication.
+ *  - Centralises redirect handling after auth actions.
+ *
+ * Notes
+ * -----
+ *  - This facade does not attach Authorization headers and performs no low-level HTTP; it delegates to
+ *    `ServerAuthenticationService` and `KeycloakAuthenticationService`.
+ *  - It tracks which auth method is active (`authMethod`) to execute the correct logout path and avoid mixing flows.
+ *  - UI routing beyond post-auth redirects is not handled here; components/pages remain responsible for navigation.
+ */
 export class AuthFacadeService {
   private readonly serverAuthenticationService = inject(ServerAuthenticationService);
   private readonly keycloakAuthenticationService = inject(KeycloakAuthenticationService);
@@ -120,7 +142,16 @@ export class AuthFacadeService {
   }
 
   // --------------- Logout ---------------
-  // Logout the user from both email and Keycloak sessions.
+  /**
+   * Logs the user out from the currently active authentication domain.
+   *
+   * - If the active method is `server`, calls server logout (cookie-based) and then redirects.
+   * - If the active method is `keycloak`, triggers RP-initiated logout at Keycloak (front-channel).
+   * - In both cases, local user state is cleared and `authMethod` is reset to `none`.
+   *
+   * The branching prevents mixed flows (e.g., trying Keycloak logout when only a server session exists)
+   * and avoids unnecessary calls when no auth method is active.
+   */
   async logout(redirectUri?: string): Promise<void> {
     if (this.authMethod === 'none') {
       this.redirectToPage();
