@@ -9,10 +9,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 0;
+  padding-bottom: 4rem;
 
-  .header {
-    padding-bottom: 0; // Override the 4rem padding from _header.scss to keep items on same row
+  .page-header {
+    padding-bottom: 0;
 
     h1 {
       margin: 0; // Remove default h1 margins
