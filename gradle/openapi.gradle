@@ -196,13 +196,10 @@ private static boolean operationContainsNullSchema(Map<String, Object> operation
 
 
 
-tasks.named('openApiGenerate') {
-  finalizedBy 'postProcessTsFiles'
-}
-tasks.named('openApiGenerate') {
-  dependsOn 'pruneOpenApiSpec'
-}
 tasks.named("openApiGenerate") {
+  finalizedBy("postProcessTsFiles")
+  dependsOn("pruneOpenApiSpec")
+
   doFirst {
     def openapiDir = file("$rootDir/src/main/webapp/app/generated")
     if (openapiDir.exists()) {
