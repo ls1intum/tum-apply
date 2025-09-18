@@ -99,8 +99,6 @@ export class ServerAuthenticationService {
     // Clear any scheduled refresh first
     this.stopTokenRefreshTimeout();
     await firstValueFrom(this.authenticationApi.logout());
-    this.accountService.user.set(undefined);
-    this.accountService.loaded.set(true);
   }
 
   // --------------------------- Token Refresh ----------------------------
