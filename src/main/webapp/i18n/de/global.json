@@ -242,7 +242,8 @@
       },
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
-        "SAVED": "Änderungen gespeichert"
+        "SAVED": "Änderungen gespeichert",
+        "FAILED": "Speichern fehlgeschlagen"
       }
     },
     "applicationPage1": {

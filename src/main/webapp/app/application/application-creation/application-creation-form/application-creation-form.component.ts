@@ -44,6 +44,7 @@ import { UpdateApplicationDTO } from '../../../generated/model/updateApplication
 const SavingStates = {
   SAVED: 'SAVED',
   SAVING: 'SAVING',
+  FAILED: 'FAILED',
 } as const;
 
 const applyflow = 'entity.toast.applyFlow';
@@ -131,7 +132,13 @@ export default class ApplicationCreationFormComponent {
 
   savingBadgeCalculatedClass = computed<string>(
     () =>
-      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
+      `flex flex-wrap justify-around content-center gap-1 ${
+        this.savingState() === SavingStates.SAVED
+          ? 'saved_color'
+          : this.savingState() === SavingStates.FAILED
+            ? 'failed_color'
+            : 'unsaved_color'
+      }`,
   );
 
   page1Valid = signal<boolean>(false);
@@ -453,6 +460,8 @@ export default class ApplicationCreationFormComponent {
       }
       if (savedSuccessFully) {
         this.savingState.set(SavingStates.SAVED);
+      } else {
+        this.savingState.set(SavingStates.FAILED);
       }
     }
   }
