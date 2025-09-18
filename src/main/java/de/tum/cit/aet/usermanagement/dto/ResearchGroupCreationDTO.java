@@ -8,5 +8,5 @@ import jakarta.validation.constraints.Size;
 public record ResearchGroupCreationDTO(
     @NotBlank @Size(min = 3, max = 150) String name,
     @NotBlank @Size(min = 3, max = 150) String headName,
-    @NotBlank @Size(min = 3, max = 150) String universityID
+    @NotBlank @Size(min = 3, max = 150) String universityId
 ) {}

@@ -198,28 +198,28 @@ public class ResearchGroupService {
      * @return the created or existing research group
      */
     public ResearchGroup createResearchGroup(ResearchGroupCreationDTO dto) {
-        Optional<ResearchGroup> existing = researchGroupRepository.findByUniversityId(dto.universityID());
+        Optional<ResearchGroup> existing = researchGroupRepository.findByUniversityId(dto.universityId());
         if (existing.isPresent()) {
             log.info("AUDIT research-group.create reused by={} groupId={} name={} headName={} universityId={}",
                 currentUserService.getUserId(),
                 existing.get().getResearchGroupId(),
                 dto.name(),
                 dto.headName(),
-                dto.universityID());
+                dto.universityId());
             return existing.get();
         }
 
         ResearchGroup newResearchGroup = new ResearchGroup();
         newResearchGroup.setName(dto.name());
         newResearchGroup.setHead(dto.headName());
-        newResearchGroup.setUniversityId(dto.universityID());
+        newResearchGroup.setUniversityId(dto.universityId());
         ResearchGroup saved = researchGroupRepository.save(newResearchGroup);
         log.info("AUDIT research-group.create created by={} groupId={} name={} headName={} universityId={}",
             currentUserService.getUserId(),
             saved.getResearchGroupId(),
             dto.name(),
             dto.headName(),
-            dto.universityID());
+            dto.universityId());
         return saved;
 
     }
@@ -228,7 +228,7 @@ public class ResearchGroupService {
      * Provisions a target user (professor) into an existing research group.
      * - Caller must be ADMIN (enforced in controller).
      * - Group must already exist (manual creation).
-     * - Uses dto.universityID as the user's TUM id (e.g., "ab12cde").
+     * - Uses dto.universityId as the user's TUM id (e.g., "ab12cde").
      * - Idempotent: if mapping exists with PROFESSOR, no-op.
      *
      * @param dto the research group + user information to provision
@@ -237,9 +237,9 @@ public class ResearchGroupService {
      */
     @Transactional
     public ResearchGroup provisionResearchGroup(ResearchGroupCreationDTO dto) {
-        User user = userRepository.findByUniversityIdIgnoreCase(dto.universityID())
+        User user = userRepository.findByUniversityIdIgnoreCase(dto.universityId())
             .orElseThrow(() -> new EntityNotFoundException(
-                "User with universityId '%s' not found".formatted(dto.universityID())
+                "User with universityId '%s' not found".formatted(dto.universityId())
             ));
 
         ResearchGroup group = researchGroupRepository.findByNameIgnoreCase(dto.name())
@@ -274,7 +274,7 @@ public class ResearchGroupService {
         log.info("AUDIT research-group.provision by={} targetUserId={} targetUniId={} groupId={} groupName={} userGroupChanged={} roleOutcome={}",
             currentUserService.getUserId(),
             user.getUserId(),
-            dto.universityID(),
+            dto.universityId(),
             group.getResearchGroupId(),
             group.getName(),
             userGroupChanged,
