@@ -217,6 +217,15 @@ public class ResearchGroupService {
         newResearchGroup.setName(dto.name());
         newResearchGroup.setHead(dto.headName());
         newResearchGroup.setUniversityId(dto.universityId());
+        newResearchGroup.setDescription(dto.description());
+        newResearchGroup.setStreet(dto.street());
+        newResearchGroup.setPostalCode(dto.postalCode());
+        newResearchGroup.setCity(dto.city());
+        newResearchGroup.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
+       newResearchGroup.setAbbreviation(dto.abbreviation());
+       newResearchGroup.setWebsite(dto.website());
+       newResearchGroup.setSchool(dto.school());
+
         ResearchGroup saved = researchGroupRepository.save(newResearchGroup);
         log.info("AUDIT research-group.create created by={} groupId={} name={} headName={} universityId={}",
             currentUserService.getUserId(),
