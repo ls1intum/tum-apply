@@ -61,7 +61,6 @@ export class KeycloakAuthenticationService {
         return authenticated;
       }
       this.startTokenRefreshScheduler();
-      this.bindWindowListeners();
       return authenticated;
     } catch (err) {
       console.error('🔁 Keycloak init failed:', err);
@@ -97,13 +96,13 @@ export class KeycloakAuthenticationService {
    * @param redirectUri Optional URI to redirect to after login. Defaults to the app root.
    */
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
+    await this.init();
     try {
       await this.keycloak.login({
         redirectUri: this.buildRedirectUri(redirectUri),
         idpHint: provider !== IdpProvider.TUM ? provider : undefined,
       });
       this.startTokenRefreshScheduler();
-      this.bindWindowListeners();
     } catch (err) {
       console.error(`Login with provider ${provider} failed:`, err);
     }
@@ -118,12 +117,9 @@ export class KeycloakAuthenticationService {
    * @param redirectUri Optional URI to redirect to after logout. Defaults to the app root.
    */
   async logout(redirectUri?: string): Promise<void> {
-    try {
-      this.stopTokenRefreshScheduler();
-      this.unbindWindowListeners();
+    this.stopTokenRefreshScheduler();
+    if (this.keycloak.authenticated === true) {
       await this.keycloak.logout({ redirectUri: this.buildRedirectUri(redirectUri) });
-    } catch (err) {
-      console.error('Logout failed:', err);
     }
   }
 
@@ -160,12 +156,12 @@ export class KeycloakAuthenticationService {
    * Starts a timer to refresh the session tokens periodically.
    */
   private startTokenRefreshScheduler(): void {
+    this.bindWindowListeners();
     if (this.refreshIntervalId) {
       return;
     }
     this.refreshIntervalId = setInterval(() => {
       void this.ensureFreshToken();
-      this.startTokenRefreshScheduler();
     }, 30_000);
   }
 
@@ -173,6 +169,7 @@ export class KeycloakAuthenticationService {
    * Cancels any scheduled token refresh schedulers.
    */
   private stopTokenRefreshScheduler(): void {
+    this.unbindWindowListeners();
     if (this.refreshIntervalId) {
       clearInterval(this.refreshIntervalId);
       this.refreshIntervalId = undefined;
