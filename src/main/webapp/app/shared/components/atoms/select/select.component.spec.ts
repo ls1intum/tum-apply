@@ -55,16 +55,14 @@ describe('SelectComponent', () => {
   });
 
   it('should toggle chevron icon based on isOpen state', () => {
+    expect(component.isOpen).toBeFalsy();
+    let icon = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
+    expect(icon.icon()).toEqual(['fas', 'chevron-down']);
+
     component.isOpen = true;
     fixture.detectChanges();
 
-    let icon = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
-    expect(icon.icon()).toEqual(['fas', 'chevron-up']);
-
-    component.isOpen = false;
-    fixture.detectChanges();
-
     icon = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
-    expect(icon.icon()).toEqual(['fas', 'chevron-down']);
+    expect(icon.icon()).toEqual(['fas', 'chevron-up']);
   });
 });

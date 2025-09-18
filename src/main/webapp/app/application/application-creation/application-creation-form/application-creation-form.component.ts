@@ -19,6 +19,8 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ApplicationDraftData, LocalStorageService } from 'app/service/localStorage.service';
 import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { OtpInput } from 'app/shared/components/atoms/otp-input/otp-input';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
@@ -38,6 +40,8 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { AuthOrchestratorService } from '../../../shared/auth/data-access/auth-orchestrator.service';
+import { AuthService } from '../../../shared/auth/data-access/auth.service';
 
 const SavingStates = {
   SAVED: 'SAVED',
@@ -66,9 +70,11 @@ type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
+  providers: [DialogService],
   standalone: true,
 })
 export default class ApplicationCreationFormComponent {
+  private static readonly MAX_OTP_WAIT_TIME_MS = 600_000; // 10 minutes
   readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
   readonly sendButtonSeverity = 'primary' as ButtonColor;
   readonly sendButtonIcon = 'paper-plane';
@@ -94,14 +100,19 @@ export default class ApplicationCreationFormComponent {
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
     bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: '',
+    bachelorGrade: undefined,
     masterDegreeName: '',
     masterDegreeUniversity: '',
     masterGradingScale: masterGradingScale[0],
-    masterGrade: '',
+    masterGrade: undefined,
   });
 
-  page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
+  page3 = signal<ApplicationCreationPage3Data>({
+    desiredStartDate: '',
+    motivation: '',
+    skills: '',
+    experiences: '',
+  });
 
   previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
 
@@ -111,6 +122,7 @@ export default class ApplicationCreationFormComponent {
   panel4 = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('panel4');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
+  progressStepper = viewChild<ProgressStepperComponent>(ProgressStepperComponent);
 
   title = signal<string>('');
   jobId = signal<string>('');
@@ -131,6 +143,9 @@ export default class ApplicationCreationFormComponent {
   allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   readonly formbuilder = inject(FormBuilder);
+
+  dialogService = inject(DialogService);
+  location = inject(Location);
   useLocalStorage = signal<boolean>(false);
 
   readonly additionalInfoForm = this.formbuilder.nonNullable.group({
@@ -190,11 +205,13 @@ export default class ApplicationCreationFormComponent {
           {
             severity: 'primary',
             icon: 'arrow-right',
-            onClick() {},
-            disabled: !(page1Valid && applicantId !== ''),
+            onClick: () => {
+              this.handleNextFromStep1();
+            },
+            disabled: !page1Valid,
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
-            changePanel: true,
+            changePanel: this.applicantId() !== '',
           },
         ],
         status: statusPanel,
@@ -233,7 +250,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
-        disabled: !page1Valid,
+        disabled: !page1Valid || !applicantId,
         status: statusPanel,
       });
     }
@@ -270,7 +287,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: true,
           },
         ],
-        disabled: !page1And2Valid,
+        disabled: !page1And2Valid || !applicantId,
         status: statusPanel,
       });
     }
@@ -307,23 +324,24 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
-        disabled: !page1And2And3Valid,
+        disabled: !page1And2And3Valid || !applicantId,
         status: statusPanel,
       });
     }
     return steps;
   });
+  private readonly applicationResourceService = inject(ApplicationResourceService);
+  private readonly accountService = inject(AccountService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
+  private readonly authOrchestrator = inject(AuthOrchestratorService);
+  private readonly authService = inject(AuthService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly translateService = inject(TranslateService);
 
+  private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
-
-  private location = inject(Location);
-  private applicationResourceService = inject(ApplicationResourceService);
-  private accountService = inject(AccountService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private toastService = inject(ToastService);
-  private localStorageService = inject(LocalStorageService);
-  private readonly translate = inject(TranslateService);
 
   private initEffect = effect(() => {
     if (!untracked(() => this.initCalled())) {
@@ -440,12 +458,13 @@ export default class ApplicationCreationFormComponent {
       }
     }
   }
+
   onConfirmSend(): void {
     this.submitAttempted.set(true);
     if (!this.privacyAcceptedSignal()) {
       this.toastService.showError({
-        summary: this.translate.instant('privacy.privacyConsent.errorSummary'),
-        detail: this.translate.instant('privacy.privacyConsent.errorText'),
+        summary: this.translateService.instant('privacy.privacyConsent.toastError.summary'),
+        detail: this.translateService.instant('privacy.privacyConsent.toastError.detail'),
       });
       return;
     }
@@ -453,7 +472,6 @@ export default class ApplicationCreationFormComponent {
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
-    const location = this.location;
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
@@ -477,9 +495,7 @@ export default class ApplicationCreationFormComponent {
 
       if (rerouteToOtherPage) {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
-        // TODO: browser history is not working as expected for location.back()
-
-        location.back();
+        await this.router.navigate(['/application/overview']);
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
@@ -518,6 +534,104 @@ export default class ApplicationCreationFormComponent {
     this.page3Valid.set(isValid);
   }
 
+  // Handles the Next action from Step 1: runs OTP flow, refreshes user, and migrates draft
+  private handleNextFromStep1(): void {
+    if (this.applicantId()) {
+      return;
+    }
+
+    const email = this.page1().email;
+    const firstName = this.page1().firstName;
+    const lastName = this.page1().lastName;
+
+    void (async () => {
+      try {
+        await this.openOtpAndWaitForLogin(email, firstName, lastName);
+        this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
+        void this.migrateDraftIfNeeded();
+        this.progressStepper()?.goToStep(2);
+      } catch (err) {
+        this.toastService.showError({
+          summary: 'Error',
+          detail: (err as Error).message || 'Email verification failed. Please try again.',
+        });
+      }
+    })();
+  }
+
+  // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
+  private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid email address.' });
+      return;
+    }
+    const normalizedFirstName = firstName.trim();
+    if (!normalizedFirstName) {
+      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid first name.' });
+      return;
+    }
+    const normalizedLastName = lastName.trim();
+    if (!normalizedLastName) {
+      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid last name.' });
+      return;
+    }
+
+    this.authOrchestrator.email.set(normalizedEmail);
+    this.authOrchestrator.firstName.set(normalizedFirstName);
+    this.authOrchestrator.lastName.set(normalizedLastName);
+    this.authOrchestrator.clearError();
+    await this.authService.sendOtp(true);
+    this.otpDialogRef = this.dialogService.open(OtpInput, {
+      header: this.translateService.instant('auth.common.otp.title'),
+      data: { registration: true },
+      style: { background: 'var(--p-background-default)', maxWidth: '40rem' },
+      closable: true,
+      modal: true,
+    });
+
+    // TODO: maybe switch to creating the account in this component
+    // Poll account state until a user is available or timeout
+    const started = Date.now();
+    await new Promise<void>((resolve, reject) => {
+      const iv = setInterval(() => {
+        const hasUser = this.accountService.loadedUser()?.id != null;
+        if (hasUser) {
+          clearInterval(iv);
+          this.otpDialogRef?.close();
+          resolve();
+        } else if (Date.now() - started > ApplicationCreationFormComponent.MAX_OTP_WAIT_TIME_MS) {
+          clearInterval(iv);
+          this.otpDialogRef?.close();
+          reject(new Error('OTP verification timeout. Please try again.'));
+        }
+      }, 250);
+    });
+  }
+
+  // Migrates local draft (anonymous) to server-backed application after login and persists current data.
+  private async migrateDraftIfNeeded(): Promise<void> {
+    if (!this.useLocalStorage()) {
+      return;
+    }
+
+    const jobId = this.jobId();
+    if (!jobId) {
+      return;
+    }
+
+    try {
+      const application = await this.initPageCreateApplication(jobId);
+      this.useLocalStorage.set(false);
+      this.applicationId.set(application.applicationId ?? this.applicationId());
+      this.savingState.set(SavingStates.SAVING);
+      await this.sendCreateApplicationData(this.applicationState(), false);
+      // TODO: remove application from local storage
+    } catch {
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to migrate local draft to server.' });
+    }
+  }
+
   private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
     const p1 = this.page1();
     const p2 = this.page2();
@@ -545,10 +659,10 @@ export default class ApplicationCreationFormComponent {
         masterGrade: p2.masterGrade,
         masterGradingScale: p2.masterGradingScale.value,
       },
-      motivation: p3?.motivation ?? '',
-      specialSkills: p3?.skills ?? '',
-      desiredDate: p3?.desiredStartDate ?? '',
-      projects: p3?.experiences,
+      motivation: p3.motivation,
+      specialSkills: p3.skills,
+      desiredDate: p3.desiredStartDate,
+      projects: p3.experiences,
       jobTitle: this.title(),
     };
 

@@ -11,11 +11,11 @@ const mockData: ApplicationCreationPage2Data = {
   bachelorDegreeName: 'B.Sc. Computer Science',
   bachelorDegreeUniversity: 'Technical University of Munich',
   bachelorGradingScale: { value: ApplicantDTO.BachelorGradingScaleEnum.OneToFour, name: 'One To Four' },
-  bachelorGrade: '2.0',
+  bachelorGrade: 2.0,
   masterDegreeName: 'M.Sc. Artificial Intelligence',
   masterDegreeUniversity: 'University of Heidelberg',
   masterGradingScale: { value: ApplicantDTO.MasterGradingScaleEnum.OneToFour, name: 'One To Four' },
-  masterGrade: '1.3',
+  masterGrade: 1.3,
 };
 
 describe('ApplicationCreationPage2Component', () => {

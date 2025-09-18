@@ -53,6 +53,8 @@ export * from './researchGroupShortDTO';
 export * from './sendCodeRequest';
 export * from './sortObject';
 export * from './updateApplicationDTO';
+export * from './updatePasswordDTO';
+export * from './updateUserNameDTO';
 export * from './uploadDocumentsRequest';
 export * from './user';
 export * from './userDTO';

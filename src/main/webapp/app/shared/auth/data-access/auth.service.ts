@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 
-import { UserProfileDTO } from '../../../generated';
+import { AuthSessionInfoDTO, UserProfileDTO } from '../../../generated';
+import { AccountService } from '../../../core/auth/account.service';
+import { AuthenticationService } from '../../../core/auth/authentication.service';
 
 import { AuthOrchestratorService } from './auth-orchestrator.service';
 import { AuthGateway } from './auth-gateway.service';
@@ -9,6 +11,8 @@ import { AuthGateway } from './auth-gateway.service';
 export class AuthService {
   private readonly authOrchestration = inject(AuthOrchestratorService);
   private readonly authGateway = inject(AuthGateway);
+  private readonly accountService = inject(AccountService);
+  private readonly authenticationService = inject(AuthenticationService);
 
   // -------- Login flow ----------
   async loginWithPassword(password: string): Promise<void> {
@@ -32,12 +36,12 @@ export class AuthService {
   async sendOtp(registration = false): Promise<void> {
     this.authOrchestration.isSendingCode.set(true);
     try {
-      await this.authGateway.sendOtp(this.authOrchestration.email());
+      await this.authGateway.sendOtp(this.authOrchestration.email(), registration);
       this.authOrchestration.startCooldown();
       if (registration) {
         this.authOrchestration.registerStep.set('verify');
       } else {
-        this.authOrchestration.loginSub.set('otp');
+        this.authOrchestration.loginStep.set('otp');
       }
     } finally {
       this.authOrchestration.isSendingCode.set(false);
@@ -55,14 +59,15 @@ export class AuthService {
             lastName: this.authOrchestration.lastName(),
           }
         : undefined;
-      await this.authGateway.verifyOtp(this.authOrchestration.email(), otp, registration, userProfile);
+      const value: AuthSessionInfoDTO = await this.authGateway.verifyOtp(this.authOrchestration.email(), otp, registration, userProfile);
+      this.authenticationService.scheduleRefresh(value.expiresIn);
+      await this.accountService.loadUser();
+
       if (registration) {
         this.authOrchestration.registerStep.set('profile');
       } else {
-        // TODO: set token
+        this.authOrchestration.authSuccess();
       }
-
-      this.authOrchestration.authSuccess();
     } catch {
       this.authOrchestration.setError('Code invalid or expired.');
     } finally {

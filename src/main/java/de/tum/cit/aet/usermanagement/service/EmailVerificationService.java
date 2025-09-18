@@ -9,6 +9,7 @@ import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,7 @@ public class EmailVerificationService {
 
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
     private final AsyncEmailSender asyncEmailSender;
+    private final UserRepository userRepository;
 
     @Value("${security.otp.length:8}")
     private int otpLength;
@@ -45,21 +47,34 @@ public class EmailVerificationService {
 
     public EmailVerificationService(
         EmailVerificationOtpRepository emailVerificationOtpRepository,
-        AsyncEmailSender asyncEmailSender) {
+        AsyncEmailSender asyncEmailSender,
+        UserRepository userRepository
+    ) {
         this.emailVerificationOtpRepository = emailVerificationOtpRepository;
         this.asyncEmailSender = asyncEmailSender;
+        this.userRepository = userRepository;
     }
 
     /**
      * Generates a new OTP for the given email, invalidates any previous active OTPs,
      * saves the new OTP in the repository, and sends the verification code via email.
+     * <p>
+     * For login flow (isRegistration == false), this method only sends the OTP if the user exists,
+     * to avoid user enumeration. If the user does not exist, it returns without sending.
+     * For registration flow (isRegistration == true), the OTP is sent regardless of user existence.
      *
-     * @param rawEmail the raw email address to send the verification code to
-     * @param ip       the IP address of the client requesting the code
+     * @param rawEmail       the raw email address to send the verification code to
+     * @param ip             the IP address of the client requesting the code
+     * @param isRegistration true if this is a registration flow, false for login flow
      */
     @Transactional
-    public void sendCode(String rawEmail, String ip) {
+    public void sendCode(String rawEmail, String ip, boolean isRegistration) {
         String emailAddress = StringUtil.normalize(rawEmail, true);
+
+        // For login flow, only send if user exists
+        if (!isRegistration && !userRepository.existsByEmailIgnoreCase(emailAddress)) {
+            return;
+        }
 
         // Enforce single-active-code policy
         emailVerificationOtpRepository.invalidateAllForEmail(emailAddress);

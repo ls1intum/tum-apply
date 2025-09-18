@@ -17,8 +17,8 @@ import { ProgressStepperComponent, StepData } from './progress-stepper.component
   `,
 })
 class TestHostComponent {
-  @ViewChild('testTemplate1') templateRef1!: TemplateRef<any>;
-  @ViewChild('testTemplate2') templateRef2!: TemplateRef<any>;
+  @ViewChild('testTemplate1') templateRef1!: TemplateRef<unknown>;
+  @ViewChild('testTemplate2') templateRef2!: TemplateRef<unknown>;
 }
 
 describe('ProgressStepperComponent', () => {
@@ -92,7 +92,7 @@ describe('ProgressStepperComponent', () => {
 
     const buttons: HTMLButtonElement[] = fixture.nativeElement.querySelectorAll('button');
 
-    const saveDraftButton = Array.from(buttons).find((btn: HTMLButtonElement) => btn.textContent?.includes('Save Draft'));
+    const saveDraftButton = Array.from(buttons).find((btn: HTMLButtonElement) => btn.textContent.includes('Save Draft'));
 
     expect(saveDraftButton).toBeTruthy();
     saveDraftButton?.click();

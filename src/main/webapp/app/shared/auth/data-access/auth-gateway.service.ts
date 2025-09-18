@@ -1,7 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { AuthenticationResourceService, EmailVerificationResourceService, OtpCompleteDTO, UserProfileDTO } from '../../../generated';
+import {
+  AuthSessionInfoDTO,
+  AuthenticationResourceService,
+  EmailVerificationResourceService,
+  OtpCompleteDTO,
+  UserProfileDTO,
+} from '../../../generated';
 import { EmailLoginResourceService } from '../../../generated/api/emailLoginResource.service';
 
 @Injectable({ providedIn: 'root' })
@@ -13,12 +19,12 @@ export class AuthGateway {
   // --------- Shared -----------
 
   // Sends an OTP (one-time password) via email.
-  sendOtp(email: string): Promise<unknown> {
-    return firstValueFrom(this.verificationApi.send({ email }));
+  sendOtp(email: string, registration: boolean): Promise<unknown> {
+    return firstValueFrom(this.verificationApi.send({ email, registration }));
   }
 
   // Verifies OTP code for login or registration.
-  verifyOtp(email: string, code: string, isRegistration: boolean, profile?: UserProfileDTO): Promise<unknown> {
+  verifyOtp(email: string, code: string, isRegistration: boolean, profile?: UserProfileDTO): Promise<AuthSessionInfoDTO> {
     return firstValueFrom(
       this.authenticationApi.otpComplete({
         email,

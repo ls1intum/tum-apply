@@ -1,64 +1,62 @@
 @use '../../../../../content/scss/layout' as layout;
 
-.login-header {
+.registration-header {
   @include layout.authentication-header-base;
 
   background: var(--p-accent-color);
   color: var(--p-text-on-accent);
 }
 
-.login-content {
-  @include layout.section-col;
+.registration-steps {
+  display: flex;
+  flex-direction: column;
+  padding: 0 2rem;
+  align-items: center;
 
-  .login-panel {
-    @include layout.panel-col;
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+    height: 3.5rem;
 
-    .progressbar {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      width: 100%;
-
-      .progress-label {
-        width: 3.5rem;
-        text-align: right;
-        color: var(--p-text-primary);
-      }
+    > jhi-button:first-child {
+      justify-self: start;
     }
 
-    .login-description {
-      max-width: 100%;
-      width: 100%;
-      word-break: break-word;
+    > jhi-button:last-child {
+      justify-self: end;
+    }
+
+    > span[jhitranslate='auth.register.texts.steps'] {
+      grid-column: 2;
+      justify-self: center;
       text-align: center;
-      box-sizing: border-box;
-      color: var(--p-text-primary);
-    }
-
-    .login-buttons {
-      @include layout.buttons-col;
-
-      .login-credentials {
-        width: 100%;
-      }
-
-      .p-divider-content {
-        background-color: var(--p-background-surface);
-      }
-
-      .divider-text {
-        color: var(--p-text-secondary);
-      }
-
-      .login-providers {
-        display: flex;
-        flex: 1 1 auto;
-        align-self: stretch;
-      }
     }
   }
 
-  .login-footer {
+  .progressbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+}
+
+.registration-content {
+  @include layout.section-col;
+
+  .registration-panel {
+    @include layout.panel-col;
+
+    .registration-credentials,
+    .profile,
+    .password {
+      width: 100%;
+    }
+  }
+
+  .registration-footer {
     @include layout.auth-footer;
   }
 }
