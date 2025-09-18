@@ -42,8 +42,9 @@ ext {
   springProfiles = ""
 }
 
+// TODO: upgrade to Gradle 9.0.0 and migrate liquibase to work with the new version
 wrapper {
-  gradleVersion = "9.0.0"
+  gradleVersion = "8.14.3"
 }
 
 spotless {
