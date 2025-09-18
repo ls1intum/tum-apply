@@ -169,6 +169,16 @@ export class KeycloakAuthenticationService {
     }, 30_000);
   }
 
+  /**
+   * Cancels any scheduled token refresh schedulers.
+   */
+  private stopTokenRefreshScheduler(): void {
+    if (this.refreshIntervalId) {
+      clearInterval(this.refreshIntervalId);
+      this.refreshIntervalId = undefined;
+    }
+  }
+
   private onVisibilityChange?: () => void = () => {};
   private onFocus?: () => void = () => {};
   private onOnline?: () => void = () => {};
@@ -185,8 +195,15 @@ export class KeycloakAuthenticationService {
       }
     };
     document.addEventListener('visibilitychange', this.onVisibilityChange);
-    window.addEventListener('focus', () => void this.ensureFreshToken());
-    window.addEventListener('online', () => void this.ensureFreshToken());
+
+    this.onFocus = () => {
+      void this.ensureFreshToken();
+    };
+    this.onOnline = () => {
+      void this.ensureFreshToken();
+    };
+    window.addEventListener('focus', this.onFocus);
+    window.addEventListener('online', this.onOnline);
 
     this.windowListenersActive = true;
   }
@@ -206,16 +223,6 @@ export class KeycloakAuthenticationService {
       window.removeEventListener('online', this.onOnline);
     }
     this.windowListenersActive = false;
-  }
-
-  /**
-   * Cancels any scheduled token refresh schedulers.
-   */
-  private stopTokenRefreshScheduler(): void {
-    if (this.refreshIntervalId) {
-      clearInterval(this.refreshIntervalId);
-      this.refreshIntervalId = undefined;
-    }
   }
 
   /**
