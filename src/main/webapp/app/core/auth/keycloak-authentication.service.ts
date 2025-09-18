@@ -179,18 +179,14 @@ export class KeycloakAuthenticationService {
       return;
     }
 
-    const updateToken = (): void => {
-      this.keycloak.updateToken(20).catch((err: unknown) => console.error('Window-triggered token update failed', err));
-    };
-
     this.onVisibilityChange = () => {
       if (!document.hidden) {
-        updateToken();
+        void this.ensureFreshToken();
       }
     };
     document.addEventListener('visibilitychange', this.onVisibilityChange);
-    window.addEventListener('focus', () => updateToken());
-    window.addEventListener('online', () => updateToken());
+    window.addEventListener('focus', () => void this.ensureFreshToken());
+    window.addEventListener('online', () => void this.ensureFreshToken());
 
     this.windowListenersActive = true;
   }
