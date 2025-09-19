@@ -86,6 +86,7 @@ export class ApplicationOverviewComponent {
   protected readonly sortOptions = sortOptions;
 
   private isSearchInitiatedByUser = false;
+  private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
   private readonly evaluationService = inject(EvaluationService);
@@ -102,10 +103,14 @@ export class ApplicationOverviewComponent {
 
       const rawSize = qp.get('pageSize');
       this.pageSize.set(rawSize !== null && !isNaN(+rawSize) ? Math.max(1, +rawSize) : 10);
-      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
 
-      const rawSD = qp.get('sortDir');
-      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      if (!this.isSortInitiatedByUser) {
+        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
+        const rawSD = qp.get('sortDir');
+        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      } else {
+        this.isSortInitiatedByUser = false;
+      }
 
       if (!this.isSearchInitiatedByUser) {
         this.searchQuery.set(qp.get('search') ?? '');
@@ -169,6 +174,7 @@ export class ApplicationOverviewComponent {
   }
 
   loadOnSortEmit(event: Sort): void {
+    this.isSortInitiatedByUser = true;
     this.page.set(0);
 
     this.sortBy.set(event.field);
