@@ -34,7 +34,7 @@ description = "Modern portal for streamlined, inclusive, and transparent doctora
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
+    languageVersion = JavaLanguageVersion.of(25)
   }
 }
 
@@ -42,9 +42,8 @@ ext {
   springProfiles = ""
 }
 
-// TODO: upgrade to Gradle 9.0.0 and migrate liquibase to work with the new version
 wrapper {
-  gradleVersion = "8.14.3"
+  gradleVersion = "9.1.0"
 }
 
 spotless {
@@ -279,7 +278,7 @@ tasks.register("cleanResources", Delete) {
 }
 
 wrapper {
-  gradleVersion = "8.13"
+  gradleVersion = "9.1.0"
 }
 
 node {

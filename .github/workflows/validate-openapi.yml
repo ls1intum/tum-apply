@@ -70,8 +70,8 @@ jobs:
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: 'zulu'
+          java-version: '25'
 
       - name: Run Gradle to generate OpenAPI docs
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
@@ -129,8 +129,8 @@ jobs:
         if: env.CHANGE_DETECTED == 'true'
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: 'zulu'
+          java-version: '25'
 
       - name: Set up Node.js
         if: env.CHANGE_DETECTED == 'true'
