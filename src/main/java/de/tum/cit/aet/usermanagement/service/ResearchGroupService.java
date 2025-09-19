@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
+import de.tum.cit.aet.core.util.StringUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -214,18 +215,17 @@ public class ResearchGroupService {
         }
 
         ResearchGroup newResearchGroup = new ResearchGroup();
-        newResearchGroup.setName(dto.name());
-        newResearchGroup.setHead(dto.headName());
-        newResearchGroup.setUniversityId(dto.universityId());
-        newResearchGroup.setDescription(dto.description());
-        newResearchGroup.setStreet(dto.street());
-        newResearchGroup.setPostalCode(dto.postalCode());
-        newResearchGroup.setCity(dto.city());
-        newResearchGroup.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
-       newResearchGroup.setAbbreviation(dto.abbreviation());
-       newResearchGroup.setWebsite(dto.website());
-       newResearchGroup.setSchool(dto.school());
-
+        newResearchGroup.setName(StringUtil.normalize(dto.name(), false));
+        newResearchGroup.setHead(StringUtil.normalize(dto.headName(), false));
+        newResearchGroup.setUniversityId(StringUtil.normalize(dto.universityId(), false));
+        newResearchGroup.setDescription(StringUtil.normalize(dto.description(), false));
+        newResearchGroup.setStreet(StringUtil.normalize(dto.street(), false));
+        newResearchGroup.setPostalCode(StringUtil.normalize(dto.postalCode(), false));
+        newResearchGroup.setCity(StringUtil.normalize(dto.city(), false));
+        newResearchGroup.setDefaultFieldOfStudies(StringUtil.normalize(dto.defaultFieldOfStudies(), false));
+        newResearchGroup.setAbbreviation(StringUtil.normalize(dto.abbreviation(), false));
+        newResearchGroup.setWebsite(StringUtil.normalize(dto.website(), false));
+        newResearchGroup.setSchool(StringUtil.normalize(dto.school(), false));
         ResearchGroup saved = researchGroupRepository.save(newResearchGroup);
         log.info("AUDIT research-group.create created by={} groupId={} name={} headName={} universityId={}",
             currentUserService.getUserId(),
@@ -255,9 +255,9 @@ public class ResearchGroupService {
                 "User with universityId '%s' not found".formatted(dto.universityId())
             ));
 
-        ResearchGroup group = researchGroupRepository.findByNameIgnoreCase(dto.name())
+        ResearchGroup group = researchGroupRepository.findByUniversityId(dto.universityId())
             .orElseThrow(() -> new EntityNotFoundException(
-                "ResearchGroup with name '%s' not found (must be created manually).".formatted(dto.name())
+                "ResearchGroup with head universityId '" + dto.universityId() + "' not found"
             ));
 
         boolean userGroupChanged = false;
