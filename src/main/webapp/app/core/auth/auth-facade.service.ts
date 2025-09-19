@@ -78,12 +78,11 @@ export class AuthFacadeService {
    * Logs in via email/password on the server.
    * @returns true on success, throws on failure
    */
-  async loginWithEmail(email: string, password: string, redirectUri?: string): Promise<boolean> {
+  async loginWithEmail(email: string, password: string): Promise<boolean> {
     return this.runAuthAction(
       async () => {
         await this.serverAuthenticationService.login(email, password);
         await this.accountService.loadUser();
-        this.redirectToPage(redirectUri);
         this.authMethod = 'server';
         return true;
       },
@@ -103,7 +102,7 @@ export class AuthFacadeService {
   }
 
   /** Verify an OTP code and start a server session, then redirect. */
-  async verifyOtp(code: string, registration = false, redirectUri?: string): Promise<boolean> {
+  async verifyOtp(code: string, registration = false): Promise<boolean> {
     const email = this.authOrchestrator.email();
     const purpose = registration ? OtpCompleteDTO.PurposeEnum.Register : OtpCompleteDTO.PurposeEnum.Login;
     const profile: UserProfileDTO | undefined = registration
@@ -116,7 +115,6 @@ export class AuthFacadeService {
       async () => {
         await this.serverAuthenticationService.verifyOtp(email, code, purpose, profile);
         await this.accountService.loadUser();
-        this.redirectToPage(redirectUri);
         if (registration) {
           this.authOrchestrator.nextStep();
         }
@@ -152,19 +150,19 @@ export class AuthFacadeService {
    * The branching prevents mixed flows (e.g., trying Keycloak logout when only a server session exists)
    * and avoids unnecessary calls when no auth method is active.
    */
-  async logout(redirectUri?: string): Promise<void> {
+  async logout(): Promise<void> {
     if (this.authMethod === 'none') {
-      this.redirectToPage();
+      this.navigateAfterLogin();
       return;
     }
     return this.runAuthAction(async () => {
       if (this.authMethod === 'server') {
         this.authMethod = 'none';
         await this.serverAuthenticationService.logout();
-        this.redirectToPage(redirectUri);
+        this.navigateAfterLogin();
       } else if (this.authMethod === 'keycloak') {
         this.authMethod = 'none';
-        await this.keycloakAuthenticationService.logout(redirectUri);
+        await this.keycloakAuthenticationService.logout(window.location.href);
       }
       // Reset states
       this.accountService.user.set(undefined);
@@ -173,21 +171,6 @@ export class AuthFacadeService {
   }
 
   // --------------- Helpers ---------------
-
-  /**
-   * Navigates to an absolute or app-relative URL.
-   * If the URL does not start with http, it is resolved against window.location.origin.
-   */
-  private redirectToPage(redirectUri = '/'): void {
-    if (!redirectUri) return;
-    if (/^http?:\/\//.test(redirectUri)) {
-      if (window.location.href !== redirectUri) {
-        window.location.href = encodeURI(redirectUri);
-      }
-    } else if (this.router.url !== redirectUri) {
-      void this.router.navigateByUrl(redirectUri);
-    }
-  }
 
   /**
    * Runs an auth action while toggling the orchestrator's busy flag and capturing errors.
@@ -213,6 +196,18 @@ export class AuthFacadeService {
       if (lastAction) {
         this.authOrchestrator.authSuccess();
       }
+    }
+  }
+
+  /**
+   * Navigate to the stored redirect URL or home after logout.
+   */
+  private navigateAfterLogin(): void {
+    let route = this.router.routerState.snapshot.root;
+    while (route.firstChild) route = route.firstChild;
+    const data = route.data;
+    if (data['authorities'].length > 0) {
+      void this.router.navigate(['/']);
     }
   }
 }

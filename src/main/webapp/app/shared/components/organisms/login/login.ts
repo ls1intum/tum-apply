@@ -39,7 +39,7 @@ export class Login {
     if (password == null || password.trim() === '') {
       return false;
     }
-    const response = await this.authFacade.loginWithEmail(email, password, this.redirectUri());
+    const response = await this.authFacade.loginWithEmail(email, password);
     if (!response) {
       this.toastService.showError({
         summary: this.translate.instant('auth.login.messages.error.header'),
@@ -48,8 +48,4 @@ export class Login {
     }
     return response;
   };
-
-  private redirectUri(): string {
-    return window.location.origin;
-  }
 }

@@ -122,8 +122,7 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    const redirectUri = this.isProfessorPage() ? '/professor' : '/';
-    void this.authFacadeService.logout(redirectUri);
+    void this.authFacadeService.logout();
   }
 
   /*
