@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.Language;
@@ -166,8 +167,19 @@ public class JobService {
      * @return the job detail DTO with detailed job information
      */
     public JobDetailDTO getJobDetails(UUID jobId) {
+        UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
+        UUID applicationId = null;
+        ApplicationState applicationState = null;
+
+        if (userId != null) {
+            Application application = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
+            if (application != null) {
+                applicationId = application.getApplicationId();
+                applicationState = application.getState();
+            }
+        }
         return new JobDetailDTO(
             job.getJobId(),
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
@@ -186,7 +198,9 @@ public class JobService {
             job.getEndDate(),
             job.getCreatedAt(),
             job.getLastModifiedAt(),
-            job.getState()
+            job.getState(),
+            applicationId,
+            applicationState
         );
     }
 
@@ -200,6 +214,7 @@ public class JobService {
      * @return a page of {@link JobCardDTO} matching the criteria
      */
     public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
+        UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
@@ -213,6 +228,7 @@ public class JobService {
                 availableJobsFilterDTO.workload(), // optional filter for workload value
                 sortDTO.sortBy(),
                 sortDTO.direction().name(),
+                userId,
                 pageable
             );
         } else {
@@ -225,6 +241,7 @@ public class JobService {
                 availableJobsFilterDTO.location(), // optional filter for campus location
                 availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
                 availableJobsFilterDTO.workload(), // optional filter for workload value
+                userId,
                 pageable
             );
         }

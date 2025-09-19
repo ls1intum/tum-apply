@@ -38,6 +38,9 @@ jobs:
       KEYCLOAK_REALM: ${{ steps.set-vars.outputs.KEYCLOAK_REALM }}
       KEYCLOAK_CLIENT_ID: ${{ steps.set-vars.outputs.KEYCLOAK_CLIENT_ID }}
       KEYCLOAK_ENABLE_LOGGING: ${{ steps.set-vars.outputs.KEYCLOAK_ENABLE_LOGGING }}
+      OTP_LENGTH: ${{ steps.set-vars.outputs.OTP_LENGTH }}
+      OTP_RESEND_COOLDOWN_SECONDS: ${{ steps.set-vars.outputs.OTP_RESEND_COOLDOWN_SECONDS }}
+      OTP_TTL_SECONDS: ${{ steps.set-vars.outputs.OTP_TTL_SECONDS }}
     steps:
       - id: set-vars
         run: |
@@ -45,6 +48,9 @@ jobs:
           echo "KEYCLOAK_REALM=${{ vars.KEYCLOAK_REALM }}" >> "$GITHUB_OUTPUT"
           echo "KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}" >> "$GITHUB_OUTPUT"
           echo "KEYCLOAK_ENABLE_LOGGING=${{ vars.KEYCLOAK_ENABLE_LOGGING }}" >> "$GITHUB_OUTPUT"
+          echo "OTP_LENGTH=${{ vars.OTP_LENGTH }}" >> "$GITHUB_OUTPUT"
+          echo "OTP_RESEND_COOLDOWN_SECONDS=${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}" >> "$GITHUB_OUTPUT"
+          echo "OTP_TTL_SECONDS=${{ vars.OTP_TTL_SECONDS }}" >> "$GITHUB_OUTPUT"
   build:
     needs: prepare-vars
     uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
@@ -56,4 +62,7 @@ jobs:
         KEYCLOAK_REALM=${{ needs.prepare-vars.outputs.KEYCLOAK_REALM }}
         KEYCLOAK_CLIENT_ID=${{ needs.prepare-vars.outputs.KEYCLOAK_CLIENT_ID }}
         KEYCLOAK_ENABLE_LOGGING=${{ needs.prepare-vars.outputs.KEYCLOAK_ENABLE_LOGGING }}
+        OTP_LENGTH=${{ needs.prepare-vars.outputs.OTP_LENGTH }}
+        OTP_RESEND_COOLDOWN_SECONDS=${{ needs.prepare-vars.outputs.OTP_RESEND_COOLDOWN_SECONDS }}
+        OTP_TTL_SECONDS=${{ needs.prepare-vars.outputs.OTP_TTL_SECONDS }}
     secrets: inherit

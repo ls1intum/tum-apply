@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
-import { ApplicantDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faChevronDown, faChevronUp, faCloudArrowUp, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
+
+import { ApplicantDTO } from '../../../generated/model/applicantDTO';
 
 import ApplicationCreationPage2Component, { ApplicationCreationPage2Data } from './application-creation-page2.component';
 
@@ -11,11 +12,11 @@ const mockData: ApplicationCreationPage2Data = {
   bachelorDegreeName: 'B.Sc. Computer Science',
   bachelorDegreeUniversity: 'Technical University of Munich',
   bachelorGradingScale: { value: ApplicantDTO.BachelorGradingScaleEnum.OneToFour, name: 'One To Four' },
-  bachelorGrade: '2.0',
+  bachelorGrade: 2.0,
   masterDegreeName: 'M.Sc. Artificial Intelligence',
   masterDegreeUniversity: 'University of Heidelberg',
   masterGradingScale: { value: ApplicantDTO.MasterGradingScaleEnum.OneToFour, name: 'One To Four' },
-  masterGrade: '1.3',
+  masterGrade: 1.3,
 };
 
 describe('ApplicationCreationPage2Component', () => {

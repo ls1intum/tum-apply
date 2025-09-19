@@ -1,6 +1,5 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { ApplicationOverviewDTO, ApplicationResourceService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ToastService } from 'app/service/toast-service';
@@ -15,9 +14,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
+import { ApplicationOverviewDTO } from '../../generated/model/applicationOverviewDTO';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
+  standalone: true,
   imports: [
     DynamicTableComponent,
     ButtonComponent,
@@ -98,7 +100,7 @@ export default class ApplicationOverviewForApplicantComponent {
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
-  private readonly applicationService = inject(ApplicationResourceService);
+  private readonly applicationService = inject(ApplicationResourceApiService);
   private readonly accountService = inject(AccountService);
   private readonly translate = inject(TranslateService);
 
@@ -146,7 +148,11 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onUpdateApplication(applicationId: string): void {
-    this.router.navigate([`/application/edit/${applicationId}`]);
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        application: applicationId,
+      },
+    });
   }
 
   onDeleteApplication(applicationId: string): void {
@@ -163,7 +169,6 @@ export default class ApplicationOverviewForApplicantComponent {
         console.error('Delete failed', err);
       },
     });
-    // }
   }
 
   onWithdrawApplication(applicationId: string): void {

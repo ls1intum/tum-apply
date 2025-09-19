@@ -2,6 +2,39 @@
   "global": {
     "title": "TUMApply",
     "browsehappy": "Du benutzt einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisiere deinen Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+    "routes": {
+      "landingPage": {
+        "applicant": "TUMApply - Bewerber Portal",
+        "professor": "TUMApply - Professor Portal"
+      },
+      "job": {
+        "detail": "TUMApply - Positionsdetails",
+        "creation": "TUMApply - Positionserstellung",
+        "edit": "TUMApply - Positiosbearbeitung",
+        "overview": "TUMApply - Positionsübersicht",
+        "myPositions": "TUMApply - Meine Positionen"
+      },
+      "application": {
+        "creation": "TUMApply - Bewerbungserstellung",
+        "overview": "TUMApply - Bewerbungsübersicht",
+        "detail": "TUMApply - Bewerbungsdetail"
+      },
+      "evaluation": {
+        "overview": "TUMApply - Evaluierungsübersicht",
+        "detail": "TUMApply - Bewerbungsevaluierung"
+      },
+      "footer": {
+        "imprint": "TUMApply - Impressum",
+        "privacy": "TUMApply - Datenschutz"
+      },
+      "settings": "TUMApply - Einstellungen",
+      "researchGroup": {
+        "templates": "TUMApply - Meine Vorlagen",
+        "templateCreation": "TUMApply - Vorlagenserstellung",
+        "templateEdit": "TUMApply - Vorlagenbearbeitung",
+        "info": "TUMApply - Meine Gruppe"
+      }
+    },
     "menu": {
       "home": "Startseite",
       "colorTheme": "Farbschema ändern",
@@ -30,18 +63,6 @@
         "database": "Datenbank"
       },
       "language": "Sprache"
-    },
-    "form": {
-      "username.label": "Benutzername",
-      "username.placeholder": "Dein Benutzername",
-      "currentpassword.label": "Aktuelles Passwort",
-      "currentpassword.placeholder": "Aktuelles Passwort",
-      "newpassword.label": "Neues Passwort",
-      "newpassword.placeholder": "Neues Passwort",
-      "confirmpassword.label": "Neues Passwort bestätigen",
-      "confirmpassword.placeholder": "Bestätige dein neues Passwort",
-      "email.label": "Email Adresse",
-      "email.placeholder": "Deine Email Adresse"
     },
     "messages": {
       "info": {
@@ -103,8 +124,7 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Entwicklung",
-      "prod": "Demo"
+      "dev": "Entwicklung"
     },
     "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
   },
@@ -158,9 +178,9 @@
     },
     "filters": {
       "filter": "Filter",
+      "selected": "Ausgewählt",
+      "noResults": "Keine Ergebnisse gefunden",
       "numberSelected": "{{selected}} ausgewählt",
-      "clear": "Entfernen",
-      "clearAll": "Alle entfernen",
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
@@ -209,6 +229,7 @@
       "personalInformation": "Persönliche Informationen",
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
+      "summary": "Zusammenfassung",
       "buttons": {
         "back": "Zurück",
         "next": "Weiter",
@@ -309,6 +330,10 @@
         "selectStartDate": "Startdatum auswählen..."
       }
     },
+    "applicationPage4": {
+      "title": "Übersicht",
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst."
+    },
     "applicationOverview": {
       "header": "Deine Bewerbungen",
       "state": {
@@ -342,6 +367,88 @@
       "motivation": "Motivation",
       "skills": "Fähigkeiten",
       "researchExperience": "Forschungserfahrung"
+    },
+    "toast": {
+      "applyFlow": {
+        "saved": {
+          "summary": "Bewerbung gespeichert",
+          "detail": "Deine Bewerbung wurde erfolgreich gespeichert."
+        },
+        "submitted": {
+          "summary": "Bewerbung eingereicht",
+          "detail": "Vielen Dank für deine Bewerbung."
+        },
+        "invalidJobId": {
+          "summary": "Ungültige Job-ID",
+          "detail": "Bitte prüfe die eingegebene Job-ID und versuche es erneut."
+        },
+        "invalidApplicationId": {
+          "summary": "Ungültige Bewerbungs-ID",
+          "detail": "Bitte prüfe die eingegebene Bewerbungs-ID und versuche es erneut."
+        },
+        "errorApplicationId": {
+          "summary": "Fehlerhafte Bewerbungs-ID",
+          "detail": "Es liegt ein Problem mit der Bewerbungs-ID vor. Bitte lade die Seite neu oder versuche es später erneut."
+        },
+        "invalidPageLink": {
+          "summary": "Ungültiger Seitenlink",
+          "detail": "Dieser Bewerbungslink ist nicht gültig. Bitte öffne die Seite über die Übersicht und versuche es erneut."
+        },
+        "saveFailedWithStatus": {
+          "summary": "Übermittlung fehlgeschlagen",
+          "detail": "Bewerbung konnte nicht übermittelt werden: {{status}}"
+        },
+        "fetchDocumentIdsFailed": {
+          "summary": "Dokumente nicht geladen",
+          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut."
+        },
+        "notEditable": {
+          "summary": "Nicht bearbeitbar",
+          "detail": "Diese Bewerbung kann nicht bearbeitet werden, da sie bereits eingereicht wurde oder kein Entwurf mehr ist."
+        },
+        "authRequired": {
+          "summary": "Anmeldung erforderlich",
+          "detail": "Bewerbung kann nicht eingereicht werden: Bitte melde dich an."
+        },
+        "saveFailed": {
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite."
+        },
+        "initLoadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut."
+        },
+        "missingJobIdUnauthenticated": {
+          "summary": "Job-ID fehlt",
+          "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+        }
+      },
+      "applicationOverview": {
+        "delete": {
+          "success": {
+            "summary": "Entwurf gelöscht",
+            "detail": "Der Bewerbungsentwurf wurde erfolgreich gelöscht."
+          },
+          "error": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Der Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut."
+          }
+        },
+        "withdraw": {
+          "success": {
+            "summary": "Bewerbung zurückgezogen",
+            "detail": "Deine Bewerbung wurde erfolgreich zurückgezogen."
+          },
+          "error": {
+            "summary": "Zurückziehen fehlgeschlagen",
+            "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut."
+          }
+        }
+      }
     }
   },
   "error": {

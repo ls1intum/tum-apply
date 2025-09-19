@@ -2,7 +2,6 @@ import { Component, TemplateRef, computed, effect, inject, signal, viewChild } f
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule, Location } from '@angular/common';
-import { JobResourceService } from 'app/generated/api/jobResource.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
@@ -15,7 +14,6 @@ import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validato
 import { HttpErrorResponse } from '@angular/common/http';
 
 import SharedModule from '../../shared/shared.module';
-import { JobDTO, JobFormDTO } from '../../generated';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
@@ -24,6 +22,10 @@ import { SelectComponent } from '../../shared/components/atoms/select/select.com
 import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
 import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
 import { ToastService } from '../../service/toast-service';
+import { JobDetailComponent } from '../job-detail/job-detail.component';
+import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
+import { JobFormDTO } from '../../generated/model/jobFormDTO';
+import { JobDTO } from '../../generated/model/jobDTO';
 
 type JobFormMode = 'create' | 'edit';
 type SavingState = 'SAVED' | 'SAVING';
@@ -47,8 +49,9 @@ type SavingState = 'SAVED' | 'SAVING';
     NumberInputComponent,
     EditorComponent,
     ConfirmDialog,
+    JobDetailComponent,
   ],
-  providers: [JobResourceService],
+  providers: [JobResourceApiService],
 })
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
@@ -58,7 +61,7 @@ export class JobCreationFormComponent {
   readonly publishButtonIcon = 'paper-plane';
   // Services
   private fb = inject(FormBuilder);
-  private jobResourceService = inject(JobResourceService);
+  private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private autoSaveTimer: number | undefined;
   private router = inject(Router);
@@ -90,6 +93,7 @@ export class JobCreationFormComponent {
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
   panel2 = viewChild<TemplateRef<HTMLDivElement>>('panel2');
   panel3 = viewChild<TemplateRef<HTMLDivElement>>('panel3');
+  panel4 = viewChild<TemplateRef<HTMLDivElement>>('panel4');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
   sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
 
@@ -114,7 +118,11 @@ export class JobCreationFormComponent {
   });
 
   // Data computation
-  currentJobData = computed<JobFormDTO>(() => this.createJobDTO('DRAFT'));
+  currentJobData = computed<JobFormDTO>(() => {
+    this.basicInfoFormValueSignal();
+    this.positionDetailsFormValueSignal();
+    return this.createJobDTO('DRAFT');
+  });
 
   publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO('PUBLISHED') : undefined));
 
@@ -146,6 +154,7 @@ export class JobCreationFormComponent {
       panel1: this.panel1(),
       panel2: this.panel2(),
       panel3: this.panel3(),
+      panel4: this.panel4(),
       status: this.savingStatePanel(),
     };
 
@@ -214,10 +223,44 @@ export class JobCreationFormComponent {
       });
     }
 
-    if (templates.panel3) {
+    // TODO: Add additional info step back in if needed
+
+    /* if (templates.panel3) {
       steps.push({
         name: 'jobCreationForm.header.steps.additionalInfo',
         panelTemplate: templates.panel3,
+        shouldTranslate: true,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'arrow-left',
+            onClick() {},
+            disabled: false,
+            label: 'jobActionButton.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'arrow-right',
+            onClick() {},
+            disabled: !this.positionDetailsValid(),
+            label: 'jobActionButton.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        status: templates.status,
+      });
+    }*/
+
+    if (templates.panel4) {
+      steps.push({
+        name: 'jobCreationForm.header.steps.summary',
+        panelTemplate: templates.panel4,
         shouldTranslate: true,
         buttonGroupPrev: [
           {
@@ -382,7 +425,7 @@ export class JobCreationFormComponent {
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
-      supervisingProfessor: user?.name ?? '',
+      supervisingProfessor: user?.name,
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       startDate: job?.startDate ?? '',
@@ -440,12 +483,6 @@ export class JobCreationFormComponent {
    * Handles both create and update scenarios based on existing job ID
    */
   private async performAutoSave(): Promise<void> {
-    // Only save if basic info form is valid
-    if (!this.basicInfoValid()) {
-      this.savingState.set('SAVED');
-      return;
-    }
-
     const currentData = this.createJobDTO('DRAFT');
 
     try {

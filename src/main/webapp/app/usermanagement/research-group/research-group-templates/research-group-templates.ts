@@ -6,11 +6,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
-import { EmailTemplateOverviewDTO } from '../../../generated';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
-import { EmailTemplateResourceService } from '../../../generated/api/emailTemplateResource.service';
 import { ToastService } from '../../../service/toast-service';
+import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
+import { EmailTemplateOverviewDTO } from '../../../generated/model/emailTemplateOverviewDTO';
 
 @Component({
   selector: 'jhi-research-group-templates',
@@ -23,7 +23,7 @@ export class ResearchGroupTemplates {
   protected pageSize = signal<number>(10);
   protected total = signal<number>(0);
 
-  protected readonly emailTemplateService = inject(EmailTemplateResourceService);
+  protected readonly emailTemplateService = inject(EmailTemplateResourceApiService);
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
   protected readonly router = inject(Router);

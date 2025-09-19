@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import { ApplicationResourceService, JobResourceService } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
@@ -15,10 +14,13 @@ import {
   faInfoCircle,
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
-import { HttpResponse } from '@angular/common/http';
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { MessageService } from 'primeng/api';
+
+import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
 
@@ -40,37 +42,35 @@ class MockApplicationResourceService {
   deleteApplication = jest.fn();
 }
 
-jest.useFakeTimers();
-
 describe('ApplicationCreationFormComponent create', () => {
   let component: ApplicationCreationFormComponent;
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
 
   beforeEach(async () => {
-    jest.clearAllTimers();
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationFormComponent, TranslateModule.forRoot()],
       providers: [
+        provideHttpClient(),
         {
           provide: ActivatedRoute,
           useValue: {
-            url: of([{ path: 'application' }, { path: 'create' }]),
             snapshot: {
-              paramMap: {
-                get(key: string) {
-                  if (key === 'job_id') return '123';
+              queryParamMap: {
+                get: jest.fn().mockImplementation((key: string) => {
+                  if (key === 'job') return '123';
+                  if (key === 'application') return null;
                   return null;
-                },
+                }),
               },
             },
           },
         },
         {
-          provide: ApplicationResourceService,
+          provide: ApplicationResourceApiService,
           useClass: MockApplicationResourceService,
         },
         {
-          provide: JobResourceService,
+          provide: JobResourceApiService,
           useValue: {
             getJobById: jest.fn().mockReturnValue(of(new HttpResponse({ body: { title: 'Test title' } }))),
           },
@@ -79,6 +79,7 @@ describe('ApplicationCreationFormComponent create', () => {
           provide: AccountService,
           useValue: {
             loadedUser: jest.fn().mockReturnValue(of({ id: 'id_for_test' })),
+            signedIn: jest.fn().mockReturnValue(of(true)),
           },
         },
         MessageService,
@@ -106,10 +107,5 @@ describe('ApplicationCreationFormComponent create', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should set mode to "create" and extract jobId from route', () => {
-    expect(component.mode).toBe('create');
-    expect(component.jobId()).toBe('123');
   });
 });

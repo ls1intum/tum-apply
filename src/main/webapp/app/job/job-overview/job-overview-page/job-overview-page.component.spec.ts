@@ -1,19 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
-import { JobResourceService, PageJobCardDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { JobCardListComponent } from '../job-card-list/job-card-list.component';
+import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { PageJobCardDTO } from '../../../generated/model/pageJobCardDTO';
 
 import { JobOverviewPageComponent } from './job-overview-page.component';
 
 describe('JobOverviewPageComponent', () => {
   let component: JobOverviewPageComponent;
   let fixture: ComponentFixture<JobOverviewPageComponent>;
-  let jobServiceMock: Partial<Record<keyof JobResourceService, jest.Mock>>;
+  let jobServiceMock: Partial<Record<keyof JobResourceApiService, jest.Mock>>;
 
   beforeEach(async () => {
     jobServiceMock = {
@@ -22,7 +23,7 @@ describe('JobOverviewPageComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [JobOverviewPageComponent, JobCardListComponent, TranslateModule.forRoot()],
-      providers: [{ provide: JobResourceService, useValue: jobServiceMock }, provideHttpClientTesting()],
+      providers: [{ provide: JobResourceApiService, useValue: jobServiceMock }, provideHttpClientTesting()],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);

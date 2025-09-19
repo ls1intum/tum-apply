@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { ApplicationResourceService } from 'app/generated';
 import { ActivatedRoute } from '@angular/router';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
@@ -17,6 +16,8 @@ import { MissingTranslationHandler, TranslateModule, TranslateService } from '@n
 import { missingTranslationHandler } from 'app/config/translation.config';
 import { MessageService } from 'primeng/api';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 
 import ApplicationDetailForApplicantComponent from './application-detail-for-applicant.component';
 
@@ -57,7 +58,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
           },
         },
         {
-          provide: ApplicationResourceService,
+          provide: ApplicationResourceApiService,
           useClass: MockApplicationResourceService,
         },
         MessageService,
@@ -97,14 +98,15 @@ describe('ApplicationDetailForApplicantComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the application detail card when application data is present', () => {
+  it('should render the application detail card when application data is present', async () => {
+    await waitForComponentUpdate(fixture);
     const compiled = fixture.nativeElement as HTMLElement;
     const detailCard = compiled.querySelector('jhi-application-detail-card');
     expect(detailCard).toBeTruthy();
   });
 
   it('should display "Application not found" when no application is available', () => {
-    component.application.set(undefined);
+    component.actualDetailData.set(null);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;

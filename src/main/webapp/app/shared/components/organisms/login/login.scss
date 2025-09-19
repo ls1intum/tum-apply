@@ -1,0 +1,24 @@
+@use '../../../../../content/scss/layout' as layout;
+
+.login-header {
+  @include layout.authentication-header-base;
+
+  background: var(--p-primary-color);
+  color: var(--p-text-on-primary);
+}
+
+.login-content {
+  @include layout.section-col;
+
+  .login-panel {
+    @include layout.panel-col;
+
+    .login-credentials {
+      width: 100%;
+    }
+  }
+
+  .login-footer {
+    @include layout.auth-footer;
+  }
+}

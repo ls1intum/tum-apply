@@ -208,7 +208,7 @@ security:
 # Properties to be exposed on the /info management endpoint
 info:
   # Comma separated list of profiles that will trigger the ribbon to show
-  display-ribbon-on-profiles: 'dev,prod'
+  display-ribbon-on-profiles: 'dev'
 
 # ===================================================================
 # JHipster specific properties
@@ -268,3 +268,12 @@ aet:
     deterministic-zip: false
   client:
     url: ${AET_CLIENT_URL}
+keycloak:
+  url: ${KEYCLOAK_URL:http://localhost:9080}
+  realm: ${KEYCLOAK_REALM:tumapply}
+  server:
+    client-id: ${KEYCLOAK_SERVER_CLIENT_ID:server-client}
+    client-secret: ${KEYCLOAK_SERVER_CLIENT_SECRET:server-secret}
+  admin:
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:otp-client}
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:otp-secret}

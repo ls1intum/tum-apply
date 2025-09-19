@@ -28,8 +28,8 @@ export class SidebarComponent {
    * This allows for more flexible matching of active links.
    */
   private readonly customGroups: Partial<Record<string, string[]>> = {
-    '/application/overview': ['/application/detail', '/application/edit'],
-    '/job-overview': ['/job/detail', '/application/create'],
+    '/application/overview': ['/application/detail', '/application/form'],
+    '/job-overview': ['/job/detail'],
     '/my-positions': ['/job/detail', '/job/edit'],
   };
   private accountService = inject(AccountService);
@@ -100,7 +100,7 @@ export class SidebarComponent {
         {
           title: 'sidebar.manage.manage',
           buttons: [
-            { icon: 'home', text: 'sidebar.manage.home', link: '/' },
+            { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
             { icon: 'list', text: 'sidebar.manage.mypositions', link: '/my-positions' },
             { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job/create' },
           ],
@@ -122,7 +122,11 @@ export class SidebarComponent {
         },
         {
           title: 'sidebar.researchgroup.researchgroup',
-          buttons: [{ icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' }],
+          buttons: [
+            { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
+            { icon: 'users', text: 'sidebar.researchgroup.yourmembers', link: '/research-group/members' },
+            { icon: 'flask', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
+          ],
         },
       ],
       ADMIN: [

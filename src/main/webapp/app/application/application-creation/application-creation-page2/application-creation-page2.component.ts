@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ApplicantDTO, ApplicationForApplicantDTO, DocumentInformationHolderDTO } from 'app/generated';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
@@ -11,16 +10,19 @@ import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
+import { ApplicantDTO } from '../../../generated/model/applicantDTO';
+import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
   bachelorGradingScale: SelectOption;
-  bachelorGrade: string;
+  bachelorGrade?: number;
   masterDegreeName: string;
   masterDegreeUniversity: string;
   masterGradingScale: SelectOption;
-  masterGrade: string;
+  masterGrade?: number;
 };
 
 export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
@@ -39,15 +41,17 @@ export const masterGradingScale: SelectOption[] = Object.values(ApplicantDTO.Mas
 }));
 
 export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
+  const bachelorGradeApplicant = application.applicant?.bachelorGrade;
+  const masterGradeApplicant = application.applicant?.masterGrade;
   return {
     bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
     bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
     bachelorGradingScale: bachelorGradingScale[0], // TODO
-    bachelorGrade: application.applicant?.bachelorGrade ?? '',
+    bachelorGrade: bachelorGradeApplicant !== undefined ? Number.parseFloat(bachelorGradeApplicant) : undefined,
     masterDegreeName: application.applicant?.masterDegreeName ?? '',
     masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
     masterGradingScale: masterGradingScale[0],
-    masterGrade: application.applicant?.masterGrade ?? '',
+    masterGrade: masterGradeApplicant !== undefined ? Number.parseFloat(masterGradeApplicant) : undefined,
   };
 };
 
@@ -124,24 +128,17 @@ export default class ApplicationCreationPage2Component {
     });
   }
 
-  getBachelorGradeAsNumber(): number | undefined {
-    const bachelorGrade = this.data().bachelorGrade;
-    return bachelorGrade === '' ? undefined : Number.parseFloat(bachelorGrade.trim());
-  }
-  setBachelorGradeAsNumber(gradeInputValue: number | undefined): void {
+  setBachelorGradeAsNumber = (gradeInputValue: number | undefined): void => {
     this.data.set({
       ...this.data(),
-      bachelorGrade: gradeInputValue !== undefined ? gradeInputValue.toString() : '',
+      bachelorGrade: gradeInputValue,
     });
-  }
-  getMasterGradeAsNumber(): number | undefined {
-    const masterGrade = this.data().masterGrade;
-    return masterGrade === '' ? undefined : Number.parseFloat(masterGrade.trim());
-  }
-  setMasterGradeAsNumber(gradeInputValue: number | undefined): void {
+  };
+
+  setMasterGradeAsNumber = (gradeInputValue: number | undefined): void => {
     this.data.set({
       ...this.data(),
-      masterGrade: gradeInputValue !== undefined ? gradeInputValue.toString() : '',
+      masterGrade: gradeInputValue,
     });
-  }
+  };
 }

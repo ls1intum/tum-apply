@@ -5,17 +5,18 @@ import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
-import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { FilterChange, SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
 import { sortOptions } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
+import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
+import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -45,6 +46,10 @@ export class ApplicationOverviewComponent {
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
+
+  readonly selectedJobFilters = signal<string[]>([]);
+
+  readonly allAvailableJobNames = signal<string[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
@@ -82,7 +87,7 @@ export class ApplicationOverviewComponent {
 
   private isSearchInitiatedByUser = false;
 
-  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -108,6 +113,8 @@ export class ApplicationOverviewComponent {
 
       this.isSearchInitiatedByUser = false;
 
+      void this.loadAllJobNames();
+
       void this.loadPage();
     });
     void this.initFilterFields();
@@ -118,6 +125,15 @@ export class ApplicationOverviewComponent {
     const params = this.qpSignal();
     filters.forEach(filter => filter.withSelectionFromParam(params));
     this.filters.set(filters);
+  }
+
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.evaluationResourceService.getAllJobNames());
+      this.allAvailableJobNames.set(jobNames.sort());
+    } catch {
+      this.allAvailableJobNames.set([]);
+    }
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -142,6 +158,14 @@ export class ApplicationOverviewComponent {
     this.filters.set(filters);
 
     void this.loadPage();
+  }
+
+  loadOnJobFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
+      this.page.set(0);
+      this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadPage();
+    }
   }
 
   loadOnSortEmit(event: Sort): void {
@@ -181,7 +205,7 @@ export class ApplicationOverviewComponent {
 
       const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
       const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = Array.from(filtersByKey['job'] ?? []);
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey.job ?? []);
 
       const res = await firstValueFrom(
         this.evaluationResourceService.getApplicationsOverviews(

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
@@ -22,7 +22,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   // Check if error message should be displayed
-  isTouched = signal(false);
   isOverCharLimit = computed(() => {
     const count = this.characterCount();
     const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
@@ -34,7 +33,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   errorMessage = computed(() => {
     this.langChange();
 
-    if (this.isEmpty()) {
+    if (this.isEmpty() && this.required()) {
       return this.translate.instant('global.input.error.required');
     }
     if (this.isOverCharLimit()) {
@@ -65,13 +64,14 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   private htmlValue = signal('');
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   private hasFormControl = computed(() => !!this.formControl());
 
-  constructor() {
-    super();
-
-    this.htmlValue.set(this.editorValue());
-  }
+  // Effect to sync htmlValue when editorValue changes (e.g., from form patching)
+  private syncHtmlValueEffect = effect(() => {
+    const currentEditorValue = this.editorValue();
+    this.htmlValue.set(currentEditorValue);
+  });
 
   textChanged(event: ContentChange): void {
     const { source, oldDelta, editor } = event;
@@ -109,7 +109,9 @@ export class EditorComponent extends BaseInputDirective<string> {
   private extractTextFromHtml(htmlText: string): string {
     const temp = document.createElement('div');
     temp.innerHTML = htmlText;
-    return (temp.textContent ?? temp.innerText) || '';
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return temp.textContent?.trim() ?? temp.innerText.trim() ?? '';
   }
 }
 

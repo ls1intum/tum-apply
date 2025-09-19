@@ -4,7 +4,7 @@ ARG WAR_FILE_STAGE="builder"
 #-----------------------------------------------------------------------------------------------------------------------
 # build stage
 #-----------------------------------------------------------------------------------------------------------------------
-FROM --platform=$BUILDPLATFORM docker.io/library/eclipse-temurin:24-jdk AS builder
+FROM --platform=$BUILDPLATFORM docker.io/library/eclipse-temurin:21-jdk AS builder
 
 # some Apple M1 (arm64) builds need python3 and build-essential(make+gcc) for node-gyp to not fail
 RUN echo "Installing build dependencies" \
@@ -26,10 +26,16 @@ ARG KEYCLOAK_URL
 ARG KEYCLOAK_REALM
 ARG KEYCLOAK_CLIENT_ID
 ARG KEYCLOAK_ENABLE_LOGGING
+ARG OTP_LENGTH
+ARG OTP_RESEND_COOLDOWN_SECONDS
+ARG OTP_TTL_SECONDS
 ENV KEYCLOAK_URL=$KEYCLOAK_URL \
     KEYCLOAK_REALM=$KEYCLOAK_REALM \
     KEYCLOAK_CLIENT_ID=$KEYCLOAK_CLIENT_ID \
-    KEYCLOAK_ENABLE_LOGGING=$KEYCLOAK_ENABLE_LOGGING
+    KEYCLOAK_ENABLE_LOGGING=$KEYCLOAK_ENABLE_LOGGING \
+    OTP_LENGTH=$OTP_LENGTH \
+    OTP_RESEND_COOLDOWN_SECONDS=$OTP_RESEND_COOLDOWN_SECONDS \
+    OTP_TTL_SECONDS=$OTP_TTL_SECONDS
 
 # also copy this script which is required by postinstall lifecycle hook
 RUN \
@@ -77,7 +83,7 @@ FROM ${WAR_FILE_STAGE} AS war_file
 #-----------------------------------------------------------------------------------------------------------------------
 # runtime stage
 #-----------------------------------------------------------------------------------------------------------------------
-FROM docker.io/library/eclipse-temurin:24-jdk AS runtime
+FROM docker.io/library/eclipse-temurin:21-jdk AS runtime
 
 #default path of the built .war files
 ARG WAR_FILE_PATH="/opt/tum-apply/build/libs"

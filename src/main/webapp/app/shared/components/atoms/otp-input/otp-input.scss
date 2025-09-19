@@ -1,0 +1,29 @@
+.otp-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+
+  .instructions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+
+    .otp-instruction {
+      text-align: center;
+      color: var(--p-text-primary);
+    }
+  }
+
+  .error-container {
+    color: var(--p-danger-color);
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 2rem;
+  }
+}

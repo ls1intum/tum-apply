@@ -1,0 +1,49 @@
+<div class="registration-header">
+  <h1 jhiTranslate="auth.common.title"></h1>
+</div>
+<div class="registration-steps">
+  <div class="steps">
+    @if (showBackButton()) {
+      <jhi-button (click)="onBack()" variant="text" icon="chevron-left" />
+    }
+    <span [translateValues]="{ number: registerProgress(), total: totalRegisterSteps }" jhiTranslate="auth.register.texts.steps"></span>
+    @if (showSkipButton()) {
+      <jhi-button (click)="onSkip()" variant="text" icon="chevron-right" />
+    }
+  </div>
+  <div class="progressbar">
+    <p-progressbar [showValue]="false" [value]="registerProgressInPercent()" class="progressbar" color="var(--p-accent-color)" />
+  </div>
+</div>
+<div class="registration-content">
+  <div class="registration-panel">
+    @switch (authOrchestrator.registerStep()) {
+      @case ('email') {
+        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials" [isLogin]="false" />
+      }
+      @case ('verify') {
+        <jhi-otp-input [registration]="true" />
+      }
+      @case ('profile') {
+        <jhi-profile class="profile" [submitHandler]="setProfile" />
+      }
+      @case ('password') {
+        <form class="password" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+          <jhi-password-input
+            label="auth.common.password.label"
+            [shouldTranslate]="true"
+            [showStrength]="true"
+            [control]="passwordForm.controls.password"
+          />
+          <jhi-button type="submit" [shouldTranslate]="true" label="auth.register.buttons.continue" [fullWidth]="true" />
+        </form>
+      }
+    }
+  </div>
+  @if (authOrchestrator.registerStep() === 'email') {
+    <p class="registration-footer">
+      <span jhiTranslate="auth.register.texts.accountPresent.prefix"></span>
+      <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountPresent.link"></a>
+    </p>
+  }
+</div>

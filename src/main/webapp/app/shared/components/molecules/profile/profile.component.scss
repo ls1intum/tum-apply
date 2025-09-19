@@ -1,0 +1,11 @@
+@use '../../../../../content/scss/layout' as layout;
+
+.profile-card {
+  @include layout.buttons-col;
+
+  .form {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+  }
+}
