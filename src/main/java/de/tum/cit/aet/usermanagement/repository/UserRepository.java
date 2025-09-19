@@ -75,6 +75,11 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """)
     List<User> findUsersWithRolesByIdsForResearchGroup(@Param("userIds") List<UUID> userIds, @Param("currentUserId") UUID currentUserId);
 
+
+
+
+    Optional<User> findByUniversityIdIgnoreCase(String universityId);
+
     /**
      * Finds a user by email in a case-insensitive manner.
      *
@@ -92,4 +97,5 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     boolean existsByEmailIgnoreCase(String email);
 
     String email(String email);
+
 }
