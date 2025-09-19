@@ -32,10 +32,16 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     );
 
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
-        Map.entry("rating", "a.rating"),
-        Map.entry("createdAt", "a.created_at"),
-        Map.entry("applicant.lastName", "u.last_name")
-    );
+            Map.entry("name", "u.last_name"),
+            Map.entry("appliedAt", "a.created_at"),
+            Map.entry("status", "a.application_state"),
+            Map.entry("job", "j.title"));
+
+    private static final Map<String, String> SORT_FIELD_MAPPING = Map.ofEntries(
+            Map.entry("name", "applicant.user.lastName"),
+            Map.entry("appliedAt", "createdAt"),
+            Map.entry("status", "state"),
+            Map.entry("job", "job.title"));
 
     /**
      * Retrieves a paginated list of {@link Application} entities for a given research group,
@@ -69,7 +75,33 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     }
 
     /**
-     * Counts the number of applications for a given research group, filtered by application states
+     * This method transforms sort fields from the API layer (e.g., "name", "job")
+     * to the actual entity relationship paths (e.g., "applicant.user.lastName",
+     * "job.title").
+     * This abstraction allows for cleaner URLs while maintaining proper entity
+     * navigation.
+     * 
+     * @param originalSort the {@link Sort} object containing user-friendly field
+     *                     names
+     * @return a new {@link Sort} object with mapped entity property paths
+     */
+    private Sort mapSortFields(Sort originalSort) {
+        List<Sort.Order> mappedOrders = new ArrayList<>();
+
+        for (Sort.Order order : originalSort) {
+            String originalField = order.getProperty();
+            String mappedField = SORT_FIELD_MAPPING.getOrDefault(originalField, originalField);
+
+            Sort.Order mappedOrder = new Sort.Order(order.getDirection(), mappedField);
+            mappedOrders.add(mappedOrder);
+        }
+
+        return Sort.by(mappedOrders);
+    }
+
+    /**
+     * Counts the number of applications for a given research group, filtered by
+     * application states
      * and optional dynamic filters.
      */
     @Override

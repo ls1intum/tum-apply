@@ -70,8 +70,8 @@ export class ApplicationOverviewComponent {
   });
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'evaluation.tableHeaders.appliedAt', fieldName: 'createdAt', type: 'NUMBER' },
-    { displayName: 'evaluation.tableHeaders.name', fieldName: 'applicant.lastName', type: 'TEXT' },
+    { displayName: 'evaluation.tableHeaders.appliedAt', fieldName: 'appliedAt', type: 'NUMBER' },
+    { displayName: 'evaluation.tableHeaders.name', fieldName: 'name', type: 'TEXT' },
     { displayName: 'evaluation.tableHeaders.status', fieldName: 'status', type: 'TEXT' },
     { displayName: 'evaluation.tableHeaders.job', fieldName: 'job', type: 'TEXT' },
   ];
