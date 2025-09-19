@@ -43,7 +43,7 @@ services:
       retries: 5
 
   maintenance:
-    image: nginx:1.29.0-alpine-slim
+    image: nginx:1.29.1-alpine-slim
     restart: unless-stopped
     configs:
       - source: maintenance-page
