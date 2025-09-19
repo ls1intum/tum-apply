@@ -3,10 +3,11 @@ import { firstValueFrom } from 'rxjs';
 
 import { SubSection } from '../sub-section/sub-section';
 import { RatingComponent } from '../../../shared/components/atoms/rating/rating.component';
-import { RatingOverviewDTO, RatingResourceService } from '../../../generated';
 import { AccountService } from '../../../core/auth/account.service';
 import { ToastService } from '../../../service/toast-service';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { RatingOverviewDTO } from '../../../generated/model/ratingOverviewDTO';
+import { RatingResourceApiService } from '../../../generated/api/ratingResourceApi.service';
 
 @Component({
   selector: 'jhi-rating-section',
@@ -14,7 +15,7 @@ import TranslateDirective from '../../../shared/language/translate.directive';
   templateUrl: './rating-section.html',
 })
 export class RatingSection {
-  ratingService = inject(RatingResourceService);
+  ratingService = inject(RatingResourceApiService);
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
