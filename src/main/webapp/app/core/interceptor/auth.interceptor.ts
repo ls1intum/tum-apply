@@ -3,29 +3,39 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { KeycloakService } from '../auth/keycloak.service';
+import { AuthFacadeService } from '../auth/auth-facade.service';
+import { KeycloakAuthenticationService } from '../auth/keycloak-authentication.service';
 
+/**
+ * HTTP interceptor that automatically attaches the Keycloak access token (if present/logged in) to all outgoing HTTP
+ * requests.
+ *
+ * Purpose:
+ * - Ensures that every request to secured server endpoints carries a valid Bearer token in the Authorization header.
+ * - Centralizes token handling so that individual services and components don't need to manage headers themselves.
+ * - Catches 401 (Unauthorized) responses to trigger a global logout via the AuthFacadeService.
+ *
+ */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private keycloakService = inject(KeycloakService);
+  private authFacade = inject(AuthFacadeService);
+  private keycloakService = inject(KeycloakAuthenticationService);
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.keycloakService.getToken();
-
-    if (token != null) {
+    if (token?.length) {
       request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`,
-        },
+        setHeaders: { Authorization: `Bearer ${token}` },
       });
     }
 
     return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          console.warn('Unauthorized - please login again...');
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401) {
+          console.warn('Unauthorized – logging out');
+          void this.authFacade.logout();
         }
-        return throwError(() => error);
+        return throwError(() => err);
       }),
     );
   }

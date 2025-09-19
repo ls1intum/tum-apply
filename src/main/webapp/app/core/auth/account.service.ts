@@ -13,6 +13,26 @@ export interface User {
   authorities?: string[];
 }
 
+/**
+ * Purpose
+ * -------
+ * Provides a reactive, application-wide source of truth for the currently signed-in user.
+ *
+ * Responsibilities
+ * ----------------
+ *  - Loads the current user's information from the server (`loadUser`).
+ *  - Exposes reactive signals (`user`, `loaded`, `signedIn`) to let components react to changes in user state.
+ *  - Provides convenience getters for user properties such as id, email, name, research group and authorities.
+ *  - Allows updates to the user profile (`updateUser`) and password (`updatePassword`).
+ *  - Offers role-based checks (`hasAnyAuthority`) to simplify authorization logic in the UI.
+ *
+ * Notes
+ * -----
+ *  - This service does not handle authentication itself; it assumes that the server session or Keycloak
+ *    has already established an authenticated context.
+ *  - It relies on `UserResourceApiService` for all server communication.
+ *  - Errors when fetching the user are logged and result in `user` being set to `undefined` while `loaded` is true.
+ */
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   loaded = signal<boolean>(false);
@@ -22,7 +42,7 @@ export class AccountService {
     const user = this.user();
     return this.loaded() && user !== undefined;
   });
-  userResourceService = inject(UserResourceApiService);
+  private readonly userResourceService = inject(UserResourceApiService);
 
   /**
    * Returns the id of the signed-in user, or undefined if no user is loaded.
@@ -80,6 +100,25 @@ export class AccountService {
     } else {
       this.user.set(undefined);
       this.loaded.set(true);
+    }
+  }
+
+  async updateUser(firstName: string, lastName: string): Promise<void> {
+    const normalizedFirstName = firstName.trim();
+    const normalizedLastName = lastName.trim();
+    await firstValueFrom(
+      this.userResourceService.updateUserName({
+        firstName: normalizedFirstName,
+        lastName: normalizedLastName,
+      }),
+    );
+    await this.loadUser();
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    const trimmedPassword = password.trim();
+    if (trimmedPassword) {
+      await firstValueFrom(this.userResourceService.updatePassword({ newPassword: trimmedPassword }));
     }
   }
 

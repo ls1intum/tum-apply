@@ -10,10 +10,10 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 import { environment } from '../../../../environments/environment';
 import { BaseInputDirective } from '../base-input/base-input.component';
-import { AuthService } from '../../../auth/data-access/auth.service';
-import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
+import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { ButtonComponent } from '../button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 @Component({
   selector: 'jhi-otp-input',
@@ -23,11 +23,11 @@ import TranslateDirective from '../../../language/translate.directive';
   styleUrl: './otp-input.scss',
 })
 export class OtpInput extends BaseInputDirective<string | undefined> {
-  authService = inject(AuthService);
-  authOrchestratorService = inject(AuthOrchestratorService);
-  translateService = inject(TranslateService);
-  breakpointObserver = inject(BreakpointObserver);
-  dynamicDialogConfig = inject(DynamicDialogConfig);
+  readonly authFacade = inject(AuthFacadeService);
+  readonly authOrchestratorService = inject(AuthOrchestratorService);
+  readonly translateService = inject(TranslateService);
+  readonly breakpointObserver = inject(BreakpointObserver);
+  readonly dynamicDialogConfig = inject(DynamicDialogConfig);
 
   // if the otp is for registration (true) or login (false)
   registration = input<boolean>(false);
@@ -106,7 +106,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     this.authOrchestratorService.clearError();
     if (!this.disabledSubmit()) {
       const otp = this.otpValue();
-      void this.authService.verifyOtp(otp, this.isRegistration());
+      void this.authFacade.verifyOtp(otp, this.isRegistration());
     }
   }
 
@@ -114,7 +114,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     if (!this.disableResend()) {
       this.authOrchestratorService.clearError();
       this.setValue('');
-      void this.authService.sendOtp(this.isRegistration());
+      void this.authFacade.requestOtp(this.isRegistration());
     }
   }
 

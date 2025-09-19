@@ -3,11 +3,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService, User } from 'app/core/auth/account.service';
-import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 
 @Component({
   standalone: true,
-  imports: [HasAnyAuthorityDirective],
+  imports: [],
   template: ` <div *jhiHasAnyAuthority="'ROLE_ADMIN'" #content></div> `,
 })
 class TestHasAnyAuthorityDirectiveComponent {
@@ -15,8 +14,8 @@ class TestHasAnyAuthorityDirectiveComponent {
 }
 
 jest.mock('app/core/auth/account.service');
-jest.mock('app/core/auth/keycloak.service', () => {
-  const { MockKeycloakService } = jest.requireActual('app/core/auth/keycloak.service.mock');
+jest.mock('app/core/auth/keycloak-authentication.service', () => {
+  const { MockKeycloakService } = jest.requireActual('app/core/auth/tests/keycloak.service.mock');
   return {
     keycloakService: new MockKeycloakService(),
   };

@@ -4,7 +4,7 @@ import { DividerModule } from 'primeng/divider';
 
 import { Login } from '../../organisms/login/login';
 import { Registration } from '../../organisms/registration/registration';
-import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
+import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 
 @Component({
   selector: 'jhi-auth-card',
