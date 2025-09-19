@@ -2,58 +2,62 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideZonelessChangeDetection } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-describe('JobCardComponent (with plugin)', () => {
+describe('JobCardComponent', () => {
+  const translateServiceMock = {
+    instant: vi.fn(key => key),
+    get: vi.fn(key => ({ subscribe: vi.fn() })),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [JobCardComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-        provideRouter([]),
-        // Minimal stub for TranslateService (component injects it)
-        { provide: (await import('@ngx-translate/core')).TranslateService, useValue: {} },
-      ],
+      providers: [provideZonelessChangeDetection(), provideRouter([]), { provide: TranslateService, useValue: translateServiceMock }],
+      // Verhindert Probleme mit untergeordneten Komponenten, die nicht importiert werden können
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
 
-  it('formats start date via computed signal', () => {
-    const f = TestBed.createComponent(JobCardComponent);
-    f.componentRef.setInput('startDate', '2025-11-01');
-    f.detectChanges();
-    expect(f.componentInstance.formattedStartDate()).toBe('01.11.2025');
+  it('formatiert das Startdatum korrekt über computed signal', () => {
+    const fixture = TestBed.createComponent(JobCardComponent);
+    fixture.componentRef.setInput('startDate', '2025-11-01');
+    fixture.detectChanges();
+    expect(fixture.componentInstance.formattedStartDate()).toBe('01.11.2025');
   });
 
-  it('navigates to details on onViewDetails()', () => {
-    const f = TestBed.createComponent(JobCardComponent);
+  it('navigiert zur Detailseite bei onViewDetails()', () => {
+    const fixture = TestBed.createComponent(JobCardComponent);
     const router = TestBed.inject(Router);
     const spy = vi.spyOn(router, 'navigate');
 
-    f.componentRef.setInput('jobId', 'abc-123');
-    f.detectChanges();
+    fixture.componentRef.setInput('jobId', 'abc-123');
+    fixture.detectChanges();
 
-    f.componentInstance.onViewDetails();
+    fixture.componentInstance.onViewDetails();
     expect(spy).toHaveBeenCalledWith(['/job/detail/abc-123']);
   });
 
-  it('navigates to apply/edit/view correctly', () => {
-    const f = TestBed.createComponent(JobCardComponent);
-    const c = f.componentInstance;
-    const r = TestBed.inject(Router);
-    const nav = vi.spyOn(r, 'navigate');
+  it('navigiert korrekt zu apply/edit/view', () => {
+    const fixture = TestBed.createComponent(JobCardComponent);
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navigationSpy = vi.spyOn(router, 'navigate');
 
-    f.componentRef.setInput('jobId', 'abc-123');
-    f.componentRef.setInput('applicationId', 'app-42');
-    f.detectChanges();
+    fixture.componentRef.setInput('jobId', 'abc-123');
+    fixture.componentRef.setInput('applicationId', 'app-42');
+    fixture.detectChanges();
 
-    c.onApply();
-    expect(nav).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'abc-123' } });
+    component.onApply();
+    expect(navigationSpy).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'abc-123' } });
 
-    c.onEdit();
-    expect(nav).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'abc-123', application: 'app-42' } });
+    component.onEdit();
+    expect(navigationSpy).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'abc-123', application: 'app-42' } });
 
-    c.onView();
-    expect(nav).toHaveBeenCalledWith(['/application/detail/app-42']);
+    component.onView();
+    expect(navigationSpy).toHaveBeenCalledWith(['/application/detail/app-42']);
   });
 });

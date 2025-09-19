@@ -6,9 +6,9 @@ import angular from '@analogjs/vite-plugin-angular';
 import tsconfigPaths from "vite-tsconfig-paths";
 import path from 'node:path';
 
-export default defineConfig(({ mode }) => ({
-  //plugins: [angular(), tsconfigPaths()],
-  plugins: [tsconfigPaths()],
+export default defineConfig(({ mode, command }) => ({
+  plugins: [...(command === 'build' ? [angular()] : []), tsconfigPaths()],
+  //plugins: [tsconfigPaths()],
   test: {
     pool: 'threads',
     globals: true,
