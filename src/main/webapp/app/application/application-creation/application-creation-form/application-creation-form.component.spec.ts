@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import { ApplicationResourceService, JobResourceService } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
@@ -19,6 +18,9 @@ import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { MessageService } from 'primeng/api';
+
+import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
 
 import ApplicationCreationFormComponent from './application-creation-form.component';
 
@@ -64,11 +66,11 @@ describe('ApplicationCreationFormComponent create', () => {
           },
         },
         {
-          provide: ApplicationResourceService,
+          provide: ApplicationResourceApiService,
           useClass: MockApplicationResourceService,
         },
         {
-          provide: JobResourceService,
+          provide: JobResourceApiService,
           useValue: {
             getJobById: jest.fn().mockReturnValue(of(new HttpResponse({ body: { title: 'Test title' } }))),
           },

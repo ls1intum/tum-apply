@@ -1,11 +1,12 @@
 import { Component, WritableSignal, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { InternalCommentDTO, InternalCommentResourceService } from '../../../generated';
 import { AccountService, User } from '../../../core/auth/account.service';
 import { ToastService } from '../../../service/toast-service';
 import { Comment } from '../../../shared/components/molecules/comment/comment';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { InternalCommentResourceApiService } from '../../../generated/api/internalCommentResourceApi.service';
+import { InternalCommentDTO } from '../../../generated/model/internalCommentDTO';
 
 @Component({
   selector: 'jhi-comment-section',
@@ -13,7 +14,7 @@ import TranslateDirective from '../../../shared/language/translate.directive';
   templateUrl: './comment-section.html',
 })
 export class CommentSection {
-  commentService = inject(InternalCommentResourceService);
+  commentService = inject(InternalCommentResourceApiService);
   accountService = inject(AccountService);
   toast = inject(ToastService);
 
