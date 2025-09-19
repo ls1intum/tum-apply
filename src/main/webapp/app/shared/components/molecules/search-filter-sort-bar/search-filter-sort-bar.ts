@@ -47,7 +47,7 @@ export class SearchFilterSortBar {
   filters = input<Filter[]>([]);
 
   // list of sort options to be displayed
-  sortableFields = input.required<SortOption[]>();
+  sortableFields = input<SortOption[]>();
 
   // translation keys used for the total number of records found
   // those fields should already be translated within the parent component
