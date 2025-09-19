@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 
-import { AuthSessionInfoDTO, UserProfileDTO } from '../../../generated';
 import { AccountService } from '../../../core/auth/account.service';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
+import { UserProfileDTO } from '../../../generated/model/userProfileDTO';
+import { AuthSessionInfoDTO } from '../../../generated/model/authSessionInfoDTO';
 
 import { AuthOrchestratorService } from './auth-orchestrator.service';
 import { AuthGateway } from './auth-gateway.service';

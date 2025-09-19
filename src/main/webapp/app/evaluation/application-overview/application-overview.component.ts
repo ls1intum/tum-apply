@@ -9,13 +9,14 @@ import { FilterChange, SearchFilterSortBar } from 'app/shared/components/molecul
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { ApplicationEvaluationOverviewDTO, ApplicationEvaluationResourceService } from '../../generated';
 import { Sort, SortOption } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
 import { sortOptions } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
+import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
+import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -88,7 +89,7 @@ export class ApplicationOverviewComponent {
   private isSearchInitiatedByUser = false;
   private isSortInitiatedByUser = false;
 
-  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

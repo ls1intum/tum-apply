@@ -5,6 +5,7 @@ import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CheckboxModule } from 'primeng/checkbox';
+
 @Component({
   selector: 'jhi-filter-multiselect',
   imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule],

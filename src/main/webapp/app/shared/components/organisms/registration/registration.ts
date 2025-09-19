@@ -11,8 +11,8 @@ import { OtpInput } from '../../atoms/otp-input/otp-input';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { PasswordInputComponent } from '../../atoms/password-input/password-input';
 import { ProfileComponent } from '../../molecules/profile/profile.component';
-import { UserResourceService } from '../../../../generated';
 import { AccountService } from '../../../../core/auth/account.service';
+import { UserResourceApiService } from '../../../../generated/api/userResourceApi.service';
 
 @Component({
   selector: 'jhi-registration',
@@ -32,7 +32,7 @@ import { AccountService } from '../../../../core/auth/account.service';
 export class Registration {
   authService = inject(AuthService);
   authOrchestrator = inject(AuthOrchestratorService);
-  userResource = inject(UserResourceService);
+  userResource = inject(UserResourceApiService);
   accountService = inject(AccountService);
 
   readonly registerProgress = computed(() => this.authOrchestrator.registerProgress());
