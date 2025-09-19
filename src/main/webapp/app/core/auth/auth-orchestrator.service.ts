@@ -154,19 +154,17 @@ export class AuthOrchestratorService {
   }
 
   nextStep(loginStep?: LoginStep): void {
-    if (this.mode() === 'login') {
-      if (loginStep && loginStep !== 'email') {
-        this.loginStep.set(loginStep);
-        this.close();
-      }
+    if (this.mode() === 'login' && loginStep !== undefined) {
+      this.loginStep.set(loginStep);
+      return;
     } else {
       const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
       if (currentIndex < REGISTER_STEPS.length - 1) {
         this.registerStep.set(REGISTER_STEPS[currentIndex + 1]);
-      } else {
-        this.close();
+        return;
       }
     }
+    this.close();
   }
 
   previousStep(): void {

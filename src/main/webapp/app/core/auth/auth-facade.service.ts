@@ -83,6 +83,7 @@ export class AuthFacadeService {
       async () => {
         await this.serverAuthenticationService.login(email, password);
         await this.accountService.loadUser();
+        this.authOrchestrator.nextStep();
         this.authMethod = 'server';
         return true;
       },
