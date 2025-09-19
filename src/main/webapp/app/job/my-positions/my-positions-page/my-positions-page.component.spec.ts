@@ -8,7 +8,7 @@ import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown, 
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { MessageService } from 'primeng/api';
 
-import { JobResourceService } from '../../../generated';
+import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
 
 import { MyPositionsPageComponent } from './my-positions-page.component';
 
@@ -69,7 +69,7 @@ describe('MyPositionsPageComponent', () => {
       ],
       providers: [
         provideHttpClientTesting(),
-        { provide: JobResourceService, useClass: MockJobResourceService },
+        { provide: JobResourceApiService, useClass: MockJobResourceService },
         { provide: AccountService, useClass: MockAccountService },
         { provide: TranslateService, useClass: MockTranslateService },
         MessageService,

@@ -1,14 +1,15 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { ApplicationEvaluationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 
-import { ApplicationDocumentIdsDTO } from '../../../generated';
 import { DocumentViewerComponent } from '../../../shared/components/atoms/document-viewer/document-viewer.component';
 import { SubSection } from '../sub-section/sub-section';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
+import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
+import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
+import { ApplicationEvaluationResourceApiService } from '../../../generated/api/applicationEvaluationResourceApi.service';
 
 @Component({
   selector: 'jhi-document-section',
@@ -24,7 +25,7 @@ export class DocumentSection {
 
   readonly NUMBER_OF_DOCUMENTS = 3;
 
-  evaluationResourceService = inject(ApplicationEvaluationResourceService);
+  evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   toastService = inject(ToastService);
 
   hasDocuments = computed(() => this.documents().length > 0);

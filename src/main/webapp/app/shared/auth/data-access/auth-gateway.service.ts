@@ -1,20 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import {
-  AuthSessionInfoDTO,
-  AuthenticationResourceService,
-  EmailVerificationResourceService,
-  OtpCompleteDTO,
-  UserProfileDTO,
-} from '../../../generated';
-import { EmailLoginResourceService } from '../../../generated/api/emailLoginResource.service';
+import { EmailVerificationResourceApiService } from '../../../generated/api/emailVerificationResourceApi.service';
+import { AuthenticationResourceApiService } from '../../../generated/api/authenticationResourceApi.service';
+import { OtpCompleteDTO } from '../../../generated/model/otpCompleteDTO';
+import { UserProfileDTO } from '../../../generated/model/userProfileDTO';
+import { AuthSessionInfoDTO } from '../../../generated/model/authSessionInfoDTO';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGateway {
-  private readonly emailAuthApi = inject(EmailLoginResourceService);
-  private readonly verificationApi = inject(EmailVerificationResourceService);
-  private readonly authenticationApi = inject(AuthenticationResourceService);
+  private readonly emailAuthApi = inject(AuthenticationResourceApiService);
+  private readonly verificationApi = inject(EmailVerificationResourceApiService);
+  private readonly authenticationApi = inject(AuthenticationResourceApiService);
 
   // --------- Shared -----------
 

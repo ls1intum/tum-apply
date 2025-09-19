@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
-import { ApplicantDTO } from 'app/generated';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faChevronDown, faChevronUp, faCloudArrowUp, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
+
+import { ApplicantDTO } from '../../../generated/model/applicantDTO';
 
 import ApplicationCreationPage2Component, { ApplicationCreationPage2Data } from './application-creation-page2.component';
 

@@ -7,9 +7,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { EmailSetting, EmailSettingResourceService, UserShortDTO } from '../../../generated';
 import TranslateDirective from '../../language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
+import { EmailSettingResourceApiService } from '../../../generated/api/emailSettingResourceApi.service';
+import { EmailSetting } from '../../../generated/model/emailSetting';
+import { UserShortDTO } from '../../../generated/model/userShortDTO';
 
 import EmailTypeEnum = EmailSetting.EmailTypeEnum;
 import RolesEnum = UserShortDTO.RolesEnum;
@@ -30,7 +32,7 @@ export interface NotificationGroup {
 export class EmailSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
-  protected emailSettingService = inject(EmailSettingResourceService);
+  protected emailSettingService = inject(EmailSettingResourceApiService);
   protected toastService = inject(ToastService);
 
   // to control that switches are only displayed when settings are loaded

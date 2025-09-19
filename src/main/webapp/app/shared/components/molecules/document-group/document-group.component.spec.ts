@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component } from '@angular/core';
-import { ApplicationDocumentIdsDTO, ApplicationResourceService, DocumentResourceService } from 'app/generated';
 import {
   MissingTranslationHandler,
   TranslateCompiler,
@@ -11,6 +10,10 @@ import {
   TranslateStore,
 } from '@ngx-translate/core';
 import { of } from 'rxjs';
+
+import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationResourceApiService } from '../../../../generated/api/applicationResourceApi.service';
+import { DocumentResourceApiService } from '../../../../generated/api/documentResourceApi.service';
 
 import DocumentGroupComponent from './document-group.component';
 
@@ -54,11 +57,11 @@ describe('DocumentGroupComponent', () => {
         },
         TranslateService,
         {
-          provide: ApplicationResourceService,
+          provide: ApplicationResourceApiService,
           useClass: MockApplicationResourceService,
         },
         {
-          provide: DocumentResourceService,
+          provide: DocumentResourceApiService,
           useClass: MockDocumentResourceService,
         },
       ],
