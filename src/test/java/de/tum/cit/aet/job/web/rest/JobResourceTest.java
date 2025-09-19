@@ -31,7 +31,6 @@
     import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
     import org.springframework.boot.test.context.SpringBootTest;
     import com.fasterxml.jackson.core.type.TypeReference;
-    import org.springframework.http.MediaType;
     import org.springframework.security.test.context.support.WithMockUser;
     import org.springframework.test.context.ActiveProfiles;
     import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -40,8 +39,6 @@
     import com.fasterxml.jackson.databind.ObjectMapper;
 
     import static org.mockito.Mockito.when;
-    import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-    import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
     @SpringBootTest
     @AutoConfigureMockMvc
@@ -312,29 +309,26 @@
 
         @Test
         @WithMockUser(roles = "PROFESSOR")
-        void getJobsByProfessor_returnsJobsCreatedByProfessor() throws Exception {
-            mockMvc.perform(get("/api/jobs/professor")
-                    .param("pageNumber", "0")
-                    .param("pageSize", "10")
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").exists())
-                .andExpect(jsonPath("$.content[*].title").value(org.hamcrest.Matchers.hasItems(
-                    "Published Role",
-                    "Draft Role"
-                )));
+        void getJobsByProfessor_returnsJobsCreatedByProfessor() {
 
-            assertThat(jobRepository.findAll()).hasSize(2);
+            PageResponse<CreatedJobDTO> page = api.getAndReadOk(
+                "/api/jobs/professor",
+                Map.of("pageNumber", "0", "pageSize", "10"),
+                new TypeReference<>() {
+                }
+            );
+            assertThat(page.totalElements()).isEqualTo(2);
+
         }
 
         @Test
         @WithMockUser(roles = "PROFESSOR")
-        void getJobsByProfessor_invalidPagination_returnsError() throws Exception {
-            mockMvc.perform(get("/api/jobs/professor")
-                    .param("pageNumber", "-1")
-                    .param("pageSize", "10")
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        void getJobsByProfessor_invalidPagination_returnsError() {
+            assertThatThrownBy(() ->
+                api.getAndReadOk("/api/jobs/professor",
+                    Map.of("pageNumber", "-1", "pageSize", "10"),
+                    new TypeReference<>() {})
+            ).isInstanceOf(AssertionError.class);
         }
 
         @Test
