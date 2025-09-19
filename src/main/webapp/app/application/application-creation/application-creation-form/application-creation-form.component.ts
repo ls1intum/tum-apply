@@ -1,13 +1,6 @@
 import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import {
-  ApplicationDetailDTO,
-  ApplicationDocumentIdsDTO,
-  ApplicationForApplicantDTO,
-  ApplicationResourceService,
-  UpdateApplicationDTO,
-} from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -42,6 +35,11 @@ import ApplicationCreationPage2Component, {
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthOrchestratorService } from '../../../shared/auth/data-access/auth-orchestrator.service';
 import { AuthService } from '../../../shared/auth/data-access/auth.service';
+import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
+import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
+import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
 
 const SavingStates = {
   SAVED: 'SAVED',
@@ -107,7 +105,12 @@ export default class ApplicationCreationFormComponent {
     masterGrade: undefined,
   });
 
-  page3 = signal<ApplicationCreationPage3Data | undefined>(undefined);
+  page3 = signal<ApplicationCreationPage3Data>({
+    desiredStartDate: '',
+    motivation: '',
+    skills: '',
+    experiences: '',
+  });
 
   previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
 
@@ -325,7 +328,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  private readonly applicationResourceService = inject(ApplicationResourceService);
+  private readonly applicationResourceService = inject(ApplicationResourceApiService);
   private readonly accountService = inject(AccountService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -467,7 +470,6 @@ export default class ApplicationCreationFormComponent {
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
-    const location = this.location;
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
@@ -491,9 +493,7 @@ export default class ApplicationCreationFormComponent {
 
       if (rerouteToOtherPage) {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
-        // TODO: browser history is not working as expected for location.back()
-
-        location.back();
+        await this.router.navigate(['/application/overview']);
       }
     } catch (err) {
       const httpError = err as HttpErrorResponse;
@@ -657,10 +657,10 @@ export default class ApplicationCreationFormComponent {
         masterGrade: p2.masterGrade,
         masterGradingScale: p2.masterGradingScale.value,
       },
-      motivation: p3?.motivation ?? '',
-      specialSkills: p3?.skills ?? '',
-      desiredDate: p3?.desiredStartDate ?? '',
-      projects: p3?.experiences,
+      motivation: p3.motivation,
+      specialSkills: p3.skills,
+      desiredDate: p3.desiredStartDate,
+      projects: p3.experiences,
       jobTitle: this.title(),
     };
 

@@ -64,7 +64,8 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   private htmlValue = signal('');
-  private hasFormControl = computed(() => this.control() !== undefined);
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  private hasFormControl = computed(() => !!this.formControl());
 
   // Effect to sync htmlValue when editorValue changes (e.g., from form patching)
   private syncHtmlValueEffect = effect(() => {
@@ -108,7 +109,9 @@ export class EditorComponent extends BaseInputDirective<string> {
   private extractTextFromHtml(htmlText: string): string {
     const temp = document.createElement('div');
     temp.innerHTML = htmlText;
-    return (temp.textContent ?? temp.innerText) || '';
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return temp.textContent?.trim() ?? temp.innerText.trim() ?? '';
   }
 }
 

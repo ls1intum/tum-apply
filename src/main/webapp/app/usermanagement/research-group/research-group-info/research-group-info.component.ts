@@ -6,11 +6,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { ResearchGroupManagementService } from 'app/generated/api/researchGroupManagement.service';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 
 export interface ResearchGroupFormData {
   name: string;
@@ -64,7 +64,7 @@ export class ResearchGroupInfoComponent {
 
   // Services
   private accountService = inject(AccountService);
-  private researchGroupService = inject(ResearchGroupManagementService);
+  private researchGroupService = inject(ResearchGroupResourceApiService);
   private toastService = inject(ToastService);
   private translate = inject(TranslateService);
 
