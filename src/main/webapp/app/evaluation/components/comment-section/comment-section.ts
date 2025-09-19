@@ -1,7 +1,7 @@
-import { Component, WritableSignal, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { AccountService, User } from '../../../core/auth/account.service';
+import { AccountService } from '../../../core/auth/account.service';
 import { ToastService } from '../../../service/toast-service';
 import { Comment } from '../../../shared/components/molecules/comment/comment';
 import TranslateDirective from '../../../shared/language/translate.directive';
@@ -22,7 +22,7 @@ export class CommentSection {
 
   protected comments = signal<InternalCommentDTO[]>([]);
   protected createDraft = signal<string>('');
-  protected currentUser: WritableSignal<User | undefined> = this.accountService.user;
+  protected currentUser = this.accountService.user()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
 
   protected _loadCommentsEffect = effect(() => {
