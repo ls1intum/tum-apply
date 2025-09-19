@@ -1,10 +1,12 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/main/webapp/**/*.ts"],
   "compilerOptions": {
-    "composite": true,
-    "declaration": true,
     "outDir": "build/out-tsc/spec",
-    "types": ["jest", "node"]
-  }
+    "types": ["vitest/globals", "node"],
+    "noEmit": true
+  },
+  "include": [
+    "src/test/webapp/**/*.ts",
+    "src/main/webapp/**/*.ts"
+  ]
 }

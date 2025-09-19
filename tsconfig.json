@@ -19,6 +19,9 @@
     "target": "es2024",
     "module": "es2022",
     "types": [],
+    "paths": {
+    "app/*": ["app/*"], "@app/*": ["app/*"]
+  },
     "lib": ["es2024", "dom"],
     "skipLibCheck": true
   },

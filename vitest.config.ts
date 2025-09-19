@@ -1,20 +1,33 @@
-import { defineConfig } from 'vitest/config';
-import { resolve } from 'path';
+/// <reference types="vitest" />
+import { defineConfig } from 'vite';
+import { coverageConfigDefaults } from 'vitest/config';
 
-export default defineConfig({
+import angular from '@analogjs/vite-plugin-angular';
+import tsconfigPaths from "vite-tsconfig-paths";
+import path from 'node:path';
+
+export default defineConfig(({ mode }) => ({
+  //plugins: [angular(), tsconfigPaths()],
+  plugins: [tsconfigPaths()],
   test: {
+    pool: 'threads',
     globals: true,
+    setupFiles: ['src/test/webapp/vitest-setup.ts'],
     environment: 'jsdom',
-    include: [
-      'javascript/vitest/**/*.spec.ts',
-      'src/test/javascript/vitest/**/*.spec.ts'
-    ],
-    root: './'
+    include: ['src/test/webapp/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    coverage: {
+      provider: 'istanbul',
+      reporter: ['text', 'lcov'],
+      exclude: ['**/*.config.*', '**/*.gen.*', '**/assets/**', ...coverageConfigDefaults.exclude],
+    }
+  },
+  define: {
+    'import.meta.vitest': mode !== 'production',
   },
   resolve: {
     alias: {
-      'app': resolve(__dirname, './src/main/webapp/app'),
-      '@': resolve(__dirname, './src/main/webapp')
-    }
-  }
-});
+      app: path.resolve(__dirname, 'src/main/webapp/app'),
+      '@app': path.resolve(__dirname, 'src/main/webapp/app'),
+    },
+  },
+}));
