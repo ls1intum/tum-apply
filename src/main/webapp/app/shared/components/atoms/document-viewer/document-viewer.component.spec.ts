@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DocumentResourceService } from 'app/generated';
 import { of, throwError } from 'rxjs';
+
+import { DocumentResourceApiService } from '../../../../generated/api/documentResourceApi.service';
 
 import { DocumentViewerComponent } from './document-viewer.component';
 
@@ -19,7 +20,7 @@ describe('DocumentViewerComponent', () => {
       imports: [DocumentViewerComponent],
       providers: [
         {
-          provide: DocumentResourceService,
+          provide: DocumentResourceApiService,
           useClass: MockDocumentResourceService,
         },
       ],
@@ -41,7 +42,7 @@ describe('DocumentViewerComponent', () => {
   });
 
   it('should call downloadDocument with the provided documentDictionaryId', () => {
-    const service = TestBed.inject(DocumentResourceService) as jest.Mocked<DocumentResourceService>;
+    const service = TestBed.inject(DocumentResourceApiService) as jest.Mocked<DocumentResourceApiService>;
     const expectedId = { id: 'example-id-999', size: 230 };
     fixture.componentRef.setInput('documentDictionaryId', expectedId);
     fixture.detectChanges();
@@ -58,7 +59,7 @@ describe('DocumentViewerComponent', () => {
   });
 
   it('should not throw if downloadDocument fails', async () => {
-    const service = TestBed.inject(DocumentResourceService) as jest.Mocked<DocumentResourceService>;
+    const service = TestBed.inject(DocumentResourceApiService) as jest.Mocked<DocumentResourceApiService>;
     service.downloadDocument.mockReturnValueOnce(throwError(() => new Error('Download failed')));
 
     fixture.componentRef.setInput('documentDictionaryId', 'error-case');

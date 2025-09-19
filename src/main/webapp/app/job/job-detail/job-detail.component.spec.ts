@@ -10,9 +10,10 @@ import { ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { provideHttpClient } from '@angular/common/http';
 
-import { JobDetailDTO, JobResourceService } from '../../generated';
 import { AccountService } from '../../core/auth/account.service';
 import { ToastService } from '../../service/toast-service'; // Add this import
+import { JobDetailDTO } from '../../generated/model/jobDetailDTO';
+import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
 
 import { JobDetailComponent } from './job-detail.component';
 
@@ -94,7 +95,7 @@ describe('JobDetailComponent', () => {
         provideRouter([]),
         provideHttpClientTesting(),
         { provide: Router, useValue: mockRouter },
-        { provide: JobResourceService, useValue: mockJobService },
+        { provide: JobResourceApiService, useValue: mockJobService },
         { provide: AccountService, useValue: mockAccountService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: MessageService, useValue: mockMessageService },

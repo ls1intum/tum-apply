@@ -11,16 +11,6 @@ import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
-import {
-  AcceptDTO,
-  ApplicationDocumentIdsDTO,
-  ApplicationEvaluationDetailDTO,
-  ApplicationEvaluationDetailListDTO,
-  ApplicationEvaluationResourceService,
-  ApplicationForApplicantDTO,
-  ApplicationResourceService,
-  RejectDTO,
-} from '../../generated';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -30,6 +20,14 @@ import { DescriptionList } from '../components/description-list/description-list
 import { LinkList } from '../components/link-list/link-list';
 import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
+import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
+import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
+import { ApplicationEvaluationDetailDTO } from '../../generated/model/applicationEvaluationDetailDTO';
+import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
+import { AcceptDTO } from '../../generated/model/acceptDTO';
+import { RejectDTO } from '../../generated/model/rejectDTO';
+import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
+import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -85,9 +83,9 @@ export class ApplicationDetailComponent {
   protected readonly sortOptions = sortOptions;
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
 
-  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
-  private readonly applicationResourceService = inject(ApplicationResourceService);
+  private readonly applicationResourceService = inject(ApplicationResourceApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
