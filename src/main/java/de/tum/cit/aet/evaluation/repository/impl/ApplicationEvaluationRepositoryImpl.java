@@ -59,14 +59,18 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
 
         Root<Application> root = cq.from(Application.class);
         Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
+        Join<Application, Applicant> applicantJoin = root.join(Application_.APPLICANT, JoinType.LEFT);
+        Join<Applicant, User> userJoin = applicantJoin.join(Applicant_.USER, JoinType.LEFT);
 
-        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters,
-                searchQuery);
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin,
+                researchGroupId, states, dynamicFilters, searchQuery);
 
-        cq
-            .select(root)
-            .where(predicates.toArray(new Predicate[0]))
-            .orderBy(CriteriaUtils.buildSortOrders(cb, root, pageable.getSort(), Application_.APPLICATION_ID));
+        Sort mappedSort = mapSortFields(pageable.getSort());
+        List<Order> orders = buildCustomSortOrders(cb, root, jobJoin, applicantJoin, userJoin, mappedSort);
+
+        cq.select(root)
+                .where(predicates.toArray(new Predicate[0]))
+                .orderBy(orders);
 
         TypedQuery<Application> query = em.createQuery(cq);
         query.setFirstResult((int) pageable.getOffset());
@@ -97,6 +101,71 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         }
 
         return Sort.by(mappedOrders);
+    }
+
+    /**
+     * Builds JPA {@link Order} objects for sorting query results based on the
+     * provided sort criteria.
+     * This method creates the appropriate sort expressions by using pre-established
+     * joins
+     * to handle nested entity relationships. It maps entity property paths to their
+     * corresponding
+     * JPA expressions, ensuring that sorting works correctly across entity
+     * relationships.
+     * 
+     * @param cb            the {@link CriteriaBuilder} for creating criteria
+     *                      expressions
+     * @param root          the root {@link Application} entity in the criteria
+     *                      query
+     * @param jobJoin       the join to the {@link Job} entity
+     * @param applicantJoin the join to the {@link Applicant} entity
+     * @param userJoin      the join to the {@link User} entity through the
+     *                      applicant relationship
+     * @param sort          the {@link Sort} specification containing the mapped
+     *                      entity property paths
+     * @return a list of {@link Order} objects for use in the criteria query's
+     *         orderBy clause
+     */
+    private List<Order> buildCustomSortOrders(
+            CriteriaBuilder cb,
+            Root<Application> root,
+            Join<Application, Job> jobJoin,
+            Join<Application, Applicant> applicantJoin,
+            Join<Applicant, User> userJoin,
+            Sort sort) {
+
+        List<Order> orders = new ArrayList<>();
+
+        for (Sort.Order sortOrder : sort) {
+            String property = sortOrder.getProperty();
+            boolean ascending = sortOrder.isAscending();
+
+            Expression<?> sortExpression;
+
+            switch (property) {
+                case "applicant.user.lastName":
+                    sortExpression = userJoin.get(User_.LAST_NAME);
+                    break;
+                case "job.title":
+                    sortExpression = jobJoin.get(Job_.TITLE);
+                    break;
+                case "createdAt":
+                    sortExpression = root.get(Application_.CREATED_AT);
+                    break;
+                case "state":
+                    sortExpression = root.get(Application_.STATE);
+                    break;
+                default:
+                    sortExpression = root.get(Application_.CREATED_AT);
+                    break;
+            }
+
+            Order order = ascending ? cb.asc(sortExpression) : cb.desc(sortExpression);
+            orders.add(order);
+        }
+
+        orders.add(cb.asc(root.get(Application_.APPLICATION_ID)));
+        return orders;
     }
 
     /**
