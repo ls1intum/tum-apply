@@ -33,9 +33,11 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
+          start-dev
         env:
           KEYCLOAK_ADMIN: admin
           KEYCLOAK_ADMIN_PASSWORD: admin
+        args: start-dev
     permissions:
       contents: read
       pull-requests: write
