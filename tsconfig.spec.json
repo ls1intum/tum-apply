@@ -5,8 +5,6 @@
     "target": "es2022",
     "types": ["vitest/globals", "node"]
   },
-  "files": [
-    "src/test/webapp/test-setup.ts"
-  ],
+  "files": ["src/test/webapp/test-setup.ts"],
   "include": ["src/test/webapp/**/*.spec.ts", "src/test/webapp/**/*.d.ts"]
 }
