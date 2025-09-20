@@ -17,6 +17,7 @@ import { OtpInput } from 'app/shared/components/atoms/otp-input/otp-input';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
+import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -41,15 +42,7 @@ import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationD
 import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
 import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
 
-const SavingStates = {
-  SAVED: 'SAVED',
-  SAVING: 'SAVING',
-  FAILED: 'FAILED',
-} as const;
-
 const applyflow = 'entity.toast.applyFlow';
-
-type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
 
 @Component({
   selector: 'jhi-application-creation-form',
