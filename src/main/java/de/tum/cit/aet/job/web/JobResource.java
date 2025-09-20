@@ -107,7 +107,7 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/professor/{userId}} : Returns a paginated list of jobs created by a specific professor.
+     * {@code GET /api/jobs/professor} : Returns a paginated list of jobs created by a specific professor.
      *
      * <p>Supports optional filtering by title and job state. Sorting is supported using {@link SortDTO}.</p>
      *
