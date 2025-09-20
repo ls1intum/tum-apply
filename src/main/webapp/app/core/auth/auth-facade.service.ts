@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { OtpCompleteDTO } from '../../generated/model/otpCompleteDTO';
 import { UserProfileDTO } from '../../generated/model/userProfileDTO';
+import { AuthSessionInfoDTO } from '../../generated/model/authSessionInfoDTO';
 
 import { ServerAuthenticationService } from './server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentication.service';
@@ -114,9 +115,11 @@ export class AuthFacadeService {
       : undefined;
     return this.runAuthAction(
       async () => {
-        await this.serverAuthenticationService.verifyOtp(email, code, purpose, profile);
+        const response: AuthSessionInfoDTO = await this.serverAuthenticationService.verifyOtp(email, code, purpose, profile);
         await this.accountService.loadUser();
-        if (registration) {
+        if (response.profileRequired === false) {
+          this.authOrchestrator.authSuccess();
+        } else if (registration) {
           this.authOrchestrator.nextStep();
         }
         this.authMethod = 'server';

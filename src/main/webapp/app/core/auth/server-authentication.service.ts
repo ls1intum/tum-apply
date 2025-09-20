@@ -78,7 +78,7 @@ export class ServerAuthenticationService {
    * @returns Promise resolving to AuthSessionInfoDTO containing session information.
    * @throws Error if verification fails or orchestrator is busy.
    */
-  async verifyOtp(email: string, code: string, purpose: PurposeEnum, profile?: UserProfileDTO): Promise<void> {
+  async verifyOtp(email: string, code: string, purpose: PurposeEnum, profile?: UserProfileDTO): Promise<AuthSessionInfoDTO> {
     const response: AuthSessionInfoDTO = await firstValueFrom(
       this.authenticationApi.otpComplete({
         email,
@@ -88,6 +88,7 @@ export class ServerAuthenticationService {
       }),
     );
     this.startTokenRefreshTimeout(response.expiresIn);
+    return response;
   }
 
   // --------------------------- Logout ----------------------------
