@@ -96,7 +96,7 @@
         }
 
         @Test
-        void getAvailableJobs_onlyPublishedOnes() {
+        void getAvailableJobsOnlyPublishedOnes() {
             PageResponse<JobCardDTO> page = api.getAndReadOk(
                 "/api/jobs/available",
                 Map.of("pageNumber", "0", "pageSize", "10"),
@@ -119,7 +119,7 @@
         }
 
         @Test
-        void getAvailableJobs_invalidPagination_returnsError() {
+        void getAvailableJobsInvalidPaginationReturnsError() {
             assertThatThrownBy(() ->
                 api.getAndReadOk("/api/jobs/available",
                     Map.of("pageNumber", "-1", "pageSize", "10"),
@@ -129,7 +129,7 @@
 
         @Test
         @WithMockUser
-        void createJob_persistsAndReturnsIt() {
+        void createJobPersistsAndReturnsIt() {
             JobFormDTO payload = new JobFormDTO(
                 null, "ML Engineer", "Machine Learning", "CS",
                 professor.getUserId(), Campus.GARCHING,
@@ -183,7 +183,7 @@
 
         @Test
         @WithMockUser
-        void createJobInvalid_DoesNotPersist() {
+        void createJobInvalidDoesNotPersist() {
             long before = jobRepository.count();
 
             Map<String, Object> invalid = Map.ofEntries(
@@ -212,7 +212,7 @@
 
         @Test
         @WithMockUser
-        void updateJob_updatesCorrectly() {
+        void updateJobUpdatesCorrectly() {
 
             Job job = jobRepository.findAll().getFirst();
 
@@ -225,7 +225,7 @@
                 "Updated Requirements", JobState.DRAFT
             );
 
-            JobFormDTO returnedJob = api.putAndReadOk("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class);
+            api.putAndReadOk("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class);
 
             Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
 
@@ -247,7 +247,7 @@
 
         @Test
         @WithMockUser
-        void updateJob_nonexistentJob_throwsNotFound() {
+        void updateJobNonexistentJobThrowsNotFound() {
             JobFormDTO updatedPayload = new JobFormDTO(
                 UUID.randomUUID(), "Ghost Job", "Area", "Field",
                 professor.getUserId(), Campus.GARCHING,
@@ -263,7 +263,7 @@
 
         @Test
         @WithMockUser
-        void deleteJob_removesIt() {
+        void deleteJobRemovesIt() {
             Job job = jobRepository.findAll().getFirst();
             assertThat(jobRepository.existsById(job.getJobId())).isTrue();
 
@@ -274,7 +274,7 @@
 
         @Test
         @WithMockUser
-        void deleteJob_nonexistentJob_throwsNotFound() {
+        void deleteJobNonexistentJobThrowsNotFound() {
             assertThatThrownBy(() ->
                 api.deleteAndReadOk("/api/jobs/" + UUID.randomUUID(), null, Void.class)
             ).isInstanceOf(AssertionError.class);
@@ -282,11 +282,11 @@
 
         @Test
         @WithMockUser
-        void changeJobState_updatesIt() {
+        void changeJobStateUpdatesIt() {
             Job job = jobRepository.findAll().getFirst();
             assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
 
-            JobFormDTO returnedJob = api.putAndReadOk(
+            api.putAndReadOk(
                 "/api/jobs/changeState/" + job.getJobId() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
                 null,
                 JobFormDTO.class
@@ -298,7 +298,7 @@
 
         @Test
         @WithMockUser
-        void changeJobState_nonExistantJob_throwsNotFound() {
+        void changeJobStateNonExistantJobThrowsNotFound() {
             assertThatThrownBy(() ->
                 api.putAndReadOk("api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
                     null,
@@ -309,7 +309,7 @@
 
         @Test
         @WithMockUser(roles = "PROFESSOR")
-        void getJobsByProfessor_returnsJobsCreatedByProfessor() {
+        void getJobsByProfessorReturnsJobsCreatedByProfessor() {
 
             PageResponse<CreatedJobDTO> page = api.getAndReadOk(
                 "/api/jobs/professor",
@@ -323,7 +323,7 @@
 
         @Test
         @WithMockUser(roles = "PROFESSOR")
-        void getJobsByProfessor_invalidPagination_returnsError() {
+        void getJobsByProfessorInvalidPaginationReturnsError() {
             assertThatThrownBy(() ->
                 api.getAndReadOk("/api/jobs/professor",
                     Map.of("pageNumber", "-1", "pageSize", "10"),
@@ -333,7 +333,7 @@
 
         @Test
         @WithMockUser
-        void getJobById_returnsCorrectJob() {
+        void getJobByIdReturnsCorrectJob() {
             Job job = jobRepository.findAll().getFirst();
 
             JobDTO returnedJob = api.getAndReadOk("/api/jobs/" + job.getJobId(), null, JobDTO.class);
@@ -357,14 +357,14 @@
 
         @Test
         @WithMockUser
-        void getJobById_nonExistentJob_throwsNotFound() {
+        void getJobByIdNonExistentJobThrowsNotFound() {
             assertThatThrownBy(() ->
                 api.getAndReadOk("/api/jobs/" + UUID.randomUUID(), null, JobDTO.class)
             ).isInstanceOf(AssertionError.class);
         }
 
         @Test
-        void getJobDetails_returnsCorrectJobDetails() {
+        void getJobDetailsReturnsCorrectJobDetails() {
             Job job = jobRepository.findAll().getFirst();
 
             JobDetailDTO returnedJob = api.getAndReadOk("/api/jobs/detail/" + job.getJobId(), null, JobDetailDTO.class);
@@ -390,7 +390,7 @@
         }
 
         @Test
-        void getJobDetails_nonExistantId_throwsNotFound() {
+        void getJobDetailsNonExistantIdThrowsNotFound() {
             assertThatThrownBy(() ->
                 api.getAndReadOk("api/jobs/detail" + UUID.randomUUID(),
                     null,
