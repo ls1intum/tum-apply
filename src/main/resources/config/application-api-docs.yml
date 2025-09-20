@@ -1,0 +1,4 @@
+tumapply:
+  email:
+    initializer:
+      enabled: false
