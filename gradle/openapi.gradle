@@ -33,7 +33,6 @@ openApi {
       "--spring.datasource.password=",
       "--spring.datasource.driver-class-name=org.h2.Driver"
     ])
-  }
 }
 
 // 1. TODO Detect if any resources have changed
