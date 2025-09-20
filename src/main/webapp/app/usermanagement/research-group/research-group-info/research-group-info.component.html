@@ -1,5 +1,5 @@
-<div class="content">
-  <div class="header">
+<div class="page-container">
+  <div class="page-header">
     <h1 jhiTranslate="researchGroup.groupInfoHeader"></h1>
   </div>
   <div class="card">
@@ -17,90 +17,131 @@
         <form [formGroup]="form">
           <div class="form-group">
             <!-- Basic information section -->
-            <jhi-string-input
-              [id]="'rg-name'"
-              label="{{ 'researchGroup.groupInfo.fields.name' | translate }}"
-              [required]="true"
-              [control]="form.controls.name"
-              [model]="form.controls.name.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.name' | translate }}"
-            />
+            <p-divider layout="horizontal">
+              <span jhiTranslate="researchGroup.groupInfo.fields.section1"></span>
+            </p-divider>
 
-            <jhi-string-input
-              [id]="'rg-abbreviation'"
-              label="{{ 'researchGroup.groupInfo.fields.abbreviation' | translate }}"
-              [control]="form.controls.abbreviation"
-              [model]="form.controls.abbreviation.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.abbreviation' | translate }}"
-            />
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-name'"
+                  label="{{ 'researchGroup.groupInfo.fields.name' | translate }}"
+                  [required]="true"
+                  [control]="form.controls.name"
+                  [model]="form.controls.name.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.name' | translate }}"
+                />
+              </div>
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-abbreviation'"
+                  label="{{ 'researchGroup.groupInfo.fields.abbreviation' | translate }}"
+                  [control]="form.controls.abbreviation"
+                  [model]="form.controls.abbreviation.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.abbreviation' | translate }}"
+                />
+              </div>
+            </div>
 
-            <jhi-string-input
-              [id]="'rg-head'"
-              label="{{ 'researchGroup.groupInfo.fields.head' | translate }}"
-              [required]="true"
-              [control]="form.controls.head"
-              [model]="form.controls.head.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.head' | translate }}"
-            />
-            <div></div>
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-head'"
+                  label="{{ 'researchGroup.groupInfo.fields.head' | translate }}"
+                  [required]="true"
+                  [control]="form.controls.head"
+                  [model]="form.controls.head.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.head' | translate }}"
+                />
+              </div>
+              <div class="form-field"></div>
+            </div>
 
             <!-- School and website section -->
-            <jhi-string-input
-              [id]="'rg-school'"
-              label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
-              [control]="form.controls.school"
-              [model]="form.controls.school.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.school' | translate }}"
-            />
+            <p-divider layout="horizontal">
+              <span jhiTranslate="researchGroup.groupInfo.fields.section2"></span>
+            </p-divider>
 
-            <jhi-string-input
-              [id]="'rg-defaultFieldOfStudies'"
-              label="{{ 'researchGroup.groupInfo.fields.defaultFieldOfStudies' | translate }}"
-              [control]="form.controls.defaultFieldOfStudies"
-              [model]="form.controls.defaultFieldOfStudies.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
-            />
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-school'"
+                  label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
+                  [control]="form.controls.school"
+                  [model]="form.controls.school.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.school' | translate }}"
+                />
+              </div>
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-defaultFieldOfStudies'"
+                  label="{{ 'researchGroup.groupInfo.fields.defaultFieldOfStudies' | translate }}"
+                  [control]="form.controls.defaultFieldOfStudies"
+                  [model]="form.controls.defaultFieldOfStudies.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
+                />
+              </div>
+            </div>
 
-            <jhi-string-input
-              [id]="'rg-website'"
-              label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
-              [control]="form.controls.website"
-              [model]="form.controls.website.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.website' | translate }}"
-            />
-
-            <jhi-string-input
-              [id]="'rg-email'"
-              label="{{ 'researchGroup.groupInfo.fields.email' | translate }}"
-              [control]="form.controls.email"
-              [model]="form.controls.email.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
-            />
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-website'"
+                  label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
+                  [control]="form.controls.website"
+                  [model]="form.controls.website.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.website' | translate }}"
+                />
+              </div>
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-email'"
+                  label="{{ 'researchGroup.groupInfo.fields.email' | translate }}"
+                  [control]="form.controls.email"
+                  [model]="form.controls.email.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
+                />
+              </div>
+            </div>
 
             <!-- Address section -->
-            <jhi-string-input
-              [id]="'rg-city'"
-              label="{{ 'researchGroup.groupInfo.fields.city' | translate }}"
-              [control]="form.controls.city"
-              [model]="form.controls.city.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.city' | translate }}"
-            />
-            <jhi-string-input
-              [id]="'rg-postalCode'"
-              label="{{ 'researchGroup.groupInfo.fields.postalCode' | translate }}"
-              [control]="form.controls.postalCode"
-              [model]="form.controls.postalCode.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.postalCode' | translate }}"
-            />
+            <p-divider layout="horizontal">
+              <span jhiTranslate="researchGroup.groupInfo.fields.section3"></span>
+            </p-divider>
 
-            <jhi-string-input
-              [id]="'rg-address'"
-              label="{{ 'researchGroup.groupInfo.fields.address' | translate }}"
-              [control]="form.controls.address"
-              [model]="form.controls.address.value || ''"
-              placeholder="{{ 'researchGroup.groupInfo.placeholders.address' | translate }}"
-            />
-            <div></div>
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-city'"
+                  label="{{ 'researchGroup.groupInfo.fields.city' | translate }}"
+                  [control]="form.controls.city"
+                  [model]="form.controls.city.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.city' | translate }}"
+                />
+              </div>
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-postalCode'"
+                  label="{{ 'researchGroup.groupInfo.fields.postalCode' | translate }}"
+                  [control]="form.controls.postalCode"
+                  [model]="form.controls.postalCode.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.postalCode' | translate }}"
+                />
+              </div>
+            </div>
+
+            <div class="form-row mb-6">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-address'"
+                  label="{{ 'researchGroup.groupInfo.fields.address' | translate }}"
+                  [control]="form.controls.address"
+                  [model]="form.controls.address.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.address' | translate }}"
+                />
+              </div>
+              <div class="form-field"></div>
+            </div>
           </div>
 
           @if (hasInitialized()) {

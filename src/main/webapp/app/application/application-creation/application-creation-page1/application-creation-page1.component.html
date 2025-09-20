@@ -1,44 +1,52 @@
 <form [formGroup]="page1Form()">
   <div class="form-row">
-    <jhi-string-input
-      label="{{ 'entity.applicationPage1.label.firstName' | translate }}"
-      id="firstName"
-      [required]="true"
-      [(model)]="data().firstName"
-      [control]="page1Form().controls.firstName"
-    />
-    <jhi-string-input
-      label="{{ 'entity.applicationPage1.label.lastName' | translate }}"
-      id="lastName"
-      [required]="true"
-      [(model)]="data().lastName"
-      [control]="page1Form().controls.lastName"
-    />
+    <div class="form-field">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage1.label.firstName' | translate }}"
+        id="firstName"
+        [required]="true"
+        [(model)]="data().firstName"
+        [control]="page1Form().controls.firstName"
+      />
+    </div>
+    <div class="form-field">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage1.label.lastName' | translate }}"
+        id="lastName"
+        [required]="true"
+        [(model)]="data().lastName"
+        [control]="page1Form().controls.lastName"
+      />
+    </div>
   </div>
 
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.userInformation"></span></p-divider>
 
   <div class="form-row">
-    <jhi-string-input
-      label="{{ 'entity.applicationPage1.label.email' | translate }}"
-      icon="envelope"
-      [disabled]="disabledEmail()"
-      id="email"
-      [required]="true"
-      [(model)]="data().email"
-      [control]="page1Form().controls.email"
-    />
-    <jhi-string-input
-      label="{{ 'entity.applicationPage1.label.phoneNumber' | translate }}"
-      id="phoneNumber"
-      [required]="true"
-      [(model)]="data().phoneNumber"
-      [control]="page1Form().controls.phoneNumber"
-    />
+    <div class="form-field">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage1.label.email' | translate }}"
+        icon="envelope"
+        [disabled]="disabledEmail()"
+        id="email"
+        [required]="true"
+        [(model)]="data().email"
+        [control]="page1Form().controls.email"
+      />
+    </div>
+    <div class="form-field">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage1.label.phoneNumber' | translate }}"
+        id="phoneNumber"
+        [required]="true"
+        [(model)]="data().phoneNumber"
+        [control]="page1Form().controls.phoneNumber"
+      />
+    </div>
   </div>
 
-  <div class="form-row">
-    <div class="w-1/2 pr-4">
+  <div class="form-row mb-6">
+    <div class="form-field">
       <jhi-select
         width="100%"
         label="{{ 'entity.applicationPage1.label.gender' | translate }}"
@@ -48,7 +56,7 @@
         (selectedChange)="updateSelect('gender', $event)"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-select
         width="100%"
         label="{{ 'entity.applicationPage1.label.nationality' | translate }}"
@@ -61,8 +69,8 @@
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="w-1/2 pr-4">
+  <div class="form-row mb-6">
+    <div class="form-field">
       <jhi-select
         width="100%"
         label="{{ 'entity.applicationPage1.label.language' | translate }}"
@@ -74,14 +82,14 @@
         [tooltipText]="'entity.applicationPage1.tooltip.language' | translate"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <label jhiTranslate="entity.applicationPage1.label.dateOfBirth"></label>
       <jhi-datepicker [selectedDate]="data().dateOfBirth" label="" width="100%" (selectedDateChange)="setDateOfBirth($event)" />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage1.label.website' | translate }}"
         id="website"
@@ -89,7 +97,7 @@
         [control]="page1Form().controls.website"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage1.label.linkedIn' | translate }}"
         id="linkedIn"
@@ -102,7 +110,7 @@
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.address"></span></p-divider>
 
   <div class="form-row">
-    <div class="w-full pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage1.label.street' | translate }}"
         id="street"
@@ -114,17 +122,19 @@
   </div>
 
   <div class="form-row">
-    <jhi-string-input
-      label="{{ 'entity.applicationPage1.label.city' | translate }}"
-      id="city"
-      [required]="true"
-      [(model)]="data().city"
-      [control]="page1Form().controls.city"
-    />
+    <div class="form-field">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage1.label.city' | translate }}"
+        id="city"
+        [required]="true"
+        [(model)]="data().city"
+        [control]="page1Form().controls.city"
+      />
+    </div>
   </div>
 
   <div class="form-row">
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-select
         label="{{ 'entity.applicationPage1.label.country' | translate }}"
         id="country"
@@ -136,7 +146,7 @@
         [filter]="true"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage1.label.postcode' | translate }}"
         id="postcode"

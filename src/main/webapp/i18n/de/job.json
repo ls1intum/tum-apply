@@ -10,6 +10,10 @@
         "positionDetails": "Stellenbeschreibung",
         "additionalInfo": "Zusätzliche Informationen",
         "summary": "Zusammenfassung"
+      },
+      "basicInfo": {
+        "section1": "Übersicht",
+        "section2": "Arbeitsbedingungen"
       }
     },
     "basicInformationSection": {

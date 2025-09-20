@@ -10,6 +10,10 @@
         "positionDetails": "Position Details",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
+      },
+      "basicInfo": {
+        "section1": "Overview",
+        "section2": "Employment Terms"
       }
     },
     "basicInformationSection": {

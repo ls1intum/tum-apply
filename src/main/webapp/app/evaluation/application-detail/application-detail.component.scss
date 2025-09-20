@@ -1,15 +1,4 @@
-.content {
-  padding: 2rem 4rem;
-  width: 100%;
-
-  .header {
-    font-weight: 700;
-    padding-bottom: 4rem;
-    font-size: 2rem;
-    color: var(--p-primary-color);
-    align-items: center;
-  }
-
+.page-container {
   .body {
     display: flex;
     flex-direction: column;
