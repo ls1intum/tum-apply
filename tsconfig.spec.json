@@ -7,7 +7,7 @@
     "baseUrl": ".",
     "paths": {
       "util/*": ["src/test/webapp/util/*"],
-      "app/*": ["src/main/webapp/app/*"],
+      "app/*": ["src/main/webapp/app/*"]
     }
   },
   "files": ["src/test/webapp/test-setup.ts"],
