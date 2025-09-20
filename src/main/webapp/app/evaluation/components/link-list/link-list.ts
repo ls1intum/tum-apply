@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
 
 export interface LinkItem {
   labelKey: string;
@@ -11,7 +12,7 @@ export interface LinkItem {
 
 @Component({
   selector: 'jhi-link-list',
-  imports: [FontAwesomeModule, TranslateModule],
+  imports: [FontAwesomeModule, TranslateModule, TooltipModule],
   templateUrl: './link-list.html',
 })
 export class LinkList {

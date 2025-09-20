@@ -13,7 +13,7 @@
           [isCreate]="false"
           [text]="c.message ?? ''"
           [editingId]="editingId()"
-          (enterEdit)="editingId.set(c.commentId!)"
+          (enterEdit)="editingId.set(c.commentId)"
           (exitEdit)="editingId.set(undefined)"
           (saved)="updateComment(c.commentId!, $event)"
           (deleted)="editingId.set(undefined); deleteComment(c.commentId)"
