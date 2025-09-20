@@ -11,7 +11,14 @@ export default defineConfig(({ mode }) => ({
     setupFiles: ['src/test/webapp/test-setup.ts'],
     environment: 'jsdom',
     include: ['src/test/webapp/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    reporters: ['default'],
+    reporters: ['default', 'junit'],
+    outputFile: 'junit.xml',
+    coverage: {
+      reporter: ['text', 'lcov', 'html'],
+      reportsDirectory: 'build/test-results/lcov-report',
+      provider: 'v8',
+      all: false,
+    },
   },
   define: {
     'import.meta.vitest': mode !== 'production',
