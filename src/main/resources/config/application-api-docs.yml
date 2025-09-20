@@ -2,3 +2,6 @@ tumapply:
   email:
     initializer:
       enabled: false
+
+  keycloak:
+    enabled: false
