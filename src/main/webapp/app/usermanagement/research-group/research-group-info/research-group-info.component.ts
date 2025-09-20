@@ -12,8 +12,6 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 
-import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
-
 export interface ResearchGroupFormData {
   name: string;
   abbreviation: string;
