@@ -3557,6 +3557,9 @@
           "refreshExpiresIn": {
             "type": "integer",
             "format": "int64"
+          },
+          "profileRequired": {
+            "type": "boolean"
           }
         }
       },
@@ -3960,10 +3963,10 @@
       "SortObject": {
         "type": "object",
         "properties": {
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
           "empty": {
