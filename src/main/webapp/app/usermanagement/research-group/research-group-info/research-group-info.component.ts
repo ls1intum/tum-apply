@@ -10,9 +10,7 @@ import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { DividerModule } from 'primeng/divider';
-
-import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 
 export interface ResearchGroupFormData {
   name: string;
