@@ -6,20 +6,37 @@ import { TranslateService } from '@ngx-translate/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { of, Subject } from 'rxjs';
+import { fontAwesomeIcons } from 'app/config/font-awesome-icons';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 describe('JobCardComponent', () => {
-  const translateServiceMock = {
-    instant: vi.fn(key => key),
-    get: vi.fn(key => ({ subscribe: vi.fn() })),
+  const makeTranslateServiceMock = (): Partial<TranslateService> => {
+    const events = () => new Subject<any>();
+    return {
+      instant: (key: string) => key,
+      get: (key: any, _params?: any) => of(String(key)),
+      stream: (key: any, _params?: any) => of(String(key)),
+      onTranslationChange: events(),
+      onLangChange: events(),
+      onDefaultLangChange: events(),
+      currentLang: 'en',
+      use: () => of('en'),
+      setDefaultLang: () => {},
+    } as any;
   };
+
+  const translateServiceMock = makeTranslateServiceMock();
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [JobCardComponent],
       providers: [provideZonelessChangeDetection(), provideRouter([]), { provide: TranslateService, useValue: translateServiceMock }],
-      // Verhindert Probleme mit untergeordneten Komponenten, die nicht importiert werden können
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
+
+    const lib = TestBed.inject(FaIconLibrary);
+    lib.addIcons(...fontAwesomeIcons);
   });
 
   it('formatiert das Startdatum korrekt über computed signal', () => {

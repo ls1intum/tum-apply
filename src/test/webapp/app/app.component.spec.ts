@@ -9,9 +9,6 @@ import dayjs from 'dayjs/esm';
 import { provideRouter } from '@angular/router';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-// --- Hoisted mocks (must use string literals) ---
-
-// Mock @angular/common so registerLocaleData is a vi.fn()
 vi.mock('@angular/common', async importOriginal => {
   const actual = await importOriginal<typeof import('@angular/common')>();
   return {
@@ -20,7 +17,6 @@ vi.mock('@angular/common', async importOriginal => {
   };
 });
 
-// Stub <jhi-main> so the app shell doesn't drag in everything
 vi.mock('../../../main/webapp/app/layouts/main/main.component', () => {
   @Component({ selector: 'jhi-main', standalone: true, template: '' })
   class StubMainComponent {}
