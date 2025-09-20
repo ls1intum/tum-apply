@@ -216,7 +216,6 @@ tasks.register('postProcessTsFiles', Exec) {
 
   def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
   def npxExecutable = isWindows ? "npx.cmd" : "npx"
-  def npxPath = "${projectDir}/node_modules/.bin/${npxExecutable}"
 
-  commandLine npxPath, "tsx", "gradle/scripts/openapi-post-processing.ts"
+  commandLine npxExecutable, "tsx", "gradle/scripts/openapi-post-processing.ts"
 }
