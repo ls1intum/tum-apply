@@ -46,8 +46,7 @@ import java.util.UUID;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -216,6 +215,18 @@ public class ApplicationEvaluationResourceTest {
             .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"));
     }
 
+    @Test
+    @WithMockUser
+    void getApplicationsDetailsWindow_noSizeProvided_isClientError() throws Exception {
+        mockMvc.perform(
+                get("/api/evaluation/application-details/window")
+                    .param("applicationId", sentApp.getApplicationId().toString())
+                    .accept(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"));
+    }
+
 
     @Test
     @WithMockUser
@@ -266,6 +277,7 @@ public class ApplicationEvaluationResourceTest {
 
         var job = jobRepository.findById(publishedJob.getJobId()).orElseThrow();
         assertThat(job.getState()).isEqualTo(JobState.APPLICANT_FOUND);
+        verify(sender, times(2)).sendAsync(any());
     }
 
     @Test
@@ -285,6 +297,7 @@ public class ApplicationEvaluationResourceTest {
         assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
         assertThat(updated.getApplicationReview()).isNotNull();
         assertThat(updated.getApplicationReview().getReason()).isNotBlank();
+        verify(sender, times(1)).sendAsync(any());
     }
 
     @Test
