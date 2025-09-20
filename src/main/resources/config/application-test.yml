@@ -1,9 +1,0 @@
-keycloak:
-  url: http://localhost:9080
-  realm: tumapply
-  server:
-    client-id: server-client
-    client-secret: local-secret
-  admin:
-    client-id: tumapply-otp-admin
-    client-secret: local-admin-secret
