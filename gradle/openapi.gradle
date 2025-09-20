@@ -16,13 +16,15 @@ openApi {
   outputDir.set(file("$rootDir/openapi"))
   outputFileName.set("openapi.yaml")
   waitTimeInSeconds.set(120)
-  def activeProfiles = (project.hasProperty("prod"))
+
+  def activeProfiles = project.hasProperty("prod")
     ? "prod,no-liquibase,api-docs"
     : "dev,no-liquibase,api-docs"
 
-  jvmArgs = [
-    "-Dspring.profiles.active=${activeProfiles}",
-      "-Dspringdoc.packages-to-scan=de.tum.cit.aet", // all packages inside of de.tum.cit.aet will be scanned
+  customBootRun {
+    jvmArgs = [
+      "-Dspring.profiles.active=${activeProfiles}",
+      "-Dspringdoc.packages-to-scan=de.tum.cit.aet",// all packages inside of de.tum.cit.aet will be scanned
       "-Dspringdoc.paths-to-match=/api/**", // paths must start with "/api" to be scanned
       "-Dspring.docker.compose.enabled=false",
       "-Dspring.docker.compose.lifecycle-management=none"
@@ -33,6 +35,7 @@ openApi {
       "--spring.datasource.password=",
       "--spring.datasource.driver-class-name=org.h2.Driver"
     ])
+  }
 }
 
 // 1. TODO Detect if any resources have changed
