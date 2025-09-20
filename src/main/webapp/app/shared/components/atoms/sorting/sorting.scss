@@ -1,0 +1,18 @@
+.sort-bar {
+  display: flex;
+  align-items: center;
+  color: var(--p-text-secondary);
+  gap: 1rem;
+
+  .sort-bar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  jhi-select {
+    .custom-select.p-select:not(.p-disabled):hover {
+      border-color: var(--p-primary-color);
+    }
+  }
+}

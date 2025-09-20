@@ -9,11 +9,11 @@ import { FilterChange, SearchFilterSortBar } from 'app/shared/components/molecul
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
+import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
-import { sortOptions } from '../filterSortOptions';
+import { sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
@@ -70,12 +70,6 @@ export class ApplicationOverviewComponent {
     ];
   });
 
-  readonly sortableFields: SortOption[] = [
-    { displayName: 'Applied at', field: 'createdAt', type: 'NUMBER' },
-    { displayName: 'Name', field: 'applicant.lastName', type: 'TEXT' },
-    { displayName: 'Rating', field: 'rating', type: 'NUMBER' },
-  ];
-
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     SENT: 'info',
     ACCEPTED: 'success',
@@ -83,9 +77,10 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
-  protected readonly sortOptions = sortOptions;
+  protected readonly sortableFields = sortableFields;
 
   private isSearchInitiatedByUser = false;
+  private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
@@ -102,10 +97,14 @@ export class ApplicationOverviewComponent {
 
       const rawSize = qp.get('pageSize');
       this.pageSize.set(rawSize !== null && !isNaN(+rawSize) ? Math.max(1, +rawSize) : 10);
-      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].field);
 
-      const rawSD = qp.get('sortDir');
-      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      if (!this.isSortInitiatedByUser) {
+        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
+        const rawSD = qp.get('sortDir');
+        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      } else {
+        this.isSortInitiatedByUser = false;
+      }
 
       if (!this.isSearchInitiatedByUser) {
         this.searchQuery.set(qp.get('search') ?? '');
@@ -169,9 +168,10 @@ export class ApplicationOverviewComponent {
   }
 
   loadOnSortEmit(event: Sort): void {
+    this.isSortInitiatedByUser = true;
     this.page.set(0);
 
-    this.sortBy.set(event.field ?? this.sortableFields[0].field);
+    this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
 
     void this.loadPage();
