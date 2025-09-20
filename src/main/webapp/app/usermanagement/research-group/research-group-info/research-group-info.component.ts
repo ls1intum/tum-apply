@@ -11,6 +11,7 @@ import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { DividerModule } from 'primeng/divider';
 
 export interface ResearchGroupFormData {
   name: string;
