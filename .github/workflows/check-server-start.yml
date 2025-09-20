@@ -19,8 +19,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: 'zulu'
+          java-version: '25'
 
       - name: Start Spring Boot and check log
         env:
