@@ -20,7 +20,7 @@ export const filterFields: FilterField[] = [
 
 export const sortableFields: SortOption[] = [
   { displayName: 'evaluation.tableHeaders.appliedAt', fieldName: 'appliedAt', type: 'NUMBER' },
-  { displayName: 'evaluation.tableHeaders.name', fieldName: 'name', type: 'TEXT' },
+  { displayName: 'evaluation.tableHeaders.lastName', fieldName: 'name', type: 'TEXT' },
   { displayName: 'evaluation.tableHeaders.status', fieldName: 'status', type: 'TEXT' },
   { displayName: 'evaluation.tableHeaders.job', fieldName: 'job', type: 'TEXT' },
 ];
