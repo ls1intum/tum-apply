@@ -16,10 +16,7 @@ export interface Sort {
   direction: SortDirection;
 }
 
-export enum SortDirection {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
+export type SortDirection = 'ASC' | 'DESC';
 
 @Component({
   selector: 'jhi-sorting',
@@ -83,7 +80,7 @@ export class Sorting {
     const sel = this.currentOption();
     this.sortChange.emit({
       field: sel.fieldName,
-      direction: this.isAsc() ? SortDirection.ASC : SortDirection.DESC,
+      direction: this.isAsc() ? 'ASC' : 'DESC',
     });
   }
 }

@@ -67,7 +67,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
                 researchGroupId, states, dynamicFilters, searchQuery);
 
         Sort mappedSort = mapSortFields(pageable.getSort());
-        List<Order> orders = buildCustomSortOrders(cb, root, jobJoin, applicantJoin, userJoin, mappedSort);
+        List<Order> orders = buildCustomSortOrders(cb, root, jobJoin, userJoin, mappedSort);
 
         cq.select(root)
                 .where(predicates.toArray(new Predicate[0]))
@@ -131,7 +131,6 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
             CriteriaBuilder cb,
             Root<Application> root,
             Join<Application, Job> jobJoin,
-            Join<Application, Applicant> applicantJoin,
             Join<Applicant, User> userJoin,
             Sort sort) {
 
