@@ -27,9 +27,8 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     private EntityManager em;
 
     private static final Map<String, String> FILTER_COLUMNS = Map.ofEntries(
-        Map.entry("state", "a.application_state"),
-        Map.entry("job.jobId", "j.job_id")
-    );
+            Map.entry("state", "a.application_state"),
+            Map.entry("job.jobId", "j.job_id"));
 
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
             Map.entry("name", "u.last_name"),
@@ -44,8 +43,10 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
             Map.entry("job", "job.title"));
 
     /**
-     * Retrieves a paginated list of {@link Application} entities for a given research group,
-     * filtered by application states and optional dynamic filters, and ordered according to the provided pageable.
+     * Retrieves a paginated list of {@link Application} entities for a given
+     * research group,
+     * filtered by application states and optional dynamic filters, and ordered
+     * according to the provided pageable.
      */
     @Override
     public List<Application> findApplications(
@@ -94,7 +95,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
 
         for (Sort.Order order : originalSort) {
             String originalField = order.getProperty();
-            String mappedField = SORT_FIELD_MAPPING.getOrDefault(originalField, originalField);
+            String mappedField = SORT_FIELD_MAPPING.get(originalField);
 
             Sort.Order mappedOrder = new Sort.Order(order.getDirection(), mappedField);
             mappedOrders.add(mappedOrder);
@@ -191,17 +192,17 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     }
 
     /**
-     * Finds the index (0-based) of a specific application in a dynamically filtered and sorted list
+     * Finds the index (0-based) of a specific application in a dynamically filtered
+     * and sorted list
      * of applications for a given research group.
      */
     @Override
     public long findIndexOfApplication(
-        UUID applicationId,
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Sort sort,
-        Map<String, List<?>> dynamicFilters
-    ) {
+            UUID applicationId,
+            UUID researchGroupId,
+            Collection<ApplicationState> states,
+            Sort sort,
+            Map<String, List<?>> dynamicFilters) {
         Map<String, Object> params = new HashMap<>();
         params.put("groupId", researchGroupId);
         params.put("states", states.stream().map(ApplicationState::toString).toList());
@@ -210,27 +211,25 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.created_at", "a.application_id");
 
         StringBuilder sql = new StringBuilder(
-            """
-            WITH filtered_apps AS (
-                SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
-                FROM applications a
-                JOIN jobs j ON j.job_id = a.job_id
-                JOIN users u ON u.user_id = a.applicant_id
-                WHERE j.research_group_id = :groupId
-                  AND a.application_state IN (:states)
-            """.formatted(orderBy)
-        );
+                """
+                        WITH filtered_apps AS (
+                            SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
+                            FROM applications a
+                            JOIN jobs j ON j.job_id = a.job_id
+                            JOIN users u ON u.user_id = a.applicant_id
+                            WHERE j.research_group_id = :groupId
+                              AND a.application_state IN (:states)
+                        """.formatted(orderBy));
 
         SqlQueryUtil.appendDynamicFilters(sql, FILTER_COLUMNS, dynamicFilters, params);
 
         sql.append(
-            """
-                )
-                SELECT rn
-                FROM filtered_apps
-                WHERE application_id = :applicationId
-            """
-        );
+                """
+                            )
+                            SELECT rn
+                            FROM filtered_apps
+                            WHERE application_id = :applicationId
+                        """);
 
         Query q = em.createNativeQuery(sql.toString());
         SqlQueryUtil.bindParameters(q, params);
@@ -262,53 +261,54 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
                 .getResultList();
     }
 
-        /**
-         * Builds a list of common predicates for filtering applications based on
-         * research group,
-         * application states, and dynamic filters, and an optional search query.
-         */
-        private List<Predicate> buildCommonPredicates(
-                        CriteriaBuilder cb,
-                        Root<Application> root,
-                        Join<Application, Job> jobJoin,
-                        UUID researchGroupId,
-                        Collection<ApplicationState> states,
-                        Map<String, List<?>> dynamicFilters, String searchQuery) {
-                List<Predicate> predicates = new ArrayList<>();
+    /**
+     * Builds a list of common predicates for filtering applications based on
+     * research group,
+     * application states, and dynamic filters, and an optional search query.
+     */
+    private List<Predicate> buildCommonPredicates(
+            CriteriaBuilder cb,
+            Root<Application> root,
+            Join<Application, Job> jobJoin,
+            UUID researchGroupId,
+            Collection<ApplicationState> states,
+            Map<String, List<?>> dynamicFilters, String searchQuery) {
+        List<Predicate> predicates = new ArrayList<>();
 
-        predicates.add(cb.equal(jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
+        predicates
+                .add(cb.equal(jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
 
-                if (states != null && !states.isEmpty()) {
-                        predicates.add(root.get(Application_.STATE).in(states));
-                }
+        if (states != null && !states.isEmpty()) {
+            predicates.add(root.get(Application_.STATE).in(states));
+        }
 
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
 
             String normalizedQuery = searchQuery.trim().toLowerCase();
             String searchPattern = "%" + normalizedQuery.toLowerCase() + "%";
 
-                        Join<Application, Applicant> applicantJoin = root.join(Application_.APPLICANT);
-                        Join<Applicant, User> userJoin = applicantJoin.join(Applicant_.USER);
+            Join<Application, Applicant> applicantJoin = root.join(Application_.APPLICANT);
+            Join<Applicant, User> userJoin = applicantJoin.join(Applicant_.USER);
 
-                        List<Predicate> searchPredicates = new ArrayList<>();
+            List<Predicate> searchPredicates = new ArrayList<>();
 
-                        // search for firstname or lastname
-                        searchPredicates.add(cb.like(cb.lower(userJoin.get(User_.FIRST_NAME)), searchPattern));
-                        searchPredicates.add(cb.like(cb.lower(userJoin.get(User_.LAST_NAME)), searchPattern));
+            // search for firstname or lastname
+            searchPredicates.add(cb.like(cb.lower(userJoin.get(User_.FIRST_NAME)), searchPattern));
+            searchPredicates.add(cb.like(cb.lower(userJoin.get(User_.LAST_NAME)), searchPattern));
 
-                        // search for full name (format: firstname lastname)
-                        Expression<String> fullName = cb.concat(
-                                        cb.concat(cb.lower(userJoin.get(User_.FIRST_NAME)), " "),
-                                        cb.lower(userJoin.get(User_.LAST_NAME)));
-                        searchPredicates.add(cb.like(fullName, searchPattern));
+            // search for full name (format: firstname lastname)
+            Expression<String> fullName = cb.concat(
+                    cb.concat(cb.lower(userJoin.get(User_.FIRST_NAME)), " "),
+                    cb.lower(userJoin.get(User_.LAST_NAME)));
+            searchPredicates.add(cb.like(fullName, searchPattern));
 
-                        // search for job title
-                        searchPredicates.add(cb.like(cb.lower(jobJoin.get(Job_.TITLE)), searchPattern));
+            // search for job title
+            searchPredicates.add(cb.like(cb.lower(jobJoin.get(Job_.TITLE)), searchPattern));
 
-                        Predicate searchPredicate = cb.or(searchPredicates.toArray(new Predicate[0]));
+            Predicate searchPredicate = cb.or(searchPredicates.toArray(new Predicate[0]));
 
-                        predicates.add(searchPredicate);
-                }
+            predicates.add(searchPredicate);
+        }
 
         predicates.addAll(CriteriaUtils.buildDynamicFilters(cb, root, dynamicFilters));
 
