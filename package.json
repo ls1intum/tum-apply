@@ -28,6 +28,7 @@
     "test:run": "vitest run",
     "test:watch": "vitest",
     "test:ci": "npm run prebuild && vitest run --coverage",
+    "test-diff:ci": "npm run prebuild && bash -lc 'set -eo pipefail; DEFAULT_BRANCH=${GITHUB_BASE_REF:-$(git remote show origin | sed -n \"/HEAD branch/s/.*: //p\")} ; git fetch -q origin \"$DEFAULT_BRANCH\"; CHANGED=$(git diff --name-only --diff-filter=ACMRTUXB \"origin/$DEFAULT_BRANCH\"...HEAD | grep -E \"^src/.*\\.(test|spec)\\.(ts|tsx)$\" || true); if [ -n \"$CHANGED\" ]; then echo \"Running changed tests:\"; echo \"$CHANGED\"; npx vitest run --coverage $CHANGED; else echo \"No changed spec files; running full suite\"; npx vitest run --coverage; fi'",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "update": "ncu -i --format group",
