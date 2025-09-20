@@ -23,25 +23,28 @@ plugins {
   id "org.sonarqube" version "6.3.1.5724"
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
+  // TODO: we cannot upgrade to the latest version yet, because of liquibase and openapi errors
   id "org.openapi.generator" version "7.12.0"
 }
 
 group = "de.tum.cit.aet"
-version = "0.1.3"
+version = "1.0.0"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_21
-  targetCompatibility = JavaVersion.VERSION_21
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
 }
 
 ext {
   springProfiles = ""
 }
 
+// TODO: upgrade to Gradle 9.0.0 and migrate liquibase to work with the new version
 wrapper {
-  gradleVersion = "8.13"
+  gradleVersion = "8.14.3"
 }
 
 spotless {
@@ -51,7 +54,7 @@ spotless {
   }
 }
 
-//apply from: "gradle/openapi.gradle"
+apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
 if (project.hasProperty("prod")) {
@@ -84,9 +87,9 @@ test {
   useJUnitPlatform()
   exclude "**/*IT*", "**/*IntTest*"
   testLogging {
-    events 'FAILED', 'SKIPPED'
+    events "FAILED", "SKIPPED"
   }
-  jvmArgs += '-Djava.security.egd=file:/dev/./urandom -Xmx512m'
+  jvmArgs += "-Djava.security.egd=file:/dev/./urandom -Xmx512m"
   testClassesDirs = testing.suites.test.sources.output.classesDirs
   classpath = testing.suites.test.sources.runtimeClasspath
   reports.html.required = false
@@ -126,47 +129,6 @@ checkstyleMain.source = "src/main/java"
 
 configurations {
   providedRuntime
-}
-
-openApi {
-  apiDocsUrl.set("http://localhost:8080/api-docs")
-  outputDir.set(file("$rootDir/openapi"))
-  outputFileName.set("openapi.yaml")
-  waitTimeInSeconds.set(120)
-  customBootRun {
-    jvmArgs = [
-      "-Dspring.profiles.active=dev,no-liquibase",
-      "-Dspringdoc.packages-to-scan=de.tum.cit.aet", // all packages inside of de.tum.cit.aet will be scanned
-      "-Dspringdoc.paths-to-match=/api/**", // paths must start with '/api' to be scanned
-      "-Dspring.docker.compose.enabled=false",
-      "-Dspring.docker.compose.lifecycle-management=none"
-    ]
-    args.set([
-      "--spring.datasource.url=jdbc:h2:mem:openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-      "--spring.datasource.username=sa",
-      "--spring.datasource.password=",
-      "--spring.datasource.driver-class-name=org.h2.Driver"
-    ])
-  }
-}
-
-openApiGenerate {
-  generatorName = "typescript-angular"
-  inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
-  outputDir.set("${rootDir}/src/main/webapp/app/generated")
-  apiPackage = "api"
-  modelPackage = "model"
-  invokerPackage = "invoker"
-  validateSpec.set(false)
-  typeMappings = [
-    "set": "Array"
-  ]
-  configOptions = [
-    serviceSuffix: "Service",
-    supportsES6  : "true",
-    npmName      : "@tumapply/api-client",
-    npmVersion   : "${project.version}"
-  ]
 }
 
 repositories {
@@ -214,7 +176,7 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-mail"
   implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
   implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+  implementation "org.springframework.boot:spring-boot-starter-webflux"
   testImplementation "org.springframework.boot:spring-boot-starter-test"
   implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
   implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
@@ -225,12 +187,42 @@ dependencies {
   testImplementation "org.springframework.boot:spring-boot-test"
   testImplementation "org.springframework.security:spring-security-test"
   implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+
+  // Consistently use the latest version of spring framework modules the latest version to avoid security vulnerabilities
+  implementation "org.springframework:spring-aop:${springFrameworkVersion}"
+  implementation "org.springframework:spring-aspects:${springFrameworkVersion}"
+  implementation "org.springframework:spring-beans:${springFrameworkVersion}"
+  implementation "org.springframework:spring-context:${springFrameworkVersion}"
+  implementation "org.springframework:spring-context-support:${springFrameworkVersion}"
+  implementation "org.springframework:spring-core:${springFrameworkVersion}"
+  implementation "org.springframework:spring-expression:${springFrameworkVersion}"
+  implementation "org.springframework:spring-jcl:${springFrameworkVersion}"
+  implementation "org.springframework:spring-jdbc:${springFrameworkVersion}"
+  implementation "org.springframework:spring-messaging:${springFrameworkVersion}"
+  implementation "org.springframework:spring-orm:${springFrameworkVersion}"
+  implementation "org.springframework:spring-tx:${springFrameworkVersion}"
+  implementation "org.springframework:spring-webmvc:${springFrameworkVersion}"
+  implementation "org.springframework:spring-web:${springFrameworkVersion}"
+  implementation "org.springframework:spring-webflux:${springFrameworkVersion}"
+  implementation "org.springframework:spring-websocket:${springFrameworkVersion}"
+
+  // Consistently use the latest version of all spring security modules to avoid vulnerabilities
+  implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
   implementation "org.springframework.security:spring-security-data:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-core:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-oauth2-core:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-crypto:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-web:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-messaging:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-ldap:${springSecurityVersion}"
+  testImplementation "org.springframework.security:spring-security-test:${springSecurityVersion}"
+
   implementation "com.mysql:mysql-connector-j:9.4.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
-  implementation "org.hibernate.orm:hibernate-core"
-  implementation "org.hibernate.validator:hibernate-validator"
-  implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+  implementation "io.github.cdimascio:java-dotenv:5.2.2"
 
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
@@ -244,8 +236,14 @@ dependencies {
 
 
   // needed for OpenAPI generation
-  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12'
-  runtimeOnly "com.h2database:h2"
+  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13"
+  implementation("org.yaml:snakeyaml") {
+    version {
+      strictly "${snakeyaml_version}"
+      // needed to reduce the number of vulnerabilities, also see https://mvnrepository.com/artifact/org.yaml/snakeyaml
+    }
+  }
+  runtimeOnly "com.h2database:h2:2.3.232"
 
 
   testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
@@ -254,8 +252,8 @@ dependencies {
   testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
   annotationProcessor "org.glassfish.jaxb:jaxb-runtime"
   annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen:${hibernateVersion}"
-  developmentOnly "org.springframework.boot:spring-boot-docker-compose"
-  developmentOnly "org.springframework.boot:spring-boot-devtools"
+  developmentOnly "org.springframework.boot:spring-boot-docker-compose:${springBootVersion}"
+  developmentOnly "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
   compileOnly "org.projectlombok:lombok:${lombokVersion}"
   annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
@@ -263,14 +261,13 @@ dependencies {
   testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
   // FreeMarker
-  implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+  implementation "org.springframework.boot:spring-boot-starter-freemarker:${springBootVersion}"
 
   // Jsoup for sanitizing HTML
-  implementation 'org.jsoup:jsoup:1.21.2'
+  implementation "org.jsoup:jsoup:1.21.2"
 
   // Spring Retry
-  implementation 'org.springframework.retry:spring-retry:2.0.12'
-  implementation 'org.springframework:spring-aspects:6.2.10'
+  implementation "org.springframework.retry:spring-retry:2.0.12"
 
   // Keycloak
   implementation "org.keycloak:keycloak-admin-client:${keycloakVersion}"

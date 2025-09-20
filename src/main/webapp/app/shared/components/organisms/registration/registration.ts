@@ -2,8 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ProgressBar } from 'primeng/progressbar';
-import { AccountService } from 'app/core/auth/account.service';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
@@ -13,6 +11,8 @@ import { OtpInput } from '../../atoms/otp-input/otp-input';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { PasswordInputComponent } from '../../atoms/password-input/password-input';
 import { ProfileComponent } from '../../molecules/profile/profile.component';
+import { AccountService } from '../../../../core/auth/account.service';
+import { UserResourceApiService } from '../../../../generated/api/userResourceApi.service';
 
 @Component({
   selector: 'jhi-registration',

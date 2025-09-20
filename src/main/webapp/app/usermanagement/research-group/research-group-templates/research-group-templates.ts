@@ -4,13 +4,13 @@ import { firstValueFrom, map } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
-import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { ToastService } from 'app/service/toast-service';
-import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateOverviewDTO } from 'app/generated/model/emailTemplateOverviewDTO';
 
+import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
+import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { ToastService } from '../../../service/toast-service';
+import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
+import { EmailTemplateOverviewDTO } from '../../../generated/model/emailTemplateOverviewDTO';
 
 @Component({
   selector: 'jhi-research-group-templates',

@@ -8,15 +8,15 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import 'quill-mention/autoregister';
-import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
-import { ToastService } from 'app/service/toast-service';
-import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateDTO } from 'app/generated/model/emailTemplateDTO';
 
+import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
+import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
+import 'quill-mention/autoregister';
+import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
+import { ToastService } from '../../../service/toast-service';
+import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
+import { EmailTemplateDTO } from '../../../generated/model/emailTemplateDTO';
 
 @Component({
   selector: 'jhi-research-group-template-edit',
