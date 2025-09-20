@@ -1,10 +1,10 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/main/webapp/**/*.ts"],
   "compilerOptions": {
-    "composite": true,
-    "declaration": true,
-    "outDir": "build/out-tsc/spec",
-    "types": ["jest", "node"]
-  }
+    "outDir": "./out-tsc/spec",
+    "target": "es2022",
+    "types": ["vitest/globals", "node"]
+  },
+  "files": ["src/test-setup.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }
