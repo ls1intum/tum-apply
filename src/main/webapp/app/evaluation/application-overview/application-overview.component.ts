@@ -9,11 +9,11 @@ import { FilterChange, SearchFilterSortBar } from 'app/shared/components/molecul
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { Sort, SortOption } from '../../shared/components/atoms/sorting/sorting';
+import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
 import { FilterField } from '../../shared/filter';
-import { sortOptions } from '../filterSortOptions';
+import { sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
@@ -70,13 +70,6 @@ export class ApplicationOverviewComponent {
     ];
   });
 
-  readonly sortableFields: SortOption[] = [
-    { displayName: 'evaluation.tableHeaders.appliedAt', fieldName: 'appliedAt', type: 'NUMBER' },
-    { displayName: 'evaluation.tableHeaders.name', fieldName: 'name', type: 'TEXT' },
-    { displayName: 'evaluation.tableHeaders.status', fieldName: 'status', type: 'TEXT' },
-    { displayName: 'evaluation.tableHeaders.job', fieldName: 'job', type: 'TEXT' },
-  ];
-
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     SENT: 'info',
     ACCEPTED: 'success',
@@ -84,7 +77,7 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
-  protected readonly sortOptions = sortOptions;
+  protected readonly sortableFields = sortableFields;
 
   private isSearchInitiatedByUser = false;
   private isSortInitiatedByUser = false;
