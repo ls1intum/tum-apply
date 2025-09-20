@@ -300,7 +300,7 @@
         @WithMockUser
         void changeJobStateNonExistantJobThrowsNotFound() {
             assertThatThrownBy(() ->
-                api.putAndReadOk("api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+                api.putAndReadOk("/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
                     null,
                     JobFormDTO.class
                 )
@@ -392,7 +392,7 @@
         @Test
         void getJobDetailsNonExistantIdThrowsNotFound() {
             assertThatThrownBy(() ->
-                api.getAndReadOk("api/jobs/detail" + UUID.randomUUID(),
+                api.getAndReadOk("/api/jobs/detail/" + UUID.randomUUID(),
                     null,
                     JobDetailDTO.class)
             ).isInstanceOf(AssertionError.class);
