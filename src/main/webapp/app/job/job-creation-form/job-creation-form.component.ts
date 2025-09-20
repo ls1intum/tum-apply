@@ -5,7 +5,7 @@ import { CommonModule, Location } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
@@ -59,7 +59,6 @@ export class JobCreationFormComponent {
   readonly publishButtonLabel = 'jobActionButton.publish';
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
-  private readonly translateService = inject(TranslateService);
   // Services
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceApiService);
