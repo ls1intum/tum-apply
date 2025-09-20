@@ -36,8 +36,6 @@ jobs:
         env:
           KEYCLOAK_ADMIN: admin
           KEYCLOAK_ADMIN_PASSWORD: admin
-        command: >
-          start-dev --http-port=8080
     permissions:
       contents: read
       pull-requests: write
