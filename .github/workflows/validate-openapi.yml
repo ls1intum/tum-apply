@@ -23,6 +23,21 @@ jobs:
   validate-openapi:
     name: Validate OpenAPI Spec
     runs-on: ubuntu-latest
+    services:
+      keycloak:
+        image: quay.io/keycloak/keycloak:24.0
+        ports:
+          - 9080:8080
+        options: >-
+          --health-cmd="curl -f http://localhost:8080/realms/master || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+        env:
+          KEYCLOAK_ADMIN: admin
+          KEYCLOAK_ADMIN_PASSWORD: admin
+        command: >
+          start-dev --http-port=8080
     permissions:
       contents: read
       pull-requests: write

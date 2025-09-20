@@ -1,6 +1,5 @@
 .gitignore
 api.base.service.ts
-api/actuatorApi.service.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
@@ -50,7 +49,6 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFilterOptionDTO.ts
 model/jobFormDTO.ts
-model/link.ts
 model/loginRequestDTO.ts
 model/otpCompleteDTO.ts
 model/pageCreatedJobDTO.ts
