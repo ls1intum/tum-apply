@@ -48,10 +48,10 @@
 
     @if (currentApplication(); as application) {
       <div class="w-full">
-        <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
+        <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
           <div>
             <jhi-section titleKey="evaluation.details.applicantTitle" icon="user">
-              <div class="grid gap-8 md:grid-cols-2">
+              <div class="grid lg:gap-8 lg:grid-cols-2">
                 <!-- Applicant Information -->
                 <jhi-sub-section titleKey="evaluation.details.applicantInformation">
                   <jhi-description-list
@@ -103,7 +103,7 @@
 
             <!-- Education -->
             <jhi-section titleKey="evaluation.details.educationTitle" icon="building-columns">
-              <div class="grid gap-8 md:grid-cols-2">
+              <div class="grid lg:gap-8 lg:grid-cols-2">
                 <!-- Bachelor -->
                 <jhi-sub-section titleKey="evaluation.details.educationBachelors">
                   <jhi-description-list
@@ -161,6 +161,7 @@
               </jhi-sub-section>
             </jhi-section>
           </div>
+          <p-divider class="block xl:hidden col-span-full" />
           <div>
             <jhi-section titleKey="evaluation.details.documentTitle" icon="folder">
               <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />
@@ -168,12 +169,15 @@
           </div>
         </div>
         <p-divider />
-        <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
+        <div class="grid lg:gap-16 grid-cols-1 lg:grid-cols-[3fr_7fr]">
           <div>
             <jhi-section titleKey="evaluation.details.ratingTitle" icon="thumbs-up">
               <jhi-rating-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
+
+          <p-divider class="block lg:hidden col-span-full" />
+
           <div>
             <jhi-section titleKey="evaluation.details.commentTitle" icon="comments">
               <jhi-comment-section [applicationId]="currentApplicationId()" />
