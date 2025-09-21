@@ -1,10 +1,20 @@
 <div class="search-filter-sort-bar">
-  <p-iconfield iconPosition="left">
-    <p-inputicon>
-      <fa-icon class="icon" [icon]="['fas', 'search']" />
-    </p-inputicon>
-    <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
-  </p-iconfield>
+  <div class="functionality-bar">
+    <p-iconfield iconPosition="left">
+      <p-inputicon>
+        <fa-icon class="icon" [icon]="['fas', 'search']" />
+      </p-inputicon>
+      <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
+    </p-iconfield>
+    @for (filter of filters(); track filter.filterLabel) {
+      <jhi-filter-multiselect
+        [filterLabel]="filter.filterLabel"
+        [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
+        [filterOptions]="filter.filterOptions"
+        (filterChange)="onFilterChange($event)"
+      />
+    }
+  </div>
   <div
     class="record-count"
     jhiTranslate="entity.filters.recordsFound"

@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "allowedCommonJsDependencies": [],
+            "allowedCommonJsDependencies": ["postal-codes-js", "quill-delta"],
             "outputPath": {
               "base": "build/resources/main/static/",
               "browser": ""
@@ -115,11 +115,7 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular-builders/jest:run",
-          "options": {
-            "configPath": "jest.conf.js",
-            "tsConfig": "tsconfig.spec.json"
-          }
+          "builder": "@analogjs/vitest-angular:test"
         }
       }
     }

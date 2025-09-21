@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.Language;
@@ -126,11 +127,10 @@ public class JobService {
      * @param jobId the ID of the job to delete
      */
     public void deleteJob(UUID jobId) {
-        try {
-            jobRepository.deleteById(jobId);
-        } catch (Exception e) {
+        if (!jobRepository.existsById(jobId)) {
             throw EntityNotFoundException.forId("Job", jobId);
         }
+        jobRepository.deleteById(jobId);
     }
 
     /**
@@ -167,8 +167,19 @@ public class JobService {
      * @return the job detail DTO with detailed job information
      */
     public JobDetailDTO getJobDetails(UUID jobId) {
+        UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
+        UUID applicationId = null;
+        ApplicationState applicationState = null;
+
+        if (userId != null) {
+            Application application = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
+            if (application != null) {
+                applicationId = application.getApplicationId();
+                applicationState = application.getState();
+            }
+        }
         return new JobDetailDTO(
             job.getJobId(),
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
@@ -187,7 +198,9 @@ public class JobService {
             job.getEndDate(),
             job.getCreatedAt(),
             job.getLastModifiedAt(),
-            job.getState()
+            job.getState(),
+            applicationId,
+            applicationState
         );
     }
 

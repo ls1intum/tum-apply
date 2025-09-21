@@ -1,24 +1,35 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { EmailVerificationResourceService } from '../../../generated';
-import { EmailLoginResourceService } from '../../../generated/api/emailLoginResource.service';
+import { EmailVerificationResourceApiService } from '../../../generated/api/emailVerificationResourceApi.service';
+import { AuthenticationResourceApiService } from '../../../generated/api/authenticationResourceApi.service';
+import { OtpCompleteDTO } from '../../../generated/model/otpCompleteDTO';
+import { UserProfileDTO } from '../../../generated/model/userProfileDTO';
+import { AuthSessionInfoDTO } from '../../../generated/model/authSessionInfoDTO';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGateway {
-  private readonly emailAuthApi = inject(EmailLoginResourceService);
-  private readonly verificationApi = inject(EmailVerificationResourceService);
+  private readonly emailAuthApi = inject(AuthenticationResourceApiService);
+  private readonly verificationApi = inject(EmailVerificationResourceApiService);
+  private readonly authenticationApi = inject(AuthenticationResourceApiService);
 
   // --------- Shared -----------
 
   // Sends an OTP (one-time password) via email.
-  sendOtp(email: string): Promise<unknown> {
-    return firstValueFrom(this.verificationApi.send({ email }));
+  sendOtp(email: string, registration: boolean): Promise<unknown> {
+    return firstValueFrom(this.verificationApi.send({ email, registration }));
   }
 
   // Verifies OTP code for login or registration.
-  verifyOtp(email: string, code: string): Promise<unknown> {
-    return firstValueFrom(this.verificationApi.verify({ email, code }));
+  verifyOtp(email: string, code: string, isRegistration: boolean, profile?: UserProfileDTO): Promise<AuthSessionInfoDTO> {
+    return firstValueFrom(
+      this.authenticationApi.otpComplete({
+        email,
+        code,
+        profile,
+        purpose: isRegistration ? OtpCompleteDTO.PurposeEnum.Register : OtpCompleteDTO.PurposeEnum.Login,
+      }),
+    );
   }
 
   // -------- Login flow ----------

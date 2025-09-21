@@ -1,6 +1,5 @@
 {
   "landingPage": {
-    "title": "TUMApply",
     "hero": {
       "headline": "Beginne deine Promotion an der TUM",
       "subline": "Die TUM bietet ein weltweit führendes Umfeld für deine Promotion.",
@@ -81,7 +80,7 @@
       "questions": {
         "login": {
           "title": "Wie melde ich mich bei TUMApply an?",
-          "content": "Du kannst dich mit deinen TUM-Zugangsdaten oder alternativ über Microsoft, Google oder Apple Single Sign-On anmelden."
+          "content": "Du kannst dich mit deinen TUM-Zugangsdaten oder alternativ über Google oder Apple Single Sign-On anmelden."
         },
         "multipleApplications": {
           "title": "Kann ich mich gleichzeitig auf mehrere Promotionsstellen bewerben?",

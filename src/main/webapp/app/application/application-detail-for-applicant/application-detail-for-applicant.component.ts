@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApplicationDetailDTO, ApplicationDocumentIdsDTO, ApplicationResourceService } from 'app/generated';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ToastService } from 'app/service/toast-service';
@@ -9,6 +8,9 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
+import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
+import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
@@ -42,13 +44,16 @@ export default class ApplicationDetailForApplicantComponent {
     return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
   });
 
-  private applicationService = inject(ApplicationResourceService);
+  private applicationService = inject(ApplicationResourceApiService);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
 
   constructor() {
-    if (!this.previewDetailData()) {
+    // Only initialize if we're on a detail page route (has application_id param)
+    // and not in preview mode
+    const applicationId = this.route.snapshot.paramMap.get('application_id');
+    if (applicationId && !this.previewDetailData()) {
       this.init();
     }
   }
@@ -56,10 +61,11 @@ export default class ApplicationDetailForApplicantComponent {
   async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
-      this.toastService.showError({ summary: 'Error', detail: 'This is no valid jobId' });
+      this.toastService.showErrorKey('entity.toast.applyFlow.invalidApplicationId');
     } else {
       this.applicationId.set(applicationId);
     }
+
     const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
     this.actualDetailData.set(application);
     this.actualDetailDataExists.set(true);
@@ -69,7 +75,7 @@ export default class ApplicationDetailForApplicantComponent {
         this.actualDocumentData.set(ids);
         this.actualDocumentDataExists.set(true);
       })
-      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+      .catch(() => this.toastService.showErrorKey('entity.toast.applyFlow.fetchDocumentIdsFailed'));
   }
 
   onUpdateApplication(): void {

@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { JobFilterOptionDTO } from 'app/generated/model/jobFilterOptionDTO';
-import { ApplicationEvaluationResourceService } from 'app/generated/api/applicationEvaluationResource.service';
 
 import { filterFields } from '../filterSortOptions';
 import { FilterField, FilterOption } from '../../shared/filter';
+import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ import { FilterField, FilterOption } from '../../shared/filter';
 export class EvaluationService {
   private filterFields: FilterField[] = filterFields.map(f => f.clone());
 
-  private readonly evaluationService = inject(ApplicationEvaluationResourceService);
+  private readonly evaluationService = inject(ApplicationEvaluationResourceApiService);
 
   async getJobFilterOptions(): Promise<JobFilterOptionDTO[]> {
     return await firstValueFrom(this.evaluationService.getJobFilterOptions());
@@ -34,7 +34,7 @@ export class EvaluationService {
     return this.filterFields;
   }
 
-  collectFiltersByKey(filters: FilterField[]): Record<string, Set<string>> {
+  collectFiltersByKey(filters: FilterField[]): Record<string, Set<string> | undefined> {
     const filtersByKey: Record<string, Set<string>> = {};
 
     filters.forEach(f => {

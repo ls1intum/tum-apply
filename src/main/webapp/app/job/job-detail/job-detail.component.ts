@@ -11,11 +11,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-import { JobDetailDTO, JobFormDTO, JobResourceService, ResearchGroupResourceService } from '../../generated';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
+import { ResearchGroupResourceApiService } from '../../generated/api/researchGroupResourceApi.service';
+import { JobFormDTO } from '../../generated/model/jobFormDTO';
+import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
+import { JobDetailDTO } from '../../generated/model/jobDetailDTO';
+
+import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
 export interface JobDetails {
   supervisingProfessor: string;
@@ -44,6 +50,9 @@ export interface JobDetails {
 
   jobState: string | undefined;
   belongsToResearchGroup: boolean;
+
+  applicationId?: string;
+  applicationState?: ApplicationStateEnum;
 }
 
 @Component({
@@ -87,18 +96,51 @@ export class JobDetailComponent {
 
     // Case 1: Not a research group member → show Apply button
     if (!job.belongsToResearchGroup) {
-      return {
-        direction: 'horizontal',
-        buttons: [
-          {
-            label: 'jobActionButton.apply',
-            severity: 'primary',
-            onClick: () => this.onApply(),
-            disabled: false,
-            shouldTranslate: true,
-          },
-        ],
-      };
+      switch (job.applicationState) {
+        case undefined:
+          return {
+            direction: 'horizontal',
+            buttons: [
+              {
+                label: 'jobActionButton.apply',
+                severity: 'primary',
+                onClick: () => this.onApply(),
+                disabled: false,
+                shouldTranslate: true,
+                icon: 'plus',
+              },
+            ],
+          };
+        case ApplicationStateEnum.Saved:
+          return {
+            direction: 'horizontal',
+            buttons: [
+              {
+                label: 'jobActionButton.edit',
+                severity: 'primary',
+                variant: 'outlined',
+                onClick: () => this.onEditApplication(),
+                disabled: false,
+                shouldTranslate: true,
+                icon: 'file-import',
+              },
+            ],
+          };
+        default:
+          return {
+            direction: 'horizontal',
+            buttons: [
+              {
+                label: 'jobActionButton.viewApplication',
+                severity: 'secondary',
+                onClick: () => this.onViewApplication(),
+                disabled: false,
+                shouldTranslate: true,
+                variant: 'outlined',
+              },
+            ],
+          };
+      }
     }
     // Case 2: DRAFT → show Edit + Delete buttons
     if (job.jobState === 'DRAFT') {
@@ -163,13 +205,13 @@ export class JobDetailComponent {
     ['APPLICANT_FOUND', 'warn'],
   ]);
 
-  private jobResourceService = inject(JobResourceService);
+  private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private researchGroupService = inject(ResearchGroupResourceService);
+  private researchGroupService = inject(ResearchGroupResourceApiService);
 
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();
@@ -191,6 +233,19 @@ export class JobDetailComponent {
       },
     });
     // TODO - adjust to application state like in job overview page
+  }
+
+  onEditApplication(): void {
+    this.router.navigate(['/application/form'], {
+      queryParams: {
+        job: this.jobId(),
+        application: this.jobDetails()?.applicationId,
+      },
+    });
+  }
+
+  onViewApplication(): void {
+    this.router.navigate([`/application/detail/${this.jobDetails()?.applicationId}`]);
   }
 
   onEditJob(): void {
@@ -346,6 +401,9 @@ export class JobDetailComponent {
 
       jobState: isForm ? 'DRAFT' : jobDetailDTO.state,
       belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
+
+      applicationId: jobDetailDTO.applicationId ?? undefined,
+      applicationState: jobDetailDTO.applicationState ?? undefined,
     };
   }
 

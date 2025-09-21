@@ -30,6 +30,7 @@ jobs:
           KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
           OTP_LENGTH: ${{ vars.OTP_LENGTH }}
           OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
+          OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
           AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
         run: |
           ./gradlew -Pprod bootRun > boot.log 2>&1 & SERVER_PID=$!
