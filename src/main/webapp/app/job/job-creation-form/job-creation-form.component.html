@@ -235,9 +235,7 @@
       <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>
       <br />
     </div>
-    <div class="summary_page">
-      <jhi-job-detail [previewData]="currentJobData" class="w-full" />
-    </div>
+    <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
     <div class="data-privacy-notice">
       <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
     </div>

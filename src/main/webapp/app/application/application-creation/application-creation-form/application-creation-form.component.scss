@@ -14,8 +14,3 @@
 .unsaved_color {
   color: var(--p-warn-color);
 }
-
-.summary_page {
-  margin: -2rem -4rem; // Counteract the page-container padding (2rem 4rem)
-  padding: 0; // No padding on the summary page itself
-}

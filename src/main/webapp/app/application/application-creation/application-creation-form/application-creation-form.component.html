@@ -49,9 +49,12 @@
 <ng-template #panel4>
   <p jhiTranslate="entity.applicationPage4.message"></p>
   <!-- Summary panel -->
-  <div class="summary_page">
-    <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
-  </div>
+  <jhi-application-detail-for-applicant
+    [previewDetailData]="previewData()"
+    [previewDocumentData]="documentIds()"
+    [isSummaryPage]="true"
+    class="w-full"
+  />
 
   <p-divider layout="horizontal">
     <span jhiTranslate="privacy.privacyConsent.title"></span>

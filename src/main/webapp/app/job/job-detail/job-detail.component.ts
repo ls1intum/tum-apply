@@ -71,6 +71,7 @@ export class JobDetailComponent {
 
   // Input for preview data, used in the job creation overview step
   previewData = input<Signal<JobFormDTO | undefined>>();
+  isSummaryPage = input<boolean>(false);
 
   closeConfirmDialog = viewChild<ConfirmDialog>('closeConfirmDialog');
   deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');

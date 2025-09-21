@@ -1,4 +1,4 @@
-<div class="page-container">
+<div [class]="isSummaryPage() ? '' : 'page-container'">
   @if (application(); as application) {
     <div class="header-container">
       @if (!previewDetailData()) {

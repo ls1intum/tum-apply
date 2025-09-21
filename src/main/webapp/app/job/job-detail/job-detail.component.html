@@ -22,7 +22,7 @@
   (confirmed)="onDeleteJob()"
 />
 @if (dataLoaded()) {
-  <div class="page-container">
+  <div [class]="isSummaryPage() ? '' : 'page-container'">
     <header class="page-header-body">
       <div class="header-row">
         <h1 class="page-header">{{ jobDetails()?.title }}</h1>
