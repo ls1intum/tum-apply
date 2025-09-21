@@ -11,6 +11,7 @@ export interface Filter {
   filterLabel: string;
   filterSearchPlaceholder: string;
   filterOptions: string[];
+  shouldTranslateOptions?: boolean;
 }
 
 export interface FilterChange {
@@ -32,6 +33,7 @@ export class FilterMultiselect {
   filterLabel = input.required<string>();
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
+  shouldTranslateOptions = input<boolean>(false);
 
   selectedValues = signal<string[]>([]);
 
