@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import de.tum.cit.aet.utility.*;
+import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
 
@@ -45,10 +46,6 @@ public class ResearchGroupResourceTest {
     ResearchGroupRepository researchGroupRepository;
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    ResearchGroupService researchGroupService;
-
-    private CurrentUserService mockCurrentUserService;
 
     MvcTestClient api;
     ResearchGroup researchGroup;
@@ -59,40 +56,27 @@ public class ResearchGroupResourceTest {
     @BeforeEach
     public void setup() {
         api = new MvcTestClient(mockMvc, objectMapper);
-
         userRepository.deleteAll();
         researchGroupRepository.deleteAll();
-
         researchGroup = ResearchGroupTestData.savedAll(
                 researchGroupRepository,
                 "Machine Learning Lab", "Prof. Smith", "ml@example.com", "ML",
                 "Computer Science", "We research ML algorithms", "contact@ml.tum.de",
                 "80333", "TUM", "Arcisstr. 21", "https://ml.tum.de");
-
         secondResearchGroup = ResearchGroupTestData.savedAll(
                 researchGroupRepository,
                 "Other Lab", "Dr. Doe", "other@example.com", "OL",
                 "Physics", "Other research", "contact@other.tum.de",
                 "80335", "TUM", "Otherstr. 10", "https://other.tum.de");
-
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
-
-        mockCurrentUserService = Mockito.mock(CurrentUserService.class);
-        ReflectionTestUtils.setField(researchGroupService, "currentUserService", mockCurrentUserService);
-
-    }
-
-    private void setupMockUserService(User user) {
-        Mockito.when(mockCurrentUserService.getUserIdIfAvailable())
-                .thenReturn(Optional.of(user.getUserId()));
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
     public void getResearchGroupDetailsExistingIdReturnsDetails() {
-        setupMockUserService(researchGroupUser);
-        ResearchGroupLargeDTO result = api.getAndReadOk(
+        ResearchGroupLargeDTO result = api.with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .getAndReadOk(
                 "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
                 Map.of(),
                 ResearchGroupLargeDTO.class);
@@ -111,7 +95,6 @@ public class ResearchGroupResourceTest {
     @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsNonExistingIdThrowsException() {
         UUID nonExistingId = UUID.randomUUID();
-
         assertThatThrownBy(() -> api.getAndReadOk(
                 "/api/research-groups/detail/" + nonExistingId, Map.of(),
                 ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
