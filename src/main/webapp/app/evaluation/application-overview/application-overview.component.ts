@@ -49,6 +49,7 @@ export class ApplicationOverviewComponent {
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
   readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<string[]>([]);
 
   readonly allAvailableJobNames = signal<string[]>([]);
 
@@ -163,17 +164,16 @@ export class ApplicationOverviewComponent {
     void this.loadPage();
   }
 
-  loadOnFilterEmit(filters: FilterField[]): void {
-    this.page.set(0);
-    this.filters.set(filters);
-
-    void this.loadPage();
-  }
-
-  loadOnJobFilterEmit(filterChange: FilterChange): void {
+  loadOnFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadPage();
+    } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
+      this.page.set(0);
+      // Translation Keys zu Enum-Werten mappen
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedStatusFilters.set(enumValues);
       void this.loadPage();
     }
   }
@@ -214,7 +214,8 @@ export class ApplicationOverviewComponent {
       const search = this.searchQuery();
 
       const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters = Array.from(filtersByKey['status'] ?? []);
+      const statusFilters =
+        this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : Array.from(filtersByKey['status'] ?? []);
       const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey.job ?? []);
 
       const res = await firstValueFrom(
@@ -238,6 +239,11 @@ export class ApplicationOverviewComponent {
     } catch (error) {
       console.error('Failed to load applications:', error);
     }
+  }
+
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(this.availableStatusOptions().map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
   }
 
   private buildQueryParams(): Params {
