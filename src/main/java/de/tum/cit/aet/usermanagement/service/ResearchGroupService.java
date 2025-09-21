@@ -302,7 +302,6 @@ public class ResearchGroupService {
             roleOutcome = "updated";
         }
 
-
         log.info("AUDIT research-group.provision by={} targetUserId={} targetUniId={} groupId={} groupName={} userGroupChanged={} roleOutcome={}",
             currentUserService.getUserId(),
             user.getUserId(),
