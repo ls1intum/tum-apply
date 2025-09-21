@@ -2,6 +2,8 @@ package de.tum.cit.aet.usermanagement.web;
 
 import java.util.UUID;
 
+import de.tum.cit.aet.core.security.AccessTarget;
+import de.tum.cit.aet.core.security.CheckAccess;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,7 @@ public class ResearchGroupResource {
     }
 
     @GetMapping("/detail/{researchGroupId}")
+    @CheckAccess
     public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
         return ResponseEntity.ok(researchGroupService.getResearchGroupDetails(researchGroupId));
     }

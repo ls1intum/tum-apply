@@ -40,20 +40,8 @@ public class ResearchGroupService {
      *                                 doesn't have access
      */
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
-        // Find the research group
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
                 .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
-
-        UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-
-        // Check if user belongs to the requested research group
-        if (user.getResearchGroup() == null ||
-                !user.getResearchGroup().getResearchGroupId().equals(researchGroupId)) {
-            throw EntityNotFoundException.forId("ResearchGroup", researchGroupId);
-        }
 
         return new ResearchGroupLargeDTO(
                 researchGroup.getDescription(),
