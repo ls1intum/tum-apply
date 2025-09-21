@@ -129,10 +129,12 @@ public class ResearchGroupService {
 
     /**
      * Retrieves the details of a research group by its ID.
-     *
-     * @param researchGroupId the ID of the research group
-     * @return the detailed research group DTO
-     * @throws EntityNotFoundException if the research group is not found
+     * Only users belonging to the research group can access its details.
+     * @param researchGroupId the unique identifier of the research group
+     * @return a {@link ResearchGroupLargeDTO} containing detailed information about
+     *         the research group
+     * @throws EntityNotFoundException if the research group is not found or user
+     *                                 doesn't have access
      */
 
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
@@ -320,4 +322,5 @@ public class ResearchGroupService {
 
         return group;
     }
+
 }

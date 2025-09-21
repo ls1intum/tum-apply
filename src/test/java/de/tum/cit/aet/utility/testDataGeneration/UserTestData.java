@@ -1,7 +1,9 @@
 package de.tum.cit.aet.utility.testDataGeneration;
 
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 
 import java.util.UUID;
@@ -21,6 +23,7 @@ public final class UserTestData {
         u.setEmail("alice.smith@example.com");
         u.setSelectedLanguage("en");
         u.setResearchGroup(rg);
+        attachProfessorRole(u, rg);
         return u;
     }
 
@@ -79,5 +82,15 @@ public final class UserTestData {
     ) {
         return repo.save(newProfessorAll(researchGroup, userId, email, firstName, lastName,
             selectedLanguage, phoneNumber, website, linkedinUrl, nationality, avatar, gender,universityId));
+    }
+
+    private static void attachProfessorRole(User user, ResearchGroup rg) {
+        UserResearchGroupRole link = new UserResearchGroupRole();
+        link.setUser(user);
+        link.setResearchGroup(rg);
+        link.setRole(UserRole.PROFESSOR);
+
+        user.getResearchGroupRoles().add(link);
+        rg.getUserRoles().add(link);
     }
 }
