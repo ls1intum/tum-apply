@@ -161,7 +161,6 @@ export class ApplicationOverviewComponent {
       void this.loadPage();
     } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
       this.page.set(0);
-      // Translation Keys zu Enum-Werten mappen
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
       void this.loadPage();
