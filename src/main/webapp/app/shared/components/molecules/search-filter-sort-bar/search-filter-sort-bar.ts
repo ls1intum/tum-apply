@@ -8,18 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import TranslateDirective from '../../../language/translate.directive';
 import { FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
-
-// Interface for filter options which can be passed to the filter component
-export interface Filter {
-  filterLabel: string;
-  filterSearchPlaceholder: string;
-  filterOptions: string[];
-}
-
-export interface FilterChange {
-  filterLabel: string;
-  selectedValues: string[];
-}
+import { Filter, FilterChange } from '../../atoms/filter-multiselect/filter-multiselect';
 
 @Component({
   selector: 'jhi-search-filter-sort-bar',
