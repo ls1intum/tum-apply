@@ -8,10 +8,10 @@ import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 
 import { ButtonComponent } from '../button/button.component';
-import { ApplicationResourceApiService } from '../../../../generated/api/applicationResourceApi.service';
-import { DocumentInformationHolderDTO } from '../../../../generated/model/documentInformationHolderDTO';
 
 const DocumentType = {
   BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
