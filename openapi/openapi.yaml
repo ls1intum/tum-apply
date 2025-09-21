@@ -1446,30 +1446,30 @@ components:
         totalElements: {type: integer, format: int64}
         first: {type: boolean}
         last: {type: boolean}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
-        numberOfElements: {type: integer, format: int32}
         size: {type: integer, format: int32}
         content:
           type: array
           items: {$ref: '#/components/schemas/CreatedJobDTO'}
         number: {type: integer, format: int32}
         sort: {$ref: '#/components/schemas/SortObject'}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     PageableObject:
       type: object
       properties:
+        offset: {type: integer, format: int64}
+        sort: {$ref: '#/components/schemas/SortObject'}
         paged: {type: boolean}
         pageNumber: {type: integer, format: int32}
         pageSize: {type: integer, format: int32}
         unpaged: {type: boolean}
-        offset: {type: integer, format: int64}
-        sort: {$ref: '#/components/schemas/SortObject'}
     SortObject:
       type: object
       properties:
+        empty: {type: boolean}
         sorted: {type: boolean}
         unsorted: {type: boolean}
-        empty: {type: boolean}
     Applicant:
       type: object
       properties:
@@ -1705,14 +1705,14 @@ components:
         totalElements: {type: integer, format: int64}
         first: {type: boolean}
         last: {type: boolean}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
-        numberOfElements: {type: integer, format: int32}
         size: {type: integer, format: int32}
         content:
           type: array
           items: {$ref: '#/components/schemas/JobCardDTO'}
         number: {type: integer, format: int32}
         sort: {$ref: '#/components/schemas/SortObject'}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     JobFilterOptionDTO:
       type: object
