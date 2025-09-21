@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupCreationDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupProvisionDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +40,10 @@ public class AdminResource {
      * @return HTTP 200 OK with the provisioned {@link ResearchGroup}
      */
     @PostMapping("/research-groups/provision")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResearchGroup> provisionResearchGroup(
-        @Valid @RequestBody ResearchGroupCreationDTO request) {
+        @Valid @RequestBody ResearchGroupProvisionDTO request
+    ) {
         return ResponseEntity.ok(researchGroupService.provisionResearchGroup(request));
     }
 

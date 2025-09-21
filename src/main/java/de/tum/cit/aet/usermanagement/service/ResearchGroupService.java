@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +24,6 @@ import de.tum.cit.aet.usermanagement.domain.User;
 
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupCreationDTO;
-import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 
@@ -249,15 +246,15 @@ public class ResearchGroupService {
      * @throws EntityNotFoundException if the user or the group does not exist
      */
     @Transactional
-    public ResearchGroup provisionResearchGroup(ResearchGroupCreationDTO dto) {
+    public ResearchGroup provisionResearchGroup(ResearchGroupProvisionDTO dto) {
         User user = userRepository.findByUniversityIdIgnoreCase(dto.universityId())
             .orElseThrow(() -> new EntityNotFoundException(
                 "User with universityId '%s' not found".formatted(dto.universityId())
             ));
 
-        ResearchGroup group = researchGroupRepository.findByUniversityId(dto.universityId())
+        ResearchGroup group = researchGroupRepository.findById(dto.researchGroupId())
             .orElseThrow(() -> new EntityNotFoundException(
-                "ResearchGroup with head universityId '" + dto.universityId() + "' not found"
+                "ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())
             ));
 
         boolean userGroupChanged = false;
