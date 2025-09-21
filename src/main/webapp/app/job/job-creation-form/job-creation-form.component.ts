@@ -11,7 +11,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
-import { HttpErrorResponse } from '@angular/common/http';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -317,9 +316,7 @@ export class JobCreationFormComponent {
       await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
       this.toastService.showSuccessKey('toast.published');
       this.router.navigate(['/my-positions']);
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      console.error('Save failed:', httpError.message, httpError.status);
+    } catch {
       this.toastService.showErrorKey('toast.publishFailed');
     }
   }
@@ -413,9 +410,7 @@ export class JobCreationFormComponent {
         this.populateForm(job);
         this.autoSaveInitialized = false;
       }
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      console.error('Save failed:', httpError.message, httpError.status);
+    } catch {
       this.toastService.showErrorKey('toast.loadFailed');
       this.router.navigate(['/my-positions']);
     } finally {
@@ -499,9 +494,7 @@ export class JobCreationFormComponent {
 
       this.lastSavedData.set(currentData);
       this.savingState.set('SAVED');
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      console.error('Save failed:', httpError.message, httpError.status);
+    } catch {
       this.toastService.showErrorKey('toast.saveFailed');
     }
   }
