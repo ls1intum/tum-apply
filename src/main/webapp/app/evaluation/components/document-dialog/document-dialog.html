@@ -13,7 +13,7 @@
             <!-- Checkbox -->
             <p-checkbox
               [binary]="true"
-              [ngModel]="isChecked(item.document.id)"
+              [ngModel]="isChecked(item.document.id)()"
               (ngModelChange)="toggleChecked(item.document.id, $event)"
               [inputId]="'doc-chk-' + item.document.id"
               [attr.aria-label]="item.label"

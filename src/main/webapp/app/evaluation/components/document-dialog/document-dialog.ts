@@ -40,9 +40,7 @@ export class DocumentDialog {
 
   isSelected: (documentId: string) => Signal<boolean> = (documentId: string) => computed(() => this.selectedDocument()?.id === documentId);
 
-  isChecked(id: string): boolean {
-    return this.checkedIds().has(id);
-  }
+  isChecked: (id: string) => Signal<boolean> = (id: string) => computed(() => this.checkedIds().has(id));
 
   toggleChecked(id: string, checked: boolean): void {
     const next = new Set(this.checkedIds());
