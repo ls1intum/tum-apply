@@ -222,7 +222,7 @@
     },
     "invalidJobId": {
       "summary": "Invalid job ID",
-      "detail": "We couldn't find this job. Please open it from “My positions” and try again."
+      "detail": "We couldn't find this job. Please open it from “My Positions” and try again."
     },
     "authRequired": {
       "summary": "Sign-in required",
