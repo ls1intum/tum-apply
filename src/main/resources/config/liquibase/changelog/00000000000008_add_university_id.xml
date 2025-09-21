@@ -24,10 +24,11 @@
       </not>
     </preConditions>
     <addColumn tableName="users">
-      <column name="university_id" type="VARCHAR(64)"/>
+      <column name="university_id" type="CHAR(7)">
+        <constraints nullable="false" checkConstraint="CHAR_LENGTH(university_id) = 7"/>
+      </column>
     </addColumn>
   </changeSet>
-
 
   <changeSet id="users-ux-university_id" author="abinayasivaguru">
     <preConditions onFail="MARK_RAN" onError="MARK_RAN">
