@@ -22,6 +22,7 @@ export default class ApplicationDetailForApplicantComponent {
   // preview application data passed from parent component (if any)
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
+  isSummaryPage = input<boolean>(false);
 
   // actual application data fetched from the backend
   actualDetailDataExists = signal<boolean>(false);

@@ -19,7 +19,10 @@
         "address": "Straße und Hausnummer",
         "postalCode": "Postleitzahl",
         "city": "Stadt",
-        "description": "Beschreibung"
+        "description": "Beschreibung",
+        "section1": "Grundlegende Informationen",
+        "section2": "Schule und Website",
+        "section3": "Adresse"
       },
       "placeholders": {
         "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",

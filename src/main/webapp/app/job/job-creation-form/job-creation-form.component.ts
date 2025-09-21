@@ -11,6 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { DividerModule } from 'primeng/divider';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -49,6 +50,7 @@ type SavingState = 'SAVED' | 'SAVING';
     EditorComponent,
     ConfirmDialog,
     JobDetailComponent,
+    DividerModule,
   ],
   providers: [JobResourceApiService],
 })
