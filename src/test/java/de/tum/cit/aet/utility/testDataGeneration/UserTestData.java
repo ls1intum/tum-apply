@@ -37,7 +37,8 @@ public final class UserTestData {
         String linkedinUrl,
         String nationality,
         String avatar,
-        String gender
+        String gender,
+        String universityId
     ) {
         User u = newProfessor(researchGroup);
         if (userId != null) u.setUserId(userId);
@@ -51,6 +52,7 @@ public final class UserTestData {
         if (nationality != null) u.setNationality(nationality);
         if (avatar != null) u.setAvatar(avatar);
         if (gender != null) u.setGender(gender);
+        if (universityId != null) u.setUniversityId(universityId);
         return u;
     }
 
@@ -72,9 +74,10 @@ public final class UserTestData {
         String linkedinUrl,
         String nationality,
         String avatar,
-        String gender
+        String gender,
+         String universityId
     ) {
         return repo.save(newProfessorAll(researchGroup, userId, email, firstName, lastName,
-            selectedLanguage, phoneNumber, website, linkedinUrl, nationality, avatar, gender));
+            selectedLanguage, phoneNumber, website, linkedinUrl, nationality, avatar, gender,universityId));
     }
 }
