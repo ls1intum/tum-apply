@@ -217,10 +217,10 @@ public class MvcTestClient {
      * Builds and performs a GET with query parameters, applying defaults and processors.
      */
     private ResultActions get(String url, Map<String, String> params, MediaType... accepts) throws Exception {
-        MockHttpServletRequestBuilder rb =
+        MockHttpServletRequestBuilder requestBuilder =
             applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts);
-        if (params != null) params.forEach(rb::param);
-        return mockMvc.perform(rb);
+        if (params != null) params.forEach(requestBuilder::param);
+        return mockMvc.perform(requestBuilder);
     }
 
     /**
@@ -249,10 +249,10 @@ public class MvcTestClient {
      * Builds and performs a DELETE, optionally with a JSON body, applying defaults and processors.
      */
     private ResultActions deleteJson(String url, Object body, MediaType... accepts) throws Exception {
-        MockHttpServletRequestBuilder rb = applyDefaults(delete(url), accepts)
+        MockHttpServletRequestBuilder requestBuilder = applyDefaults(delete(url), accepts)
             .contentType(MediaType.APPLICATION_JSON);
-        if (body != null) rb.content(objectMapper.writeValueAsString(body));
-        return mockMvc.perform(rb);
+        if (body != null) requestBuilder.content(objectMapper.writeValueAsString(body));
+        return mockMvc.perform(requestBuilder);
     }
 
     // --- Shortcuts that parse JSON bodies --------------------------------------------------------
@@ -285,12 +285,12 @@ public class MvcTestClient {
      * Applies the default Accept header and all configured RequestPostProcessors.
      * This is where authentication processors are attached.
      */
-    private MockHttpServletRequestBuilder applyDefaults(MockHttpServletRequestBuilder rb, MediaType... accepts) {
-        rb = (accepts != null && accepts.length > 0) ? rb.accept(accepts) : rb.accept(defaultAccept);
+    private MockHttpServletRequestBuilder applyDefaults(MockHttpServletRequestBuilder requestBuilder, MediaType... accepts) {
+        requestBuilder = (accepts != null && accepts.length > 0) ? requestBuilder.accept(accepts) : requestBuilder.accept(defaultAccept);
         for (RequestPostProcessor rpp : defaultPostProcessors) {
-            rb.with(rpp);
+            requestBuilder.with(rpp);
         }
-        return rb;
+        return requestBuilder;
     }
 
     // --- Misc helpers ----------------------------------------------------------------------------
