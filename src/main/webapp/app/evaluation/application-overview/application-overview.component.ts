@@ -84,6 +84,15 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
+  readonly availableStatusOptions = signal<{ key: string; label: string }[]>([
+    { key: 'SENT', label: 'evaluation.statusBadge.SENT' },
+    { key: 'IN_REVIEW', label: 'evaluation.statusBadge.IN_REVIEW' },
+    { key: 'ACCEPTED', label: 'evaluation.statusBadge.ACCEPTED' },
+    { key: 'REJECTED', label: 'evaluation.statusBadge.REJECTED' },
+  ]);
+
+  readonly availableStatusLabels = computed(() => this.availableStatusOptions().map(option => option.label));
+
   protected readonly sortOptions = sortOptions;
 
   private isSearchInitiatedByUser = false;
