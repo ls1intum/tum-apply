@@ -23,6 +23,7 @@ public final class UserTestData {
         u.setEmail("alice.smith@example.com");
         u.setSelectedLanguage("en");
         u.setResearchGroup(rg);
+        u.setUniversityId(UUID.randomUUID().toString().substring(0, 7));
         attachProfessorRole(u, rg);
         return u;
     }
