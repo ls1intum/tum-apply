@@ -197,6 +197,7 @@ public class ResearchGroupService {
      * @param dto the research group creation request DTO
      * @return the created or existing research group
      */
+    @Transactional
     public ResearchGroup createResearchGroup(ResearchGroupCreationDTO dto) {
         Optional<ResearchGroup> existing = researchGroupRepository.findByUniversityId(dto.universityId());
         if (existing.isPresent()) {
@@ -224,14 +225,35 @@ public class ResearchGroupService {
         newResearchGroup.setWebsite(StringUtil.normalize(dto.website(), false));
         newResearchGroup.setSchool(StringUtil.normalize(dto.school(), false));
         ResearchGroup saved = researchGroupRepository.save(newResearchGroup);
+
+        User headUser = userRepository.findByUniversityIdIgnoreCase(dto.universityId())
+            .orElseThrow(() -> new EntityNotFoundException(
+                "User with universityId '%s' not found".formatted(dto.universityId())
+            ));
+
+        headUser.setResearchGroup(saved);
+        userRepository.save(headUser);
+
+        var existingMapping = userResearchGroupRoleRepository.findByUserAndResearchGroup(headUser, saved);
+        if (existingMapping.isEmpty()) {
+            UserResearchGroupRole mapping = new UserResearchGroupRole();
+            mapping.setUser(headUser);
+            mapping.setResearchGroup(saved);
+            mapping.setRole(UserRole.PROFESSOR);
+            userResearchGroupRoleRepository.save(mapping);
+        } else if (existingMapping.get().getRole() != UserRole.PROFESSOR) {
+            existingMapping.get().setRole(UserRole.PROFESSOR);
+            userResearchGroupRoleRepository.save(existingMapping.get());
+        }
+
         log.info("AUDIT research-group.create created by={} groupId={} name={} headName={} universityId={}",
             currentUserService.getUserId(),
             saved.getResearchGroupId(),
             dto.name(),
             dto.headName(),
             dto.universityId());
-        return saved;
 
+        return saved;
     }
 
     /**
@@ -264,8 +286,8 @@ public class ResearchGroupService {
             userRepository.save(user);
             userGroupChanged = true;
         }
-
         String roleOutcome = "unchanged";
+
         var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
             UserResearchGroupRole mapping = new UserResearchGroupRole();
