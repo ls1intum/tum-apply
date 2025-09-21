@@ -4,7 +4,6 @@
     import static org.assertj.core.api.Assertions.assertThat;
     import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-    import de.tum.cit.aet.core.service.CurrentUserService;
     import de.tum.cit.aet.job.constants.Campus;
     import de.tum.cit.aet.job.constants.FundingType;
     import de.tum.cit.aet.job.constants.JobState;
@@ -26,7 +25,6 @@
     import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
     import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
     import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
-    import org.junit.jupiter.api.AfterEach;
     import org.junit.jupiter.api.BeforeEach;
     import org.junit.jupiter.api.Test;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -221,6 +219,7 @@
 
             JobFormDTO returnedJob = api.putAndReadOk("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class);
 
+            assertThat(returnedJob).usingRecursiveComparison().isEqualTo(updatedPayload);
             Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
 
             assertThat(updatedJob.getTitle()).isEqualTo(updatedPayload.title());
@@ -286,6 +285,8 @@
                 JobFormDTO.class
             );
 
+            assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
+
             Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
             assertThat(updatedJob.getState()).isEqualTo(JobState.CLOSED);
         }
@@ -317,7 +318,9 @@
         @WithMockUser(roles = "PROFESSOR")
         void getJobsByProfessorInvalidPaginationReturnsError() {
             assertThatThrownBy(() ->
-                api.getAndReadOk("/api/jobs/professor",
+                api
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .getAndReadOk("/api/jobs/professor",
                     Map.of("pageNumber", "-1", "pageSize", "10"),
                     new TypeReference<>() {})
             ).isInstanceOf(AssertionError.class);
