@@ -13,7 +13,6 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
-import { FilterField } from '../../shared/filter';
 import { sortOptions } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
@@ -41,7 +40,6 @@ export class ApplicationOverviewComponent {
   page = signal(0);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
-  filters = signal<FilterField[]>([]);
   total = signal(0);
   searchQuery = signal<string>('');
 
@@ -128,14 +126,6 @@ export class ApplicationOverviewComponent {
 
       void this.loadPage();
     });
-    void this.initFilterFields();
-  }
-
-  async initFilterFields(): Promise<void> {
-    const filters = await this.evaluationService.getFilterFields();
-    const params = this.qpSignal();
-    filters.forEach(filter => filter.withSelectionFromParam(params));
-    this.filters.set(filters);
   }
 
   async loadAllJobNames(): Promise<void> {
@@ -194,12 +184,6 @@ export class ApplicationOverviewComponent {
       applicationId: application.applicationId,
     };
 
-    this.filters().forEach(filter => {
-      if (filter.selected.length > 0) {
-        queryParams[filter.field] = filter.selected.map(opt => encodeURIComponent(opt.field)).join(',');
-      }
-    });
-
     void this.router.navigate(['/evaluation/application'], {
       queryParams,
     });
@@ -213,10 +197,8 @@ export class ApplicationOverviewComponent {
       const direction = this.sortDirection();
       const search = this.searchQuery();
 
-      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters =
-        this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey.job ?? []);
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
 
       const res = await firstValueFrom(
         this.evaluationResourceService.getApplicationsOverviews(
@@ -257,13 +239,6 @@ export class ApplicationOverviewComponent {
       baseParams.search = this.searchQuery();
     }
     const filterParams: Params = {};
-    this.filters().forEach(f => {
-      const entry = f.getQueryParamEntry();
-
-      if (entry) {
-        filterParams[entry[0]] = entry[1];
-      }
-    });
 
     return {
       ...baseParams,
