@@ -4,7 +4,6 @@
     import static org.assertj.core.api.Assertions.assertThat;
     import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-    import de.tum.cit.aet.core.service.CurrentUserService;
     import de.tum.cit.aet.job.constants.Campus;
     import de.tum.cit.aet.job.constants.FundingType;
     import de.tum.cit.aet.job.constants.JobState;
@@ -22,9 +21,11 @@
     import de.tum.cit.aet.utility.*;
     import de.tum.cit.aet.utility.MvcTestClient;
 
+    import de.tum.cit.aet.utility.security.JwtPostProcessors;
     import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
     import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
     import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+    import org.junit.jupiter.api.AfterEach;
     import org.junit.jupiter.api.BeforeEach;
     import org.junit.jupiter.api.Test;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +34,9 @@
     import com.fasterxml.jackson.core.type.TypeReference;
     import org.springframework.security.test.context.support.WithMockUser;
     import org.springframework.test.context.ActiveProfiles;
-    import org.springframework.test.context.bean.override.mockito.MockitoBean;
     import org.springframework.test.web.servlet.MockMvc;
 
     import com.fasterxml.jackson.databind.ObjectMapper;
-
-    import static org.mockito.Mockito.when;
 
     @SpringBootTest
     @AutoConfigureMockMvc
@@ -59,9 +57,6 @@
 
         @Autowired
         ResearchGroupRepository researchGroupRepository;
-
-        @MockitoBean
-        CurrentUserService currentUserService;
 
         MvcTestClient api;
         ResearchGroup researchGroup;
@@ -91,8 +86,6 @@
 
             JobTestData.saved(jobRepository, professor, researchGroup, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
             JobTestData.saved(jobRepository, professor, researchGroup, "Draft Role",     JobState.DRAFT,     LocalDate.of(2025,10, 1));
-
-            when(currentUserService.getUserId()).thenReturn(professor.getUserId());
         }
 
         @Test
@@ -128,7 +121,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void createJob_persistsAndReturnsIt() {
             JobFormDTO payload = new JobFormDTO(
                 null, "ML Engineer", "Machine Learning", "CS",
@@ -182,7 +175,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void createJobInvalid_DoesNotPersist() {
             long before = jobRepository.count();
 
@@ -211,7 +204,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void updateJob_updatesCorrectly() {
 
             Job job = jobRepository.findAll().getFirst();
@@ -246,7 +239,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void updateJob_nonexistentJob_throwsNotFound() {
             JobFormDTO updatedPayload = new JobFormDTO(
                 UUID.randomUUID(), "Ghost Job", "Area", "Field",
@@ -262,18 +255,16 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void deleteJob_removesIt() {
             Job job = jobRepository.findAll().getFirst();
             assertThat(jobRepository.existsById(job.getJobId())).isTrue();
-
             api.deleteAndReadOk("/api/jobs/" + job.getJobId(), null, Void.class);
-
             assertThat(jobRepository.existsById(job.getJobId())).isFalse();
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void deleteJob_nonexistentJob_throwsNotFound() {
             assertThatThrownBy(() ->
                 api.deleteAndReadOk("/api/jobs/" + UUID.randomUUID(), null, Void.class)
@@ -281,7 +272,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void changeJobState_updatesIt() {
             Job job = jobRepository.findAll().getFirst();
             assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
@@ -297,7 +288,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void changeJobState_nonExistantJob_throwsNotFound() {
             assertThatThrownBy(() ->
                 api.putAndReadOk("api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
@@ -310,15 +301,13 @@
         @Test
         @WithMockUser(roles = "PROFESSOR")
         void getJobsByProfessor_returnsJobsCreatedByProfessor() {
-
-            PageResponse<CreatedJobDTO> page = api.getAndReadOk(
-                "/api/jobs/professor",
-                Map.of("pageNumber", "0", "pageSize", "10"),
-                new TypeReference<>() {
-                }
-            );
+            PageResponse<CreatedJobDTO> page = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndReadOk("/api/jobs/professor",
+                    Map.of("pageNumber","0","pageSize","10"),
+                    new TypeReference<>() {}
+                );
             assertThat(page.totalElements()).isEqualTo(2);
-
         }
 
         @Test
@@ -332,7 +321,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void getJobById_returnsCorrectJob() {
             Job job = jobRepository.findAll().getFirst();
 
@@ -356,7 +345,7 @@
         }
 
         @Test
-        @WithMockUser
+        @WithMockUser(roles = "PROFESSOR")
         void getJobById_nonExistentJob_throwsNotFound() {
             assertThatThrownBy(() ->
                 api.getAndReadOk("/api/jobs/" + UUID.randomUUID(), null, JobDTO.class)
