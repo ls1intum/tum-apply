@@ -11,7 +11,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
-import { HttpErrorResponse } from '@angular/common/http';
 import { DividerModule } from 'primeng/divider';
 
 import SharedModule from '../../shared/shared.module';
@@ -310,16 +309,17 @@ export class JobCreationFormComponent {
     const jobData = this.publishableJobData();
     this.publishAttempted.set(true);
     if (!Boolean(this.privacyAcceptedSignal())) {
+      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
       return;
     }
     if (!jobData) return;
 
     try {
       await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
+      this.toastService.showSuccessKey('toast.published');
       this.router.navigate(['/my-positions']);
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to publish job: ' + httpError.statusText });
+    } catch {
+      this.toastService.showErrorKey('toast.publishFailed');
     }
   }
 
@@ -412,9 +412,8 @@ export class JobCreationFormComponent {
         this.populateForm(job);
         this.autoSaveInitialized = false;
       }
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to load job form: ' + httpError.statusText });
+    } catch {
+      this.toastService.showErrorKey('toast.loadFailed');
       this.router.navigate(['/my-positions']);
     } finally {
       this.isLoading.set(false);
@@ -497,9 +496,8 @@ export class JobCreationFormComponent {
 
       this.lastSavedData.set(currentData);
       this.savingState.set('SAVED');
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to save job: ' + httpError.statusText });
+    } catch {
+      this.toastService.showErrorKey('toast.saveFailed');
     }
   }
 

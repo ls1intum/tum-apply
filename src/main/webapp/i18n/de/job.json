@@ -206,5 +206,31 @@
     "unknown": "Unbekannt"
   },
   "job": "Stelle",
-  "jobs": "Stellen"
+  "jobs": "Stellen",
+  "toast": {
+    "published": {
+      "summary": "Veröffentlicht",
+      "detail": "Vielen Dank. Die Stelle wurde erfolgreich veröffentlicht."
+    },
+    "publishFailed": {
+      "summary": "Veröffentlichen fehlgeschlagen",
+      "detail": "Die Stelle konnte nicht veröffentlicht werden. Bitte überprüfe deine Eingaben oder versuche es erneut."
+    },
+    "loadFailed": {
+      "summary": "Laden fehlgeschlagen",
+      "detail": "Das Formular konnte nicht geladen werden. Bitte aktualisiere die Seite."
+    },
+    "saveFailed": {
+      "summary": "Speichern fehlgeschlagen",
+      "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und speichere erneut."
+    },
+    "invalidJobId": {
+      "summary": "Ungültige Job-ID",
+      "detail": "Diese Stelle konnte nicht gefunden werden. Bitte öffne sie über „Meine Positionen“ und versuche es erneut."
+    },
+    "authRequired": {
+      "summary": "Anmeldung erforderlich",
+      "detail": "Bitte melde dich an, um fortzufahren."
+    }
+  }
 }

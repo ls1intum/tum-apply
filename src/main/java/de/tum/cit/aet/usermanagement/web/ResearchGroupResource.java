@@ -91,6 +91,7 @@ public class ResearchGroupResource {
      * @return the detailed research group information
      */
     @GetMapping("/detail/{researchGroupId}")
+    @CheckAccess
     public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
         return ResponseEntity.ok(researchGroupService.getResearchGroupDetails(researchGroupId));
     }
