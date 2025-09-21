@@ -280,8 +280,7 @@ public class ResearchGroupService {
             ));
 
         boolean userGroupChanged = false;
-        if (user.getResearchGroup() == null
-            || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
+        if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
             userGroupChanged = true;
