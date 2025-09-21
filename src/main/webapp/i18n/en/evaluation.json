@@ -102,6 +102,7 @@
       "documentTypeCV": "Curriculum Vitae",
       "documentTypeReference": "Reference Letter",
       "documentNoUploads": "No documents uploaded",
+      "documentView": "View",
       "documentDownloadAll": "Download all",
       "moreDocument": "+1 more document",
       "moreDocuments": "+{{count}} more documents",

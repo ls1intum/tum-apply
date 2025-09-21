@@ -1,0 +1,53 @@
+<p-dialog
+  [header]="'evaluation.details.documentTitle' | translate"
+  [modal]="true"
+  [(visible)]="isOpen"
+  styleClass="max-h-[90vh] w-3/5 max-w-[100rem]"
+>
+  <div class="flex flex-col md:flex-row gap-6 h-[70vh] max-h-[calc(90vh-8rem)] overflow-hidden">
+    <!-- LEFT: List of documents -->
+    <div class="overflow-y-auto md:overflow-visible md:max-h-[40vh] md:w-[30%] md:min-w-[12rem] md:h-full md:flex-shrink-0">
+      <ul class="divide-y divide-[var(--p-border-default)]">
+        @for (item of documents(); track item.document.id) {
+          <li class="flex items-center gap-3 px-3 py-2">
+            <!-- Checkbox -->
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="isChecked(item.document.id)"
+              (ngModelChange)="toggleChecked(item.document.id, $event)"
+              [inputId]="'doc-chk-' + item.document.id"
+              [attr.aria-label]="item.label"
+            />
+            <!-- Label container -->
+            <div
+              class="grow cursor-pointer px-3 py-2 hover:rounded-lg"
+              (click)="selectDoc(item.document.id)"
+              [class.bg-[var(--p-primary-color)]]="isSelected(item.document.id)()"
+              [class.hover:bg-[var(--p-primary-hover-color-outlined)]]="!isSelected(item.document.id)()"
+              [class.rounded-lg]="isSelected(item.document.id)()"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="selectDoc(item.document.id)"
+              (keydown.space)="selectDoc(item.document.id); $event.preventDefault()"
+            >
+              <span
+                class="block truncate"
+                [class.text-[var(--p-text-on-primary)]]="isSelected(item.document.id)()"
+                [jhiTranslate]="item.label"
+              ></span>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- RIGHT: Document viewer -->
+    <div class="h-full flex items-center justify-center overflow-hidden md:flex-1">
+      @if (selectedDocument(); as doc) {
+        <div class="h-full w-full max-w-full rounded-lg overflow-hidden bg-white">
+          <jhi-document-viewer class="w-full h-full object-contain" [documentDictionaryId]="doc" />
+        </div>
+      }
+    </div>
+  </div>
+</p-dialog>

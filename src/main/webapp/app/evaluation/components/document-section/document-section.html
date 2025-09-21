@@ -1,7 +1,7 @@
-@for (document of documents(); track document.id) {
+@for (document of documents(); track document.document.id) {
   <jhi-sub-section [titleKey]="document.label">
     <div class="h-60 w-full">
-      <jhi-document-viewer [documentDictionaryId]="document.id" />
+      <jhi-document-viewer [documentDictionaryId]="document.document" />
     </div>
   </jhi-sub-section>
 }
@@ -23,7 +23,15 @@
       />
     </div>
   }
-  <div class="mt-8 w-full flex justify-end">
+  <div class="mt-8 w-full flex justify-between">
+    <jhi-button
+      class="h-1/2"
+      label="evaluation.details.documentView"
+      [shouldTranslate]="true"
+      icon="eye"
+      variant="outlined"
+      (click)="dialogVisible.set(true)"
+    />
     <jhi-button
       class="h-1/2"
       label="evaluation.details.documentDownloadAll"
@@ -38,3 +46,5 @@
     <p class="text-sm" jhiTranslate="evaluation.details.documentNoUploads"></p>
   </div>
 }
+
+<jhi-document-dialog [(isOpen)]="dialogVisible" [documents]="allDocuments()" />

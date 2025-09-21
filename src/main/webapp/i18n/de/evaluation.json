@@ -102,6 +102,7 @@
       "documentTypeCV": "Lebenslauf",
       "documentTypeReference": "Referenzschreiben",
       "documentNoUploads": "Keine Dokumente hochgeladen",
+      "documentView": "Anzeigen",
       "documentDownloadAll": "Alle herunterladen",
       "moreDocument": "+1 weiteres Dokument",
       "moreDocuments": "+{{count}} weitere Dokumente",
