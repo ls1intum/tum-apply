@@ -192,6 +192,25 @@ public class ResearchGroupService {
     }
 
     /**
+     * Creates a ResearchGroup entity from the given DTO and normalizes all fields.
+     */
+    private ResearchGroup buildResearchGroupFromDTO(ResearchGroupCreationDTO dto) {
+        ResearchGroup group = new ResearchGroup();
+        group.setName(StringUtil.normalize(dto.name(), false));
+        group.setHead(StringUtil.normalize(dto.headName(), false));
+        group.setUniversityId(StringUtil.normalize(dto.universityId(), false));
+        group.setDescription(StringUtil.normalize(dto.description(), false));
+        group.setStreet(StringUtil.normalize(dto.street(), false));
+        group.setPostalCode(StringUtil.normalize(dto.postalCode(), false));
+        group.setCity(StringUtil.normalize(dto.city(), false));
+        group.setDefaultFieldOfStudies(StringUtil.normalize(dto.defaultFieldOfStudies(), false));
+        group.setAbbreviation(StringUtil.normalize(dto.abbreviation(), false));
+        group.setWebsite(StringUtil.normalize(dto.website(), false));
+        group.setSchool(StringUtil.normalize(dto.school(), false));
+        return group;
+    }
+
+    /**
      * Creates a research group if the current user is professor; returns existing if found.
      *
      * @param dto the research group creation request DTO
@@ -212,18 +231,7 @@ public class ResearchGroupService {
             );
         }
 
-        ResearchGroup newResearchGroup = new ResearchGroup();
-        newResearchGroup.setName(StringUtil.normalize(dto.name(), false));
-        newResearchGroup.setHead(StringUtil.normalize(dto.headName(), false));
-        newResearchGroup.setUniversityId(StringUtil.normalize(dto.universityId(), false));
-        newResearchGroup.setDescription(StringUtil.normalize(dto.description(), false));
-        newResearchGroup.setStreet(StringUtil.normalize(dto.street(), false));
-        newResearchGroup.setPostalCode(StringUtil.normalize(dto.postalCode(), false));
-        newResearchGroup.setCity(StringUtil.normalize(dto.city(), false));
-        newResearchGroup.setDefaultFieldOfStudies(StringUtil.normalize(dto.defaultFieldOfStudies(), false));
-        newResearchGroup.setAbbreviation(StringUtil.normalize(dto.abbreviation(), false));
-        newResearchGroup.setWebsite(StringUtil.normalize(dto.website(), false));
-        newResearchGroup.setSchool(StringUtil.normalize(dto.school(), false));
+        ResearchGroup newResearchGroup = buildResearchGroupFromDTO(dto);
         ResearchGroup saved = researchGroupRepository.save(newResearchGroup);
 
         User headUser = userRepository.findByUniversityIdIgnoreCase(dto.universityId())
