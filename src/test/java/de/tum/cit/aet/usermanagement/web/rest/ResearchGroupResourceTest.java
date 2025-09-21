@@ -93,18 +93,13 @@ public class ResearchGroupResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getResearchGroupDetailsNonExistingIdThrowsException() {
+    void getResearchGroupDetailsNoIdAndNonExistingIdThrowsException() {
+        assertThatThrownBy(() -> api.getAndReadOk(
+            "/api/research-groups/detail/", Map.of(),
+            ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
         UUID nonExistingId = UUID.randomUUID();
         assertThatThrownBy(() -> api.getAndReadOk(
                 "/api/research-groups/detail/" + nonExistingId, Map.of(),
-                ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
-    }
-
-    @Test
-    @WithMockUser(roles = "PROFESSOR")
-    void getResearchGroupDetailsNoIdThrowsException() {
-        assertThatThrownBy(() -> api.getAndReadOk(
-                "/api/research-groups/detail/", Map.of(),
                 ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
     }
 
