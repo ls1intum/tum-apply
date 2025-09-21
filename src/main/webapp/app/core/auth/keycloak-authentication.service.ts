@@ -162,7 +162,7 @@ export class KeycloakAuthenticationService {
     }
     this.refreshIntervalId = setInterval(() => {
       void this.ensureFreshToken();
-    }, 30_000);
+    }, 15_000);
   }
 
   /**
