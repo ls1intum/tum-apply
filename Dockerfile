@@ -83,7 +83,7 @@ FROM ${WAR_FILE_STAGE} AS war_file
 #-----------------------------------------------------------------------------------------------------------------------
 # runtime stage
 #-----------------------------------------------------------------------------------------------------------------------
-FROM docker.io/library/azul/zulu-openjdk:25.0.0-jre AS runtime
+FROM docker.io/azul/zulu-openjdk:25.0.0-jre AS runtime
 
 #default path of the built .war files
 ARG WAR_FILE_PATH="/opt/tum-apply/build/libs"
