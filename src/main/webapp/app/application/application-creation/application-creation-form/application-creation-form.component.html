@@ -47,15 +47,14 @@
 </ng-template>
 
 <ng-template #panel4>
-  <div class="panel">
-    <!-- Summary panel -->
-    <div class="summary_page">
-      <h2 jhiTranslate="entity.applicationPage4.title"></h2>
-      <p jhiTranslate="entity.applicationPage4.message"></p>
-
-      <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
-    </div>
-  </div>
+  <p jhiTranslate="entity.applicationPage4.message"></p>
+  <!-- Summary panel -->
+  <jhi-application-detail-for-applicant
+    [previewDetailData]="previewData()"
+    [previewDocumentData]="documentIds()"
+    [isSummaryPage]="true"
+    class="w-full"
+  />
 
   <p-divider layout="horizontal">
     <span jhiTranslate="privacy.privacyConsent.title"></span>
@@ -84,13 +83,9 @@
   </div>
 </ng-template>
 
-<div class="ml-8 mb-8 p-2">
-  <header>
+<div class="page-container">
+  <div class="page-header">
     <h1>{{ this.title() }}</h1>
-  </header>
-  <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>
-</div>
-
-<div class="m-4 p-1">
+  </div>
   <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
 </div>

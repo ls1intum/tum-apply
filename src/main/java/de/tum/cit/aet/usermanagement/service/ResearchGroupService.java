@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ResearchGroupService {
-    
+
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
@@ -47,22 +47,22 @@ public class ResearchGroupService {
     public PageResponseDTO<UserShortDTO> getResearchGroupMembers(PageDTO pageDTO) {
         // Get the current user's research group ID
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
-        
+
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
-        
+
         // First query: Get paginated user IDs to avoid N+1 query problem
         Page<UUID> userIdsPage = userRepository.findUserIdsByResearchGroupId(researchGroupId, pageable);
-        
+
         if (userIdsPage.isEmpty()) {
             return new PageResponseDTO<>(List.of(), 0L);
         }
-        
+
         // Second query: Fetch full user data with collections for the paginated IDs
         UUID currentUserId = currentUserService.getUserId();
         List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), currentUserId);
-        
+
         return new PageResponseDTO<>(
-            members.stream().map(UserShortDTO::new).toList(), 
+            members.stream().map(UserShortDTO::new).toList(),
             userIdsPage.getTotalElements()
         );
     }
@@ -77,27 +77,27 @@ public class ResearchGroupService {
     public void removeMemberFromResearchGroup(UUID userId) {
         // Get the current user's research group ID for validation
         UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
-        
+
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository.findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
         // Ensure user belongs to the same research group
-        if (userToRemove.getResearchGroup() == null || 
+        if (userToRemove.getResearchGroup() == null ||
             !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)) {
             throw new AccessDeniedException("User is not a member of your research group");
         }
-        
+
         // Prevent removing oneself (for now)
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
             throw new IllegalArgumentException("Cannot remove yourself from the research group");
         }
-        
+
         // Remove the direct research group membership
         userToRemove.setResearchGroup(null);
         userRepository.save(userToRemove);
-        
+
         // Remove research group associations from user's roles
         userResearchGroupRoleRepository.removeResearchGroupFromUserRoles(userId);
     }
@@ -116,10 +116,13 @@ public class ResearchGroupService {
 
     /**
      * Retrieves the details of a research group by its ID.
+     * Only users belonging to the research group can access its details.
      *
      * @param researchGroupId the unique identifier of the research group
      * @return a {@link ResearchGroupLargeDTO} containing detailed information about
      *         the research group
+     * @throws EntityNotFoundException if the research group is not found or user
+     *                                 doesn't have access
      */
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
