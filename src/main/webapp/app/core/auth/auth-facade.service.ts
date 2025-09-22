@@ -182,7 +182,7 @@ export class AuthFacadeService {
    */
   private async runAuthAction<T>(
     action: () => Promise<T>,
-    errorMessage = 'Authentication failed.' + ' Please try again.',
+    errorMessage = 'Authentication failed. Please try again.',
     lastAction = false,
   ): Promise<T> {
     if (this.authOrchestrator.isBusy()) {
@@ -191,15 +191,16 @@ export class AuthFacadeService {
     this.authOrchestrator.clearError();
     this.authOrchestrator.isBusy.set(true);
     try {
-      return await action();
+      const response = await action();
+      if (lastAction) {
+        this.authOrchestrator.authSuccess();
+      }
+      return response;
     } catch (e) {
       this.authOrchestrator.setError(errorMessage);
       throw e;
     } finally {
       this.authOrchestrator.isBusy.set(false);
-      if (lastAction) {
-        this.authOrchestrator.authSuccess();
-      }
     }
   }
 
