@@ -10,8 +10,7 @@ import {
 import { missingTranslationHandler } from 'app/config/translation.config';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faArrowDown19, faArrowDownAZ, faArrowUp19, faArrowUpAZ, faChevronDown } from '@fortawesome/free-solid-svg-icons';
-
-import { Sorting } from './sorting';
+import { Sorting } from 'app/shared/components/atoms/sorting/sorting';
 
 describe('Sorting', () => {
   let component: Sorting;
