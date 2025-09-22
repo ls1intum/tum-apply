@@ -79,6 +79,8 @@
     box-shadow: none;
     border: 0.1rem solid var(--p-primary-color);
   }
+
+  // Override PrimeNG positioning and size of the clear ("X") icon
   .p-select-clear-icon {
     width: 0.75rem;
     height: 1rem;
