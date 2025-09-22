@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tip: Use the "with(...)" helper to attach security to all requests from this client,
  * for example a JWT RequestPostProcessor.
  */
+@Component
 public class MvcTestClient {
 
     // --- Framework wiring -----------------------------------------------------------
