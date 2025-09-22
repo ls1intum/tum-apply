@@ -23,11 +23,13 @@ import { DocumentSection } from '../components/document-section/document-section
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationEvaluationDetailDTO } from '../../generated/model/applicationEvaluationDetailDTO';
-import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 import { AcceptDTO } from '../../generated/model/acceptDTO';
 import { RejectDTO } from '../../generated/model/rejectDTO';
 import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
 import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
+import { CommentSection } from '../components/comment-section/comment-section';
+import { RatingSection } from '../components/rating-section/rating-section';
+import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -49,6 +51,8 @@ const WINDOW_SIZE = 7;
     LinkList,
     Prose,
     DocumentSection,
+    CommentSection,
+    RatingSection,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
@@ -78,6 +82,10 @@ export class ApplicationDetailComponent {
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
     return state !== 'ACCEPTED' && state !== 'REJECTED';
+  });
+
+  protected currentApplicationId = computed(() => {
+    return this.currentApplication()?.applicationDetailDTO.applicationId;
   });
 
   protected readonly sortOptions = sortOptions;

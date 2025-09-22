@@ -10,7 +10,7 @@ export class TimeAgoPipe implements PipeTransform {
     const date = new Date(value);
     const seconds = Math.floor((+new Date() - +date) / 1000);
 
-    if (seconds < 29) {
+    if (seconds < 60) {
       return this.translate.instant('time.justNow');
     }
 

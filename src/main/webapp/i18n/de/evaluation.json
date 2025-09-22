@@ -102,9 +102,19 @@
       "documentTypeCV": "Lebenslauf",
       "documentTypeReference": "Referenzschreiben",
       "documentNoUploads": "Keine Dokumente hochgeladen",
+      "documentView": "Anzeigen",
       "documentDownloadAll": "Alle herunterladen",
       "moreDocument": "+1 weiteres Dokument",
-      "moreDocuments": "+{{count}} weitere Dokumente"
+      "moreDocuments": "+{{count}} weitere Dokumente",
+
+      "ratingTitle": "Bewertungen",
+      "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben. Diese Angaben sind für die Bewerber:innen nicht sichtbar.",
+      "ratingYourRating": "Deine Bewertung",
+      "ratingYourRatingLabel": "Klicke auf ein Feld, um deine Bewertung auszuwählen",
+      "ratingOtherRatings": "Bewertungen Anderer",
+
+      "commentTitle": "Kommentare",
+      "commentDescription": "Hinterlasse interne Kommentare, um die Bewerbung mit anderen zu diskutieren oder persönliche Notizen zu machen. Diese sind für die Bewerber:innen nicht sichtbar."
     }
   }
 }
