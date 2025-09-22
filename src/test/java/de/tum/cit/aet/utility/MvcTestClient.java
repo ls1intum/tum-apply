@@ -27,16 +27,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Component
 public class MvcTestClient {
 
-    // --- Framework wiring -----------------------------------------------------------
-    private final MockMvc mockMvc;
-    private final ObjectMapper objectMapper;
+    // --- Framework wiring
+    // -----------------------------------------------------------
 
-    public MvcTestClient(MockMvc mockMvc, ObjectMapper objectMapper) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = objectMapper;
-    }
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    // --- Defaults --------------------------------------------------------------------------------
+    // --- Defaults
+    // --------------------------------------------------------------------------------
     private MediaType defaultAccept = MediaType.APPLICATION_JSON;
 
     /**
