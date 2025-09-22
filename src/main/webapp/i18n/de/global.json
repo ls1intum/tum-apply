@@ -33,7 +33,8 @@
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
         "info": "TUMApply - Meine Gruppe"
-      }
+      },
+      "about-us": "TumApply - About Us"
     },
     "menu": {
       "home": "Startseite",
