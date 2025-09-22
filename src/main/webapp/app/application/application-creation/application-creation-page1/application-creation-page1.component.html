@@ -58,6 +58,7 @@
         [(selected)]="data().nationality"
         (selectedChange)="emitChanged()"
         [filter]="true"
+        [showClear]="true"
       />
     </div>
   </div>
@@ -73,6 +74,7 @@
         (selectedChange)="updateSelect('language', $event)"
         icon="circle-info"
         [tooltipText]="'entity.applicationPage1.tooltip.language' | translate"
+        [showClear]="true"
       />
     </div>
     <div class="w-1/2 pr-4">
