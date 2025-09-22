@@ -4,7 +4,7 @@
   </p-divider>
 
   <div class="form-row">
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage2.label.bachelorDegreeName' | translate }}"
         [required]="true"
@@ -14,7 +14,7 @@
         [tooltipText]="'entity.applicationPage2.tooltip.bachelorDegreeName' | translate"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage2.label.bachelorDegreeUniversity' | translate }}"
         [required]="true"
@@ -26,8 +26,8 @@
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="w-1/2 pr-4">
+  <div class="form-row mb-6">
+    <div class="form-field">
       <jhi-select
         label="{{ 'entity.applicationPage2.label.bachelorGradingScale' | translate }}"
         [disabled]="true"
@@ -39,7 +39,7 @@
         [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradingScale' | translate"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       @switch (data().bachelorGradingScale.value) {
         @case (BachelorGradingScaleEnumLocal.OneToFour) {
           <ng-container
@@ -64,7 +64,7 @@
 
   @if (applicationIdForDocuments(); as applicationId) {
     <div class="form-row justify-center">
-      <div class="w-1/2">
+      <div class="w-1/2 mb-6">
         <jhi-upload-button
           uploadKey="entity.upload.upload_instruction.BACHELOR_TRANSCRIPT"
           documentType="BACHELOR_TRANSCRIPT"
@@ -86,7 +86,7 @@
   </p-divider>
 
   <div class="form-row">
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage2.label.masterDegreeName' | translate }}"
         [required]="true"
@@ -96,7 +96,7 @@
         [tooltipText]="'entity.applicationPage2.tooltip.masterDegreeName' | translate"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       <jhi-string-input
         label="{{ 'entity.applicationPage2.label.masterDegreeUniversity' | translate }}"
         [required]="true"
@@ -108,8 +108,8 @@
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="w-1/2 pr-4">
+  <div class="form-row mb-6">
+    <div class="form-field">
       <jhi-select
         label="{{ 'entity.applicationPage2.label.masterGradingScale' | translate }}"
         [disabled]="true"
@@ -121,7 +121,7 @@
         [tooltipText]="'entity.applicationPage2.tooltip.masterGradingScale' | translate"
       />
     </div>
-    <div class="w-1/2 pr-4">
+    <div class="form-field">
       @switch (data().masterGradingScale.value) {
         @case (MasterGradingScaleEnumLocal.OneToFour) {
           <ng-container
@@ -146,7 +146,7 @@
 
   @if (applicationIdForDocuments(); as applicationId) {
     <div class="form-row justify-center">
-      <div class="w-1/2">
+      <div class="w-1/2 mb-6">
         <jhi-upload-button
           [applicationId]="applicationId"
           documentType="MASTER_TRANSCRIPT"
