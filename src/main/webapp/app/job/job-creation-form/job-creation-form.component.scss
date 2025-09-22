@@ -11,30 +11,6 @@ body {
   line-height: 1.6;
 }
 
-.doctorate-form-container {
-  max-width: 75rem;
-  margin: 0 auto;
-  padding: 1.25rem;
-  background-color: var(--p-background-default);
-  border-radius: 0.25rem;
-}
-
-// Header
-header {
-  padding-bottom: 1.25rem;
-
-  h1 {
-    font-weight: 700;
-    font-size: 2rem;
-    color: var(--p-primary-color);
-  }
-
-  p {
-    color: var(--p-background-disabled);
-    font-size: 1rem;
-  }
-}
-
 // Stepper
 .stepper {
   display: flex;
@@ -106,8 +82,6 @@ header {
 }
 
 .form-field {
-  margin-bottom: 1.25rem;
-
   input,
   textarea,
   select {
@@ -150,15 +124,6 @@ header {
     .char-counter {
       color: var(--p-text-primary);
     }
-  }
-}
-
-.form-row {
-  display: flex;
-  gap: 1.25rem;
-
-  .form-field {
-    flex: 1;
   }
 }
 
