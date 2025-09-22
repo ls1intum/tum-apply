@@ -10,12 +10,11 @@
   (confirmed)="publishJob()"
 />
 @if (!isLoading()) {
-  <div class="doctorate-form-container">
-    <header>
+  <div class="page-container">
+    <div class="page-header">
       <h1 jhiTranslate="{{ pageTitle() }}"></h1>
-    </header>
-
-    <div class="m-4 p-1">
+    </div>
+    <div>
       <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
     </div>
   </div>
@@ -23,9 +22,8 @@
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
     <form [formGroup]="basicInfoForm">
-      <h2 jhiTranslate="jobCreationForm.header.steps.basicInfo"></h2>
       <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
-      <br />
+      <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span></p-divider>
       <div class="form-field">
         <jhi-string-input
           [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
@@ -88,7 +86,8 @@
         </div>
       </div>
 
-      <div class="form-row">
+      <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span></p-divider>
+      <div class="form-row mb-6">
         <div class="form-field">
           <jhi-datepicker
             [selectedDate]="basicInfoForm.get('applicationDeadline')?.value"
@@ -163,52 +162,57 @@
   <!-- Step 2: Position Details -->
   <ng-template #panel2>
     <form [formGroup]="positionDetailsForm">
-      <h2 jhiTranslate="jobCreationForm.header.steps.positionDetails"></h2>
       <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
       <br />
-      <div class="form-field">
-        <jhi-editor
-          label="jobCreationForm.positionDetailsSection.jobDescription.label"
-          placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
-          helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
-          tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
-          [required]="true"
-          [characterLimit]="1000"
-          [model]="positionDetailsForm.get('description')?.value"
-          [control]="positionDetailsForm.get('description') ?? undefined"
-          icon="circle-info"
-          [shouldTranslate]="true"
-        />
+      <div class="form-row mb-6">
+        <div class="form-field">
+          <jhi-editor
+            label="jobCreationForm.positionDetailsSection.jobDescription.label"
+            placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
+            helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+            tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
+            [required]="true"
+            [characterLimit]="1000"
+            [model]="positionDetailsForm.get('description')?.value"
+            [control]="positionDetailsForm.get('description') ?? undefined"
+            icon="circle-info"
+            [shouldTranslate]="true"
+          />
+        </div>
       </div>
 
-      <div class="form-field">
-        <jhi-editor
-          label="jobCreationForm.positionDetailsSection.tasks.label"
-          placeholder="jobCreationForm.positionDetailsSection.tasks.placeholder"
-          helperText="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"
-          tooltipText="jobCreationForm.positionDetailsSection.tasks.toolTipText"
-          [required]="true"
-          [characterLimit]="1000"
-          [model]="positionDetailsForm.get('tasks')?.value"
-          [control]="positionDetailsForm.get('tasks') ?? undefined"
-          icon="circle-info"
-          [shouldTranslate]="true"
-        />
+      <div class="form-row mb-6">
+        <div class="form-field">
+          <jhi-editor
+            label="jobCreationForm.positionDetailsSection.tasks.label"
+            placeholder="jobCreationForm.positionDetailsSection.tasks.placeholder"
+            helperText="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"
+            tooltipText="jobCreationForm.positionDetailsSection.tasks.toolTipText"
+            [required]="true"
+            [characterLimit]="1000"
+            [model]="positionDetailsForm.get('tasks')?.value"
+            [control]="positionDetailsForm.get('tasks') ?? undefined"
+            icon="circle-info"
+            [shouldTranslate]="true"
+          />
+        </div>
       </div>
 
-      <div class="form-field">
-        <jhi-editor
-          label="jobCreationForm.positionDetailsSection.requirements.label"
-          placeholder="jobCreationForm.positionDetailsSection.requirements.placeholder"
-          helperText="jobCreationForm.positionDetailsSection.requirements.descriptionHelper"
-          tooltipText="jobCreationForm.positionDetailsSection.requirements.toolTipText"
-          [required]="true"
-          [characterLimit]="1000"
-          [model]="positionDetailsForm.get('requirements')?.value"
-          [control]="positionDetailsForm.get('requirements') ?? undefined"
-          icon="circle-info"
-          [shouldTranslate]="true"
-        />
+      <div class="form-row">
+        <div class="form-field">
+          <jhi-editor
+            label="jobCreationForm.positionDetailsSection.requirements.label"
+            placeholder="jobCreationForm.positionDetailsSection.requirements.placeholder"
+            helperText="jobCreationForm.positionDetailsSection.requirements.descriptionHelper"
+            tooltipText="jobCreationForm.positionDetailsSection.requirements.toolTipText"
+            [required]="true"
+            [characterLimit]="1000"
+            [model]="positionDetailsForm.get('requirements')?.value"
+            [control]="positionDetailsForm.get('requirements') ?? undefined"
+            icon="circle-info"
+            [shouldTranslate]="true"
+          />
+        </div>
       </div>
     </form>
   </ng-template>
@@ -229,10 +233,10 @@
   <!-- Step 4: Review Page -->
   <ng-template #panel4>
     <div class="extras-section">
-      <h2 jhiTranslate="jobCreationForm.reviewPageSection.title"></h2>
       <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>
+      <br />
     </div>
-    <jhi-job-detail [previewData]="currentJobData" />
+    <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
     <div class="data-privacy-notice">
       <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
     </div>
