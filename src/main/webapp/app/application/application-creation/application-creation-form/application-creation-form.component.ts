@@ -130,7 +130,7 @@ export default class ApplicationCreationFormComponent {
           ? 'saved_color'
           : this.savingState() === SavingStates.FAILED
             ? 'failed_color'
-            : 'unsaved_color'
+            : 'saving_color'
       }`,
   );
 

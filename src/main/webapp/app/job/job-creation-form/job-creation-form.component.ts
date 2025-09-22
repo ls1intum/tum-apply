@@ -502,10 +502,9 @@ export class JobCreationFormComponent {
 
       this.lastSavedData.set(currentData);
       this.savingState.set('SAVED');
-    } catch (err) {
+    } catch {
       this.savingState.set('FAILED');
-      const httpError = err as HttpErrorResponse;
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to save job: ' + httpError.statusText });
+      this.toastService.showErrorKey('toast.saveFailed');
     }
   }
 
