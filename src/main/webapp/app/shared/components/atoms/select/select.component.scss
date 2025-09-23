@@ -82,8 +82,25 @@
 
   // Override PrimeNG positioning and size of the clear ("X") icon
   .p-select-clear-icon {
-    width: 0.75rem;
-    height: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
     font-size: 0.75rem;
+    right: 2rem;
+    top: 1.25rem;
+    border-radius: 50%;
+
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--p-background-surface);
+    }
+  }
+  .p-select-clear-icon svg path {
+    fill: var(--p-text-secondary);
   }
 }
