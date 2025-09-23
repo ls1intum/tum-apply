@@ -5,11 +5,12 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
-import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { sortOptions } from '../filterSortOptions';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
@@ -38,7 +39,7 @@ const WINDOW_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     DividerModule,
-    FilterSortBarComponent,
+    SearchFilterSortBar,
     TranslateModule,
     ButtonComponent,
     ReviewDialogComponent,
@@ -58,12 +59,16 @@ export class ApplicationDetailComponent {
   totalRecords = signal<number>(0);
   currentIndex = signal<number>(0);
   windowIndex = signal<number>(0);
+  searchQuery = signal<string>('');
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   filters = signal<FilterField[]>([]);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
+
+  selectedJobFilters = signal<string[]>([]);
+  allAvailableJobNames = signal<string[]>([]);
 
   // accept/reject dialog
   reviewDialogVisible = signal<boolean>(false);
@@ -82,6 +87,8 @@ export class ApplicationDetailComponent {
 
   protected readonly sortOptions = sortOptions;
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
+
+  private isSearchInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
@@ -102,9 +109,15 @@ export class ApplicationDetailComponent {
       this.sortBy.set(qp.get('sortBy') ?? this.sortOptions[0].field);
       const rawSD = qp.get('sortDir');
       this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+
+      if (!this.isSearchInitiatedByUser) {
+        this.searchQuery.set(qp.get('search') ?? '');
+      }
+      this.isSearchInitiatedByUser = false;
     });
     void this.initFilterFields();
     await this.initFilterFields();
+    await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
     if (id) {
@@ -120,6 +133,28 @@ export class ApplicationDetailComponent {
     const params = this.qpSignal();
     filters.forEach(filter => filter.withSelectionFromParam(params));
     this.filters.set(filters);
+  }
+
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.evaluationResourceService.getAllJobNames());
+      this.allAvailableJobNames.set(jobNames.sort());
+    } catch {
+      this.allAvailableJobNames.set([]);
+    }
+  }
+
+  onSearchEmit(searchQuery: string): void {
+    this.isSearchInitiatedByUser = true;
+    this.searchQuery.set(searchQuery);
+    void this.loadInitialPage();
+  }
+
+  onJobFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
+      this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadInitialPage();
+    }
   }
 
   // Navigate to next application
@@ -276,7 +311,9 @@ export class ApplicationDetailComponent {
     try {
       const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
       const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = Array.from(filtersByKey['job'] ?? []);
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey['job'] ?? []);
+
+      const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
         this.evaluationResourceService.getApplicationsDetails(
           offset,
@@ -285,6 +322,7 @@ export class ApplicationDetailComponent {
           this.sortDirection(),
           statusFilters.length ? statusFilters : undefined,
           jobFilters.length ? jobFilters : undefined,
+          search || undefined,
         ),
       );
       this.totalRecords.set(res.totalRecords ?? 0);
@@ -299,7 +337,9 @@ export class ApplicationDetailComponent {
     try {
       const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
       const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = Array.from(filtersByKey['job'] ?? []);
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey['job'] ?? []);
+
+      const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
         this.evaluationResourceService.getApplicationsDetailsWindow(
           applicationId,
@@ -308,6 +348,7 @@ export class ApplicationDetailComponent {
           this.sortDirection(),
           statusFilters.length ? statusFilters : undefined,
           jobFilters.length ? jobFilters : undefined,
+          search || undefined,
         ),
       );
       this.totalRecords.set(res.totalRecords ?? 0);
@@ -403,6 +444,10 @@ export class ApplicationDetailComponent {
       sortDir: this.sortDirection(),
       applicationId: this.currentApplication()?.applicationDetailDTO.applicationId,
     };
+
+    if (this.searchQuery()) {
+      baseParams.search = this.searchQuery();
+    }
 
     const filterParams: Params = {};
     this.filters().forEach(f => {

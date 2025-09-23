@@ -6,6 +6,19 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CheckboxModule } from 'primeng/checkbox';
 
+// Interface for filter options which can be passed to the filter component
+export interface Filter {
+  filterLabel: string;
+  filterSearchPlaceholder: string;
+  filterOptions: string[];
+  shouldTranslateOptions?: boolean;
+}
+
+export interface FilterChange {
+  filterLabel: string;
+  selectedValues: string[];
+}
+
 @Component({
   selector: 'jhi-filter-multiselect',
   imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule],
