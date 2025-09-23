@@ -87,27 +87,27 @@ export class ApplicationOverviewComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+  private readonly queryParamsSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
   constructor() {
     effect(() => {
-      const qp = this.qpSignal();
-      const rawPage = qp.get('page');
+      const queryParams = this.queryParamsSignal();
+      const rawPage = queryParams.get('page');
       this.page.set(rawPage !== null && !isNaN(+rawPage) ? Math.max(0, +rawPage) : 0);
 
-      const rawSize = qp.get('pageSize');
+      const rawSize = queryParams.get('pageSize');
       this.pageSize.set(rawSize !== null && !isNaN(+rawSize) ? Math.max(1, +rawSize) : 10);
 
       if (!this.isSortInitiatedByUser) {
-        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
-        const rawSD = qp.get('sortDir');
+        this.sortBy.set(queryParams.get('sortBy') ?? this.sortableFields[0].fieldName);
+        const rawSD = queryParams.get('sortDir');
         this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
       } else {
         this.isSortInitiatedByUser = false;
       }
 
       if (!this.isSearchInitiatedByUser) {
-        this.searchQuery.set(qp.get('search') ?? '');
+        this.searchQuery.set(queryParams.get('search') ?? '');
       }
 
       this.isSearchInitiatedByUser = false;
@@ -121,7 +121,7 @@ export class ApplicationOverviewComponent {
 
   async initFilterFields(): Promise<void> {
     const filters = await this.evaluationService.getFilterFields();
-    const params = this.qpSignal();
+    const params = this.queryParamsSignal();
     filters.forEach(filter => filter.withSelectionFromParam(params));
     this.filters.set(filters);
   }
@@ -256,9 +256,9 @@ export class ApplicationOverviewComponent {
   }
 
   private updateUrlQueryParams(): void {
-    const qp: Params = this.buildQueryParams();
+    const queryParams: Params = this.buildQueryParams();
     void this.router.navigate([], {
-      queryParams: qp,
+      queryParams,
       replaceUrl: true,
     });
   }
