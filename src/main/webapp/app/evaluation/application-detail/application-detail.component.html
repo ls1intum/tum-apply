@@ -2,22 +2,22 @@
   <div class="page-header">
     <h1 jhiTranslate="evaluation.reviewHeader">Applications - Review</h1>
   </div>
+  <jhi-search-filter-sort-bar
+    [searchText]="'evaluation.searchFilterSortBar.searchText' | translate"
+    [totalRecords]="totalRecords()"
+    [singleEntity]="'evaluation.application' | translate"
+    [multipleEntities]="'evaluation.applications' | translate"
+    (searchOutput)="onSearchEmit($event)"
+    (filterOutput)="onJobFilterEmit($event)"
+    [filters]="[
+      {
+        filterLabel: 'evaluation.tableHeaders.job',
+        filterSearchPlaceholder: 'evaluation.filterOptions.jobSearchPlaceholder',
+        filterOptions: allAvailableJobNames(),
+      },
+    ]"
+  />
   <div class="body">
-    <jhi-search-filter-sort-bar
-      [searchText]="'evaluation.searchFilterSortBar.searchText' | translate"
-      [totalRecords]="totalRecords()"
-      [singleEntity]="'evaluation.application' | translate"
-      [multipleEntities]="'evaluation.applications' | translate"
-      (searchOutput)="onSearchEmit($event)"
-      (filterOutput)="onJobFilterEmit($event)"
-      [filters]="[
-        {
-          filterLabel: 'evaluation.tableHeaders.job',
-          filterSearchPlaceholder: 'evaluation.filterOptions.jobSearchPlaceholder',
-          filterOptions: allAvailableJobNames(),
-        },
-      ]"
-    />
     <jhi-application-carousel
       [totalRecords]="totalRecords()"
       [applications]="applications()"
