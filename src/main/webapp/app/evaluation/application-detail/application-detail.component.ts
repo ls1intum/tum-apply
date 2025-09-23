@@ -11,7 +11,7 @@ import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/fil
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
-import { sortOptions } from '../filterSortOptions';
+import { SortOption } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -85,7 +85,20 @@ export class ApplicationDetailComponent {
     return state !== 'ACCEPTED' && state !== 'REJECTED';
   });
 
-  protected readonly sortOptions = sortOptions;
+  // TODO: replace this with values from filterSortOptions in new sorting style
+  readonly sortOptions: SortOption[] = [
+    {
+      displayName: 'Applied at (Oldest to Newest)',
+      field: 'createdAt',
+      direction: 'ASC',
+    },
+    {
+      displayName: 'Applied at (Newest to Oldest)',
+      field: 'createdAt',
+      direction: 'DESC',
+    },
+  ];
+
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
 
   private isSearchInitiatedByUser = false;

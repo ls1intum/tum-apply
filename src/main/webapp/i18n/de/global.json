@@ -184,6 +184,7 @@
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
+    "filterBy": "Filtern nach:",
     "sortBy": "Sortieren nach:",
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",
@@ -242,7 +243,8 @@
       },
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
-        "SAVED": "Änderungen gespeichert"
+        "SAVED": "Änderungen gespeichert",
+        "FAILED": "Speichern fehlgeschlagen"
       }
     },
     "applicationPage1": {
