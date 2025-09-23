@@ -9,6 +9,7 @@
     [multipleEntities]="'evaluation.applications' | translate"
     (searchOutput)="onSearchEmit($event)"
     (filterOutput)="onFilterEmit($event)"
+    (sortOutput)="loadOnSortEmit($event)"
     [filters]="[
       {
         filterLabel: 'evaluation.tableHeaders.job',
@@ -22,6 +23,7 @@
         shouldTranslateOptions: true,
       },
     ]"
+    [sortableFields]="sortableFields"
   />
   <div class="body">
     <jhi-application-carousel

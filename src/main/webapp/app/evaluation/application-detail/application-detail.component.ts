@@ -7,10 +7,10 @@ import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
+import { Sort } from 'app/shared/components/atoms/sorting/sorting';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { EvaluationService } from '../service/evaluation.service';
-import { SortOption } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -28,7 +28,7 @@ import { AcceptDTO } from '../../generated/model/acceptDTO';
 import { RejectDTO } from '../../generated/model/rejectDTO';
 import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
 import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
-import { availableStatusOptions } from '../filterSortOptions';
+import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -90,23 +90,11 @@ export class ApplicationDetailComponent {
     return state !== 'ACCEPTED' && state !== 'REJECTED';
   });
 
-  // TODO: replace this with values from filterSortOptions in new sorting style
-  readonly sortOptions: SortOption[] = [
-    {
-      displayName: 'Applied at (Oldest to Newest)',
-      field: 'createdAt',
-      direction: 'ASC',
-    },
-    {
-      displayName: 'Applied at (Newest to Oldest)',
-      field: 'createdAt',
-      direction: 'DESC',
-    },
-  ];
-
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
+  protected readonly sortableFields = sortableFields;
 
   private isSearchInitiatedByUser = false;
+  private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
@@ -124,9 +112,15 @@ export class ApplicationDetailComponent {
   async init(): Promise<void> {
     effect(() => {
       const qp = this.qpSignal();
-      this.sortBy.set(qp.get('sortBy') ?? this.sortOptions[0].field);
       const rawSD = qp.get('sortDir');
       this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+
+      if (!this.isSortInitiatedByUser) {
+        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
+        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      } else {
+        this.isSortInitiatedByUser = false;
+      }
 
       if (!this.isSearchInitiatedByUser) {
         this.searchQuery.set(qp.get('search') ?? '');
@@ -168,6 +162,15 @@ export class ApplicationDetailComponent {
       this.selectedStatusFilters.set(enumValues);
       void this.loadInitialPage();
     }
+  }
+
+  loadOnSortEmit(event: Sort): void {
+    this.isSortInitiatedByUser = true;
+
+    this.sortBy.set(event.field);
+    this.sortDirection.set(event.direction);
+
+    void this.loadInitialPage();
   }
 
   // Navigate to next application
