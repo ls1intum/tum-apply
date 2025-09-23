@@ -13,7 +13,7 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
-import { sortableFields } from '../filterSortOptions';
+import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
@@ -77,14 +77,7 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
-  readonly availableStatusOptions = signal<{ key: string; label: string }[]>([
-    { key: 'SENT', label: 'evaluation.statusBadge.SENT' },
-    { key: 'IN_REVIEW', label: 'evaluation.statusBadge.IN_REVIEW' },
-    { key: 'ACCEPTED', label: 'evaluation.statusBadge.ACCEPTED' },
-    { key: 'REJECTED', label: 'evaluation.statusBadge.REJECTED' },
-  ]);
-
-  readonly availableStatusLabels = computed(() => this.availableStatusOptions().map(option => option.label));
+  readonly availableStatusLabels = availableStatusOptions.map(option => option.label);
 
   protected readonly sortableFields = sortableFields;
 
@@ -223,7 +216,7 @@ export class ApplicationOverviewComponent {
   }
 
   private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
-    const keyMap = new Map(this.availableStatusOptions().map(option => [option.label, option.key]));
+    const keyMap = new Map(availableStatusOptions.map(option => [option.label, option.key]));
     return translationKeys.map(key => keyMap.get(key) ?? key);
   }
 
