@@ -19,6 +19,16 @@
     color: var(--p-text-primary);
   }
 
+  .sub-subtitle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Adjust spacing between text and icon */
+  }
+
+  .sub-subtitle {
+    margin: 0; /* Remove any default margin */
+  }
+
   .p-accordionheader {
     background: var(--p-background-default);
     color: var(--p-text-secondary);
