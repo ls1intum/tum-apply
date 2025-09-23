@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
+import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 
 @Component({
   selector: 'jhi-profile',

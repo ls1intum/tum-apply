@@ -1,5 +1,5 @@
-<div class="content">
-  <div class="header">
+<div class="page-container">
+  <div class="page-header">
     <h1 jhiTranslate="evaluation.overviewHeader">Applications - Overview</h1>
   </div>
   <div class="body">
@@ -10,6 +10,7 @@
       [multipleEntities]="'evaluation.applications' | translate"
       (searchOutput)="loadOnSearchEmit($event)"
       (filterOutput)="loadOnJobFilterEmit($event)"
+      (sortOutput)="loadOnSortEmit($event)"
       [filters]="[
         {
           filterLabel: 'evaluation.tableHeaders.job',
@@ -17,6 +18,7 @@
           filterOptions: allAvailableJobNames(),
         },
       ]"
+      [sortableFields]="sortableFields"
     />
 
     <jhi-dynamic-table

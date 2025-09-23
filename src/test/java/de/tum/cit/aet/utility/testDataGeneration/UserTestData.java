@@ -1,7 +1,9 @@
 package de.tum.cit.aet.utility.testDataGeneration;
 
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 
 import java.util.UUID;
@@ -21,6 +23,8 @@ public final class UserTestData {
         u.setEmail("alice.smith@example.com");
         u.setSelectedLanguage("en");
         u.setResearchGroup(rg);
+        u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        attachProfessorRole(u, rg);
         return u;
     }
 
@@ -37,7 +41,8 @@ public final class UserTestData {
         String linkedinUrl,
         String nationality,
         String avatar,
-        String gender
+        String gender,
+        String universityId
     ) {
         User u = newProfessor(researchGroup);
         if (userId != null) u.setUserId(userId);
@@ -51,6 +56,11 @@ public final class UserTestData {
         if (nationality != null) u.setNationality(nationality);
         if (avatar != null) u.setAvatar(avatar);
         if (gender != null) u.setGender(gender);
+        if (universityId != null) {
+            u.setUniversityId(universityId);
+        } else {
+            u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        }
         return u;
     }
 
@@ -72,9 +82,20 @@ public final class UserTestData {
         String linkedinUrl,
         String nationality,
         String avatar,
-        String gender
+        String gender,
+        String universityId
     ) {
         return repo.save(newProfessorAll(researchGroup, userId, email, firstName, lastName,
-            selectedLanguage, phoneNumber, website, linkedinUrl, nationality, avatar, gender));
+            selectedLanguage, phoneNumber, website, linkedinUrl, nationality, avatar, gender,universityId));
+    }
+
+    private static void attachProfessorRole(User user, ResearchGroup rg) {
+        UserResearchGroupRole link = new UserResearchGroupRole();
+        link.setUser(user);
+        link.setResearchGroup(rg);
+        link.setRole(UserRole.PROFESSOR);
+
+        user.getResearchGroupRoles().add(link);
+        rg.getUserRoles().add(link);
     }
 }
