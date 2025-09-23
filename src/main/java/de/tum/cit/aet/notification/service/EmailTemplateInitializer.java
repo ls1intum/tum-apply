@@ -4,12 +4,14 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
+@Profile("!api-docs")
 public class EmailTemplateInitializer {
 
     private final EmailTemplateService emailTemplateService;
