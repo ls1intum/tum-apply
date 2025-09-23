@@ -163,7 +163,7 @@ export class ApplicationDetailComponent {
     void this.loadInitialPage();
   }
 
-  onJobFilterEmit(filterChange: FilterChange): void {
+  onFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadInitialPage();
