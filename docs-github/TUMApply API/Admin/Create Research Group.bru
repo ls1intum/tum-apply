@@ -1,0 +1,23 @@
+meta {
+  name: Create Research Group
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/admin/research-groups
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Applied Engineering & Technology",
+    "headName": "Prof. Jane Doe",
+    "universityID": "RG12345"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

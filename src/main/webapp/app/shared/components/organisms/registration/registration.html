@@ -21,14 +21,14 @@
       @case ('email') {
         <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials" [isLogin]="false" />
       }
-      @case ('verify') {
+      @case ('otp') {
         <jhi-otp-input [registration]="true" />
       }
       @case ('profile') {
         <jhi-profile class="profile" [submitHandler]="setProfile" />
       }
       @case ('password') {
-        <form class="password" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+        <form class="password" [formGroup]="passwordForm" (ngSubmit)="setPassword()">
           <jhi-password-input
             label="auth.common.password.label"
             [shouldTranslate]="true"
