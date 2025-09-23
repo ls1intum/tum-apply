@@ -144,6 +144,7 @@ export class ApplicationDetailComponent {
       this.allAvailableJobNames.set(jobNames.sort());
     } catch {
       this.allAvailableJobNames.set([]);
+      this.toastService.showErrorKey('evaluation.errors.loadJobNames');
     }
   }
 
@@ -341,8 +342,8 @@ export class ApplicationDetailComponent {
       );
       this.totalRecords.set(res.totalRecords ?? 0);
       return res.applications ?? undefined;
-    } catch (error) {
-      console.error('Failed to load applications:', error);
+    } catch {
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
       return undefined;
     }
   }
@@ -371,8 +372,8 @@ export class ApplicationDetailComponent {
       this.currentApplication.set(this.applications()[this.windowIndex()]);
       this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
       void this.markCurrentApplicationAsInReview();
-    } catch (error) {
-      console.error('Failed to load applications:', error);
+    } catch {
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
       return undefined;
     }
   }

@@ -89,6 +89,10 @@
       "documentDownloadAll": "Alle herunterladen",
       "moreDocument": "+1 weiteres Dokument",
       "moreDocuments": "+{{count}} weitere Dokumente"
+    },
+    "errors": {
+      "loadJobNames": "Fehler beim Laden der Jobnamen.",
+      "loadApplication": "Fehler beim Laden der Bewerbungen."
     }
   }
 }
