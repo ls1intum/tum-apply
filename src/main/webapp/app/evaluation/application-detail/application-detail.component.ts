@@ -9,7 +9,6 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
-import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
 import { SortOption } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
@@ -29,6 +28,7 @@ import { AcceptDTO } from '../../generated/model/acceptDTO';
 import { RejectDTO } from '../../generated/model/rejectDTO';
 import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
 import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
+import { availableStatusOptions } from '../filterSortOptions';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -63,11 +63,16 @@ export class ApplicationDetailComponent {
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-  filters = signal<FilterField[]>([]);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  selectedJobFilters = signal<string[]>([]);
+  readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<string[]>([]);
+
+  readonly availableStatusOptions = availableStatusOptions;
+
+  readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
+
   allAvailableJobNames = signal<string[]>([]);
 
   // accept/reject dialog
@@ -128,8 +133,6 @@ export class ApplicationDetailComponent {
       }
       this.isSearchInitiatedByUser = false;
     });
-    void this.initFilterFields();
-    await this.initFilterFields();
     await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
@@ -139,13 +142,6 @@ export class ApplicationDetailComponent {
       // Load initial batch of applications
       void this.loadInitialPage();
     }
-  }
-
-  async initFilterFields(): Promise<void> {
-    const filters = await this.evaluationService.getFilterFields();
-    const params = this.qpSignal();
-    filters.forEach(filter => filter.withSelectionFromParam(params));
-    this.filters.set(filters);
   }
 
   async loadAllJobNames(): Promise<void> {
@@ -166,6 +162,10 @@ export class ApplicationDetailComponent {
   onFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
       this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadInitialPage();
+    } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedStatusFilters.set(enumValues);
       void this.loadInitialPage();
     }
   }
@@ -210,11 +210,6 @@ export class ApplicationDetailComponent {
       this.updateApplications();
     }
     this.updateUrlQueryParams();
-  }
-
-  onFilterChange(filters: FilterField[]): void {
-    this.filters.set(filters);
-    void this.loadInitialPage();
   }
 
   openAcceptDialog(): void {
@@ -316,16 +311,19 @@ export class ApplicationDetailComponent {
     );
   }
 
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
   /**
    * Loads a page of applications from backend.
    * Also updates total count of applications.
    */
   private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {
     try {
-      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey['job'] ?? []);
-
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
       const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
         this.evaluationResourceService.getApplicationsDetails(
@@ -348,9 +346,8 @@ export class ApplicationDetailComponent {
 
   private async loadWindow(applicationId: string): Promise<void> {
     try {
-      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey['job'] ?? []);
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
 
       const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
@@ -463,12 +460,6 @@ export class ApplicationDetailComponent {
     }
 
     const filterParams: Params = {};
-    this.filters().forEach(f => {
-      const entry = f.getQueryParamEntry();
-      if (entry) {
-        filterParams[entry[0]] = entry[1];
-      }
-    });
 
     return {
       ...baseParams,
