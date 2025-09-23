@@ -3,6 +3,8 @@ package de.tum.cit.aet.usermanagement.web;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupCreationDTO;
 import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
@@ -23,6 +25,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
+
 
 /**
  * REST controller for managing research groups.
@@ -113,3 +116,4 @@ public class ResearchGroupResource {
         return ResponseEntity.ok(updatedResearchGroup);
     }
 }
+
