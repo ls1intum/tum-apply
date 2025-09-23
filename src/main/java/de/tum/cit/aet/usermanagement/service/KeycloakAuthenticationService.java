@@ -109,13 +109,12 @@ public class KeycloakAuthenticationService {
      */
     public void invalidateRefreshToken(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new UnauthorizedException("Missing refresh token");
+            return;
         }
 
         if (!logoutWithClient(this.clientId, this.clientSecret, refreshToken)
             && !logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)) {
             throw new UnauthorizedException("Failed to logout user");
-
         }
     }
 

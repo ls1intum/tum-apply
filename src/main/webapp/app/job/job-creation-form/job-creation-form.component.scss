@@ -190,3 +190,10 @@ input:disabled {
     color: inherit;
   }
 }
+
+.failed_color {
+  color: var(--p-danger-color);
+  .ng-fa-icon {
+    color: inherit;
+  }
+}

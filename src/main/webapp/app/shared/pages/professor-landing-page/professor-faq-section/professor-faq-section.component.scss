@@ -19,6 +19,16 @@
     color: var(--p-text-primary);
   }
 
+  .sub-subtitle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sub-subtitle {
+    margin: 0;
+  }
+
   .p-accordionheader {
     background: var(--p-background-default);
     color: var(--p-text-secondary);

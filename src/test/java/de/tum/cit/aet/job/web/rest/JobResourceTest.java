@@ -1,3 +1,4 @@
+
     package de.tum.cit.aet.job.web.rest;
 
     import static java.util.Map.entry;
@@ -80,7 +81,7 @@
                 userRepository, researchGroup,
                 null, "prof.doe@tum.de", "John", "Doe", "en",
                 "+49 89 1234", "https://doe.tum.de", "https://linkedin.com/in/doe",
-                "DE", null, "männlich"
+                "DE", null, "männlich",UUID.randomUUID().toString().replace("-", "").substring(0, 7)
             );
 
             JobTestData.saved(jobRepository, professor, researchGroup, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
