@@ -1,4 +1,4 @@
-.privacy-page {
+.about-us-page {
   color: var(--p-text-primary);
   max-width: 75rem;
   margin-right: auto;
@@ -6,10 +6,6 @@
   .headline {
     font-size: 2rem;
     font-weight: 700;
-  }
-
-  .headline + .text {
-    margin-top: 2rem;
   }
 
   .subheadline {
@@ -23,26 +19,11 @@
     text-align: justify;
     display: block;
     font-size: 1rem;
+    white-space: pre-line;
   }
 
-  .text + .text {
-    margin-top: 0.2rem;
-  }
-
-  .inline-text {
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-  }
-
-  .bullet-list {
-    list-style-type: disc;
-    padding-left: 1rem;
-    margin: 1rem 0;
-
-    li {
-      margin-bottom: 0.1rem;
-    }
+  .text.bloc {
+    line-height: 2rem;
   }
 
   .external-link {
