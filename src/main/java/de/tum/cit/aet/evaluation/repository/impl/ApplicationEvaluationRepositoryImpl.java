@@ -95,12 +95,12 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      */
     @Override
     public long findIndexOfApplication(
-        UUID applicationId,
-        UUID researchGroupId,
-        Collection<ApplicationState> states,
-        Sort sort,
-        Map<String, List<?>> dynamicFilters
-    ) {
+            UUID applicationId,
+            UUID researchGroupId,
+            Collection<ApplicationState> states,
+            Sort sort,
+            Map<String, List<?>> dynamicFilters,
+            String searchQuery) {
         Map<String, Object> params = new HashMap<>();
         params.put("groupId", researchGroupId);
         params.put("states", states.stream().map(ApplicationState::toString).toList());
@@ -109,16 +109,28 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.created_at", "a.application_id");
 
         StringBuilder sql = new StringBuilder(
-            """
-            WITH filtered_apps AS (
-                SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
-                FROM applications a
-                JOIN jobs j ON j.job_id = a.job_id
-                JOIN users u ON u.user_id = a.applicant_id
-                WHERE j.research_group_id = :groupId
-                  AND a.application_state IN (:states)
-            """.formatted(orderBy)
-        );
+                """
+                        WITH filtered_apps AS (
+                            SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
+                            FROM applications a
+                            JOIN jobs j ON j.job_id = a.job_id
+                            JOIN users u ON u.user_id = a.applicant_id
+                            WHERE j.research_group_id = :groupId
+                              AND a.application_state IN (:states)
+                        """.formatted(orderBy));
+
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            String searchPattern = "%" + searchQuery.trim().toLowerCase() + "%";
+            params.put("searchPattern", searchPattern);
+            sql.append("""
+                      AND (
+                        LOWER(u.first_name) LIKE :searchPattern OR
+                        LOWER(u.last_name) LIKE :searchPattern OR
+                        LOWER(CONCAT(u.first_name, ' ', u.last_name)) LIKE :searchPattern OR
+                        LOWER(j.title) LIKE :searchPattern
+                      )
+                    """);
+        }
 
         SqlQueryUtil.appendDynamicFilters(sql, FILTER_COLUMNS, dynamicFilters, params);
 

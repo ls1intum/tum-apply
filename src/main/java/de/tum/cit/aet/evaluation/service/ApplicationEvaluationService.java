@@ -210,18 +210,20 @@ public class ApplicationEvaluationService {
             UUID researchGroupId,
             SortDTO sortDTO,
             EvaluationFilterDTO filterDTO) {
-        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), null);
+
+        String searchQuery = filterDTO.getSearch();
+
+        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
 
         if (windowSize == null || windowSize <= 0 || (windowSize % 2) != 1) {
             throw new IllegalArgumentException("Window size must be a positive and odd integer");
         }
         long idx = applicationEvaluationRepository.findIndexOfApplication(
-            applicationId,
-            researchGroupId,
-            VIEWABLE_STATES,
-            sortDTO.toSpringSort(SORTABLE_FIELDS),
-            filterDTO.getFilters()
-        );
+                applicationId,
+                researchGroupId,
+                VIEWABLE_STATES,
+                sortDTO.toSpringSort(SORTABLE_FIELDS),
+                filterDTO.getFilters(), searchQuery);
 
         // Calculate how many items to include before and after the target application
         int half = (int) Math.floor((double) windowSize / 2);
@@ -239,7 +241,7 @@ public class ApplicationEvaluationService {
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
 
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                null);
+                searchQuery);
         return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx,
                 windowIndex);
     }
@@ -254,16 +256,16 @@ public class ApplicationEvaluationService {
      * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications and total record count
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetails(
-        UUID researchGroupId,
-        OffsetPageDTO offsetPageDTO,
-        SortDTO sortDTO,
-        EvaluationFilterDTO filterDTO
-    ) {
-        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
-
+            UUID researchGroupId,
+            OffsetPageDTO offsetPageDTO,
+            SortDTO sortDTO,
+            EvaluationFilterDTO filterDTO) {
+        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(),
+                sortDTO.toSpringSort(SORTABLE_FIELDS));
+        String searchQuery = filterDTO.getSearch();
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                null);
-        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), null);
+                searchQuery);
+        long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
         return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null);
     }
 
