@@ -2,12 +2,9 @@
   Layout
  */
 
-.content {
-  padding: 2rem 4rem;
+.page-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  gap: 3rem;
 
   .meta-info {
     width: 100%;

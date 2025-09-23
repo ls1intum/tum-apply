@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
-import { HttpErrorResponse } from '@angular/common/http';
+import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 
 import SharedModule from '../../shared/shared.module';
@@ -50,6 +50,7 @@ type JobFormMode = 'create' | 'edit';
     EditorComponent,
     ConfirmDialog,
     JobDetailComponent,
+    DividerModule,
   ],
   providers: [JobResourceApiService],
 })
