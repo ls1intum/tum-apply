@@ -65,7 +65,7 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "selected_language", nullable = false)
     private String selectedLanguage;
 
-    @Column(name = "university_id", length = 64, unique = true)
+    @Column(name = "university_id", length = 7, unique = true)
     private String universityId;
 
     // Contains all the Jobs that a User (Professor) has posted
