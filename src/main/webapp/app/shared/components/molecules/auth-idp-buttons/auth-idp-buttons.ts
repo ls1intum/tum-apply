@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
-import { IdpProvider } from '../../../../core/auth/keycloak.service';
+import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 @Component({

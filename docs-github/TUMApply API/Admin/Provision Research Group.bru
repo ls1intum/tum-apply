@@ -1,0 +1,23 @@
+meta {
+  name: Provision Research Group
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/admin/research-groups/provision
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Applied Engineering & Technology",
+    "headName": "Prof. Jane Doe",
+    "universityID": "ab123cde"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

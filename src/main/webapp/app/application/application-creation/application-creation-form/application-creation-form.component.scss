@@ -11,6 +11,10 @@
   color: var(--p-success-color);
 }
 
-.unsaved_color {
+.failed_color {
+  color: var(--p-danger-color);
+}
+
+.saving_color {
   color: var(--p-warn-color);
 }
