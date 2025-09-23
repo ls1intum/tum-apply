@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 
 import TranslateDirective from '../../../language/translate.directive';

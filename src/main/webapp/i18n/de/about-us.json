@@ -9,10 +9,6 @@
     "support": {
       "headline": "Support-Mailbox",
       "mailbox": "Bei Fragen wenden Sie sich bitte an: <a href='mailto:support-tum-apply.aet@xcit.tum.de' class='external-link'>support-tum-apply.aet@xcit.tum.de</a>"
-    },
-    "documentation": {
-      "headline": "Dokumentation",
-      "link": "Besuchen Sie unsere Dokumentation hier."
     }
   }
 }
