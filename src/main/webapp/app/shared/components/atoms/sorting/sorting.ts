@@ -26,16 +26,13 @@ export type SortDirection = 'ASC' | 'DESC';
   encapsulation: ViewEncapsulation.None,
 })
 export class Sorting {
-  // input of the sortable fields
   sortableFields = input.required<SortOption[]>();
 
   isAsc = signal<boolean>(false);
   selectedOption = signal<SortOption | undefined>(undefined);
 
-  // output of the selected sort option
   sortChange = output<Sort>();
 
-  // currently selected option, defaults to the first option if none is selected
   readonly currentOption = computed(() => this.selectedOption() ?? this.sortableFields()[0]);
 
   readonly selectOptions = computed<SelectOption[]>(() =>
