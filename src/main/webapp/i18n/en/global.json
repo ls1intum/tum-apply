@@ -184,6 +184,7 @@
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },
+    "filterBy": "Filter By:",
     "sortBy": "Sort By:",
     "upload": {
       "upload_instruction_standard": "Please upload",

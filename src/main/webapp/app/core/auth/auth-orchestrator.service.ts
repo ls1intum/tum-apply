@@ -1,11 +1,32 @@
-import { Injectable, Injector, computed, inject, signal } from '@angular/core';
+import { Injectable, Injector, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
 
-import { ApplyStep, AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep } from '../models/auth.model';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environments/environment';
+
+import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep } from './models/auth.model';
 
 @Injectable({ providedIn: 'root' })
+/**
+ * Purpose
+ * -------
+ * Central state machine and coordinator for the authentication dialog (login & registration flows).
+ *
+ * Responsibilities
+ * ----------------
+ *  - Maintains all high-level state for the modal dialog: open/close, current mode (login/register),
+ *    current sub-step for each flow (email, otp, etc.).
+ *  - Holds the shared form state (email, firstName, lastName) and UI state (busy flag, error messages).
+ *  - Computes progress indicators for multi-step registration and exposes a reactive cooldown timer
+ *    for OTP resend.
+ *  - Automatically starts the OTP cooldown whenever the user reaches the OTP step in login or register flow.
+ *  - Provides helper methods to switch flows, navigate between steps, and reset state.
+ *
+ * Notes
+ * -----
+ *  - Pure client-side state container: does not perform any network requests itself.
+ *  - Intended to be used by `AuthDialogService` and other UI components to drive the authentication UI.
+ */
 export class AuthOrchestratorService {
   // high level dialog state
   readonly isOpen = signal(false);
@@ -13,14 +34,12 @@ export class AuthOrchestratorService {
   // substates per flow
   loginStep = signal<LoginStep>('email');
   registerStep = signal<RegisterStep>('email');
-  applyStep = signal<ApplyStep>('inline');
   // form state (shared across flows)
   readonly email = signal<string>('');
   readonly firstName = signal<string>('');
   readonly lastName = signal<string>('');
   // UX state
   readonly isBusy = signal(false);
-  readonly isSendingCode = signal(false);
   readonly error = signal<string | null>(null);
   // progress for registration dialog
   readonly registerProgress = computed(() => {
@@ -60,6 +79,22 @@ export class AuthOrchestratorService {
     const remainingTimeInMs = cooldownUntilTimestamp - Date.now();
     return remainingTimeInMs <= 0 ? 0 : Math.ceil(remainingTimeInMs / 1000);
   });
+
+  // Auto-start OTP cooldown when the user enters the OTP step in login or register
+  private readonly _autoStartOtpCooldown = effect(
+    () => {
+      const mode = this.mode();
+      const login = this.loginStep();
+      const register = this.registerStep();
+      const cooldownSet = this.cooldownUntil() !== null;
+
+      if (!cooldownSet && ((mode === 'login' && login === 'otp') || (mode === 'register' && register === 'otp'))) {
+        this.startOtpRefreshCooldown();
+      }
+    },
+    { injector: this.injector },
+  );
+
   private onSuccessCb: (() => void) | undefined;
 
   // open the dialog in a specific mode
@@ -80,9 +115,6 @@ export class AuthOrchestratorService {
     }
     if (this.mode() === 'register') {
       this.registerStep.set('email');
-    }
-    if (this.mode() === 'apply-register') {
-      this.applyStep.set('inline');
     }
 
     this.onSuccessCb = opts?.onSuccess;
@@ -121,29 +153,38 @@ export class AuthOrchestratorService {
     this.error.set(msg);
   }
 
-  nextRegisterStep(): void {
-    const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
-    if (currentIndex < REGISTER_STEPS.length - 1) {
-      this.registerStep.set(REGISTER_STEPS[currentIndex + 1]);
+  nextStep(loginStep?: LoginStep): void {
+    if (this.mode() === 'login' && loginStep !== undefined) {
+      this.loginStep.set(loginStep);
+      return;
+    } else if (this.mode() === 'register') {
+      const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
+      if (currentIndex < REGISTER_STEPS.length - 1) {
+        this.registerStep.set(REGISTER_STEPS[currentIndex + 1]);
+        return;
+      }
+    }
+    this.close();
+  }
+
+  previousStep(): void {
+    if (this.mode() === 'login' && this.loginStep() !== 'email') {
+      this.loginStep.set('email');
     } else {
-      this.close();
+      const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
+      if (currentIndex > 0) {
+        this.registerStep.set(REGISTER_STEPS[currentIndex - 1]);
+      }
     }
   }
 
-  previousRegisterStep(): void {
-    const currentIndex = REGISTER_STEPS.indexOf(this.registerStep());
-    if (currentIndex > 0) {
-      this.registerStep.set(REGISTER_STEPS[currentIndex - 1]);
-    }
-  }
+  // -------- Helpers ----------
 
-  startCooldown(): void {
+  private startOtpRefreshCooldown(): void {
     const cooldown = environment.otp.cooldown;
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);
   }
-
-  // -------- Helpers ----------
 
   private setIfPresent(input: string | undefined, setter: (value: string) => void): void {
     const value = (input ?? '').replace(/\s+/g, ' ').trim();
@@ -154,7 +195,6 @@ export class AuthOrchestratorService {
 
   private resetAll(): void {
     this.isBusy.set(false);
-    this.isSendingCode.set(false);
     this.error.set(null);
     this.cooldownUntil.set(null);
   }

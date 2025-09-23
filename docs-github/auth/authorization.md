@@ -200,7 +200,7 @@ The `GET /api/users/me` endpoint allows the client to fetch details of the curre
 
 ### 📁 Related Files
 
-- `AuthenticationService.java` – user creation and role loading
+- `ServerAuthenticationService.java` – user creation and role loading
 - `CustomJwtAuthenticationConverter.java` – maps JWT to authorities
 - `SecurityConfiguration.java` – configures access restrictions
 - `UserRepository.java` – uses `@EntityGraph` to preload roles
