@@ -43,3 +43,19 @@ liquibase {
 
 liquibaseDiff.dependsOn compileJava
 liquibaseDiffChangelog.dependsOn compileJava
+
+tasks.register("liquibaseUpdateCli", JavaExec) {
+  group = "liquibase"
+  description = "Liquibase update via CLI"
+  classpath = sourceSets.main.runtimeClasspath + configurations.liquibaseRuntime
+  mainClass = "liquibase.integration.commandline.LiquibaseCommandLine"
+  args "update"   // rely on liquibase.properties for connection settings
+}
+
+// keep the public name and bypass the plugin actions
+plugins.withId("org.liquibase.gradle") {
+  tasks.named("liquibaseUpdate").configure {
+    dependsOn tasks.named("liquibaseUpdateCli")
+    onlyIf { false }
+  }
+}
