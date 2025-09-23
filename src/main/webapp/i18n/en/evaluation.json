@@ -16,6 +16,7 @@
     "reject": "Reject",
     "tableHeaders": {
       "name": "Name",
+      "lastName": "Last Name",
       "status": "Status",
       "job": "Job",
       "appliedAt": "Applied at"

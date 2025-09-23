@@ -16,6 +16,7 @@
     "reject": "Ablehnen",
     "tableHeaders": {
       "name": "Name",
+      "lastName": "Nachname",
       "status": "Status",
       "job": "Position",
       "appliedAt": "Beworben am"

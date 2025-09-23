@@ -10,6 +10,7 @@
       [multipleEntities]="'evaluation.applications' | translate"
       (searchOutput)="loadOnSearchEmit($event)"
       (filterOutput)="loadOnFilterEmit($event)"
+      (sortOutput)="loadOnSortEmit($event)"
       [filters]="[
         {
           filterLabel: 'evaluation.tableHeaders.job',
@@ -23,6 +24,7 @@
           shouldTranslateOptions: true,
         },
       ]"
+      [sortableFields]="sortableFields"
     />
 
     <jhi-dynamic-table

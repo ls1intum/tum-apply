@@ -2,7 +2,9 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.exception.EmailVerificationFailedException;
 import de.tum.cit.aet.core.util.CookieUtils;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.OtpPurpose;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthSessionInfoDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
@@ -86,8 +88,9 @@ public class OtpFlowService {
         String keycloakUserId = keycloakUserService.ensureUser(body);
         String firstName = body.profile() != null ? body.profile().firstName() : null;
         String lastName = body.profile() != null ? body.profile().lastName() : null;
-        userService.upsertUser(keycloakUserId, body.email(), firstName, lastName);
-        return getTokens(keycloakUserId, response);
+        User user = userService.upsertUser(keycloakUserId, body.email(), firstName, lastName);
+        boolean profileRequired = StringUtil.isBlank(user.getFirstName()) || StringUtil.isBlank(user.getLastName());
+        return getTokens(keycloakUserId, response, profileRequired);
     }
 
     /**
@@ -98,8 +101,12 @@ public class OtpFlowService {
      * @return an {@link AuthSessionInfoDTO} with token lifetimes
      */
     private AuthSessionInfoDTO getTokens(String keycloakUserId, HttpServletResponse response) {
+        return getTokens(keycloakUserId, response, false);
+    }
+
+    private AuthSessionInfoDTO getTokens(String keycloakUserId, HttpServletResponse response, boolean profileRequired) {
         AuthResponseDTO tokens = keycloakAuthService.exchangeForUserTokens(keycloakUserId);
         CookieUtils.setAuthCookies(response, tokens);
-        return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());
+        return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn(), profileRequired);
     }
 }

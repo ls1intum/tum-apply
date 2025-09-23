@@ -77,6 +77,7 @@
     "faq": {
       "headline": "Frequently Asked Questions",
       "subheadline": "Find quick answers to common queries about TUMApply",
+      "sub-subheadline": "For further questions, please refer to the <a href='https://ls1intum.github.io/tum-apply' class='external-link'><strong>documentation</strong> <span class='icon icon-external-link'></span></a>",
       "questions": {
         "login": {
           "title": "How do I log in to TUMApply?",
