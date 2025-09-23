@@ -243,7 +243,8 @@
       },
       "status": {
         "SAVING": "Saving changes...",
-        "SAVED": "Changes saved"
+        "SAVED": "Changes saved",
+        "FAILED": "Failed saving changes"
       }
     },
     "applicationPage1": {

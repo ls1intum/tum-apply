@@ -12,6 +12,7 @@ import { ButtonColor } from 'app/shared/components/atoms/button/button.component
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { DividerModule } from 'primeng/divider';
+import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -28,7 +29,6 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 
 type JobFormMode = 'create' | 'edit';
-type SavingState = 'SAVED' | 'SAVING';
 
 @Component({
   selector: 'jhi-job-creation-form',
@@ -81,7 +81,7 @@ export class JobCreationFormComponent {
   jobId = signal<string>('');
   userId = signal<string>('');
   isLoading = signal<boolean>(true);
-  savingState = signal<SavingState>('SAVED');
+  savingState = signal<SavingState>(SavingStates.SAVED);
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
   publishAttempted = signal<boolean>(false);
 
@@ -140,7 +140,14 @@ export class JobCreationFormComponent {
 
   /** Computed CSS classes for saving badge based on current saving state */
   readonly savingBadgeCalculatedClass = computed(
-    () => `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === 'SAVED' ? 'saved_color' : 'saving_color'}`,
+    () =>
+      `flex flex-wrap justify-around content-center gap-1 ${
+        this.savingState() === SavingStates.SAVED
+          ? 'saved_color'
+          : this.savingState() === SavingStates.FAILED
+            ? 'failed_color'
+            : 'saving_color'
+      }`,
   );
 
   // Step configuration
@@ -497,6 +504,7 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(currentData);
       this.savingState.set('SAVED');
     } catch {
+      this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');
     }
   }
