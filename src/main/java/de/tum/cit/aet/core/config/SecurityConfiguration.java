@@ -110,6 +110,8 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/auth/otp-complete")
                     .permitAll()
+                    .requestMatchers("/api/auth/logout")
+                    .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()
                     .requestMatchers("/login/webauthn")

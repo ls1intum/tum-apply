@@ -33,13 +33,13 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
-import { AuthOrchestratorService } from '../../../shared/auth/data-access/auth-orchestrator.service';
-import { AuthService } from '../../../shared/auth/data-access/auth.service';
+import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
 import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
 import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
+import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
 const SavingStates = {
   SAVED: 'SAVED',
@@ -330,11 +330,11 @@ export default class ApplicationCreationFormComponent {
   });
   private readonly applicationResourceService = inject(ApplicationResourceApiService);
   private readonly accountService = inject(AccountService);
+  private readonly authFacade = inject(AuthFacadeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
-  private readonly authService = inject(AuthService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
 
@@ -578,8 +578,7 @@ export default class ApplicationCreationFormComponent {
     this.authOrchestrator.email.set(normalizedEmail);
     this.authOrchestrator.firstName.set(normalizedFirstName);
     this.authOrchestrator.lastName.set(normalizedLastName);
-    this.authOrchestrator.clearError();
-    await this.authService.sendOtp(true);
+    await this.authFacade.requestOtp(true);
     this.otpDialogRef = this.dialogService.open(OtpInput, {
       header: this.translateService.instant('auth.common.otp.title'),
       data: { registration: true },
