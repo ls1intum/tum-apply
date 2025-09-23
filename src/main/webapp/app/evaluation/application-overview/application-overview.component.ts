@@ -5,7 +5,8 @@ import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
-import { FilterChange, SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
