@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -33,6 +33,7 @@ export class FilterMultiselect {
   filterLabel = input.required<string>();
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
+  shouldTranslateOptions = input<boolean>(false);
 
   selectedValues = signal<string[]>([]);
 
@@ -46,7 +47,18 @@ export class FilterMultiselect {
     const search = this.searchTerm().toLowerCase().trim();
     const options = this.filterOptions();
 
-    return options.filter(option => option.toLowerCase().includes(search));
+    if (!search) {
+      return options;
+    }
+
+    return options.filter(option => {
+      if (this.shouldTranslateOptions()) {
+        const translatedValue = this.translateService.instant(option).toLowerCase();
+        return translatedValue.includes(search);
+      } else {
+        return option.toLowerCase().includes(search);
+      }
+    });
   });
 
   sortedOptions = computed(() => {
@@ -78,6 +90,7 @@ export class FilterMultiselect {
   totalCount = computed(() => this.filterOptions().length);
 
   private readonly elementRef = inject(ElementRef);
+  private readonly translateService = inject(TranslateService);
 
   toggleDropdown(): void {
     this.isOpen.update(current => !current);
