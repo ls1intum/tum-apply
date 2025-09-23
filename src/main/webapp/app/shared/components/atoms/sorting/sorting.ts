@@ -1,6 +1,4 @@
 import { Component, ViewEncapsulation, computed, input, output, signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
-import TranslateDirective from 'app/shared/language/translate.directive';
 
 import { SelectComponent, SelectOption } from '../select/select.component';
 import { ButtonComponent } from '../button/button.component';
@@ -20,7 +18,7 @@ export type SortDirection = 'ASC' | 'DESC';
 
 @Component({
   selector: 'jhi-sorting',
-  imports: [SelectComponent, ButtonComponent, TranslateModule, TranslateDirective],
+  imports: [SelectComponent, ButtonComponent],
   templateUrl: './sorting.html',
   styleUrl: './sorting.scss',
   encapsulation: ViewEncapsulation.None,
