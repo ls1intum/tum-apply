@@ -29,7 +29,6 @@ const sidebars: SidebarsConfig = {
   ],
    */
   tutorialSidebar: [
-    'faq',
     {
       type: 'category',
       label: 'Applicants',

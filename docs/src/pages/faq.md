@@ -1,8 +1,3 @@
----
-sidebar_label: FAQ
-sidebar_position: 0
----
-
 # Frequently Asked Questions (FAQ)
 
 This FAQ page provides quick answers to the most common questions from users of TUMApply. If you need more help with
