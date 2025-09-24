@@ -88,7 +88,6 @@
     right: 2rem;
     top: 1.25rem;
     border-radius: 50%;
-
     position: absolute;
     align-items: center;
     justify-content: center;
@@ -100,6 +99,7 @@
       background-color: var(--p-background-surface);
     }
   }
+  
   .p-select-clear-icon svg path {
     fill: var(--p-text-secondary);
   }
