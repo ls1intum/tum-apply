@@ -7,14 +7,6 @@
   </div>
   <div class="my-positions-container">
     <div class="body">
-      <jhi-sort-bar
-        [totalRecords]="totalRecords()"
-        [sortableFields]="sortableFields"
-        (sortChange)="loadOnSortEmit($event)"
-        [singleEntity]="'job' | translate"
-        [multipleEntities]="'jobs' | translate"
-        [shouldTranslate]="true"
-      />
       <jhi-search-filter-sort-bar
         [searchText]="'myPositionsPage.searchFilterSortBar.searchText' | translate"
         [totalRecords]="totalRecords()"
