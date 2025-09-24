@@ -243,7 +243,7 @@ dependencies {
       // needed to reduce the number of vulnerabilities, also see https://mvnrepository.com/artifact/org.yaml/snakeyaml
     }
   }
-  runtimeOnly "com.h2database:h2:2.3.232"
+  runtimeOnly "com.h2database:h2:2.4.240"
 
 
   testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
