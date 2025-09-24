@@ -9,14 +9,13 @@ import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TagComponent } from '../../../shared/components/atoms/tag/tag.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
-import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 import { CreatedJobDTO } from '../../../generated/model/createdJobDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
-
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
@@ -27,7 +26,6 @@ import { JobResourceApiService } from '../../../generated/api/jobResourceApi.ser
     DynamicTableComponent,
     TranslateDirective,
     TranslateModule,
-    SortBarComponent,
     ConfirmDialog,
     SearchFilterSortBar,
   ],
@@ -46,11 +44,11 @@ export class MyPositionsPageComponent {
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'myPositionsPage.sortingOptions.lastModified', field: 'lastModifiedAt', type: 'NUMBER' },
-    { displayName: 'myPositionsPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
-    { displayName: 'myPositionsPage.sortingOptions.status', field: 'state', type: 'TEXT' },
-    { displayName: 'myPositionsPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
-    { displayName: 'myPositionsPage.sortingOptions.created', field: 'createdAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.jobTitle', fieldName: 'title', type: 'TEXT' },
+    { displayName: 'myPositionsPage.sortingOptions.status', fieldName: 'state', type: 'TEXT' },
+    { displayName: 'myPositionsPage.sortingOptions.startDate', fieldName: 'startDate', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.sortingOptions.created', fieldName: 'createdAt', type: 'NUMBER' },
   ];
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -114,7 +112,7 @@ export class MyPositionsPageComponent {
 
   loadOnSortEmit(event: Sort): void {
     this.page.set(0);
-    this.sortBy.set(event.field ?? this.sortableFields[0].field);
+    this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
     void this.loadJobs();
   }
