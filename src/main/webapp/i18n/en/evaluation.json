@@ -91,8 +91,8 @@
       "moreDocuments": "+{{count}} more documents"
     },
     "errors": {
-      "loadJobNames": "Failed to load job names.",
-      "loadApplication": "Failed to load application."
+      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues.",
+      "loadApplication": "Failed to load application. Please try refreshing the page, or contact us if the problem continues."
     }
   }
 }

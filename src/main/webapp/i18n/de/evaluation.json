@@ -91,8 +91,8 @@
       "moreDocuments": "+{{count}} weitere Dokumente"
     },
     "errors": {
-      "loadJobNames": "Fehler beim Laden der Jobnamen.",
-      "loadApplication": "Fehler beim Laden der Bewerbungen."
+      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+      "loadApplication": "Fehler beim Laden der Bewerbungen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   }
 }
