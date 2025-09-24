@@ -10,6 +10,13 @@ describe('Sorting', () => {
     { displayName: 'Date', fieldName: 'date', type: 'TEXT' },
   ];
 
+  function createSortingFixture() {
+    const fixture = TestBed.createComponent(Sorting);
+    fixture.componentRef.setInput('sortableFields', mockSortOptions);
+    fixture.detectChanges();
+    return fixture;
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Sorting],
@@ -18,17 +25,13 @@ describe('Sorting', () => {
   });
 
   it('should use first sortable field as default current option', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     expect(sortingFixture.componentInstance.currentOption()).toEqual(mockSortOptions[0]);
   });
 
   it('should generate correct select options from sortable fields', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     const selectOptions = sortingFixture.componentInstance.selectOptions();
     expect(selectOptions).toEqual([
@@ -39,9 +42,7 @@ describe('Sorting', () => {
   });
 
   it('should return correct sort icon for TEXT type', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-a-z');
 
@@ -50,9 +51,7 @@ describe('Sorting', () => {
   });
 
   it('should return correct sort icon for NUMBER type', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     // Select the Age field (NUMBER type)
     sortingFixture.componentInstance.selectedOption.set(mockSortOptions[1]);
@@ -64,9 +63,7 @@ describe('Sorting', () => {
   });
 
   it('should change selected option and emit sort change', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     const sortChangeSpy = vi.spyOn(sortingFixture.componentInstance.sortChange, 'emit');
 
@@ -80,9 +77,7 @@ describe('Sorting', () => {
   });
 
   it('should set undefined option when empty value is selected', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     const sortChangeSpy = vi.spyOn(sortingFixture.componentInstance.sortChange, 'emit');
 
@@ -97,9 +92,7 @@ describe('Sorting', () => {
   });
 
   it('should toggle direction and emit sort change', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     const sortChangeSpy = vi.spyOn(sortingFixture.componentInstance.sortChange, 'emit');
 
@@ -123,9 +116,7 @@ describe('Sorting', () => {
   });
 
   it('should return correct selected select option', () => {
-    const sortingFixture = TestBed.createComponent(Sorting);
-    sortingFixture.componentRef.setInput('sortableFields', mockSortOptions);
-    sortingFixture.detectChanges();
+    const sortingFixture = createSortingFixture();
 
     // Default should return first option
     expect(sortingFixture.componentInstance.selectedSelectOption()).toEqual({
