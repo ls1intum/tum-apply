@@ -8,6 +8,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TagComponent } from '../../../shared/components/atoms/tag/tag.component';
@@ -28,6 +29,7 @@ import { JobResourceApiService } from '../../../generated/api/jobResourceApi.ser
     TranslateModule,
     SortBarComponent,
     ConfirmDialog,
+    SearchFilterSortBar,
   ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
@@ -38,6 +40,7 @@ export class MyPositionsPageComponent {
   page = signal<number>(0);
   pageSize = signal<number>(10);
   userId = signal<string>('');
+  searchQuery = signal<string>('');
 
   sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
@@ -100,6 +103,12 @@ export class MyPositionsPageComponent {
 
     this.page.set(page);
     this.pageSize.set(size);
+    void this.loadJobs();
+  }
+
+  onSearchEmit(searchQuery: string): void {
+    this.page.set(0);
+    this.searchQuery.set(searchQuery);
     void this.loadJobs();
   }
 
@@ -166,6 +175,7 @@ export class MyPositionsPageComponent {
           undefined, // Optional state filter
           this.sortBy(),
           this.sortDirection(),
+          this.searchQuery() || undefined,
         ),
       );
       this.jobs.set(pageData.content ?? []);

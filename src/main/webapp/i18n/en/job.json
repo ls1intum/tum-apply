@@ -127,6 +127,9 @@
       "title": "Manage your Doctorate Positions",
       "createButton": "Create New Position"
     },
+    "searchFilterSortBar": {
+      "searchText": "Search Positions..."
+    },
     "tableColumn": {
       "supervisingProfessor": "Supervising Professor",
       "job": "Job",

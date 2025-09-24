@@ -118,11 +118,11 @@ public class JobResource {
      */
     @GetMapping("/professor")
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
-        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
-    ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO));
+            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+            @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
+            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+            @RequestParam(required = false) String searchQuery) {
+        return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
     }
 
     /**

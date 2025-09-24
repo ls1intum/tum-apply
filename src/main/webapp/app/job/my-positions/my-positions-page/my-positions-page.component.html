@@ -15,6 +15,13 @@
         [multipleEntities]="'jobs' | translate"
         [shouldTranslate]="true"
       />
+      <jhi-search-filter-sort-bar
+        [searchText]="'myPositionsPage.searchFilterSortBar.searchText' | translate"
+        [totalRecords]="totalRecords()"
+        [singleEntity]="'job' | translate"
+        [multipleEntities]="'jobs' | translate"
+        (searchOutput)="onSearchEmit($event)"
+      />
       <div class="table-wrapper">
         <jhi-dynamic-table
           [columns]="columns()"

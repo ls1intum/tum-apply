@@ -127,6 +127,9 @@
       "title": "Verwalte deine Doktorandenstellen",
       "createButton": "Neue Stelle erstellen"
     },
+    "searchFilterSortBar": {
+      "searchText": "Stellen suchen..."
+    },
     "tableColumn": {
       "supervisingProfessor": "Betreuender Professor",
       "job": "Stelle",
