@@ -12,7 +12,9 @@
       </not>
     </preConditions>
     <addColumn tableName="research_groups">
-      <column name="university_id" type="VARCHAR(64)"/>
+      <column name="university_id" type="CHAR(7)">
+        <constraints nullable="false" checkConstraint="CHAR_LENGTH(university_id) = 7"/>
+      </column>
     </addColumn>
   </changeSet>
 
@@ -25,7 +27,7 @@
     </preConditions>
     <addColumn tableName="users">
       <column name="university_id" type="CHAR(7)">
-        <constraints nullable="false" checkConstraint="CHAR_LENGTH(university_id) = 7"/>
+        <constraints checkConstraint="CHAR_LENGTH(university_id) = 7"/>
       </column>
     </addColumn>
   </changeSet>
