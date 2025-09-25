@@ -2141,6 +2141,29 @@
         }
       }
     },
+    "/api/jobs/allNames": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getAllJobNamesByProfessor",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/evaluation/jobs": {
       "get": {
         "tags": [
