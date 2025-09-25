@@ -291,8 +291,8 @@ jhipster:
 # Application specific properties:
 aet:
   email:
-    enabled: false
-    from:
+    enabled: ${AET_EMAIL_ENABLED:false}
+    from: ${AET_EMAIL_FROM:tum-apply.aet@xcit.tum.de}
   storage:
     root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400
