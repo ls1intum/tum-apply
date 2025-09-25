@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 
 import { ButtonComponent } from '../../../components/atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
 
 @Component({
   selector: 'jhi-professor-hero-section',
@@ -15,15 +16,24 @@ import TranslateDirective from '../../../language/translate.directive';
 })
 export class ProfessorHeroSectionComponent {
   imagesWithBackgroundClass = [
-    { image: 'professor-landing-page-hero-section-1', backgroundClass: 'hero-background-professor-landing-page-hero-section-1' },
-    { image: 'professor-landing-page-hero-section-2', backgroundClass: 'hero-background-professor-landing-page-hero-section-2' },
-    { image: 'professor-landing-page-hero-section-3', backgroundClass: 'hero-background-professor-landing-page-hero-section-3' },
+    {
+      image: 'professor-landing-page-hero-section-1',
+      backgroundClass: 'hero-background-professor-landing-page-hero-section-1',
+    },
+    {
+      image: 'professor-landing-page-hero-section-2',
+      backgroundClass: 'hero-background-professor-landing-page-hero-section-2',
+    },
+    {
+      image: 'professor-landing-page-hero-section-3',
+      backgroundClass: 'hero-background-professor-landing-page-hero-section-3',
+    },
   ];
 
   private authFacadeService = inject(AuthFacadeService);
   private router = inject(Router);
 
   async navigateToGetStarted(): Promise<void> {
-    await this.authFacadeService.loginWithTUM('/my-positions');
+    await this.authFacadeService.loginWithProvider(IdpProvider.TUM, '/my-positions');
   }
 }

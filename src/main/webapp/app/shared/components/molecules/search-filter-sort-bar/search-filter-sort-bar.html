@@ -6,14 +6,23 @@
       </p-inputicon>
       <input type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
     </p-iconfield>
-    @for (filter of filters(); track filter.filterLabel) {
-      <jhi-filter-multiselect
-        [filterLabel]="filter.filterLabel"
-        [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
-        [filterOptions]="filter.filterOptions"
-        (filterChange)="onFilterChange($event)"
-      />
-    }
+    <div class="filter-sort flex items-center flex-wrap gap-4">
+      @if (filters().length > 0) {
+        <span jhiTranslate="entity.filterBy"></span>
+        @for (filter of filters(); track filter.filterLabel) {
+          <jhi-filter-multiselect
+            [filterLabel]="filter.filterLabel"
+            [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
+            [filterOptions]="filter.filterOptions"
+            (filterChange)="onFilterChange($event)"
+          />
+        }
+      }
+      @if (sortableFields(); as fields) {
+        <span jhiTranslate="entity.sortBy"></span>
+        <jhi-sorting [sortableFields]="fields" (sortChange)="onSortChange($event)" />
+      }
+    </div>
   </div>
   <div
     class="record-count"

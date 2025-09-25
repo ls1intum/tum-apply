@@ -28,4 +28,8 @@ export default class FooterComponent {
   navigateToPrivacy(): void {
     void this.router.navigate(['/privacy']);
   }
+
+  navigateToAboutUs(): void {
+    void this.router.navigate(['/about-us']);
+  }
 }
