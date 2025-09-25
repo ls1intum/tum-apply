@@ -91,5 +91,34 @@ aet:
   storage:
     root: build/test-docs
     max-size-bytes: 26214400
+  email:
+    enabled: false
+  download:
+    deterministic-zip: true
   client:
     url:
+
+keycloak:
+  url: http://localhost:9080
+  realm: tumapply
+  # Client ID used by the browser/client application to authenticate with Keycloak
+  client-id: tumapply-client
+  # Enables Keycloak-related debug logging (true/false)
+  logging: true
+  server:
+    # Client ID used by the server to authenticate with Keycloak
+    client-id: tumapply-server-client
+    # Secret used by the server to authenticate securely with Keycloak
+    client-secret: tumapply-server-secret
+  admin:
+    # Admin service-account client used by the server for Keycloak Admin API calls (create users, set emailVerified, backchannel logout)
+    client-id: tumapply-otp-admin
+    # Secret for the admin client; generate in Keycloak → Clients → tumapply-otp-admin → Credentials
+    client-secret: tumapply-otp-secret
+security:
+  otp:
+    length: 8
+    ttl-seconds: 900
+    max-attempts: 6
+    resend-cooldown-seconds: 60
+    hmac-secret: 3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=
