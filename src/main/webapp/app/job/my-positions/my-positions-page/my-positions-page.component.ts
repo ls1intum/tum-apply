@@ -80,19 +80,19 @@ export class MyPositionsPageComponent {
     ];
   });
 
-  readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: 'jobState.draft',
-    PUBLISHED: 'jobState.published',
-    CLOSED: 'jobState.closed',
-    APPLICANT_FOUND: 'jobState.applicantFound',
-  }));
-
   readonly availableStatusOptions: { key: string; label: string }[] = [
     { key: 'DRAFT', label: 'jobState.draft' },
     { key: 'PUBLISHED', label: 'jobState.published' },
     { key: 'CLOSED', label: 'jobState.closed' },
     { key: 'APPLICANT_FOUND', label: 'jobState.applicantFound' },
   ];
+
+  readonly stateTextMap = computed<Record<string, string>>(() =>
+    this.availableStatusOptions.reduce<Record<string, string>>((acc, cur) => {
+      acc[cur.key] = cur.label;
+      return acc;
+    }, {}),
+  );
 
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
