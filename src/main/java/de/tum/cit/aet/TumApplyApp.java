@@ -2,7 +2,6 @@ package de.tum.cit.aet;
 
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.CRLFLogConverter;
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,19 +38,6 @@ public class TumApplyApp {
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
-        // Load .env.local only if it exists (for local development)
-        Dotenv dotenv = Dotenv.configure().directory("./").filename(".env.local").ignoreIfMalformed().ignoreIfMissing().load();
-
-        dotenv
-            .entries()
-            .forEach(entry -> {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (System.getenv(key) == null && System.getProperty(key) == null) {
-                    System.setProperty(key, value);
-                }
-            });
-
         SpringApplication app = new SpringApplication(TumApplyApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
