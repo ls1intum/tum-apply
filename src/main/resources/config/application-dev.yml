@@ -51,11 +51,6 @@ spring:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:
     cache: false
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_URL}realms/${KEYCLOAK_REALM}
 springdoc:
   api-docs:
     enabled: true
