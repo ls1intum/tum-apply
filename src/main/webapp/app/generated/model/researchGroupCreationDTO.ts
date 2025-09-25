@@ -7,17 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { UserResearchGroupRole } from './userResearchGroupRole';
 
 
-export interface ResearchGroup { 
-    createdAt?: string;
-    lastModifiedAt?: string;
-    researchGroupId?: string;
-    head?: string;
-    name?: string;
-    abbreviation?: string;
+export interface ResearchGroupCreationDTO { 
+    name: string;
+    headName: string;
+    universityId: string;
     email?: string;
+    abbreviation?: string;
     website?: string;
     school?: string;
     description?: string;
@@ -25,7 +22,5 @@ export interface ResearchGroup {
     street?: string;
     postalCode?: string;
     city?: string;
-    universityId?: string;
-    userRoles?: Array<UserResearchGroupRole>;
 }
 
