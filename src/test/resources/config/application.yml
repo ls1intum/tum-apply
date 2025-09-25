@@ -32,7 +32,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9080/realms/jhipster
+          issuer-uri: http://localhost:9080/realms/tumapply
           principal-claim-name: preferred_username
   task:
     execution:
@@ -98,3 +98,25 @@ aet:
   client:
     url:
 
+keycloak:
+  url: http://localhost:9080
+  realm: tumapply
+  client-id: tumapply-client
+  users:
+    admin:
+      username: admin
+      password: admin
+  server:
+    client-id: tumapply-server-client
+    client-secret: tumapply-server-secret
+  admin:
+    client-id: tumapply-otp-admin
+    client-secret: tumapply-otp-secret
+
+security:
+  otp:
+    length: 8
+    ttl-seconds: 900
+    max-attempts: 6
+    resend-cooldown-seconds: 60
+    hmac-secret: 3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=
