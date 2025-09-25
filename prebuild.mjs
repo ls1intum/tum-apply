@@ -48,16 +48,15 @@ function inferVersion() {
 const args = process.argv.slice(2);
 const developFlag = args.includes('--develop');
 const keycloakConfig = {
-  url: process.env.KEYCLOAK_URL ?? 'http://localhost:9080/',
-  realm: process.env.KEYCLOAK_REALM ?? 'tumapply',
-  clientId: process.env.KEYCLOAK_CLIENT_ID ?? 'tumapply-client',
-  // Align to new env var name; default true like .env.example
-  enableLogging: (process.env.KEYCLOAK_ENABLE_LOGGING ?? 'true') === 'true',
+  url: 'http://localhost:9080/',
+  realm: 'tumapply',
+  clientId: 'tumapply-client',
+  enableLogging: developFlag,
 };
 const otpConfig = {
-  length: Number(process.env.OTP_LENGTH ?? 8),
-  cooldown: Number(process.env.OTP_RESEND_COOLDOWN_SECONDS ?? 60),
-  ttlSeconds: Number(process.env.OTP_TTL_SECONDS ?? 900),
+  length: 8,
+  cooldown: 60,
+  ttlSeconds: 900,
 };
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
