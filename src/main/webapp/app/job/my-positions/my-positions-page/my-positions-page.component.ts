@@ -44,6 +44,10 @@ export class MyPositionsPageComponent {
   sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
+  _loadJobNamesEffect = effect(() => {
+    void this.loadAllJobNames();
+  });
+
   readonly sortableFields: SortOption[] = [
     { displayName: 'myPositionsPage.sortingOptions.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
     { displayName: 'myPositionsPage.sortingOptions.jobTitle', fieldName: 'title', type: 'TEXT' },
@@ -109,10 +113,6 @@ export class MyPositionsPageComponent {
   private accountService = inject(AccountService);
   private router = inject(Router);
   private toastService = inject(ToastService);
-
-  private loadJobNamesEffect = effect(() => {
-    void this.loadAllJobNames();
-  });
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
