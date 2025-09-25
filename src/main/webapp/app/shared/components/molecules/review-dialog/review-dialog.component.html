@@ -34,6 +34,8 @@
 <!-- ───────── Template rendered in ACCEPT mode ───────── -->
 <ng-template #acceptTemplate>
   <div>
+    <!-- TODO: Removed until editor is fixed -->
+    <!--
     <jhi-editor
       [label]="'evaluation.message' | translate"
       [placeholder]="'evaluation.writeMessage' | translate"
@@ -41,6 +43,7 @@
       (modelChange)="editorModel.set($event)"
       [required]="true"
     />
+    -->
     <ul class="review-checkboxes">
       <li>
         <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
