@@ -130,7 +130,8 @@
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
       "filterOptions": {
-        "jobSearchPlaceholder": "Search Jobs..."
+        "jobSearchPlaceholder": "Search Jobs...",
+        "stateSearchPlaceholder": "Search Status..."
       }
     },
     "tableColumn": {

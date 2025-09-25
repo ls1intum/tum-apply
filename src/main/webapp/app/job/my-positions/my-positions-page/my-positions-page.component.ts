@@ -87,6 +87,15 @@ export class MyPositionsPageComponent {
     APPLICANT_FOUND: 'jobState.applicantFound',
   }));
 
+  readonly availableStatusOptions: { key: string; label: string }[] = [
+    { key: 'DRAFT', label: 'jobState.draft' },
+    { key: 'PUBLISHED', label: 'jobState.published' },
+    { key: 'CLOSED', label: 'jobState.closed' },
+    { key: 'APPLICANT_FOUND', label: 'jobState.applicantFound' },
+  ];
+
+  readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
+
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     DRAFT: 'info',
     PUBLISHED: 'success',

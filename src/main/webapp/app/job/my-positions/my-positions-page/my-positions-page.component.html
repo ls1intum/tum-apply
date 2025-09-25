@@ -21,6 +21,12 @@
             filterSearchPlaceholder: 'myPositionsPage.searchFilterSortBar.filterOptions.jobSearchPlaceholder',
             filterOptions: allJobNames(),
           },
+          {
+            filterLabel: 'evaluation.tableHeaders.status',
+            filterSearchPlaceholder: 'myPositionsPage.searchFilterSortBar.filterOptions.stateSearchPlaceholder',
+            filterOptions: availableStatusLabels,
+            shouldTranslateOptions: true,
+          },
         ]"
         [sortableFields]="sortableFields"
       />
