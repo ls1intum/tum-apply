@@ -33,16 +33,16 @@ public class EmailVerificationService {
     private final AsyncEmailSender asyncEmailSender;
     private final UserRepository userRepository;
 
-    @Value("${security.otp.length:8}")
+    @Value("${security.otp.length}")
     private int otpLength;
 
-    @Value("${security.otp.ttl-seconds:900}")
+    @Value("${security.otp.ttl-seconds}")
     private long otpTtlSeconds;
 
-    @Value("${security.otp.max-attempts:6}")
+    @Value("${security.otp.max-attempts}")
     private int otpMaxAttempts;
 
-    @Value("${security.otp.hmac-secret:dGVzdC1zZWNyZXQ=}")
+    @Value("${security.otp.hmac-secret}")
     private String otpHmacSecret;
 
     public EmailVerificationService(
