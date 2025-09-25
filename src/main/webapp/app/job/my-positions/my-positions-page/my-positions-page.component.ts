@@ -191,11 +191,12 @@ export class MyPositionsPageComponent {
       if (this.userId() === '') {
         return;
       }
+      const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getJobsByProfessor(
           this.pageSize(),
           this.page(),
-          undefined, // Optional title filter
+          jobNameFilters.length ? jobNameFilters : undefined,
           undefined, // Optional state filter
           this.sortBy(),
           this.sortDirection(),

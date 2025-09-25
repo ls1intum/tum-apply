@@ -452,7 +452,7 @@ export class JobResourceApiService extends BaseService {
     /**
      * @param pageSize 
      * @param pageNumber 
-     * @param title 
+     * @param titles 
      * @param state 
      * @param sortBy 
      * @param direction 
@@ -460,18 +460,22 @@ export class JobResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, title?: string, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageCreatedJobDTO>;
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, title?: string, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageCreatedJobDTO>>;
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, title?: string, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageCreatedJobDTO>>;
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, title?: string, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getJobsByProfessor(pageSize?: number, pageNumber?: number, titles?: Array<string>, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageCreatedJobDTO>;
+    public getJobsByProfessor(pageSize?: number, pageNumber?: number, titles?: Array<string>, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageCreatedJobDTO>>;
+    public getJobsByProfessor(pageSize?: number, pageNumber?: number, titles?: Array<string>, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageCreatedJobDTO>>;
+    public getJobsByProfessor(pageSize?: number, pageNumber?: number, titles?: Array<string>, state?: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>pageSize, 'pageSize');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>pageNumber, 'pageNumber');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>title, 'title');
+        if (titles) {
+            titles.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'titles');
+            })
+        }
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>state, 'state');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,

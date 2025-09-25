@@ -263,7 +263,7 @@ public class JobService {
             SortDTO sortDTO, String searchQuery) {
         UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
-        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.title(),
+        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(),
                 professorJobsFilterDTO.state(), searchQuery, pageable);
     }
 
