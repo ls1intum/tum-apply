@@ -143,7 +143,7 @@
       "jobTitle": "Stellentitel",
       "status": "Status",
       "startDate": "Startdatum",
-      "created": "Erstellt"
+      "created": "Erstellt am"
     },
     "confirmDialog": {
       "closeHeader": "Schließung der Position bestätigen",
