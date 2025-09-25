@@ -30,6 +30,7 @@ export default [
         '.gradle/',
         '.idea/',
         '.jhipster/',
+        'build/',
         'coverage/',
         'docker/',
         'docs/',
