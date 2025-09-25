@@ -52,10 +52,26 @@ export class MyPositionsPageComponent {
     { displayName: 'myPositionsPage.sortingOptions.created', fieldName: 'createdAt', type: 'NUMBER' },
   ];
 
+  readonly availableStatusOptions: { key: string; label: string }[] = [
+    { key: 'DRAFT', label: 'jobState.draft' },
+    { key: 'PUBLISHED', label: 'jobState.published' },
+    { key: 'CLOSED', label: 'jobState.closed' },
+    { key: 'APPLICANT_FOUND', label: 'jobState.applicantFound' },
+  ];
+
+  readonly stateTextMap = computed<Record<string, string>>(() =>
+    this.availableStatusOptions.reduce<Record<string, string>>((acc, cur) => {
+      acc[cur.key] = cur.label;
+      return acc;
+    }, {}),
+  );
+
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
   readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<string[]>([]);
+
   readonly allJobNames = signal<string[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
@@ -79,20 +95,6 @@ export class MyPositionsPageComponent {
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });
-
-  readonly availableStatusOptions: { key: string; label: string }[] = [
-    { key: 'DRAFT', label: 'jobState.draft' },
-    { key: 'PUBLISHED', label: 'jobState.published' },
-    { key: 'CLOSED', label: 'jobState.closed' },
-    { key: 'APPLICANT_FOUND', label: 'jobState.applicantFound' },
-  ];
-
-  readonly stateTextMap = computed<Record<string, string>>(() =>
-    this.availableStatusOptions.reduce<Record<string, string>>((acc, cur) => {
-      acc[cur.key] = cur.label;
-      return acc;
-    }, {}),
-  );
 
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
@@ -131,6 +133,11 @@ export class MyPositionsPageComponent {
     if (filterChange.filterLabel === 'myPositionsPage.tableColumn.job') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadJobs();
+    } else if (filterChange.filterLabel === 'myPositionsPage.tableColumn.status') {
+      this.page.set(0);
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedStatusFilters.set(enumValues);
       void this.loadJobs();
     }
   }
@@ -194,6 +201,11 @@ export class MyPositionsPageComponent {
     }
   }
 
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
   private async loadJobs(): Promise<void> {
     try {
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
@@ -201,12 +213,13 @@ export class MyPositionsPageComponent {
         return;
       }
       const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getJobsByProfessor(
           this.pageSize(),
           this.page(),
           jobNameFilters.length ? jobNameFilters : undefined,
-          undefined, // Optional state filter
+          statusFilters.length ? statusFilters : undefined,
           this.sortBy(),
           this.sortDirection(),
           this.searchQuery() || undefined,

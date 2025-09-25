@@ -21,6 +21,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,12 @@ public class JobService {
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
+
+    private static final Map<String, JobState> JOB_STATE_MAP = Map.of(
+            "DRAFT", JobState.DRAFT,
+            "PUBLISHED", JobState.PUBLISHED,
+            "CLOSED", JobState.CLOSED,
+            "APPLICANT_FOUND", JobState.APPLICANT_FOUND);
 
     public JobService(
         JobRepository jobRepository,
@@ -263,8 +270,14 @@ public class JobService {
             SortDTO sortDTO, String searchQuery) {
         UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
+        List<JobState> enumStates = null;
+        if (professorJobsFilterDTO.states() != null && !professorJobsFilterDTO.states().isEmpty()) {
+            enumStates = professorJobsFilterDTO.states().stream()
+                    .map(JOB_STATE_MAP::get)
+                    .toList();
+        }
         return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(),
-                professorJobsFilterDTO.state(), searchQuery, pageable);
+                enumStates, searchQuery, pageable);
     }
 
     /**

@@ -26,8 +26,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
    * Results are paginated.
    *
    * @param userId      the ID of the professor (user)
-   * @param title       a partial match filter for job title (nullable)
-   * @param state       the state of the job (nullable)
+   * @param titles      a list of job titles to filter by (nullable)
+   * @param states      a list of job states to filter by (nullable)
    * @param searchQuery general search term for job title (nullable, whitespace
    *                    will be trimmed)
    * @param pageable    pagination and sorting information
@@ -47,7 +47,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                           FROM Job j
                           WHERE j.supervisingProfessor.userId = :userId
                           AND (:titles IS NULL OR j.title IN :titles)
-                          AND (:state IS NULL OR j.state = :state)
+                          AND (:states IS NULL OR j.state IN :states)
       AND (:searchQuery IS NULL OR
            UPPER(j.title) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%')) OR
            UPPER(CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName)) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%'))
@@ -56,7 +56,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
   Page<CreatedJobDTO> findAllJobsByProfessor(
       @Param("userId") UUID userId,
       @Param("titles") List<String> titles,
-      @Param("state") JobState state,
+      @Param("states") List<JobState> states,
       @Param("searchQuery") String searchQuery,
       Pageable pageable);
 
