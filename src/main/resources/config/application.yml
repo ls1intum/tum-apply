@@ -141,6 +141,18 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+  datasource:
+    # JDBC URL for the main datasource connection
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    # Username for connecting to MySQL
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    # Password for connecting to MySQL
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  liquibase:
+    # JDBC URL used by Liquibase for database migrations
+    url: ${SPRING_LIQUIBASE_URL:jdbc:mysql://localhost:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    user: ${SPRING_LIQUIBASE_USERNAME:${SPRING_DATASOURCE_USERNAME:root}}
+    password: ${SPRING_LIQUIBASE_PASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
   messages:
     basename: i18n/messages
   main:
@@ -152,7 +164,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL}realms/${KEYCLOAK_REALM}
+          issuer-uri: ${keycloak.url}/realms/${keycloak.realm}
   task:
     execution:
       thread-name-prefix: tum-apply-task-
@@ -203,7 +215,7 @@ security:
     ttl-seconds: ${OTP_TTL_SECONDS:900}
     max-attempts: ${OTP_MAX_ATTEMPTS:6}
     resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}
-    hmac-secret: ${OTP_HMAC_SECRET:CHANGE_ME_BASE64}
+    hmac-secret: ${OTP_HMAC_SECRET:3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=}
 
 # Properties to be exposed on the /info management endpoint
 info:
@@ -247,6 +259,7 @@ jhipster:
       audience:
         - account
         - api://default
+
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class
@@ -267,13 +280,34 @@ aet:
   download:
     deterministic-zip: false
   client:
-    url: ${AET_CLIENT_URL}
+    # Base URL of the client used in emails to generate links
+    url: ${AET_CLIENT_URL:http://localhost:4200}
+# Application environment label (e.g., test, production)
+environment: ${ENVIRONMENT:test}
+# Current application version (used for build metadata)
+version: ${VERSION:1.0.1}
+# Enable or disable debug mode (true/false)
+debug: ${DEBUG:false}
+
 keycloak:
   url: ${KEYCLOAK_URL:http://localhost:9080}
   realm: ${KEYCLOAK_REALM:tumapply}
+  # Client ID used by the browser/client application to authenticate with Keycloak
+  client-id: ${KEYCLOAK_CLIENT_ID:tumapply-client}
+  # Enables Keycloak-related debug logging (true/false)
+  logging: ${KEYCLOAK_LOGGING:true}
+  # Admin user to create initial users in Keycloak
+  users:
+    admin:
+      username: ${KEYCLOAK_USERS_ADMIN_USERNAME:admin}
+      password: ${KEYCLOAK_USERS_ADMIN_PASSWORD:admin}
   server:
-    client-id: ${KEYCLOAK_SERVER_CLIENT_ID:server-client}
-    client-secret: ${KEYCLOAK_SERVER_CLIENT_SECRET:server-secret}
+    # Client ID used by the server to authenticate with Keycloak
+    client-id: ${KEYCLOAK_SERVER_CLIENT_ID:tumapply-server-client}
+    # Secret used by the server to authenticate securely with Keycloak
+    client-secret: ${KEYCLOAK_SERVER_CLIENT_SECRET:tumapply-server-secret}
   admin:
-    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:otp-client}
-    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:otp-secret}
+    # Admin service-account client used by the server for Keycloak Admin API calls (create users, set emailVerified, backchannel logout)
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:tumapply-otp-admin}
+    # Secret for the admin client; generate in Keycloak → Clients → tumapply-otp-admin → Credentials
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}
