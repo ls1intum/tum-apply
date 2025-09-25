@@ -27,7 +27,7 @@ tasks.register("webapp", NpmTask) {
     "KEYCLOAK_URL"               : System.getenv("KEYCLOAK_URL"),
     "KEYCLOAK_REALM"             : System.getenv("KEYCLOAK_REALM"),
     "KEYCLOAK_CLIENT_ID"         : System.getenv("KEYCLOAK_CLIENT_ID"),
-    "KEYCLOAK_ENABLE_LOGGING"    : System.getenv("KEYCLOAK_ENABLE_LOGGING"),
+    "KEYCLOAK_LOGGING"           : System.getenv("KEYCLOAK_LOGGING"),
     "OTP_LENGTH"                 : System.getenv("OTP_LENGTH"),
     "OTP_RESEND_COOLDOWN_SECONDS": System.getenv("OTP_RESEND_COOLDOWN_SECONDS"),
     "OTP_TTL_SECONDS"            : System.getenv("OTP_TTL_SECONDS"),
