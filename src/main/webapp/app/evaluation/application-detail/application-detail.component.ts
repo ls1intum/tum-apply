@@ -5,28 +5,28 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
+import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
+import { FilterField } from 'app/shared/filter';
+import { FilterSortBarComponent, SortOption } from 'app/shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
+import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { AcceptDTO } from 'app/generated/model/acceptDTO';
+import { RejectDTO } from 'app/generated/model/rejectDTO';
+import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicationEvaluationDetailListDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 
-import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
-import { FilterField } from '../../shared/filter';
-import { EvaluationService } from '../service/evaluation.service';
-import { FilterSortBarComponent, SortOption } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
-import TranslateDirective from '../../shared/language/translate.directive';
-import { Section } from '../components/section/section';
-import { SubSection } from '../components/sub-section/sub-section';
-import { DescriptionList } from '../components/description-list/description-list';
-import { LinkList } from '../components/link-list/link-list';
-import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
-import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationEvaluationDetailDTO } from '../../generated/model/applicationEvaluationDetailDTO';
-import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
-import { AcceptDTO } from '../../generated/model/acceptDTO';
-import { RejectDTO } from '../../generated/model/rejectDTO';
-import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
-import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
+import { Prose } from '../components/prose/prose';
+import { LinkList } from '../components/link-list/link-list';
+import { DescriptionList } from '../components/description-list/description-list';
+import { SubSection } from '../components/sub-section/sub-section';
+import { Section } from '../components/section/section';
+import TranslateDirective from '../../shared/language/translate.directive';
+import { EvaluationService } from '../service/evaluation.service';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -61,7 +61,7 @@ export class ApplicationDetailComponent {
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   filters = signal<FilterField[]>([]);
-  sortBy = signal<string>('createdAt');
+  sortBy = signal<string>('appliedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   // accept/reject dialog
@@ -83,12 +83,12 @@ export class ApplicationDetailComponent {
   readonly sortOptions: SortOption[] = [
     {
       displayName: 'Applied at (Oldest to Newest)',
-      field: 'createdAt',
+      field: 'appliedAt',
       direction: 'ASC',
     },
     {
       displayName: 'Applied at (Newest to Oldest)',
-      field: 'createdAt',
+      field: 'appliedAt',
       direction: 'DESC',
     },
   ];
