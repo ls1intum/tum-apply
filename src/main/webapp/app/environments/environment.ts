@@ -8,14 +8,6 @@ export const I18N_HASH = '';
 export const environment = {
   production: false,
   keycloak: {
-    url: 'http://localhost:9080/',
-    realm: 'tumapply',
-    clientId: 'tumapply-client',
     enableLogging: true,
-  },
-  otp: {
-    length: 6,
-    cooldown: 60,
-    ttlSeconds: 900,
   },
 };

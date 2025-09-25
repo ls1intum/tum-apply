@@ -1,39 +1,20 @@
-import { environment } from 'app/environments/environment.override';
 import { firstValueFrom } from 'rxjs';
 import { PublicConfigResourceApiService } from 'app/generated/api/publicConfigResourceApi.service';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
-type Indexable = Record<string, unknown>;
-
-// Type guard for plain objects (no arrays, no null)
-function isPlainObject(value: unknown): value is Indexable {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
+import { ApplicationConfig } from './application-config.model';
 
 /**
- * Recursively merges values from `source` into `target`, but only for keys that already exist in `target`.
- * Unknown keys in `source` are ignored to avoid accidental schema expansion or prototype pollution.
+ * Function to initialize the application configuration by fetching it from the API.
+ * This function returns a promise that resolves when the configuration is set.
+ *
+ * @param api - The service used to fetch the public configuration.
+ * @param service - The service used to set the application configuration.
+ * @returns A function that returns a promise resolving to void.
  */
-function mergeExistingKeys(target: Indexable, source: unknown): void {
-  if (!isPlainObject(source)) return;
-
-  for (const [key, sourceValue] of Object.entries(source)) {
-    if (!(key in target)) continue; // ignore unknown keys
-
-    const targetValue = target[key];
-
-    if (isPlainObject(targetValue) && isPlainObject(sourceValue)) {
-      mergeExistingKeys(targetValue, sourceValue);
-    } else {
-      target[key] = sourceValue;
-    }
-  }
-}
-
-export function loadRuntimeConfig(api: PublicConfigResourceApiService): () => Promise<void> {
-  return () =>
-    firstValueFrom(api.config())
-      .then(configuration => {
-        mergeExistingKeys(environment, configuration);
-      })
-      .catch(() => void 0);
+export function initializeAppConfig(api: PublicConfigResourceApiService, service: ApplicationConfigService): () => Promise<void> {
+  return async () => {
+    const response = await firstValueFrom(api.config());
+    service.setAppConfig(response as ApplicationConfig);
+  };
 }

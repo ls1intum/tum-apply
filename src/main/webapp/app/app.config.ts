@@ -19,8 +19,9 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
-import { loadRuntimeConfig } from 'app/core/config/runtime-config.loader';
 import { PublicConfigResourceApiService } from 'app/generated/api/publicConfigResourceApi.service';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
@@ -41,15 +42,10 @@ import { AuthFacadeService } from './core/auth/auth-facade.service';
  */
 export async function initializeApp(): Promise<void> {
   const api = inject(PublicConfigResourceApiService);
+  const appConfigService = inject(ApplicationConfigService);
   const authFacade = inject(AuthFacadeService);
 
-  try {
-    await loadRuntimeConfig(api)();
-  } catch (error) {
-    console.error('Failed to load runtime configuration from /api/public/config:', error);
-    throw error;
-  }
-
+  await initializeAppConfig(api, appConfigService)();
   await authFacade.initAuth();
 }
 

@@ -48,15 +48,7 @@ function inferVersion() {
 const args = process.argv.slice(2);
 const developFlag = args.includes('--develop');
 const keycloakConfig = {
-  url: 'http://localhost:9080/',
-  realm: 'tumapply',
-  clientId: 'tumapply-client',
   enableLogging: developFlag,
-};
-const otpConfig = {
-  length: 8,
-  cooldown: 60,
-  ttlSeconds: 900,
 };
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
@@ -65,15 +57,7 @@ export const I18N_HASH = '${languagesHash.hash}';
 export const environment = {
   production: ${!developFlag},
   keycloak: {
-    url: '${keycloakConfig.url}',
-    realm: '${keycloakConfig.realm}',
-    clientId: '${keycloakConfig.clientId}',
     enableLogging: ${keycloakConfig.enableLogging},
-  },
-  otp: {
-    length: ${otpConfig.length},
-    cooldown: ${otpConfig.cooldown},
-    ttlSeconds: ${otpConfig.ttlSeconds},
   },
 };
 `;

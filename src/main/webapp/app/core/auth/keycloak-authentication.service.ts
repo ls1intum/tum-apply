@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 import { environment } from '../../environments/environment';
 
@@ -30,11 +31,9 @@ export enum IdpProvider {
  */
 @Injectable({ providedIn: 'root' })
 export class KeycloakAuthenticationService {
-  private readonly keycloak = new Keycloak({
-    url: environment.keycloak.url,
-    realm: environment.keycloak.realm,
-    clientId: environment.keycloak.clientId,
-  });
+  readonly config = inject(ApplicationConfigService);
+
+  private keycloak: Keycloak | undefined;
   private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
   private refreshInFlight: Promise<void> | null = null;
   private windowListenersActive = false;
@@ -46,6 +45,11 @@ export class KeycloakAuthenticationService {
    * @returns A promise that resolves to true if the user is authenticated, false otherwise.
    */
   async init(): Promise<boolean> {
+    this.keycloak ??= new Keycloak({
+      url: this.config.keycloak.url,
+      realm: this.config.keycloak.realm,
+      clientId: this.config.keycloak.clientId,
+    });
     const options: KeycloakInitOptions = {
       onLoad: 'check-sso',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
@@ -74,7 +78,7 @@ export class KeycloakAuthenticationService {
    * @returns The current token string if available, otherwise undefined.
    */
   getToken(): string | undefined {
-    return this.keycloak.token;
+    return this.keycloak?.token;
   }
 
   /**
@@ -83,7 +87,7 @@ export class KeycloakAuthenticationService {
    * @returns True if the user is authenticated, false otherwise.
    */
   isLoggedIn(): boolean {
-    return Boolean(this.keycloak.authenticated);
+    return Boolean(this.keycloak?.authenticated);
   }
 
   // --------------------------- Login ----------------------------
@@ -98,7 +102,7 @@ export class KeycloakAuthenticationService {
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
     await this.init();
     try {
-      await this.keycloak.login({
+      await this.keycloak?.login({
         redirectUri: this.buildRedirectUri(redirectUri),
         idpHint: provider !== IdpProvider.TUM ? provider : undefined,
       });
@@ -118,7 +122,7 @@ export class KeycloakAuthenticationService {
    */
   async logout(redirectUri?: string): Promise<void> {
     this.stopTokenRefreshScheduler();
-    if (this.keycloak.authenticated === true) {
+    if (this.keycloak?.authenticated === true) {
       await this.keycloak.logout({ redirectUri: this.buildRedirectUri(redirectUri) });
     }
   }
@@ -132,7 +136,7 @@ export class KeycloakAuthenticationService {
    * @throws An error if the token refresh fails.
    */
   async ensureFreshToken(): Promise<void> {
-    if (this.keycloak.authenticated === false) {
+    if (this.keycloak === undefined || this.keycloak.authenticated === false) {
       return;
     }
     if (this.refreshInFlight) {
