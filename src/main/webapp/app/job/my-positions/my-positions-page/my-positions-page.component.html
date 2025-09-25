@@ -13,7 +13,15 @@
         [singleEntity]="'job' | translate"
         [multipleEntities]="'jobs' | translate"
         (searchOutput)="onSearchEmit($event)"
+        (filterOutput)="onFilterEmit($event)"
         (sortOutput)="loadOnSortEmit($event)"
+        [filters]="[
+          {
+            filterLabel: 'myPositionsPage.tableColumn.job',
+            filterSearchPlaceholder: 'myPositionsPage.searchFilterSortBar.filterOptions.jobSearchPlaceholder',
+            filterOptions: allJobNames(),
+          },
+        ]"
         [sortableFields]="sortableFields"
       />
       <div class="table-wrapper">

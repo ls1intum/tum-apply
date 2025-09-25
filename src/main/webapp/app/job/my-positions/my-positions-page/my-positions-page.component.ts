@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
@@ -10,6 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TagComponent } from '../../../shared/components/atoms/tag/tag.component';
@@ -54,6 +55,9 @@ export class MyPositionsPageComponent {
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  readonly selectedJobFilters = signal<string[]>([]);
+  readonly allJobNames = signal<string[]>([]);
+
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
@@ -95,6 +99,10 @@ export class MyPositionsPageComponent {
   private router = inject(Router);
   private toastService = inject(ToastService);
 
+  private loadJobNamesEffect = effect(() => {
+    void this.loadAllJobNames();
+  });
+
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
     const size = event.rows ?? this.pageSize();
@@ -108,6 +116,14 @@ export class MyPositionsPageComponent {
     this.page.set(0);
     this.searchQuery.set(searchQuery);
     void this.loadJobs();
+  }
+
+  onFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterLabel === 'myPositionsPage.tableColumn.job') {
+      this.page.set(0);
+      this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadJobs();
+    }
   }
 
   loadOnSortEmit(event: Sort): void {
@@ -133,6 +149,16 @@ export class MyPositionsPageComponent {
       console.error('Unable to view job with job id:', jobId);
     }
     this.router.navigate([`/job/detail/${jobId}`]);
+  }
+
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.jobService.getAllJobNamesByProfessor());
+      this.allJobNames.set(jobNames.sort());
+    } catch {
+      this.allJobNames.set([]);
+      this.toastService.showErrorKey('myPositionsPage.errors.loadJobNames');
+    }
   }
 
   async onDeleteJob(jobId: string): Promise<void> {

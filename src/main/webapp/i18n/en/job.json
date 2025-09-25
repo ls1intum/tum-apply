@@ -128,7 +128,10 @@
       "createButton": "Create New Position"
     },
     "searchFilterSortBar": {
-      "searchText": "Search Positions..."
+      "searchText": "Search Positions...",
+      "filterOptions": {
+        "jobSearchPlaceholder": "Search Jobs..."
+      }
     },
     "tableColumn": {
       "supervisingProfessor": "Supervising Professor",
@@ -150,6 +153,9 @@
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",
       "deleteHeader": "Confirm Delete Operation",
       "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!"
+    },
+    "errors": {
+      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
     }
   },
   "jobDetailPage": {
