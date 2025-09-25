@@ -18,6 +18,11 @@ public class PublicConfigResource {
         this.env = env;
     }
 
+    /**
+     * Get public configuration details such as Keycloak settings and OTP parameters.
+     *
+     * @return A map containing Keycloak and OTP configuration details.
+     */
     @GetMapping("/config")
     public Map<String, Object> config() {
         Map<String, Object> response = new HashMap<>();
