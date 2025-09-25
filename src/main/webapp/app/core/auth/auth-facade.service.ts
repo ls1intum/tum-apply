@@ -211,7 +211,7 @@ export class AuthFacadeService {
     let route = this.router.routerState.snapshot.root;
     while (route.firstChild) route = route.firstChild;
     const data = route.data;
-    if (data.authorities.length > 0) {
+    if (data.authorities?.length > 0) {
       void this.router.navigate(['/']);
     }
   }
