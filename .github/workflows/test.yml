@@ -46,15 +46,6 @@ env:
 jobs:
   server-tests:
     environment: test-server
-    env:
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_LOGGING: ${{ vars.KEYCLOAK_LOGGING }}
-      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-      OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
-      AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -141,14 +132,6 @@ jobs:
 
   server-style:
     environment: test-server
-    env:
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_LOGGING: ${{ vars.KEYCLOAK_LOGGING }}
-      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-      OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -177,14 +160,6 @@ jobs:
 
   client-tests:
     environment: test-server
-    env:
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_LOGGING: ${{ vars.KEYCLOAK_LOGGING }}
-      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-      OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -219,14 +194,6 @@ jobs:
 
   client-tests-selected:
     environment: test-server
-    env:
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_LOGGING: ${{ vars.KEYCLOAK_LOGGING }}
-      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-      OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -265,14 +232,6 @@ jobs:
 
   client-compilation:
     environment: test-server
-    env:
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_LOGGING: ${{ vars.KEYCLOAK_LOGGING }}
-      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-      OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

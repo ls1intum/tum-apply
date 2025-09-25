@@ -23,15 +23,6 @@ jobs:
           java-version: '21'
 
       - name: Start Spring Boot and check log
-        env:
-          KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-          KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-          KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-          KEYCLOAK_LOGGING: ${{ vars.KEYCLOAK_LOGGING }}
-          OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-          OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-          OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
-          AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
         run: |
           ./gradlew -Pprod bootRun > boot.log 2>&1 & SERVER_PID=$!
 

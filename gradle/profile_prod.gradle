@@ -22,16 +22,6 @@ bootRun {
 tasks.register("webapp", NpmTask) {
   dependsOn npmInstall
   args = ["run", "webapp:prod"]
-  environment = [
-    "APP_VERSION"                : project.version,
-    "KEYCLOAK_URL"               : System.getenv("KEYCLOAK_URL"),
-    "KEYCLOAK_REALM"             : System.getenv("KEYCLOAK_REALM"),
-    "KEYCLOAK_CLIENT_ID"         : System.getenv("KEYCLOAK_CLIENT_ID"),
-    "KEYCLOAK_LOGGING"           : System.getenv("KEYCLOAK_LOGGING"),
-    "OTP_LENGTH"                 : System.getenv("OTP_LENGTH"),
-    "OTP_RESEND_COOLDOWN_SECONDS": System.getenv("OTP_RESEND_COOLDOWN_SECONDS"),
-    "OTP_TTL_SECONDS"            : System.getenv("OTP_TTL_SECONDS"),
-  ]
 }
 
 processResources {

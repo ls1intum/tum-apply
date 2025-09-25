@@ -32,20 +32,6 @@ jobs:
         src/main/java/
         openapi/openapi.yaml
         src/main/webapp/app/generated
-      KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-      KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-      KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-      KEYCLOAK_LOGGING: ${{ vars.KEYCLOAK_LOGGING }}
-      KEYCLOAK_USERS_ADMIN_USERNAME: ${{ vars.KEYCLOAK_USERS_ADMIN_USERNAME }}
-      KEYCLOAK_USERS_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_USERS_ADMIN_PASSWORD }}
-      KEYCLOAK_SERVER_CLIENT_ID: ${{ vars.KEYCLOAK_SERVER_CLIENT_ID }}
-      KEYCLOAK_SERVER_CLIENT_SECRET: ${{ secrets.KEYCLOAK_SERVER_CLIENT_SECRET }}
-      KEYCLOAK_ADMIN_CLIENT_ID: ${{ vars.KEYCLOAK_ADMIN_CLIENT_ID }}
-      KEYCLOAK_ADMIN_CLIENT_SECRET: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_SECRET }}
-      OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-      OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-      OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
-      AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
     outputs:
       CHANGE_DETECTED: ${{ steps.check_changes.outputs.CHANGE_DETECTED }}
     steps:
