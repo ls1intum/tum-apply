@@ -148,6 +148,15 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:root}
     # Password for connecting to MySQL
     password: ${SPRING_DATASOURCE_PASSWORD:}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: Hikari
+      auto-commit: false
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
   liquibase:
     # JDBC URL used by Liquibase for database migrations
     url: ${SPRING_LIQUIBASE_URL:jdbc:mysql://localhost:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
@@ -259,6 +268,16 @@ jhipster:
       audience:
         - account
         - api://default
+  logging:
+    use-json-format: false # By default, logs are not in Json format
+    logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
+      enabled: false
+      host: localhost
+      port: 5000
+      ring-buffer-size: 512
+  cache: # Cache configuration
+    caffeine: # Caffeine configuration
+      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache. This sets expireAfterWrite in Caffeine (https://github.com/ben-manes/caffeine/wiki/Eviction#time-based)
 
 # ===================================================================
 # Application specific properties
