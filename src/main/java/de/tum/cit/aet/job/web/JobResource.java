@@ -6,6 +6,8 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +125,19 @@ public class JobResource {
             @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
             @RequestParam(required = false) String searchQuery) {
         return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
+    }
+
+    /**
+     * {@code GET /api/jobs/allNames} : Returns all unique job names created by the
+     * current professor.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} job names
+     */
+    @GetMapping("/allNames")
+    public ResponseEntity<List<String>> getAllJobNamesByProfessor() {
+        List<String> jobNames = jobService.getAllJobNamesByProfessor();
+        return ResponseEntity.ok(jobNames);
     }
 
     /**

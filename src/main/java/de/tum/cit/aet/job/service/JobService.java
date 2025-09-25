@@ -19,6 +19,8 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -263,6 +265,19 @@ public class JobService {
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
         return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.title(),
                 professorJobsFilterDTO.state(), searchQuery, pageable);
+    }
+
+    /**
+     * Retrieves all unique job names for the current professor.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique job names by current professor sorted
+     *         alphabetically
+     */
+    public List<String> getAllJobNamesByProfessor() {
+        UUID userId = currentUserService.getUserId();
+        return jobRepository.findAllUniqueJobNamesByProfessor(userId);
     }
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
