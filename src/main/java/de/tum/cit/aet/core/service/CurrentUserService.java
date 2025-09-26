@@ -43,7 +43,7 @@ public class CurrentUserService {
      * @return the current user as a {@link CurrentUser} object
      */
     public CurrentUser getCurrentUser() {
-        if (currentUser == null) {
+        if (currentUser==null) {
             loadCurrentUser();
         }
         return currentUser;
@@ -56,7 +56,7 @@ public class CurrentUserService {
      * @return the current user as a {@link User} entity
      */
     public User getUser() {
-        if (user == null) {
+        if (user==null) {
             loadCurrentUser();
         }
         return user;
@@ -82,7 +82,7 @@ public class CurrentUserService {
         List<ResearchGroupRole> roles = user
             .getResearchGroupRoles()
             .stream()
-            .map(r -> new ResearchGroupRole(r.getRole(), r.getResearchGroup() != null ? r.getResearchGroup().getResearchGroupId() : null))
+            .map(r -> new ResearchGroupRole(r.getRole(), r.getResearchGroup()!=null ? r.getResearchGroup().getResearchGroupId():null))
             .toList();
 
         this.user = user;
@@ -167,16 +167,45 @@ public class CurrentUserService {
      * Checks whether the current user is either an admin or professor of the specified research group.
      *
      * @param researchGroupId the ID of the research group
-     * @return true if the user has access to the group, false otherwise
+     * @throws AccessDeniedException if the current user does not belong to the research group
      */
-    public boolean isAdminOrProfessorOf(UUID researchGroupId) {
-        if (isAdmin()) {
-            return true;
+    public void isAdminOrMemberOf(UUID researchGroupId) {
+        if (isAdmin() || getCurrentUser().getResearchGroupIdIfProfessor().map(id -> id.equals(researchGroupId)).orElse(false)) {
+            return;
         }
-        return getCurrentUser()
-            .getResearchGroupIdIfProfessor()
-            .map(id -> id.equals(researchGroupId))
-            .orElse(false);
+        throw new AccessDeniedException("User has no access to the research group");
+    }
+
+    /**
+     * Checks whether the current user is either an admin or is a professor of the given research group.
+     *
+     * @param researchGroup the research group to check
+     */
+    public void isAdminOrMemberOf(ResearchGroup researchGroup) {
+        if (researchGroup==null) {
+            return;
+        }
+        isAdminOrMemberOf(researchGroup.getResearchGroupId());
+    }
+
+    /**
+     * Checks whether the current user is either an admin or is a professor of the same research group
+     * as the given professor identified by their user ID.
+     *
+     * @param professor the professor of whom the research group is to be checked
+     * @throws AccessDeniedException if the professor cannot be found or has no research group
+     */
+    public void isAdminOrMemberOfResearchGroupOfProfessor(User professor) {
+        if (professor==null) {
+            throw new AccessDeniedException("Professor not found");
+        }
+        if (isAdmin()) {
+            return;
+        }
+        if (professor.getResearchGroup()==null) {
+            throw new AccessDeniedException("Professor does not belong to a research group");
+        }
+        isAdminOrMemberOf(professor.getResearchGroup().getResearchGroupId());
     }
 
     /**
@@ -196,7 +225,7 @@ public class CurrentUserService {
      * @param entity the entity to check
      */
     public void assertAccessTo(Object entity) {
-        boolean hasAccess = switch (entity) {
+        switch (entity) {
             case Application app -> hasAccessTo(app);
             case ApplicationReview review -> hasAccessTo(review);
             case CustomFieldAnswer answer -> hasAccessTo(answer);
@@ -204,11 +233,7 @@ public class CurrentUserService {
             case Job job -> hasAccessTo(job);
             case InternalComment comment -> hasAccessTo(comment);
             case EmailTemplate emailTemplate -> hasAccessTo(emailTemplate);
-            default -> false;
-        };
-
-        if (!hasAccess) {
-            throw new AccessDeniedException("Access denied to entity: " + entity.getClass().getSimpleName());
+            default -> throw new AccessDeniedException("Access denied to entity: " + entity.getClass().getSimpleName());
         }
     }
 
@@ -217,10 +242,10 @@ public class CurrentUserService {
      * The user must either be the applicant or an admin.
      *
      * @param application the application to check
-     * @return true if access is granted, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccessTo(Application application) {
-        return isCurrentUserOrAdmin(application.getApplicant().getUserId());
+    private void hasAccessTo(Application application) {
+        isCurrentUserOrAdmin(application.getApplicant().getUserId());
     }
 
     /**
@@ -228,10 +253,10 @@ public class CurrentUserService {
      * The user must be an admin or professor of the associated research group.
      *
      * @param review the application review to check
-     * @return true if access is granted, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccessTo(ApplicationReview review) {
-        return isAdminOrProfessorOf(review.getApplication().getJob().getResearchGroup().getResearchGroupId());
+    private void hasAccessTo(ApplicationReview review) {
+        isAdminOrMemberOf(review.getApplication().getJob().getResearchGroup().getResearchGroupId());
     }
 
     /**
@@ -239,14 +264,13 @@ public class CurrentUserService {
      * The user must be an admin, professor of the research group, or the applicant.
      *
      * @param answer the custom field answer to check
-     * @return true if access is granted, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccessTo(CustomFieldAnswer answer) {
+    private void hasAccessTo(CustomFieldAnswer answer) {
         Application application = answer.getApplication();
-        return (
-            isAdminOrProfessorOf(application.getJob().getResearchGroup().getResearchGroupId()) ||
-                isCurrentUserOrAdmin(application.getApplicant().getUserId())
-        );
+
+        isAdminOrMemberOf(application.getJob().getResearchGroup().getResearchGroupId());
+        isCurrentUserOrAdmin(application.getApplicant().getUserId());
     }
 
     /**
@@ -254,10 +278,10 @@ public class CurrentUserService {
      * The user must be an admin or professor of the group.
      *
      * @param researchGroup the research group to check
-     * @return true if access is granted, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccessTo(ResearchGroup researchGroup) {
-        return isAdminOrProfessorOf(researchGroup.getResearchGroupId());
+    private void hasAccessTo(ResearchGroup researchGroup) {
+        isAdminOrMemberOf(researchGroup.getResearchGroupId());
     }
 
     /**
@@ -265,10 +289,10 @@ public class CurrentUserService {
      * The user must be an admin or professor of the associated research group.
      *
      * @param job the job posting to check
-     * @return true if access is granted, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccessTo(Job job) {
-        return isAdminOrProfessorOf(job.getResearchGroup().getResearchGroupId());
+    private void hasAccessTo(Job job) {
+        isAdminOrMemberOf(job.getResearchGroup().getResearchGroupId());
     }
 
     /**
@@ -276,10 +300,10 @@ public class CurrentUserService {
      * The user must be an admin or professor of the associated research group.
      *
      * @param comment the internal comment to check
-     * @return true if access is granted, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccessTo(InternalComment comment) {
-        return isAdminOrProfessorOf(comment.getApplication().getJob().getResearchGroup().getResearchGroupId());
+    private void hasAccessTo(InternalComment comment) {
+        isAdminOrMemberOf(comment.getApplication().getJob().getResearchGroup().getResearchGroupId());
     }
 
     /**
@@ -287,9 +311,9 @@ public class CurrentUserService {
      * The user must be an admin or professor of the associated research group.
      *
      * @param emailTemplate the email template to check
-     * @return true if access is granted, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccessTo(EmailTemplate emailTemplate) {
-        return isAdminOrProfessorOf(emailTemplate.getResearchGroup().getResearchGroupId());
+    private void hasAccessTo(EmailTemplate emailTemplate) {
+        isAdminOrMemberOf(emailTemplate.getResearchGroup().getResearchGroupId());
     }
 }
