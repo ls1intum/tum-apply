@@ -156,7 +156,8 @@
       "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!"
     },
     "errors": {
-      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
+      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues.",
+      "loadJobs": "Failed to load jobs. Please try refreshing the page, or contact us if the problem continues."
     }
   },
   "jobDetailPage": {

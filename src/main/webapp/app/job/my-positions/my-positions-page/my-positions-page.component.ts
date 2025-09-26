@@ -227,8 +227,8 @@ export class MyPositionsPageComponent {
       );
       this.jobs.set(pageData.content ?? []);
       this.totalRecords.set(pageData.totalElements ?? 0);
-    } catch (error) {
-      console.error('Failed to load jobs from API:', error);
+    } catch {
+      this.toastService.showErrorKey('myPositionsPage.errors.loadJobs');
     }
   }
 }
