@@ -1,0 +1,15 @@
+meta {
+  name: Get Application Details
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/applications/:application_id/detail
+  body: none
+  auth: inherit
+}
+
+params:path {
+  application_id: 00000000-0000-0000-0000-300000020837
+}

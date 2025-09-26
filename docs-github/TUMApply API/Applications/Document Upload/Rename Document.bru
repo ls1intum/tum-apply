@@ -1,0 +1,19 @@
+meta {
+  name: Rename Document
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/applications/rename-document/:documentDictonaryId?newName=Test
+  body: none
+  auth: inherit
+}
+
+params:query {
+  newName: Test
+}
+
+params:path {
+  documentDictonaryId: 00000000-0000-0000-0000-000000000103
+}
