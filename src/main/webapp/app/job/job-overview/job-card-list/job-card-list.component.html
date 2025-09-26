@@ -1,37 +1,16 @@
-<jhi-sort-bar
-  [totalRecords]="totalRecords()"
-  [sortableFields]="sortableFields"
-  (sortChange)="loadOnSortEmit($event)"
-  [singleEntity]="'job' | translate"
-  [multipleEntities]="'jobs' | translate"
-  [shouldTranslate]="true"
-/>
 @if (jobs().length > 0) {
-  <div class="job-card-grid">
-    @for (job of jobs(); track job.jobId) {
-      <jhi-job-card
-        [jobId]="job.jobId"
-        [jobTitle]="job.title"
-        [fieldOfStudies]="job.fieldOfStudies"
-        [location]="job.location.toString()"
-        [professor]="job.professorName"
-        [workload]="job.workload || undefined"
-        [startDate]="job.startDate?.toString() || undefined"
-        [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"
-        [applicationId]="job.applicationId"
-        [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
-      />
-    }
-  </div>
+<div class="job-card-grid">
+  @for (job of jobs(); track job.jobId) {
+  <jhi-job-card [jobId]="job.jobId" [jobTitle]="job.title" [fieldOfStudies]="job.fieldOfStudies"
+    [location]="job.location.toString()" [professor]="job.professorName" [workload]="job.workload || undefined"
+    [startDate]="job.startDate?.toString() || undefined"
+    [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"
+    [applicationId]="job.applicationId"
+    [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied" />
+  }
+</div>
 } @else {
-  <p class="no-jobs-text" jhiTranslate="jobOverviewPage.noJobsFound"></p>
+<p class="no-jobs-text" jhiTranslate="jobOverviewPage.noJobsFound"></p>
 }
-<p-table
-  [value]="jobs()"
-  [paginator]="true"
-  [rows]="pageSize()"
-  [totalRecords]="totalRecords()"
-  [lazy]="true"
-  (onLazyLoad)="loadOnTableEmit($event)"
-  [tableStyle]="{ width: '100%' }"
-/>
+<p-table [value]="jobs()" [paginator]="true" [rows]="pageSize()" [totalRecords]="totalRecords()" [lazy]="true"
+  (onLazyLoad)="loadOnTableEmit($event)" [tableStyle]="{ width: '100%' }" />

@@ -8,14 +8,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
-import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
+import { Sort, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 import { JobCardDTO } from '../../../generated/model/jobCardDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { SearchFilterSortBar } from "app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar";
 
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
-  imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SortBarComponent, SharedModule],
+  imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SharedModule, SearchFilterSortBar],
   templateUrl: './job-card-list.component.html',
   styleUrls: ['./job-card-list.component.scss'],
 })
