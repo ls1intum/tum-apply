@@ -2108,11 +2108,14 @@
             }
           },
           {
-            "name": "title",
+            "name": "titles",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
@@ -2120,42 +2123,41 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
-            "name": "location",
+            "name": "locations",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "GARCHING",
-                "GARCHING_HOCHBRUECK",
-                "HEILBRONN",
-                "MUNICH",
-                "STRAUBING",
-                "WEIHENSTEPHAN",
-                "SINGAPORE"
-              ]
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "GARCHING",
+                  "GARCHING_HOCHBRUECK",
+                  "HEILBRONN",
+                  "MUNICH",
+                  "STRAUBING",
+                  "WEIHENSTEPHAN",
+                  "SINGAPORE"
+                ]
+              }
             }
           },
           {
-            "name": "professorName",
+            "name": "professorNames",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "workload",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 0
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
@@ -2194,6 +2196,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageJobCardDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/allJobNames": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getAllAvailableJobNames",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
