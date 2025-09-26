@@ -229,6 +229,7 @@ public class JobService {
                     .map(Campus::fromValue)
                     .filter(Objects::nonNull).toList();
         }
+        String normalizedSearchQuery = normalizeSearchQuery(searchQuery);
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
@@ -241,7 +242,7 @@ public class JobService {
                     sortDTO.sortBy(),
                     sortDTO.direction().name(),
                     userId,
-                    searchQuery,
+                    normalizedSearchQuery,
                     pageable);
         } else {
             // Sort dynamically via Pageable
@@ -253,7 +254,7 @@ public class JobService {
                     enumLocations, // optional filter for campus location
                     availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                     userId,
-                    searchQuery,
+                    normalizedSearchQuery,
                     pageable);
         }
     }
@@ -328,5 +329,21 @@ public class JobService {
         job.setState(dto.state());
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
+    }
+
+    /**
+     * Normalizes the search query by trimming whitespace, converting to lowercase,
+     * and returning null if the result is empty.
+     *
+     * @param searchQuery the raw search query
+     * @return normalized search query or null if empty
+     */
+    private String normalizeSearchQuery(String searchQuery) {
+        if (searchQuery == null) {
+            return null;
+        }
+
+        String trimmed = searchQuery.trim().toLowerCase();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }
