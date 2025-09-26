@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class DocumentDictionaryService {
 
+    private CurrentUserService currentUserService;
     private DocumentDictionaryRepository documentDictionaryRepository;
 
     /**
@@ -93,22 +94,8 @@ public class DocumentDictionaryService {
      * @param documentDictionaryId the id of the document dictionary entry to delete
      */
     public void deleteById(UUID documentDictionaryId) {
-        if (!documentDictionaryRepository.existsById(documentDictionaryId)) {
-            throw new EntityNotFoundException("DocumentDictionaryId does not exist");
-        }
+        assertCanManageDocument(documentDictionaryId);
         documentDictionaryRepository.deleteById(documentDictionaryId);
-    }
-
-    /**
-     * Deletes all document dictionary entries associated with the given application
-     * and document type.
-     *
-     * @param application  the application associated with the documents
-     * @param documentType the type of documents to delete
-     */
-    public void deleteByApplicationAndType(Application application, DocumentType documentType) {
-        Set<DocumentDictionary> documentDictionaries = getDocumentDictionaries(application, documentType);
-        this.documentDictionaryRepository.deleteAll(documentDictionaries);
     }
 
     /**
@@ -156,13 +143,13 @@ public class DocumentDictionaryService {
      *                    should be retrieved;
      *                    must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} populated with document IDs
-     *         grouped by document type;
-     *         never {@code null}, but fields may be empty if no documents are
-     *         associated
+     * grouped by document type;
+     * never {@code null}, but fields may be empty if no documents are
+     * associated
      * @throws IllegalArgumentException if the {@code application} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentIdsDTO(Application application) {
-        if (application == null) {
+        if (application==null) {
             throw new IllegalArgumentException("Application may not be null");
         }
         return documentDictionaryRepository.getApplicationDocumentIdsDTOByApplicationId(application.getApplicationId());
@@ -172,23 +159,34 @@ public class DocumentDictionaryService {
      * Updates the name of the document with the given ID.
      *
      * @param documentDictionaryId the ID of the document to rename
-     * @param newName    the new name to set for the document
+     * @param newName              the new name to set for the document
      */
     public void renameDocument(UUID documentDictionaryId, String newName) {
-        documentDictionaryRepository
-            .findById(documentDictionaryId)
-            .ifPresent(document -> {
-                document.setName(newName);
-                documentDictionaryRepository.save(document);
-            });
+        DocumentDictionary documentDictionary = assertCanManageDocument(documentDictionaryId);
+        documentDictionary.setName(newName);
+        documentDictionaryRepository.save(documentDictionary);
     }
 
     /**
      * Get all {@link DocumentDictionary} entries for an application
+     *
      * @param applicationId the id of the application
      * @return a {@link Set} of {@link DocumentDictionary}
      */
     public Set<DocumentDictionary> findAllByApplication(UUID applicationId) {
         return documentDictionaryRepository.findAllByApplicationApplicationId(applicationId);
+    }
+
+    /**
+     * Asserts that the current user can manage the applicant with the given ID.
+     *
+     * @param documentId the id of the document to check
+     * @return the documentDictionary entity if the user can manage it
+     */
+    private DocumentDictionary assertCanManageDocument(UUID documentId) {
+        DocumentDictionary documentDictionary = documentDictionaryRepository.findById(documentId)
+            .orElseThrow(() -> new EntityNotFoundException("Document with id " + documentId + " not found"));
+        currentUserService.isCurrentUserOrAdmin(documentDictionary.getApplication().getApplicant().getUserId());
+        return documentDictionary;
     }
 }
