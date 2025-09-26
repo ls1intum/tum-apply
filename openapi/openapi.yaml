@@ -1993,25 +1993,25 @@
             }
           },
           {
-            "name": "title",
+            "name": "titles",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
-            "name": "state",
+            "name": "states",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "DRAFT",
-                "PUBLISHED",
-                "CLOSED",
-                "APPLICANT_FOUND"
-              ]
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
