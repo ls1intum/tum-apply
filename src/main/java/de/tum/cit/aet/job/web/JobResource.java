@@ -38,16 +38,20 @@ public class JobResource {
      *
      * @param pageDTO the pagination information including page number (zero-based) and page size
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sorting parameter containing the field and direction
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link JobCardDTO}
+     * @param sortDTO                sorting parameter containing the field and
+     *                               direction
+     * @param searchQuery            string to search for job title, field of
+     *                               studies or supervisor name
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link Page} of {@link JobCardDTO}
      */
     @GetMapping("/available")
     public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
-        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
-    ) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO);
+            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+            @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
+            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+            @RequestParam(required = false) String searchQuery) {
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO, searchQuery);
         return ResponseEntity.ok(jobs);
     }
 

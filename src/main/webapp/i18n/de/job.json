@@ -105,6 +105,9 @@
   "jobOverviewPage": {
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
+    "searchFilterSortBar": {
+      "searchText": "Stellen suchen..."
+    },
     "sortingOptions": {
       "startDate": "Startdatum",
       "jobTitle": "Jobtitel",

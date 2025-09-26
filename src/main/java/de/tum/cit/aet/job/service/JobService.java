@@ -210,40 +210,43 @@ public class JobService {
      *
      * @param pageDTO pagination configuration
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sort configuration (by field and direction)
+     * @param sortDTO                sort configuration (by field and direction)
+     * @param searchQuery            string to search for job title, field of
+     *                               studies or supervisor name
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
+    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO,
+            SortDTO sortDTO, String searchQuery) {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
-                JobState.PUBLISHED,
-                availableJobsFilterDTO.title(), // optional filter for job title
-                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                availableJobsFilterDTO.location(), // optional filter for campus location
-                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                availableJobsFilterDTO.workload(), // optional filter for workload value
-                sortDTO.sortBy(),
-                sortDTO.direction().name(),
-                userId,
-                pageable
-            );
+                    JobState.PUBLISHED,
+                    availableJobsFilterDTO.title(), // optional filter for job title
+                    availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                    availableJobsFilterDTO.location(), // optional filter for campus location
+                    availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
+                    availableJobsFilterDTO.workload(), // optional filter for workload value
+                    sortDTO.sortBy(),
+                    sortDTO.direction().name(),
+                    userId,
+                    searchQuery,
+                    pageable);
         } else {
             // Sort dynamically via Pageable
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
-                JobState.PUBLISHED,
-                availableJobsFilterDTO.title(), // optional filter for job title
-                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                availableJobsFilterDTO.location(), // optional filter for campus location
-                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                availableJobsFilterDTO.workload(), // optional filter for workload value
-                userId,
-                pageable
-            );
+                    JobState.PUBLISHED,
+                    availableJobsFilterDTO.title(), // optional filter for job title
+                    availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                    availableJobsFilterDTO.location(), // optional filter for campus location
+                    availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
+                    availableJobsFilterDTO.workload(), // optional filter for workload value
+                    userId,
+                    searchQuery,
+                    pageable);
         }
     }
 

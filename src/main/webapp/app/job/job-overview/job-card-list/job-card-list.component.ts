@@ -5,13 +5,13 @@ import { CommonModule } from '@angular/common';
 import { firstValueFrom, map } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
 import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { Sort, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 import { JobCardDTO } from '../../../generated/model/jobCardDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
-import { SearchFilterSortBar } from "app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar";
 
 @Component({
   selector: 'jhi-job-card-list',
@@ -27,6 +27,7 @@ export class JobCardListComponent {
   totalRecords = signal<number>(0);
   page = signal<number>(0);
   pageSize = signal<number>(8);
+  searchQuery = signal<string>('');
 
   sortBy = signal<string>('startDate');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
@@ -56,6 +57,12 @@ export class JobCardListComponent {
     void this.loadJobs();
   }
 
+  onSearchEmit(searchQuery: string): void {
+    this.page.set(0);
+    this.searchQuery.set(searchQuery);
+    void this.loadJobs();
+  }
+
   loadOnSortEmit(event: Sort): void {
     this.page.set(0);
     this.sortBy.set(event.field ?? this.sortableFields[0].field);
@@ -76,6 +83,7 @@ export class JobCardListComponent {
           undefined, // filtering by workload
           this.sortBy(),
           this.sortDirection(),
+          this.searchQuery() || undefined,
         ),
       );
       this.jobs.set(pageData.content ?? []);
