@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { CommonModule } from '@angular/common';
@@ -34,10 +34,6 @@ export class JobCardListComponent {
   sortBy = signal<string>('startDate');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  _loadFiltersEffect = effect(() => {
-    void this.loadAllFilter();
-  });
-
   readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
 
@@ -60,6 +56,10 @@ export class JobCardListComponent {
 
   private jobService = inject(JobResourceApiService);
   private readonly toastService = inject(ToastService);
+
+  constructor() {
+    void this.loadAllFilter();
+  }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
