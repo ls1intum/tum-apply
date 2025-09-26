@@ -78,44 +78,50 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
    * @return a page of {@link JobCardDTO} matching the criteria
    */
   @Query("""
-      SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
-        j.jobId as jobId,
-        j.title as title,
-        j.fieldOfStudies as fieldOfStudies,
-        j.location as location,
-        CONCAT(p.firstName, ' ', p.lastName) as professorName,
-        a.applicationId as applicationId,
-        a.state as applicationState,
-        j.workload as workload,
-        j.startDate as startDate,
-        j.endDate as endDate
-      )
-      FROM Job j
-      JOIN j.supervisingProfessor p
-      LEFT JOIN j.applications a
-             WITH (:userId IS NOT NULL
-               AND a.applicant.userId = :userId
-               AND a.createdAt = (
-                    SELECT MAX(a2.createdAt)
-                    FROM Application a2
-                    WHERE a2.job = j AND a2.applicant.userId = :userId
-               ))
-      WHERE j.state = :state
-        AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-        AND (:titles IS NULL OR j.title IN :titles)
-        AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
-        AND (:locations IS NULL OR j.location IN :locations)
-        AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
-        AND (:searchQuery IS NULL OR
-           UPPER(j.title) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%')) OR
-           UPPER(j.fieldOfStudies) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%')) OR
-           UPPER(CONCAT(p.firstName, ' ', p.lastName)) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%'))
-      )
-                ORDER BY
-                    CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END ASC,
-                    CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName' THEN CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) END DESC,
-                    j.createdAt DESC
-                """)
+            SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
+              j.jobId as jobId,
+              j.title as title,
+              j.fieldOfStudies as fieldOfStudies,
+              j.location as location,
+              CONCAT(p.firstName, ' ', p.lastName) as professorName,
+              a.applicationId as applicationId,
+              a.state as applicationState,
+              j.workload as workload,
+              j.startDate as startDate,
+              j.endDate as endDate
+            )
+            FROM Job j
+            JOIN j.supervisingProfessor p
+            LEFT JOIN j.applications a
+                   WITH (:userId IS NOT NULL
+                     AND a.applicant.userId = :userId
+                     AND a.createdAt = (
+                          SELECT MAX(a2.createdAt)
+                          FROM Application a2
+                          WHERE a2.job = j AND a2.applicant.userId = :userId
+                     ))
+            WHERE j.state = :state
+              AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+              AND (:titles IS NULL OR j.title IN :titles)
+              AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
+              AND (:locations IS NULL OR j.location IN :locations)
+              AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
+              AND (:searchQuery IS NULL OR
+                 UPPER(j.title) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%')) OR
+                 UPPER(j.fieldOfStudies) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%')) OR
+                 UPPER(CONCAT(p.firstName, ' ', p.lastName)) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%'))
+            )
+      ORDER BY
+          CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName'
+               THEN j.supervisingProfessor.lastName END ASC,
+          CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName'
+               THEN j.supervisingProfessor.firstName END ASC,
+          CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName'
+               THEN j.supervisingProfessor.lastName END DESC,
+          CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName'
+               THEN j.supervisingProfessor.firstName END DESC,
+          j.createdAt DESC
+                      """)
   Page<JobCardDTO> findAllJobCardsByState(
       @Param("state") JobState state,
       @Param("titles") List<String> titles,
