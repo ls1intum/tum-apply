@@ -34,11 +34,23 @@ export class JobCardListComponent {
   sortBy = signal<string>('startDate');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
+  readonly availableLocationOptions: { key: string; label: string }[] = [
+    { key: 'GARCHING', label: 'jobOverviewPage.searchFilterSortBar.locations.garching' },
+    { key: 'GARCHING_HOCHBRUECK', label: 'jobOverviewPage.searchFilterSortBar.locations.garching_hochbrueck' },
+    { key: 'HEILBRONN', label: 'jobOverviewPage.searchFilterSortBar.locations.heilbronn' },
+    { key: 'MUNICH', label: 'jobOverviewPage.searchFilterSortBar.locations.munich' },
+    { key: 'STRAUBING', label: 'jobOverviewPage.searchFilterSortBar.locations.straubing' },
+    { key: 'WEIHENSTEPHAN', label: 'jobOverviewPage.searchFilterSortBar.locations.weihenstephan' },
+    { key: 'SINGAPORE', label: 'jobOverviewPage.searchFilterSortBar.locations.singapore' },
+  ];
+
   readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
+  readonly selectedLocationFilters = signal<string[]>([]);
 
   readonly allJobNames = signal<string[]>([]);
   readonly allFieldofStudies = signal<string[]>([]);
+  readonly availableLocationLabels = this.availableLocationOptions.map(option => option.label);
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'jobOverviewPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
@@ -81,10 +93,14 @@ export class JobCardListComponent {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadJobs();
-    }
-    if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudies') {
+    } else if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudies') {
       this.page.set(0);
       this.selectedFieldOfStudiesFilters.set(filterChange.selectedValues);
+      void this.loadJobs();
+    } else if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.location') {
+      this.page.set(0);
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedLocationFilters.set(enumValues);
       void this.loadJobs();
     }
   }
@@ -113,13 +129,14 @@ export class JobCardListComponent {
     try {
       const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
       const fieldsOfStudyFilters = this.selectedFieldOfStudiesFilters().length > 0 ? this.selectedFieldOfStudiesFilters() : [];
+      const locationFilters = this.selectedLocationFilters().length > 0 ? this.selectedLocationFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getAvailableJobs(
           this.pageSize(),
           this.page(),
           jobNameFilters.length ? jobNameFilters : undefined,
           fieldsOfStudyFilters.length ? fieldsOfStudyFilters : undefined,
-          undefined, // filtering by location (Campus enum string)
+          locationFilters.length ? locationFilters : undefined,
           undefined, // filtering by professorName
           this.sortBy(),
           this.sortDirection(),
@@ -131,5 +148,10 @@ export class JobCardListComponent {
     } catch (error) {
       console.error('Failed to load jobs from API:', error);
     }
+  }
+
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(this.availableLocationOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
   }
 }

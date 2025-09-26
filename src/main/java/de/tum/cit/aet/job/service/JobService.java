@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
+import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
@@ -21,6 +22,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -221,6 +223,12 @@ public class JobService {
             SortDTO sortDTO, String searchQuery) {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
+        List<Campus> enumLocations = null;
+        if (availableJobsFilterDTO.locations() != null && !availableJobsFilterDTO.locations().isEmpty()) {
+            enumLocations = availableJobsFilterDTO.locations().stream()
+                    .map(Campus::fromValue)
+                    .filter(Objects::nonNull).toList();
+        }
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
@@ -228,7 +236,7 @@ public class JobService {
                     JobState.PUBLISHED,
                     availableJobsFilterDTO.titles(), // filter for job title
                     availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
-                    availableJobsFilterDTO.locations(), // filter for campus location
+                    enumLocations, // filter for campus location
                     availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
                     sortDTO.sortBy(),
                     sortDTO.direction().name(),
@@ -242,7 +250,7 @@ public class JobService {
                     JobState.PUBLISHED,
                     availableJobsFilterDTO.titles(), // optional filter for job title
                     availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                    availableJobsFilterDTO.locations(), // optional filter for campus location
+                    enumLocations, // optional filter for campus location
                     availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                     userId,
                     searchQuery,

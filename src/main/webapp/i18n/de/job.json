@@ -111,7 +111,18 @@
         "job": "Stelle",
         "jobSearchPlaceholder": "Stellen suchen...",
         "fieldOfStudies": "Studienrichtung",
-        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen..."
+        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
+        "location": "Standort",
+        "LocationSearchPlaceholder": "Standorte suchen..."
+      },
+      "locations": {
+        "garching": "Garching",
+        "garching_hochbrueck": "Garching Hochbrueck",
+        "heilbronn": "Heilbronn",
+        "munich": "Munich",
+        "straubing": "Straubing",
+        "weihenstephan": "Weihenstephan",
+        "singapore": "Singapore"
       }
     },
     "sortingOptions": {

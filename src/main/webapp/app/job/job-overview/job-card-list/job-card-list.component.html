@@ -16,6 +16,12 @@
       filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudiesPlaceholder',
       filterOptions: allFieldofStudies(),
     },
+    {
+      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.location',
+      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.LocationSearchPlaceholder',
+      filterOptions: availableLocationLabels,
+      shouldTranslateOptions: true,
+    },
   ]"
 />
 @if (jobs().length > 0) {
