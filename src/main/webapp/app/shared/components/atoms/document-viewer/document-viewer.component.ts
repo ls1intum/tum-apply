@@ -1,9 +1,9 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
-
-import { DocumentResourceApiService } from '../../../../generated/api/documentResourceApi.service';
-import { DocumentInformationHolderDTO } from '../../../../generated/model/documentInformationHolderDTO';
+import { DocumentResourceApiService } from 'app/generated/api/documentResourceApi.service';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentCacheService } from 'app/service/document-cache.service';
 
 @Component({
   selector: 'jhi-document-viewer',
@@ -18,20 +18,29 @@ export class DocumentViewerComponent {
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
   private documentService = inject(DocumentResourceApiService);
-  private sanitizer = inject(DomSanitizer);
+  private cache: DocumentCacheService = inject(DocumentCacheService);
 
   constructor() {
     effect(() => {
-      this.initDocument();
+      void this.initDocument();
     });
   }
 
   async initDocument(): Promise<void> {
+    const docId = this.documentDictionaryId().id;
+
+    // check cache first
+    const cached = this.cache.get(docId);
+    if (cached !== undefined) {
+      this.sanitizedBlobUrl.set(cached);
+      return;
+    }
+
     try {
-      const response = await firstValueFrom(this.documentService.downloadDocument(this.documentDictionaryId().id));
+      const response = await firstValueFrom(this.documentService.downloadDocument(docId));
       const pdfBlob = new Blob([response], { type: 'application/pdf' });
-      const blobUrl = URL.createObjectURL(pdfBlob);
-      this.sanitizedBlobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl + '#toolbar=0&navpanes=0'));
+      const safeUrl = this.cache.set(docId, pdfBlob);
+      this.sanitizedBlobUrl.set(safeUrl);
     } catch (error) {
       console.error('Document download failed:', error);
       this.sanitizedBlobUrl.set(undefined);
