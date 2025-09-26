@@ -8,6 +8,13 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1rem;
+
+    .group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
   }
 
   .p-iconfield {
