@@ -115,7 +115,9 @@ public class JobResource {
      *
      * @param pageDTO pagination parameters including page number and size
      * @param professorJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sorting parameter
+     * @param sortDTO                sorting parameter
+     * @param searchQuery            string to search for supervising professor or
+     *                               job title
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link CreatedJobDTO}
      */
     @GetMapping("/professor")
