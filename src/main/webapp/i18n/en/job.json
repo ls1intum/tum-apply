@@ -109,7 +109,9 @@
       "searchText": "Search Positions...",
       "filterOptions": {
         "job": "Position",
-        "jobSearchPlaceholder": "Search Positions..."
+        "jobSearchPlaceholder": "Search Positions...",
+        "fieldOfStudies": "Field of Studies",
+        "fieldOfStudiesPlaceholder": "Search Field of Studies..."
       }
     },
     "sortingOptions": {
@@ -129,7 +131,7 @@
     },
     "hoursPerWeek": "{{workload}} h/week",
     "errors": {
-      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
+      "loadFilter": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
     }
   },
   "myPositionsPage": {

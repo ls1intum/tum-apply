@@ -34,13 +34,15 @@ export class JobCardListComponent {
   sortBy = signal<string>('startDate');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  _loadJobNamesEffect = effect(() => {
-    void this.loadAllJobNames();
+  _loadFiltersEffect = effect(() => {
+    void this.loadAllFilter();
   });
 
   readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
 
   readonly allJobNames = signal<string[]>([]);
+  readonly allFieldofStudies = signal<string[]>([]);
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'jobOverviewPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
@@ -80,6 +82,11 @@ export class JobCardListComponent {
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadJobs();
     }
+    if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudies') {
+      this.page.set(0);
+      this.selectedFieldOfStudiesFilters.set(filterChange.selectedValues);
+      void this.loadJobs();
+    }
   }
 
   loadOnSortEmit(event: Sort): void {
@@ -89,25 +96,29 @@ export class JobCardListComponent {
     void this.loadJobs();
   }
 
-  async loadAllJobNames(): Promise<void> {
+  async loadAllFilter(): Promise<void> {
     try {
       const jobNames = await firstValueFrom(this.jobService.getAllAvailableJobNames());
       this.allJobNames.set(jobNames.sort());
+      const fieldsOfStudy = await firstValueFrom(this.jobService.getAllFieldOfStudies());
+      this.allFieldofStudies.set(fieldsOfStudy.sort());
     } catch {
       this.allJobNames.set([]);
-      this.toastService.showErrorKey('jobOverviewPage.errors.loadJobNames');
+      this.allFieldofStudies.set([]);
+      this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
     }
   }
 
   async loadJobs(): Promise<void> {
     try {
       const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
+      const fieldsOfStudyFilters = this.selectedFieldOfStudiesFilters().length > 0 ? this.selectedFieldOfStudiesFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getAvailableJobs(
           this.pageSize(),
           this.page(),
           jobNameFilters.length ? jobNameFilters : undefined,
-          undefined, // filtering by fieldOfStudies
+          fieldsOfStudyFilters.length ? fieldsOfStudyFilters : undefined,
           undefined, // filtering by location (Campus enum string)
           undefined, // filtering by professorName
           this.sortBy(),

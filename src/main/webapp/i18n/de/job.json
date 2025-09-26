@@ -109,7 +109,9 @@
       "searchText": "Stellen suchen...",
       "filterOptions": {
         "job": "Stelle",
-        "jobSearchPlaceholder": "Stellen suchen..."
+        "jobSearchPlaceholder": "Stellen suchen...",
+        "fieldOfStudies": "Studienrichtung",
+        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen..."
       }
     },
     "sortingOptions": {
@@ -129,7 +131,7 @@
     },
     "hoursPerWeek": "{{workload}} h/Woche",
     "errors": {
-      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      "loadFilter": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   },
   "myPositionsPage": {
