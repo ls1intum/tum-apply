@@ -1,0 +1,36 @@
+meta {
+  name: Available Jobs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/jobs/available?sortBy=startDate&direction=DESC&pageSize=8&pageNumber=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  sortBy: startDate
+  direction: DESC
+  pageSize: 8
+  pageNumber: 0
+}
+
+docs {
+  ### Get Available Jobs
+  
+  This endpoint retrieves a list of currently available jobs.
+  
+  #### Request
+  
+  - Method: `GET`
+      
+  - URL: `{{baseUrl}}/jobs/available`
+      
+  - Query Parameters:
+      
+      - `filter` (optional): Filter for jobs
+          
+      - `sorting` (optional): Sorting criteria for the jobs
+}

@@ -5,48 +5,29 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/jobs/create
+  url: {{baseUrl}}/api/jobs/create
   body: json
-  auth: oauth2
-}
-
-auth:oauth2 {
-  grant_type: authorization_code
-  callback_url: {{redirectUri}}
-  authorization_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth
-  access_token_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
-  refresh_token_url: 
-  client_id: {{clientId}}
-  client_secret: 
-  scope: openid
-  state: {{$guid}}
-  pkce: true
-  credentials_placement: basic_auth_header
-  credentials_id: 
-  token_placement: header
-  token_header_prefix: 
-  auto_fetch_token: true
-  auto_refresh_token: false
+  auth: inherit
 }
 
 body:json {
   {
-    "professorId": "6e8a48fa-0e8e-4e17-bc0f-8e7389e4f1ab",
-    "fieldOfStudies": "",
-    "researchArea": "Machine Learning and Computer Vision",
-    "title": "",
-    "introduction": "",
-    "aboutUs": "",
-    "tasks": "",
-    "qualifications": "",
-    "weOffer": "",
-    "applicationRequirements": "",
-    "dataProtectionInformation": "",
-    "contact": "",
-    "state": "DRAFT",
-    "startDate": "2025-10-01T00:00:00Z",
-    "applicationDeadline": "2025-06-30T23:59:59Z"
+    "title": "Working Student Software Engineering",
+    "researchArea": "Cloud Computing",
+    "fieldOfStudies": "Informatics",
+    "supervisingProfessor": "00000000-0000-0000-0000-000000000102",
+    "location": "GARCHING",
+    "startDate": "2024-10-01",
+    "endDate": "2025-03-31",
+    "workload": 16,
+    "contractDuration": 2,
+    "fundingType": "FULLY_FUNDED",
+    "description": "Support the development of scalable cloud applications in a research environment.",
+    "tasks": "Develop microservices, automate deployment, collaborate in agile teams",
+    "requirements": "Java, Spring Boot, Docker, good communication skills",
+    "state": "PUBLISHED"
   }
+  
 }
 
 docs {

@@ -18,7 +18,7 @@ public @interface CheckAccess {
      * Defines which method argument should be used for access control checks.
      * Defaults to {@link AccessTarget#RESEARCH_GROUP_ID}.
      *
-     * @return the access target type to check
+     * @return the access target to check
      */
-    AccessTarget type() default AccessTarget.RESEARCH_GROUP_ID;
+    AccessTarget target() default AccessTarget.RESEARCH_GROUP_ID;
 }
