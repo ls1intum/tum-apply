@@ -4,6 +4,14 @@
   [multipleEntities]="'jobs' | translate"
   [searchText]="'jobOverviewPage.searchFilterSortBar.searchText' | translate"
   (searchOutput)="onSearchEmit($event)"
+  (filterOutput)="onFilterEmit($event)"
+  [filters]="[
+    {
+      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.job',
+      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.jobSearchPlaceholder',
+      filterOptions: allJobNames(),
+    },
+  ]"
 />
 @if (jobs().length > 0) {
   <div class="job-card-grid">

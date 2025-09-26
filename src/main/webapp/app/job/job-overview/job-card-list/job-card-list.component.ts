@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { CommonModule } from '@angular/common';
@@ -6,6 +6,8 @@ import { firstValueFrom, map } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
+import { ToastService } from 'app/service/toast-service';
 
 import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
@@ -32,6 +34,14 @@ export class JobCardListComponent {
   sortBy = signal<string>('startDate');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
+  _loadJobNamesEffect = effect(() => {
+    void this.loadAllJobNames();
+  });
+
+  readonly selectedJobFilters = signal<string[]>([]);
+
+  readonly allJobNames = signal<string[]>([]);
+
   readonly sortableFields: SortOption[] = [
     { displayName: 'jobOverviewPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
     { displayName: 'jobOverviewPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
@@ -47,6 +57,7 @@ export class JobCardListComponent {
   });
 
   private jobService = inject(JobResourceApiService);
+  private readonly toastService = inject(ToastService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -63,6 +74,14 @@ export class JobCardListComponent {
     void this.loadJobs();
   }
 
+  onFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.job') {
+      this.page.set(0);
+      this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadJobs();
+    }
+  }
+
   loadOnSortEmit(event: Sort): void {
     this.page.set(0);
     this.sortBy.set(event.field ?? this.sortableFields[0].field);
@@ -70,17 +89,27 @@ export class JobCardListComponent {
     void this.loadJobs();
   }
 
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.jobService.getAllAvailableJobNames());
+      this.allJobNames.set(jobNames.sort());
+    } catch {
+      this.allJobNames.set([]);
+      this.toastService.showErrorKey('jobOverviewPage.errors.loadJobNames');
+    }
+  }
+
   async loadJobs(): Promise<void> {
     try {
+      const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getAvailableJobs(
           this.pageSize(),
           this.page(),
-          undefined, // filtering by title
+          jobNameFilters.length ? jobNameFilters : undefined,
           undefined, // filtering by fieldOfStudies
           undefined, // filtering by location (Campus enum string)
           undefined, // filtering by professorName
-          undefined, // filtering by workload
           this.sortBy(),
           this.sortDirection(),
           this.searchQuery() || undefined,

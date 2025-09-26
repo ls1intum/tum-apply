@@ -106,7 +106,11 @@
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
     "searchFilterSortBar": {
-      "searchText": "Stellen suchen..."
+      "searchText": "Stellen suchen...",
+      "filterOptions": {
+        "job": "Stelle",
+        "jobSearchPlaceholder": "Stellen suchen..."
+      }
     },
     "sortingOptions": {
       "startDate": "Startdatum",
@@ -123,7 +127,10 @@
       "workload": "Arbeitsaufwand",
       "startDate": "Startdatum"
     },
-    "hoursPerWeek": "{{workload}} h/Woche"
+    "hoursPerWeek": "{{workload}} h/Woche",
+    "errors": {
+      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+    }
   },
   "myPositionsPage": {
     "header": {

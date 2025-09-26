@@ -106,7 +106,11 @@
     "title": "Find Your Perfect Position",
     "noJobsFound": "No Jobs Found.",
     "searchFilterSortBar": {
-      "searchText": "Search Positions..."
+      "searchText": "Search Positions...",
+      "filterOptions": {
+        "job": "Position",
+        "jobSearchPlaceholder": "Search Positions..."
+      }
     },
     "sortingOptions": {
       "startDate": "Start Date",
@@ -123,7 +127,10 @@
       "workload": "Workload",
       "startDate": "Start Date"
     },
-    "hoursPerWeek": "{{workload}} h/week"
+    "hoursPerWeek": "{{workload}} h/week",
+    "errors": {
+      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
+    }
   },
   "myPositionsPage": {
     "header": {
