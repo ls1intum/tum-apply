@@ -7,24 +7,30 @@
 -- =============================================
 
 -- Clean up
-DELETE
-FROM research_groups
-WHERE research_group_id LIKE '00000000-0000-0000-0000-%';
+DELETE FROM research_groups
+WHERE
+    research_group_id LIKE '00000000-0000-0000-0000-%';
 
 -- Insert research groups
-REPLACE INTO research_groups (research_group_id,
-                              head,
-                              name,
-                              abbreviation,
-                              email,
-                              website,
-                              school,
-                              description,
-                              default_field_of_studies,
-                              street,
-                              postal_code,
-                              city)
-VALUES ('00000000-0000-0000-0000-000000000001',
+
+REPLACE INTO
+    research_groups (
+        research_group_id,
+        head,
+        name,
+        abbreviation,
+        email,
+        website,
+        school,
+        description,
+        default_field_of_studies,
+        street,
+        postal_code,
+        city,
+        university_id
+    )
+VALUES (
+        '00000000-0000-0000-0000-000000000001',
         'Prof. Dr. Stephan Krusche',
         'Applied Education Technologies',
         'AET',
@@ -35,8 +41,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Informatics',
         'Boltzmannstrasse 3',
         '85748',
-        'Garching b. München'),
-       ('00000000-0000-0000-0000-000000000002',
+        'Garching b. München',
+        '0000001'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000002',
         'Prof. Dr. Paulina Krüger',
         'Data Science Group',
         'DSG',
@@ -47,8 +56,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Data Science',
         'Friedrichstraße 12',
         '10117',
-        'Berlin'),
-       ('00000000-0000-0000-0000-000000000003',
+        'Berlin',
+        '0000002'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000003',
         'Prof. Dr. Markus Vogt',
         'Quantum Computing Lab',
         'QCL',
@@ -59,9 +71,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Physics',
         'Max-Planck-Str. 1',
         '85748',
-        'Garching'),
-
-       ('00000000-0000-0000-0000-000000000004',
+        'Garching',
+        '0000003'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000004',
         'Prof. Dr. Laura Meier',
         'Biomedical Engineering Group',
         'BEG',
@@ -72,9 +86,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Bioengineering',
         'Walther-Meißner-Str. 8',
         '85748',
-        'Garching'),
-
-       ('00000000-0000-0000-0000-000000000005',
+        'Garching',
+        '0000004'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000005',
         'Prof. Dr. Ahmed Al-Farsi',
         'Renewable Energy Systems',
         'RES',
@@ -85,9 +101,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Electrical Engineering',
         'Theresienstrasse 90',
         '80333',
-        'Munich'),
-
-       ('00000000-0000-0000-0000-000000000006',
+        'Munich',
+        '0000005'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000006',
         'Prof. Dr. Anika Roth',
         'Human-Robot Interaction Lab',
         'HRIL',
@@ -98,9 +116,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Robotics',
         'Karlstraße 45',
         '80333',
-        'Munich'),
-
-       ('00000000-0000-0000-0000-000000000007',
+        'Munich',
+        '0000006'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000007',
         'Prof. Dr. Jonas Weber',
         'Climate Systems Research',
         'CSR',
@@ -111,9 +131,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Environmental Engineering',
         'Lothstraße 34',
         '80335',
-        'Munich'),
-
-       ('00000000-0000-0000-0000-000000000008',
+        'Munich',
+        '0000007'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000008',
         'Prof. Dr. Isabella Conti',
         'Digital Humanities Lab',
         'DHL',
@@ -124,9 +146,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Digital Humanities',
         'Luisenstraße 37',
         '80333',
-        'Munich'),
-
-       ('00000000-0000-0000-0000-000000000009',
+        'Munich',
+        '0000008'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000009',
         'Prof. Dr. Michael Tan',
         'Nano-Materials Group',
         'NMG',
@@ -137,9 +161,11 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Materials Science',
         'Chemiestraße 21',
         '85748',
-        'Garching'),
-
-       ('00000000-0000-0000-0000-000000000010',
+        'Garching',
+        '0000009'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000010',
         'Prof. Dr. Sophie Dubois',
         'Computational Linguistics Research',
         'CLR',
@@ -150,8 +176,9 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         'Linguistics',
         'Sprachstraße 10',
         '80331',
-        'Munich');
-
+        'Munich',
+        '0000010'
+    );
 
 -- =============================================
 -- 02b_assign_users_to_research_groups.sql
@@ -164,42 +191,70 @@ VALUES ('00000000-0000-0000-0000-000000000001',
 -- User: admin → no group needed (skip)
 -- User: professor@tum.de → AET
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000001'
-WHERE user_id = '00000000-0000-0000-0000-000000000102';
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000001'
+WHERE
+    user_id = '00000000-0000-0000-0000-000000000102';
 
 -- User: reviewer@tum.de → DSG
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000002'
-WHERE user_id = '00000000-0000-0000-0000-000000000105';
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000002'
+WHERE
+    user_id = '00000000-0000-0000-0000-000000000105';
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000003' -- Quantum Computing Lab
-WHERE user_id = '11111111-0000-0000-0000-000000000002'; -- John Doe
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000003' -- Quantum Computing Lab
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000002';
+-- John Doe
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000004' -- Biomedical Engineering Group
-WHERE user_id = '11111111-0000-0000-0000-000000000003'; -- Alice Nguyen
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000004' -- Biomedical Engineering Group
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000003';
+-- Alice Nguyen
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000005' -- Renewable Energy Systems
-WHERE user_id = '11111111-0000-0000-0000-000000000004'; -- Ricardo Martínez
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000005' -- Renewable Energy Systems
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000004';
+-- Ricardo Martínez
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000006' -- Human-Robot Interaction Lab
-WHERE user_id = '11111111-0000-0000-0000-000000000005'; -- Yuki Tanaka
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000006' -- Human-Robot Interaction Lab
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000005';
+-- Yuki Tanaka
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000007' -- Climate Systems Research
-WHERE user_id = '11111111-0000-0000-0000-000000000008'; -- Emma Johnson
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000007' -- Climate Systems Research
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000008';
+-- Emma Johnson
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000008' -- Digital Humanities Lab
-WHERE user_id = '11111111-0000-0000-0000-000000000009'; -- Lucas Rossi
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000008' -- Digital Humanities Lab
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000009';
+-- Lucas Rossi
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000009' -- Nano-Materials Group
-WHERE user_id = '11111111-0000-0000-0000-000000000010'; -- Fatima Khan
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000009' -- Nano-Materials Group
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000010';
+-- Fatima Khan
 
 UPDATE users
-SET research_group_id = '00000000-0000-0000-0000-000000000010' -- Computational Linguistics Research
-WHERE user_id = '11111111-0000-0000-0000-000000000012'; -- Daniel Kim
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000010' -- Computational Linguistics Research
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000012';
+-- Daniel Kim

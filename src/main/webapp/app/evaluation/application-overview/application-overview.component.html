@@ -9,13 +9,19 @@
       [singleEntity]="'evaluation.application' | translate"
       [multipleEntities]="'evaluation.applications' | translate"
       (searchOutput)="loadOnSearchEmit($event)"
-      (filterOutput)="loadOnJobFilterEmit($event)"
+      (filterOutput)="loadOnFilterEmit($event)"
       (sortOutput)="loadOnSortEmit($event)"
       [filters]="[
         {
           filterLabel: 'evaluation.tableHeaders.job',
           filterSearchPlaceholder: 'evaluation.filterOptions.jobSearchPlaceholder',
           filterOptions: allAvailableJobNames(),
+        },
+        {
+          filterLabel: 'evaluation.tableHeaders.status',
+          filterSearchPlaceholder: 'evaluation.filterOptions.stateSearchPlaceholder',
+          filterOptions: availableStatusLabels,
+          shouldTranslateOptions: true,
         },
       ]"
       [sortableFields]="sortableFields"

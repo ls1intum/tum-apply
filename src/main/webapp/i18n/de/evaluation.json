@@ -41,7 +41,8 @@
     "filterOptions": {
       "job": "Stelle",
       "status": "Status",
-      "jobSearchPlaceholder": "Suche Positionen..."
+      "jobSearchPlaceholder": "Suche Positionen...",
+      "stateSearchPlaceholder": "Suche Status..."
     },
     "application": "Bewerbung",
     "applications": "Bewerbungen",
@@ -88,6 +89,10 @@
       "documentDownloadAll": "Alle herunterladen",
       "moreDocument": "+1 weiteres Dokument",
       "moreDocuments": "+{{count}} weitere Dokumente"
+    },
+    "errors": {
+      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+      "loadApplication": "Fehler beim Laden der Bewerbungen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   }
 }
