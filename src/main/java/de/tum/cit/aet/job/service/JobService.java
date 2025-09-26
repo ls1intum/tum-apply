@@ -259,11 +259,11 @@ public class JobService {
     }
 
     /**
-     * Retrieves all unique job names for the current professor.
+     * Retrieves all unique job names.
      * This is used for filter dropdown options and should not be affected by
      * current filters.
      *
-     * @return a list of all unique job names by current professor sorted
+     * @return a list of all unique job names sorted
      *         alphabetically
      */
     public List<String> getAllJobNames() {
@@ -280,6 +280,18 @@ public class JobService {
      */
     public List<String> getAllFieldOfStudies() {
         return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
+    }
+
+    /**
+     * Retrieves all unique supervisor names
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique supervisor names sorted
+     *         alphabetically
+     */
+    public List<String> getAllSupervisorNames() {
+        return jobRepository.findAllUniqueSupervisorNames(JobState.PUBLISHED);
     }
 
     /**

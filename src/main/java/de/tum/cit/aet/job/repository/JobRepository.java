@@ -199,7 +199,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
    * Finds all available job names
    *
    * @param state the job state (typically PUBLISHED)
-   * @return a List of String with all unique, available job Names
+   * @return a List of String with all unique, available job names
    */
   @Query("""
       SELECT DISTINCT j.title
@@ -224,5 +224,21 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
       ORDER BY j.fieldOfStudies ASC
       """)
   List<String> findAllUniqueFieldOfStudies(@Param("state") JobState state);
+
+  /**
+   * Finds all unique supervisor names
+   *
+   * @param state the job state (typically PUBLISHED)
+   * @return a List of String with all unique, available supervisor names
+   */
+  @Query("""
+      SELECT DISTINCT CONCAT(p.firstName, ' ', p.lastName)
+      FROM Job j
+      JOIN j.supervisingProfessor p
+      WHERE j.state = :state
+        AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+      ORDER BY CONCAT(p.firstName, ' ', p.lastName) ASC
+      """)
+  List<String> findAllUniqueSupervisorNames(@Param("state") JobState state);
 
 }

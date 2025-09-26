@@ -58,8 +58,7 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/allNames} : Returns all unique job names created by the
-     * current professor.
+     * {@code GET /api/jobs/allNames} : Returns all unique job names
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link List} of {@link String} job names
@@ -80,6 +79,19 @@ public class JobResource {
     public ResponseEntity<List<String>> getAllFieldOfStudies() {
         List<String> fieldsOfStudy = jobService.getAllFieldOfStudies();
         return ResponseEntity.ok(fieldsOfStudy);
+    }
+
+    /**
+     * {@code GET /api/jobs/allSupervisorNames} : Returns all unique supervisor
+     * names
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} supervisor names
+     */
+    @GetMapping("/allSupervisorNames")
+    public ResponseEntity<List<String>> getAllSupervisorNames() {
+        List<String> supervisorNames = jobService.getAllSupervisorNames();
+        return ResponseEntity.ok(supervisorNames);
     }
 
     /**

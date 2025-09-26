@@ -2194,6 +2194,29 @@
         }
       }
     },
+    "/api/jobs/allSupervisorNames": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getAllSupervisorNames",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/allJobNames": {
       "get": {
         "tags": [
