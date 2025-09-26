@@ -397,10 +397,6 @@
           "summary": "Ungültiger Seitenlink",
           "detail": "Dieser Bewerbungslink ist nicht gültig. Bitte öffne die Seite über die Übersicht und versuche es erneut."
         },
-        "saveFailedWithStatus": {
-          "summary": "Übermittlung fehlgeschlagen",
-          "detail": "Bewerbung konnte nicht übermittelt werden: {{status}}"
-        },
         "fetchDocumentIdsFailed": {
           "summary": "Dokumente nicht geladen",
           "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut."
@@ -415,19 +411,35 @@
         },
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut."
+          "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und speichere erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite."
-        },
-        "initLoadFailed": {
-          "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut."
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite und überprüfe deine Verbindung."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
           "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+        },
+        "invalidEmail": {
+          "summary": "Error",
+          "detail": "Bitte gib eine gültige E-Mail-Adresse an."
+        },
+        "invalidFirstName": {
+          "summary": "Error",
+          "detail": "Bitte gib einen gültigen Vornamen an."
+        },
+        "invalidLastName": {
+          "summary": "Error",
+          "detail": "Bitte gib einen gültigen Nachnamen an."
+        },
+        "migrationFailed": {
+          "summary": "Error",
+          "detail": "Der lokale Entwurf konnte nicht auf den Server migriert werden."
+        },
+        "otpVerificationFailed": {
+          "summary": "Error",
+          "detail": "E-Mail-Verifizierung fehlgeschlagen. Bitte versuch es erneut."
         }
       },
       "applicationOverview": {
