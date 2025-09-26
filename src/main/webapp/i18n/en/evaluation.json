@@ -41,7 +41,8 @@
     "filterOptions": {
       "job": "Job",
       "status": "Status",
-      "jobSearchPlaceholder": "Search Positions..."
+      "jobSearchPlaceholder": "Search Positions...",
+      "stateSearchPlaceholder": "Search Status..."
     },
     "application": "Application",
     "applications": "Applications",

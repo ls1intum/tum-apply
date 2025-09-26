@@ -13,8 +13,7 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
 import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
-import { FilterField } from '../../shared/filter';
-import { sortableFields } from '../filterSortOptions';
+import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
@@ -41,7 +40,6 @@ export class ApplicationOverviewComponent {
   page = signal(0);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
-  filters = signal<FilterField[]>([]);
   total = signal(0);
   searchQuery = signal<string>('');
 
@@ -49,6 +47,7 @@ export class ApplicationOverviewComponent {
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
   readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<string[]>([]);
 
   readonly allAvailableJobNames = signal<string[]>([]);
 
@@ -77,6 +76,8 @@ export class ApplicationOverviewComponent {
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
   });
+
+  readonly availableStatusLabels = availableStatusOptions.map(option => option.label);
 
   protected readonly sortableFields = sortableFields;
 
@@ -117,14 +118,6 @@ export class ApplicationOverviewComponent {
 
       void this.loadPage();
     });
-    void this.initFilterFields();
-  }
-
-  async initFilterFields(): Promise<void> {
-    const filters = await this.evaluationService.getFilterFields();
-    const params = this.queryParamsSignal();
-    filters.forEach(filter => filter.withSelectionFromParam(params));
-    this.filters.set(filters);
   }
 
   async loadAllJobNames(): Promise<void> {
@@ -153,17 +146,15 @@ export class ApplicationOverviewComponent {
     void this.loadPage();
   }
 
-  loadOnFilterEmit(filters: FilterField[]): void {
-    this.page.set(0);
-    this.filters.set(filters);
-
-    void this.loadPage();
-  }
-
-  loadOnJobFilterEmit(filterChange: FilterChange): void {
+  loadOnFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadPage();
+    } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
+      this.page.set(0);
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedStatusFilters.set(enumValues);
       void this.loadPage();
     }
   }
@@ -185,12 +176,6 @@ export class ApplicationOverviewComponent {
       applicationId: application.applicationId,
     };
 
-    this.filters().forEach(filter => {
-      if (filter.selected.length > 0) {
-        queryParams[filter.field] = filter.selected.map(opt => encodeURIComponent(opt.field)).join(',');
-      }
-    });
-
     void this.router.navigate(['/evaluation/application'], {
       queryParams,
     });
@@ -204,9 +189,8 @@ export class ApplicationOverviewComponent {
       const direction = this.sortDirection();
       const search = this.searchQuery();
 
-      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey.job ?? []);
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
 
       const res = await firstValueFrom(
         this.evaluationResourceService.getApplicationsOverviews(
@@ -231,6 +215,11 @@ export class ApplicationOverviewComponent {
     }
   }
 
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(availableStatusOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
   private buildQueryParams(): Params {
     const baseParams: Params = {
       page: this.page(),
@@ -242,13 +231,6 @@ export class ApplicationOverviewComponent {
       baseParams.search = this.searchQuery();
     }
     const filterParams: Params = {};
-    this.filters().forEach(f => {
-      const entry = f.getQueryParamEntry();
-
-      if (entry) {
-        filterParams[entry[0]] = entry[1];
-      }
-    });
 
     return {
       ...baseParams,
