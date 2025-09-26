@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
@@ -43,10 +43,6 @@ export class MyPositionsPageComponent {
 
   sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
-
-  _loadJobNamesEffect = effect(() => {
-    void this.loadAllJobNames();
-  });
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'myPositionsPage.sortingOptions.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
@@ -113,6 +109,10 @@ export class MyPositionsPageComponent {
   private accountService = inject(AccountService);
   private router = inject(Router);
   private toastService = inject(ToastService);
+
+  constructor() {
+    void this.loadAllJobNames();
+  }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
