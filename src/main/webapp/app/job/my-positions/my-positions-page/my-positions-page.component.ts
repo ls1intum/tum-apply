@@ -39,7 +39,7 @@ export class MyPositionsPageComponent {
   page = signal<number>(0);
   pageSize = signal<number>(10);
   userId = signal<string>('');
-  searchQuery = signal<string>('');
+  searchQuery = signal<string | null>(null);
 
   sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
@@ -124,9 +124,14 @@ export class MyPositionsPageComponent {
   }
 
   onSearchEmit(searchQuery: string): void {
-    this.page.set(0);
-    this.searchQuery.set(searchQuery);
-    void this.loadJobs();
+    const normalizedQuery = searchQuery.trim().replace(/\s+/g, ' ');
+    const currentQuery = this.searchQuery()?.trim().replace(/\s+/g, ' ') ?? null;
+
+    if (normalizedQuery !== currentQuery) {
+      this.page.set(0);
+      this.searchQuery.set(normalizedQuery);
+      void this.loadJobs();
+    }
   }
 
   onFilterEmit(filterChange: FilterChange): void {
@@ -222,7 +227,7 @@ export class MyPositionsPageComponent {
           statusFilters.length ? statusFilters : undefined,
           this.sortBy(),
           this.sortDirection(),
-          this.searchQuery() || undefined,
+          this.searchQuery() ?? undefined,
         ),
       );
       this.jobs.set(pageData.content ?? []);
