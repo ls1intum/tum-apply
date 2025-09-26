@@ -43,3 +43,20 @@ liquibase {
 
 liquibaseDiff.dependsOn compileJava
 liquibaseDiffChangelog.dependsOn compileJava
+
+// A workaround to run Liquibase CLI with the same configuration as the Gradle plugin because plugin still has open issues: https://github.com/liquibase/liquibase-gradle-plugin/issues/173
+tasks.register("liquibaseUpdateCli", JavaExec) {
+  group = "liquibase"
+  description = "Liquibase update via CLI"
+  classpath = sourceSets.main.runtimeClasspath + configurations.liquibaseRuntime
+  mainClass = "liquibase.integration.commandline.LiquibaseCommandLine"
+  args "update"   // rely on liquibase.properties for connection settings
+}
+
+// keep the public name and bypass the plugin actions
+plugins.withId("org.liquibase.gradle") {
+  tasks.named("liquibaseUpdate").configure {
+    dependsOn tasks.named("liquibaseUpdateCli")
+    onlyIf { false }
+  }
+}
