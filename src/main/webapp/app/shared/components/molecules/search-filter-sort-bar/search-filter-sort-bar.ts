@@ -7,9 +7,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
 import TranslateDirective from '../../../language/translate.directive';
-import { FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
+import { Filter, FilterChange, FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption, Sorting } from '../../atoms/sorting/sorting';
-import { Filter, FilterChange } from '../../atoms/filter-multiselect/filter-multiselect';
 
 @Component({
   selector: 'jhi-search-filter-sort-bar',
