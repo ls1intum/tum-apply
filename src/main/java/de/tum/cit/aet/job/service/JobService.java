@@ -263,6 +263,18 @@ public class JobService {
     }
 
     /**
+     * Retrieves all unique fields of study.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique fields of study sorted
+     *         alphabetically
+     */
+    public List<String> getAllFieldOfStudies() {
+        return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
+    }
+
+    /**
      * Returns a paginated list of jobs created by a given professor.
      * Supports optional filtering and dynamic sorting.
      *

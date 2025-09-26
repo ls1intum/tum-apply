@@ -210,4 +210,19 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
       """)
   List<String> findAllUniqueJobNames(@Param("state") JobState state);
 
+  /**
+   * Finds all available fields of study
+   *
+   * @param state the job state (typically PUBLISHED)
+   * @return a List of String with all unique, available fields of study
+   */
+  @Query("""
+      SELECT DISTINCT j.fieldOfStudies
+      FROM Job j
+      WHERE j.state = :state
+        AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+      ORDER BY j.fieldOfStudies ASC
+      """)
+  List<String> findAllUniqueFieldOfStudies(@Param("state") JobState state);
+
 }

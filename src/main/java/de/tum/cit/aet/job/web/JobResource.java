@@ -71,6 +71,18 @@ public class JobResource {
     }
 
     /**
+     * {@code GET /api/jobs/allFieldsOfStudy} : Returns all unique fields of study
+     * 
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} fields of study
+     */
+    @GetMapping("/allFieldsOfStudy")
+    public ResponseEntity<List<String>> getAllFieldOfStudies() {
+        List<String> fieldsOfStudy = jobService.getAllFieldOfStudies();
+        return ResponseEntity.ok(fieldsOfStudy);
+    }
+
+    /**
      * {@code POST /api/jobs} : Create a new job posting.
      *
      * @param jobForm the job posting data.
