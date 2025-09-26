@@ -1,0 +1,32 @@
+meta {
+  name: Job Details
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/jobs/detail/:jobId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  jobId: 00000000-0000-0000-0000-000000020007
+}
+
+docs {
+  ### Get Job Details
+  
+  This endpoint retrieves the full details for a specific job.
+  
+  #### Request
+  
+  - Method: `GET`
+      
+  - URL: `{{baseUrl}}/jobs/{jobId}/details`
+      
+  
+  #### Response
+  
+  The response will include the full details of the specific job, including its title, description, location, and other relevant information.
+}

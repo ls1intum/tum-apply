@@ -100,16 +100,6 @@ export class UploadButtonComponent {
     this.isUploading.set(false);
   }
 
-  async deleteAll(): Promise<void> {
-    try {
-      await firstValueFrom(this.applicationService.deleteDocumentBatchByTypeFromApplication(this.applicationId(), this.documentType()));
-      this.selectedFiles.set([]);
-    } catch (err) {
-      console.error('Failed to delete documents', err);
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to delete documents' });
-    }
-  }
-
   async renameDocument(documentInfo: DocumentInformationHolderDTO): Promise<void> {
     const newName = documentInfo.name ?? '';
     if (!newName) {
@@ -119,7 +109,15 @@ export class UploadButtonComponent {
     const documentId = documentInfo.id;
     try {
       await firstValueFrom(this.applicationService.renameDocument(documentId, newName));
-      const updatedDocs = this.documentIds()?.map(doc => (doc.id === documentId ? { ...doc, name: newName } : doc)) ?? [];
+      const updatedDocs =
+        this.documentIds()?.map(doc =>
+          doc.id === documentId
+            ? {
+                ...doc,
+                name: newName,
+              }
+            : doc,
+        ) ?? [];
       this.documentIds.set(updatedDocs);
     } catch (err) {
       console.error('Failed to rename document', err);

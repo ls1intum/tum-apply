@@ -1,0 +1,34 @@
+meta {
+  name: All Jobs of Professor
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/jobs/professor?title=Test&state=DRAFT&pageSize=10&pageNumber=0&sortBy=lastModifiedAt&direction=DESC
+  body: none
+  auth: inherit
+}
+
+params:query {
+  title: Test
+  state: DRAFT
+  pageSize: 10
+  pageNumber: 0
+  sortBy: lastModifiedAt
+  direction: DESC
+}
+
+docs {
+  ### Get Professor's Job Postings
+  
+  #### Description
+  
+  This endpoint retrieves all job postings created by the current professor.
+  
+  #### Request
+  
+  - Method: GET
+      
+  - Endpoint: `{{baseUrl}}/jobs/professor/{userId}`
+}

@@ -19,11 +19,12 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.util.Set;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class JobService {
@@ -63,11 +64,11 @@ public class JobService {
      * Updates an existing job with the new form data.
      *
      * @param jobId the ID of the job to update
-     * @param dto the {@link JobFormDTO} containing updated job details
+     * @param dto   the {@link JobFormDTO} containing updated job details
      * @return the updated job as a {@link JobFormDTO}
      */
     public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = assertCanManageJob(jobId);
         return updateJobEntity(job, dto);
     }
 
@@ -76,17 +77,16 @@ public class JobService {
      * If the job is being closed or if explicitly requested, all pending application states
      * (i.e., in 'SAVED', 'SENT' or 'IN_REVIEW' state) for the job will be automatically updated.
      *
-     * @param jobId the ID of the job whose state is to be changed
-     * @param targetState the new {@link JobState} to apply to the job
+     * @param jobId                             the ID of the job whose state is to be changed
+     * @param targetState                       the new {@link JobState} to apply to the job
      * @param shouldRejectRemainingApplications flag indicating whether remaining pending applications should be rejected
      * @return the updated job as a {@link JobFormDTO}
      */
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-
+        Job job = assertCanManageJob(jobId);
         job.setState(targetState);
 
-        if (targetState == JobState.CLOSED) {
+        if (targetState==JobState.CLOSED) {
             // send emails stating that the job has been closed, to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
 
@@ -94,7 +94,7 @@ public class JobService {
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
 
             notifyApplicants(applicationsToNotify, RejectReason.JOB_OUTDATED);
-        } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
+        } else if (targetState==JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
             // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
 
@@ -127,9 +127,7 @@ public class JobService {
      * @param jobId the ID of the job to delete
      */
     public void deleteJob(UUID jobId) {
-        if (!jobRepository.existsById(jobId)) {
-            throw EntityNotFoundException.forId("Job", jobId);
-        }
+        assertCanManageJob(jobId);
         jobRepository.deleteById(jobId);
     }
 
@@ -140,7 +138,7 @@ public class JobService {
      * @return the job DTO with generaL job information
      */
     public JobDTO getJobById(UUID jobId) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = assertCanManageJob(jobId);
         return new JobDTO(
             job.getJobId(),
             job.getTitle(),
@@ -173,9 +171,9 @@ public class JobService {
         UUID applicationId = null;
         ApplicationState applicationState = null;
 
-        if (userId != null) {
+        if (userId!=null) {
             Application application = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
-            if (application != null) {
+            if (application!=null) {
                 applicationId = application.getApplicationId();
                 applicationState = application.getState();
             }
@@ -208,15 +206,15 @@ public class JobService {
      * Returns a paginated list of all available (PUBLISHED) jobs.
      * Supports filtering by multiple fields and dynamic sorting, including manual sort for professor name.
      *
-     * @param pageDTO pagination configuration
+     * @param pageDTO                pagination configuration
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sort configuration (by field and direction)
+     * @param sortDTO                sort configuration (by field and direction)
      * @return a page of {@link JobCardDTO} matching the criteria
      */
     public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
-        if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
+        if (sortDTO.sortBy()!=null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
@@ -251,9 +249,9 @@ public class JobService {
      * Returns a paginated list of jobs created by a given professor.
      * Supports optional filtering and dynamic sorting.
      *
-     * @param pageDTO pagination configuration
+     * @param pageDTO                pagination configuration
      * @param professorJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sorting configuration
+     * @param sortDTO                sorting configuration
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
     public Page<CreatedJobDTO> getJobsByProfessor(PageDTO pageDTO, ProfessorJobsFilterDTO professorJobsFilterDTO, SortDTO sortDTO) {
@@ -264,6 +262,9 @@ public class JobService {
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
         User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
+        // Ensure that the current user is either an admin or a research group member of the supervising professor
+        currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
+
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
         job.setTitle(dto.title());
@@ -282,4 +283,18 @@ public class JobService {
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
     }
+
+    /**
+     * Asserts that the current user can manage the job with the given ID.
+     *
+     * @param jobId the ID of the job to check
+     * @return the job entity if the user can manage it
+     */
+    private Job assertCanManageJob(UUID jobId) {
+        Job job = jobRepository.findById(jobId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        return job;
+    }
+
 }

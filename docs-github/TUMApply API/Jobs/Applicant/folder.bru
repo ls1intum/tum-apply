@@ -1,13 +1,10 @@
 meta {
-  name: Create document
-  type: http
+  name: Applicant
   seq: 1
 }
 
-post {
-  url: {{baseUrl}}/document/
-  body: multipartForm
-  auth: oauth2
+auth {
+  mode: oauth2
 }
 
 auth:oauth2 {
@@ -22,15 +19,9 @@ auth:oauth2 {
   state: {{$guid}}
   pkce: true
   credentials_placement: basic_auth_header
-  credentials_id: 
+  credentials_id: credentials
   token_placement: header
   token_header_prefix: 
   auto_fetch_token: true
   auto_refresh_token: false
-}
-
-body:multipart-form {
-  file: @file(postman-cloud:///1f02032d-0b56-4d90-9d40-2d24a2328554)
-  userId: 
-  customFieldId: 
 }

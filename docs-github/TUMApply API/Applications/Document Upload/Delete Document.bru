@@ -5,30 +5,11 @@ meta {
 }
 
 delete {
-  url: {{baseUrl}}/document/:document_id
+  url: {{baseUrl}}/api/applications/delete-document/:documentDictonaryId
   body: none
-  auth: oauth2
+  auth: inherit
 }
 
 params:path {
-  document_id: 
-}
-
-auth:oauth2 {
-  grant_type: authorization_code
-  callback_url: {{redirectUri}}
-  authorization_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth
-  access_token_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
-  refresh_token_url: 
-  client_id: {{clientId}}
-  client_secret: 
-  scope: openid
-  state: {{$guid}}
-  pkce: true
-  credentials_placement: basic_auth_header
-  credentials_id: 
-  token_placement: header
-  token_header_prefix: 
-  auto_fetch_token: true
-  auto_refresh_token: false
+  documentDictonaryId: 00000000-0000-0000-0000-000000000103
 }
