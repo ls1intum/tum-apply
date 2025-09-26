@@ -139,7 +139,7 @@
       "job": "Stelle",
       "status": "Status",
       "startDate": "Startdatum",
-      "created": "Erstellt am",
+      "created": "Erstellt",
       "lastModified": "Zuletzt geändert"
     },
     "sortingOptions": {
