@@ -47,10 +47,8 @@ public class CheckAccessAspect {
                 }
                 case USER_ID -> {
                     UUID userId = extractUuid(arg, "getUserId");
-                    if (userId!=null && !currentUserService.isCurrentUserOrAdmin(userId)) {
-                        throw new AccessDeniedException("Access denied for user ID " + userId);
-                    }
                     if (userId!=null) {
+                        currentUserService.isCurrentUserOrAdmin(userId);
                         return joinPoint.proceed();
                     }
                 }

@@ -133,7 +133,7 @@ public class ApplicationService {
         application = applicationRepository.save(application);
 
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
-        Applicant applicant = assertCanManageApplicant(updateApplicationDTO.applicant().user().userId());
+        Applicant applicant = assertCanManageApplicant(application.getApplicant().getUserId());
         User user = applicant.getUser();
         user.setFirstName(applicantDTO.user().firstName());
         user.setLastName(applicantDTO.user().lastName());
