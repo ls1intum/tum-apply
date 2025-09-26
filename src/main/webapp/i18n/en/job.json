@@ -113,7 +113,9 @@
         "fieldOfStudies": "Field of Studies",
         "fieldOfStudiesPlaceholder": "Search Field of Studies...",
         "location": "Location",
-        "LocationSearchPlaceholder": "Search Locations..."
+        "LocationSearchPlaceholder": "Search Locations...",
+        "supervisor": "Supervisor",
+        "supervisorSearchPlaceholder": "Search Supervisors..."
       },
       "locations": {
         "garching": "Garching",

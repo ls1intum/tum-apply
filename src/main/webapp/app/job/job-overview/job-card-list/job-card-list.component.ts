@@ -47,10 +47,12 @@ export class JobCardListComponent {
   readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
   readonly selectedLocationFilters = signal<string[]>([]);
+  readonly selectedSupervisorFilters = signal<string[]>([]);
 
   readonly allJobNames = signal<string[]>([]);
   readonly allFieldofStudies = signal<string[]>([]);
   readonly availableLocationLabels = this.availableLocationOptions.map(option => option.label);
+  readonly allSupervisorNames = signal<string[]>([]);
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'jobOverviewPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
@@ -102,6 +104,10 @@ export class JobCardListComponent {
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedLocationFilters.set(enumValues);
       void this.loadJobs();
+    } else if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.supervisor') {
+      this.page.set(0);
+      this.selectedSupervisorFilters.set(filterChange.selectedValues);
+      void this.loadJobs();
     }
   }
 
@@ -118,9 +124,12 @@ export class JobCardListComponent {
       this.allJobNames.set(jobNames.sort());
       const fieldsOfStudy = await firstValueFrom(this.jobService.getAllFieldOfStudies());
       this.allFieldofStudies.set(fieldsOfStudy.sort());
+      const supervisorNames = await firstValueFrom(this.jobService.getAllSupervisorNames());
+      this.allSupervisorNames.set(supervisorNames.sort());
     } catch {
       this.allJobNames.set([]);
       this.allFieldofStudies.set([]);
+      this.allSupervisorNames.set([]);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
     }
   }
@@ -130,6 +139,7 @@ export class JobCardListComponent {
       const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
       const fieldsOfStudyFilters = this.selectedFieldOfStudiesFilters().length > 0 ? this.selectedFieldOfStudiesFilters() : [];
       const locationFilters = this.selectedLocationFilters().length > 0 ? this.selectedLocationFilters() : [];
+      const supervisorFilters = this.selectedSupervisorFilters().length > 0 ? this.selectedSupervisorFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getAvailableJobs(
           this.pageSize(),
@@ -137,7 +147,7 @@ export class JobCardListComponent {
           jobNameFilters.length ? jobNameFilters : undefined,
           fieldsOfStudyFilters.length ? fieldsOfStudyFilters : undefined,
           locationFilters.length ? locationFilters : undefined,
-          undefined, // filtering by professorName
+          supervisorFilters.length ? supervisorFilters : undefined,
           this.sortBy(),
           this.sortDirection(),
           this.searchQuery() || undefined,

@@ -113,7 +113,9 @@
         "fieldOfStudies": "Studienrichtung",
         "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
         "location": "Standort",
-        "LocationSearchPlaceholder": "Standorte suchen..."
+        "LocationSearchPlaceholder": "Standorte suchen...",
+        "supervisor": "Betreuer",
+        "supervisorSearchPlaceholder": "Betreuer suchen..."
       },
       "locations": {
         "garching": "Garching",
