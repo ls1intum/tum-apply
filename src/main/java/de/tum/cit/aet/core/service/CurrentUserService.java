@@ -114,22 +114,24 @@ public class CurrentUserService {
     /**
      * Returns the research group ID if the current user is a professor.
      *
-     * @return an Optional containing the research group ID if user is a professor, or empty otherwise
+     * @return the research group ID if user is a professor
+     * @throws AccessDeniedException if the user is not a professor or has no research group
      */
     public UUID getResearchGroupIdIfProfessor() {
         return getCurrentUser()
             .getResearchGroupIdIfProfessor()
-            .orElseThrow(() -> new IllegalStateException("Current User does not have a research group"));
+            .orElseThrow(() -> new AccessDeniedException("Current User does not have a research group"));
     }
 
     /**
      * Returns the research group if the current user is a professor.
      *
-     * @return the research group ID if user is a professor, or throws IllegalStateException
+     * @return the research group ID if user is a professor
+     * @throws AccessDeniedException if the user is not a professor or has no research group
      */
     public ResearchGroup getResearchGroupIfProfessor() {
         return Optional.ofNullable(getUser().getResearchGroup()).orElseThrow(() ->
-            new IllegalStateException("Current User does not have a research group")
+            new AccessDeniedException("Current User does not have a research group")
         );
     }
 
@@ -168,7 +170,13 @@ public class CurrentUserService {
      * @return true if the user has access to the group, false otherwise
      */
     public boolean isAdminOrProfessorOf(UUID researchGroupId) {
-        return isAdmin() || getResearchGroupIdIfProfessor().equals(researchGroupId);
+        if (isAdmin()) {
+            return true;
+        }
+        return getCurrentUser()
+            .getResearchGroupIdIfProfessor()
+            .map(id -> id.equals(researchGroupId))
+            .orElse(false);
     }
 
     /**
@@ -237,7 +245,7 @@ public class CurrentUserService {
         Application application = answer.getApplication();
         return (
             isAdminOrProfessorOf(application.getJob().getResearchGroup().getResearchGroupId()) ||
-            isCurrentUserOrAdmin(application.getApplicant().getUserId())
+                isCurrentUserOrAdmin(application.getApplicant().getUserId())
         );
     }
 
