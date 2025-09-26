@@ -34,25 +34,25 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
    * @return a page of {@link CreatedJobDTO} matching the criteria
    */
   @Query("""
-                          SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
-                              j.jobId,
-                              j.supervisingProfessor.avatar,
-                              CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-                              j.state,
-                              j.title,
-                              j.startDate,
-                              j.createdAt,
-                              j.lastModifiedAt
-                          )
-                          FROM Job j
-                          WHERE j.supervisingProfessor.userId = :userId
-                          AND (:titles IS NULL OR j.title IN :titles)
-                          AND (:states IS NULL OR j.state IN :states)
-      AND (:searchQuery IS NULL OR
-           UPPER(j.title) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%')) OR
-           UPPER(CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName)) LIKE UPPER(CONCAT('%', TRIM(:searchQuery), '%'))
-      )
-                      """)
+          SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
+              j.jobId,
+              j.supervisingProfessor.avatar,
+              CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+              j.state,
+              j.title,
+              j.startDate,
+              j.createdAt,
+              j.lastModifiedAt
+          )
+          FROM Job j
+          WHERE j.supervisingProfessor.userId = :userId
+          AND (:titles IS NULL OR j.title IN :titles)
+          AND (:states IS NULL OR j.state IN :states)
+          AND (:searchQuery IS NULL OR
+               LOWER(j.title) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+               LOWER(CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+          )
+      """)
   Page<CreatedJobDTO> findAllJobsByProfessor(
       @Param("userId") UUID userId,
       @Param("titles") List<String> titles,

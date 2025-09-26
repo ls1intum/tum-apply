@@ -286,8 +286,9 @@ public class JobService {
                     .filter(Objects::nonNull)
                     .toList();
         }
+        String normalizedSearchQuery = normalizeSearchQuery(searchQuery);
         return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(),
-                enumStates, searchQuery, pageable);
+                enumStates, normalizedSearchQuery, pageable);
     }
 
     /**
@@ -322,5 +323,21 @@ public class JobService {
         job.setState(dto.state());
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
+    }
+
+    /**
+     * Normalizes the search query by trimming whitespace, converting to lowercase,
+     * and returning null if the result is empty.
+     *
+     * @param searchQuery the raw search query
+     * @return normalized search query or null if empty
+     */
+    private String normalizeSearchQuery(String searchQuery) {
+        if (searchQuery == null) {
+            return null;
+        }
+
+        String trimmed = searchQuery.trim().toLowerCase();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }
