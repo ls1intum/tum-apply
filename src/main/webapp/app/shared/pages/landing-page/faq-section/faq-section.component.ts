@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
-import { AccordionModule } from 'primeng/accordion';
 import { TranslateModule } from '@ngx-translate/core';
+import { AccordionModule } from 'primeng/accordion';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-faq-section',
   standalone: true,
-  imports: [AccordionModule, TranslateModule, TranslateDirective],
+  imports: [AccordionModule, TranslateModule, TranslateDirective, FontAwesomeModule],
   templateUrl: './faq-section.component.html',
   styleUrl: './faq-section.component.scss',
 })
@@ -34,4 +36,6 @@ export class FaqSectionComponent {
       content: 'landingPage.faq.questions.status.content',
     },
   ];
+
+  readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 }

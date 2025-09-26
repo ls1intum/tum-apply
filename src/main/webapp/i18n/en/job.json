@@ -10,6 +10,10 @@
         "positionDetails": "Position Details",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
+      },
+      "basicInfo": {
+        "section1": "Overview",
+        "section2": "Employment Terms"
       }
     },
     "basicInformationSection": {
@@ -202,5 +206,31 @@
     "unknown": "Unknown"
   },
   "job": "Position",
-  "jobs": "Positions"
+  "jobs": "Positions",
+  "toast": {
+    "published": {
+      "summary": "Published",
+      "detail": "Thank you. The job has been published successfully."
+    },
+    "publishFailed": {
+      "summary": "Publish failed",
+      "detail": "The job could not be published. Please review your inputs or try again."
+    },
+    "loadFailed": {
+      "summary": "Load failed",
+      "detail": "The form could not be loaded. Please refresh the page."
+    },
+    "saveFailed": {
+      "summary": "Save failed",
+      "detail": "Changes could not be saved. Please check your connection and save again."
+    },
+    "invalidJobId": {
+      "summary": "Invalid job ID",
+      "detail": "We couldn't find this job. Please open it from “My Positions” and try again."
+    },
+    "authRequired": {
+      "summary": "Sign-in required",
+      "detail": "Please sign in to continue."
+    }
+  }
 }

@@ -5,15 +5,15 @@ import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
-import { FilterChange, SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { Sort, SortOption } from '../../shared/components/molecules/sort-bar/sort-bar.component';
+import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { EvaluationService } from '../service/evaluation.service';
-import { FilterField } from '../../shared/filter';
-import { sortOptions } from '../filterSortOptions';
+import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
@@ -40,7 +40,6 @@ export class ApplicationOverviewComponent {
   page = signal(0);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
-  filters = signal<FilterField[]>([]);
   total = signal(0);
   searchQuery = signal<string>('');
 
@@ -48,6 +47,7 @@ export class ApplicationOverviewComponent {
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
   readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<string[]>([]);
 
   readonly allAvailableJobNames = signal<string[]>([]);
 
@@ -70,12 +70,6 @@ export class ApplicationOverviewComponent {
     ];
   });
 
-  readonly sortableFields: SortOption[] = [
-    { displayName: 'Applied at', field: 'createdAt', type: 'NUMBER' },
-    { displayName: 'Name', field: 'applicant.lastName', type: 'TEXT' },
-    { displayName: 'Rating', field: 'rating', type: 'NUMBER' },
-  ];
-
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     SENT: 'info',
     ACCEPTED: 'success',
@@ -83,32 +77,39 @@ export class ApplicationOverviewComponent {
     IN_REVIEW: 'warn',
   });
 
-  protected readonly sortOptions = sortOptions;
+  readonly availableStatusLabels = availableStatusOptions.map(option => option.label);
+
+  protected readonly sortableFields = sortableFields;
 
   private isSearchInitiatedByUser = false;
+  private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+  private readonly queryParamsSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
   constructor() {
     effect(() => {
-      const qp = this.qpSignal();
-      const rawPage = qp.get('page');
+      const queryParams = this.queryParamsSignal();
+      const rawPage = queryParams.get('page');
       this.page.set(rawPage !== null && !isNaN(+rawPage) ? Math.max(0, +rawPage) : 0);
 
-      const rawSize = qp.get('pageSize');
+      const rawSize = queryParams.get('pageSize');
       this.pageSize.set(rawSize !== null && !isNaN(+rawSize) ? Math.max(1, +rawSize) : 10);
-      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].field);
 
-      const rawSD = qp.get('sortDir');
-      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      if (!this.isSortInitiatedByUser) {
+        this.sortBy.set(queryParams.get('sortBy') ?? this.sortableFields[0].fieldName);
+        const rawSD = queryParams.get('sortDir');
+        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      } else {
+        this.isSortInitiatedByUser = false;
+      }
 
       if (!this.isSearchInitiatedByUser) {
-        this.searchQuery.set(qp.get('search') ?? '');
+        this.searchQuery.set(queryParams.get('search') ?? '');
       }
 
       this.isSearchInitiatedByUser = false;
@@ -117,14 +118,6 @@ export class ApplicationOverviewComponent {
 
       void this.loadPage();
     });
-    void this.initFilterFields();
-  }
-
-  async initFilterFields(): Promise<void> {
-    const filters = await this.evaluationService.getFilterFields();
-    const params = this.qpSignal();
-    filters.forEach(filter => filter.withSelectionFromParam(params));
-    this.filters.set(filters);
   }
 
   async loadAllJobNames(): Promise<void> {
@@ -153,25 +146,24 @@ export class ApplicationOverviewComponent {
     void this.loadPage();
   }
 
-  loadOnFilterEmit(filters: FilterField[]): void {
-    this.page.set(0);
-    this.filters.set(filters);
-
-    void this.loadPage();
-  }
-
-  loadOnJobFilterEmit(filterChange: FilterChange): void {
+  loadOnFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadPage();
+    } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
+      this.page.set(0);
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedStatusFilters.set(enumValues);
       void this.loadPage();
     }
   }
 
   loadOnSortEmit(event: Sort): void {
+    this.isSortInitiatedByUser = true;
     this.page.set(0);
 
-    this.sortBy.set(event.field ?? this.sortableFields[0].field);
+    this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
 
     void this.loadPage();
@@ -183,12 +175,6 @@ export class ApplicationOverviewComponent {
       sortDirection: this.sortDirection(),
       applicationId: application.applicationId,
     };
-
-    this.filters().forEach(filter => {
-      if (filter.selected.length > 0) {
-        queryParams[filter.field] = filter.selected.map(opt => encodeURIComponent(opt.field)).join(',');
-      }
-    });
 
     void this.router.navigate(['/evaluation/application'], {
       queryParams,
@@ -203,9 +189,8 @@ export class ApplicationOverviewComponent {
       const direction = this.sortDirection();
       const search = this.searchQuery();
 
-      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : Array.from(filtersByKey.job ?? []);
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
 
       const res = await firstValueFrom(
         this.evaluationResourceService.getApplicationsOverviews(
@@ -230,6 +215,11 @@ export class ApplicationOverviewComponent {
     }
   }
 
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(availableStatusOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
   private buildQueryParams(): Params {
     const baseParams: Params = {
       page: this.page(),
@@ -241,13 +231,6 @@ export class ApplicationOverviewComponent {
       baseParams.search = this.searchQuery();
     }
     const filterParams: Params = {};
-    this.filters().forEach(f => {
-      const entry = f.getQueryParamEntry();
-
-      if (entry) {
-        filterParams[entry[0]] = entry[1];
-      }
-    });
 
     return {
       ...baseParams,
@@ -256,9 +239,9 @@ export class ApplicationOverviewComponent {
   }
 
   private updateUrlQueryParams(): void {
-    const qp: Params = this.buildQueryParams();
+    const queryParams: Params = this.buildQueryParams();
     void this.router.navigate([], {
-      queryParams: qp,
+      queryParams,
       replaceUrl: true,
     });
   }

@@ -1,4 +1,5 @@
-import { SortOption } from '../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
+import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
+
 import { FilterField, FilterOption } from '../shared/filter';
 
 // TODO Jobs will be replaced by dynamically loaded jobs from the server
@@ -17,15 +18,16 @@ export const filterFields: FilterField[] = [
   ),
 ];
 
-export const sortOptions: SortOption[] = [
-  {
-    displayName: 'Applied at (Oldest to Newest)',
-    field: 'createdAt',
-    direction: 'ASC',
-  },
-  {
-    displayName: 'Applied at (Newest to Oldest)',
-    field: 'createdAt',
-    direction: 'DESC',
-  },
+export const availableStatusOptions: { key: string; label: string }[] = [
+  { key: 'SENT', label: 'evaluation.statusBadge.SENT' },
+  { key: 'IN_REVIEW', label: 'evaluation.statusBadge.IN_REVIEW' },
+  { key: 'ACCEPTED', label: 'evaluation.statusBadge.ACCEPTED' },
+  { key: 'REJECTED', label: 'evaluation.statusBadge.REJECTED' },
+];
+
+export const sortableFields: SortOption[] = [
+  { displayName: 'evaluation.tableHeaders.appliedAt', fieldName: 'appliedAt', type: 'NUMBER' },
+  { displayName: 'evaluation.tableHeaders.lastName', fieldName: 'name', type: 'TEXT' },
+  { displayName: 'evaluation.tableHeaders.status', fieldName: 'status', type: 'TEXT' },
+  { displayName: 'evaluation.tableHeaders.job', fieldName: 'job', type: 'TEXT' },
 ];

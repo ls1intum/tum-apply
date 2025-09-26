@@ -30,7 +30,13 @@
             @for (option of selectedOptions(); track option.value) {
               <div class="option-item selected" (click)="toggleOption(option.value)">
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
-                <span class="option-label">{{ option.label }}</span>
+                <span class="option-label">
+                  @if (shouldTranslateOptions()) {
+                    {{ option.label | translate }}
+                  } @else {
+                    {{ option.label }}
+                  }
+                </span>
               </div>
             }
           }
@@ -45,7 +51,13 @@
             @for (option of unselectedOptions(); track option.value) {
               <div class="option-item" (click)="toggleOption(option.value)">
                 <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
-                <span class="option-label">{{ option.label }}</span>
+                <span class="option-label">
+                  @if (shouldTranslateOptions()) {
+                    {{ option.label | translate }}
+                  } @else {
+                    {{ option.label }}
+                  }
+                </span>
               </div>
             }
           }

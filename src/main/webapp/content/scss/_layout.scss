@@ -58,3 +58,21 @@
     }
   }
 }
+
+.page-container {
+  padding: 2rem 4rem;
+  width: 100%;
+}
+
+/* -------------------------------
+   Layout for Forms
+---------------------------------- */
+
+.form-row {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.form-field {
+  flex: 1;
+}
