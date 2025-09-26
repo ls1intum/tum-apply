@@ -212,7 +212,6 @@ public class CurrentUserService {
      * Checks whether the given userId matches the current user or the current user is an admin.
      *
      * @param userId the user ID to check
-     * @return true if the current user is the given user or is an admin
      */
     public void isCurrentUserOrAdmin(UUID userId) {
         boolean success = isAdmin() || getUserId().equals(userId);
