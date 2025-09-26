@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ApplicationConfig, KeycloakConfig, OtpConfig } from 'app/core/config/application-config.model';
+import { ToastService } from 'app/service/toast-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApplicationConfigService {
+  toastService = inject(ToastService);
   private _config?: ApplicationConfig;
 
   /**
@@ -40,7 +42,13 @@ export class ApplicationConfigService {
   }
 
   getAppConfig(): ApplicationConfig {
-    if (!this._config) throw new Error('ApplicationConfig not initialized yet');
+    if (!this._config) {
+      this.toastService.showError({
+        summary: 'Error',
+        detail: 'Failed to load the application. Please refresh the' + ' page.',
+      });
+      throw new Error('ApplicationConfig not initialized yet');
+    }
     return this._config;
   }
 }
