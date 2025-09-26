@@ -1,5 +1,6 @@
 meta {
   name: Applications
+  seq: 10
 }
 
 auth {
@@ -18,7 +19,7 @@ auth:oauth2 {
   state: {{$guid}}
   pkce: true
   credentials_placement: basic_auth_header
-  credentials_id: 
+  credentials_id: credentials
   token_placement: header
   token_header_prefix: 
   auto_fetch_token: true
