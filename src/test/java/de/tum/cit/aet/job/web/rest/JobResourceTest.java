@@ -1,9 +1,7 @@
 package de.tum.cit.aet.job.web.rest;
 
-import static java.util.Map.entry;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -14,13 +12,8 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.UUID;
-
-import de.tum.cit.aet.utility.*;
 import de.tum.cit.aet.utility.MvcTestClient;
-
+import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
 import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
@@ -28,16 +21,17 @@ import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-class JobResourceTest {
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.UUID;
+
+import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class JobResourceTest extends AbstractResourceTest {
 
         @Autowired
         JobRepository jobRepository;

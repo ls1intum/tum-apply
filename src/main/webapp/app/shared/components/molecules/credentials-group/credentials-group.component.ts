@@ -4,11 +4,11 @@ import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { PasswordInputComponent } from '../../atoms/password-input/password-input';
-import { environment } from '../../../../environments/environment';
 import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { AuthIdpButtons } from '../auth-idp-buttons/auth-idp-buttons';
 import { TranslateDirective } from '../../../language';
@@ -35,6 +35,7 @@ type SubmitHandler = (email: string, password?: string) => Promise<boolean>;
   encapsulation: ViewEncapsulation.None,
 })
 export class CredentialsGroupComponent {
+  config = inject(ApplicationConfigService);
   authOrchestrator = inject(AuthOrchestratorService);
 
   isLogin = input<boolean>(true);
@@ -53,7 +54,7 @@ export class CredentialsGroupComponent {
   dividerLabel = computed(() => (this.isLogin() ? 'auth.login.texts.or' : 'auth.register.texts.or'));
 
   isSubmitting = false;
-  otpLength = environment.otp.length;
+  otpLength = this.config.otp.length;
 
   form = new FormGroup({
     email: new FormControl<string>(this.authOrchestrator.email(), {

@@ -7,8 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
-import { environment } from '../../../../environments/environment';
 import { BaseInputDirective } from '../base-input/base-input.component';
 import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { ButtonComponent } from '../button/button.component';
@@ -23,6 +23,7 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
   styleUrl: './otp-input.scss',
 })
 export class OtpInput extends BaseInputDirective<string | undefined> {
+  readonly config = inject(ApplicationConfigService);
   readonly authFacade = inject(AuthFacadeService);
   readonly authOrchestratorService = inject(AuthOrchestratorService);
   readonly translateService = inject(TranslateService);
@@ -32,8 +33,8 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   // if the otp is for registration (true) or login (false)
   registration = input<boolean>(false);
   // Number of characters the OTP should have
-  length = environment.otp.length;
-  ttlSeconds = environment.otp.ttlSeconds;
+  length = this.config.otp.length;
+  ttlSeconds = this.config.otp.ttlSeconds;
   // Time-to-live for the OTP in minutes
   readonly ttlMinutes: number = Math.max(1, Math.ceil(this.ttlSeconds / 60));
   // Cooldown in seconds for the resend button

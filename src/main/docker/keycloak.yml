@@ -9,8 +9,8 @@ services:
       - ./realm-config/keycloak-health-check.sh:/opt/keycloak/health-check.sh
     environment:
       - KC_DB=dev-file
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KEYCLOAK_USERS_ADMIN_USERNAME=admin
+      - KEYCLOAK_USERS_ADMIN_PASSWORD=admin
       - KC_FEATURES=scripts,token-exchange,admin-fine-grained-authz:v1
       - KC_HTTP_PORT=9080
       - KC_HTTPS_PORT=9443

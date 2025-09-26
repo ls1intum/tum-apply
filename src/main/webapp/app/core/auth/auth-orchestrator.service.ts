@@ -1,8 +1,7 @@
 import { Injectable, Injector, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
-
-import { environment } from '../../environments/environment';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep } from './models/auth.model';
 
@@ -28,6 +27,7 @@ import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep 
  *  - Intended to be used by `AuthDialogService` and other UI components to drive the authentication UI.
  */
 export class AuthOrchestratorService {
+  readonly config = inject(ApplicationConfigService);
   // high level dialog state
   readonly isOpen = signal(false);
   readonly mode = signal<AuthFlowMode>('login');
@@ -181,7 +181,7 @@ export class AuthOrchestratorService {
   // -------- Helpers ----------
 
   private startOtpRefreshCooldown(): void {
-    const cooldown = environment.otp.cooldown;
+    const cooldown = this.config.otp.resendCooldownSeconds;
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);
   }
