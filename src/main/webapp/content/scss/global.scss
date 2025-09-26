@@ -402,6 +402,20 @@
   border-radius: 50%;
 }
 
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 2;
+  pointer-events: none; // Disable pointer events for the carousel indicators
+
+  .pointer-event-button {
+    pointer-events: auto; // Enable pointer events for the button
+  }
+}
+
 /* -------------------------------
  Style primeNg select component.
 ------------------------------- */

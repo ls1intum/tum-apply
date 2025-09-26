@@ -7,20 +7,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
 import TranslateDirective from '../../../language/translate.directive';
-import { FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
+import { Filter, FilterChange, FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption, Sorting } from '../../atoms/sorting/sorting';
-
-// Interface for filter options which can be passed to the filter component
-export interface Filter {
-  filterLabel: string;
-  filterSearchPlaceholder: string;
-  filterOptions: string[];
-}
-
-export interface FilterChange {
-  filterLabel: string;
-  selectedValues: string[];
-}
 
 @Component({
   selector: 'jhi-search-filter-sort-bar',

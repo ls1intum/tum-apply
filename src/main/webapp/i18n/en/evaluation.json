@@ -41,7 +41,8 @@
     "filterOptions": {
       "job": "Job",
       "status": "Status",
-      "jobSearchPlaceholder": "Search Positions..."
+      "jobSearchPlaceholder": "Search Positions...",
+      "stateSearchPlaceholder": "Search Status..."
     },
     "application": "Application",
     "applications": "Applications",
@@ -88,6 +89,10 @@
       "documentDownloadAll": "Download all",
       "moreDocument": "+1 more document",
       "moreDocuments": "+{{count}} more documents"
+    },
+    "errors": {
+      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues.",
+      "loadApplication": "Failed to load application. Please try refreshing the page, or contact us if the problem continues."
     }
   }
 }

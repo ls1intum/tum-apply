@@ -201,7 +201,8 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
             UUID researchGroupId,
             Collection<ApplicationState> states,
             Sort sort,
-            Map<String, List<?>> dynamicFilters) {
+            Map<String, List<?>> dynamicFilters,
+            String searchQuery) {
         Map<String, Object> params = new HashMap<>();
         params.put("groupId", researchGroupId);
         params.put("states", states.stream().map(ApplicationState::toString).toList());
@@ -219,6 +220,19 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
                             WHERE j.research_group_id = :groupId
                               AND a.application_state IN (:states)
                         """.formatted(orderBy));
+
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            String searchPattern = "%" + searchQuery.trim().toLowerCase() + "%";
+            params.put("searchPattern", searchPattern);
+            sql.append("""
+                      AND (
+                        LOWER(u.first_name) LIKE :searchPattern OR
+                        LOWER(u.last_name) LIKE :searchPattern OR
+                        LOWER(CONCAT(u.first_name, ' ', u.last_name)) LIKE :searchPattern OR
+                        LOWER(j.title) LIKE :searchPattern
+                      )
+                    """);
+        }
 
         SqlQueryUtil.appendDynamicFilters(sql, FILTER_COLUMNS, dynamicFilters, params);
 
