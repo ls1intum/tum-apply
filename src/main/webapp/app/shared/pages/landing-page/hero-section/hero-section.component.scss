@@ -1,4 +1,9 @@
 @use '../../../../../content/scss/breakpoints' as bp;
+
+.hero-wrap {
+  position: relative;
+}
+
 .hero-container {
   position: relative;
   display: flex;
