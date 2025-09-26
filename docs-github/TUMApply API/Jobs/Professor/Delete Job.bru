@@ -1,0 +1,29 @@
+meta {
+  name: Delete Job
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/api/jobs/:jobid
+  body: none
+  auth: inherit
+}
+
+params:path {
+  jobid: 00000000-0000-0000-0000-000000020001
+}
+
+docs {
+  ### Delete Job Posting
+  
+  ---
+  
+  #### Request
+  
+  Deletes a specific job posting.
+  
+  - Method: `DELETE`
+      
+  - URL: `{{baseUrl}}/jobs/{jobId}`
+}
