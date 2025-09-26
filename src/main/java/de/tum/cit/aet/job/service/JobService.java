@@ -19,6 +19,8 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -224,11 +226,10 @@ public class JobService {
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
                     JobState.PUBLISHED,
-                    availableJobsFilterDTO.title(), // optional filter for job title
-                    availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                    availableJobsFilterDTO.location(), // optional filter for campus location
-                    availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                    availableJobsFilterDTO.workload(), // optional filter for workload value
+                    availableJobsFilterDTO.titles(), // filter for job title
+                    availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
+                    availableJobsFilterDTO.locations(), // filter for campus location
+                    availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
                     sortDTO.sortBy(),
                     sortDTO.direction().name(),
                     userId,
@@ -239,11 +240,10 @@ public class JobService {
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
                     JobState.PUBLISHED,
-                    availableJobsFilterDTO.title(), // optional filter for job title
+                    availableJobsFilterDTO.titles(), // optional filter for job title
                     availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                    availableJobsFilterDTO.location(), // optional filter for campus location
-                    availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                    availableJobsFilterDTO.workload(), // optional filter for workload value
+                    availableJobsFilterDTO.locations(), // optional filter for campus location
+                    availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                     userId,
                     searchQuery,
                     pageable);

@@ -6,6 +6,8 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

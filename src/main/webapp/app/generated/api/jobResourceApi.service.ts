@@ -223,37 +223,50 @@ export class JobResourceApiService extends BaseService {
     /**
      * @param pageSize 
      * @param pageNumber 
-     * @param title 
+     * @param titles 
      * @param fieldOfStudies 
-     * @param location 
-     * @param professorName 
-     * @param workload 
+     * @param locations 
+     * @param professorNames 
      * @param sortBy 
      * @param direction 
      * @param searchQuery 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAvailableJobs(pageSize?: number, pageNumber?: number, title?: string, fieldOfStudies?: string, location?: 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE', professorName?: string, workload?: number, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageJobCardDTO>;
-    public getAvailableJobs(pageSize?: number, pageNumber?: number, title?: string, fieldOfStudies?: string, location?: 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE', professorName?: string, workload?: number, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageJobCardDTO>>;
-    public getAvailableJobs(pageSize?: number, pageNumber?: number, title?: string, fieldOfStudies?: string, location?: 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE', professorName?: string, workload?: number, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageJobCardDTO>>;
-    public getAvailableJobs(pageSize?: number, pageNumber?: number, title?: string, fieldOfStudies?: string, location?: 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE', professorName?: string, workload?: number, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getAvailableJobs(pageSize?: number, pageNumber?: number, titles?: Array<string>, fieldOfStudies?: Array<string>, locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>, professorNames?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageJobCardDTO>;
+    public getAvailableJobs(pageSize?: number, pageNumber?: number, titles?: Array<string>, fieldOfStudies?: Array<string>, locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>, professorNames?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageJobCardDTO>>;
+    public getAvailableJobs(pageSize?: number, pageNumber?: number, titles?: Array<string>, fieldOfStudies?: Array<string>, locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>, professorNames?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageJobCardDTO>>;
+    public getAvailableJobs(pageSize?: number, pageNumber?: number, titles?: Array<string>, fieldOfStudies?: Array<string>, locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>, professorNames?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>pageSize, 'pageSize');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>pageNumber, 'pageNumber');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>title, 'title');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>fieldOfStudies, 'fieldOfStudies');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>location, 'location');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>professorName, 'professorName');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>workload, 'workload');
+        if (titles) {
+            titles.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'titles');
+            })
+        }
+        if (fieldOfStudies) {
+            fieldOfStudies.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'fieldOfStudies');
+            })
+        }
+        if (locations) {
+            locations.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'locations');
+            })
+        }
+        if (professorNames) {
+            professorNames.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'professorNames');
+            })
+        }
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>sortBy, 'sortBy');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
