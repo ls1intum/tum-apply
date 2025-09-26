@@ -1,0 +1,35 @@
+.about-us-page {
+  color: var(--p-text-primary);
+  max-width: 75rem;
+  margin-right: auto;
+
+  .headline {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .subheadline {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+
+  .text {
+    text-align: justify;
+    display: block;
+    font-size: 1rem;
+    white-space: pre-line;
+  }
+
+  .text.bloc {
+    line-height: 2rem;
+  }
+
+  .external-link {
+    color: var(--p-primary-color);
+    text-decoration: none;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

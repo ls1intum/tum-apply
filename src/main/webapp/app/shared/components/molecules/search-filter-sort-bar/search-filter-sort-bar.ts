@@ -7,19 +7,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
 import TranslateDirective from '../../../language/translate.directive';
-import { FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
-
-// Interface for filter options which can be passed to the filter component
-export interface Filter {
-  filterLabel: string;
-  filterSearchPlaceholder: string;
-  filterOptions: string[];
-}
-
-export interface FilterChange {
-  filterLabel: string;
-  selectedValues: string[];
-}
+import { Filter, FilterChange, FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
+import { Sort, SortOption, Sorting } from '../../atoms/sorting/sorting';
 
 @Component({
   selector: 'jhi-search-filter-sort-bar',
@@ -32,6 +21,7 @@ export interface FilterChange {
     TranslateModule,
     TranslateDirective,
     FilterMultiselect,
+    Sorting,
   ],
   templateUrl: './search-filter-sort-bar.html',
   styleUrl: './search-filter-sort-bar.scss',
@@ -44,6 +34,9 @@ export class SearchFilterSortBar {
   // list of filters to be displayed
   filters = input<Filter[]>([]);
 
+  // list of sort options to be displayed
+  sortableFields = input<SortOption[]>();
+
   // translation keys used for the total number of records found
   // those fields should already be translated within the parent component
   singleEntity = input.required<string>();
@@ -51,6 +44,7 @@ export class SearchFilterSortBar {
 
   searchOutput = output<string>();
   filterOutput = output<FilterChange>();
+  sortOutput = output<Sort>();
 
   // text entered in the search input field
   inputText = '';
@@ -69,5 +63,9 @@ export class SearchFilterSortBar {
 
   onFilterChange(filterChange: FilterChange): void {
     this.filterOutput.emit(filterChange);
+  }
+
+  onSortChange(event: Sort): void {
+    this.sortOutput.emit(event);
   }
 }

@@ -5,12 +5,12 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
+import { Sort } from 'app/shared/components/atoms/sorting/sorting';
 
 import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
-import { FilterField } from '../../shared/filter';
 import { EvaluationService } from '../service/evaluation.service';
-import { FilterSortBarComponent } from '../../shared/components/molecules/filter-sort-bar/filter-sort-bar.component';
-import { sortOptions } from '../filterSortOptions';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -27,6 +27,7 @@ import { AcceptDTO } from '../../generated/model/acceptDTO';
 import { RejectDTO } from '../../generated/model/rejectDTO';
 import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
 import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
+import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import { CommentSection } from '../components/comment-section/comment-section';
 import { RatingSection } from '../components/rating-section/rating-section';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
@@ -40,7 +41,7 @@ const WINDOW_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     DividerModule,
-    FilterSortBarComponent,
+    SearchFilterSortBar,
     TranslateModule,
     ButtonComponent,
     ReviewDialogComponent,
@@ -62,12 +63,21 @@ export class ApplicationDetailComponent {
   totalRecords = signal<number>(0);
   currentIndex = signal<number>(0);
   windowIndex = signal<number>(0);
+  searchQuery = signal<string>('');
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-  filters = signal<FilterField[]>([]);
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
+
+  readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<string[]>([]);
+
+  readonly availableStatusOptions = availableStatusOptions;
+
+  readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
+
+  allAvailableJobNames = signal<string[]>([]);
 
   // accept/reject dialog
   reviewDialogVisible = signal<boolean>(false);
@@ -88,8 +98,11 @@ export class ApplicationDetailComponent {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
   });
 
-  protected readonly sortOptions = sortOptions;
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
+  protected readonly sortableFields = sortableFields;
+
+  private isSearchInitiatedByUser = false;
+  private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly evaluationService = inject(EvaluationService);
@@ -107,12 +120,22 @@ export class ApplicationDetailComponent {
   async init(): Promise<void> {
     effect(() => {
       const qp = this.qpSignal();
-      this.sortBy.set(qp.get('sortBy') ?? this.sortOptions[0].field);
       const rawSD = qp.get('sortDir');
       this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+
+      if (!this.isSortInitiatedByUser) {
+        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
+        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      } else {
+        this.isSortInitiatedByUser = false;
+      }
+
+      if (!this.isSearchInitiatedByUser) {
+        this.searchQuery.set(qp.get('search') ?? '');
+      }
+      this.isSearchInitiatedByUser = false;
     });
-    void this.initFilterFields();
-    await this.initFilterFields();
+    await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
     if (id) {
@@ -123,11 +146,40 @@ export class ApplicationDetailComponent {
     }
   }
 
-  async initFilterFields(): Promise<void> {
-    const filters = await this.evaluationService.getFilterFields();
-    const params = this.qpSignal();
-    filters.forEach(filter => filter.withSelectionFromParam(params));
-    this.filters.set(filters);
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.evaluationResourceService.getAllJobNames());
+      this.allAvailableJobNames.set(jobNames.sort());
+    } catch {
+      this.allAvailableJobNames.set([]);
+      this.toastService.showErrorKey('evaluation.errors.loadJobNames');
+    }
+  }
+
+  onSearchEmit(searchQuery: string): void {
+    this.isSearchInitiatedByUser = true;
+    this.searchQuery.set(searchQuery);
+    void this.loadInitialPage();
+  }
+
+  onFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
+      this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadInitialPage();
+    } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedStatusFilters.set(enumValues);
+      void this.loadInitialPage();
+    }
+  }
+
+  loadOnSortEmit(event: Sort): void {
+    this.isSortInitiatedByUser = true;
+
+    this.sortBy.set(event.field);
+    this.sortDirection.set(event.direction);
+
+    void this.loadInitialPage();
   }
 
   // Navigate to next application
@@ -170,11 +222,6 @@ export class ApplicationDetailComponent {
       this.updateApplications();
     }
     this.updateUrlQueryParams();
-  }
-
-  onFilterChange(filters: FilterField[]): void {
-    this.filters.set(filters);
-    void this.loadInitialPage();
   }
 
   openAcceptDialog(): void {
@@ -276,15 +323,20 @@ export class ApplicationDetailComponent {
     );
   }
 
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
   /**
    * Loads a page of applications from backend.
    * Also updates total count of applications.
    */
   private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {
     try {
-      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = Array.from(filtersByKey['job'] ?? []);
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
+      const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
         this.evaluationResourceService.getApplicationsDetails(
           offset,
@@ -293,21 +345,23 @@ export class ApplicationDetailComponent {
           this.sortDirection(),
           statusFilters.length ? statusFilters : undefined,
           jobFilters.length ? jobFilters : undefined,
+          search || undefined,
         ),
       );
       this.totalRecords.set(res.totalRecords ?? 0);
       return res.applications ?? undefined;
-    } catch (error) {
-      console.error('Failed to load applications:', error);
+    } catch {
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
       return undefined;
     }
   }
 
   private async loadWindow(applicationId: string): Promise<void> {
     try {
-      const filtersByKey = this.evaluationService.collectFiltersByKey(this.filters());
-      const statusFilters = Array.from(filtersByKey['status'] ?? []);
-      const jobFilters = Array.from(filtersByKey['job'] ?? []);
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
+
+      const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
         this.evaluationResourceService.getApplicationsDetailsWindow(
           applicationId,
@@ -316,6 +370,7 @@ export class ApplicationDetailComponent {
           this.sortDirection(),
           statusFilters.length ? statusFilters : undefined,
           jobFilters.length ? jobFilters : undefined,
+          search || undefined,
         ),
       );
       this.totalRecords.set(res.totalRecords ?? 0);
@@ -325,8 +380,8 @@ export class ApplicationDetailComponent {
       this.currentApplication.set(this.applications()[this.windowIndex()]);
       this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
       void this.markCurrentApplicationAsInReview();
-    } catch (error) {
-      console.error('Failed to load applications:', error);
+    } catch {
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
       return undefined;
     }
   }
@@ -412,13 +467,11 @@ export class ApplicationDetailComponent {
       applicationId: this.currentApplication()?.applicationDetailDTO.applicationId,
     };
 
+    if (this.searchQuery()) {
+      baseParams.search = this.searchQuery();
+    }
+
     const filterParams: Params = {};
-    this.filters().forEach(f => {
-      const entry = f.getQueryParamEntry();
-      if (entry) {
-        filterParams[entry[0]] = entry[1];
-      }
-    });
 
     return {
       ...baseParams,
