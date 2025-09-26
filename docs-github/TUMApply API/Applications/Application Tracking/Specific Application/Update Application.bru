@@ -1,44 +1,45 @@
 meta {
   name: Update Application
   type: http
-  seq: 2
+  seq: 3
 }
 
 put {
-  url: {{baseUrl}}/applications
+  url: {{baseUrl}}/api/applications
   body: json
-  auth: oauth2
-}
-
-auth:oauth2 {
-  grant_type: authorization_code
-  callback_url: {{redirectUri}}
-  authorization_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth
-  access_token_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
-  refresh_token_url: 
-  client_id: {{clientId}}
-  client_secret: 
-  scope: openid
-  state: {{$guid}}
-  pkce: true
-  credentials_placement: basic_auth_header
-  credentials_id: 
-  token_placement: header
-  token_header_prefix: 
-  auto_fetch_token: true
-  auto_refresh_token: false
+  auth: inherit
 }
 
 body:json {
   {
-      "applicationId": "123e4567-e89b-42d3-a456-556642440000",
-      "submittedBy": "123e4567-e89b-42d3-a456-556642440000",
-      "applicationReview": "123e4567-e89b-42d3-a456-556642440000",
-      "job": "123e4567-e89b-42d3-a456-556642440000",
-      "applicationStatus": "SENT",
-      "motivation": "",
-      "desiredDate": "",
-      "customFields": [],
-      "internalComments": []
+    "applicationId": "00000000-0000-0000-0000-300000020837",
+    "applicant": {
+      "user": {
+        "id": "00000000-0000-0000-0000-000000000103",
+        "firstName": "Alice",
+        "lastName": "Johnson",
+        "email": "alice.johnson@example.com",
+        "phone": "+1-555-123-4567",
+        "language": "en",
+        "avatarUrl": "https://example.com/avatars/alice.jpg"
+      },
+      "street": "123 Maple Avenue",
+      "postalCode": "10001",
+      "city": "New York",
+      "country": "USA",
+      "bachelorDegreeName": "B.Sc. Computer Science",
+      "bachelorGradingScale": "ONE_TO_FOUR",
+      "bachelorGrade": "3.8",
+      "bachelorUniversity": "New York University",
+      "masterDegreeName": "M.Sc. Data Science",
+      "masterGradingScale": "ONE_TO_FOUR",
+      "masterGrade": "3.9",
+      "masterUniversity": "Columbia University"
+    },
+    "desiredDate": "2025-10-15",
+    "applicationState": "SAVED",
+    "projects": "Developed a machine learning model for predicting stock prices.",
+    "specialSkills": "Python, TensorFlow, data analysis, cloud computing",
+    "motivation": "I am passionate about applying data science to real-world financial challenges."
   }
 }
