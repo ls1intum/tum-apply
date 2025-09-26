@@ -8,13 +8,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
+import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 
 import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
-import { Sort, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 import { JobCardDTO } from '../../../generated/model/jobCardDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
-
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
@@ -55,12 +54,12 @@ export class JobCardListComponent {
   readonly allSupervisorNames = signal<string[]>([]);
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'jobOverviewPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
-    { displayName: 'jobOverviewPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
-    { displayName: 'jobOverviewPage.sortingOptions.fieldOfStudies', field: 'fieldOfStudies', type: 'TEXT' },
-    { displayName: 'jobOverviewPage.sortingOptions.location', field: 'location', type: 'TEXT' },
-    { displayName: 'jobOverviewPage.sortingOptions.professor', field: 'professorName', type: 'TEXT' },
-    { displayName: 'jobOverviewPage.sortingOptions.workload', field: 'workload', type: 'NUMBER' },
+    { displayName: 'jobOverviewPage.sortingOptions.startDate', fieldName: 'startDate', type: 'NUMBER' },
+    { displayName: 'jobOverviewPage.sortingOptions.jobTitle', fieldName: 'title', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.fieldOfStudies', fieldName: 'fieldOfStudies', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.location', fieldName: 'location', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.professor', fieldName: 'professorName', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.workload', fieldName: 'workload', type: 'NUMBER' },
   ];
 
   translateService = inject(TranslateService);
@@ -111,9 +110,9 @@ export class JobCardListComponent {
     }
   }
 
-  loadOnSortEmit(event: Sort): void {
+  onSortEmit(event: Sort): void {
     this.page.set(0);
-    this.sortBy.set(event.field ?? this.sortableFields[0].field);
+    this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
     void this.loadJobs();
   }

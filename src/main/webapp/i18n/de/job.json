@@ -132,7 +132,7 @@
       "jobTitle": "Jobtitel",
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "professor": "Betreuer/in",
+      "professor": "Betreuer/in (Nachname)",
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {

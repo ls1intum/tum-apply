@@ -132,7 +132,7 @@
       "jobTitle": "Job Title",
       "fieldOfStudies": "Field of Studies",
       "location": "Location",
-      "professor": "Professor",
+      "professor": "Supervisor (Lastname)",
       "workload": "Workload"
     },
     "tooltips": {

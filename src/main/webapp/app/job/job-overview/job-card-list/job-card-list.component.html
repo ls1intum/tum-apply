@@ -5,6 +5,7 @@
   [searchText]="'jobOverviewPage.searchFilterSortBar.searchText' | translate"
   (searchOutput)="onSearchEmit($event)"
   (filterOutput)="onFilterEmit($event)"
+  (sortOutput)="onSortEmit($event)"
   [filters]="[
     {
       filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.job',
@@ -28,6 +29,7 @@
       filterOptions: allSupervisorNames(),
     },
   ]"
+  [sortableFields]="sortableFields"
 />
 @if (jobs().length > 0) {
   <div class="job-card-grid">
