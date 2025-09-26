@@ -58,6 +58,19 @@ public class JobResource {
     }
 
     /**
+     * {@code GET /api/jobs/allNames} : Returns all unique job names created by the
+     * current professor.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} job names
+     */
+    @GetMapping("/allJobNames")
+    public ResponseEntity<List<String>> getAllAvailableJobNames() {
+        List<String> jobNames = jobService.getAllJobNames();
+        return ResponseEntity.ok(jobNames);
+    }
+
+    /**
      * {@code POST /api/jobs} : Create a new job posting.
      *
      * @param jobForm the job posting data.

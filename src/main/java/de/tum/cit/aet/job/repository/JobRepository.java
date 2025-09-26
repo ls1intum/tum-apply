@@ -195,4 +195,19 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
       @Param("searchQuery") String searchQuery,
       Pageable pageable);
 
+  /**
+   * Finds all available job names
+   *
+   * @param state the job state (typically PUBLISHED)
+   * @return a List of String with all unique, available job Names
+   */
+  @Query("""
+      SELECT DISTINCT j.title
+      FROM Job j
+      WHERE j.state = :state
+        AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+      ORDER BY j.title ASC
+      """)
+  List<String> findAllUniqueJobNames(@Param("state") JobState state);
+
 }
