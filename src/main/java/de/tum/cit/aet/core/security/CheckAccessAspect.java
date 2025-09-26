@@ -40,25 +40,23 @@ public class CheckAccessAspect {
             switch (checkAccess.target()) {
                 case RESEARCH_GROUP_ID -> {
                     UUID researchGroupId = extractGroupId(arg);
-                    if (researchGroupId != null && !hasAccess(researchGroupId)) {
-                        throw new AccessDeniedException("Access denied to research group " + researchGroupId);
-                    }
-                    if (researchGroupId != null) {
+                    if (researchGroupId!=null) {
+                        hasAccess(researchGroupId);
                         return joinPoint.proceed();
                     }
                 }
                 case USER_ID -> {
                     UUID userId = extractUuid(arg, "getUserId");
-                    if (userId != null && !currentUserService.isCurrentUserOrAdmin(userId)) {
+                    if (userId!=null && !currentUserService.isCurrentUserOrAdmin(userId)) {
                         throw new AccessDeniedException("Access denied for user ID " + userId);
                     }
-                    if (userId != null) {
+                    if (userId!=null) {
                         return joinPoint.proceed();
                     }
                 }
                 case PROFESSOR_ID -> {
                     UUID professorId = extractUuid(arg, "getProfessorId");
-                    if (professorId != null) {
+                    if (professorId!=null) {
                         boolean allowed = currentUserService.isAdmin() ||
                             (currentUserService.isCurrentUser(professorId) && currentUserService.isProfessor());
                         if (!allowed) {
@@ -76,10 +74,10 @@ public class CheckAccessAspect {
      * Checks whether the current user is admin or professor of the given research group.
      *
      * @param researchGroupId the ID of the research group
-     * @return true if the user has access, false otherwise
+     * @throws AccessDeniedException if access is denied
      */
-    private boolean hasAccess(@Nonnull UUID researchGroupId) {
-        return currentUserService.isAdminOrProfessorOf(researchGroupId);
+    private void hasAccess(@Nonnull UUID researchGroupId) {
+        currentUserService.isAdminOrMemberOf(researchGroupId);
     }
 
     /**
@@ -90,7 +88,7 @@ public class CheckAccessAspect {
      * @return the extracted research group ID, or null if not applicable
      */
     private @Nullable UUID extractGroupId(Object arg) {
-        if (arg == null) {
+        if (arg==null) {
             return null;
         }
 
