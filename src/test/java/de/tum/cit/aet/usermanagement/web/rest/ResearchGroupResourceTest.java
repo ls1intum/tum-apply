@@ -1,34 +1,27 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.MvcTestClient;
+import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Map;
 import java.util.UUID;
 
-import de.tum.cit.aet.utility.*;
-import de.tum.cit.aet.utility.security.JwtPostProcessors;
-import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
-import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-public class ResearchGroupResourceTest {
+public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Autowired
     ResearchGroupRepository researchGroupRepository;
