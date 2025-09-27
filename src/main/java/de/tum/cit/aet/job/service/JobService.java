@@ -38,12 +38,6 @@ public class JobService {
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
 
-    private static final Map<String, JobState> JOB_STATE_MAP = Map.of(
-            "DRAFT", JobState.DRAFT,
-            "PUBLISHED", JobState.PUBLISHED,
-            "CLOSED", JobState.CLOSED,
-            "APPLICANT_FOUND", JobState.APPLICANT_FOUND);
-
     public JobService(
             JobRepository jobRepository,
             UserRepository userRepository,
