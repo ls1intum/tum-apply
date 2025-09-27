@@ -411,34 +411,34 @@
         },
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
-          "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und speichere erneut."
+          "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und versuche es erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite und überprüfe deine Verbindung."
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte überprüfe deine Verbindung und lade die Seite neu."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
           "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
         },
         "invalidEmail": {
-          "summary": "Error",
+          "summary": "Fehler",
           "detail": "Bitte gib eine gültige E-Mail-Adresse an."
         },
         "invalidFirstName": {
-          "summary": "Error",
+          "summary": "Fehler",
           "detail": "Bitte gib einen gültigen Vornamen an."
         },
         "invalidLastName": {
-          "summary": "Error",
+          "summary": "Fehler",
           "detail": "Bitte gib einen gültigen Nachnamen an."
         },
         "migrationFailed": {
-          "summary": "Error",
-          "detail": "Der lokale Entwurf konnte nicht auf den Server migriert werden."
+          "summary": "Fehler",
+          "detail": "Der lokale Entwurf konnte nicht gespeichert werden. Versuche es erneut, lade die Seite neu oder überprüfe deine Verbindung."
         },
         "otpVerificationFailed": {
-          "summary": "Error",
+          "summary": "Fehler",
           "detail": "E-Mail-Verifizierung fehlgeschlagen. Bitte versuch es erneut."
         }
       },

@@ -410,12 +410,12 @@
           "detail": "Cannot submit application: User authentication required."
         },
         "saveFailed": {
-          "summary": "Save failed",
-          "detail": "Changes could not be saved. Please check your connection and save again."
+          "summary": "Error",
+          "detail": "Changes could not be saved. Please check your connection and try again."
         },
         "loadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application. Please check your connection."
+          "detail": "Failed to load application. Please check your connection and reload the page."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Error",
@@ -435,7 +435,7 @@
         },
         "migrationFailed": {
           "summary": "Error",
-          "detail": "Failed to migrate local draft to server."
+          "detail": "Failed to save local draft. Try again, reload the page or check your connection."
         },
         "otpVerificationFailed": {
           "summary": "Error",
