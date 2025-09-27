@@ -2,6 +2,8 @@ package de.tum.cit.aet.utility;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.*;
@@ -24,18 +26,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tip: Use the "with(...)" helper to attach security to all requests from this client,
  * for example a JWT RequestPostProcessor.
  */
+@Component
 public class MvcTestClient {
 
-    // --- Framework wiring -----------------------------------------------------------
-    private final MockMvc mockMvc;
-    private final ObjectMapper objectMapper;
+    // --- Framework wiring
+    // -----------------------------------------------------------
 
-    public MvcTestClient(MockMvc mockMvc, ObjectMapper objectMapper) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = objectMapper;
-    }
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    // --- Defaults --------------------------------------------------------------------------------
+    // --- Defaults
+    // --------------------------------------------------------------------------------
     private MediaType defaultAccept = MediaType.APPLICATION_JSON;
 
     /**

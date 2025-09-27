@@ -3,16 +3,13 @@ package de.tum.cit.aet.usermanagement.web.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import de.tum.cit.aet.utility.*;
@@ -22,16 +19,11 @@ import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,15 +31,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ResearchGroupResourceTest {
 
     @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
     ResearchGroupRepository researchGroupRepository;
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
     MvcTestClient api;
+
     ResearchGroup researchGroup;
     ResearchGroup secondResearchGroup;
     User researchGroupUser;
@@ -55,7 +45,7 @@ public class ResearchGroupResourceTest {
 
     @BeforeEach
     public void setup() {
-        api = new MvcTestClient(mockMvc, objectMapper);
+
         userRepository.deleteAll();
         researchGroupRepository.deleteAll();
         researchGroup = ResearchGroupTestData.savedAll(
@@ -75,11 +65,12 @@ public class ResearchGroupResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     public void getResearchGroupDetailsExistingIdReturnsDetails() {
-        ResearchGroupLargeDTO result = api.with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
-            .getAndReadOk(
-                "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
-                Map.of(),
-                ResearchGroupLargeDTO.class);
+        ResearchGroupLargeDTO result = api
+                .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+                .getAndReadOk(
+                        "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
+                        Map.of(),
+                        ResearchGroupLargeDTO.class);
 
         assertThat(researchGroupUser.getResearchGroup().getResearchGroupId())
                 .isEqualTo(researchGroup.getResearchGroupId());
@@ -95,8 +86,8 @@ public class ResearchGroupResourceTest {
     @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsNoIdAndNonExistingIdThrowsException() {
         assertThatThrownBy(() -> api.getAndReadOk(
-            "/api/research-groups/detail/", Map.of(),
-            ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
+                "/api/research-groups/detail/", Map.of(),
+                ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
         UUID nonExistingId = UUID.randomUUID();
         assertThatThrownBy(() -> api.getAndReadOk(
                 "/api/research-groups/detail/" + nonExistingId, Map.of(),
