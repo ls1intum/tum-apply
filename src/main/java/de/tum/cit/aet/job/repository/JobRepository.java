@@ -20,38 +20,38 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
-    /**
-     * Finds all jobs created by a specific professor, filtered optionally by title
-     * and job state.
-     * Results are paginated.
-     *
-     * @param userId   the ID of the professor (user)
-     * @param title    a partial match filter for job title (nullable)
-     * @param state    the state of the job (nullable)
-     * @param pageable pagination and sorting information
-     * @return a page of {@link CreatedJobDTO} matching the criteria
-     */
-    @Query("""
-                SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
-                    j.jobId,
-                    j.supervisingProfessor.avatar,
-                    CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-                    j.state,
-                    j.title,
-                    j.startDate,
-                    j.createdAt,
-                    j.lastModifiedAt
-                )
-                FROM Job j
-                WHERE j.supervisingProfessor.userId = :userId
-                AND (:title IS NULL OR j.title LIKE %:title%)
-                AND (:state IS NULL OR j.state = :state)
-            """)
-    Page<CreatedJobDTO> findAllJobsByProfessor(
-            @Param("userId") UUID userId,
-            @Param("title") String title,
-            @Param("state") JobState state,
-            Pageable pageable);
+  /**
+   * Finds all jobs created by a specific professor, filtered optionally by title
+   * and job state.
+   * Results are paginated.
+   *
+   * @param userId   the ID of the professor (user)
+   * @param title    a partial match filter for job title (nullable)
+   * @param state    the state of the job (nullable)
+   * @param pageable pagination and sorting information
+   * @return a page of {@link CreatedJobDTO} matching the criteria
+   */
+  @Query("""
+          SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
+              j.jobId,
+              j.supervisingProfessor.avatar,
+              CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+              j.state,
+              j.title,
+              j.startDate,
+              j.createdAt,
+              j.lastModifiedAt
+          )
+          FROM Job j
+          WHERE j.supervisingProfessor.userId = :userId
+          AND (:title IS NULL OR j.title LIKE %:title%)
+          AND (:state IS NULL OR j.state = :state)
+      """)
+  Page<CreatedJobDTO> findAllJobsByProfessor(
+      @Param("userId") UUID userId,
+      @Param("title") String title,
+      @Param("state") JobState state,
+      Pageable pageable);
 
   /**
    * Finds all available job postings with optional filtering and custom sorting
@@ -67,7 +67,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
    * @param professorNames a partial match filter for multiple professor's full
    *                       names
    *                       (nullable)
-   * @param workload       filter for the job workload (nullable)
    * @param sortBy         the field to sort by (only used for professorName
    *                       sorting here)
    * @param sortDirection  sort direction (ASC or DESC)
@@ -149,7 +148,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
    * @param professorNames a partial match filter for multiple professor's full
    *                       names
    *                       (nullable)
-   * @param workload       filter for the job workload (nullable)
    * @param userId         id of the currently logged in user (nullable)
    * @param searchQuery    string to search for job title, field of
    *                       studies or supervisor name

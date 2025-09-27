@@ -27,8 +27,9 @@ public enum Campus {
                     Campus::getValue, Function.identity()));
 
     public static Campus fromValue(String value) {
-        if (value == null)
+        if (value == null) {
             return null;
+        }
         return LOOKUP.get(value.toUpperCase(Locale.ROOT));
     }
 }
