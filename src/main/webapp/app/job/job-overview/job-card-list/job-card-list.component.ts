@@ -84,9 +84,14 @@ export class JobCardListComponent {
   }
 
   onSearchEmit(searchQuery: string): void {
-    this.page.set(0);
-    this.searchQuery.set(searchQuery);
-    void this.loadJobs();
+    const normalizedQuery = searchQuery.trim().replace(/\s+/g, ' ');
+    const currentQuery = this.searchQuery().trim().replace(/\s+/g, ' ');
+
+    if (normalizedQuery !== currentQuery) {
+      this.page.set(0);
+      this.searchQuery.set(normalizedQuery);
+      void this.loadJobs();
+    }
   }
 
   onFilterEmit(filterChange: FilterChange): void {
