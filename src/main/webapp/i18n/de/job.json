@@ -105,12 +105,34 @@
   "jobOverviewPage": {
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
+    "searchFilterSortBar": {
+      "searchText": "Stellen suchen...",
+      "filterOptions": {
+        "job": "Stelle",
+        "jobSearchPlaceholder": "Stellen suchen...",
+        "fieldOfStudies": "Studienrichtung",
+        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
+        "location": "Standort",
+        "LocationSearchPlaceholder": "Standorte suchen...",
+        "supervisor": "Betreuer/in",
+        "supervisorSearchPlaceholder": "Betreuer/in suchen..."
+      },
+      "locations": {
+        "garching": "Garching",
+        "garching_hochbrueck": "Garching Hochbrueck",
+        "heilbronn": "Heilbronn",
+        "munich": "Munich",
+        "straubing": "Straubing",
+        "weihenstephan": "Weihenstephan",
+        "singapore": "Singapore"
+      }
+    },
     "sortingOptions": {
       "startDate": "Startdatum",
       "jobTitle": "Jobtitel",
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "professor": "Betreuer/in",
+      "professor": "Betreuer/in (Nachname)",
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {
@@ -120,7 +142,10 @@
       "workload": "Arbeitsaufwand",
       "startDate": "Startdatum"
     },
-    "hoursPerWeek": "{{workload}} h/Woche"
+    "hoursPerWeek": "{{workload}} h/Woche",
+    "errors": {
+      "loadFilter": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+    }
   },
   "myPositionsPage": {
     "header": {

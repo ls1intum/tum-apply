@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
+import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
@@ -19,6 +20,9 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -210,41 +214,85 @@ public class JobService {
      *
      * @param pageDTO pagination configuration
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sort configuration (by field and direction)
+     * @param sortDTO                sort configuration (by field and direction)
+     * @param searchQuery            string to search for job title, field of
+     *                               studies or supervisor name
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
+    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO,
+            SortDTO sortDTO, String searchQuery) {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
+        List<Campus> enumLocations = null;
+        if (availableJobsFilterDTO.locations() != null && !availableJobsFilterDTO.locations().isEmpty()) {
+            enumLocations = availableJobsFilterDTO.locations().stream()
+                    .map(Campus::fromValue)
+                    .filter(Objects::nonNull).toList();
+        }
+        String normalizedSearchQuery = normalizeSearchQuery(searchQuery);
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
-                JobState.PUBLISHED,
-                availableJobsFilterDTO.title(), // optional filter for job title
-                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                availableJobsFilterDTO.location(), // optional filter for campus location
-                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                availableJobsFilterDTO.workload(), // optional filter for workload value
-                sortDTO.sortBy(),
-                sortDTO.direction().name(),
-                userId,
-                pageable
-            );
+                    JobState.PUBLISHED,
+                    availableJobsFilterDTO.titles(), // filter for job title
+                    availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
+                    enumLocations, // filter for campus location
+                    availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
+                    sortDTO.sortBy(),
+                    sortDTO.direction().name(),
+                    userId,
+                    normalizedSearchQuery,
+                    pageable);
         } else {
             // Sort dynamically via Pageable
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
-                JobState.PUBLISHED,
-                availableJobsFilterDTO.title(), // optional filter for job title
-                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                availableJobsFilterDTO.location(), // optional filter for campus location
-                availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                availableJobsFilterDTO.workload(), // optional filter for workload value
-                userId,
-                pageable
-            );
+                    JobState.PUBLISHED,
+                    availableJobsFilterDTO.titles(), // optional filter for job title
+                    availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                    enumLocations, // optional filter for campus location
+                    availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
+                    userId,
+                    normalizedSearchQuery,
+                    pageable);
         }
+    }
+
+    /**
+     * Retrieves all unique job names.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique job names sorted
+     *         alphabetically
+     */
+    public List<String> getAllJobNames() {
+        return jobRepository.findAllUniqueJobNames(JobState.PUBLISHED);
+    }
+
+    /**
+     * Retrieves all unique fields of study.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique fields of study sorted
+     *         alphabetically
+     */
+    public List<String> getAllFieldOfStudies() {
+        return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
+    }
+
+    /**
+     * Retrieves all unique supervisor names
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique supervisor names sorted
+     *         alphabetically
+     */
+    public List<String> getAllSupervisorNames() {
+        return jobRepository.findAllUniqueSupervisorNames(JobState.PUBLISHED);
     }
 
     /**
@@ -281,5 +329,21 @@ public class JobService {
         job.setState(dto.state());
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
+    }
+
+    /**
+     * Normalizes the search query by trimming whitespace, converting to lowercase,
+     * and returning null if the result is empty.
+     *
+     * @param searchQuery the raw search query
+     * @return normalized search query or null if empty
+     */
+    private String normalizeSearchQuery(String searchQuery) {
+        if (searchQuery == null) {
+            return null;
+        }
+
+        String trimmed = searchQuery.trim().toLowerCase();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

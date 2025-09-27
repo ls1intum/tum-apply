@@ -6,6 +6,8 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +40,58 @@ public class JobResource {
      *
      * @param pageDTO the pagination information including page number (zero-based) and page size
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sorting parameter containing the field and direction
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link JobCardDTO}
+     * @param sortDTO                sorting parameter containing the field and
+     *                               direction
+     * @param searchQuery            string to search for job title, field of
+     *                               studies or supervisor name
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link Page} of {@link JobCardDTO}
      */
     @GetMapping("/available")
     public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
-        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
-    ) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO);
+            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+            @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
+            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+            @RequestParam(required = false) String searchQuery) {
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO, searchQuery);
         return ResponseEntity.ok(jobs);
+    }
+
+    /**
+     * {@code GET /api/jobs/allNames} : Returns all unique job names
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} job names
+     */
+    @GetMapping("/allJobNames")
+    public ResponseEntity<List<String>> getAllAvailableJobNames() {
+        List<String> jobNames = jobService.getAllJobNames();
+        return ResponseEntity.ok(jobNames);
+    }
+
+    /**
+     * {@code GET /api/jobs/allFieldsOfStudy} : Returns all unique fields of study
+     * 
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} fields of study
+     */
+    @GetMapping("/allFieldsOfStudy")
+    public ResponseEntity<List<String>> getAllFieldOfStudies() {
+        List<String> fieldsOfStudy = jobService.getAllFieldOfStudies();
+        return ResponseEntity.ok(fieldsOfStudy);
+    }
+
+    /**
+     * {@code GET /api/jobs/allSupervisorNames} : Returns all unique supervisor
+     * names
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} supervisor names
+     */
+    @GetMapping("/allSupervisorNames")
+    public ResponseEntity<List<String>> getAllSupervisorNames() {
+        List<String> supervisorNames = jobService.getAllSupervisorNames();
+        return ResponseEntity.ok(supervisorNames);
     }
 
     /**

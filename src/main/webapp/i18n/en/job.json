@@ -105,12 +105,34 @@
   "jobOverviewPage": {
     "title": "Find Your Perfect Position",
     "noJobsFound": "No Jobs Found.",
+    "searchFilterSortBar": {
+      "searchText": "Search Positions...",
+      "filterOptions": {
+        "job": "Position",
+        "jobSearchPlaceholder": "Search Positions...",
+        "fieldOfStudies": "Field of Studies",
+        "fieldOfStudiesPlaceholder": "Search Field of Studies...",
+        "location": "Location",
+        "LocationSearchPlaceholder": "Search Locations...",
+        "supervisor": "Supervisor",
+        "supervisorSearchPlaceholder": "Search Supervisors..."
+      },
+      "locations": {
+        "garching": "Garching",
+        "garching_hochbrueck": "Garching Hochbrueck",
+        "heilbronn": "Heilbronn",
+        "munich": "Munich",
+        "straubing": "Straubing",
+        "weihenstephan": "Weihenstephan",
+        "singapore": "Singapore"
+      }
+    },
     "sortingOptions": {
       "startDate": "Start Date",
       "jobTitle": "Job Title",
       "fieldOfStudies": "Field of Studies",
       "location": "Location",
-      "professor": "Professor",
+      "professor": "Supervisor (Lastname)",
       "workload": "Workload"
     },
     "tooltips": {
@@ -120,7 +142,10 @@
       "workload": "Workload",
       "startDate": "Start Date"
     },
-    "hoursPerWeek": "{{workload}} h/week"
+    "hoursPerWeek": "{{workload}} h/week",
+    "errors": {
+      "loadFilter": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+    }
   },
   "myPositionsPage": {
     "header": {
