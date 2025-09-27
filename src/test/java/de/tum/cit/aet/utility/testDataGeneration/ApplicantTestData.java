@@ -1,9 +1,12 @@
 package de.tum.cit.aet.utility.testDataGeneration;
 
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+
+import java.util.UUID;
 
 /**
  * Test data helpers for Applicant.
@@ -62,10 +65,24 @@ public final class ApplicantTestData {
         return a;
     }
 
+    private static User newApplicantUser() {
+        User applicantUser = new User();
+        applicantUser.setUserId(UUID.randomUUID());
+        applicantUser.setEmail("ada@example.com");
+        applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
+        applicantUser.setFirstName("Ada");
+        applicantUser.setLastName("Lovelace");
+        return applicantUser;
+    }
+
     // --- Saved variants -------------------------------------------------------------------------
 
     public static Applicant saved(ApplicantRepository repo, User user) {
         return repo.save(newApplicant(user));
+    }
+
+    public static Applicant savedWithNewUser(ApplicantRepository repo) {
+        return saved(repo, newApplicantUser());
     }
 
     public static Applicant savedAll(
