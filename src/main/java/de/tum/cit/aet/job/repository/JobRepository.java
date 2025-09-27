@@ -49,8 +49,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           AND (:titles IS NULL OR j.title IN :titles)
           AND (:states IS NULL OR j.state IN :states)
           AND (:searchQuery IS NULL OR
-               LOWER(j.title) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
-               LOWER(CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+               j.title LIKE CONCAT('%', :searchQuery, '%') OR
+               CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE CONCAT('%', :searchQuery, '%')
           )
       """)
   Page<CreatedJobDTO> findAllJobsByProfessor(
