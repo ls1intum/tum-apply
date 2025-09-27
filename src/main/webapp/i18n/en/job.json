@@ -142,13 +142,6 @@
       "created": "Created",
       "lastModified": "Last Modified"
     },
-    "sortingOptions": {
-      "lastModified": "Last Modified",
-      "jobTitle": "Job Title",
-      "status": "Status",
-      "startDate": "Start Date",
-      "created": "Created"
-    },
     "confirmDialog": {
       "closeHeader": "Confirm Position Closure",
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",

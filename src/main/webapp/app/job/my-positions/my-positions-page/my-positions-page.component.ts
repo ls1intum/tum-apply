@@ -45,11 +45,11 @@ export class MyPositionsPageComponent {
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'myPositionsPage.sortingOptions.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
-    { displayName: 'myPositionsPage.sortingOptions.jobTitle', fieldName: 'title', type: 'TEXT' },
-    { displayName: 'myPositionsPage.sortingOptions.status', fieldName: 'state', type: 'TEXT' },
-    { displayName: 'myPositionsPage.sortingOptions.startDate', fieldName: 'startDate', type: 'NUMBER' },
-    { displayName: 'myPositionsPage.sortingOptions.created', fieldName: 'createdAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.tableColumn.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.tableColumn.job', fieldName: 'title', type: 'TEXT' },
+    { displayName: 'myPositionsPage.tableColumn.status', fieldName: 'state', type: 'TEXT' },
+    { displayName: 'myPositionsPage.tableColumn.startDate', fieldName: 'startDate', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.tableColumn.created', fieldName: 'createdAt', type: 'NUMBER' },
   ];
 
   readonly availableStatusOptions: { key: string; label: string }[] = [

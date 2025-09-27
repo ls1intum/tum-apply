@@ -142,13 +142,6 @@
       "created": "Erstellt",
       "lastModified": "Zuletzt geändert"
     },
-    "sortingOptions": {
-      "lastModified": "Zuletzt geändert",
-      "jobTitle": "Stellentitel",
-      "status": "Status",
-      "startDate": "Startdatum",
-      "created": "Erstellt am"
-    },
     "confirmDialog": {
       "closeHeader": "Schließung der Position bestätigen",
       "closeMessage": "Bist du sicher, dass du diese Position schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
