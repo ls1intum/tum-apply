@@ -6,6 +6,8 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,16 +115,31 @@ public class JobResource {
      *
      * @param pageDTO pagination parameters including page number and size
      * @param professorJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO sorting parameter
+     * @param sortDTO                sorting parameter
+     * @param searchQuery            string to search for supervising professor or
+     *                               job title
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a {@link Page} of {@link CreatedJobDTO}
      */
     @GetMapping("/professor")
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-        @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
-        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
-    ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO));
+            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+            @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
+            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+            @RequestParam(required = false) String searchQuery) {
+        return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
+    }
+
+    /**
+     * {@code GET /api/jobs/allNames} : Returns all unique job names created by the
+     * current professor.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link List} of {@link String} job names
+     */
+    @GetMapping("/allNames")
+    public ResponseEntity<List<String>> getAllJobNamesByProfessor() {
+        List<String> jobNames = jobService.getAllJobNamesByProfessor();
+        return ResponseEntity.ok(jobNames);
     }
 
     /**
