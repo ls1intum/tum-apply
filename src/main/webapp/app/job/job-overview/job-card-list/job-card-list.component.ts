@@ -138,18 +138,14 @@ export class JobCardListComponent {
 
   async loadJobs(): Promise<void> {
     try {
-      const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
-      const fieldsOfStudyFilters = this.selectedFieldOfStudiesFilters().length > 0 ? this.selectedFieldOfStudiesFilters() : [];
-      const locationFilters = this.selectedLocationFilters().length > 0 ? this.selectedLocationFilters() : [];
-      const supervisorFilters = this.selectedSupervisorFilters().length > 0 ? this.selectedSupervisorFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getAvailableJobs(
           this.pageSize(),
           this.page(),
-          jobNameFilters.length ? jobNameFilters : undefined,
-          fieldsOfStudyFilters.length ? fieldsOfStudyFilters : undefined,
-          locationFilters.length ? locationFilters : undefined,
-          supervisorFilters.length ? supervisorFilters : undefined,
+          this.emptyToUndef(this.selectedJobFilters()),
+          this.emptyToUndef(this.selectedFieldOfStudiesFilters()),
+          this.emptyToUndef(this.selectedLocationFilters()),
+          this.emptyToUndef(this.selectedSupervisorFilters()),
           this.sortBy(),
           this.sortDirection(),
           this.searchQuery() || undefined,
@@ -165,5 +161,9 @@ export class JobCardListComponent {
   private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
     const keyMap = new Map(this.availableLocationOptions.map(option => [option.label, option.key]));
     return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
+  private emptyToUndef<T>(v: T[]): T[] | undefined {
+    return v.length ? v : undefined;
   }
 }
