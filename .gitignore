@@ -170,3 +170,4 @@ storage
 # Environment files
 ######################
 .env.local
+/junit.xml

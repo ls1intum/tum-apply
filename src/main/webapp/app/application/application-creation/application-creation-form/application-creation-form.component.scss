@@ -2,16 +2,6 @@
   display: none;
 }
 
-header {
-  padding-bottom: 1.25rem;
-
-  h1 {
-    font-weight: 700;
-    font-size: 2rem;
-    color: var(--p-primary-color);
-  }
-}
-
 .panel {
   height: 100%;
   display: flex;
@@ -21,6 +11,10 @@ header {
   color: var(--p-success-color);
 }
 
-.unsaved_color {
+.failed_color {
+  color: var(--p-danger-color);
+}
+
+.saving_color {
   color: var(--p-warn-color);
 }

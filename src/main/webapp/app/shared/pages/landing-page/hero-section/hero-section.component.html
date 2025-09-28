@@ -1,18 +1,24 @@
-<p-carousel
-  styleClass="hero-carousel"
-  [autoplayInterval]="8000"
-  [circular]="true"
-  [numVisible]="1"
-  [showNavigators]="false"
-  [value]="imagesWithBackgroundClass"
->
-  <ng-template #item let-image>
-    <div [class]="image.backgroundClass" class="hero-container">
-      <div class="hero-content">
-        <h1 class="title" jhiTranslate="landingPage.hero.headline"></h1>
-        <p class="subtitle" jhiTranslate="landingPage.hero.subline"></p>
+<div class="hero-wrap">
+  <p-carousel
+    styleClass="hero-carousel"
+    [autoplayInterval]="8000"
+    [circular]="true"
+    [numVisible]="1"
+    [showNavigators]="false"
+    [value]="imagesWithBackgroundClass"
+  >
+    <ng-template #item let-image>
+      <div class="hero-slide" [class]="image.backgroundClass" class="hero-container"></div>
+    </ng-template>
+  </p-carousel>
+
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <h1 class="title" jhiTranslate="landingPage.hero.headline"></h1>
+      <p class="subtitle" jhiTranslate="landingPage.hero.subline"></p>
+      <div class="pointer-event-button">
         <jhi-button (click)="navigateToJobOverview()" label="{{ 'landingPage.hero.button' | translate }}" severity="primary" />
       </div>
     </div>
-  </ng-template>
-</p-carousel>
+  </div>
+</div>

@@ -12,29 +12,24 @@
       "good": "Gut",
       "very_good": "Sehr gut"
     },
-
     "accept": "Annehmen",
     "reject": "Ablehnen",
-
     "tableHeaders": {
       "name": "Name",
+      "lastName": "Nachname",
       "status": "Status",
       "job": "Position",
       "appliedAt": "Beworben am"
     },
-
     "cancel": "Abbrechen",
     "save": "Speichern",
     "post": "Absenden",
-
     "more": "Mehr",
-
     "statusBadge": {
       "SENT": "Ungelesen",
       "ACCEPTED": "Angenommen",
       "REJECTED": "Abgelehnt",
       "IN_REVIEW": "In Bearbeitung",
-
       "tooltips": {
         "SENT": "Die Bewerbung wurde noch nicht geöffnet",
         "ACCEPTED": "Die Bewerbung wurde angenommen",
@@ -46,56 +41,45 @@
     "filterOptions": {
       "job": "Stelle",
       "status": "Status",
-      "jobSearchPlaceholder": "Suche Positionen..."
+      "jobSearchPlaceholder": "Suche Positionen...",
+      "stateSearchPlaceholder": "Suche Status..."
     },
-
     "application": "Bewerbung",
     "applications": "Bewerbungen",
-
     "message": "Nachricht",
     "writeMessage": "Schreibe eine Nachricht...",
-
     "reason": "Grund",
     "selectReason": "Wähle einen Grund...",
-
     "closeJobAndRejectAll": "Stelle schließen und alle anderen Bewerbungen ablehnen",
     "notifyApplicant": "Bewerber*in benachrichtigen",
-
     "rejectReasons": {
       "jobFilled": "Position bereits besetzt",
       "jobOutdated": "Position nicht mehr aktuell",
       "failedRequirements": "Anforderungen nicht erfüllt",
       "otherReason": "Anderer Grund"
     },
-
     "defaultAcceptMessage": "<p>Sehr geehrte*r {{APPLICANT_FIRST_NAME}},</p><br /><p>ich freue mich, Ihnen mitteilen zu können, dass Sie für die Position <b>{{JOB_NAME}}</b> in unserer Forschungsgruppe angenommen wurden. Ihr fachlicher Hintergrund, Ihre Motivation und Ihr Potenzial zur Mitgestaltung unserer akademischen und anwendungsorientierten Forschung haben uns überzeugt.</p><br /><p>In dieser Rolle übernehmen Sie die Verantwortung für Ihr Forschungsprojekt – einschließlich der inhaltlichen Ausrichtung, der Veröffentlichung Ihrer Ergebnisse und der aktiven Mitarbeit an laufenden Teamaktivitäten. Die Position erfordert ein hohes Maß an Engagement, Eigenständigkeit und Kommunikationsfähigkeit.</p><br /><p>Wir sind überzeugt von Ihrem Potenzial und freuen uns auf die Impulse, die Sie in unsere Gruppe und die wissenschaftliche Gemeinschaft einbringen werden.</p><br /><p><b>Bitte bestätigen Sie die Annahme dieses Angebots so bald wie möglich und kontaktieren Sie mich unter <a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a>, um die nächsten Schritte zu besprechen.</b></p><br /><br /><p>Mit freundlichen Grüßen,<br /><br />{{PROFESSOR_FIRST_NAME}}<br /><br />{{PROFESSOR_FIRST_NAME}} {{PROFESSOR_LAST_NAME}}<br />{{RESEARCH_GROUP_NAME}}<br />Technische Universität München<br /><a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a><br /><a href=\"{{RESEARCH_GROUP_WEBSITE}}\" target=\"_blank\">{{RESEARCH_GROUP_WEBSITE}}</a></p><br />",
-
     "details": {
       "applicantTitle": "Bewerber:in",
       "applicantInformation": "Allgemeine Informationen",
       "applicantLinks": "Links",
-
       "applicantName": "Name",
       "applicantGender": "Geschlecht",
       "applicantNationality": "Nationalität",
       "applicantPreferredLanguage": "Bevorzugte Sprache",
-
       "applicantLinkedIn": "LinkedIn",
       "applicantWebsite": "Webseite",
-
       "educationTitle": "Ausbildung",
       "educationBachelors": "Bachelor",
       "educationMasters": "Master",
       "educationDegree": "Abschluss",
       "educationUniversity": "Universität",
       "educationGrade": "Abschlussnote",
-
       "applicationTitle": "Bewerbung",
       "applicationDesiredStartDate": "Bevorzugtes Startdatum",
       "applicationMotivation": "Motivation",
       "applicationSkills": "Fähigkeiten",
       "applicationProjects": "Projekte",
-
       "documentTitle": "Dokumente",
       "documentTypeBachelor": "Bachelorzeugnis",
       "documentTypeMaster": "Masterzeugnis",
@@ -105,6 +89,10 @@
       "documentDownloadAll": "Alle herunterladen",
       "moreDocument": "+1 weiteres Dokument",
       "moreDocuments": "+{{count}} weitere Dokumente"
+    },
+    "errors": {
+      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+      "loadApplication": "Fehler beim Laden der Bewerbungen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   }
 }

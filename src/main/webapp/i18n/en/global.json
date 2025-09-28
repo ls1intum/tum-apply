@@ -33,7 +33,8 @@
         "templateCreation": "TUMApply - New Template",
         "templateEdit": "TUMApply - Edit Template",
         "info": "TUMApply - My Group"
-      }
+      },
+      "about-us": "TumApply - About Us"
     },
     "menu": {
       "home": "Home",
@@ -184,6 +185,7 @@
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },
+    "filterBy": "Filter By:",
     "sortBy": "Sort By:",
     "upload": {
       "upload_instruction_standard": "Please upload",
@@ -242,7 +244,8 @@
       },
       "status": {
         "SAVING": "Saving changes...",
-        "SAVED": "Changes saved"
+        "SAVED": "Changes saved",
+        "FAILED": "Failed saving changes"
       }
     },
     "applicationPage1": {

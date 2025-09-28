@@ -51,10 +51,10 @@ openApiGenerate {
   typeMappings = [
     set: 'Array',
   ]
-  languageSpecificPrimitives =['void']
+  languageSpecificPrimitives = ['void']
   configOptions = [
-    serviceSuffix: "ApiService",
-    supportsES6: "true",
+    serviceSuffix    : "ApiService",
+    supportsES6      : "true",
     serviceFileSuffix: "Api.service"
   ]
 }
@@ -93,7 +93,7 @@ tasks.register('pruneOpenApiSpec') {
  * This is needed as we only include DTOs in the OpenAPI spec.
  * Not all our endpoints use DTOs, currently, so we get some invalid $ref entries and they need to be pruned.
  *
- * @param originalMap   the OpenAPI spec (or sub-map) to prune
+ * @param originalMap the OpenAPI spec (or sub-map) to prune
  * @param componentsMap a map of component category → (component name → definition)
  * @return a new map containing only entries whose values did not prune to null
  */
@@ -131,7 +131,7 @@ private Map<String, Object> pruneMapEntries(
     if (componentMatcher.matches()) {
       def componentTypeIndex = 1
       def componentNameIndex = 2
-      String componentCategory   = componentMatcher[0][componentTypeIndex]
+      String componentCategory = componentMatcher[0][componentTypeIndex]
       String componentIdentifier = componentMatcher[0][componentNameIndex]
       if (!componentsMap[componentCategory]?.containsKey(componentIdentifier)) {
         return null
@@ -195,7 +195,6 @@ private static boolean operationContainsNullSchema(Map<String, Object> operation
 }
 
 
-
 tasks.named("openApiGenerate") {
   finalizedBy("postProcessTsFiles")
   dependsOn("pruneOpenApiSpec")
@@ -208,7 +207,6 @@ tasks.named("openApiGenerate") {
     }
   }
 }
-
 
 
 tasks.register('postProcessTsFiles', Exec) {

@@ -107,3 +107,8 @@ aet:
   email:
     enabled: false
     from:
+
+management:
+  health:
+    ldap:
+      enabled: false

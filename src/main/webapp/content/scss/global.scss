@@ -1,4 +1,6 @@
 @use 'tailwindcss' as *;
+@use './_header.scss';
+@use './_layout.scss';
 
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
@@ -398,6 +400,20 @@
   width: 0.8rem;
   height: 0.8rem;
   border-radius: 50%;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 2;
+  pointer-events: none; // Disable pointer events for the carousel indicators
+
+  .pointer-event-button {
+    pointer-events: auto; // Enable pointer events for the button
+  }
 }
 
 /* -------------------------------

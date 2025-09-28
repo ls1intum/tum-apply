@@ -9,7 +9,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { PasswordInputComponent } from '../../atoms/password-input/password-input';
 import { environment } from '../../../../environments/environment';
-import { AuthOrchestratorService } from '../../../auth/data-access/auth-orchestrator.service';
+import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { AuthIdpButtons } from '../auth-idp-buttons/auth-idp-buttons';
 import { TranslateDirective } from '../../../language';
 
