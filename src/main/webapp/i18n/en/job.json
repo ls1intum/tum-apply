@@ -123,7 +123,7 @@
       "jobTitle": "Job Title",
       "fieldOfStudies": "Field of Studies",
       "location": "Location",
-      "professor": "Supervisor (Lastname)",
+      "professor": "Supervisor (Last name)",
       "workload": "Workload"
     },
     "tooltips": {
