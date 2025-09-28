@@ -144,7 +144,10 @@
     },
     "hoursPerWeek": "{{workload}} h/week",
     "errors": {
-      "loadFilter": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+      "loadFilter": {
+        "summary": "Error loading filter options",
+        "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+      }
     }
   },
   "myPositionsPage": {
