@@ -55,13 +55,10 @@ export const fundingTypes = [
   { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
 ];
 
-/**
- * Generic function to map translation keys (names) to their corresponding enum values
- * @param names - Array of display names to map
- * @param options - Dropdown options array containing name-value pairs
- * @returns Array of mapped enum values, filtered to exclude undefined values
- */
-export function mapNamesToValues<T>(names: string[], options: { name: string; value: T }[]): T[] {
-  const keyMap = new Map(options.map(option => [option.name, option.value]));
-  return names.map(key => keyMap.get(key)).filter((value): value is T => value !== undefined);
+export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));
+
+export function mapLocationNames(translationKeys: string[]): JobFormDTO.LocationEnum[] {
+  return translationKeys
+    .map(key => locationNameToValueMap.get(key))
+    .filter((value): value is JobFormDTO.LocationEnum => value !== undefined);
 }

@@ -100,7 +100,7 @@ export class JobCardListComponent {
       void this.loadJobs();
     } else if (filterChange.filterId === 'location') {
       this.page.set(0);
-      const enumValues = DropdownOptions.mapNamesToValues(filterChange.selectedValues, DropdownOptions.locations);
+      const enumValues = DropdownOptions.mapLocationNames(filterChange.selectedValues);
       this.selectedLocationFilters.set(enumValues);
       void this.loadJobs();
     } else if (filterChange.filterId === 'supervisor') {
