@@ -163,10 +163,10 @@ export class ApplicationDetailComponent {
   }
 
   onFilterEmit(filterChange: FilterChange): void {
-    if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
+    if (filterChange.filterId === 'jobTitle') {
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadInitialPage();
-    } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
+    } else if (filterChange.filterId === 'status') {
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
       void this.loadInitialPage();

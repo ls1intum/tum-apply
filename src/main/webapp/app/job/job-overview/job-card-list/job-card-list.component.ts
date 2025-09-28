@@ -95,20 +95,20 @@ export class JobCardListComponent {
   }
 
   onFilterEmit(filterChange: FilterChange): void {
-    if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.job') {
+    if (filterChange.filterId === 'jobTitle') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadJobs();
-    } else if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudies') {
+    } else if (filterChange.filterId === 'fieldOfStudies') {
       this.page.set(0);
       this.selectedFieldOfStudiesFilters.set(filterChange.selectedValues);
       void this.loadJobs();
-    } else if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.location') {
+    } else if (filterChange.filterId === 'location') {
       this.page.set(0);
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedLocationFilters.set(enumValues);
       void this.loadJobs();
-    } else if (filterChange.filterLabel === 'jobOverviewPage.searchFilterSortBar.filterOptions.supervisor') {
+    } else if (filterChange.filterId === 'supervisor') {
       this.page.set(0);
       this.selectedSupervisorFilters.set(filterChange.selectedValues);
       void this.loadJobs();
