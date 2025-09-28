@@ -455,7 +455,6 @@ export default class ApplicationCreationFormComponent {
         this.savingState.set(SavingStates.SAVED);
       } else {
         this.savingState.set(SavingStates.FAILED);
-        this.toastService.showErrorKey(`${applyflow}.saveFailed`);
       }
     }
   }
@@ -496,6 +495,7 @@ export default class ApplicationCreationFormComponent {
         await this.router.navigate(['/application/overview']);
       }
     } catch {
+      this.toastService.showErrorKey(`${applyflow}.saveFailed`);
       return false;
     }
     return true;
