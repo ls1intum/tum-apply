@@ -15,6 +15,7 @@
             [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
             [filterOptions]="filter.filterOptions"
             (filterChange)="onFilterChange($event)"
+            [shouldTranslateOptions]="filter.shouldTranslateOptions ?? false"
           />
         }
       }

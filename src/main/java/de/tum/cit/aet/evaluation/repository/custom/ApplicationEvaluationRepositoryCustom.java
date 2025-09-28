@@ -10,18 +10,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public interface ApplicationEvaluationRepositoryCustom {
-    List<Application> findApplications(
-            UUID researchGroupId,
-            Collection<ApplicationState> states,
-            Pageable pageable,
-            Map<String, List<?>> dynamicFilters, String searchQuery);
+        List<Application> findApplications(
+                        UUID researchGroupId,
+                        Collection<ApplicationState> states,
+                        Pageable pageable,
+                        Map<String, List<?>> dynamicFilters, String searchQuery);
 
-    long findIndexOfApplication(
-            UUID applicationId,
-            UUID researchGroupId,
-            Collection<ApplicationState> states,
-            Sort sort,
-            Map<String, List<?>> dynamicFilters);
+        long findIndexOfApplication(
+                        UUID applicationId,
+                        UUID researchGroupId,
+                        Collection<ApplicationState> states,
+                        Sort sort,
+                        Map<String, List<?>> dynamicFilters, String searchQuery);
 
     long countApplications(UUID researchGroupId, Collection<ApplicationState> states,
             Map<String, List<?>> dynamicFilters, String searchQuery);
