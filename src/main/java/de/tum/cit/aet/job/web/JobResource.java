@@ -58,40 +58,24 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/allNames} : Returns all unique job names
+     * {@code GET /api/jobs/filters} : Returns all available filter options for jobs
+     *
+     * This endpoint provides all unique filter values that can be used in the job
+     * filters
+     * It returns job names, fields of study, and supervisor names from all
+     * published jobs
+     * to populate dropdown menus and filter components on the client side.
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
-     *         {@link List} of {@link String} job names
+     *         {@link JobFiltersDTO} with all available filter options
      */
-    @GetMapping("/allJobNames")
-    public ResponseEntity<List<String>> getAllAvailableJobNames() {
-        List<String> jobNames = jobService.getAllJobNames();
-        return ResponseEntity.ok(jobNames);
-    }
-
-    /**
-     * {@code GET /api/jobs/allFieldsOfStudy} : Returns all unique fields of study
-     * 
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
-     *         {@link List} of {@link String} fields of study
-     */
-    @GetMapping("/allFieldsOfStudy")
-    public ResponseEntity<List<String>> getAllFieldOfStudies() {
-        List<String> fieldsOfStudy = jobService.getAllFieldOfStudies();
-        return ResponseEntity.ok(fieldsOfStudy);
-    }
-
-    /**
-     * {@code GET /api/jobs/allSupervisorNames} : Returns all unique supervisor
-     * names
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
-     *         {@link List} of {@link String} supervisor names
-     */
-    @GetMapping("/allSupervisorNames")
-    public ResponseEntity<List<String>> getAllSupervisorNames() {
-        List<String> supervisorNames = jobService.getAllSupervisorNames();
-        return ResponseEntity.ok(supervisorNames);
+    @GetMapping("/filters")
+    public ResponseEntity<JobFiltersDTO> getAllFilters() {
+        JobFiltersDTO dto = new JobFiltersDTO(
+                jobService.getAllJobNames(),
+                jobService.getAllFieldOfStudies(),
+                jobService.getAllSupervisorNames());
+        return ResponseEntity.ok(dto);
     }
 
     /**
