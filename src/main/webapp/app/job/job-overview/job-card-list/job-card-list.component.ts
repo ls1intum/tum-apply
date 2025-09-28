@@ -155,6 +155,7 @@ export class JobCardListComponent {
       this.totalRecords.set(pageData.totalElements ?? 0);
     } catch (error) {
       console.error('Failed to load jobs from API:', error);
+      this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
     }
   }
 

@@ -147,6 +147,10 @@
       "loadFilter": {
         "summary": "Laden der Filteroptionen fehlgeschlagen",
         "detail": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "loadJobs": {
+        "summary": "Laden der Stellen fehlgeschlagen",
+        "detail": "Fehler beim Laden der verfügbaren Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   },
