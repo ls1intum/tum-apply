@@ -52,7 +52,18 @@ export class DocumentCacheService {
     return safeUrl;
   }
 
+  clear(): void {
+    for (const entry of this.cache.values()) {
+      this.revoke(entry);
+    }
+    this.cache.clear();
+  }
+
   private revoke(entry: CachedDoc): void {
-    URL.revokeObjectURL(entry.rawUrl);
+    try {
+      URL.revokeObjectURL(entry.rawUrl);
+    } catch (err) {
+      console.warn('Failed to revoke object URL:', entry.rawUrl, err);
+    }
   }
 }

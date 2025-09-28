@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AuthSessionInfoDTO } from 'app/generated/model/authSessionInfoDTO';
+import { DocumentCacheService } from 'app/service/document-cache.service';
 
 import { AuthenticationResourceApiService } from '../../generated/api/authenticationResourceApi.service';
 
@@ -12,6 +13,7 @@ export class AuthenticationService {
 
   private authenticationResourceService = inject(AuthenticationResourceApiService);
   private accountService = inject(AccountService);
+  private documentCache = inject(DocumentCacheService);
 
   // Login with email and password, schedule token refresh, and load user profile.
   async login(email: string, password: string): Promise<void> {
@@ -37,6 +39,7 @@ export class AuthenticationService {
     await firstValueFrom(this.authenticationResourceService.logout());
     this.accountService.user.set(undefined);
     this.accountService.loaded.set(true);
+    this.documentCache.clear();
   }
 
   // Schedules a token refresh if the user is authenticated
