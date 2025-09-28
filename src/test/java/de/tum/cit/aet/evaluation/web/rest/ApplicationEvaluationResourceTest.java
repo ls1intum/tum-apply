@@ -1,6 +1,5 @@
 package de.tum.cit.aet.evaluation.web.rest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -118,12 +117,13 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser
     void getApplicationsOverviews_onlyViewableStates() {
-        ApplicationEvaluationOverviewListDTO dto = api.getAndReadOk(
+        ApplicationEvaluationOverviewListDTO dto = api.getAndRead(
             "/api/evaluation/applications",
             Map.ofEntries(entry("offset", "0"), entry("limit", "10")),
-            new TypeReference<>() {
-            }
+            ApplicationEvaluationOverviewListDTO.class,
+        200
         );
+
 
         assertThat(dto.totalRecords()).isGreaterThanOrEqualTo(2);
         assertThat(dto.applications()).extracting("applicationId")
@@ -133,11 +133,11 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser
     void getApplicationsDetails_returnsDetails() {
-        ApplicationEvaluationDetailListDTO details = api.getAndReadOk(
+        ApplicationEvaluationDetailListDTO details = api.getAndRead(
             "/api/evaluation/application-details",
             Map.of("offset", "0", "limit", "10"),
-            new TypeReference<>() {
-            }
+            ApplicationEvaluationDetailListDTO.class,
+            200
         );
 
         assertThat(details.totalRecords()).isGreaterThanOrEqualTo(2);
@@ -147,11 +147,11 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser
     void getApplicationsDetailsWindow_validOddSize() {
-        ApplicationEvaluationDetailListDTO win = api.getAndReadOk(
+        ApplicationEvaluationDetailListDTO win = api.getAndRead(
             "/api/evaluation/application-details/window",
             Map.ofEntries(entry("applicationId", inReviewApp.getApplicationId().toString()), entry("windowSize", "3")),
-            new TypeReference<>() {
-            }
+            ApplicationEvaluationDetailListDTO.class,
+            200
         );
         assertThat(win.applications().size()).isBetween(1, 3);
     }
@@ -159,11 +159,11 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser
     void getApplicationsDetails_limitIsApplied() {
-        ApplicationEvaluationDetailListDTO details = api.getAndReadOk(
+        ApplicationEvaluationDetailListDTO details = api.getAndRead(
             "/api/evaluation/application-details",
             Map.of("offset", "0", "limit", "1"),
-            new TypeReference<>() {
-            }
+            ApplicationEvaluationDetailListDTO.class,
+            200
         );
         assertThat(details.totalRecords()).isGreaterThanOrEqualTo(2);
         assertThat(details.applications()).hasSize(1);
@@ -172,7 +172,7 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser
     void markApplicationAsInReview_sent_becomesInReview() {
-        api.putNoContent("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null);
+        api.putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 204);
 
         Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
         assertThat(updated.getState()).isEqualTo(ApplicationState.IN_REVIEW);
@@ -184,7 +184,7 @@ public class ApplicationEvaluationResourceTest {
         String message = "Accepted!";
         AcceptDTO payload = new AcceptDTO(message, true, true);
 
-        api.postNoContent("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload);
+        api.postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 204);
 
         Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
         assertThat(updated.getState()).isEqualTo(ApplicationState.ACCEPTED);
@@ -201,7 +201,7 @@ public class ApplicationEvaluationResourceTest {
     void rejectApplication_inReview_becomesRejected_andStoresReason() {
         RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
 
-        api.postNoContent("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload);
+        api.postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
 
         Application updated = applicationRepository.findById(inReviewApp.getApplicationId()).orElseThrow();
         assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
@@ -213,18 +213,18 @@ public class ApplicationEvaluationResourceTest {
     @Test
     void acceptApplication_unauthenticated_returns401() {
         AcceptDTO payload = new AcceptDTO("msg", false, false);
-        api.postUnauthorized("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload);
+        api.postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 401);
     }
 
     @Test
     void rejectApplication_unauthenticated_returns401() {
         RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
-        api.postUnauthorized("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload);
+        api.postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 401);
     }
 
     @Test
     void markApplicationAsInReview_unauthenticated_returns401() {
-        api.putUnauthorized("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null);
+        api.putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
     }
 
     @Test
@@ -233,7 +233,7 @@ public class ApplicationEvaluationResourceTest {
         SortDTO sort = new SortDTO("appliedAt", SortDTO.Direction.DESC);
         OffsetPageDTO page = new OffsetPageDTO(0, 10);
 
-        ApplicationEvaluationOverviewListDTO dto = api.getAndReadOk(
+        ApplicationEvaluationOverviewListDTO dto = api.getAndRead(
             "/api/evaluation/applications",
             Map.of(
                 "offset", String.valueOf(page.offset()),
@@ -241,8 +241,8 @@ public class ApplicationEvaluationResourceTest {
                 "sortBy", sort.sortBy(),
                 "direction", sort.direction().name()
             ),
-            new TypeReference<>() {
-            }
+            ApplicationEvaluationOverviewListDTO.class,
+            200
         );
 
         assertThat(dto.totalRecords()).isGreaterThan(0);
