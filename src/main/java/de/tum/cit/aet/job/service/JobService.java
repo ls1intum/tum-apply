@@ -335,8 +335,7 @@ public class JobService {
         if (searchQuery == null) {
             return null;
         }
-
-        String trimmed = searchQuery.trim().toLowerCase();
-        return trimmed.isEmpty() ? null : trimmed;
+        String normalized = searchQuery.trim().replaceAll("\\s+", " ").toLowerCase();
+        return normalized.isEmpty() ? null : normalized;
     }
 }
