@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TooltipModule } from 'primeng/tooltip';
+import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -12,7 +13,16 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   templateUrl: './number-input.component.html',
   styleUrl: './number-input.component.scss',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, InputNumberModule, ReactiveFormsModule, InputNumberModule, TooltipModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FontAwesomeModule,
+    InputNumberModule,
+    ReactiveFormsModule,
+    InputNumberModule,
+    TooltipModule,
+    TranslateDirective,
+  ],
 })
 export class NumberInputComponent extends BaseInputDirective<number | undefined> {
   // Min and max values
@@ -22,6 +32,15 @@ export class NumberInputComponent extends BaseInputDirective<number | undefined>
   // Min and max fraction digits
   minFractionDigits = input<number>(0);
   maxFractionDigits = input<number>(3);
+
+  smallerThanMin = computed<boolean>(() => {
+    const model = this.model();
+    return model !== undefined && model < this.min();
+  });
+  largerThanMax = computed<boolean>(() => {
+    const model = this.model();
+    return model !== undefined && model > this.max();
+  });
 
   onInputChange(value: number): void {
     this.modelChange.emit(value);

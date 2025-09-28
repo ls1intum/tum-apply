@@ -29,8 +29,6 @@
         [style]="{ width: width() }"
         autocomplete="off"
         [useGrouping]="false"
-        [min]="min()"
-        [max]="max()"
         [minFractionDigits]="minFractionDigits()"
         [maxFractionDigits]="maxFractionDigits()"
         class="custom-input"
@@ -45,5 +43,11 @@
         {{ errorMessage() }}
       }
     </div>
+    @if (smallerThanMin()) {
+      <div class="warning-text" jhiTranslate="global.input.warning.min" [translateValues]="{ min: min() }"></div>
+    }
+    @if (largerThanMax()) {
+      <div class="warning-text" jhiTranslate="global.input.warning.max" [translateValues]="{ max: max() }"></div>
+    }
   </div>
 </div>
