@@ -124,12 +124,10 @@ export class JobCardListComponent {
 
   async loadAllFilter(): Promise<void> {
     try {
-      const jobNames = await firstValueFrom(this.jobService.getAllAvailableJobNames());
-      this.allJobNames.set(jobNames.sort());
-      const fieldsOfStudy = await firstValueFrom(this.jobService.getAllFieldOfStudies());
-      this.allFieldofStudies.set(fieldsOfStudy.sort());
-      const supervisorNames = await firstValueFrom(this.jobService.getAllSupervisorNames());
-      this.allSupervisorNames.set(supervisorNames.sort());
+      const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
+      this.allJobNames.set(filterOptions.jobNames ?? []);
+      this.allFieldofStudies.set(filterOptions.fieldsOfStudy ?? []);
+      this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
       this.allJobNames.set([]);
       this.allFieldofStudies.set([]);
