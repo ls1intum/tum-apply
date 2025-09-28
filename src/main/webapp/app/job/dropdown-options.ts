@@ -4,13 +4,13 @@ import { JobFormDTO } from '../generated/model/jobFormDTO';
  * Dropdown options used in the Job Creation Form
  */
 export const locations = [
-  { name: 'Garching Campus', value: JobFormDTO.LocationEnum.Garching },
-  { name: 'Garching Hochbrueck Campus', value: JobFormDTO.LocationEnum.GarchingHochbrueck },
-  { name: 'Heilbronn Campus', value: JobFormDTO.LocationEnum.Heilbronn },
-  { name: 'Munich Campus', value: JobFormDTO.LocationEnum.Munich },
-  { name: 'Singapore Campus', value: JobFormDTO.LocationEnum.Singapore },
-  { name: 'Straubing Campus', value: JobFormDTO.LocationEnum.Straubing },
-  { name: 'Weihenstephan Campus', value: JobFormDTO.LocationEnum.Weihenstephan },
+  { name: 'Garching', value: JobFormDTO.LocationEnum.Garching },
+  { name: 'Garching Hochbrueck', value: JobFormDTO.LocationEnum.GarchingHochbrueck },
+  { name: 'Heilbronn', value: JobFormDTO.LocationEnum.Heilbronn },
+  { name: 'Munich', value: JobFormDTO.LocationEnum.Munich },
+  { name: 'Singapore', value: JobFormDTO.LocationEnum.Singapore },
+  { name: 'Straubing', value: JobFormDTO.LocationEnum.Straubing },
+  { name: 'Weihenstephan', value: JobFormDTO.LocationEnum.Weihenstephan },
 ];
 export const fieldsOfStudies = [
   { name: 'Aerospace Engineering', value: 'Aerospace Engineering' },
@@ -54,3 +54,14 @@ export const fundingTypes = [
   { name: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
   { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
 ];
+
+/**
+ * Generic function to map translation keys (names) to their corresponding enum values
+ * @param names - Array of display names to map
+ * @param options - Dropdown options array containing name-value pairs
+ * @returns Array of mapped enum values, filtered to exclude undefined values
+ */
+export function mapNamesToValues<T>(names: string[], options: { name: string; value: T }[]): T[] {
+  const keyMap = new Map(options.map(option => [option.name, option.value]));
+  return names.map(key => keyMap.get(key)).filter((value): value is T => value !== undefined);
+}

@@ -9,11 +9,14 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 
 import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { JobCardDTO } from '../../../generated/model/jobCardDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import * as DropdownOptions from '../.././dropdown-options';
+
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
@@ -33,24 +36,16 @@ export class JobCardListComponent {
   sortBy = signal<string>('startDate');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  readonly availableLocationOptions: { key: string; label: string }[] = [
-    { key: 'GARCHING', label: 'jobOverviewPage.searchFilterSortBar.locations.garching' },
-    { key: 'GARCHING_HOCHBRUECK', label: 'jobOverviewPage.searchFilterSortBar.locations.garching_hochbrueck' },
-    { key: 'HEILBRONN', label: 'jobOverviewPage.searchFilterSortBar.locations.heilbronn' },
-    { key: 'MUNICH', label: 'jobOverviewPage.searchFilterSortBar.locations.munich' },
-    { key: 'STRAUBING', label: 'jobOverviewPage.searchFilterSortBar.locations.straubing' },
-    { key: 'WEIHENSTEPHAN', label: 'jobOverviewPage.searchFilterSortBar.locations.weihenstephan' },
-    { key: 'SINGAPORE', label: 'jobOverviewPage.searchFilterSortBar.locations.singapore' },
-  ];
+  DropdownOptions = DropdownOptions;
 
   readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
-  readonly selectedLocationFilters = signal<string[]>([]);
+  readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
 
   readonly allJobNames = signal<string[]>([]);
   readonly allFieldOfStudies = signal<string[]>([]);
-  readonly availableLocationLabels = this.availableLocationOptions.map(option => option.label);
+  readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
   readonly allSupervisorNames = signal<string[]>([]);
 
   readonly sortableFields: SortOption[] = [
@@ -105,7 +100,7 @@ export class JobCardListComponent {
       void this.loadJobs();
     } else if (filterChange.filterId === 'location') {
       this.page.set(0);
-      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      const enumValues = DropdownOptions.mapNamesToValues(filterChange.selectedValues, DropdownOptions.locations);
       this.selectedLocationFilters.set(enumValues);
       void this.loadJobs();
     } else if (filterChange.filterId === 'supervisor') {
@@ -157,11 +152,6 @@ export class JobCardListComponent {
       console.error('Failed to load jobs from API:', error);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
     }
-  }
-
-  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
-    const keyMap = new Map(this.availableLocationOptions.map(option => [option.label, option.key]));
-    return translationKeys.map(key => keyMap.get(key) ?? key);
   }
 
   private emptyToUndef<T>(v: T[]): T[] | undefined {

@@ -2,6 +2,8 @@ package de.tum.cit.aet.job.dto;
 
 import java.util.List;
 
+import de.tum.cit.aet.job.constants.Campus;
+
 /**
  * Filter DTO for retrieving available job listings.
  * Used to encapsulate optional filter parameters when querying published jobs.
@@ -17,6 +19,6 @@ import java.util.List;
 public record AvailableJobsFilterDTO(
                 List<String> titles,
                 List<String> fieldOfStudies,
-                List<String> locations,
+                List<Campus> locations,
                 List<String> professorNames) {
 }

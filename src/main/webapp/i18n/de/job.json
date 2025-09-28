@@ -116,15 +116,6 @@
         "LocationSearchPlaceholder": "Standorte suchen...",
         "supervisor": "Betreuer:in",
         "supervisorSearchPlaceholder": "Betreuer:in suchen..."
-      },
-      "locations": {
-        "garching": "Garching",
-        "garching_hochbrueck": "Garching Hochbrueck",
-        "heilbronn": "Heilbronn",
-        "munich": "Munich",
-        "straubing": "Straubing",
-        "weihenstephan": "Weihenstephan",
-        "singapore": "Singapore"
       }
     },
     "sortingOptions": {

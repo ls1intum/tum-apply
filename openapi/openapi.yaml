@@ -2156,7 +2156,16 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                  "GARCHING",
+                  "GARCHING_HOCHBRUECK",
+                  "HEILBRONN",
+                  "MUNICH",
+                  "STRAUBING",
+                  "WEIHENSTEPHAN",
+                  "SINGAPORE"
+                ]
               }
             }
           },
