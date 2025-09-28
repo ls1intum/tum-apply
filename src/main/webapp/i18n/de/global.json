@@ -375,6 +375,9 @@
       "skills": "Fähigkeiten",
       "researchExperience": "Forschungserfahrung"
     },
+    "comment": {
+      "placeholder": "Kommentar schreiben..."
+    },
     "toast": {
       "applyFlow": {
         "saved": {
