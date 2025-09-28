@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
@@ -222,7 +223,7 @@ public class JobService {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
 
-        String normalizedSearchQuery = normalizeSearchQuery(searchQuery);
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
@@ -324,18 +325,4 @@ public class JobService {
         return JobFormDTO.getFromEntity(createdJob);
     }
 
-    /**
-     * Normalizes the search query by trimming whitespace, converting to lowercase,
-     * and returning null if the result is empty.
-     *
-     * @param searchQuery the raw search query
-     * @return normalized search query or null if empty
-     */
-    private String normalizeSearchQuery(String searchQuery) {
-        if (searchQuery == null) {
-            return null;
-        }
-        String normalized = searchQuery.trim().replaceAll("\\s+", " ").toLowerCase();
-        return normalized.isEmpty() ? null : normalized;
-    }
 }
