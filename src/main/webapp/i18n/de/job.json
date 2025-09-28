@@ -114,8 +114,8 @@
         "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
         "location": "Standort",
         "LocationSearchPlaceholder": "Standorte suchen...",
-        "supervisor": "Betreuer/in",
-        "supervisorSearchPlaceholder": "Betreuer/in suchen..."
+        "supervisor": "Betreuer:in",
+        "supervisorSearchPlaceholder": "Betreuer:in suchen..."
       },
       "locations": {
         "garching": "Garching",
@@ -132,13 +132,13 @@
       "jobTitle": "Jobtitel",
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "professor": "Betreuer/in (Nachname)",
+      "professor": "Betreuer:in (Nachname)",
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "supervisor": "Betreuer/in",
+      "supervisor": "Betreuer:in",
       "workload": "Arbeitsaufwand",
       "startDate": "Startdatum"
     },
@@ -179,7 +179,7 @@
   },
   "jobDetailPage": {
     "header": {
-      "supervisor": "Betreuer/in: ",
+      "supervisor": "Betreuer:in: ",
       "researchGroup": "Forschungsgruppe: ",
       "location": "Standort: "
     },
