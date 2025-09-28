@@ -49,7 +49,7 @@ export class JobCardListComponent {
   readonly selectedSupervisorFilters = signal<string[]>([]);
 
   readonly allJobNames = signal<string[]>([]);
-  readonly allFieldofStudies = signal<string[]>([]);
+  readonly allFieldOfStudies = signal<string[]>([]);
   readonly availableLocationLabels = this.availableLocationOptions.map(option => option.label);
   readonly allSupervisorNames = signal<string[]>([]);
 
@@ -126,11 +126,11 @@ export class JobCardListComponent {
     try {
       const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
       this.allJobNames.set(filterOptions.jobNames ?? []);
-      this.allFieldofStudies.set(filterOptions.fieldsOfStudy ?? []);
+      this.allFieldOfStudies.set(filterOptions.fieldsOfStudy ?? []);
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
       this.allJobNames.set([]);
-      this.allFieldofStudies.set([]);
+      this.allFieldOfStudies.set([]);
       this.allSupervisorNames.set([]);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
     }
