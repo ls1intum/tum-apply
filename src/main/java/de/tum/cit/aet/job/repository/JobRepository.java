@@ -106,9 +106,9 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
               AND (:locations IS NULL OR j.location IN :locations)
               AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
               AND (:searchQuery IS NULL OR
-                 LOWER(j.title) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
-                 LOWER(j.fieldOfStudies) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
-                 LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+                 j.title LIKE CONCAT('%', :searchQuery, '%') OR
+                 j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
+                 CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
             )
       ORDER BY
           CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName'
@@ -184,9 +184,9 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           AND (:locations IS NULL OR j.location IN :locations)
           AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
           AND (:searchQuery IS NULL OR
-                 LOWER(j.title) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
-                 LOWER(j.fieldOfStudies) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
-                 LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+                 j.title LIKE CONCAT('%', :searchQuery, '%') OR
+                 j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
+                 CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
           )
       """)
   Page<JobCardDTO> findAllJobCardsByState(
