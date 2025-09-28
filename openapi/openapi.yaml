@@ -2049,6 +2049,26 @@
         }
       }
     },
+    "/api/jobs/filters": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getAllFilters",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFiltersDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/detail/{jobId}": {
       "get": {
         "tags": [
@@ -2187,75 +2207,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageJobCardDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/jobs/allSupervisorNames": {
-      "get": {
-        "tags": [
-          "job-resource"
-        ],
-        "operationId": "getAllSupervisorNames",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/jobs/allJobNames": {
-      "get": {
-        "tags": [
-          "job-resource"
-        ],
-        "operationId": "getAllAvailableJobNames",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/jobs/allFieldsOfStudy": {
-      "get": {
-        "tags": [
-          "job-resource"
-        ],
-        "operationId": "getAllFieldOfStudies",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
                 }
               }
             }
@@ -4695,6 +4646,29 @@
           },
           "empty": {
             "type": "boolean"
+          }
+        }
+      },
+      "JobFiltersDTO": {
+        "type": "object",
+        "properties": {
+          "jobNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fieldsOfStudy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supervisorNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
