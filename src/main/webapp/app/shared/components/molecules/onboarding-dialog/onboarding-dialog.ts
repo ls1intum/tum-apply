@@ -6,9 +6,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MessageModule } from 'primeng/message';
 import { firstValueFrom } from 'rxjs';
 
-import { ProfOnboardingResourceService } from '../../../../generated';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { ProfOnboardingResourceApiService } from '../../../../generated/api/profOnboardingResourceApi.service';
 
 /**
  * Professor onboarding dialog.
@@ -22,7 +22,7 @@ import TranslateDirective from '../../../language/translate.directive';
 })
 export class OnboardingDialog {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
-  private readonly api = inject(ProfOnboardingResourceService);
+  private readonly api = inject(ProfOnboardingResourceApiService);
   private readonly translate = inject(TranslateService);
 
   private static buildMailto(translate: TranslateService): string {

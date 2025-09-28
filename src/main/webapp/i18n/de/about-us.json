@@ -1,0 +1,14 @@
+{
+  "about-us": {
+    "headline": "Über uns",
+    "chair": {
+      "headline": "Informationen zum Lehrstuhl",
+      "description": "Diese Plattform wird vom AET Lehrstuhl an der TUM entwickelt und gepflegt.",
+      "contact": "Applied Education Technologies<br>Postal address: Boltzmannstrasse 3, D-85748 Garching b. Muenchen<br>Telephone: <a href='tel:+498928918206' class='external-link'>+49 89 289-18206</a><br>Fax: +49 89 289-18207<br>"
+    },
+    "support": {
+      "headline": "Support-Mailbox",
+      "mailbox": "Bei Fragen wenden Sie sich bitte an: <a href='mailto:support-tum-apply.aet@xcit.tum.de' class='external-link'>support-tum-apply.aet@xcit.tum.de</a>"
+    }
+  }
+}

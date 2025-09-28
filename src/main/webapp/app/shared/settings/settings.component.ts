@@ -2,8 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AccountService } from '../../core/auth/account.service';
-import { UserShortDTO } from '../../generated';
 import TranslateDirective from '../language/translate.directive';
+import { UserShortDTO } from '../../generated/model/userShortDTO';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 

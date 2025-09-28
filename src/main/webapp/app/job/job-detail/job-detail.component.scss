@@ -2,17 +2,15 @@
   display: none;
 }
 
-.container {
-  max-width: 100rem;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.page-header {
+.page-header-body {
   border-radius: 1.25rem;
   padding: 2.5rem;
   margin-bottom: 2rem;
   border: 0.1rem solid var(--p-border-default);
+}
+
+.page-header {
+  padding-bottom: 0;
 }
 
 .header-row {
@@ -22,12 +20,6 @@
   flex-wrap: wrap;
   margin-bottom: 1rem;
   gap: 1rem;
-}
-
-.job-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--p-primary-color);
 }
 
 .job-meta {

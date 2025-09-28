@@ -9,11 +9,12 @@ import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-import { CreatedJobDTO, JobResourceService } from '../../../generated';
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TagComponent } from '../../../shared/components/atoms/tag/tag.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
+import { CreatedJobDTO } from '../../../generated/model/createdJobDTO';
+import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
 
 @Component({
   selector: 'jhi-my-positions-page',
@@ -88,7 +89,7 @@ export class MyPositionsPageComponent {
     APPLICANT_FOUND: 'warn',
   });
 
-  private jobService = inject(JobResourceService);
+  private jobService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private toastService = inject(ToastService);

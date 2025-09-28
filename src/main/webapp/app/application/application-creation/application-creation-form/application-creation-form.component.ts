@@ -1,13 +1,6 @@
 import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { CommonModule, Location } from '@angular/common';
-import {
-  ApplicationDetailDTO,
-  ApplicationDocumentIdsDTO,
-  ApplicationForApplicantDTO,
-  ApplicationResourceService,
-  UpdateApplicationDTO,
-} from 'app/generated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -24,6 +17,7 @@ import { OtpInput } from 'app/shared/components/atoms/otp-input/otp-input';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
+import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -40,17 +34,15 @@ import ApplicationCreationPage2Component, {
   masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
-import { AuthOrchestratorService } from '../../../shared/auth/data-access/auth-orchestrator.service';
-import { AuthService } from '../../../shared/auth/data-access/auth.service';
-
-const SavingStates = {
-  SAVED: 'SAVED',
-  SAVING: 'SAVING',
-} as const;
+import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
+import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
+import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
+import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
+import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
 const applyflow = 'entity.toast.applyFlow';
-
-type SavingState = (typeof SavingStates)[keyof typeof SavingStates];
 
 @Component({
   selector: 'jhi-application-creation-form',
@@ -133,7 +125,13 @@ export default class ApplicationCreationFormComponent {
 
   savingBadgeCalculatedClass = computed<string>(
     () =>
-      `flex flex-wrap justify-around content-center gap-1 ${this.savingState() === SavingStates.SAVED ? 'saved_color' : 'unsaved_color'}`,
+      `flex flex-wrap justify-around content-center gap-1 ${
+        this.savingState() === SavingStates.SAVED
+          ? 'saved_color'
+          : this.savingState() === SavingStates.FAILED
+            ? 'failed_color'
+            : 'saving_color'
+      }`,
   );
 
   page1Valid = signal<boolean>(false);
@@ -330,13 +328,13 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  private readonly applicationResourceService = inject(ApplicationResourceService);
+  private readonly applicationResourceService = inject(ApplicationResourceApiService);
   private readonly accountService = inject(AccountService);
+  private readonly authFacade = inject(AuthFacadeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
-  private readonly authService = inject(AuthService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
 
@@ -455,6 +453,8 @@ export default class ApplicationCreationFormComponent {
       }
       if (savedSuccessFully) {
         this.savingState.set(SavingStates.SAVED);
+      } else {
+        this.savingState.set(SavingStates.FAILED);
       }
     }
   }
@@ -580,8 +580,7 @@ export default class ApplicationCreationFormComponent {
     this.authOrchestrator.email.set(normalizedEmail);
     this.authOrchestrator.firstName.set(normalizedFirstName);
     this.authOrchestrator.lastName.set(normalizedLastName);
-    this.authOrchestrator.clearError();
-    await this.authService.sendOtp(true);
+    await this.authFacade.requestOtp(true);
     this.otpDialogRef = this.dialogService.open(OtpInput, {
       header: this.translateService.instant('auth.common.otp.title'),
       data: { registration: true },

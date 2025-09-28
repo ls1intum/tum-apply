@@ -22,7 +22,6 @@ import { MessageService } from 'primeng/api';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
-import { ApiModule, Configuration } from './generated';
 import { httpInterceptorProviders } from './core/interceptor';
 import routes from './app.routes';
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
@@ -40,12 +39,6 @@ import { AuthFacadeService } from './core/auth/auth-facade.service';
 export async function initializeAuth(): Promise<void> {
   const authFacade = inject(AuthFacadeService);
   await authFacade.initAuth();
-}
-
-export function apiConfigFactory(): Configuration {
-  return new Configuration({
-    withCredentials: true,
-  });
 }
 
 export const appConfig: ApplicationConfig = {
@@ -68,7 +61,6 @@ export const appConfig: ApplicationConfig = {
     // Set this to true to enable service worker (PWA)
     importProvidersFrom(ServiceWorkerModule.register('ngsw-worker.js', { enabled: false })),
     importProvidersFrom(
-      ApiModule.forRoot(apiConfigFactory),
       RouterModule,
       ScrollingModule,
       TranslateModule.forRoot({

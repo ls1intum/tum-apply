@@ -1,9 +1,21 @@
-.header {
-  padding-bottom: 1.25rem;
+.page-header {
+  font-weight: 700;
+  padding-bottom: 4rem;
+  font-size: 2rem;
+  color: var(--p-primary-color);
+}
 
-  .h1-text {
-    font-weight: 700;
-    font-size: 2rem;
-    color: var(--p-primary-color);
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 4rem;
+
+  .page-header {
+    padding-bottom: 0;
+
+    h1 {
+      margin: 0; // Remove default h1 margins
+    }
   }
 }

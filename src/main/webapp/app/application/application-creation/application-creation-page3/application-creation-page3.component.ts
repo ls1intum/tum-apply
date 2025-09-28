@@ -3,7 +3,6 @@ import { Component, computed, effect, inject, input, model, output, signal } fro
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { ApplicationForApplicantDTO, DocumentInformationHolderDTO } from 'app/generated';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -15,6 +14,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
+import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;

@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ApplicationResourceService, DocumentInformationHolderDTO } from 'app/generated';
 import SharedModule from 'app/shared/shared.module';
 import { ToastService } from 'app/service/toast-service';
 import { FileUpload } from 'primeng/fileupload';
@@ -9,6 +8,8 @@ import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -44,7 +45,7 @@ export class UploadButtonComponent {
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
 
-  private applicationService = inject(ApplicationResourceService);
+  private applicationService = inject(ApplicationResourceApiService);
   private toastService = inject(ToastService);
 
   async onFileSelected(event: any): Promise<void> {

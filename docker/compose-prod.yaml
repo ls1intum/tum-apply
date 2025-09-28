@@ -17,7 +17,7 @@ services:
     networks:
       - shared-network
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./mysql_data:/var/lib/mysql
     ports:
       - '5432:5432'
   tumapply:
@@ -27,7 +27,7 @@ services:
     expose:
       - '8080'
     volumes:
-      - docs_data:/data/docs
+      - ./docs_data:/data/docs
     healthcheck:
       test: wget -nv -t1 --spider http://localhost:8080/actuator/health || exit 1
       start_period: 100s
@@ -68,7 +68,4 @@ networks:
   shared-network:
     name: tumapply-shared-network
     driver: bridge
-
-volumes:
-  mysql_data:
-  docs_data:
+    

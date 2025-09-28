@@ -7,8 +7,9 @@ import { filter, map, startWith, switchMap, take } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
-import { ProfOnboardingDTO, ProfOnboardingResourceService } from '../generated';
 import { AccountService } from '../core/auth/account.service';
+import { ProfOnboardingResourceApiService } from '../generated/api/profOnboardingResourceApi.service';
+import { ProfOnboardingDTO } from '../generated/model/profOnboardingDTO';
 
 /**
  * Orchestrates the professor onboarding dialog on the client.
@@ -24,7 +25,7 @@ export class OnboardingOrchestratorService {
   private readonly accountService = inject(AccountService);
   private readonly translate = inject(TranslateService);
   private readonly dialog = inject(DialogService);
-  private readonly profOnboardingResourceService = inject(ProfOnboardingResourceService);
+  private readonly profOnboardingResourceService = inject(ProfOnboardingResourceApiService);
 
   // Prevents opening multiple dialogs concurrently.
   private opened = false;

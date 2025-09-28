@@ -11,11 +11,11 @@ import { TableLazyLoadEvent } from 'primeng/table';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
-import { ResearchGroupResourceService } from '../../../generated/api/researchGroupResource.service';
 import { UserShortDTO } from '../../../generated/model/userShortDTO';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
+import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
 
 @Component({
   selector: 'jhi-research-group-members',
@@ -65,7 +65,7 @@ export class ResearchGroupMembersComponent {
     }));
   });
 
-  private researchGroupService = inject(ResearchGroupResourceService);
+  private researchGroupService = inject(ResearchGroupResourceApiService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);

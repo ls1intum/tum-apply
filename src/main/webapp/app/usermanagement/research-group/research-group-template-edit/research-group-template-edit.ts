@@ -10,13 +10,13 @@ import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { EmailTemplateDTO } from '../../../generated';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
-import { EmailTemplateResourceService } from '../../../generated/api/emailTemplateResource.service';
 import { ToastService } from '../../../service/toast-service';
+import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
+import { EmailTemplateDTO } from '../../../generated/model/emailTemplateDTO';
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -39,7 +39,7 @@ import { ToastService } from '../../../service/toast-service';
 export class ResearchGroupTemplateEdit {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
-  readonly emailTemplateService = inject(EmailTemplateResourceService);
+  readonly emailTemplateService = inject(EmailTemplateResourceApiService);
   readonly translate = inject(TranslateService);
   readonly toastService = inject(ToastService);
 

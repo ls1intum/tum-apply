@@ -65,10 +65,9 @@ public class AuthenticationResource {
                 }
             }
         }
-        if (refreshToken == null) {
-            throw new UnauthorizedException("Refresh token is missing for logout");
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
         }
-        keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
 
         CookieUtils.setAuthCookies(response, null);
         return ResponseEntity.ok().build();

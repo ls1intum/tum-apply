@@ -1,7 +1,8 @@
 import { Component, input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { ApplicationDetailDTO } from 'app/generated';
 import { BadgeModule } from 'primeng/badge';
+
+import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 
 @Component({
   selector: 'jhi-application-state-for-applicants',
