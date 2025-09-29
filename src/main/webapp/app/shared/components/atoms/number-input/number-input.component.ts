@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, effect, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -13,23 +12,11 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   templateUrl: './number-input.component.html',
   styleUrl: './number-input.component.scss',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    FontAwesomeModule,
-    InputNumberModule,
-    ReactiveFormsModule,
-    InputNumberModule,
-    TooltipModule,
-    TranslateDirective,
-  ],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, InputNumberModule, ReactiveFormsModule, InputNumberModule, TooltipModule],
 })
 export class NumberInputComponent extends BaseInputDirective<number | undefined> {
-  // Min and max values
   min = input<number>(0);
   max = input<number>(100);
-
-  // Min and max fraction digits
   minFractionDigits = input<number>(0);
   maxFractionDigits = input<number>(3);
 
@@ -37,9 +24,22 @@ export class NumberInputComponent extends BaseInputDirective<number | undefined>
     const model = this.model();
     return model !== undefined && model < this.min();
   });
+
   largerThanMax = computed<boolean>(() => {
     const model = this.model();
     return model !== undefined && model > this.max();
+  });
+
+  private readonly updateValidatorsEffect = effect(() => {
+    this.min();
+    this.max();
+    const ctrl = this.formControl();
+
+    // Revalidate when min/max changes
+    if (ctrl.value !== null && ctrl.value !== undefined) {
+      this.validateMinMax(ctrl.value, ctrl);
+      ctrl.updateValueAndValidity();
+    }
   });
 
   onInputChange(value: number): void {
@@ -47,6 +47,27 @@ export class NumberInputComponent extends BaseInputDirective<number | undefined>
     const ctrl = this.formControl();
     ctrl.setValue(value);
     ctrl.markAsDirty();
+
     ctrl.updateValueAndValidity();
+    this.validateMinMax(value, ctrl);
+
+    this.formValidityVersion.update(v => v + 1);
+  }
+
+  private validateMinMax(value: number | null | undefined, control: AbstractControl): void {
+    const errors = { ...control.errors };
+
+    delete errors['min'];
+    delete errors['max'];
+
+    if (value !== null && value !== undefined && value < this.min()) {
+      errors['min'] = { min: this.min(), actual: value };
+    }
+
+    if (value !== null && value !== undefined && value > this.max()) {
+      errors['max'] = { max: this.max(), actual: value };
+    }
+
+    control.setErrors(Object.keys(errors).length > 0 ? errors : null);
   }
 }
