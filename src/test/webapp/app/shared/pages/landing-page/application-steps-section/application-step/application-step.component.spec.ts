@@ -32,7 +32,6 @@ describe('ApplicationStepComponent', () => {
       ],
       providers: [provideFontAwesomeTesting()],
     })
-      // ✅ override real ButtonComponent with Stub
       .overrideComponent(ApplicationStepComponent, {
         remove: {
           imports: [ButtonComponent],
