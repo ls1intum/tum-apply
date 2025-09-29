@@ -15,11 +15,7 @@ describe('FaqSectionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FaqSectionComponent],
-      providers: [
-        provideTranslateMock(),
-        provideFontAwesomeTesting(),
-        provideNoopAnimations(),
-      ],
+      providers: [provideTranslateMock(), provideFontAwesomeTesting(), provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FaqSectionComponent);

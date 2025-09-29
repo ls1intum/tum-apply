@@ -47,11 +47,7 @@ describe('LandingPageComponent', () => {
         StubInformationSection,
         StubFaqSection,
       ],
-      providers: [
-        provideTranslateMock(),
-        provideFontAwesomeTesting(),
-        provideNoopAnimations(),
-      ],
+      providers: [provideTranslateMock(), provideFontAwesomeTesting(), provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LandingPageComponent);
