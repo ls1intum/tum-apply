@@ -57,15 +57,15 @@ export class NumberInputComponent extends BaseInputDirective<number | undefined>
   private validateMinMax(value: number | null | undefined, control: AbstractControl): void {
     const errors = { ...control.errors };
 
-    delete errors['min'];
-    delete errors['max'];
+    delete errors.min;
+    delete errors.max;
 
     if (value !== null && value !== undefined && value < this.min()) {
-      errors['min'] = { min: this.min(), actual: value };
+      errors.min = { min: this.min(), actual: value };
     }
 
     if (value !== null && value !== undefined && value > this.max()) {
-      errors['max'] = { max: this.max(), actual: value };
+      errors.max = { max: this.max(), actual: value };
     }
 
     control.setErrors(Object.keys(errors).length > 0 ? errors : null);
