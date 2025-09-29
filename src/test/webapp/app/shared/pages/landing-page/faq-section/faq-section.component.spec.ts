@@ -40,12 +40,17 @@ describe('FaqSectionComponent', () => {
   });
 
   it('should render external link with correct href and icon', () => {
-    const link = nativeElement.querySelector<HTMLAnchorElement>('.sub-subtitle-link')!;
-    expect(link).toBeTruthy();
-    expect(link.href).toContain('https://ls1intum.github.io/tum-apply');
+    const linkElement = nativeElement.querySelector('.sub-subtitle-link');
 
-    const icon = link.querySelector('fa-icon');
-    expect(icon).toBeTruthy();
+    expect(linkElement).not.toBeNull();
+    if (!(linkElement instanceof HTMLAnchorElement)) {
+      throw new Error('Expected .sub-subtitle-link to be an <a> element');
+    }
+
+    expect(linkElement.href).toContain('https://ls1intum.github.io/tum-apply');
+
+    const icon = linkElement.querySelector('fa-icon');
+    expect(icon).not.toBeNull();
     expect(icon?.classList).toContain('external-icon');
   });
 
