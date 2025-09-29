@@ -3,25 +3,34 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { Component } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
-
 import { LandingPageComponent } from 'app/shared/pages/landing-page/landing-page.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
-import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing'; // ✅ Icon-Fix
+import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 
 @Component({ selector: 'jhi-hero-section', standalone: true, template: '' })
-class StubHeroSection {}
+class StubHeroSection {
+  private readonly _dummy = true;
+}
 
 @Component({ selector: 'jhi-doctoral-journey-section', standalone: true, template: '' })
-class StubDoctoralJourneySection {}
+class StubDoctoralJourneySection {
+  private readonly _dummy = true;
+}
 
 @Component({ selector: 'jhi-application-steps-section', standalone: true, template: '' })
-class StubApplicationStepsSection {}
+class StubApplicationStepsSection {
+  private readonly _dummy = true;
+}
 
 @Component({ selector: 'jhi-information-section', standalone: true, template: '' })
-class StubInformationSection {}
+class StubInformationSection {
+  private readonly _dummy = true;
+}
 
 @Component({ selector: 'jhi-faq-section', standalone: true, template: '' })
-class StubFaqSection {}
+class StubFaqSection {
+  private readonly _dummy = true;
+}
 
 describe('LandingPageComponent', () => {
   let fixture: ComponentFixture<LandingPageComponent>;

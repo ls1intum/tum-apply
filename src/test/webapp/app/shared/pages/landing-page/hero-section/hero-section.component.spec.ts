@@ -16,10 +16,7 @@ describe('HeroSectionComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [HeroSectionComponent],
-      providers: [
-        provideTranslateMock(),
-        { provide: Router, useValue: routerMock },
-      ],
+      providers: [provideTranslateMock(), { provide: Router, useValue: routerMock }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HeroSectionComponent);

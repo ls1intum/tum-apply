@@ -24,11 +24,7 @@ describe('ApplicationStepComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        ApplicationStepComponent,
-        TranslateModule,
-        FontAwesomeModule,
-      ],
+      imports: [ApplicationStepComponent, TranslateModule, FontAwesomeModule],
       providers: [provideFontAwesomeTesting()],
     })
       .overrideComponent(ApplicationStepComponent, {

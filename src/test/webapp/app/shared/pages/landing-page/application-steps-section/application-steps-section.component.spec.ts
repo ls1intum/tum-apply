@@ -24,14 +24,8 @@ describe('ApplicationStepsSectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        ApplicationStepsSectionComponent,
-        StubApplicationStepComponent,
-      ],
-      providers: [
-        provideTranslateMock(),
-        provideFontAwesomeTesting(),
-      ],
+      imports: [ApplicationStepsSectionComponent, StubApplicationStepComponent],
+      providers: [provideTranslateMock(), provideFontAwesomeTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationStepsSectionComponent);

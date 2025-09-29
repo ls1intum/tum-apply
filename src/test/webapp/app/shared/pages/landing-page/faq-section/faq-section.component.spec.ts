@@ -40,7 +40,7 @@ describe('FaqSectionComponent', () => {
   });
 
   it('should render external link with correct href and icon', () => {
-    const link = nativeElement.querySelector('.sub-subtitle-link') as HTMLAnchorElement;
+    const link = nativeElement.querySelector<HTMLAnchorElement>('.sub-subtitle-link')!;
     expect(link).toBeTruthy();
     expect(link.href).toContain('https://ls1intum.github.io/tum-apply');
 
