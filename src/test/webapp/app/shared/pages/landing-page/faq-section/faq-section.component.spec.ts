@@ -5,6 +5,7 @@ import { By } from '@angular/platform-browser';
 import { FaqSectionComponent } from 'app/shared/pages/landing-page/faq-section/faq-section.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 describe('FaqSectionComponent', () => {
   let fixture: ComponentFixture<FaqSectionComponent>;
@@ -14,7 +15,10 @@ describe('FaqSectionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FaqSectionComponent, FontAwesomeModule],
-      providers: [provideTranslateMock()],
+      providers: [
+        provideTranslateMock(),
+        provideNoopAnimations(), // ⬅️ PrimeNG animation fix
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FaqSectionComponent);
