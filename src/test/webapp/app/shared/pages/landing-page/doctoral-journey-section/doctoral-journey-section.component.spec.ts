@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { By } from '@angular/platform-browser';
 
 import { DoctoralJourneySectionComponent } from 'app/shared/pages/landing-page/doctoral-journey-section/doctoral-journey-section.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
@@ -19,7 +18,6 @@ class StubButtonGroupComponent {
 
 describe('DoctoralJourneySectionComponent', () => {
   let fixture: ComponentFixture<DoctoralJourneySectionComponent>;
-  let component: DoctoralJourneySectionComponent;
   let nativeElement: HTMLElement;
 
   beforeEach(async () => {
@@ -29,19 +27,16 @@ describe('DoctoralJourneySectionComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(DoctoralJourneySectionComponent);
-    component = fixture.componentInstance;
     nativeElement = fixture.nativeElement;
     fixture.detectChanges();
-  });
-
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should render image with correct path', () => {
     const img = nativeElement.querySelector('img');
     expect(img).not.toBeNull();
-    expect(img?.getAttribute('src')).toBe('/content/images/landing-page/doctoral-journey-section/landing-page-doctoral-journey.webp');
+    expect(img?.getAttribute('src')).toBe(
+      '/content/images/landing-page/doctoral-journey-section/landing-page-doctoral-journey.webp',
+    );
   });
 
   it('should render headline with correct translation key', () => {
@@ -55,49 +50,39 @@ describe('DoctoralJourneySectionComponent', () => {
   });
 
   it('should provide correct button group data', () => {
-    const data = component.buttons();
+    const data = fixture.componentInstance.buttons();
     expect(data.direction).toBe('horizontal');
     expect(data.buttons.length).toBe(2);
 
-    const whyDoctorateBtn = data.buttons[0];
-    expect(whyDoctorateBtn.label).toBe('landingPage.doctoralJourney.button1');
-    expect(whyDoctorateBtn.severity).toBe('secondary');
-    expect(whyDoctorateBtn.variant).toBe('outlined');
-    expect(whyDoctorateBtn.isExternalLink).toBe(true);
+    const [btn1, btn2] = data.buttons;
 
-    const doctorateAtTUMBtn = data.buttons[1];
-    expect(doctorateAtTUMBtn.label).toBe('landingPage.doctoralJourney.button2');
-    expect(doctorateAtTUMBtn.severity).toBe('primary');
-    expect(doctorateAtTUMBtn.isExternalLink).toBe(true);
+    expect(btn1.label).toBe('landingPage.doctoralJourney.button1');
+    expect(btn1.severity).toBe('secondary');
+    expect(btn1.variant).toBe('outlined');
+    expect(btn1.isExternalLink).toBe(true);
+
+    expect(btn2.label).toBe('landingPage.doctoralJourney.button2');
+    expect(btn2.severity).toBe('primary');
+    expect(btn2.isExternalLink).toBe(true);
   });
 
-  it('should open correct URL for "Why Do Your Doctorate at TUM" button', () => {
+  it('should open correct URL for first button', () => {
     const spy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const data = component.buttons();
-
-    const whyDoctorateBtn = data.buttons[0];
-    whyDoctorateBtn.onClick();
-
+    fixture.componentInstance.buttons().buttons[0].onClick();
     expect(spy).toHaveBeenCalledWith(
       'https://www.gs.tum.de/en/gs/path-to-a-doctorate/why-do-your-doctorate-at-tum/',
-      '_blank'
+      '_blank',
     );
-
     spy.mockRestore();
   });
 
-  it('should open correct URL for "Doctorate at TUM" button', () => {
+  it('should open correct URL for second button', () => {
     const spy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const data = component.buttons();
-
-    const doctorateAtTUMBtn = data.buttons[1];
-    doctorateAtTUMBtn.onClick();
-
+    fixture.componentInstance.buttons().buttons[1].onClick();
     expect(spy).toHaveBeenCalledWith(
       'https://www.gs.tum.de/en/gs/doctorate-at-tum/',
-      '_blank'
+      '_blank',
     );
-
     spy.mockRestore();
   });
 });

@@ -6,7 +6,6 @@ import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.test
 
 describe('InformationCardComponent', () => {
   let fixture: ComponentFixture<InformationCardComponent>;
-  let component: InformationCardComponent;
   let nativeElement: HTMLElement;
 
   beforeEach(async () => {
@@ -16,7 +15,6 @@ describe('InformationCardComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(InformationCardComponent);
-    component = fixture.componentInstance;
     nativeElement = fixture.nativeElement;
   });
 

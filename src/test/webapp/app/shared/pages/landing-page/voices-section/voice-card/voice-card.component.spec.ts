@@ -1,11 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-
 import { VoiceCardComponent } from 'app/shared/pages/landing-page/voices-section/voice-card/voice-card/voice-card.component';
 
 describe('VoiceCardComponent', () => {
   let fixture: ComponentFixture<VoiceCardComponent>;
-  let component: VoiceCardComponent;
   let nativeElement: HTMLElement;
 
   beforeEach(async () => {
@@ -14,7 +12,6 @@ describe('VoiceCardComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(VoiceCardComponent);
-    component = fixture.componentInstance;
     nativeElement = fixture.nativeElement;
   });
 

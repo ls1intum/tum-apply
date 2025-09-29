@@ -21,7 +21,6 @@ class StubButtonComponent {
 
 describe('ApplicationStepComponent', () => {
   let fixture: ComponentFixture<ApplicationStepComponent>;
-  let component: ApplicationStepComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -43,7 +42,6 @@ describe('ApplicationStepComponent', () => {
       .compileComponents();
 
     fixture = TestBed.createComponent(ApplicationStepComponent);
-    component = fixture.componentInstance;
   });
 
   it('should render inputs correctly', () => {
