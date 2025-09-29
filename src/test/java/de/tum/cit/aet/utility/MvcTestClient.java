@@ -58,7 +58,7 @@ public class MvcTestClient {
 
     /**
      * Replaces the set of RequestPostProcessors applied to every request.
-     * Example usage: api.with(jwt(...)).getAndReadOk(...)
+     * Example usage: api.with(jwt(...)).getAndRead(...)
      */
     public MvcTestClient with(RequestPostProcessor... rpps) {
         this.defaultPostProcessors.clear();
@@ -85,76 +85,135 @@ public class MvcTestClient {
      * Query parameters and optional Accept overrides are supported.
      * If type is Void, only the assertion is performed.
      */
-    public <T> T getAndReadOk(String url, Map<String, String> params, Class<T> type, MediaType... accepts) {
+    public <T> T getAndRead(String url, Map<String, String> params, Class<T> type, int expectedStatus, MediaType... accepts) {
+        MvcResult result;
+        switch (expectedStatus) {
+            case 200 -> result = getOk(url, params, accepts);
+            case 400 -> result = getInvalid(url, params, accepts);
+            case 401 -> result = getUnauthorized(url, params, accepts);
+            case 403 -> result = getForbidden(url, params, accepts);
+            case 404 -> result = getNotFound(url, params, accepts);
+            case 500 -> result = getInternalServerError(url, params, accepts);
+            default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+        }
+
         if (type == Void.class) {
-            getOk(url, params, accepts);
             return null;
         }
-        return read(getOk(url, params, accepts), type);
+        return read(result, type);
     }
 
     /**
      * Performs a GET and asserts 200 OK, then deserializes the body using a TypeReference.
      * Useful for generic types like PageResponse<Foo>.
      */
-    public <T> T getAndReadOk(String url, Map<String, String> params, TypeReference<T> typeRef, MediaType... accepts) {
-        return read(getOk(url, params, accepts), typeRef);
+    public <T> T getAndRead(String url, Map<String, String> params, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
+        MvcResult result;
+        switch (expectedStatus) {
+            case 200 -> result = getOk(url, params, accepts);
+            case 400 -> result = getInvalid(url, params, accepts);
+            case 401 -> result = getUnauthorized(url, params, accepts);
+            case 404 -> result = getNotFound(url, params, accepts);
+            default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+        }
+        return read(result, typeRef);
     }
 
     /**
      * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the given class.
      * If type is Void, only the assertion is performed.
      */
-    public <T> T postAndReadOk(String url, Object body, Class<T> type, MediaType... accepts) {
+    public <T> T postAndRead(String url, Object body, Class<T> type, int expectedStatus, MediaType... accepts) {
+        MvcResult result;
+        switch (expectedStatus) {
+            case 200 -> result = postOk(url, body, accepts);
+            case 400 -> result = postInvalid(url, body, accepts);
+            case 401 -> result = postUnauthorized(url, body, accepts);
+            case 404 -> result = postNotFound(url, body, accepts);
+            default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+        }
+
         if (type == Void.class) {
-            postOk(url, body, accepts);
             return null;
         }
-        return read(postOk(url, body, accepts), type);
+        return read(result, type);
     }
 
     /**
      * Performs a POST with a JSON body and asserts 200 OK, then deserializes using a TypeReference.
      */
-    public <T> T postAndReadOk(String url, Object body, TypeReference<T> typeRef, MediaType... accepts) {
-        return read(postOk(url, body, accepts), typeRef);
+    public <T> T postAndRead(String url, Object body, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
+        MvcResult result;
+        switch (expectedStatus) {
+            case 200 -> result = postOk(url, body, accepts);
+            case 400 -> result = postInvalid(url, body, accepts);
+            case 401 -> result = postUnauthorized(url, body, accepts);
+            case 404 -> result = postNotFound(url, body, accepts);
+            default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+        }
+        return read(result, typeRef);
     }
 
     /**
      * Performs a PUT with a JSON body and asserts 200 OK, then deserializes to the given class.
      * If type is Void, only the assertion is performed.
      */
-    public <T> T putAndReadOk(String url, Object body, Class<T> type, MediaType... accepts) {
+    public <T> T putAndRead(String url, Object body, Class<T> type, int expectedStatus, MediaType... accepts) {
+        MvcResult result;
+        switch (expectedStatus) {
+            case 200 -> result = putOk(url, body, accepts);
+            case 400 -> result = putInvalid(url, body, accepts);
+            case 401 -> result = putUnauthorized(url, body, accepts);
+            case 404 -> result = putNotFound(url, body, accepts);
+            default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+        }
+
         if (type == Void.class) {
-            putOk(url, body, accepts);
             return null;
         }
-        return read(putOk(url, body, accepts), type);
+        return read(result, type);
     }
 
     /**
      * Performs a PUT with a JSON body and asserts 200 OK, then deserializes using a TypeReference.
      */
-    public <T> T putAndReadOk(String url, Object body, TypeReference<T> typeRef, MediaType... accepts) {
-        return read(putOk(url, body, accepts), typeRef);
+    public <T> T putAndRead(String url, Object body, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
+        MvcResult result;
+        switch (expectedStatus) {
+            case 200 -> result = putOk(url, body, accepts);
+            case 400 -> result = putInvalid(url, body, accepts);
+            case 401 -> result = putUnauthorized(url, body, accepts);
+            case 404 -> result = putNotFound(url, body, accepts);
+            default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+        }
+        return read(result, typeRef);
     }
 
     /**
      * Performs a DELETE and asserts 204 No Content, then optionally deserializes if a body is returned.
      * If type is Void, only the assertion is performed.
      */
-    public <T> T deleteAndReadOk(String url, Object body, Class<T> type, MediaType... accepts) {
+    public <T> T deleteAndRead(String url, Object body, Class<T> type, int expectedStatus, MediaType... accepts) {
+        MvcResult result;
+        switch (expectedStatus) {
+            case 200 -> result = deleteOk(url, body, accepts);
+            case 204 -> result = deleteNoContent(url, body, accepts);
+            case 400 -> result = deleteInvalid(url, body, accepts);
+            case 401 -> result = deleteUnauthorized(url, body, accepts);
+            case 404 -> result = deleteNotFound(url, body, accepts);
+            default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+        }
+
         if (type == Void.class) {
-            deleteOk(url, body, accepts);
             return null;
         }
-        return read(deleteOk(url, body, accepts), type);
+        return read(result, type);
     }
 
     /**
      * Performs a DELETE and asserts 204 No Content, then deserializes using a TypeReference if present.
      */
-    public <T> T deleteAndReadOk(String url, Object body, TypeReference<T> typeRef, MediaType... accepts) {
+    public <T> T deleteAndRead(String url, Object body, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
         return read(deleteOk(url, body, accepts), typeRef);
     }
 
@@ -172,6 +231,57 @@ public class MvcTestClient {
         }
     }
 
+
+    /*     * Low-level GET that asserts 400 Bad Request and returns the MvcResult.
+     */
+    private MvcResult getInvalid(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isBadRequest()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with 400", e);
+        }
+    }
+
+    /*     * Low-level GET that asserts 401 Unauthorized and returns the MvcResult.
+     */
+    private MvcResult getUnauthorized(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isUnauthorized()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with 401", e);
+        }
+    }
+
+    /*     * Low-level GET that asserts 403 Forbidden and returns the MvcResult.
+     */
+    private MvcResult getForbidden(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isForbidden()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with 403", e);
+        }
+    }
+
+    /*     * Low-level GET that asserts 404 Not Found and returns the MvcResult.
+     */
+    private MvcResult getNotFound(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isNotFound()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with 404", e);
+        }
+    }
+
+    /*     * Low-level GET that asserts 500 Internal Server Error and returns the MvcResult.
+     */
+    private MvcResult getInternalServerError(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isInternalServerError()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with 500", e);
+        }
+    }
+
     /**
      * Low-level POST that asserts 200 OK and returns the MvcResult.
      */
@@ -179,7 +289,40 @@ public class MvcTestClient {
         try {
             return postJson(url, body, accepts).andExpect(status().isOk()).andReturn();
         } catch (Exception e) {
-            throw new AssertionError("POST " + url + " failed", e);
+            throw new AssertionError("POST " + url + " failed with 200", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 400 Bad Request and returns the MvcResult.
+     */
+    private MvcResult postInvalid(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isBadRequest()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 400", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 401 Unauthorized and returns the MvcResult.
+     */
+    private MvcResult postUnauthorized(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isUnauthorized()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 401", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 404 Not Found and returns the MvcResult.
+     */
+    private MvcResult postNotFound(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isNotFound()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 404", e);
         }
     }
 
@@ -194,14 +337,86 @@ public class MvcTestClient {
         }
     }
 
+    /*     * Low-level PUT that asserts 400 Bad Request and returns the MvcResult.
+     */
+    private MvcResult putInvalid(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isBadRequest()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed with 400", e);
+        }
+    }
+
     /**
-     * Low-level DELETE that asserts 204 No Content and returns the MvcResult.
+     * Low-level PUT that asserts 401 Unauthorized and returns the MvcResult.
+     */
+    private MvcResult putUnauthorized(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isUnauthorized()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed with 401", e);
+        }
+    }
+
+    /**
+     * Low-level PUT that asserts 404 Not Found and returns the MvcResult.
+     */
+    private MvcResult putNotFound(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isNotFound()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed with 404", e);
+        }
+    }
+
+    /**
+     * Low-level DELETE that asserts 200 Ok and returns the MvcResult.
      */
     private MvcResult deleteOk(String url, Object body, MediaType... accepts) {
         try {
+            return deleteJson(url, body, accepts).andExpect(status().isOk()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 202", e);
+        }
+    }
+
+    /*     * Low-level DELETE that asserts 204 No Content and returns the MvcResult.
+     */
+    private MvcResult deleteNoContent(String url, Object body, MediaType... accepts) {
+        try {
             return deleteJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
         } catch (Exception e) {
-            throw new AssertionError("DELETE " + url + " failed", e);
+            throw new AssertionError("DELETE " + url + " failed with 204", e);
+        }
+    }
+
+    /*     * Low-level DELETE that asserts 400 Bad Request and returns the MvcResult.
+     */
+    private MvcResult deleteInvalid(String url, Object body, MediaType... accepts) {
+        try {
+            return deleteJson(url, body, accepts).andExpect(status().isBadRequest()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 400", e);
+        }
+    }
+
+    /*     * Low-level DELETE that asserts 401 Unauthorized and returns the MvcResult.
+     */
+    private MvcResult deleteUnauthorized(String url, Object body, MediaType... accepts) {
+        try {
+            return deleteJson(url, body, accepts).andExpect(status().isUnauthorized()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 401", e);
+        }
+    }
+
+    /*     * Low-level DELETE that asserts 404 Not Found and returns the MvcResult.
+     */
+    private MvcResult deleteNotFound(String url, Object body, MediaType... accepts) {
+        try {
+            return deleteJson(url, body, accepts).andExpect(status().isNotFound()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 404", e);
         }
     }
 
