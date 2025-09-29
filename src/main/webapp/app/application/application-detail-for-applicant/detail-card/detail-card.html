@@ -1,0 +1,17 @@
+@if (showCard) {
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center gap-2 p-3">
+        @if (icon) {
+          <i class="pi" [ngClass]="icon"></i>
+        }
+        <h3 class="m-8">{{ title }}</h3>
+      </div>
+    </ng-template>
+
+    @if (content) {
+      <p>{{ content }}</p>
+    }
+    <ng-content />
+  </p-card>
+}
