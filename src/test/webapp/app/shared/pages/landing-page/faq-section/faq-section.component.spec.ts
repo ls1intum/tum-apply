@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FaqSectionComponent } from 'app/shared/pages/landing-page/faq-section/faq-section.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 describe('FaqSectionComponent', () => {
   let fixture: ComponentFixture<FaqSectionComponent>;
@@ -14,8 +14,12 @@ describe('FaqSectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FaqSectionComponent, NoopAnimationsModule],
-      providers: [provideTranslateMock(), provideFontAwesomeTesting()],
+      imports: [FaqSectionComponent],
+      providers: [
+        provideTranslateMock(),
+        provideFontAwesomeTesting(),
+        provideNoopAnimations(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FaqSectionComponent);

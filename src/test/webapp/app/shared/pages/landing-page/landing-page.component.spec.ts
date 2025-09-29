@@ -1,24 +1,51 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Component } from '@angular/core';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
-import { FaqSectionComponent } from 'app/shared/pages/landing-page/faq-section/faq-section.component';
+
+import { LandingPageComponent } from 'app/shared/pages/landing-page/landing-page.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
-import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
+import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing'; // ✅ Icon-Fix
 
-describe('FaqSectionComponent', () => {
-  let fixture: ComponentFixture<FaqSectionComponent>;
-  let component: FaqSectionComponent;
+@Component({ selector: 'jhi-hero-section', standalone: true, template: '' })
+class StubHeroSection {}
+
+@Component({ selector: 'jhi-doctoral-journey-section', standalone: true, template: '' })
+class StubDoctoralJourneySection {}
+
+@Component({ selector: 'jhi-application-steps-section', standalone: true, template: '' })
+class StubApplicationStepsSection {}
+
+@Component({ selector: 'jhi-information-section', standalone: true, template: '' })
+class StubInformationSection {}
+
+@Component({ selector: 'jhi-faq-section', standalone: true, template: '' })
+class StubFaqSection {}
+
+describe('LandingPageComponent', () => {
+  let fixture: ComponentFixture<LandingPageComponent>;
+  let component: LandingPageComponent;
   let nativeElement: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FaqSectionComponent, NoopAnimationsModule],
-      providers: [provideTranslateMock(), provideFontAwesomeTesting()],
+      imports: [
+        LandingPageComponent,
+        StubHeroSection,
+        StubDoctoralJourneySection,
+        StubApplicationStepsSection,
+        StubInformationSection,
+        StubFaqSection,
+      ],
+      providers: [
+        provideTranslateMock(),
+        provideFontAwesomeTesting(),
+        provideNoopAnimations(),
+      ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(FaqSectionComponent);
+    fixture = TestBed.createComponent(LandingPageComponent);
     component = fixture.componentInstance;
     nativeElement = fixture.nativeElement;
     fixture.detectChanges();
@@ -28,25 +55,11 @@ describe('FaqSectionComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the headline and subheadline translation keys', () => {
-    const headline = nativeElement.querySelector('h2.title');
-    const subheadline = nativeElement.querySelector('p.subtitle');
-    expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.faq.headline');
-    expect(subheadline?.getAttribute('jhiTranslate')).toBe('landingPage.faq.subheadline');
-  });
-
-  it('should render external link with correct href and icon', () => {
-    const link = nativeElement.querySelector('.sub-subtitle-link') as HTMLAnchorElement;
-    expect(link).toBeTruthy();
-    expect(link.href).toContain('https://ls1intum.github.io/tum-apply');
-
-    const icon = link.querySelector('fa-icon');
-    expect(icon).toBeTruthy();
-    expect(icon?.classList).toContain('external-icon');
-  });
-
-  it('should render all FAQ tabs based on the tabs array', () => {
-    const panels = fixture.debugElement.queryAll(By.css('p-accordion-panel'));
-    expect(panels.length).toBe(component.tabs.length);
+  it('should render all main section components', () => {
+    expect(nativeElement.querySelector('jhi-hero-section')).not.toBeNull();
+    expect(nativeElement.querySelector('jhi-doctoral-journey-section')).not.toBeNull();
+    expect(nativeElement.querySelector('jhi-application-steps-section')).not.toBeNull();
+    expect(nativeElement.querySelector('jhi-information-section')).not.toBeNull();
+    expect(nativeElement.querySelector('jhi-faq-section')).not.toBeNull();
   });
 });

@@ -36,7 +36,7 @@ describe('ApplicationStepsSectionComponent', () => {
 
     fixture = TestBed.createComponent(ApplicationStepsSectionComponent);
     component = fixture.componentInstance;
-    nativeElement = fixture.nativeElement as HTMLElement;
+    nativeElement = fixture.nativeElement; // kein "as HTMLElement"
     fixture.detectChanges();
   });
 
@@ -44,7 +44,7 @@ describe('ApplicationStepsSectionComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render 4 <jhi-application-step> components', () => {
+  it('should render four application-step components', () => {
     const stepElements = nativeElement.querySelectorAll('jhi-application-step');
     expect(stepElements.length).toBe(4);
   });
