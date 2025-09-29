@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
@@ -21,7 +22,6 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -280,7 +280,7 @@ public class JobService {
                     .filter(Objects::nonNull)
                     .toList();
         }
-        String normalizedSearchQuery = normalizeSearchQuery(searchQuery);
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
         return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(),
                 enumStates, normalizedSearchQuery, pageable);
     }
@@ -317,21 +317,5 @@ public class JobService {
         job.setState(dto.state());
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
-    }
-
-    /**
-     * Normalizes the search query by trimming whitespace, converting to lowercase,
-     * and returning null if the result is empty.
-     *
-     * @param searchQuery the raw search query
-     * @return normalized search query or null if empty
-     */
-    private String normalizeSearchQuery(String searchQuery) {
-        if (searchQuery == null) {
-            return null;
-        }
-
-        String trimmed = searchQuery.trim().toLowerCase();
-        return trimmed.isEmpty() ? null : trimmed;
     }
 }
