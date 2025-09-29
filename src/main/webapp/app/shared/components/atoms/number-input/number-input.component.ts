@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -25,65 +25,28 @@ import { BaseInputDirective } from '../base-input/base-input.component';
   ],
 })
 export class NumberInputComponent extends BaseInputDirective<number | undefined> {
+  // Min and max values
   min = input<number>(0);
   max = input<number>(100);
 
+  // Min and max fraction digits
   minFractionDigits = input<number>(0);
   maxFractionDigits = input<number>(3);
 
-  smallerThanMin = computed(() => {
+  smallerThanMin = computed<boolean>(() => {
     const model = this.model();
     return model !== undefined && model < this.min();
   });
-
-  largerThanMax = computed(() => {
+  largerThanMax = computed<boolean>(() => {
     const model = this.model();
     return model !== undefined && model > this.max();
   });
 
-  correctingEffect = effect(() => {
-    if (this.smallerThanMin() || this.largerThanMax()) {
-      if (!this.clampingScheduled()) {
-        this.clampingScheduled.set(true);
-        this.timeoutRef = setTimeout(() => {
-          this.correctValue();
-          this.clampingScheduled.set(false);
-        }, 2000);
-      }
-    } else {
-      if (this.timeoutRef) {
-        clearTimeout(this.timeoutRef);
-        this.timeoutRef = undefined;
-      }
-      this.clampingScheduled.set(false);
-    }
-  });
-
-  private clampingScheduled = signal(false);
-  private timeoutRef: ReturnType<typeof setTimeout> | undefined = undefined;
-
-  onInputChange(value: number | undefined): void {
+  onInputChange(value: number): void {
     this.modelChange.emit(value);
     const ctrl = this.formControl();
     ctrl.setValue(value);
     ctrl.markAsDirty();
     ctrl.updateValueAndValidity();
-  }
-
-  private correctValue(): void {
-    const value = this.model();
-    let corrected = value;
-
-    if (value !== undefined) {
-      if (value < this.min()) {
-        corrected = this.min();
-      } else if (value > this.max()) {
-        corrected = this.max();
-      }
-
-      if (corrected !== value) {
-        this.onInputChange(corrected);
-      }
-    }
   }
 }
