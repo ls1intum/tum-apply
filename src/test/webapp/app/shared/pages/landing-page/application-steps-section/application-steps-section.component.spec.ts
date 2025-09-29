@@ -30,7 +30,7 @@ describe('ApplicationStepsSectionComponent', () => {
 
     fixture = TestBed.createComponent(ApplicationStepsSectionComponent);
     component = fixture.componentInstance;
-    nativeElement = fixture.nativeElement; // kein "as HTMLElement"
+    nativeElement = fixture.nativeElement;
     fixture.detectChanges();
   });
 
