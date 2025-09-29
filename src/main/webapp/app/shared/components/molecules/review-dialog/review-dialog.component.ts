@@ -8,7 +8,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { EditorComponent } from '../../atoms/editor/editor.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO';
 import { AcceptDTO } from '../../../../generated/model/acceptDTO';
@@ -28,7 +27,6 @@ import ReasonEnum = RejectDTO.ReasonEnum;
     SelectComponent,
     NgTemplateOutlet,
     ButtonComponent,
-    EditorComponent,
     TranslateDirective,
   ],
   templateUrl: './review-dialog.component.html',
@@ -99,15 +97,22 @@ export class ReviewDialogComponent {
     },
   ];
 
-  constructor() {
-    // Reset state each time the dialog opens
-    effect(() => {
-      if (this.visible()) {
-        this.resetDialogState();
-        this.editorModel.set(this.translate.instant('evaluation.defaultAcceptMessage', this.translationMetaData()));
-      }
-    });
-  }
+  _defaultTextEffect = effect(() => {
+    if (this.visible()) {
+      this.resetDialogState();
+      // TODO: Removed until editor is fixed
+      // this.editorModel.set(this.translate.instant('evaluation.defaultAcceptMessage', this.translationMetaData()));
+
+      // TODO: Remove this when editor is fixed
+      // Always use english for the message
+      const value = this.translate.getParsedResult(
+        this.translate.translations['en'],
+        'evaluation.defaultAcceptMessage',
+        this.translationMetaData(),
+      );
+      this.editorModel.set(value);
+    }
+  });
 
   resetDialogState(): void {
     this.notifyApplicant.set(true);
