@@ -1,0 +1,23 @@
+meta {
+  name: Provision ResearchGroup – UserNotFound
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/admin/research-groups/provision
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Applied Engineering & Technology",
+    "headName": "Prof. Jane Doe",
+    "universityID": "doesNotExist123"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

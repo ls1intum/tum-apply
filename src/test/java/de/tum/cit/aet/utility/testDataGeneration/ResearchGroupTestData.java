@@ -3,6 +3,8 @@ package de.tum.cit.aet.utility.testDataGeneration;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 
+import java.util.UUID;
+
 /**
  * Test data helpers for ResearchGroup.
  * Keeps entity construction and saving in one place.
@@ -24,6 +26,7 @@ public final class ResearchGroupTestData {
         rg.setSchool("Test University");
         rg.setStreet("123 Main St");
         rg.setWebsite("http://example.com");
+        rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         return rg;
     }
 
@@ -53,6 +56,9 @@ public final class ResearchGroupTestData {
         if (school != null) rg.setSchool(school);
         if (street != null) rg.setStreet(street);
         if (website != null) rg.setWebsite(website);
+        if (rg.getUniversityId() == null) {
+            rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        }
         return rg;
     }
 

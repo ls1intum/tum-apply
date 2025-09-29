@@ -3,11 +3,29 @@ import { Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
-import { AuthOrchestratorService } from '../data-access/auth-orchestrator.service';
-import { AuthCardComponent } from '../../components/templates/auth-card/auth-card.component';
-import { AuthOpenOptions } from '../models/auth.model';
+import { AuthCardComponent } from '../../shared/components/templates/auth-card/auth-card.component';
+
+import { AuthOrchestratorService } from './auth-orchestrator.service';
+import { AuthOpenOptions } from './models/auth.model';
 
 @Injectable({ providedIn: 'root' })
+/**
+ * Purpose
+ * -------
+ * Provides a single, orchestrated entry point to open/close the authentication dialog (modal) and
+ * wire it to the `AuthOrchestratorService` state machine.
+ *
+ * Responsibilities
+ * ----------------
+ *  - Opens the `AuthCardComponent` inside a PrimeNG DynamicDialog.
+ *  - Bridges dialog lifecycle (open/close/destroy) to the orchestrator (`orchestrator.open/close`).
+ *  - Subscribes to dialog events (`onClose`, `onDestroy`) using Angular signals and reacts via effects.
+ *  - Ensures only one dialog instance is active at a time and cleans up effects reliably.
+ *
+ * Notes
+ * -----
+ *  - No authentication logic here; this service deals purely with dialog lifecycle and coupling to the orchestrator.
+ */
 export class AuthDialogService {
   private readonly injector = inject(Injector);
   private readonly dialogService = inject(DialogService);
@@ -79,6 +97,16 @@ export class AuthDialogService {
     );
   }
 
+  /**
+   * Closes the auth dialog (if present) and resets orchestration state.
+   *
+   * Order of operations:
+   *  1) Attempt to close the DynamicDialogRef (if it exists).
+   *  2) Null out the reference and notify the orchestrator via `orchestrator.close()`.
+   *  3) Tear down reactive effects to prevent memory leaks.
+   *
+   * This method is idempotent and safe to call multiple times.
+   */
   close(): void {
     try {
       this.ref?.close();

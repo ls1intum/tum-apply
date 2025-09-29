@@ -1,2174 +1,5138 @@
-openapi: 3.1.0
-info: {title: OpenAPI definition, version: v0}
-servers:
-- {url: 'http://localhost:8080', description: Generated server url}
-tags:
-- name: Actuator
-  description: Monitor and interact
-  externalDocs: {description: Spring Boot Actuator Web API Documentation, url: 'https://docs.spring.io/spring-boot/docs/current/actuator-api/html/'}
-paths:
-  /api/users/password:
-    put:
-      tags: [user-resource]
-      operationId: updatePassword
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/UpdatePasswordDTO'}
-        required: true
-      responses:
-        '200': {description: OK}
-  /api/users/name:
-    put:
-      tags: [user-resource]
-      operationId: updateUserName
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/UpdateUserNameDTO'}
-        required: true
-      responses:
-        '200': {description: OK}
-  /api/settings/emails:
-    get:
-      tags: [email-setting-resource]
-      operationId: getEmailSettings
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/EmailSettingDTO'}
-                uniqueItems: true
-    put:
-      tags: [email-setting-resource]
-      operationId: updateEmailSettings
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items: {$ref: '#/components/schemas/EmailSettingDTO'}
-              uniqueItems: true
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/EmailSettingDTO'}
-                uniqueItems: true
-  /api/research-groups/{id}:
-    get:
-      tags: [research-group-resource]
-      operationId: getResearchGroup
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-    put:
-      tags: [research-group-resource]
-      operationId: updateResearchGroup
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-  /api/jobs/update/{jobId}:
-    put:
-      tags: [job-resource]
-      operationId: updateJob
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/JobFormDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/JobFormDTO'}
-  /api/jobs/changeState/{jobId}:
-    put:
-      tags: [job-resource]
-      operationId: changeJobState
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: jobState
-        in: query
-        required: true
-        schema:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-      - name: shouldRejectRemainingApplications
-        in: query
-        required: false
-        schema: {type: boolean}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/JobFormDTO'}
-  /api/evaluation/applications/{applicationId}/open:
-    put:
-      tags: [application-evaluation-resource]
-      operationId: markApplicationAsInReview
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/email-templates:
-    get:
-      tags: [email-template-resource]
-      operationId: getTemplates
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOEmailTemplateOverviewDTO'}
-    put:
-      tags: [email-template-resource]
-      operationId: updateTemplate
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/EmailTemplateDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/EmailTemplateDTO'}
-    post:
-      tags: [email-template-resource]
-      operationId: createTemplate
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/EmailTemplateDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/EmailTemplateDTO'}
-  /api/comments/{commentId}:
-    put:
-      tags: [internal-comment-resource]
-      operationId: updateComment
-      parameters:
-      - name: commentId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/InternalCommentUpdateDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/InternalCommentDTO'}
-    delete:
-      tags: [internal-comment-resource]
-      operationId: deleteComment
-      parameters:
-      - name: commentId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications:
-    put:
-      tags: [application-resource]
-      operationId: updateApplication
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/UpdateApplicationDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /api/applications/{applicationId}/ratings:
-    get:
-      tags: [rating-resource]
-      operationId: getRatings
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/RatingOverviewDTO'}
-    put:
-      tags: [rating-resource]
-      operationId: updateRating
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: rating
-        in: query
-        required: false
-        schema: {type: integer, format: int32, maximum: 2, minimum: -2}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/RatingOverviewDTO'}
-  /api/applications/withdraw/{applicationId}:
-    put:
-      tags: [application-resource]
-      operationId: withdrawApplication
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications/rename-document/{documentDictionaryId}:
-    put:
-      tags: [application-resource]
-      operationId: renameDocument
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: newName
-        in: query
-        required: true
-        schema: {type: string}
-      responses:
-        '200': {description: OK}
-  /management/loggers/{name}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers-name'
-      operationId: loggerLevels
-      parameters:
-      - name: name
-        in: path
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-    post:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers-name'
-      operationId: configureLogLevel
-      parameters:
-      - name: name
-        in: path
-        required: true
-        schema: {type: string}
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: string
-              enum: [TRACE, DEBUG, INFO, WARN, ERROR, FATAL, 'OFF']
-      responses:
-        '204': {description: No Content}
-        '400': {description: Bad Request}
-  /api/me/prof-onboarding/remind:
-    post:
-      tags: [prof-onboarding-resource]
-      operationId: remindLater
-      responses:
-        '204': {description: No Content}
-  /api/me/prof-onboarding/confirm:
-    post:
-      tags: [prof-onboarding-resource]
-      operationId: confirmOnboarding
-      responses:
-        '204': {description: No Content}
-  /api/jobs/create:
-    post:
-      tags: [job-resource]
-      operationId: createJob
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/JobFormDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/JobFormDTO'}
-  /api/evaluation/applications/{applicationId}/reject:
-    post:
-      tags: [application-evaluation-resource]
-      operationId: rejectApplication
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/RejectDTO'}
-        required: true
-      responses:
-        '200': {description: OK}
-  /api/evaluation/applications/{applicationId}/accept:
-    post:
-      tags: [application-evaluation-resource]
-      operationId: acceptApplication
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/AcceptDTO'}
-        required: true
-      responses:
-        '200': {description: OK}
-  /api/auth/send-code:
-    post:
-      tags: [email-verification-resource]
-      operationId: send
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/SendCodeRequest'}
-        required: true
-      responses:
-        '200': {description: OK}
-  /api/auth/refresh:
-    post:
-      tags: [authentication-resource]
-      operationId: refresh
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/AuthSessionInfoDTO'}
-  /api/auth/otp-complete:
-    post:
-      tags: [authentication-resource]
-      operationId: otpComplete
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/OtpCompleteDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/AuthSessionInfoDTO'}
-  /api/auth/logout:
-    post:
-      tags: [authentication-resource]
-      operationId: logout
-      responses:
-        '200': {description: OK}
-  /api/auth/login:
-    post:
-      tags: [authentication-resource]
-      operationId: login
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/LoginRequestDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/AuthSessionInfoDTO'}
-  /api/applications/{applicationId}/comments:
-    get:
-      tags: [internal-comment-resource]
-      operationId: listComments
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/InternalCommentDTO'}
-    post:
-      tags: [internal-comment-resource]
-      operationId: createComment
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/InternalCommentUpdateDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/InternalCommentDTO'}
-  /api/applications/upload-documents/{applicationId}/{documentType}:
-    post:
-      tags: [application-resource]
-      summary: Upload documents
-      operationId: uploadDocuments
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: documentType
-        in: path
-        required: true
-        schema:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
-      requestBody:
-        content:
-          multipart/form-data:
-            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
-          application/json:
-            schema:
-              type: object
-              properties:
-                files:
-                  type: array
-                  items: {type: string, format: binary}
-              required: [files]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-                uniqueItems: true
-  /api/applications/create/{jobId}:
-    post:
-      tags: [application-resource]
-      operationId: createApplication
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /management:
-    get:
-      tags: [Actuator]
-      summary: Actuator root web endpoint
-      operationId: links
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-  /management/threaddump:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'threaddump'
-      operationId: threadDump
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain;charset=UTF-8:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/loggers:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers'
-      operationId: loggers
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/liquibase:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'liquibase'
-      operationId: liquibaseBeans
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/jhiopenapigroups:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'jhiopenapigroups'
-      operationId: allOpenApi
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/jhimetrics:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'jhimetrics'
-      operationId: allMetrics
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/info:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'info'
-      operationId: info
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/health:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'health'
-      operationId: health
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/env:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'env'
-      operationId: environment
-      parameters:
-      - name: pattern
-        in: query
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/env/{toMatch}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'env-toMatch'
-      operationId: environmentEntry
-      parameters:
-      - name: toMatch
-        in: path
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-  /management/configprops:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'configprops'
-      operationId: configurationProperties
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/configprops/{prefix}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'configprops-prefix'
-      operationId: configurationPropertiesWithPrefix
-      parameters:
-      - name: prefix
-        in: path
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-  /management/caches:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches'
-      operationId: caches
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-    delete:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches'
-      operationId: clearCaches
-      responses:
-        '204': {description: No Content}
-  /management/caches/{cache}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches-cache'
-      operationId: cache
-      parameters:
-      - name: cache
-        in: path
-        required: true
-        schema: {type: string}
-      - name: cacheManager
-        in: query
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-    delete:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches-cache'
-      operationId: clearCache
-      parameters:
-      - name: cache
-        in: path
-        required: true
-        schema: {type: string}
-      - name: cacheManager
-        in: query
-        schema: {type: string}
-      responses:
-        '204': {description: No Content}
-        '404': {description: Not Found}
-  /api/users/me:
-    get:
-      tags: [user-resource]
-      operationId: getCurrentUser
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/UserShortDTO'}
-  /api/research-groups:
-    get:
-      tags: [research-group-resource]
-      operationId: getAllResearchGroups
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupDTO'}
-  /api/research-groups/members:
-    get:
-      tags: [research-group-resource]
-      operationId: getResearchGroupMembers
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
-  /api/research-groups/detail/{researchGroupId}:
-    get:
-      tags: [research-group-resource]
-      operationId: getResourceGroupDetails
-      parameters:
-      - name: researchGroupId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupLargeDTO'}
-  /api/me/prof-onboarding:
-    get:
-      tags: [prof-onboarding-resource]
-      operationId: check
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ProfOnboardingDTO'}
-  /api/jobs/{jobId}:
-    get:
-      tags: [job-resource]
-      operationId: getJobById
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/JobDTO'}
-    delete:
-      tags: [job-resource]
-      operationId: deleteJob
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/jobs/professor:
-    get:
-      tags: [job-resource]
-      operationId: getJobsByProfessor
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      - name: title
-        in: query
-        required: false
-        schema: {type: string}
-      - name: state
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-      - name: sortBy
-        in: query
-        required: false
-        schema: {type: string}
-      - name: direction
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [ASC, DESC]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageCreatedJobDTO'}
-  /api/jobs/detail/{jobId}:
-    get:
-      tags: [job-resource]
-      operationId: getJobDetails
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/JobDetailDTO'}
-  /api/jobs/available:
-    get:
-      tags: [job-resource]
-      operationId: getAvailableJobs
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      - name: title
-        in: query
-        required: false
-        schema: {type: string}
-      - name: fieldOfStudies
-        in: query
-        required: false
-        schema: {type: string}
-      - name: location
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
-      - name: professorName
-        in: query
-        required: false
-        schema: {type: string}
-      - name: workload
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      - name: sortBy
-        in: query
-        required: false
-        schema: {type: string}
-      - name: direction
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [ASC, DESC]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageJobCardDTO'}
-  /api/evaluation/jobs:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getJobFilterOptions
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/JobFilterOptionDTO'}
-                uniqueItems: true
-  /api/evaluation/job-names:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getAllJobNames
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {type: string}
-  /api/evaluation/applications:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getApplicationsOverviews
-      parameters:
-      - name: offset
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      - name: limit
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: sortBy
-        in: query
-        required: false
-        schema: {type: string}
-      - name: direction
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [ASC, DESC]
-      - name: status
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
-      - name: job
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
-      - name: search
-        in: query
-        required: false
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationEvaluationOverviewListDTO'}
-  /api/evaluation/applications/{applicationId}/documents-download:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: downloadAll
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: ZIP file containing all documents
-          content:
-            application/zip:
-              schema: {type: string, format: binary}
-  /api/evaluation/application-details:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getApplicationsDetails
-      parameters:
-      - name: offset
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      - name: limit
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: sortBy
-        in: query
-        required: false
-        schema: {type: string}
-      - name: direction
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [ASC, DESC]
-      - name: status
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
-      - name: job
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
-      - name: search
-        in: query
-        required: false
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationEvaluationDetailListDTO'}
-  /api/evaluation/application-details/window:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getApplicationsDetailsWindow
-      parameters:
-      - name: applicationId
-        in: query
-        required: true
-        schema: {type: string, format: uuid}
-      - name: windowSize
-        in: query
-        required: true
-        schema: {type: integer, format: int32}
-      - name: sortBy
-        in: query
-        required: false
-        schema: {type: string}
-      - name: direction
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [ASC, DESC]
-      - name: status
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
-      - name: job
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
-      - name: search
-        in: query
-        required: false
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationEvaluationDetailListDTO'}
-  /api/email-templates/{templateId}:
-    get:
-      tags: [email-template-resource]
-      operationId: getTemplate
-      parameters:
-      - name: templateId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/EmailTemplateDTO'}
-    delete:
-      tags: [email-template-resource]
-      operationId: deleteTemplate
-      parameters:
-      - name: templateId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/documents/{documentDictionaryId}:
-    get:
-      tags: [document-resource]
-      operationId: downloadDocument
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {type: string, format: binary}
-  /api/applications/{applicationId}:
-    get:
-      tags: [application-resource]
-      operationId: getApplicationById
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-    delete:
-      tags: [application-resource]
-      operationId: deleteApplication
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications/{applicationId}/detail:
-    get:
-      tags: [application-resource]
-      operationId: getApplicationForDetailPage
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationDetailDTO'}
-  /api/applications/pages:
-    get:
-      tags: [application-resource]
-      operationId: getApplicationPages
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, default: 25, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, default: 0, minimum: 0}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationOverviewDTO'}
-  /api/applications/pages/length/{applicantId}:
-    get:
-      tags: [application-resource]
-      operationId: getApplicationPagesLength
-      parameters:
-      - name: applicantId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {type: integer, format: int64}
-  /api/applications/job/{jobId}:
-    get:
-      tags: [application-resource]
-      operationId: getAllApplicationsOfJob
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-                uniqueItems: true
-  /api/applications/getDocumentIds/{applicationId}:
-    get:
-      tags: [application-resource]
-      operationId: getDocumentDictionaryIds
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
-  /api/applications/applicant/{applicantId}:
-    get:
-      tags: [application-resource]
-      operationId: getAllApplicationsOfApplicant
-      parameters:
-      - name: applicantId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-                uniqueItems: true
-  /api/research-groups/members/{userId}:
-    delete:
-      tags: [research-group-resource]
-      operationId: removeMemberFromResearchGroup
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications/delete-document/{documentDictionaryId}:
-    delete:
-      tags: [application-resource]
-      operationId: deleteDocumentFromApplication
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications/batch-delete-document/{applicationId}/{documentType}:
-    delete:
-      tags: [application-resource]
-      operationId: deleteDocumentBatchByTypeFromApplication
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: documentType
-        in: path
-        required: true
-        schema:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
-      responses:
-        '200': {description: OK}
-components:
-  schemas:
-    UpdatePasswordDTO:
-      type: object
-      properties:
-        newPassword: {type: string, minLength: 1}
-      required: [newPassword]
-    UpdateUserNameDTO:
-      type: object
-      properties:
-        firstName: {type: string}
-        lastName: {type: string}
-      required: [firstName, lastName]
-    EmailSettingDTO:
-      type: object
-      properties:
-        emailType:
-          type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
-        enabled: {type: boolean}
-    ResearchGroupDTO:
-      type: object
-      properties:
-        name: {type: string, minLength: 1}
-        abbreviation: {type: string}
-        head: {type: string, minLength: 1}
-        email: {type: string, format: email}
-        website: {type: string}
-        school: {type: string}
-        description: {type: string}
-        defaultFieldOfStudies: {type: string}
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
-      required: [head, name]
-    JobFormDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        title: {type: string}
-        researchArea: {type: string}
-        fieldOfStudies: {type: string}
-        supervisingProfessor: {type: string, format: uuid}
-        location:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
-        startDate: {type: string, format: date}
-        endDate: {type: string, format: date}
-        workload: {type: integer, format: int32}
-        contractDuration: {type: integer, format: int32}
-        fundingType:
-          type: string
-          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-            GOVERNMENT_FUNDED, RESEARCH_GRANT]
-        description: {type: string}
-        tasks: {type: string}
-        requirements: {type: string}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-      required: [fieldOfStudies, location, state, supervisingProfessor, title]
-    EmailTemplateDTO:
-      type: object
-      properties:
-        emailTemplateId: {type: string, format: uuid}
-        templateName: {type: string}
-        emailType:
-          type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
-        isDefault: {type: boolean}
-        english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
-        german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
-    EmailTemplateTranslationDTO:
-      type: object
-      properties:
-        subject: {type: string}
-        body: {type: string}
-    InternalCommentUpdateDTO:
-      type: object
-      properties:
-        message: {type: string, maxLength: 500, minLength: 0}
-      required: [message]
-    InternalCommentDTO:
-      type: object
-      properties:
-        commentId: {type: string, format: uuid}
-        author: {type: string}
-        message: {type: string}
-        createdAt: {type: string, format: date-time}
-        canEdit: {type: boolean}
-    ApplicantDTO:
-      type: object
-      properties:
-        user: {$ref: '#/components/schemas/UserDTO'}
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
-        country: {type: string}
-        bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
-        bachelorGrade: {type: string}
-        bachelorUniversity: {type: string}
-        masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
-        masterGrade: {type: string}
-        masterUniversity: {type: string}
-      required: [user]
-    ResearchGroupShortDTO:
-      type: object
-      properties:
-        researchGroupId: {type: string, format: uuid}
-        name: {type: string}
-    UpdateApplicationDTO:
-      type: object
-      properties:
-        applicationId: {type: string, format: uuid}
-        applicant: {$ref: '#/components/schemas/ApplicantDTO'}
-        desiredDate: {type: string, format: date}
-        applicationState:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-        projects: {type: string}
-        specialSkills: {type: string}
-        motivation: {type: string}
-      required: [applicant, applicationId, applicationState]
-    UserDTO:
-      type: object
-      properties:
-        userId: {type: string, format: uuid}
-        email: {type: string}
-        avatar: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        gender: {type: string}
-        nationality: {type: string}
-        birthday: {type: string, format: date}
-        phoneNumber: {type: string}
-        website: {type: string}
-        linkedinUrl: {type: string}
-        selectedLanguage: {type: string}
-        researchGroupShortDTO: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
-    ApplicationForApplicantDTO:
-      type: object
-      properties:
-        applicationId: {type: string, format: uuid}
-        applicant: {$ref: '#/components/schemas/ApplicantDTO'}
-        job: {$ref: '#/components/schemas/JobCardDTO'}
-        applicationState:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-        desiredDate: {type: string, format: date}
-        projects: {type: string}
-        specialSkills: {type: string}
-        motivation: {type: string}
-        customFields:
-          type: array
-          items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
-          uniqueItems: true
-      required: [applicationState, job]
-    CustomFieldAnswerDTO:
-      type: object
-      properties:
-        customFieldAnswerId: {type: string, format: uuid}
-        customField: {$ref: '#/components/schemas/CustomFieldDTO'}
-        answers:
-          type: array
-          items: {type: string}
-        documents:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentDTO'}
-    CustomFieldDTO: {}
-    DocumentDTO: {}
-    JobCardDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        title: {type: string}
-        fieldOfStudies: {type: string}
-        location: {type: string}
-        professorName: {type: string}
-        applicationId: {type: string, format: uuid}
-        applicationState:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-        workload: {type: integer, format: int32}
-        startDate: {type: string, format: date}
-        relativeTimeEnglish: {type: string}
-        relativeTimeGerman: {type: string}
-      required: [fieldOfStudies, jobId, location, professorName, title]
-    RatingDTO:
-      type: object
-      properties:
-        from: {type: string}
-        rating: {type: integer, format: int32}
-    RatingOverviewDTO:
-      type: object
-      properties:
-        currentUserRating: {type: integer, format: int32}
-        otherRatings:
-          type: array
-          items: {$ref: '#/components/schemas/RatingDTO'}
-          uniqueItems: true
-    RejectDTO:
-      type: object
-      properties:
-        reason:
-          type: string
-          enum: [JOB_FILLED, JOB_OUTDATED, FAILED_REQUIREMENTS, OTHER_REASON]
-        notifyApplicant: {type: boolean}
-      required: [reason]
-    AcceptDTO:
-      type: object
-      properties:
-        message: {type: string, maxLength: 3000, minLength: 0}
-        notifyApplicant: {type: boolean}
-        closeJob: {type: boolean}
-    SendCodeRequest:
-      type: object
-      properties:
-        email: {type: string, format: email, minLength: 1}
-        registration: {type: boolean}
-      required: [email]
-    AuthSessionInfoDTO:
-      type: object
-      properties:
-        expiresIn: {type: integer, format: int64}
-        refreshExpiresIn: {type: integer, format: int64}
-    OtpCompleteDTO:
-      type: object
-      properties:
-        email: {type: string, format: email, minLength: 1}
-        code: {type: string, minLength: 1}
-        purpose:
-          type: string
-          enum: [LOGIN, REGISTER]
-        profile: {$ref: '#/components/schemas/UserProfileDTO'}
-      required: [code, email, purpose]
-    UserProfileDTO:
-      type: object
-      properties:
-        firstName: {type: string}
-        lastName: {type: string}
-    LoginRequestDTO:
-      type: object
-      properties:
-        email: {type: string, format: email, minLength: 1}
-        password: {type: string, minLength: 1}
-      required: [email, password]
-    MultipartUploadRequest:
-      type: object
-      properties:
-        files:
-          type: array
-          format: binary
-          description: List of documents to upload
-          items: {type: string, format: binary}
-    DocumentInformationHolderDTO:
-      type: object
-      properties:
-        id: {type: string, format: uuid}
-        size: {type: integer, format: int64}
-        name: {type: string}
-      required: [id, size]
-    Link:
-      type: object
-      properties:
-        href: {type: string}
-        templated: {type: boolean}
-    UserShortDTO:
-      type: object
-      properties:
-        userId: {type: string, format: uuid}
-        email: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        roles:
-          type: array
-          items:
-            type: string
-            enum: [APPLICANT, PROFESSOR, ADMIN]
-        researchGroup: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
-    PageResponseDTOResearchGroupDTO:
-      type: object
-      properties:
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/ResearchGroupDTO'}
-        totalElements: {type: integer, format: int64}
-    PageResponseDTOUserShortDTO:
-      type: object
-      properties:
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/UserShortDTO'}
-        totalElements: {type: integer, format: int64}
-    ResearchGroupLargeDTO:
-      type: object
-      properties:
-        description: {type: string}
-        email: {type: string}
-        website: {type: string}
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
-    ProfOnboardingDTO:
-      type: object
-      properties:
-        show: {type: boolean}
-    JobDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        title: {type: string}
-        researchArea: {type: string}
-        fieldOfStudies: {type: string}
-        supervisingProfessor: {type: string, format: uuid}
-        location:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
-        startDate: {type: string, format: date}
-        endDate: {type: string, format: date}
-        workload: {type: integer, format: int32}
-        contractDuration: {type: integer, format: int32}
-        fundingType:
-          type: string
-          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-            GOVERNMENT_FUNDED, RESEARCH_GRANT]
-        description: {type: string}
-        tasks: {type: string}
-        requirements: {type: string}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-      required: [jobId, state, supervisingProfessor, title]
-    CreatedJobDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        avatar: {type: string}
-        professorName: {type: string}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-        title: {type: string}
-        startDate: {type: string, format: date}
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-      required: [jobId, title]
-    PageCreatedJobDTO:
-      type: object
-      properties:
-        totalElements: {type: integer, format: int64}
-        totalPages: {type: integer, format: int32}
-        first: {type: boolean}
-        last: {type: boolean}
-        size: {type: integer, format: int32}
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/CreatedJobDTO'}
-        number: {type: integer, format: int32}
-        sort: {$ref: '#/components/schemas/SortObject'}
-        numberOfElements: {type: integer, format: int32}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
-        empty: {type: boolean}
-    PageableObject:
-      type: object
-      properties:
-        offset: {type: integer, format: int64}
-        sort: {$ref: '#/components/schemas/SortObject'}
-        paged: {type: boolean}
-        pageNumber: {type: integer, format: int32}
-        pageSize: {type: integer, format: int32}
-        unpaged: {type: boolean}
-    SortObject:
-      type: object
-      properties:
-        empty: {type: boolean}
-        sorted: {type: boolean}
-        unsorted: {type: boolean}
-    Applicant:
-      type: object
-      properties:
-        userId: {type: string, format: uuid}
-        user: {$ref: '#/components/schemas/User'}
-        submittedApplications:
-          type: array
-          items: {$ref: '#/components/schemas/Application'}
-          uniqueItems: true
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
-        country: {type: string}
-        bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
-        bachelorGrade: {type: string}
-        bachelorUniversity: {type: string}
-        masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
-        masterGrade: {type: string}
-        masterUniversity: {type: string}
-    Application:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        applicationId: {type: string, format: uuid}
-        applicationReview: {$ref: '#/components/schemas/ApplicationReview'}
-        applicant: {$ref: '#/components/schemas/Applicant'}
-        job: {}
-        state:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-        desiredStartDate: {type: string, format: date}
-        projects: {type: string}
-        specialSkills: {type: string}
-        motivation: {type: string}
-        customFieldAnswers:
-          type: array
-          items: {$ref: '#/components/schemas/CustomFieldAnswer'}
-          uniqueItems: true
-        internalComments:
-          type: array
-          items: {$ref: '#/components/schemas/InternalComment'}
-          uniqueItems: true
-    ApplicationReview:
-      type: object
-      properties:
-        applicationReviewId: {type: string, format: uuid}
-        application: {$ref: '#/components/schemas/Application'}
-        reviewedBy: {$ref: '#/components/schemas/User'}
-        reason: {type: string}
-        reviewedAt: {type: string, format: date-time}
-    CustomField:
-      type: object
-      properties:
-        customFieldId: {type: string, format: uuid}
-        job: {$ref: '#/components/schemas/Job'}
-        question: {type: string}
-        customFieldType:
-          type: string
-          enum: [FREE_TEXT, SINGLE_CHOICE, MULTIPLE_CHOICE, FILE_UPLOAD]
-        answerOptions:
-          type: array
-          items: {type: string}
-        sequence: {type: integer, format: int32}
-        customFieldAnswers:
-          type: array
-          items: {$ref: '#/components/schemas/CustomFieldAnswer'}
-          uniqueItems: true
-        required: {type: boolean}
-    CustomFieldAnswer:
-      type: object
-      properties:
-        customFieldAnswerId: {type: string, format: uuid}
-        customField: {$ref: '#/components/schemas/CustomField'}
-        application: {$ref: '#/components/schemas/Application'}
-        answers:
-          type: array
-          items: {type: string}
-    EmailSetting:
-      type: object
-      properties:
-        emailSettingId: {type: string, format: uuid}
-        user: {$ref: '#/components/schemas/User'}
-        emailType:
-          type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
-        enabled: {type: boolean}
-    InternalComment:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        internalCommentId: {type: string, format: uuid}
-        application: {}
-        createdBy: {$ref: '#/components/schemas/User'}
-        message: {type: string}
-    Job:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        jobId: {type: string, format: uuid}
-        supervisingProfessor: {$ref: '#/components/schemas/User'}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        fieldOfStudies: {type: string}
-        researchArea: {type: string}
-        location:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
-        workload: {type: integer, format: int32}
-        contractDuration: {type: integer, format: int32}
-        fundingType:
-          type: string
-          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-            GOVERNMENT_FUNDED, RESEARCH_GRANT]
-        title: {type: string}
-        description: {type: string}
-        tasks: {type: string}
-        requirements: {type: string}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-        endDate: {type: string, format: date}
-        startDate: {type: string, format: date}
-        customFields:
-          type: array
-          items: {$ref: '#/components/schemas/CustomField'}
-        applications:
-          type: array
-          items: {$ref: '#/components/schemas/Application'}
-          uniqueItems: true
-    JobDetailDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        supervisingProfessorName: {type: string}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        title: {type: string}
-        fieldOfStudies: {type: string}
-        researchArea: {type: string}
-        location: {type: string}
-        workload: {type: integer, format: int32}
-        contractDuration: {type: integer, format: int32}
-        fundingType: {type: string}
-        description: {type: string}
-        tasks: {type: string}
-        requirements: {type: string}
-        startDate: {type: string, format: date}
-        endDate: {type: string, format: date}
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-        applicationId: {type: string, format: uuid}
-        applicationState:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-      required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
-        title]
-    ResearchGroup:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        researchGroupId: {type: string, format: uuid}
-        head: {type: string}
-        name: {type: string}
-        abbreviation: {type: string}
-        email: {type: string}
-        website: {type: string}
-        school: {type: string}
-        description: {type: string}
-        defaultFieldOfStudies: {type: string}
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
-        userRoles:
-          type: array
-          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
-          uniqueItems: true
-    User:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        userId: {type: string, format: uuid}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        email: {type: string}
-        avatar: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        gender: {type: string}
-        nationality: {type: string}
-        birthday: {type: string, format: date}
-        phoneNumber: {type: string}
-        website: {type: string}
-        linkedinUrl: {type: string}
-        selectedLanguage: {type: string}
-        postedJobs:
-          type: array
-          items: {$ref: '#/components/schemas/Job'}
-          uniqueItems: true
-        researchGroupRoles:
-          type: array
-          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
-          uniqueItems: true
-        emailSettings:
-          type: array
-          items: {$ref: '#/components/schemas/EmailSetting'}
-          uniqueItems: true
-    UserResearchGroupRole:
-      type: object
-      properties:
-        userResearchGroupRoleId: {type: string, format: uuid}
-        user: {$ref: '#/components/schemas/User'}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        role:
-          type: string
-          enum: [APPLICANT, PROFESSOR, ADMIN]
-    PageJobCardDTO:
-      type: object
-      properties:
-        totalElements: {type: integer, format: int64}
-        totalPages: {type: integer, format: int32}
-        first: {type: boolean}
-        last: {type: boolean}
-        size: {type: integer, format: int32}
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/JobCardDTO'}
-        number: {type: integer, format: int32}
-        sort: {$ref: '#/components/schemas/SortObject'}
-        numberOfElements: {type: integer, format: int32}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
-        empty: {type: boolean}
-    JobFilterOptionDTO:
-      type: object
-      properties:
-        jobName: {type: string}
-        jobId: {type: string, format: uuid}
-    ApplicationEvaluationOverviewDTO:
-      type: object
-      properties:
-        applicationId: {type: string, format: uuid}
-        avatar: {type: string}
-        name: {type: string}
-        state:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-        jobName: {type: string}
-        appliedAt: {type: string, format: date-time}
-    ApplicationEvaluationOverviewListDTO:
-      type: object
-      properties:
-        applications:
-          type: array
-          items: {$ref: '#/components/schemas/ApplicationEvaluationOverviewDTO'}
-        totalRecords: {type: integer, format: int64}
-    ApplicantForApplicationDetailDTO:
-      type: object
-      properties:
-        user: {$ref: '#/components/schemas/UserForApplicationDetailDTO'}
-        bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
-        bachelorGrade: {type: string}
-        bachelorUniversity: {type: string}
-        masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
-        masterGrade: {type: string}
-        masterUniversity: {type: string}
-      required: [user]
-    ApplicationDetailDTO:
-      type: object
-      properties:
-        applicationId: {type: string, format: uuid}
-        applicant: {$ref: '#/components/schemas/ApplicantForApplicationDetailDTO'}
-        applicationState:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-        jobTitle: {type: string}
-        desiredDate: {type: string, format: date}
-        projects: {type: string}
-        specialSkills: {type: string}
-        motivation: {type: string}
-      required: [applicationId, applicationState]
-    ApplicationEvaluationDetailDTO:
-      type: object
-      properties:
-        applicationDetailDTO: {$ref: '#/components/schemas/ApplicationDetailDTO'}
-        professor: {$ref: '#/components/schemas/ProfessorDTO'}
-        jobId: {type: string, format: uuid}
-        appliedAt: {type: string, format: date-time}
-      required: [applicationDetailDTO]
-    ApplicationEvaluationDetailListDTO:
-      type: object
-      properties:
-        applications:
-          type: array
-          items: {$ref: '#/components/schemas/ApplicationEvaluationDetailDTO'}
-        totalRecords: {type: integer, format: int64}
-        currentIndex: {type: integer, format: int32}
-        windowIndex: {type: integer, format: int32}
-    ProfessorDTO:
-      type: object
-      properties:
-        firstName: {type: string}
-        lastName: {type: string}
-        email: {type: string}
-        researchGroupName: {type: string}
-        researchGroupWebsite: {type: string}
-    UserForApplicationDetailDTO:
-      type: object
-      properties:
-        userId: {type: string, format: uuid}
-        email: {type: string}
-        avatar: {type: string}
-        name: {type: string}
-        gender: {type: string}
-        nationality: {type: string}
-        preferredLanguage: {type: string}
-        birthday: {type: string, format: date}
-        phoneNumber: {type: string}
-        website: {type: string}
-        linkedinUrl: {type: string}
-      required: [userId]
-    EmailTemplateOverviewDTO:
-      type: object
-      properties:
-        emailTemplateId: {type: string, format: uuid}
-        templateName: {type: string}
-        emailType:
-          type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
-        firstName: {type: string}
-        lastName: {type: string}
-        isDefault: {type: boolean}
-    PageResponseDTOEmailTemplateOverviewDTO:
-      type: object
-      properties:
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
-        totalElements: {type: integer, format: int64}
-    ApplicationOverviewDTO:
-      type: object
-      properties:
-        applicationId: {type: string, format: uuid}
-        jobId: {type: string, format: uuid}
-        jobTitle: {type: string}
-        researchGroup: {type: string}
-        applicationState:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
-        timeSinceCreation: {type: string}
-    ApplicationDocumentIdsDTO:
-      type: object
-      properties:
-        bachelorDocumentDictionaryIds:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-          uniqueItems: true
-        masterDocumentDictionaryIds:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-          uniqueItems: true
-        referenceDocumentDictionaryIds:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-          uniqueItems: true
-        cvDocumentDictionaryId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Actuator",
+      "description": "Monitor and interact",
+      "externalDocs": {
+        "description": "Spring Boot Actuator Web API Documentation",
+        "url": "https://docs.spring.io/spring-boot/docs/current/actuator-api/html/"
+      }
+    }
+  ],
+  "paths": {
+    "/api/users/password": {
+      "put": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "updatePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/users/name": {
+      "put": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "updateUserName",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserNameDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/settings/emails": {
+      "get": {
+        "tags": [
+          "email-setting-resource"
+        ],
+        "operationId": "getEmailSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmailSettingDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "email-setting-resource"
+        ],
+        "operationId": "updateEmailSettings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EmailSettingDTO"
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmailSettingDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/{id}": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "updateResearchGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchGroupDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/update/{jobId}": {
+      "put": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "updateJob",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobFormDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/changeState/{jobId}": {
+      "put": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "changeJobState",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "jobState",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "shouldRejectRemainingApplications",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications/{applicationId}/open": {
+      "put": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "markApplicationAsInReview",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/email-templates": {
+      "get": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "getTemplates",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOEmailTemplateOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "updateTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailTemplateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTemplateDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "createTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailTemplateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTemplateDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comments/{commentId}": {
+      "put": {
+        "tags": [
+          "internal-comment-resource"
+        ],
+        "operationId": "updateComment",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternalCommentUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalCommentDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "internal-comment-resource"
+        ],
+        "operationId": "deleteComment",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications": {
+      "put": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "updateApplication",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApplicationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{applicationId}/ratings": {
+      "get": {
+        "tags": [
+          "rating-resource"
+        ],
+        "operationId": "getRatings",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "rating-resource"
+        ],
+        "operationId": "updateRating",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rating",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "maximum": 2,
+              "minimum": -2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingOverviewDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/withdraw/{applicationId}": {
+      "put": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "withdrawApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/rename-document/{documentDictionaryId}": {
+      "put": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "renameDocument",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "newName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/management/loggers/{name}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027loggers-name\u0027",
+        "operationId": "loggerLevels",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027loggers-name\u0027",
+        "operationId": "configureLogLevel",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL",
+                  "OFF"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/me/prof-onboarding/remind": {
+      "post": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "remindLater",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/prof-onboarding/confirm": {
+      "post": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "confirmOnboarding",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/jobs/create": {
+      "post": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "createJob",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobFormDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFormDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications/{applicationId}/reject": {
+      "post": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "rejectApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications/{applicationId}/accept": {
+      "post": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "acceptApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/send-code": {
+      "post": {
+        "tags": [
+          "email-verification-resource"
+        ],
+        "operationId": "send",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/otp-complete": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "otpComplete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpCompleteDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "authentication-resource"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionInfoDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{applicationId}/comments": {
+      "get": {
+        "tags": [
+          "internal-comment-resource"
+        ],
+        "operationId": "listComments",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InternalCommentDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "internal-comment-resource"
+        ],
+        "operationId": "createComment",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternalCommentUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalCommentDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/upload-documents/{applicationId}/{documentType}": {
+      "post": {
+        "tags": [
+          "application-resource"
+        ],
+        "summary": "Upload documents",
+        "operationId": "uploadDocuments",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BACHELOR_TRANSCRIPT",
+                "MASTER_TRANSCRIPT",
+                "REFERENCE",
+                "CV",
+                "CUSTOM"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipartUploadRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentInformationHolderDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/create/{jobId}": {
+      "post": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "createApplication",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/research-groups": {
+      "post": {
+        "tags": [
+          "admin-resource"
+        ],
+        "operationId": "createResearchGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchGroupCreationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroup"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/research-groups/provision": {
+      "post": {
+        "tags": [
+          "admin-resource"
+        ],
+        "operationId": "provisionResearchGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchGroupProvisionDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroup"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator root web endpoint",
+        "operationId": "links",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Link"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/threaddump": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027threaddump\u0027",
+        "operationId": "threadDump",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain;charset\u003dUTF-8": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/loggers": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027loggers\u0027",
+        "operationId": "loggers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/liquibase": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027liquibase\u0027",
+        "operationId": "liquibaseBeans",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/jhiopenapigroups": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027jhiopenapigroups\u0027",
+        "operationId": "allOpenApi",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/jhimetrics": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027jhimetrics\u0027",
+        "operationId": "allMetrics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/info": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027info\u0027",
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/health": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027health\u0027",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/env": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027env\u0027",
+        "operationId": "environment",
+        "parameters": [
+          {
+            "name": "pattern",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/env/{toMatch}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027env-toMatch\u0027",
+        "operationId": "environmentEntry",
+        "parameters": [
+          {
+            "name": "toMatch",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/management/configprops": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027configprops\u0027",
+        "operationId": "configurationProperties",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/management/configprops/{prefix}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027configprops-prefix\u0027",
+        "operationId": "configurationPropertiesWithPrefix",
+        "parameters": [
+          {
+            "name": "prefix",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/management/caches": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches\u0027",
+        "operationId": "caches",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches\u0027",
+        "operationId": "clearCaches",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/management/caches/{cache}": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches-cache\u0027",
+        "operationId": "cache",
+        "parameters": [
+          {
+            "name": "cache",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cacheManager",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.spring-boot.actuator.v3+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.spring-boot.actuator.v2+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Actuator web endpoint \u0027caches-cache\u0027",
+        "operationId": "clearCache",
+        "parameters": [
+          {
+            "name": "cache",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cacheManager",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "user-resource"
+        ],
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserShortDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getAllResearchGroups",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/members": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResearchGroupMembers",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOUserShortDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/detail/{researchGroupId}": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getResourceGroupDetails",
+        "parameters": [
+          {
+            "name": "researchGroupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupLargeDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/prof-onboarding": {
+      "get": {
+        "tags": [
+          "prof-onboarding-resource"
+        ],
+        "operationId": "check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfOnboardingDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/{jobId}": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getJobById",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "deleteJob",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/jobs/professor": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getJobsByProfessor",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "APPLICANT_FOUND"
+              ]
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCreatedJobDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/detail/{jobId}": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getJobDetails",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetailDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/available": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getAvailableJobs",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldOfStudies",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GARCHING",
+                "GARCHING_HOCHBRUECK",
+                "HEILBRONN",
+                "MUNICH",
+                "STRAUBING",
+                "WEIHENSTEPHAN",
+                "SINGAPORE"
+              ]
+            }
+          },
+          {
+            "name": "professorName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workload",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageJobCardDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/jobs": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getJobFilterOptions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobFilterOptionDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/job-names": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getAllJobNames",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getApplicationsOverviews",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationEvaluationOverviewListDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/applications/{applicationId}/documents-download": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "downloadAll",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ZIP file containing all documents",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/application-details": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getApplicationsDetails",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationEvaluationDetailListDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluation/application-details/window": {
+      "get": {
+        "tags": [
+          "application-evaluation-resource"
+        ],
+        "operationId": "getApplicationsDetailsWindow",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "windowSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationEvaluationDetailListDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/email-templates/{templateId}": {
+      "get": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "getTemplate",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTemplateDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "email-template-resource"
+        ],
+        "operationId": "deleteTemplate",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/documents/{documentDictionaryId}": {
+      "get": {
+        "tags": [
+          "document-resource"
+        ],
+        "operationId": "downloadDocument",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{applicationId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationById",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/{applicationId}/detail": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationForDetailPage",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDetailDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/pages": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationPages",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 25,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationOverviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/pages/length/{applicantId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getApplicationPagesLength",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/job/{jobId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getAllApplicationsOfJob",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/getDocumentIds/{applicationId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getDocumentDictionaryIds",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDocumentIdsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/applicant/{applicantId}": {
+      "get": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "getAllApplicationsOfApplicant",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationForApplicantDTO"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/members/{userId}": {
+      "delete": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "removeMemberFromResearchGroup",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/delete-document/{documentDictionaryId}": {
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteDocumentFromApplication",
+        "parameters": [
+          {
+            "name": "documentDictionaryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/batch-delete-document/{applicationId}/{documentType}": {
+      "delete": {
+        "tags": [
+          "application-resource"
+        ],
+        "operationId": "deleteDocumentBatchByTypeFromApplication",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "documentType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BACHELOR_TRANSCRIPT",
+                "MASTER_TRANSCRIPT",
+                "REFERENCE",
+                "CV",
+                "CUSTOM"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdatePasswordDTO": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
+      "UpdateUserNameDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName"
+        ]
+      },
+      "EmailSettingDTO": {
+        "type": "object",
+        "properties": {
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "head",
+          "name"
+        ]
+      },
+      "JobFormDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "supervisingProfessor": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "fieldOfStudies",
+          "location",
+          "state",
+          "supervisingProfessor",
+          "title"
+        ]
+      },
+      "EmailTemplateDTO": {
+        "type": "object",
+        "properties": {
+          "emailTemplateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "templateName": {
+            "type": "string"
+          },
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "english": {
+            "$ref": "#/components/schemas/EmailTemplateTranslationDTO"
+          },
+          "german": {
+            "$ref": "#/components/schemas/EmailTemplateTranslationDTO"
+          }
+        }
+      },
+      "EmailTemplateTranslationDTO": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      },
+      "InternalCommentUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "InternalCommentDTO": {
+        "type": "object",
+        "properties": {
+          "commentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "author": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "canEdit": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ApplicantDTO": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserDTO"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "bachelorDegreeName": {
+            "type": "string"
+          },
+          "bachelorGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "bachelorGrade": {
+            "type": "string"
+          },
+          "bachelorUniversity": {
+            "type": "string"
+          },
+          "masterDegreeName": {
+            "type": "string"
+          },
+          "masterGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "masterGrade": {
+            "type": "string"
+          },
+          "masterUniversity": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "ResearchGroupShortDTO": {
+        "type": "object",
+        "properties": {
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/ApplicantDTO"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "applicant",
+          "applicationId",
+          "applicationState"
+        ]
+      },
+      "UserDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "researchGroupShortDTO": {
+            "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
+      },
+      "ApplicationForApplicantDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/ApplicantDTO"
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobCardDTO"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswerDTO"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "applicationState",
+          "job"
+        ]
+      },
+      "CustomFieldAnswerDTO": {
+        "type": "object",
+        "properties": {
+          "customFieldAnswerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customField": {
+            "$ref": "#/components/schemas/CustomFieldDTO"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentDTO"
+            }
+          }
+        }
+      },
+      "CustomFieldDTO": {},
+      "DocumentDTO": {},
+      "JobCardDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "professorName": {
+            "type": "string"
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "relativeTimeEnglish": {
+            "type": "string"
+          },
+          "relativeTimeGerman": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fieldOfStudies",
+          "jobId",
+          "location",
+          "professorName",
+          "title"
+        ]
+      },
+      "RatingDTO": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RatingOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "currentUserRating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "otherRatings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RatingDTO"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "RejectDTO": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "JOB_FILLED",
+              "JOB_OUTDATED",
+              "FAILED_REQUIREMENTS",
+              "OTHER_REASON"
+            ]
+          },
+          "notifyApplicant": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "AcceptDTO": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 0
+          },
+          "notifyApplicant": {
+            "type": "boolean"
+          },
+          "closeJob": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SendCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "registration": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AuthSessionInfoDTO": {
+        "type": "object",
+        "properties": {
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "refreshExpiresIn": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "profileRequired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OtpCompleteDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "LOGIN",
+              "REGISTER"
+            ]
+          },
+          "profile": {
+            "$ref": "#/components/schemas/UserProfileDTO"
+          }
+        },
+        "required": [
+          "code",
+          "email",
+          "purpose"
+        ]
+      },
+      "UserProfileDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequestDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "MultipartUploadRequest": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "format": "binary",
+            "description": "List of documents to upload",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "DocumentInformationHolderDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "size"
+        ]
+      },
+      "ResearchGroupCreationDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 3
+          },
+          "headName": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 3
+          },
+          "universityId": {
+            "type": "string",
+            "maxLength": 7,
+            "minLength": 3
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "headName",
+          "name",
+          "universityId"
+        ]
+      },
+      "Applicant": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "submittedApplications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            },
+            "uniqueItems": true
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "bachelorDegreeName": {
+            "type": "string"
+          },
+          "bachelorGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "bachelorGrade": {
+            "type": "string"
+          },
+          "bachelorUniversity": {
+            "type": "string"
+          },
+          "masterDegreeName": {
+            "type": "string"
+          },
+          "masterGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "masterGrade": {
+            "type": "string"
+          },
+          "masterUniversity": {
+            "type": "string"
+          }
+        }
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationReview": {
+            "$ref": "#/components/schemas/ApplicationReview"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/Applicant"
+          },
+          "job": {},
+          "state": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "desiredStartDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "customFieldAnswers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswer"
+            },
+            "uniqueItems": true
+          },
+          "internalComments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalComment"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "ApplicationReview": {
+        "type": "object",
+        "properties": {
+          "applicationReviewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "reviewedBy": {
+            "$ref": "#/components/schemas/User"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "customFieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "question": {
+            "type": "string"
+          },
+          "customFieldType": {
+            "type": "string",
+            "enum": [
+              "FREE_TEXT",
+              "SINGLE_CHOICE",
+              "MULTIPLE_CHOICE",
+              "FILE_UPLOAD"
+            ]
+          },
+          "answerOptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customFieldAnswers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldAnswer"
+            },
+            "uniqueItems": true
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CustomFieldAnswer": {
+        "type": "object",
+        "properties": {
+          "customFieldAnswerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customField": {
+            "$ref": "#/components/schemas/CustomField"
+          },
+          "application": {
+            "$ref": "#/components/schemas/Application"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "EmailSetting": {
+        "type": "object",
+        "properties": {
+          "emailSettingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InternalComment": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "internalCommentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "application": {},
+          "createdBy": {
+            "$ref": "#/components/schemas/User"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supervisingProfessor": {
+            "$ref": "#/components/schemas/User"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "ResearchGroup": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "head": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "universityId": {
+            "type": "string"
+          },
+          "userRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          },
+          "selectedLanguage": {
+            "type": "string"
+          },
+          "universityId": {
+            "type": "string"
+          },
+          "postedJobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            },
+            "uniqueItems": true
+          },
+          "researchGroupRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResearchGroupRole"
+            },
+            "uniqueItems": true
+          },
+          "emailSettings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailSetting"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "UserResearchGroupRole": {
+        "type": "object",
+        "properties": {
+          "userResearchGroupRoleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "APPLICANT",
+              "PROFESSOR",
+              "ADMIN"
+            ]
+          }
+        }
+      },
+      "ResearchGroupProvisionDTO": {
+        "type": "object",
+        "properties": {
+          "universityId": {
+            "type": "string",
+            "maxLength": 7,
+            "minLength": 3
+          },
+          "researchGroupId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "universityId"
+        ]
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "templated": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UserShortDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "APPLICANT",
+                "PROFESSOR",
+                "ADMIN"
+              ]
+            }
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroupShortDTO"
+          }
+        }
+      },
+      "PageResponseDTOResearchGroupDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchGroupDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PageResponseDTOUserShortDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserShortDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ResearchGroupLargeDTO": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        }
+      },
+      "ProfOnboardingDTO": {
+        "type": "object",
+        "properties": {
+          "show": {
+            "type": "boolean"
+          }
+        }
+      },
+      "JobDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "supervisingProfessor": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "location": {
+            "type": "string",
+            "enum": [
+              "GARCHING",
+              "GARCHING_HOCHBRUECK",
+              "HEILBRONN",
+              "MUNICH",
+              "STRAUBING",
+              "WEIHENSTEPHAN",
+              "SINGAPORE"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string",
+            "enum": [
+              "FULLY_FUNDED",
+              "PARTIALLY_FUNDED",
+              "SCHOLARSHIP",
+              "SELF_FUNDED",
+              "INDUSTRY_SPONSORED",
+              "GOVERNMENT_FUNDED",
+              "RESEARCH_GRANT"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "jobId",
+          "state",
+          "supervisingProfessor",
+          "title"
+        ]
+      },
+      "CreatedJobDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "professorName": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "jobId",
+          "title"
+        ]
+      },
+      "PageCreatedJobDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreatedJobDTO"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "unsorted": {
+            "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "JobDetailDTO": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supervisingProfessorName": {
+            "type": "string"
+          },
+          "researchGroup": {
+            "$ref": "#/components/schemas/ResearchGroup"
+          },
+          "title": {
+            "type": "string"
+          },
+          "fieldOfStudies": {
+            "type": "string"
+          },
+          "researchArea": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "workload": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fundingType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "APPLICANT_FOUND"
+            ]
+          },
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          }
+        },
+        "required": [
+          "createdAt",
+          "jobId",
+          "lastModifiedAt",
+          "researchGroup",
+          "supervisingProfessorName",
+          "title"
+        ]
+      },
+      "PageJobCardDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobCardDTO"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "JobFilterOptionDTO": {
+        "type": "object",
+        "properties": {
+          "jobName": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ApplicationEvaluationOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "jobName": {
+            "type": "string"
+          },
+          "appliedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ApplicationEvaluationOverviewListDTO": {
+        "type": "object",
+        "properties": {
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationEvaluationOverviewDTO"
+            }
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApplicantForApplicationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserForApplicationDetailDTO"
+          },
+          "bachelorDegreeName": {
+            "type": "string"
+          },
+          "bachelorGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "bachelorGrade": {
+            "type": "string"
+          },
+          "bachelorUniversity": {
+            "type": "string"
+          },
+          "masterDegreeName": {
+            "type": "string"
+          },
+          "masterGradingScale": {
+            "type": "string",
+            "enum": [
+              "ONE_TO_FOUR"
+            ]
+          },
+          "masterGrade": {
+            "type": "string"
+          },
+          "masterUniversity": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "ApplicationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/ApplicantForApplicationDetailDTO"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "jobTitle": {
+            "type": "string"
+          },
+          "desiredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "string"
+          },
+          "specialSkills": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "applicationId",
+          "applicationState"
+        ]
+      },
+      "ApplicationEvaluationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "applicationDetailDTO": {
+            "$ref": "#/components/schemas/ApplicationDetailDTO"
+          },
+          "professor": {
+            "$ref": "#/components/schemas/ProfessorDTO"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "appliedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "applicationDetailDTO"
+        ]
+      },
+      "ApplicationEvaluationDetailListDTO": {
+        "type": "object",
+        "properties": {
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationEvaluationDetailDTO"
+            }
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "currentIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "windowIndex": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ProfessorDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "researchGroupName": {
+            "type": "string"
+          },
+          "researchGroupWebsite": {
+            "type": "string"
+          }
+        }
+      },
+      "UserForApplicationDetailDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "preferredLanguage": {
+            "type": "string"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "linkedinUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "EmailTemplateOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "emailTemplateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "templateName": {
+            "type": "string"
+          },
+          "emailType": {
+            "type": "string",
+            "enum": [
+              "APPLICATION_ACCEPTED",
+              "APPLICATION_REJECTED",
+              "APPLICATION_RECEIVED",
+              "APPLICATION_SENT",
+              "APPLICATION_WITHDRAWN"
+            ]
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageResponseDTOEmailTemplateOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailTemplateOverviewDTO"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApplicationOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "jobTitle": {
+            "type": "string"
+          },
+          "researchGroup": {
+            "type": "string"
+          },
+          "applicationState": {
+            "type": "string",
+            "enum": [
+              "SAVED",
+              "SENT",
+              "ACCEPTED",
+              "IN_REVIEW",
+              "REJECTED",
+              "WITHDRAWN",
+              "JOB_CLOSED"
+            ]
+          },
+          "timeSinceCreation": {
+            "type": "string"
+          }
+        }
+      },
+      "ApplicationDocumentIdsDTO": {
+        "type": "object",
+        "properties": {
+          "bachelorDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
+            },
+            "uniqueItems": true
+          },
+          "masterDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
+            },
+            "uniqueItems": true
+          },
+          "referenceDocumentDictionaryIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentInformationHolderDTO"
+            },
+            "uniqueItems": true
+          },
+          "cvDocumentDictionaryId": {
+            "$ref": "#/components/schemas/DocumentInformationHolderDTO"
+          }
+        }
+      }
+    }
+  }
+}

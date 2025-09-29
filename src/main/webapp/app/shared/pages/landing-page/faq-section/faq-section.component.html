@@ -1,12 +1,18 @@
 <div class="faq-container">
   <h2 class="title" jhiTranslate="landingPage.faq.headline"></h2>
   <p class="subtitle" jhiTranslate="landingPage.faq.subheadline"></p>
+  <div class="sub-subtitle-container">
+    <a href="https://ls1intum.github.io/tum-apply" target="_blank" class="sub-subtitle-link">
+      <span jhiTranslate="landingPage.faq.sub-subheadline"></span>
+      <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" />
+    </a>
+  </div>
   <p-accordion [value]="0">
     @for (tab of tabs; track tab.value) {
       <p-accordion-panel [value]="tab.value">
         <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
         <p-accordion-content>
-          {{ tab.content | translate }}
+          <div [innerHTML]="tab.content | translate"></div>
         </p-accordion-content>
       </p-accordion-panel>
     }

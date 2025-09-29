@@ -46,6 +46,7 @@
     "faq": {
       "headline": "Häufig gestellte Fragen",
       "subheadline": "Finde Antworten auf häufige Fragen zur Nutzung von TUMApply",
+      "sub-subheadline": "Bei weiteren Fragen wende dich bitte an die <a href='https://ls1intum.github.io/tum-apply' class='external-link'><strong>Dokumentation</strong></a>",
       "questions": {
         "login": {
           "title": "Wie melde ich mich bei TUMApply an?",

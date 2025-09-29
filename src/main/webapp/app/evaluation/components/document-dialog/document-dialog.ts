@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 
-import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { DocumentViewerComponent } from '../../../shared/components/atoms/document-viewer/document-viewer.component';
 import { DocumentHolder } from '../document-section/document-section';
 import TranslateDirective from '../../../shared/language/translate.directive';
 
