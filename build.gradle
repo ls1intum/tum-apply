@@ -96,6 +96,7 @@ test {
 
 // Disabled for now as it is not compatible with Java 25 yet
 // TODO: enable again once Java 25 is compatible
+// https://github.com/andygoossens/gradle-modernizer-plugin/issues/10
 /*
 modernizer {
   failOnViolations = false
