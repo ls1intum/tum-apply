@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { FilterMultiselect } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -31,6 +31,10 @@ describe('FilterMultiselect', () => {
       imports: [FilterMultiselect],
       providers: [provideFontAwesomeTesting(), provideTranslateMock()],
     }).compileComponents();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should initialize with empty selected values and closed dropdown', () => {
