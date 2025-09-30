@@ -65,6 +65,27 @@ describe('FilterMultiselect', () => {
     expect(filteredOptions).toEqual(['Option A']);
   });
 
+  it('should maintain sort order (selected first) even with active search', () => {
+    const filterFixture = createFilterMultiselectFixture();
+
+    filterFixture.componentInstance.selectedValues.set(['Option B', 'Option D']);
+    filterFixture.componentInstance.searchTerm.set('option');
+
+    const sortedOptions = filterFixture.componentInstance.sortedOptions();
+
+    expect(sortedOptions).toEqual([
+      { label: 'Option B', value: 'Option B', selected: true },
+      { label: 'Option D', value: 'Option D', selected: true },
+      { label: 'Option A', value: 'Option A', selected: false },
+      { label: 'Option C', value: 'Option C', selected: false },
+    ]);
+
+    expect(sortedOptions[0].selected).toBe(true);
+    expect(sortedOptions[1].selected).toBe(true);
+    expect(sortedOptions[2].selected).toBe(false);
+    expect(sortedOptions[3].selected).toBe(false);
+  });
+
   it('should filter options case-insensitively', () => {
     const filterFixture = createFilterMultiselectFixture();
 
