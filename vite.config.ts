@@ -18,6 +18,16 @@ export default defineConfig(({ mode }) => ({
       reportsDirectory: 'build/test-results/lcov-report',
       provider: 'v8',
       all: false,
+      lines: 80,
+      functions: 80,
+      branches: 70,
+      statements: 80,
+      exclude: [
+        '**/node_modules/**',
+        '**/generated/**',
+        '**/*.spec.ts',
+        '**/*.test.ts',
+      ],
     },
   },
   define: {
