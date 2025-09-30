@@ -106,7 +106,9 @@
         "minLength": "Dieses Feld muss mindestens {{min}} Zeichen lang sein.",
         "maxLength": "Dieses Feld darf höchstens {{max}} Zeichen lang sein.",
         "pattern": "Ungültiges Format.",
-        "email": "Ungültige Email-Adresse."
+        "email": "Ungültige Email-Adresse.",
+        "min": "Dieses Feld muss mind. {{min}} sein.",
+        "max": "Dieses Feld darf max. {{max}} sein."
       }
     },
     "editor": {

@@ -106,7 +106,9 @@
         "minLength": "This field is required to be at least {{ min }} characters.",
         "maxLength": "This field cannot be longer than {{ max }} characters.",
         "pattern": "Invalid format.",
-        "email": "Invalid email."
+        "email": "Invalid email.",
+        "min": "This field should be at least {{ min }}.",
+        "max": "This field cannot be more than {{ max }}."
       }
     },
     "editor": {
