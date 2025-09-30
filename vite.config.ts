@@ -5,7 +5,9 @@ import path from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(({ mode }) => ({
-  plugins: [angular(), tsconfigPaths()],
+  plugins: [angular(), tsconfigPaths({
+    projects: ['tsconfig.app.json', 'tsconfig.spec.json']
+  }),],
   test: {
     globals: true,
     setupFiles: ['src/test/webapp/test-setup.ts'],
@@ -18,6 +20,17 @@ export default defineConfig(({ mode }) => ({
       reportsDirectory: 'build/test-results/lcov-report',
       provider: 'v8',
       all: false,
+      exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts'],
+      check: {
+        global: {
+          //TODO: set this to true after we have client tests for all modules
+          all: false,
+          lines: 80,
+          functions: 80,
+          branches: 70,
+          statements: 80,
+        },
+      },
     },
   },
   define: {
