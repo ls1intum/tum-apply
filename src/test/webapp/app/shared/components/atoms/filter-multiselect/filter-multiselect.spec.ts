@@ -48,6 +48,14 @@ describe('FilterMultiselect', () => {
     expect(filteredOptions).toEqual(mockFilterOptions);
   });
 
+  it('clears search term when opening the dropdown', () => {
+    const fx = createFilterMultiselectFixture();
+    fx.componentInstance.searchTerm.set('abc');
+    fx.componentInstance.toggleDropdown();
+    expect(fx.componentInstance.isOpen()).toBe(true);
+    expect(fx.componentInstance.searchTerm()).toBe('');
+  });
+
   it('should filter options based on search term', () => {
     const filterFixture = createFilterMultiselectFixture();
 
