@@ -1,6 +1,9 @@
 package de.tum.cit.aet.job.web.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -81,11 +84,11 @@ class JobResourceTest {
 
         @Test
         void getAvailableJobsOnlyPublishedOnes() {
-                PageResponse<JobCardDTO> page = api.getAndReadOk(
+                PageResponse<JobCardDTO> page = api.getAndRead(
                                 "/api/jobs/available",
                                 Map.of("pageNumber", "0", "pageSize", "10"),
                                 new TypeReference<>() {
-                                });
+                                }, 200);
 
                 assertThat(page.totalElements()).isEqualTo(1);
                 assertThat(page.content()).hasSize(1);
@@ -103,10 +106,10 @@ class JobResourceTest {
 
         @Test
         void getAvailableJobsInvalidPaginationReturnsError() {
-                assertThatThrownBy(() -> api.getAndReadOk("/api/jobs/available",
+                api.getAndRead("/api/jobs/available",
                                 Map.of("pageNumber", "-1", "pageSize", "10"),
                                 new TypeReference<>() {
-                                })).isInstanceOf(AssertionError.class);
+                                }, 400);
         }
 
         @Test
@@ -120,7 +123,7 @@ class JobResourceTest {
                                 "Build ML pipelines", "data cleaning and model training",
                                 "Python and TensorFlow", JobState.PUBLISHED);
 
-                JobFormDTO returned = api.postAndReadOk("/api/jobs/create", payload, JobFormDTO.class);
+                JobFormDTO returned = api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 200);
 
                 assertThat(returned.jobId()).isNotNull();
                 assertThat(returned)
@@ -181,8 +184,7 @@ class JobResourceTest {
                                 entry("requirements", "req"),
                                 entry("state", "PUBLISHED"));
 
-                assertThatThrownBy(() -> api.postAndReadOk("/api/jobs/create", invalid, JobFormDTO.class))
-                                .isInstanceOf(AssertionError.class);
+                api.postAndRead("/api/jobs/create", invalid, JobFormDTO.class, 400);
 
                 assertThat(jobRepository.count()).isEqualTo(before);
         }
@@ -201,8 +203,8 @@ class JobResourceTest {
                                 "Updated Description", "Updated Tasks",
                                 "Updated Requirements", JobState.DRAFT);
 
-                JobFormDTO returnedJob = api.putAndReadOk("/api/jobs/update/" + job.getJobId(), updatedPayload,
-                                JobFormDTO.class);
+                JobFormDTO returnedJob = api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload,
+                                JobFormDTO.class, 200);
 
                 assertThat(returnedJob).usingRecursiveComparison().isEqualTo(updatedPayload);
                 Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
@@ -234,10 +236,8 @@ class JobResourceTest {
                                 20, 6, FundingType.FULLY_FUNDED,
                                 "desc", "tasks", "req", JobState.DRAFT);
 
-                assertThatThrownBy(
-                                () -> api.putAndReadOk("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload,
-                                                JobFormDTO.class))
-                                .isInstanceOf(AssertionError.class);
+                api.putAndRead("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload,
+                                                JobFormDTO.class, 404);
         }
 
         @Test
@@ -246,7 +246,7 @@ class JobResourceTest {
                 Job job = jobRepository.findAll().getFirst();
                 assertThat(jobRepository.existsById(job.getJobId())).isTrue();
 
-                api.deleteAndReadOk("/api/jobs/" + job.getJobId(), null, Void.class);
+                api.deleteAndRead("/api/jobs/" + job.getJobId(), null, Void.class, 204);
 
                 assertThat(jobRepository.existsById(job.getJobId())).isFalse();
         }
@@ -254,8 +254,7 @@ class JobResourceTest {
         @Test
         @WithMockUser(roles = "PROFESSOR")
         void deleteJobNonexistentJobThrowsNotFound() {
-                assertThatThrownBy(() -> api.deleteAndReadOk("/api/jobs/" + UUID.randomUUID(), null, Void.class))
-                                .isInstanceOf(AssertionError.class);
+                api.deleteAndRead("/api/jobs/" + UUID.randomUUID(), null, Void.class, 404);
         }
 
         @Test
@@ -264,11 +263,11 @@ class JobResourceTest {
                 Job job = jobRepository.findAll().getFirst();
                 assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
 
-                JobFormDTO returnedJob = api.putAndReadOk(
+                JobFormDTO returnedJob = api.putAndRead(
                                 "/api/jobs/changeState/" + job.getJobId()
                                                 + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
                                 null,
-                                JobFormDTO.class);
+                                JobFormDTO.class, 200);
 
                 assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
 
@@ -279,11 +278,11 @@ class JobResourceTest {
         @Test
         @WithMockUser(roles = "PROFESSOR")
         void changeJobStateNonExistantJobThrowsNotFound() {
-                assertThatThrownBy(() -> api.putAndReadOk(
+                api.putAndRead(
                                 "/api/jobs/changeState/" + UUID.randomUUID()
                                                 + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
                                 null,
-                                JobFormDTO.class)).isInstanceOf(AssertionError.class);
+                                JobFormDTO.class, 404);
         }
 
         @Test
@@ -291,23 +290,22 @@ class JobResourceTest {
         void getJobsByProfessor_returnsJobsCreatedByProfessor() {
                 PageResponse<CreatedJobDTO> page = api
                                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                                .getAndReadOk("/api/jobs/professor",
+                                .getAndRead("/api/jobs/professor",
                                                 Map.of("pageNumber", "0", "pageSize", "10"),
                                                 new TypeReference<>() {
-                                                });
+                                                }, 200);
                 assertThat(page.totalElements()).isEqualTo(2);
         }
 
         @Test
         @WithMockUser(roles = "PROFESSOR")
         void getJobsByProfessorInvalidPaginationReturnsError() {
-                assertThatThrownBy(() -> api
-                                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                                .getAndReadOk("/api/jobs/professor",
-                                                Map.of("pageNumber", "-1", "pageSize", "10"),
-                                                new TypeReference<>() {
-                                                }))
-                                .isInstanceOf(AssertionError.class);
+                api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/jobs/professor",
+                                Map.of("pageNumber", "-1", "pageSize", "10"),
+                                new TypeReference<>() {
+                                }, 400);
         }
 
         @Test
@@ -315,7 +313,7 @@ class JobResourceTest {
         void getJobByIdReturnsCorrectJob() {
                 Job job = jobRepository.findAll().getFirst();
 
-                JobDTO returnedJob = api.getAndReadOk("/api/jobs/" + job.getJobId(), null, JobDTO.class);
+                JobDTO returnedJob = api.getAndRead("/api/jobs/" + job.getJobId(), null, JobDTO.class, 200);
 
                 assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
                 assertThat(returnedJob.title()).isEqualTo(job.getTitle());
@@ -337,16 +335,15 @@ class JobResourceTest {
         @Test
         @WithMockUser(roles = "PROFESSOR")
         void getJobByIdNonExistentJobThrowsNotFound() {
-                assertThatThrownBy(() -> api.getAndReadOk("/api/jobs/" + UUID.randomUUID(), null, JobDTO.class))
-                                .isInstanceOf(AssertionError.class);
+                api.getAndRead("/api/jobs/" + UUID.randomUUID(), null, JobDTO.class, 404);
         }
 
         @Test
         void getJobDetailsReturnsCorrectJobDetails() {
                 Job job = jobRepository.findAll().getFirst();
 
-                JobDetailDTO returnedJob = api.getAndReadOk("/api/jobs/detail/" + job.getJobId(), null,
-                                JobDetailDTO.class);
+                JobDetailDTO returnedJob = api.getAndRead("/api/jobs/detail/" + job.getJobId(), null,
+                                JobDetailDTO.class, 200);
 
                 assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
                 assertThat(returnedJob.supervisingProfessorName()).isEqualTo(
@@ -373,8 +370,8 @@ class JobResourceTest {
 
         @Test
         void getJobDetailsNonExistantIdThrowsNotFound() {
-                assertThatThrownBy(() -> api.getAndReadOk("/api/jobs/detail/" + UUID.randomUUID(),
+                api.getAndRead("/api/jobs/detail/" + UUID.randomUUID(),
                                 null,
-                                JobDetailDTO.class)).isInstanceOf(AssertionError.class);
+                                JobDetailDTO.class, 404);
         }
 }

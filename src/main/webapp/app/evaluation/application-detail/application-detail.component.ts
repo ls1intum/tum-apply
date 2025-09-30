@@ -8,11 +8,19 @@ import { DividerModule } from 'primeng/divider';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
+import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
+import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { AcceptDTO } from 'app/generated/model/acceptDTO';
+import { RejectDTO } from 'app/generated/model/rejectDTO';
+import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicationEvaluationDetailListDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 
-import { ApplicationCarouselComponent } from '../../shared/components/organisms/application-carousel/application-carousel.component';
 import { EvaluationService } from '../service/evaluation.service';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
-import { ReviewDialogComponent } from '../../shared/components/molecules/review-dialog/review-dialog.component';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../components/section/section';
 import { SubSection } from '../components/sub-section/sub-section';
@@ -20,15 +28,9 @@ import { DescriptionList } from '../components/description-list/description-list
 import { LinkList } from '../components/link-list/link-list';
 import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
-import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationEvaluationDetailDTO } from '../../generated/model/applicationEvaluationDetailDTO';
-import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
-import { AcceptDTO } from '../../generated/model/acceptDTO';
-import { RejectDTO } from '../../generated/model/rejectDTO';
-import { ApplicationEvaluationDetailListDTO } from '../../generated/model/applicationEvaluationDetailListDTO';
-import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
+import { CommentSection } from '../components/comment-section/comment-section';
+import { RatingSection } from '../components/rating-section/rating-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -50,6 +52,8 @@ const WINDOW_SIZE = 7;
     LinkList,
     Prose,
     DocumentSection,
+    CommentSection,
+    RatingSection,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
@@ -63,7 +67,7 @@ export class ApplicationDetailComponent {
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
-  sortBy = signal<string>('createdAt');
+  sortBy = signal<string>('appliedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly selectedJobFilters = signal<string[]>([]);
@@ -88,6 +92,10 @@ export class ApplicationDetailComponent {
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
     return state !== 'ACCEPTED' && state !== 'REJECTED';
+  });
+
+  protected currentApplicationId = computed(() => {
+    return this.currentApplication()?.applicationDetailDTO.applicationId;
   });
 
   protected readonly WINDOW_SIZE = WINDOW_SIZE;
