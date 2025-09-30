@@ -198,34 +198,33 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.isOpen()).toBe(false);
   });
 
-  it('should toggle option selection and emit change', () => {
+  it('should toggle option selection and emit change in correct order', () => {
     const filterFixture = createFilterMultiselectFixture();
 
     const filterChangeSpy = vi.spyOn(filterFixture.componentInstance.filterChange, 'emit');
 
     filterFixture.componentInstance.toggleOption('Option A');
-
     expect(filterFixture.componentInstance.selectedValues()).toEqual(['Option A']);
-    expect(filterChangeSpy).toHaveBeenCalledWith({
+    expect(filterChangeSpy).toHaveBeenNthCalledWith(1, {
       filterLabel: 'Test Filter',
       selectedValues: ['Option A'],
     });
 
     filterFixture.componentInstance.toggleOption('Option B');
-
     expect(filterFixture.componentInstance.selectedValues()).toEqual(['Option A', 'Option B']);
-    expect(filterChangeSpy).toHaveBeenCalledWith({
+    expect(filterChangeSpy).toHaveBeenNthCalledWith(2, {
       filterLabel: 'Test Filter',
       selectedValues: ['Option A', 'Option B'],
     });
 
     filterFixture.componentInstance.toggleOption('Option A');
-
     expect(filterFixture.componentInstance.selectedValues()).toEqual(['Option B']);
-    expect(filterChangeSpy).toHaveBeenCalledWith({
+    expect(filterChangeSpy).toHaveBeenNthCalledWith(3, {
       filterLabel: 'Test Filter',
       selectedValues: ['Option B'],
     });
+
+    expect(filterChangeSpy).toHaveBeenCalledTimes(3);
   });
 
   it('should handle search input change', () => {
