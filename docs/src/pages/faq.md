@@ -1,3 +1,4 @@
+<!--
 # Frequently Asked Questions (FAQ)
 
 This FAQ page provides quick answers to the most common questions from users of TUMApply. If you need more help with
@@ -82,3 +83,4 @@ No. You can browse all open positions without an account, but as soon as you wan
 See [Applicants – Account Creation](./docs/docs/applicants/account-creation)
 
 </details>
+-->
