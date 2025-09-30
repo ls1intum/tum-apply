@@ -64,3 +64,6 @@ VALUES
         ('11111111-0000-0000-0000-000000000028', NULL, 'claire.lambert@tumapply.local', NULL, 'Claire', 'Lambert', 'female', 'fr', '1988-08-08', '+33 1 456789', 'https://clairelambert.fr', 'https://linkedin.com/in/clairelambert123', 'en', NULL),
         ('11111111-0000-0000-0000-000000000029', NULL, 'matteo.rinaldi@tumapply.local', NULL, 'Matteo', 'Rinaldi', 'male', 'nl', '1991-07-07', '+39 02 123456', 'https://matteorinaldi.it', 'https://linkedin.com/in/matteorinaldi123', 'en', NULL),
         ('11111111-0000-0000-0000-000000000030', NULL, 'noor.ahmed@tumapply.local', NULL, 'Noor', 'Ahmed', 'female', 'fr', '1995-02-02', '+92 42 1234567', 'https://noorahmed.pk', 'https://linkedin.com/in/noorahmed123', 'en', NULL);
+
+REPLACE INTO users (user_id, research_group_id, email, avatar, first_name, last_name, gender, nationality, birthday, phone_number, website, linkedin_url, selected_language, university_id)
+VALUES ('11111111-0000-0000-0000-000000000031', NULL, 'john.beno@tumapply.local', NULL, 'John', 'Beno', 'male', 'de', '2002-04-29', '+49 12345678', 'https://beno.de', 'https://linkedin.com/in/beno', 'en', 'test07');

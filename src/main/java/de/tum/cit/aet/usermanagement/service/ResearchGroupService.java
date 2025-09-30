@@ -244,6 +244,8 @@ public class ResearchGroupService {
         headUser.setResearchGroup(saved);
         userRepository.save(headUser);
 
+        // Remove existing APPLICANT role before assigning PROFESSOR
+        userResearchGroupRoleRepository.deleteByUserAndRole(headUser, UserRole.APPLICANT);
         var existingMapping = userResearchGroupRoleRepository.findByUserAndResearchGroup(headUser, saved);
         if (existingMapping.isEmpty()) {
             UserResearchGroupRole mapping = new UserResearchGroupRole();
@@ -297,6 +299,8 @@ public class ResearchGroupService {
         }
         String roleOutcome = "unchanged";
 
+        // Remove existing APPLICANT role before assigning PROFESSOR
+        userResearchGroupRoleRepository.deleteByUserAndRole(user, UserRole.APPLICANT);
         var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
             UserResearchGroupRole mapping = new UserResearchGroupRole();
@@ -324,3 +328,4 @@ public class ResearchGroupService {
     }
 
 }
+
