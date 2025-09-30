@@ -67,10 +67,10 @@ public class ResearchGroupResourceTest {
     public void getResearchGroupDetailsExistingIdReturnsDetails() {
         ResearchGroupLargeDTO result = api
                 .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
-                .getAndReadOk(
+                .getAndRead(
                         "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
                         Map.of(),
-                        ResearchGroupLargeDTO.class);
+                        ResearchGroupLargeDTO.class, 200);
 
         assertThat(researchGroupUser.getResearchGroup().getResearchGroupId())
                 .isEqualTo(researchGroup.getResearchGroupId());
@@ -85,22 +85,21 @@ public class ResearchGroupResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsNoIdAndNonExistingIdThrowsException() {
-        assertThatThrownBy(() -> api.getAndReadOk(
+        api.getAndRead(
                 "/api/research-groups/detail/", Map.of(),
-                ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
+                ResearchGroupLargeDTO.class, 500);
         UUID nonExistingId = UUID.randomUUID();
-        assertThatThrownBy(() -> api.getAndReadOk(
+        api.getAndRead(
                 "/api/research-groups/detail/" + nonExistingId, Map.of(),
-                ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
+                ResearchGroupLargeDTO.class, 403);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsOtherUsersGroupReturnsForbidden() {
-        assertThatThrownBy(() -> api.getAndReadOk(
+        api.getAndRead(
                 "/api/research-groups/detail/" + secondResearchGroup.getResearchGroupId(),
                 Map.of(),
-                ResearchGroupLargeDTO.class))
-                .isInstanceOf(AssertionError.class);
+                ResearchGroupLargeDTO.class, 403);
     }
 }
