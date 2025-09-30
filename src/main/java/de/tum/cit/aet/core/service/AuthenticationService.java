@@ -27,6 +27,7 @@ public class AuthenticationService {
         String email = jwt.getClaimAsString("email");
         String givenName = jwt.getClaimAsString("given_name");
         String familyName = jwt.getClaimAsString("family_name");
-        return userService.upsertUser(jwt.getSubject(), email, givenName, familyName);
+        String universityId = jwt.getClaimAsString("preferred_username");
+        return userService.upsertUser(jwt.getSubject(), email, givenName, familyName, universityId);
     }
 }

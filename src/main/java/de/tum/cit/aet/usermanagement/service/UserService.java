@@ -60,10 +60,16 @@ public class UserService {
      */
     @Transactional
     public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
+        return upsertUser(keycloakUserId, email, firstName, lastName, null);
+    }
+
+    @Transactional
+    public User upsertUser(String keycloakUserId, String email, String firstName, String lastName, String universityId) {
         UUID userId = UUID.fromString(keycloakUserId);
         final String normalizedEmail = StringUtil.normalize(email, true);
         final String normalizedFirstName = StringUtil.normalize(firstName, false);
         final String normalizedLastName = StringUtil.normalize(lastName, false);
+        final String normalizedUniversityId = StringUtil.normalize(universityId, false);
 
         Optional<User> existingUser = userRepository.findWithResearchGroupRolesByUserId(userId);
         final boolean isNewUser = existingUser.isEmpty();
@@ -76,6 +82,11 @@ public class UserService {
         updated |= setIfPresentAndChanged(user::getEmail, user::setEmail, normalizedEmail);
         updated |= setIfPresentAndChanged(user::getFirstName, user::setFirstName, normalizedFirstName);
         updated |= setIfPresentAndChanged(user::getLastName, user::setLastName, normalizedLastName);
+
+        if (normalizedUniversityId != null && !normalizedUniversityId.isBlank() && user.getUniversityId() == null) {
+            user.setUniversityId(normalizedUniversityId);
+            updated = true;
+        }
 
         if (updated) {
             user = userRepository.save(user);
