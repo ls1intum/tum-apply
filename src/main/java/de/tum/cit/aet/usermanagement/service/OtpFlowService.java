@@ -24,8 +24,12 @@ public class OtpFlowService {
     private final KeycloakAuthenticationService keycloakAuthService;
     private final EmailVerificationService emailVerificationService;
 
-    public OtpFlowService(UserService userService, KeycloakUserService keycloakUserService,
-                          KeycloakAuthenticationService keycloakAuthService, EmailVerificationService emailVerificationService) {
+    public OtpFlowService(
+        UserService userService,
+        KeycloakUserService keycloakUserService,
+        KeycloakAuthenticationService keycloakAuthService,
+        EmailVerificationService emailVerificationService
+    ) {
         this.userService = userService;
         this.keycloakUserService = keycloakUserService;
         this.keycloakAuthService = keycloakAuthService;

@@ -58,12 +58,11 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
-
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         UUID userId = currentUserService.getUserId();
 
-        if(userId == null) {
+        if (userId == null) {
             Application application = new Application();
             application.setJob(job);
             application.setState(ApplicationState.SAVED);

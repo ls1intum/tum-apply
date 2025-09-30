@@ -19,12 +19,11 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.Set;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class JobService {
@@ -86,7 +85,7 @@ public class JobService {
         Job job = assertCanManageJob(jobId);
         job.setState(targetState);
 
-        if (targetState==JobState.CLOSED) {
+        if (targetState == JobState.CLOSED) {
             // send emails stating that the job has been closed, to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
 
@@ -94,7 +93,7 @@ public class JobService {
             applicationRepository.updateApplicationsForJob(jobId, targetState.getValue());
 
             notifyApplicants(applicationsToNotify, RejectReason.JOB_OUTDATED);
-        } else if (targetState==JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
+        } else if (targetState == JobState.APPLICANT_FOUND && shouldRejectRemainingApplications) {
             // send rejection emails to all applicants whose application was 'SENT' or 'IN_REVIEW'
             Set<Application> applicationsToNotify = applicationRepository.findApplicantsToNotify(jobId);
 
@@ -171,9 +170,9 @@ public class JobService {
         UUID applicationId = null;
         ApplicationState applicationState = null;
 
-        if (userId!=null) {
+        if (userId != null) {
             Application application = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
-            if (application!=null) {
+            if (application != null) {
                 applicationId = application.getApplicationId();
                 applicationState = application.getState();
             }
@@ -214,7 +213,7 @@ public class JobService {
     public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO, SortDTO sortDTO) {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
-        if (sortDTO.sortBy()!=null && sortDTO.sortBy().equals("professorName")) {
+        if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
@@ -291,10 +290,8 @@ public class JobService {
      * @return the job entity if the user can manage it
      */
     private Job assertCanManageJob(UUID jobId) {
-        Job job = jobRepository.findById(jobId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
-
 }
