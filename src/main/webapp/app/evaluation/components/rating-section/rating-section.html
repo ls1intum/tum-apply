@@ -1,0 +1,21 @@
+<div class="flex flex-col gap-5">
+  <p class="text-sm" jhiTranslate="evaluation.details.ratingDescription"></p>
+
+  <jhi-sub-section class="w-ful flex gap-8" titleKey="evaluation.details.ratingYourRating">
+    <p class="text-xs" jhiTranslate="evaluation.details.ratingYourRatingLabel"></p>
+    <div class="mt-2">
+      <jhi-rating [(rating)]="myRating" [selectable]="true" />
+    </div>
+  </jhi-sub-section>
+
+  @if (otherRatings().length > 0) {
+    <jhi-sub-section class="flex gap-8" titleKey="evaluation.details.ratingOtherRatings">
+      @for (otherRating of otherRatings(); track otherRating.from) {
+        <div class="flex flex-col gap-2">
+          <p class="text-sm">{{ otherRating.from }}</p>
+          <jhi-rating [rating]="otherRating.rating" />
+        </div>
+      }
+    </jhi-sub-section>
+  }
+</div>
