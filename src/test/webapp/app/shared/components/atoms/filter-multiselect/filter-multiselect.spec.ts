@@ -231,6 +231,14 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.isOpen()).toBe(false);
   });
 
+  it('should not close dropdown on clicks inside component', () => {
+    const fx = createFilterMultiselectFixture();
+    fx.componentInstance.isOpen.set(true);
+    const insideEl = fx.nativeElement.querySelector('.filter-multiselect') ?? fx.nativeElement;
+    fx.componentInstance.onDocumentClick({ target: insideEl } as unknown as Event);
+    expect(fx.componentInstance.isOpen()).toBe(true);
+  });
+
   it('should handle empty filter options', () => {
     const filterFixture = createFilterMultiselectFixture({
       filterOptions: [],
