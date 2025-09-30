@@ -5,9 +5,12 @@ import path from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(({ mode }) => ({
-  plugins: [angular(), tsconfigPaths({
-    projects: ['tsconfig.app.json', 'tsconfig.spec.json']
-  }),],
+  plugins: [
+    angular(),
+    tsconfigPaths({
+      projects: ['tsconfig.app.json', 'tsconfig.spec.json'],
+    }),
+  ],
   test: {
     globals: true,
     setupFiles: ['src/test/webapp/test-setup.ts'],
