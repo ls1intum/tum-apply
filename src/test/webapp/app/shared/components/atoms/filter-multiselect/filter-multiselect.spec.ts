@@ -249,4 +249,33 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.hasUnselectedItems()).toBe(false);
     expect(filterFixture.componentInstance.totalCount()).toBe(0);
   });
+
+  it('should show no results message when search term yields no matches', () => {
+    const filterFixture = createFilterMultiselectFixture();
+
+    filterFixture.componentInstance.isOpen.set(true);
+    filterFixture.componentInstance.searchTerm.set('nonexistent option');
+    filterFixture.detectChanges();
+
+    expect(filterFixture.componentInstance.filteredOptions()).toEqual([]);
+
+    const noResultsElement = filterFixture.nativeElement.querySelector('.no-results');
+    expect(noResultsElement).toBeTruthy();
+    expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
+  });
+
+  it('should show no results message when filter options array is empty', () => {
+    const filterFixture = createFilterMultiselectFixture({
+      filterOptions: [],
+    });
+
+    filterFixture.componentInstance.isOpen.set(true);
+    filterFixture.detectChanges();
+
+    expect(filterFixture.componentInstance.filteredOptions()).toEqual([]);
+
+    const noResultsElement = filterFixture.nativeElement.querySelector('.no-results');
+    expect(noResultsElement).toBeTruthy();
+    expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
+  });
 });
