@@ -38,4 +38,9 @@ describe('InformationSectionComponent', () => {
     expect(firstCard.link).toBe('https://www.tum.de/en/about-tum/university-of-excellence');
     expect(firstCard.text).toBe('landingPage.informationSection.tiles.1');
   });
+
+  it('should render one information card per entry in the cards array', () => {
+    const cards = nativeElement.querySelectorAll('jhi-information-card');
+    expect(cards.length).toBe(component.cards.length);
+  });
 });

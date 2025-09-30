@@ -4,9 +4,8 @@ import { Component, Input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 import { ApplicationStepComponent } from 'app/shared/pages/landing-page/application-steps-section/application-step/application-step/application-step.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
+import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
@@ -24,8 +23,8 @@ describe('ApplicationStepComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationStepComponent, TranslateModule, FontAwesomeModule],
-      providers: [provideFontAwesomeTesting()],
+      imports: [ApplicationStepComponent],
+      providers: [provideFontAwesomeTesting(), provideTranslateMock()],
     })
       .overrideComponent(ApplicationStepComponent, {
         remove: {
