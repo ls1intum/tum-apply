@@ -182,6 +182,7 @@
 .ql-editor {
   background: transparent;
   color: var(--p-text-primary);
+  overflow-wrap: anywhere;
 }
 
 .ql-editor.ql-blank {
