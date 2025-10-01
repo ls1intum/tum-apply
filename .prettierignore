@@ -3,7 +3,6 @@ package-lock.json
 .git
 renovate.json
 src/main/webapp/app/generated
-*.java
 openapi
 docs/**
 

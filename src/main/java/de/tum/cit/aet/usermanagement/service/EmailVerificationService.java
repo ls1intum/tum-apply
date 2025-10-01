@@ -10,16 +10,15 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * This service is responsible for generating, sending, and verifying OTP codes
@@ -27,6 +26,7 @@ import java.util.UUID;
  */
 @Service
 public class EmailVerificationService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailVerificationService.class);
 
     private final EmailVerificationOtpRepository emailVerificationOtpRepository;
@@ -126,7 +126,8 @@ public class EmailVerificationService {
         String normalizedEmail = StringUtil.normalize(body.email(), true);
         Instant now = Instant.now();
 
-        Optional<EmailVerificationOtp> activeOtp = emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(normalizedEmail, now);
+        Optional<EmailVerificationOtp> activeOtp =
+            emailVerificationOtpRepository.findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(normalizedEmail, now);
         if (activeOtp.isEmpty()) {
             LOGGER.info("OTP check: no active code - emailId={} ip={}", emailLogId(normalizedEmail), ip);
             throw new EmailVerificationFailedException();
@@ -135,8 +136,7 @@ public class EmailVerificationService {
         EmailVerificationOtp otp = activeOtp.get();
 
         String cleanedCode = body.code() == null ? "" : body.code().trim();
-        String expected = OtpUtil.hmacSha256Base64(otpHmacSecret,
-            cleanedCode + "|" + otp.getSalt() + "|" + normalizedEmail);
+        String expected = OtpUtil.hmacSha256Base64(otpHmacSecret, cleanedCode + "|" + otp.getSalt() + "|" + normalizedEmail);
 
         boolean ok = OtpUtil.constantTimeEquals(expected, otp.getCodeHash());
 
@@ -164,14 +164,14 @@ public class EmailVerificationService {
         long ttlMinutes = Math.max(1, ttl.toMinutes());
 
         return """
-              <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Verify your email</h2>
-              <p style="margin:0 0 16px 0;">Use this code to verify your email address:</p>
-              <div style="text-align:center;margin:24px 0;">
-                <div style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:3px;padding:12px 16px;border:1px dashed #0A66C2;border-radius:6px;background:#F0F7FF;">%s</div>
-              </div>
-              <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
-              <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
-            """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
+          <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Verify your email</h2>
+          <p style="margin:0 0 16px 0;">Use this code to verify your email address:</p>
+          <div style="text-align:center;margin:24px 0;">
+            <div style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:3px;padding:12px 16px;border:1px dashed #0A66C2;border-radius:6px;background:#F0F7FF;">%s</div>
+          </div>
+          <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
+          <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
+        """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
     }
 
     /**

@@ -3,11 +3,10 @@ package de.tum.cit.aet.usermanagement.web;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.usermanagement.dto.ProfOnboardingDTO;
 import de.tum.cit.aet.usermanagement.service.UserSettingService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 /**
  * REST resource for professor onboarding flow.

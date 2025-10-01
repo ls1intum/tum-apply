@@ -112,7 +112,11 @@ public class AuthenticationResource {
      * @return DTO containing token lifetimes and profile completion flag
      */
     @PostMapping("/otp-complete")
-    public AuthSessionInfoDTO otpComplete(@Valid @RequestBody OtpCompleteDTO body, HttpServletRequest request, HttpServletResponse response) {
+    public AuthSessionInfoDTO otpComplete(
+        @Valid @RequestBody OtpCompleteDTO body,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
         return otpFlowService.otpComplete(body, HttpUtils.getClientIp(request), response);
     }
 }

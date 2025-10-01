@@ -4,8 +4,8 @@ package de.tum.cit.aet.core.util;
  * Helpers for string manipulation and normalization.
  */
 public class StringUtil {
-    private StringUtil() {
-    }
+
+    private StringUtil() {}
 
     /**
      * Normalizes a string input for consistent storage and comparison.

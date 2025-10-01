@@ -20,7 +20,6 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -39,11 +38,12 @@ public class JobService {
     private final ApplicationRepository applicationRepository;
 
     public JobService(
-            JobRepository jobRepository,
-            UserRepository userRepository,
-            ApplicationRepository applicationRepository,
-            AsyncEmailSender sender,
-            CurrentUserService currentUserService) {
+        JobRepository jobRepository,
+        UserRepository userRepository,
+        ApplicationRepository applicationRepository,
+        AsyncEmailSender sender,
+        CurrentUserService currentUserService
+    ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
@@ -123,12 +123,12 @@ public class JobService {
         for (Application application : applications) {
             User user = application.getApplicant().getUser();
             Email email = Email.builder()
-                    .to(user)
-                    .language(Language.fromCode(user.getSelectedLanguage()))
-                    .emailType(EmailType.APPLICATION_REJECTED)
-                    .templateName(reason.getValue())
-                    .content(application)
-                    .build();
+                .to(user)
+                .language(Language.fromCode(user.getSelectedLanguage()))
+                .emailType(EmailType.APPLICATION_REJECTED)
+                .templateName(reason.getValue())
+                .content(application)
+                .build();
             sender.sendAsync(email);
         }
     }
@@ -152,21 +152,22 @@ public class JobService {
     public JobDTO getJobById(UUID jobId) {
         Job job = assertCanManageJob(jobId);
         return new JobDTO(
-                job.getJobId(),
-                job.getTitle(),
-                job.getResearchArea(),
-                job.getFieldOfStudies(),
-                job.getSupervisingProfessor().getUserId(),
-                job.getLocation(),
-                job.getStartDate(),
-                job.getEndDate(),
-                job.getWorkload(),
-                job.getContractDuration(),
-                job.getFundingType(),
-                job.getDescription(),
-                job.getTasks(),
-                job.getRequirements(),
-                job.getState());
+            job.getJobId(),
+            job.getTitle(),
+            job.getResearchArea(),
+            job.getFieldOfStudies(),
+            job.getSupervisingProfessor().getUserId(),
+            job.getLocation(),
+            job.getStartDate(),
+            job.getEndDate(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getState()
+        );
     }
 
     /**
@@ -190,26 +191,27 @@ public class JobService {
             }
         }
         return new JobDetailDTO(
-                job.getJobId(),
-                job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
-                job.getSupervisingProfessor().getResearchGroup(),
-                job.getTitle(),
-                job.getFieldOfStudies(),
-                job.getResearchArea(),
-                job.getLocation(),
-                job.getWorkload(),
-                job.getContractDuration(),
-                job.getFundingType(),
-                job.getDescription(),
-                job.getTasks(),
-                job.getRequirements(),
-                job.getStartDate(),
-                job.getEndDate(),
-                job.getCreatedAt(),
-                job.getLastModifiedAt(),
-                job.getState(),
-                applicationId,
-                applicationState);
+            job.getJobId(),
+            job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
+            job.getSupervisingProfessor().getResearchGroup(),
+            job.getTitle(),
+            job.getFieldOfStudies(),
+            job.getResearchArea(),
+            job.getLocation(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            job.getStartDate(),
+            job.getEndDate(),
+            job.getCreatedAt(),
+            job.getLastModifiedAt(),
+            job.getState(),
+            applicationId,
+            applicationState
+        );
     }
 
     /**
@@ -224,8 +226,12 @@ public class JobService {
      *                               studies or supervisor name
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO,
-            SortDTO sortDTO, String searchQuery) {
+    public Page<JobCardDTO> getAvailableJobs(
+        PageDTO pageDTO,
+        AvailableJobsFilterDTO availableJobsFilterDTO,
+        SortDTO sortDTO,
+        String searchQuery
+    ) {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
 
@@ -234,28 +240,30 @@ public class JobService {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
-                    JobState.PUBLISHED,
-                    availableJobsFilterDTO.titles(), // filter for job title
-                    availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
-                    availableJobsFilterDTO.locations(), // filter for campus location
-                    availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
-                    sortDTO.sortBy(),
-                    sortDTO.direction().name(),
-                    userId,
-                    normalizedSearchQuery,
-                    pageable);
+                JobState.PUBLISHED,
+                availableJobsFilterDTO.titles(), // filter for job title
+                availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
+                availableJobsFilterDTO.locations(), // filter for campus location
+                availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
+                sortDTO.sortBy(),
+                sortDTO.direction().name(),
+                userId,
+                normalizedSearchQuery,
+                pageable
+            );
         } else {
             // Sort dynamically via Pageable
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
-                    JobState.PUBLISHED,
-                    availableJobsFilterDTO.titles(), // optional filter for job title
-                    availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                    availableJobsFilterDTO.locations(), // optional filter for campus location
-                    availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
-                    userId,
-                    normalizedSearchQuery,
-                    pageable);
+                JobState.PUBLISHED,
+                availableJobsFilterDTO.titles(), // optional filter for job title
+                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                availableJobsFilterDTO.locations(), // optional filter for campus location
+                availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
+                userId,
+                normalizedSearchQuery,
+                pageable
+            );
         }
     }
 
@@ -306,20 +314,20 @@ public class JobService {
      *                               title
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
-    public Page<CreatedJobDTO> getJobsByProfessor(PageDTO pageDTO, ProfessorJobsFilterDTO professorJobsFilterDTO,
-            SortDTO sortDTO, String searchQuery) {
+    public Page<CreatedJobDTO> getJobsByProfessor(
+        PageDTO pageDTO,
+        ProfessorJobsFilterDTO professorJobsFilterDTO,
+        SortDTO sortDTO,
+        String searchQuery
+    ) {
         UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
         List<JobState> enumStates = null;
         if (professorJobsFilterDTO.states() != null && !professorJobsFilterDTO.states().isEmpty()) {
-            enumStates = professorJobsFilterDTO.states().stream()
-                    .map(JobState::fromValue)
-                    .filter(Objects::nonNull)
-                    .toList();
+            enumStates = professorJobsFilterDTO.states().stream().map(JobState::fromValue).filter(Objects::nonNull).toList();
         }
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
-        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(),
-                enumStates, normalizedSearchQuery, pageable);
+        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(), enumStates, normalizedSearchQuery, pageable);
     }
 
     /**
@@ -367,10 +375,8 @@ public class JobService {
      * @return the job entity if the user can manage it
      */
     private Job assertCanManageJob(UUID jobId) {
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
-
 }

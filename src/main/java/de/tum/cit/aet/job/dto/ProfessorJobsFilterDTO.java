@@ -9,5 +9,4 @@ import java.util.List;
  * @param titles optional filter for multiple job titles
  * @param states optional filter for multiple job states
  */
-public record ProfessorJobsFilterDTO(List<String> titles, List<String> states) {
-}
+public record ProfessorJobsFilterDTO(List<String> titles, List<String> states) {}
