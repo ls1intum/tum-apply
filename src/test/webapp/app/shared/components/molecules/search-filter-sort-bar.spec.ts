@@ -220,4 +220,86 @@ describe('SearchFilterSortBar', () => {
 
     expect(fixture.componentInstance.searchText()).toBe('Enter search term...');
   });
+
+  describe('DOM rendering', () => {
+    it('should render search input element', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        searchText: 'Search items...',
+      });
+
+      const searchInput = fixture.nativeElement.querySelector('input[type="text"]');
+      expect(searchInput).toBeTruthy();
+      expect(searchInput.placeholder).toBe('Search items...');
+    });
+
+    it('should render search icon', () => {
+      const fixture = createSearchFilterSortBarFixture();
+
+      const icon = fixture.nativeElement.querySelector('fa-icon');
+      expect(icon).toBeTruthy();
+    });
+
+    it('should render filter components when filters are provided', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        filters: mockFilters,
+      });
+
+      const filterComponents = fixture.nativeElement.querySelectorAll('jhi-filter-multiselect');
+      expect(filterComponents.length).toBe(2);
+    });
+
+    it('should not render filter components when filters array is empty', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        filters: [],
+      });
+
+      const filterComponents = fixture.nativeElement.querySelectorAll('jhi-filter-multiselect');
+      expect(filterComponents.length).toBe(0);
+    });
+
+    it('should render sorting component when sortable fields are provided', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        sortableFields: mockSortOptions,
+      });
+
+      const sortingComponent = fixture.nativeElement.querySelector('jhi-sorting');
+      expect(sortingComponent).toBeTruthy();
+    });
+
+    it('should not render sorting component when sortable fields are undefined', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        sortableFields: undefined,
+      });
+
+      const sortingComponent = fixture.nativeElement.querySelector('jhi-sorting');
+      expect(sortingComponent).toBeFalsy();
+    });
+
+    it('should render record count element', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        totalRecords: 10,
+      });
+
+      const recordCount = fixture.nativeElement.querySelector('.record-count');
+      expect(recordCount).toBeTruthy();
+    });
+
+    it('should render "Filter by" text when filters are present', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        filters: mockFilters,
+      });
+
+      const filterBySpan = fixture.nativeElement.querySelector('.filter-sort span[jhiTranslate="entity.filterBy"]');
+      expect(filterBySpan).toBeTruthy();
+    });
+
+    it('should render "Sort by" text when sortable fields are present', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        sortableFields: mockSortOptions,
+      });
+
+      const sortBySpan = fixture.nativeElement.querySelector('.filter-sort span[jhiTranslate="entity.sortBy"]');
+      expect(sortBySpan).toBeTruthy();
+    });
+  });
 });
