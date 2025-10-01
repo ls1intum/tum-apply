@@ -302,4 +302,45 @@ describe('SearchFilterSortBar', () => {
       expect(sortBySpan).toBeTruthy();
     });
   });
+
+  describe('cleanup', () => {
+    it('should call clearTimeout when onSearch is called again before timeout', () => {
+      const fixture = createSearchFilterSortBarFixture();
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+
+      fixture.componentInstance.inputText = 'first';
+      fixture.componentInstance.onSearch();
+
+      fixture.componentInstance.inputText = 'second';
+      fixture.componentInstance.onSearch();
+
+      expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not call clearTimeout on first search', () => {
+      const fixture = createSearchFilterSortBarFixture();
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+
+      fixture.componentInstance.inputText = 'first';
+      fixture.componentInstance.onSearch();
+
+      expect(clearTimeoutSpy).not.toHaveBeenCalled();
+    });
+
+    it('should clear timeout multiple times for rapid searches', () => {
+      const fixture = createSearchFilterSortBarFixture();
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+
+      fixture.componentInstance.inputText = 'first';
+      fixture.componentInstance.onSearch();
+
+      fixture.componentInstance.inputText = 'second';
+      fixture.componentInstance.onSearch();
+
+      fixture.componentInstance.inputText = 'third';
+      fixture.componentInstance.onSearch();
+
+      expect(clearTimeoutSpy).toHaveBeenCalledTimes(2);
+    });
+  });
 });
