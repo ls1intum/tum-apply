@@ -24,7 +24,7 @@ plugins {
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
   // TODO: we cannot upgrade to the latest version yet, because of liquibase and openapi errors
-  id "org.openapi.generator" version "7.12.0"
+  id "org.openapi.generator" version "7.16.0"
 }
 
 group = "de.tum.cit.aet"
