@@ -75,6 +75,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link JobFiltersDTO} with all available filter options
      */
+    @Public
     @GetMapping("/filters")
     public ResponseEntity<JobFiltersDTO> getAllFilters() {
         JobFiltersDTO dto = new JobFiltersDTO(
@@ -186,6 +187,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link List} of {@link String} job names
      */
+    @ProfessorOrAdmin
     @GetMapping("/allNames")
     public ResponseEntity<List<String>> getAllJobNamesByProfessor() {
         List<String> jobNames = jobService.getAllJobNamesByProfessor();
