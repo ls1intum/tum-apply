@@ -182,6 +182,7 @@
 .ql-editor {
   background: transparent;
   color: var(--p-text-primary);
+  overflow-wrap: anywhere;
 }
 
 .ql-editor.ql-blank {
@@ -324,7 +325,9 @@
 }
 
 /* Styling for links */
-.link {
+.link,
+.description-text a,
+.text-card a {
   color: var(--p-primary-color);
 
   &:hover {
@@ -345,12 +348,15 @@
 
 /* Styles for overriding list styles in Job Detail Page */
 .description-text ol,
-.description-text ul {
+.description-text ul,
+.text-card ol,
+.text-card ul {
   margin-left: 2rem;
   list-style: initial;
 }
 
-.description-text ol {
+.description-text ol,
+.description-text ul {
   list-style-type: decimal;
 }
 
