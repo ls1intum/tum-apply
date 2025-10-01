@@ -89,7 +89,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
    * @param professorNames a partial match filter for multiple professor's full
    *                       names
    *                       (nullable)
-   * @param workload       filter for the job workload (nullable)
    * @param sortBy         the field to sort by (only used for professorName
    *                       sorting here)
    * @param sortDirection  sort direction (ASC or DESC)

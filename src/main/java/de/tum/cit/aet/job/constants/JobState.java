@@ -27,8 +27,9 @@ public enum JobState {
                     JobState::getValue, Function.identity()));
 
     public static JobState fromValue(String value) {
-        if (value == null)
+        if (value == null) {
             return null;
+        }
         return LOOKUP.get(value.toUpperCase(Locale.ROOT));
     }
 }
