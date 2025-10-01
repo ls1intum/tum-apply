@@ -115,6 +115,7 @@ public class JobService {
                 .language(Language.fromCode(user.getSelectedLanguage()))
                 .emailType(EmailType.APPLICATION_REJECTED)
                 .templateName(reason.getValue())
+                .researchGroup(application.getJob().getResearchGroup())
                 .content(application)
                 .build();
             sender.sendAsync(email);

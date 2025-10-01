@@ -3,6 +3,7 @@ package de.tum.cit.aet.evaluation.web;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.validation.Odd;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -110,7 +113,7 @@ public class ApplicationEvaluationResource {
     @GetMapping("/application-details/window")
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetailsWindow(
         @RequestParam UUID applicationId,
-        @RequestParam int windowSize,
+        @RequestParam @NotNull @Min(1) @Odd int windowSize,
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
