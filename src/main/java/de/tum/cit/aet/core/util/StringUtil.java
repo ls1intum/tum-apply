@@ -32,4 +32,19 @@ public class StringUtil {
     public static boolean isBlank(String input) {
         return input == null || input.trim().isEmpty();
     }
+
+    /**
+     * Normalizes the search query by trimming whitespace, converting to lowercase,
+     * and returning null if the result is empty.
+     *
+     * @param searchQuery the raw search query
+     * @return normalized search query or null if empty
+     */
+    public static String normalizeSearchQuery(String searchQuery) {
+        if (searchQuery == null) {
+            return null;
+        }
+        String normalized = searchQuery.trim().replaceAll("\\s+", " ").toLowerCase();
+        return normalized.isEmpty() ? null : normalized;
+    }
 }

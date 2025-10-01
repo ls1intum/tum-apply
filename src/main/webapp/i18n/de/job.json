@@ -105,22 +105,45 @@
   "jobOverviewPage": {
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
+    "searchFilterSortBar": {
+      "searchText": "Stellen suchen...",
+      "filterOptions": {
+        "job": "Stelle",
+        "jobSearchPlaceholder": "Stellen suchen...",
+        "fieldOfStudies": "Studienrichtung",
+        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
+        "location": "Standort",
+        "LocationSearchPlaceholder": "Standorte suchen...",
+        "supervisor": "Betreuer:in",
+        "supervisorSearchPlaceholder": "Betreuer:in suchen..."
+      }
+    },
     "sortingOptions": {
       "startDate": "Startdatum",
       "jobTitle": "Jobtitel",
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "professor": "Betreuer/in",
+      "professor": "Betreuer:in (Nachname)",
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "supervisor": "Betreuer/in",
+      "supervisor": "Betreuer:in",
       "workload": "Arbeitsaufwand",
       "startDate": "Startdatum"
     },
-    "hoursPerWeek": "{{workload}} h/Woche"
+    "hoursPerWeek": "{{workload}} h/Woche",
+    "errors": {
+      "loadFilter": {
+        "summary": "Laden der Filteroptionen fehlgeschlagen",
+        "detail": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "loadJobs": {
+        "summary": "Laden der Stellen fehlgeschlagen",
+        "detail": "Fehler beim Laden der verfügbaren Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      }
+    }
   },
   "myPositionsPage": {
     "header": {
@@ -151,7 +174,7 @@
   },
   "jobDetailPage": {
     "header": {
-      "supervisor": "Betreuer/in: ",
+      "supervisor": "Betreuer:in: ",
       "researchGroup": "Forschungsgruppe: ",
       "location": "Standort: "
     },
