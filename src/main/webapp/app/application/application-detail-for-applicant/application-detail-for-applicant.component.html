@@ -143,15 +143,56 @@
             </div>
           </div>
         </jhi-detail-card>
-
-        @if (documentIds(); as documentIds) {
-          <div class="documents">
-            <h2 class="section-title">{{ 'entity.application_detail.personal_documents' | translate }}</h2>
-            <jhi-document-group [documentIds]="documentIds" />
-          </div>
-        }
       </section>
     </div>
+
+    <!-- Documents Section - Full Width -->
+    @if (documentIds(); as documentIds) {
+      <section class="documents-section">
+        <h2 class="section-title">{{ 'entity.application_detail.personal_documents' | translate }}</h2>
+
+        <!-- Unified document grid for all document types -->
+        <div class="document-container">
+          @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
+            @for (doc of bachelorDocs; track $index) {
+              <jhi-detail-card [title]="'entity.upload.document_type.BACHELOR_TRANSCRIPT' | translate" icon="file-lines">
+                <div class="document-viewer">
+                  <jhi-document-viewer [documentDictionaryId]="doc" />
+                </div>
+              </jhi-detail-card>
+            }
+          }
+
+          @if (documentIds.masterDocumentDictionaryIds; as masterDocs) {
+            @for (doc of masterDocs; track $index) {
+              <jhi-detail-card [title]="'entity.upload.document_type.MASTER_TRANSCRIPT' | translate" icon="file-lines">
+                <div class="document-viewer">
+                  <jhi-document-viewer [documentDictionaryId]="doc" />
+                </div>
+              </jhi-detail-card>
+            }
+          }
+
+          @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
+            <jhi-detail-card [title]="'entity.upload.document_type.CV' | translate" icon="file-lines">
+              <div class="document-viewer">
+                <jhi-document-viewer [documentDictionaryId]="cvDoc" />
+              </div>
+            </jhi-detail-card>
+          }
+
+          @if (documentIds.referenceDocumentDictionaryIds; as referenceDocs) {
+            @for (doc of referenceDocs; track $index) {
+              <jhi-detail-card [title]="'entity.upload.document_type.REFERENCES' | translate" icon="file-lines">
+                <div class="document-viewer">
+                  <jhi-document-viewer [documentDictionaryId]="doc" />
+                </div>
+              </jhi-detail-card>
+            }
+          }
+        </div>
+      </section>
+    }
   } @else {
     <p class="text-center">{{ 'entity.application_detail.not_found' | translate }}</p>
   }

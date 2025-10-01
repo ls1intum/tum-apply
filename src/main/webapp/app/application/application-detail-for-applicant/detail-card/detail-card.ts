@@ -10,7 +10,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class DetailCard {
   @Input() title!: string;
-  @Input() content?: string;
   @Input() showCard = true;
   @Input() icon?: string;
 }

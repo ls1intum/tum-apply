@@ -98,78 +98,75 @@
   }
 }
 
-// Detail card customization
+// Detail card layout (only positioning/spacing)
 jhi-detail-card {
   display: block;
   margin-bottom: 1rem;
-
-  .card-icon {
-    color: var(--p-primary-color);
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-  }
-
-  .content {
-    color: var(--p-text-color);
-    line-height: 1.6;
-    font-size: 0.9375rem;
-  }
 }
 
-// Info list inside detail cards
-.info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.875rem;
-
-  .value {
-    text-align: right;
-  }
-}
-
-// Links section
-.links {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--p-surface-200);
-
-  a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--p-primary-color);
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: opacity 0.2s;
-
-    &:hover:not(.disabled) {
-      opacity: 0.8;
-    }
-
-    &.disabled {
-      color: var(--p-text-secondary-color);
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    fa-icon {
-      font-size: 1rem;
-    }
-  }
-}
-
-// Documents section
-.documents {
+// Documents section - Full width
+.documents-section {
   margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+// Document container - grid layout for all document cards
+.document-container {
+  display: grid;
+  gap: 1.5rem;
+
+  // Default: 2 columns for most screens (MacBook Air and similar)
+  grid-template-columns: repeat(2, 1fr);
+
+  // For very wide screens (1440px+), allow 3 columns
+  @media (min-width: bp.$xl) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  // For large screens (1024px-1440px), ensure 2 columns (MacBook Air range)
+  @media (min-width: bp.$lg) and (max-width: bp.$xl) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // For tablets (768px-1024px), 2 columns
+  @media (min-width: bp.$md) and (max-width: bp.$lg) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // On mobile, single column
+  @media (max-width: bp.$md) {
+    grid-template-columns: 1fr;
+  }
+
+  // Each document card in the grid
+  jhi-detail-card {
+    display: block;
+    margin-bottom: 0; // Remove default margin since grid handles spacing
+  }
+}
+
+.document-viewer {
+  width: 100%;
+  height: 43.75rem; // 700px
+  border: 1px solid var(--p-surface-200);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--p-surface-50);
+
+  // Adjust height for different screen sizes
+  @media (max-width: bp.$lg) {
+    height: 37.5rem; // 600px
+  }
+
+  @media (max-width: bp.$md) {
+    height: 31.25rem; // 500px
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
 }
 
 // Utility

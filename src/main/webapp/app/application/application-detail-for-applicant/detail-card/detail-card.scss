@@ -29,5 +29,63 @@
     p {
       margin: 0;
     }
+
+    // Content styling (moved from parent)
+    .content {
+      color: var(--p-text-color);
+      line-height: 1.6;
+      font-size: 0.9375rem;
+    }
+
+    // Info list styling (moved from parent)
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.875rem;
+
+      .value {
+        text-align: right;
+      }
+    }
+  }
+
+  // Links styling (moved from parent) - using ::ng-deep for projected content
+  ::ng-deep .links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--p-surface-200);
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--p-primary-color);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: opacity 0.2s;
+
+      &:hover:not(.disabled) {
+        opacity: 0.8;
+      }
+
+      &.disabled {
+        color: var(--p-text-secondary-color);
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      fa-icon {
+        font-size: 1rem;
+      }
+    }
   }
 }

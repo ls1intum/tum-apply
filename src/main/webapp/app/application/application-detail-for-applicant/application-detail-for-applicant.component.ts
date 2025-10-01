@@ -1,11 +1,11 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
@@ -16,7 +16,7 @@ import { DetailCard } from './detail-card/detail-card';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [DocumentGroupComponent, SharedModule, ButtonComponent, FontAwesomeModule, DetailCard, ApplicationStateForApplicantsComponent],
+  imports: [SharedModule, ButtonComponent, FontAwesomeModule, DetailCard, ApplicationStateForApplicantsComponent, DocumentViewerComponent],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
