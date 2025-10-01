@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { TranslateDirective } from '../../../language';
 
@@ -18,7 +19,7 @@ export type SelectOption = {
   standalone: true,
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
-  imports: [SelectModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective],
+  imports: [SelectModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective, TranslateModule],
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectComponent {
@@ -38,6 +39,8 @@ export class SelectComponent {
   translateItems = input<boolean>(false);
   filter = input<boolean>(false);
   showClear = input<boolean>(false);
+  // TODO: can be removed after new grading converter
+  helperText = input<string | undefined>(undefined);
 
   selectedChange = output<SelectOption>();
 

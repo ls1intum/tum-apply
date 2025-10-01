@@ -1,4 +1,4 @@
-import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 /**
  * Custom validator that checks whether an HTML string contains any non-empty visible text.
@@ -20,4 +20,28 @@ export function htmlTextRequiredValidator(control: AbstractControl): ValidationE
   const plainText = (temp.textContent as string | null | undefined) ?? temp.innerText;
 
   return plainText.length === 0 ? { required: true } : undefined;
+}
+
+/**
+ * Custom validator that checks whether the plain text content of an HTML string
+ * exceeds a specified maximum length.
+ *
+ * This is useful for validating rich text editor fields (e.g., Quill) where the value
+ * may contain HTML tags but only the visible text should count toward the length.
+ *
+ * @param maxLength - Maximum allowed number of characters.
+ * @returns A validator function that returns a `{ maxlength: { requiredLength, actualLength } }`
+ *          error if the input exceeds the limit, otherwise `undefined`.
+ */
+export function htmlTextMaxLengthValidator(maxLength: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const htmlText = control.value ?? '';
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlText;
+    const plainText = (temp.textContent as string | null | undefined) ?? temp.innerText;
+
+    const actualLength = plainText.trim().length;
+
+    return actualLength > maxLength ? { maxlength: { requiredLength: maxLength, actualLength } } : null;
+  };
 }
