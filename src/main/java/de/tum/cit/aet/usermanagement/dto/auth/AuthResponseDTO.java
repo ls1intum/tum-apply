@@ -8,5 +8,4 @@ package de.tum.cit.aet.usermanagement.dto.auth;
  * @param expiresIn        lifetime of the access token in seconds
  * @param refreshExpiresIn lifetime of the refresh token in seconds
  */
-public record AuthResponseDTO(String accessToken, String refreshToken, long expiresIn, long refreshExpiresIn) {
-}
+public record AuthResponseDTO(String accessToken, String refreshToken, long expiresIn, long refreshExpiresIn) {}

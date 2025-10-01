@@ -2,7 +2,6 @@ package de.tum.cit.aet.utility.testDataGeneration;
 
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
-
 import java.util.UUID;
 
 /**
@@ -10,6 +9,7 @@ import java.util.UUID;
  * Keeps entity construction and saving in one place.
  */
 public final class ResearchGroupTestData {
+
     private ResearchGroupTestData() {}
 
     /** Unsaved ResearchGroup with sane defaults. */
@@ -69,12 +69,20 @@ public final class ResearchGroupTestData {
 
     public static ResearchGroup savedAll(
         ResearchGroupRepository repo,
-        String head, String name, String abbreviation, String city,
-        String defaultFieldOfStudies, String description, String email,
-        String postalCode, String school, String street, String website
+        String head,
+        String name,
+        String abbreviation,
+        String city,
+        String defaultFieldOfStudies,
+        String description,
+        String email,
+        String postalCode,
+        String school,
+        String street,
+        String website
     ) {
-        return repo.save(newRgAll(head, name, abbreviation, city,
-            defaultFieldOfStudies, description, email,
-            postalCode, school, street, website));
+        return repo.save(
+            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, school, street, website)
+        );
     }
 }

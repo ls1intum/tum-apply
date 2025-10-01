@@ -1,22 +1,21 @@
 package de.tum.cit.aet.utility;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.*;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.test.web.servlet.*;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 /**
  * Thin HTTP client for MVC.
@@ -34,6 +33,7 @@ public class MvcTestClient {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -231,7 +231,6 @@ public class MvcTestClient {
         }
     }
 
-
     /*     * Low-level GET that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult getInvalid(String url, Map<String, String> params, MediaType... accepts) {
@@ -426,17 +425,17 @@ public class MvcTestClient {
      * Builds and performs a GET applying default Accept and any configured RequestPostProcessors.
      */
     private ResultActions get(String url, MediaType... accepts) throws Exception {
-        return mockMvc.perform(
-            applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts)
-        );
+        return mockMvc.perform(applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts));
     }
 
     /**
      * Builds and performs a GET with query parameters, applying defaults and processors.
      */
     private ResultActions get(String url, Map<String, String> params, MediaType... accepts) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder =
-            applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts);
+        MockHttpServletRequestBuilder requestBuilder = applyDefaults(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url),
+            accepts
+        );
         if (params != null) params.forEach(requestBuilder::param);
         return mockMvc.perform(requestBuilder);
     }
@@ -446,9 +445,7 @@ public class MvcTestClient {
      */
     private ResultActions postJson(String url, Object body, MediaType... accepts) throws Exception {
         return mockMvc.perform(
-            applyDefaults(post(url), accepts)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(body))
+            applyDefaults(post(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
         );
     }
 
@@ -457,9 +454,7 @@ public class MvcTestClient {
      */
     private ResultActions putJson(String url, Object body, MediaType... accepts) throws Exception {
         return mockMvc.perform(
-            applyDefaults(put(url), accepts)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(body))
+            applyDefaults(put(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
         );
     }
 
@@ -467,8 +462,7 @@ public class MvcTestClient {
      * Builds and performs a DELETE, optionally with a JSON body, applying defaults and processors.
      */
     private ResultActions deleteJson(String url, Object body, MediaType... accepts) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = applyDefaults(delete(url), accepts)
-            .contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder requestBuilder = applyDefaults(delete(url), accepts).contentType(MediaType.APPLICATION_JSON);
         if (body != null) requestBuilder.content(objectMapper.writeValueAsString(body));
         return mockMvc.perform(requestBuilder);
     }

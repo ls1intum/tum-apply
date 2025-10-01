@@ -7,13 +7,13 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-
 import java.time.LocalDate;
 
 /**
  * Test data helpers for Job.
  */
 public final class JobTestData {
+
     private JobTestData() {}
 
     /** Creates an unsaved Job with common default values. Title, state, and startDate can be overridden (null = default). */
@@ -70,14 +70,40 @@ public final class JobTestData {
 
     public static Job savedAll(
         JobRepository repo,
-        String title, String researchArea, String fieldOfStudies,
-        User supervisingProfessor, ResearchGroup researchGroup,
-        Campus location, LocalDate startDate, LocalDate endDate,
-        Integer workload, Integer contractDuration, FundingType fundingType,
-        String description, String tasks, String requirements, JobState state
+        String title,
+        String researchArea,
+        String fieldOfStudies,
+        User supervisingProfessor,
+        ResearchGroup researchGroup,
+        Campus location,
+        LocalDate startDate,
+        LocalDate endDate,
+        Integer workload,
+        Integer contractDuration,
+        FundingType fundingType,
+        String description,
+        String tasks,
+        String requirements,
+        JobState state
     ) {
-        return repo.save(newJobAll(title, researchArea, fieldOfStudies, supervisingProfessor, researchGroup,
-            location, startDate, endDate, workload, contractDuration, fundingType,
-            description, tasks, requirements, state));
+        return repo.save(
+            newJobAll(
+                title,
+                researchArea,
+                fieldOfStudies,
+                supervisingProfessor,
+                researchGroup,
+                location,
+                startDate,
+                endDate,
+                workload,
+                contractDuration,
+                fundingType,
+                description,
+                tasks,
+                requirements,
+                state
+            )
+        );
     }
 }

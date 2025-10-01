@@ -1,5 +1,8 @@
 package de.tum.cit.aet.job.web.rest;
 
+import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
@@ -17,6 +20,9 @@ import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
 import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +30,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.util.Map.entry;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -54,28 +53,45 @@ class JobResourceTest {
 
     @BeforeEach
     void setup() {
-
         jobRepository.deleteAll();
         userRepository.deleteAll();
         researchGroupRepository.deleteAll();
 
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
-            "Algorithms Group", "Prof. Doe", "alg@example.com", "ALG",
-            "CS", "We do cool stuff", "alg@example.com",
-            "80333", "CIT", "Arcisstr. 21", "https://alg.tum.de");
+            "Algorithms Group",
+            "Prof. Doe",
+            "alg@example.com",
+            "ALG",
+            "CS",
+            "We do cool stuff",
+            "alg@example.com",
+            "80333",
+            "CIT",
+            "Arcisstr. 21",
+            "https://alg.tum.de"
+        );
 
         professor = UserTestData.savedProfessorAll(
-            userRepository, researchGroup,
-            null, "prof.doe@tum.de", "John", "Doe", "en",
-            "+49 89 1234", "https://doe.tum.de", "https://linkedin.com/in/doe",
-            "DE", null, "männlich", UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+            userRepository,
+            researchGroup,
+            null,
+            "prof.doe@tum.de",
+            "John",
+            "Doe",
+            "en",
+            "+49 89 1234",
+            "https://doe.tum.de",
+            "https://linkedin.com/in/doe",
+            "DE",
+            null,
+            "männlich",
+            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
+        );
         api = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"));
 
-        JobTestData.saved(jobRepository, professor, researchGroup, "Published Role", JobState.PUBLISHED,
-            LocalDate.of(2025, 9, 1));
-        JobTestData.saved(jobRepository, professor, researchGroup, "Draft Role", JobState.DRAFT,
-            LocalDate.of(2025, 10, 1));
+        JobTestData.saved(jobRepository, professor, researchGroup, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
+        JobTestData.saved(jobRepository, professor, researchGroup, "Draft Role", JobState.DRAFT, LocalDate.of(2025, 10, 1));
     }
 
     @Test
@@ -83,8 +99,9 @@ class JobResourceTest {
         PageResponse<JobCardDTO> page = api.getAndRead(
             "/api/jobs/available",
             Map.of("pageNumber", "0", "pageSize", "10"),
-            new TypeReference<>() {
-            }, 200);
+            new TypeReference<>() {},
+            200
+        );
 
         assertThat(page.totalElements()).isEqualTo(1);
         assertThat(page.content()).hasSize(1);
@@ -102,47 +119,14 @@ class JobResourceTest {
 
     @Test
     void getAvailableJobsInvalidPaginationReturnsError() {
-        api.getAndRead("/api/jobs/available",
-            Map.of("pageNumber", "-1", "pageSize", "10"),
-            new TypeReference<>() {
-            }, 400);
+        api.getAndRead("/api/jobs/available", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void createJobPersistsAndReturnsIt() {
         JobFormDTO payload = new JobFormDTO(
-            null, "ML Engineer", "Machine Learning", "CS",
-            professor.getUserId(), Campus.GARCHING,
-            LocalDate.of(2025, 11, 1), LocalDate.of(2026, 5, 31),
-            40, 12, FundingType.FULLY_FUNDED,
-            "Build ML pipelines", "data cleaning and model training",
-            "Python and TensorFlow", JobState.PUBLISHED);
-
-        JobFormDTO returned = api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 200);
-
-        assertThat(returned.jobId()).isNotNull();
-        assertThat(returned)
-            .usingRecursiveComparison()
-            .ignoringFields("jobId")
-            .isEqualTo(payload);
-
-        Job saved = jobRepository.findById(returned.jobId()).orElseThrow();
-        assertThat(saved).extracting(
-            Job::getTitle,
-            Job::getResearchArea,
-            Job::getFieldOfStudies,
-            (Job j) -> j.getSupervisingProfessor().getUserId(),
-            Job::getLocation,
-            Job::getStartDate,
-            Job::getEndDate,
-            Job::getWorkload,
-            Job::getContractDuration,
-            Job::getFundingType,
-            Job::getDescription,
-            Job::getTasks,
-            Job::getRequirements,
-            Job::getState).containsExactly(
+            null,
             "ML Engineer",
             "Machine Learning",
             "CS",
@@ -156,7 +140,48 @@ class JobResourceTest {
             "Build ML pipelines",
             "data cleaning and model training",
             "Python and TensorFlow",
-            JobState.PUBLISHED);
+            JobState.PUBLISHED
+        );
+
+        JobFormDTO returned = api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 200);
+
+        assertThat(returned.jobId()).isNotNull();
+        assertThat(returned).usingRecursiveComparison().ignoringFields("jobId").isEqualTo(payload);
+
+        Job saved = jobRepository.findById(returned.jobId()).orElseThrow();
+        assertThat(saved)
+            .extracting(
+                Job::getTitle,
+                Job::getResearchArea,
+                Job::getFieldOfStudies,
+                (Job j) -> j.getSupervisingProfessor().getUserId(),
+                Job::getLocation,
+                Job::getStartDate,
+                Job::getEndDate,
+                Job::getWorkload,
+                Job::getContractDuration,
+                Job::getFundingType,
+                Job::getDescription,
+                Job::getTasks,
+                Job::getRequirements,
+                Job::getState
+            )
+            .containsExactly(
+                "ML Engineer",
+                "Machine Learning",
+                "CS",
+                professor.getUserId(),
+                Campus.GARCHING,
+                LocalDate.of(2025, 11, 1),
+                LocalDate.of(2026, 5, 31),
+                40,
+                12,
+                FundingType.FULLY_FUNDED,
+                "Build ML pipelines",
+                "data cleaning and model training",
+                "Python and TensorFlow",
+                JobState.PUBLISHED
+            );
     }
 
     @Test
@@ -178,7 +203,8 @@ class JobResourceTest {
             entry("description", "desc"),
             entry("tasks", "tasks"),
             entry("requirements", "req"),
-            entry("state", "PUBLISHED"));
+            entry("state", "PUBLISHED")
+        );
 
         api.postAndRead("/api/jobs/create", invalid, JobFormDTO.class, 400);
 
@@ -188,19 +214,27 @@ class JobResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void updateJobUpdatesCorrectly() {
-
         Job job = jobRepository.findAll().getFirst();
 
         JobFormDTO updatedPayload = new JobFormDTO(
-            job.getJobId(), "Updated Title", "Updated Area", "Updated Field",
-            professor.getUserId(), Campus.GARCHING_HOCHBRUECK,
-            LocalDate.of(2025, 12, 1), LocalDate.of(2026, 6, 30),
-            30, 6, FundingType.PARTIALLY_FUNDED,
-            "Updated Description", "Updated Tasks",
-            "Updated Requirements", JobState.DRAFT);
+            job.getJobId(),
+            "Updated Title",
+            "Updated Area",
+            "Updated Field",
+            professor.getUserId(),
+            Campus.GARCHING_HOCHBRUECK,
+            LocalDate.of(2025, 12, 1),
+            LocalDate.of(2026, 6, 30),
+            30,
+            6,
+            FundingType.PARTIALLY_FUNDED,
+            "Updated Description",
+            "Updated Tasks",
+            "Updated Requirements",
+            JobState.DRAFT
+        );
 
-        JobFormDTO returnedJob = api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload,
-            JobFormDTO.class, 200);
+        JobFormDTO returnedJob = api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
 
         assertThat(returnedJob).usingRecursiveComparison().isEqualTo(updatedPayload);
         Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
@@ -208,8 +242,7 @@ class JobResourceTest {
         assertThat(updatedJob.getTitle()).isEqualTo(updatedPayload.title());
         assertThat(updatedJob.getResearchArea()).isEqualTo(updatedPayload.researchArea());
         assertThat(updatedJob.getFieldOfStudies()).isEqualTo(updatedPayload.fieldOfStudies());
-        assertThat(updatedJob.getSupervisingProfessor().getUserId())
-            .isEqualTo(updatedPayload.supervisingProfessor());
+        assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(updatedPayload.supervisingProfessor());
         assertThat(updatedJob.getLocation()).isEqualTo(updatedPayload.location());
         assertThat(updatedJob.getStartDate()).isEqualTo(updatedPayload.startDate());
         assertThat(updatedJob.getEndDate()).isEqualTo(updatedPayload.endDate());
@@ -226,14 +259,24 @@ class JobResourceTest {
     @WithMockUser(roles = "PROFESSOR")
     void updateJobNonexistentJobThrowsNotFound() {
         JobFormDTO updatedPayload = new JobFormDTO(
-            UUID.randomUUID(), "Ghost Job", "Area", "Field",
-            professor.getUserId(), Campus.GARCHING,
-            LocalDate.now(), LocalDate.now().plusMonths(6),
-            20, 6, FundingType.FULLY_FUNDED,
-            "desc", "tasks", "req", JobState.DRAFT);
+            UUID.randomUUID(),
+            "Ghost Job",
+            "Area",
+            "Field",
+            professor.getUserId(),
+            Campus.GARCHING,
+            LocalDate.now(),
+            LocalDate.now().plusMonths(6),
+            20,
+            6,
+            FundingType.FULLY_FUNDED,
+            "desc",
+            "tasks",
+            "req",
+            JobState.DRAFT
+        );
 
-        api.putAndRead("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload,
-            JobFormDTO.class, 404);
+        api.putAndRead("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload, JobFormDTO.class, 404);
     }
 
     @Test
@@ -260,10 +303,11 @@ class JobResourceTest {
         assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
 
         JobFormDTO returnedJob = api.putAndRead(
-            "/api/jobs/changeState/" + job.getJobId()
-                + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+            "/api/jobs/changeState/" + job.getJobId() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
             null,
-            JobFormDTO.class, 200);
+            JobFormDTO.class,
+            200
+        );
 
         assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
 
@@ -275,10 +319,11 @@ class JobResourceTest {
     @WithMockUser(roles = "PROFESSOR")
     void changeJobStateNonExistantJobThrowsNotFound() {
         api.putAndRead(
-            "/api/jobs/changeState/" + UUID.randomUUID()
-                + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+            "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
             null,
-            JobFormDTO.class, 404);
+            JobFormDTO.class,
+            404
+        );
     }
 
     @Test
@@ -286,10 +331,7 @@ class JobResourceTest {
     void getJobsByProfessor_returnsJobsCreatedByProfessor() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor",
-                Map.of("pageNumber", "0", "pageSize", "10"),
-                new TypeReference<>() {
-                }, 200);
+            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
         assertThat(page.totalElements()).isEqualTo(2);
     }
 
@@ -298,10 +340,7 @@ class JobResourceTest {
     void getJobsByProfessorInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor",
-                Map.of("pageNumber", "-1", "pageSize", "10"),
-                new TypeReference<>() {
-                }, 400);
+            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test
@@ -338,15 +377,13 @@ class JobResourceTest {
     void getJobDetailsReturnsCorrectJobDetails() {
         Job job = jobRepository.findAll().getFirst();
 
-        JobDetailDTO returnedJob = api.getAndRead("/api/jobs/detail/" + job.getJobId(), null,
-            JobDetailDTO.class, 200);
+        JobDetailDTO returnedJob = api.getAndRead("/api/jobs/detail/" + job.getJobId(), null, JobDetailDTO.class, 200);
 
         assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
         assertThat(returnedJob.supervisingProfessorName()).isEqualTo(
-            job.getSupervisingProfessor().getFirstName() + " "
-                + job.getSupervisingProfessor().getLastName());
-        assertThat(returnedJob.researchGroup().getResearchGroupId())
-            .isEqualTo(job.getResearchGroup().getResearchGroupId());
+            job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName()
+        );
+        assertThat(returnedJob.researchGroup().getResearchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
         assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
@@ -366,8 +403,6 @@ class JobResourceTest {
 
     @Test
     void getJobDetailsNonExistantIdThrowsNotFound() {
-        api.getAndRead("/api/jobs/detail/" + UUID.randomUUID(),
-            null,
-            JobDetailDTO.class, 404);
+        api.getAndRead("/api/jobs/detail/" + UUID.randomUUID(), null, JobDetailDTO.class, 404);
     }
 }

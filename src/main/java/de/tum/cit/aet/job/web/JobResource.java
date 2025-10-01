@@ -8,7 +8,6 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.UUID;
 import org.springdoc.core.annotations.ParameterObject;
@@ -55,10 +54,11 @@ public class JobResource {
     @Public
     @GetMapping("/available")
     public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
-            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-            @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
-            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
-            @RequestParam(required = false) String searchQuery) {
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+        @RequestParam(required = false) String searchQuery
+    ) {
         Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO, searchQuery);
         return ResponseEntity.ok(jobs);
     }
@@ -79,9 +79,10 @@ public class JobResource {
     @GetMapping("/filters")
     public ResponseEntity<JobFiltersDTO> getAllFilters() {
         JobFiltersDTO dto = new JobFiltersDTO(
-                jobService.getAllJobNames(),
-                jobService.getAllFieldOfStudies(),
-                jobService.getAllSupervisorNames());
+            jobService.getAllJobNames(),
+            jobService.getAllFieldOfStudies(),
+            jobService.getAllSupervisorNames()
+        );
         return ResponseEntity.ok(dto);
     }
 
@@ -102,9 +103,9 @@ public class JobResource {
      * {@code PUT /api/jobs/update/{jobId}} : Update an existing job posting.
      *
      * @param jobId the ID of the job to update.
-     * 
+     *
      * @param jobForm the updated job posting data.
-     * 
+     *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
      * updated job.
      */
@@ -145,9 +146,10 @@ public class JobResource {
     @ProfessorOrAdmin
     @PutMapping("/changeState/{jobId}")
     public ResponseEntity<JobFormDTO> changeJobState(
-            @PathVariable UUID jobId,
-            @RequestParam JobState jobState,
-            @RequestParam(required = false) boolean shouldRejectRemainingApplications) {
+        @PathVariable UUID jobId,
+        @RequestParam JobState jobState,
+        @RequestParam(required = false) boolean shouldRejectRemainingApplications
+    ) {
         JobFormDTO updatedJob = jobService.changeJobState(jobId, jobState, shouldRejectRemainingApplications);
         return ResponseEntity.ok(updatedJob);
     }
@@ -173,10 +175,11 @@ public class JobResource {
     @ProfessorOrAdmin
     @GetMapping("/professor")
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
-            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-            @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
-            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
-            @RequestParam(required = false) String searchQuery) {
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+        @RequestParam(required = false) String searchQuery
+    ) {
         return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
     }
 
