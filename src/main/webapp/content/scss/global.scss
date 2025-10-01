@@ -325,7 +325,8 @@
 }
 
 /* Styling for links */
-.link {
+.link,
+.description-text a {
   color: var(--p-primary-color);
 
   &:hover {
