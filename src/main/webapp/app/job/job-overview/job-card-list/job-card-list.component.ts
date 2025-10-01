@@ -10,6 +10,7 @@ import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/fil
 import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { emptyToUndef } from 'app/core/util/array-util.service';
 
 import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
@@ -137,10 +138,10 @@ export class JobCardListComponent {
         this.jobService.getAvailableJobs(
           this.pageSize(),
           this.page(),
-          this.emptyToUndef(this.selectedJobFilters()),
-          this.emptyToUndef(this.selectedFieldOfStudiesFilters()),
-          this.emptyToUndef(this.selectedLocationFilters()),
-          this.emptyToUndef(this.selectedSupervisorFilters()),
+          emptyToUndef(this.selectedJobFilters()),
+          emptyToUndef(this.selectedFieldOfStudiesFilters()),
+          emptyToUndef(this.selectedLocationFilters()),
+          emptyToUndef(this.selectedSupervisorFilters()),
           this.sortBy(),
           this.sortDirection(),
           this.searchQuery() || undefined,
@@ -152,9 +153,5 @@ export class JobCardListComponent {
       console.error('Failed to load jobs from API:', error);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
     }
-  }
-
-  private emptyToUndef<T>(v: T[]): T[] | undefined {
-    return v.length ? v : undefined;
   }
 }
