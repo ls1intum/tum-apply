@@ -70,7 +70,7 @@ public class JobService {
      * @return the updated job as a {@link JobFormDTO}
      */
     public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = assertCanManageJob(jobId);
         return updateJobEntity(job, dto);
     }
 
@@ -91,8 +91,7 @@ public class JobService {
      * @return the updated job as a {@link JobFormDTO}
      */
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-
+        Job job = assertCanManageJob(jobId);
         job.setState(targetState);
 
         if (targetState == JobState.CLOSED) {
@@ -140,9 +139,7 @@ public class JobService {
      * @param jobId the ID of the job to delete
      */
     public void deleteJob(UUID jobId) {
-        if (!jobRepository.existsById(jobId)) {
-            throw EntityNotFoundException.forId("Job", jobId);
-        }
+        assertCanManageJob(jobId);
         jobRepository.deleteById(jobId);
     }
 
@@ -153,7 +150,7 @@ public class JobService {
      * @return the job DTO with generaL job information
      */
     public JobDTO getJobById(UUID jobId) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = assertCanManageJob(jobId);
         return new JobDTO(
                 job.getJobId(),
                 job.getTitle(),
@@ -300,6 +297,10 @@ public class JobService {
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
         User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
+        // Ensure that the current user is either an admin or a research group member of
+        // the supervising professor
+        currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
+
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
         job.setTitle(dto.title());
@@ -318,4 +319,18 @@ public class JobService {
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
     }
+
+    /**
+     * Asserts that the current user can manage the job with the given ID.
+     *
+     * @param jobId the ID of the job to check
+     * @return the job entity if the user can manage it
+     */
+    private Job assertCanManageJob(UUID jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        return job;
+    }
+
 }
