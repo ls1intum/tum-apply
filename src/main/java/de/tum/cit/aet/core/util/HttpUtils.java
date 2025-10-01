@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
  * Helpers for HTTP-related tasks.
  */
 public class HttpUtils {
-    private HttpUtils() {
-    }
+
+    private HttpUtils() {}
 
     /**
      * Resolves the client's IP address from the HTTP request.

@@ -8,10 +8,4 @@ import jakarta.validation.constraints.NotNull;
 /**
  * Single-call OTP completion request. Validates the OTP and performs the requested purpose.
  */
-public record OtpCompleteDTO(
-    @NotBlank @Email String email,
-    @NotBlank String code,
-    @NotNull OtpPurpose purpose,
-    UserProfileDTO profile
-) {
-}
+public record OtpCompleteDTO(@NotBlank @Email String email, @NotBlank String code, @NotNull OtpPurpose purpose, UserProfileDTO profile) {}

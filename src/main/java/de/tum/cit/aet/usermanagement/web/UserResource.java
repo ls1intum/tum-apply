@@ -53,8 +53,7 @@ public class UserResource {
      * @return 204 No Content if updated successfully
      */
     @PutMapping("/name")
-    public ResponseEntity<Void> updateUserName(@AuthenticationPrincipal Jwt jwt,
-                                               @Valid @RequestBody UpdateUserNameDTO updateUserNameDTO) {
+    public ResponseEntity<Void> updateUserName(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserNameDTO updateUserNameDTO) {
         userService.updateNames(jwt.getSubject(), updateUserNameDTO.firstName(), updateUserNameDTO.lastName());
         return ResponseEntity.noContent().build();
     }
@@ -72,8 +71,5 @@ public class UserResource {
         return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
     }
 
-    public record UpdatePasswordDTO(
-        @NotBlank String newPassword
-    ) {
-    }
+    public record UpdatePasswordDTO(@NotBlank String newPassword) {}
 }

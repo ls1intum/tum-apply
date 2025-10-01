@@ -1,18 +1,18 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
+import java.time.Duration;
+import java.time.Instant;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
-import java.time.Instant;
 
 /**
  * Service for handling JWT operations such as decoding and extracting claims.
  */
 @Service
 public class JwtService {
+
     private final JwtDecoder decoder;
 
     public JwtService(JwtDecoder decoder) {

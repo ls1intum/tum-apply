@@ -58,12 +58,11 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
-
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         UUID userId = currentUserService.getUserId();
 
-        if(userId == null) {
+        if (userId == null) {
             Application application = new Application();
             application.setJob(job);
             application.setState(ApplicationState.SAVED);
@@ -377,7 +376,7 @@ public class ApplicationService {
      *                    {@code null}
      * @param type        the document type to filter by; must not be {@code null}
      * @return a set of document IDs matching the given application and document
-     * type; never {@code null}
+     *         type; never {@code null}
      */
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
         Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
@@ -393,7 +392,7 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     * document IDs for the application
+     *         document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
