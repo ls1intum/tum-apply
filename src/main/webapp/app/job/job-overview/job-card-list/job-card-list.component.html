@@ -1,10 +1,38 @@
-<jhi-sort-bar
+<jhi-search-filter-sort-bar
   [totalRecords]="totalRecords()"
-  [sortableFields]="sortableFields"
-  (sortChange)="loadOnSortEmit($event)"
   [singleEntity]="'job' | translate"
   [multipleEntities]="'jobs' | translate"
-  [shouldTranslate]="true"
+  [searchText]="'jobOverviewPage.searchFilterSortBar.searchText' | translate"
+  (searchOutput)="onSearchEmit($event)"
+  (filterOutput)="onFilterEmit($event)"
+  (sortOutput)="onSortEmit($event)"
+  [filters]="[
+    {
+      filterId: 'jobTitle',
+      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.job',
+      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.jobSearchPlaceholder',
+      filterOptions: allJobNames(),
+    },
+    {
+      filterId: 'fieldOfStudies',
+      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudies',
+      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudiesPlaceholder',
+      filterOptions: allFieldOfStudies(),
+    },
+    {
+      filterId: 'location',
+      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.location',
+      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.LocationSearchPlaceholder',
+      filterOptions: availableLocationLabels,
+    },
+    {
+      filterId: 'supervisor',
+      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.supervisor',
+      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.supervisorSearchPlaceholder',
+      filterOptions: allSupervisorNames(),
+    },
+  ]"
+  [sortableFields]="sortableFields"
 />
 @if (jobs().length > 0) {
   <div class="job-card-grid">
