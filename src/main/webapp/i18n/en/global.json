@@ -246,6 +246,9 @@
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved",
         "FAILED": "Failed saving changes"
+      },
+      "gradingScale": {
+        "ONE_TO_FOUR": "German Scale (One to Four)"
       }
     },
     "applicationPage1": {
@@ -294,14 +297,16 @@
       "tooltip": {
         "bachelorDegreeName": "Specify the study program of your Bachelor's Degree.",
         "bachelorDegreeUniversity": "Enter the name of the University where you completed your Bachelor's Degree.",
-        "bachelorGradingScale": "Choose the Grading Scale used for your Bachelor's Degree.",
+        "bachelorGradingScale": "Choose the Grading Scale used for your Bachelor's Degree (only German scale available at the moment).",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
         "masterDegreeName": "Specify the study program of your Master's Degree.",
         "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
-        "masterGradingScale": "Choose the Grading Scale used for your Master's Degree.",
+        "masterGradingScale": "Choose the Grading Scale used for your Master's Degree (only German scale available at the moment).",
         "masterGrade": "Enter your final Master's Grade according to your institution's grading system.",
         "filenamePrivacy": "File names stay private and are not shown to professors."
-      }
+      },
+      "gradingConversionBachelor": "Please enter your grade in the German grading system in the field <em>Bachelor grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us.",
+      "gradingConversionMaster": "Please enter your grade in the German grading system in the field <em>Master grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us."
     },
     "applicationPage3": {
       "label": {
