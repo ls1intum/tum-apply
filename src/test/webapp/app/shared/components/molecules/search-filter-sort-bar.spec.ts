@@ -9,11 +9,13 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 describe('SearchFilterSortBar', () => {
   const mockFilters: Filter[] = [
     {
+      filterId: 'status-filter',
       filterLabel: 'Status',
       filterSearchPlaceholder: 'Search status...',
       filterOptions: ['Active', 'Inactive', 'Pending'],
     },
     {
+      filterId: 'category-filter',
       filterLabel: 'Category',
       filterSearchPlaceholder: 'Search category...',
       filterOptions: ['Category A', 'Category B'],
@@ -125,7 +127,7 @@ describe('SearchFilterSortBar', () => {
     const filterOutputSpy = vi.spyOn(fixture.componentInstance.filterOutput, 'emit');
 
     const filterChange: FilterChange = {
-      filterLabel: 'status',
+      filterId: 'status-filter',
       selectedValues: ['Active', 'Pending'],
     };
 
@@ -419,7 +421,7 @@ describe('SearchFilterSortBar', () => {
       const filterOutputSpy = vi.spyOn(fixture.componentInstance.filterOutput, 'emit');
 
       const filterChange: FilterChange = {
-        filterLabel: 'status',
+        filterId: 'status-filter',
         selectedValues: [],
       };
 
@@ -427,5 +429,80 @@ describe('SearchFilterSortBar', () => {
 
       expect(filterOutputSpy).toHaveBeenCalledWith(filterChange);
     });
+
+    it('should handle filter change with different filterId values', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        filters: mockFilters,
+      });
+      const filterOutputSpy = vi.spyOn(fixture.componentInstance.filterOutput, 'emit');
+
+      const filterChange1: FilterChange = {
+        filterId: 'status-filter',
+        selectedValues: ['Active'],
+      };
+
+      const filterChange2: FilterChange = {
+        filterId: 'category-filter',
+        selectedValues: ['Category A'],
+      };
+
+      fixture.componentInstance.onFilterChange(filterChange1);
+      fixture.componentInstance.onFilterChange(filterChange2);
+
+      expect(filterOutputSpy).toHaveBeenNthCalledWith(1, filterChange1);
+      expect(filterOutputSpy).toHaveBeenNthCalledWith(2, filterChange2);
+      expect(filterOutputSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should pass filterId to filter components', () => {
+    const fixture = createSearchFilterSortBarFixture({
+      filters: mockFilters,
+    });
+
+    expect(fixture.componentInstance.filters()[0].filterId).toBe('status-filter');
+    expect(fixture.componentInstance.filters()[1].filterId).toBe('category-filter');
+  });
+
+  it('should handle filters with all properties', () => {
+    const completeFilters: Filter[] = [
+      {
+        filterId: 'complete-filter',
+        filterLabel: 'Complete Filter',
+        filterSearchPlaceholder: 'Search...',
+        filterOptions: ['Option 1', 'Option 2'],
+        shouldTranslateOptions: true,
+      },
+    ];
+
+    const fixture = createSearchFilterSortBarFixture({
+      filters: completeFilters,
+    });
+
+    const filter = fixture.componentInstance.filters()[0];
+    expect(filter.filterId).toBe('complete-filter');
+    expect(filter.filterLabel).toBe('Complete Filter');
+    expect(filter.filterSearchPlaceholder).toBe('Search...');
+    expect(filter.filterOptions).toEqual(['Option 1', 'Option 2']);
+    expect(filter.shouldTranslateOptions).toBe(true);
+  });
+
+  it('should handle filters without shouldTranslateOptions', () => {
+    const filtersWithoutTranslate: Filter[] = [
+      {
+        filterId: 'simple-filter',
+        filterLabel: 'Simple Filter',
+        filterSearchPlaceholder: 'Search...',
+        filterOptions: ['A', 'B'],
+      },
+    ];
+
+    const fixture = createSearchFilterSortBarFixture({
+      filters: filtersWithoutTranslate,
+    });
+
+    const filter = fixture.componentInstance.filters()[0];
+    expect(filter.filterId).toBe('simple-filter');
+    expect(filter.shouldTranslateOptions).toBeUndefined();
   });
 });
