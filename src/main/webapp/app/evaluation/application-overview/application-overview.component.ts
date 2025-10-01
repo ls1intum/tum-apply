@@ -147,11 +147,11 @@ export class ApplicationOverviewComponent {
   }
 
   loadOnFilterEmit(filterChange: FilterChange): void {
-    if (filterChange.filterLabel === 'evaluation.tableHeaders.job') {
+    if (filterChange.filterId === 'jobTitle') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadPage();
-    } else if (filterChange.filterLabel === 'evaluation.tableHeaders.status') {
+    } else if (filterChange.filterId === 'status') {
       this.page.set(0);
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);

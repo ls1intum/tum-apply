@@ -220,39 +220,79 @@ public class JobService {
      * @param pageDTO                pagination configuration
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO                sort configuration (by field and direction)
+     * @param searchQuery            string to search for job title, field of
+     *                               studies or supervisor name
      * @return a page of {@link JobCardDTO} matching the criteria
      */
     public Page<JobCardDTO> getAvailableJobs(PageDTO pageDTO, AvailableJobsFilterDTO availableJobsFilterDTO,
-            SortDTO sortDTO) {
+            SortDTO sortDTO, String searchQuery) {
         UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
         Pageable pageable;
+
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
                     JobState.PUBLISHED,
-                    availableJobsFilterDTO.title(), // optional filter for job title
-                    availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                    availableJobsFilterDTO.location(), // optional filter for campus location
-                    availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                    availableJobsFilterDTO.workload(), // optional filter for workload value
+                    availableJobsFilterDTO.titles(), // filter for job title
+                    availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
+                    availableJobsFilterDTO.locations(), // filter for campus location
+                    availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
                     sortDTO.sortBy(),
                     sortDTO.direction().name(),
                     userId,
+                    normalizedSearchQuery,
                     pageable);
         } else {
             // Sort dynamically via Pageable
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
                     JobState.PUBLISHED,
-                    availableJobsFilterDTO.title(), // optional filter for job title
+                    availableJobsFilterDTO.titles(), // optional filter for job title
                     availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
-                    availableJobsFilterDTO.location(), // optional filter for campus location
-                    availableJobsFilterDTO.professorName(), // optional filter for supervising professor's full name
-                    availableJobsFilterDTO.workload(), // optional filter for workload value
+                    availableJobsFilterDTO.locations(), // optional filter for campus location
+                    availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                     userId,
+                    normalizedSearchQuery,
                     pageable);
         }
+    }
+
+    /**
+     * Retrieves all unique job names.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique job names sorted
+     *         alphabetically
+     */
+    public List<String> getAllJobNames() {
+        return jobRepository.findAllUniqueJobNames(JobState.PUBLISHED);
+    }
+
+    /**
+     * Retrieves all unique fields of study.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique fields of study sorted
+     *         alphabetically
+     */
+    public List<String> getAllFieldOfStudies() {
+        return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
+    }
+
+    /**
+     * Retrieves all unique supervisor names
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique supervisor names sorted
+     *         alphabetically
+     */
+    public List<String> getAllSupervisorNames() {
+        return jobRepository.findAllUniqueSupervisorNames(JobState.PUBLISHED);
     }
 
     /**

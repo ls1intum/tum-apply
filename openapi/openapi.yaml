@@ -2057,6 +2057,26 @@
         }
       }
     },
+    "/api/jobs/filters": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getAllFilters",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobFiltersDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/jobs/detail/{jobId}": {
       "get": {
         "tags": [
@@ -2116,11 +2136,14 @@
             }
           },
           {
-            "name": "title",
+            "name": "titles",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
@@ -2128,42 +2151,41 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
-            "name": "location",
+            "name": "locations",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "GARCHING",
-                "GARCHING_HOCHBRUECK",
-                "HEILBRONN",
-                "MUNICH",
-                "STRAUBING",
-                "WEIHENSTEPHAN",
-                "SINGAPORE"
-              ]
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "GARCHING",
+                  "GARCHING_HOCHBRUECK",
+                  "HEILBRONN",
+                  "MUNICH",
+                  "STRAUBING",
+                  "WEIHENSTEPHAN",
+                  "SINGAPORE"
+                ]
+              }
             }
           },
           {
-            "name": "professorName",
+            "name": "professorNames",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "workload",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 0
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
@@ -2184,6 +2206,14 @@
                 "ASC",
                 "DESC"
               ]
+            }
+          },
+          {
+            "name": "searchQuery",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -4656,6 +4686,29 @@
           },
           "empty": {
             "type": "boolean"
+          }
+        }
+      },
+      "JobFiltersDTO": {
+        "type": "object",
+        "properties": {
+          "jobNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fieldsOfStudy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supervisorNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

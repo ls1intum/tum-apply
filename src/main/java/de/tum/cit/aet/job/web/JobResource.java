@@ -47,6 +47,8 @@ public class JobResource {
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO                sorting parameter containing the field and
      *                               direction
+     * @param searchQuery            string to search for job title, field of
+     *                               studies or supervisor name
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link Page} of {@link JobCardDTO}
      */
@@ -55,9 +57,31 @@ public class JobResource {
     public ResponseEntity<Page<JobCardDTO>> getAvailableJobs(
             @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
             @ParameterObject @Valid @ModelAttribute AvailableJobsFilterDTO availableJobsFilterDTO,
-            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO) {
-        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO);
+            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+            @RequestParam(required = false) String searchQuery) {
+        Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO, searchQuery);
         return ResponseEntity.ok(jobs);
+    }
+
+    /**
+     * {@code GET /api/jobs/filters} : Returns all available filter options for jobs
+     *
+     * This endpoint provides all unique filter values that can be used in the job
+     * filters
+     * It returns job names, fields of study, and supervisor names from all
+     * published jobs
+     * to populate dropdown menus and filter components on the client side.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link JobFiltersDTO} with all available filter options
+     */
+    @GetMapping("/filters")
+    public ResponseEntity<JobFiltersDTO> getAllFilters() {
+        JobFiltersDTO dto = new JobFiltersDTO(
+                jobService.getAllJobNames(),
+                jobService.getAllFieldOfStudies(),
+                jobService.getAllSupervisorNames());
+        return ResponseEntity.ok(dto);
     }
 
     /**

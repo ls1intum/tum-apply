@@ -135,11 +135,11 @@ export class MyPositionsPageComponent {
   }
 
   onFilterEmit(filterChange: FilterChange): void {
-    if (filterChange.filterLabel === 'myPositionsPage.tableColumn.job') {
+    if (filterChange.filterId === 'job') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
       void this.loadJobs();
-    } else if (filterChange.filterLabel === 'myPositionsPage.tableColumn.status') {
+    } else if (filterChange.filterId === 'status') {
       this.page.set(0);
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
