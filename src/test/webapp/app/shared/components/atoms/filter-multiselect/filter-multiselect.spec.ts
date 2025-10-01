@@ -9,6 +9,7 @@ describe('FilterMultiselect', () => {
 
   function createFilterMultiselectFixture(
     overrideInputs?: Partial<{
+      filterId: string;
       filterLabel: string;
       filterSearchPlaceholder: string;
       filterOptions: string[];
@@ -17,6 +18,7 @@ describe('FilterMultiselect', () => {
   ) {
     const fixture = TestBed.createComponent(FilterMultiselect);
 
+    fixture.componentRef.setInput('filterId', overrideInputs?.filterId ?? 'test-filter-id');
     fixture.componentRef.setInput('filterLabel', overrideInputs?.filterLabel ?? 'Test Filter');
     fixture.componentRef.setInput('filterSearchPlaceholder', overrideInputs?.filterSearchPlaceholder ?? 'Search...');
     fixture.componentRef.setInput('filterOptions', overrideInputs?.filterOptions ?? mockFilterOptions);
@@ -198,33 +200,46 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.isOpen()).toBe(false);
   });
 
-  it('should toggle option selection and emit change in correct order', () => {
-    const filterFixture = createFilterMultiselectFixture();
+  it('should toggle option selection and emit change with filterId in correct order', () => {
+    const filterFixture = createFilterMultiselectFixture({ filterId: 'custom-filter-id' });
 
     const filterChangeSpy = vi.spyOn(filterFixture.componentInstance.filterChange, 'emit');
 
     filterFixture.componentInstance.toggleOption('Option A');
     expect(filterFixture.componentInstance.selectedValues()).toEqual(['Option A']);
     expect(filterChangeSpy).toHaveBeenNthCalledWith(1, {
-      filterLabel: 'Test Filter',
+      filterId: 'custom-filter-id',
       selectedValues: ['Option A'],
     });
 
     filterFixture.componentInstance.toggleOption('Option B');
     expect(filterFixture.componentInstance.selectedValues()).toEqual(['Option A', 'Option B']);
     expect(filterChangeSpy).toHaveBeenNthCalledWith(2, {
-      filterLabel: 'Test Filter',
+      filterId: 'custom-filter-id',
       selectedValues: ['Option A', 'Option B'],
     });
 
     filterFixture.componentInstance.toggleOption('Option A');
     expect(filterFixture.componentInstance.selectedValues()).toEqual(['Option B']);
     expect(filterChangeSpy).toHaveBeenNthCalledWith(3, {
-      filterLabel: 'Test Filter',
+      filterId: 'custom-filter-id',
       selectedValues: ['Option B'],
     });
 
     expect(filterChangeSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it('should emit change with correct filterId', () => {
+    const filterFixture = createFilterMultiselectFixture({ filterId: 'job-filter' });
+
+    const filterChangeSpy = vi.spyOn(filterFixture.componentInstance.filterChange, 'emit');
+
+    filterFixture.componentInstance.toggleOption('Option A');
+
+    expect(filterChangeSpy).toHaveBeenCalledWith({
+      filterId: 'job-filter',
+      selectedValues: ['Option A'],
+    });
   });
 
   it('should handle search input change', () => {
@@ -301,5 +316,19 @@ describe('FilterMultiselect', () => {
     const noResultsElement = filterFixture.nativeElement.querySelector('.no-results');
     expect(noResultsElement).toBeTruthy();
     expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
+  });
+
+  it('should use default filterId when not provided in override', () => {
+    const filterFixture = createFilterMultiselectFixture();
+
+    expect(filterFixture.componentInstance.filterId()).toBe('test-filter-id');
+  });
+
+  it('should handle different filterId values', () => {
+    const filterFixture1 = createFilterMultiselectFixture({ filterId: 'filter-1' });
+    const filterFixture2 = createFilterMultiselectFixture({ filterId: 'filter-2' });
+
+    expect(filterFixture1.componentInstance.filterId()).toBe('filter-1');
+    expect(filterFixture2.componentInstance.filterId()).toBe('filter-2');
   });
 });
