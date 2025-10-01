@@ -1,20 +1,22 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
-import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
-import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+
+import { DetailCard } from './detail-card/detail-card';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [ApplicationDetailCardComponent, DocumentGroupComponent, SharedModule, ApplicationStateForApplicantsComponent, ButtonComponent],
+  imports: [DocumentGroupComponent, SharedModule, ButtonComponent, FontAwesomeModule, DetailCard, ApplicationStateForApplicantsComponent],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
@@ -31,6 +33,12 @@ export default class ApplicationDetailForApplicantComponent {
   actualDocumentData = signal<ApplicationDocumentIdsDTO | null>(null);
 
   applicationId = signal<string>('');
+
+  // Job information signals (placeholders until backend provides this data)
+  supervisorName = signal<string | undefined>(undefined);
+  researchGroup = signal<string | undefined>(undefined);
+  location = signal<string | undefined>(undefined);
+  jobId = signal<string | undefined>(undefined);
 
   application = computed(() => {
     const preview = this.previewDetailData();
@@ -54,8 +62,8 @@ export default class ApplicationDetailForApplicantComponent {
     // Only initialize if we're on a detail page route (has application_id param)
     // and not in preview mode
     const applicationId = this.route.snapshot.paramMap.get('application_id');
-    if (applicationId && !this.previewDetailData()) {
-      this.init();
+    if (applicationId !== null && !this.previewDetailData()) {
+      void this.init();
     }
   }
 
@@ -71,7 +79,7 @@ export default class ApplicationDetailForApplicantComponent {
     this.actualDetailData.set(application);
     this.actualDetailDataExists.set(true);
 
-    firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
+    void firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.actualDocumentData.set(ids);
         this.actualDocumentDataExists.set(true);
@@ -80,10 +88,21 @@ export default class ApplicationDetailForApplicantComponent {
   }
 
   onUpdateApplication(): void {
-    this.router.navigate(['/application/form'], {
+    void this.router.navigate(['/application/form'], {
       queryParams: {
         application: this.applicationId(),
       },
     });
+  }
+
+  onViewJobDetails(): void {
+    // TODO: Navigate to job details page once jobId is available from backend
+    // For now, show a toast message
+    const jobIdValue = this.jobId();
+    if (jobIdValue !== undefined && jobIdValue !== '') {
+      void this.router.navigate(['/job', jobIdValue]);
+    } else {
+      this.toastService.showErrorKey('entity.toast.applyFlow.jobIdNotAvailable');
+    }
   }
 }

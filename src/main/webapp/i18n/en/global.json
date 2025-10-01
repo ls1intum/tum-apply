@@ -161,7 +161,9 @@
       "desired_start_date": "Desired Start Date",
       "preferred_language": "Preferred Language",
       "applicant_info": "Applicant Information",
-      "nationality": "Nationality"
+      "nationality": "Nationality",
+      "website": "Website",
+      "linkedin": "LinkedIn"
     },
     "delete": {
       "title": "Confirm delete operation"
@@ -226,8 +228,18 @@
     },
     "application_detail": {
       "applicant": {
-        "header": "Application for '{{jobTitle}}'"
-      }
+        "header": "Application for '{{jobTitle}}'",
+        "title_prefix": "Application for"
+      },
+      "position_overview": "Position Overview",
+      "supervisor": "Supervisor",
+      "research_group": "Research Group",
+      "location": "Location",
+      "view_job_details": "View Job Details",
+      "personal_statements": "Personal Statements",
+      "personal_information": "Personal Information",
+      "personal_documents": "Personal Documents",
+      "not_found": "Application not found"
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",

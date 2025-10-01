@@ -161,7 +161,9 @@
       "desired_start_date": "Gewünschtes Anfangsdatum",
       "preferred_language": "Bevorzugte Sprache",
       "applicant_info": "Bewerberinformationen",
-      "nationality": "Nationalität"
+      "nationality": "Nationalität",
+      "website": "Webseite",
+      "linkedin": "LinkedIn"
     },
     "delete": {
       "title": "Löschen bestätigen"
@@ -226,8 +228,18 @@
     },
     "application_detail": {
       "applicant": {
-        "header": "Bewerbung für '{{jobTitle}}'"
-      }
+        "header": "Bewerbung für '{{jobTitle}}'",
+        "title_prefix": "Bewerbung für"
+      },
+      "position_overview": "Stellenübersicht",
+      "supervisor": "Betreuer",
+      "research_group": "Forschungsgruppe",
+      "location": "Standort",
+      "view_job_details": "Stellendetails ansehen",
+      "personal_statements": "Persönliche Angaben",
+      "personal_information": "Persönliche Informationen",
+      "personal_documents": "Persönliche Dokumente",
+      "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
       "personalInformation": "Persönliche Informationen",
