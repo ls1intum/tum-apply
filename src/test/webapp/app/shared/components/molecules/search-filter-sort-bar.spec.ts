@@ -343,4 +343,89 @@ describe('SearchFilterSortBar', () => {
       expect(clearTimeoutSpy).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('edge cases', () => {
+    it('should handle empty search input', () => {
+      const fixture = createSearchFilterSortBarFixture();
+      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
+
+      fixture.componentInstance.inputText = '';
+      fixture.componentInstance.onSearch();
+
+      vi.advanceTimersByTime(300);
+
+      expect(searchOutputSpy).toHaveBeenCalledWith('');
+    });
+
+    it('should handle very long search input', () => {
+      const fixture = createSearchFilterSortBarFixture();
+      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
+
+      const longString = 'a'.repeat(1000);
+      fixture.componentInstance.inputText = longString;
+      fixture.componentInstance.onSearch();
+
+      vi.advanceTimersByTime(300);
+
+      expect(searchOutputSpy).toHaveBeenCalledWith(longString);
+      expect(searchOutputSpy.mock.calls[0][0].length).toBe(1000);
+    });
+
+    it('should handle search input with special characters', () => {
+      const fixture = createSearchFilterSortBarFixture();
+      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
+
+      const specialChars = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/\\';
+      fixture.componentInstance.inputText = specialChars;
+      fixture.componentInstance.onSearch();
+
+      vi.advanceTimersByTime(300);
+
+      expect(searchOutputSpy).toHaveBeenCalledWith(specialChars);
+    });
+
+    it('should handle search input with whitespace only', () => {
+      const fixture = createSearchFilterSortBarFixture();
+      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
+
+      fixture.componentInstance.inputText = '   ';
+      fixture.componentInstance.onSearch();
+
+      vi.advanceTimersByTime(300);
+
+      expect(searchOutputSpy).toHaveBeenCalledWith('   ');
+    });
+
+    it('should handle totalRecords of 0', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        totalRecords: 0,
+      });
+
+      expect(fixture.componentInstance.totalRecords()).toBe(0);
+    });
+
+    it('should handle very large totalRecords number', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        totalRecords: 999999,
+      });
+
+      expect(fixture.componentInstance.totalRecords()).toBe(999999);
+    });
+
+    it('should handle filter change with empty selected values', () => {
+      const fixture = createSearchFilterSortBarFixture({
+        filters: mockFilters,
+      });
+      const filterOutputSpy = vi.spyOn(fixture.componentInstance.filterOutput, 'emit');
+
+      const filterChange: FilterChange = {
+        filterLabel: 'status',
+        selectedValues: [],
+      };
+
+      fixture.componentInstance.onFilterChange(filterChange);
+
+      expect(filterOutputSpy).toHaveBeenCalledWith(filterChange);
+    });
+  });
 });
