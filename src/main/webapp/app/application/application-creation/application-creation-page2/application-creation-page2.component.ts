@@ -28,17 +28,11 @@ export type ApplicationCreationPage2Data = {
 
 export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
   value: v,
-  name: v
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase()),
+  name: `entity.applicationSteps.gradingScale.${v}`,
 }));
 export const masterGradingScale: SelectOption[] = Object.values(ApplicantDTO.MasterGradingScaleEnum).map(v => ({
   value: v,
-  name: v
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase()),
+  name: `entity.applicationSteps.gradingScale.${v}`,
 }));
 
 export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
