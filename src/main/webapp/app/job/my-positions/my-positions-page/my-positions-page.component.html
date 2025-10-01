@@ -7,13 +7,30 @@
   </div>
   <div class="my-positions-container">
     <div class="body">
-      <jhi-sort-bar
+      <jhi-search-filter-sort-bar
+        [searchText]="'myPositionsPage.searchFilterSortBar.searchText' | translate"
         [totalRecords]="totalRecords()"
-        [sortableFields]="sortableFields"
-        (sortChange)="loadOnSortEmit($event)"
         [singleEntity]="'job' | translate"
         [multipleEntities]="'jobs' | translate"
-        [shouldTranslate]="true"
+        (searchOutput)="onSearchEmit($event)"
+        (filterOutput)="onFilterEmit($event)"
+        (sortOutput)="loadOnSortEmit($event)"
+        [filters]="[
+          {
+            filterId: 'job',
+            filterLabel: 'myPositionsPage.tableColumn.job',
+            filterSearchPlaceholder: 'myPositionsPage.searchFilterSortBar.filterOptions.jobSearchPlaceholder',
+            filterOptions: allJobNames(),
+          },
+          {
+            filterId: 'status',
+            filterLabel: 'myPositionsPage.tableColumn.status',
+            filterSearchPlaceholder: 'myPositionsPage.searchFilterSortBar.filterOptions.stateSearchPlaceholder',
+            filterOptions: availableStatusLabels,
+            shouldTranslateOptions: true,
+          },
+        ]"
+        [sortableFields]="sortableFields"
       />
       <div class="table-wrapper">
         <jhi-dynamic-table

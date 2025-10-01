@@ -1993,25 +1993,25 @@
             }
           },
           {
-            "name": "title",
+            "name": "titles",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
-            "name": "state",
+            "name": "states",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "DRAFT",
-                "PUBLISHED",
-                "CLOSED",
-                "APPLICANT_FOUND"
-              ]
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
@@ -2032,6 +2032,14 @@
                 "ASC",
                 "DESC"
               ]
+            }
+          },
+          {
+            "name": "searchQuery",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -2216,6 +2224,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageJobCardDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/allNames": {
+      "get": {
+        "tags": [
+          "job-resource"
+        ],
+        "operationId": "getAllJobNamesByProfessor",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }

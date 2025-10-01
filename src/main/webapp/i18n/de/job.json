@@ -150,26 +150,30 @@
       "title": "Verwalte deine Doktorandenstellen",
       "createButton": "Neue Stelle erstellen"
     },
+    "searchFilterSortBar": {
+      "searchText": "Stellen suchen...",
+      "filterOptions": {
+        "jobSearchPlaceholder": "Suche Stellen...",
+        "stateSearchPlaceholder": "Suche Status..."
+      }
+    },
     "tableColumn": {
       "supervisingProfessor": "Betreuender Professor",
       "job": "Stelle",
       "status": "Status",
       "startDate": "Startdatum",
-      "created": "Erstellt am",
+      "created": "Erstellt",
       "lastModified": "Zuletzt geändert"
-    },
-    "sortingOptions": {
-      "lastModified": "Zuletzt geändert",
-      "jobTitle": "Stellentitel",
-      "status": "Status",
-      "startDate": "Startdatum",
-      "created": "Erstellt"
     },
     "confirmDialog": {
       "closeHeader": "Schließung der Position bestätigen",
       "closeMessage": "Bist du sicher, dass du diese Position schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
       "deleteHeader": "Löschvorgang bestätigen",
       "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
+    },
+    "errors": {
+      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+      "loadJobs": "Fehler beim Laden der Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   },
   "jobDetailPage": {

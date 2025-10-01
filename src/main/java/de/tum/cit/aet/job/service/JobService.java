@@ -22,6 +22,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -301,14 +302,37 @@ public class JobService {
      * @param pageDTO                pagination configuration
      * @param professorJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO                sorting configuration
+     * @param searchQuery            search string for supervising professor or job
+     *                               title
      * @return a page of {@link CreatedJobDTO} for the professor's jobs
      */
     public Page<CreatedJobDTO> getJobsByProfessor(PageDTO pageDTO, ProfessorJobsFilterDTO professorJobsFilterDTO,
-            SortDTO sortDTO) {
+            SortDTO sortDTO, String searchQuery) {
         UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
-        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.title(),
-                professorJobsFilterDTO.state(), pageable);
+        List<JobState> enumStates = null;
+        if (professorJobsFilterDTO.states() != null && !professorJobsFilterDTO.states().isEmpty()) {
+            enumStates = professorJobsFilterDTO.states().stream()
+                    .map(JobState::fromValue)
+                    .filter(Objects::nonNull)
+                    .toList();
+        }
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(),
+                enumStates, normalizedSearchQuery, pageable);
+    }
+
+    /**
+     * Retrieves all unique job names for the current professor.
+     * This is used for filter dropdown options and should not be affected by
+     * current filters.
+     *
+     * @return a list of all unique job names by current professor sorted
+     *         alphabetically
+     */
+    public List<String> getAllJobNamesByProfessor() {
+        UUID userId = currentUserService.getUserId();
+        return jobRepository.findAllUniqueJobNamesByProfessor(userId);
     }
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
