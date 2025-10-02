@@ -28,8 +28,7 @@ public class AdminResource {
      * @return HTTP 200 OK with the created {@link ResearchGroup}
      */
     @PostMapping("/research-groups")
-    public ResponseEntity<ResearchGroup> createResearchGroup(
-        @Valid @RequestBody ResearchGroupCreationDTO request) {
+    public ResponseEntity<ResearchGroup> createResearchGroup(@Valid @RequestBody ResearchGroupCreationDTO request) {
         return ResponseEntity.ok(researchGroupService.createResearchGroup(request));
     }
 
@@ -41,10 +40,7 @@ public class AdminResource {
      */
     @PostMapping("/research-groups/provision")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResearchGroup> provisionResearchGroup(
-        @Valid @RequestBody ResearchGroupProvisionDTO request
-    ) {
+    public ResponseEntity<ResearchGroup> provisionResearchGroup(@Valid @RequestBody ResearchGroupProvisionDTO request) {
         return ResponseEntity.ok(researchGroupService.provisionResearchGroup(request));
     }
-
 }

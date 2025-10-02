@@ -26,12 +26,6 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -39,6 +33,11 @@ import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +52,6 @@ public class ApplicationEvaluationService {
 
     @Value("${aet.download.deterministic-zip:false}")
     private boolean DETERMINISTIC_ZIP;
-
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -177,15 +175,14 @@ public class ApplicationEvaluationService {
      * and the total number of matching records
      */
     public ApplicationEvaluationOverviewListDTO getAllApplicationsOverviews(
-            UUID researchGroupId,
-            OffsetPageDTO offsetPageDTO,
-            SortDTO sortDTO,
-            EvaluationFilterDTO filterDTO) {
-        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(),
-                sortDTO.toSpringSort(SORTABLE_FIELDS));
+        UUID researchGroupId,
+        OffsetPageDTO offsetPageDTO,
+        SortDTO sortDTO,
+        EvaluationFilterDTO filterDTO
+    ) {
+        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                searchQuery);
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
 
         return ApplicationEvaluationOverviewListDTO.fromApplications(applicationsPage, totalRecords);
@@ -205,12 +202,12 @@ public class ApplicationEvaluationService {
      * @throws IllegalArgumentException if the window size is not a positive odd integer
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetailsWindow(
-            UUID applicationId,
-            Integer windowSize,
-            UUID researchGroupId,
-            SortDTO sortDTO,
-            EvaluationFilterDTO filterDTO) {
-
+        UUID applicationId,
+        Integer windowSize,
+        UUID researchGroupId,
+        SortDTO sortDTO,
+        EvaluationFilterDTO filterDTO
+    ) {
         String searchQuery = filterDTO.getSearch();
 
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
@@ -219,11 +216,13 @@ public class ApplicationEvaluationService {
             throw new IllegalArgumentException("Window size must be a positive and odd integer");
         }
         long idx = applicationEvaluationRepository.findIndexOfApplication(
-                applicationId,
-                researchGroupId,
-                VIEWABLE_STATES,
-                sortDTO.toSpringSort(SORTABLE_FIELDS),
-                filterDTO.getFilters(), searchQuery);
+            applicationId,
+            researchGroupId,
+            VIEWABLE_STATES,
+            sortDTO.toSpringSort(SORTABLE_FIELDS),
+            filterDTO.getFilters(),
+            searchQuery
+        );
 
         // Calculate how many items to include before and after the target application
         int half = (int) Math.floor((double) windowSize / 2);
@@ -240,10 +239,8 @@ public class ApplicationEvaluationService {
         // Create a Pageable with an offset (start index), limit (window size), and the sort criteria
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
 
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                searchQuery);
-        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx,
-                windowIndex);
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
+        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx, windowIndex);
     }
 
     /**
@@ -256,15 +253,14 @@ public class ApplicationEvaluationService {
      * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications and total record count
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetails(
-            UUID researchGroupId,
-            OffsetPageDTO offsetPageDTO,
-            SortDTO sortDTO,
-            EvaluationFilterDTO filterDTO) {
-        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(),
-                sortDTO.toSpringSort(SORTABLE_FIELDS));
+        UUID researchGroupId,
+        OffsetPageDTO offsetPageDTO,
+        SortDTO sortDTO,
+        EvaluationFilterDTO filterDTO
+    ) {
+        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                searchQuery);
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
         return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null);
     }
@@ -310,19 +306,19 @@ public class ApplicationEvaluationService {
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s.zip\"", zipName));
 
         // Count per type to decide if numbering is needed
-        Map<DocumentType, Long> typeCounts = documentDictionaries.stream()
-            .collect(Collectors.groupingBy(
-                DocumentDictionary::getDocumentType,
-                () -> new EnumMap<>(DocumentType.class),
-                Collectors.counting()
-            ));
+        Map<DocumentType, Long> typeCounts = documentDictionaries
+            .stream()
+            .collect(
+                Collectors.groupingBy(DocumentDictionary::getDocumentType, () -> new EnumMap<>(DocumentType.class), Collectors.counting())
+            );
 
         // Per-type index used only when count > 1
         Map<DocumentType, Integer> typeIndex = new EnumMap<>(DocumentType.class);
 
-        try (BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
-             ZipOutputStream zos = new ZipOutputStream(bos)) {
-
+        try (
+            BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
+            ZipOutputStream zos = new ZipOutputStream(bos)
+        ) {
             zos.setLevel(Deflater.BEST_SPEED);
 
             for (DocumentDictionary dd : documentDictionaries) {
@@ -331,9 +327,7 @@ public class ApplicationEvaluationService {
 
                 long count = typeCounts.getOrDefault(type, 0L);
                 String base = fileName(type);
-                String entryName = (count > 1)
-                    ? base + "_" + typeIndex.merge(type, 1, Integer::sum)
-                    : base;
+                String entryName = (count > 1) ? base + "_" + typeIndex.merge(type, 1, Integer::sum) : base;
 
                 // append file extension if present (e.g., "cv.pdf")
                 String ext = documentService.resolveFileExtension(doc).getExtension();
@@ -396,7 +390,9 @@ public class ApplicationEvaluationService {
      * @return {@link Application}
      */
     public Application getApplication(UUID applicationId) {
-        return applicationEvaluationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        return applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
     }
 
     /**
@@ -409,10 +405,13 @@ public class ApplicationEvaluationService {
      * @param searchQuery     optional search query to filter
      * @return a list of matching {@link Application} entities
      */
-    private List<Application> getApplicationsDetails(UUID researchGroupId, Pageable pageable,
-            Map<String, List<?>> dynamicFilters, String searchQuery) {
-        return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable,
-                dynamicFilters, searchQuery);
+    private List<Application> getApplicationsDetails(
+        UUID researchGroupId,
+        Pageable pageable,
+        Map<String, List<?>> dynamicFilters,
+        String searchQuery
+    ) {
+        return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable, dynamicFilters, searchQuery);
     }
 
     /**
@@ -425,8 +424,7 @@ public class ApplicationEvaluationService {
      * @return the total count of matching applications
      */
     private long getTotalRecords(UUID researchGroupId, Map<String, List<?>> dynamicFilters, String searchQuery) {
-        return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters,
-                searchQuery);
+        return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters, searchQuery);
     }
 
     /**

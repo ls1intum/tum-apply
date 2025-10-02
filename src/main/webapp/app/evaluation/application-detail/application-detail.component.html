@@ -12,11 +12,13 @@
     (sortOutput)="loadOnSortEmit($event)"
     [filters]="[
       {
+        filterId: 'jobTitle',
         filterLabel: 'evaluation.tableHeaders.job',
         filterSearchPlaceholder: 'evaluation.filterOptions.jobSearchPlaceholder',
         filterOptions: allAvailableJobNames(),
       },
       {
+        filterId: 'status',
         filterLabel: 'evaluation.tableHeaders.status',
         filterSearchPlaceholder: 'evaluation.filterOptions.stateSearchPlaceholder',
         filterOptions: availableStatusLabels,
