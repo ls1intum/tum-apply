@@ -82,9 +82,9 @@ public class ApplicationEvaluationResourceTest {
         applicationReviewRepository.deleteAllInBatch();
         evaluationRepository.deleteAllInBatch();
         applicationRepository.deleteAllInBatch();
+        applicantRepository.deleteAllInBatch();
         jobRepository.deleteAllInBatch();
         userResearchGroupRoleRepository.deleteAllInBatch();
-        applicantRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
         researchGroupRepository.deleteAllInBatch();
 
