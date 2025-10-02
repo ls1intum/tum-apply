@@ -3,10 +3,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MessageService } from 'primeng/api';
 import { provideTranslateMock } from 'util/translate.mock';
 import { ToastService } from 'app/service/toast-service';
+import { ApplicationRef, EnvironmentInjector } from '@angular/core';
 
 describe('ToastService', () => {
   let service: ToastService;
   let messageService: MessageService;
+  let appRef: ApplicationRef;
+  let envInjector: EnvironmentInjector;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -15,8 +18,12 @@ describe('ToastService', () => {
 
     service = TestBed.inject(ToastService);
     messageService = TestBed.inject(MessageService);
+    appRef = TestBed.inject(ApplicationRef);
+    envInjector = TestBed.inject(EnvironmentInjector);
 
     vi.spyOn(messageService, 'add');
+
+    document.body.querySelectorAll('jhi-toast').forEach(el => el.remove());
   });
 
   afterEach(() => {
@@ -564,6 +571,47 @@ describe('ToastService', () => {
       service.showWarnKey('app.warning', {});
 
       expect(messageService.add).toHaveBeenCalled();
+    });
+  });
+
+  describe('Constructor and Component Creation', () => {
+    it('should create toast component on initialization', () => {
+      const appendChildSpy = vi.spyOn(document.body, 'appendChild');
+      const attachViewSpy = vi.spyOn(appRef, 'attachView');
+
+      const newService = TestBed.runInInjectionContext(() => new ToastService());
+
+      expect(appendChildSpy).toHaveBeenCalled();
+      expect(attachViewSpy).toHaveBeenCalled();
+      expect(newService).toBeTruthy();
+
+      const toastElements = document.body.querySelectorAll('jhi-toast');
+      expect(toastElements.length).toBe(1);
+    });
+
+    it('should only create one toast component instance', () => {
+      const service = TestBed.runInInjectionContext(() => new ToastService());
+
+      service.showSuccess({ summary: 'Test' });
+      service.showError({ summary: 'Test' });
+
+      const toastElements = document.body.querySelectorAll('jhi-toast');
+      expect(toastElements.length).toBe(1);
+    });
+
+    it('should attach toast component to document body', () => {
+      TestBed.runInInjectionContext(() => new ToastService());
+      const toastElements = document.body.querySelectorAll('jhi-toast');
+
+      expect(toastElements.length).toBe(1);
+    });
+
+    it('should create toast component with available injector', () => {
+      TestBed.runInInjectionContext(() => new ToastService());
+
+      expect(envInjector).toBeDefined();
+      const toastElements = document.body.querySelectorAll('jhi-toast');
+      expect(toastElements.length).toBe(1);
     });
   });
 });
