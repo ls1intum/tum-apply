@@ -1,30 +1,27 @@
 package de.tum.cit.aet.utility;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.test.web.servlet.*;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 /**
  * Thin HTTP client for MVC.
  * - Central place for common request setup (Accept, JSON content).
  * - Keeps request-building logic away from individual tests.
- * <p>
+ *
  * Tip: Use the "with(...)" helper to attach security to all requests from this client,
  * for example a JWT RequestPostProcessor.
  */
@@ -36,6 +33,7 @@ public class MvcTestClient {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -129,7 +127,6 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
-            case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
@@ -165,7 +162,6 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = putOk(url, body, accepts);
-            case 204 -> result = putNoContent(url, body, accepts);
             case 400 -> result = putInvalid(url, body, accepts);
             case 401 -> result = putUnauthorized(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
@@ -235,7 +231,6 @@ public class MvcTestClient {
         }
     }
 
-
     /*     * Low-level GET that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult getInvalid(String url, Map<String, String> params, MediaType... accepts) {
@@ -298,17 +293,6 @@ public class MvcTestClient {
     }
 
     /**
-     * Low-level POST that asserts 204 Bad Request and returns the MvcResult.
-     */
-    private MvcResult postNoContent(String url, Object body, MediaType... accepts) {
-        try {
-            return postJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
-        } catch (Exception e) {
-            throw new AssertionError("POST " + url + " failed with 204", e);
-        }
-    }
-
-    /**
      * Low-level POST that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult postInvalid(String url, Object body, MediaType... accepts) {
@@ -347,17 +331,6 @@ public class MvcTestClient {
     private MvcResult putOk(String url, Object body, MediaType... accepts) {
         try {
             return putJson(url, body, accepts).andExpect(status().isOk()).andReturn();
-        } catch (Exception e) {
-            throw new AssertionError("PUT " + url + " failed", e);
-        }
-    }
-
-    /**
-     * Low-level PUT that asserts 204 OK and returns the MvcResult.
-     */
-    private MvcResult putNoContent(String url, Object body, MediaType... accepts) {
-        try {
-            return putJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("PUT " + url + " failed", e);
         }
@@ -452,17 +425,17 @@ public class MvcTestClient {
      * Builds and performs a GET applying default Accept and any configured RequestPostProcessors.
      */
     private ResultActions get(String url, MediaType... accepts) throws Exception {
-        return mockMvc.perform(
-            applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts)
-        );
+        return mockMvc.perform(applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts));
     }
 
     /**
      * Builds and performs a GET with query parameters, applying defaults and processors.
      */
     private ResultActions get(String url, Map<String, String> params, MediaType... accepts) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder =
-            applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts);
+        MockHttpServletRequestBuilder requestBuilder = applyDefaults(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url),
+            accepts
+        );
         if (params != null) params.forEach(requestBuilder::param);
         return mockMvc.perform(requestBuilder);
     }
@@ -472,9 +445,7 @@ public class MvcTestClient {
      */
     private ResultActions postJson(String url, Object body, MediaType... accepts) throws Exception {
         return mockMvc.perform(
-            applyDefaults(post(url), accepts)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(body))
+            applyDefaults(post(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
         );
     }
 
@@ -483,9 +454,7 @@ public class MvcTestClient {
      */
     private ResultActions putJson(String url, Object body, MediaType... accepts) throws Exception {
         return mockMvc.perform(
-            applyDefaults(put(url), accepts)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(body))
+            applyDefaults(put(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
         );
     }
 
@@ -493,8 +462,7 @@ public class MvcTestClient {
      * Builds and performs a DELETE, optionally with a JSON body, applying defaults and processors.
      */
     private ResultActions deleteJson(String url, Object body, MediaType... accepts) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = applyDefaults(delete(url), accepts)
-            .contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder requestBuilder = applyDefaults(delete(url), accepts).contentType(MediaType.APPLICATION_JSON);
         if (body != null) requestBuilder.content(objectMapper.writeValueAsString(body));
         return mockMvc.perform(requestBuilder);
     }

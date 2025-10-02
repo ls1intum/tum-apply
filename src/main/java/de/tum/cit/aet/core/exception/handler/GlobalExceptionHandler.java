@@ -6,6 +6,9 @@ import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.exception.errors.ValidationFieldError;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -20,10 +23,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Global exception handler for all unhandled runtime and validation exceptions in the application.
@@ -64,7 +63,7 @@ public class GlobalExceptionHandler {
      * @param request the current HTTP request
      * @return a ResponseEntity with a structured ApiError body
      */
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleRuntime(Exception ex, HttpServletRequest request) {
         if (ex instanceof HandlerMethodValidationException hmve) {
             log.warn("Handled handler-method validation: {} - Path: {}", hmve.getMessage(), request.getRequestURI());
@@ -141,13 +140,7 @@ public class GlobalExceptionHandler {
         }
         if (ex instanceof EmailVerificationFailedException evfe) {
             log.info("Handled OTP verification failure - Path: {}", request.getRequestURI());
-            return buildErrorResponse(
-                HttpStatus.UNAUTHORIZED,
-                ErrorCode.UNAUTHORIZED,
-                evfe,
-                request.getRequestURI(),
-                null
-            );
+            return buildErrorResponse(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED, evfe, request.getRequestURI(), null);
         }
         ExceptionMetadata metadata = EXCEPTION_METADATA.getOrDefault(
             ex.getClass(),
@@ -162,12 +155,15 @@ public class GlobalExceptionHandler {
     }
 
     private List<ValidationFieldError> extractFieldErrors(HandlerMethodValidationException ex) {
-        return ex.getParameterValidationResults().stream()
-            .flatMap(r -> r.getResolvableErrors().stream().map(err ->
-                new ValidationFieldError(
-                    "request",
-                    r.getMethodParameter().getParameterName(),
-                    err.getDefaultMessage())))
+        return ex
+            .getParameterValidationResults()
+            .stream()
+            .flatMap(r ->
+                r
+                    .getResolvableErrors()
+                    .stream()
+                    .map(err -> new ValidationFieldError("request", r.getMethodParameter().getParameterName(), err.getDefaultMessage()))
+            )
             .toList();
     }
 
@@ -225,6 +221,5 @@ public class GlobalExceptionHandler {
      * @param status the HTTP status to return
      * @param code   the error code associated with the exception
      */
-    private record ExceptionMetadata(HttpStatus status, ErrorCode code) {
-    }
+    private record ExceptionMetadata(HttpStatus status, ErrorCode code) {}
 }
