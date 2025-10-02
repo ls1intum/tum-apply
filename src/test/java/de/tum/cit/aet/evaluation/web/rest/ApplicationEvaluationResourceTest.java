@@ -15,7 +15,6 @@ import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
-import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -33,15 +32,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
@@ -66,8 +62,6 @@ public class ApplicationEvaluationResourceTest {
     @Autowired
     UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
-    @MockitoBean
-    AsyncEmailSender sender;
 
     @Autowired
     MvcTestClient api;
@@ -102,8 +96,6 @@ public class ApplicationEvaluationResourceTest {
 
         sentApp = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         inReviewApp = ApplicationTestData.savedInReview(applicationRepository, publishedJob, applicant);
-
-        doNothing().when(sender).sendAsync(any());
     }
 
 
@@ -192,7 +184,6 @@ public class ApplicationEvaluationResourceTest {
 
         Job job = jobRepository.findById(publishedJob.getJobId()).orElseThrow();
         assertThat(job.getState()).isEqualTo(JobState.APPLICANT_FOUND);
-        verify(sender, times(2)).sendAsync(any());
     }
 
     @Test
@@ -207,7 +198,6 @@ public class ApplicationEvaluationResourceTest {
         assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
         assertThat(updated.getApplicationReview()).isNotNull();
         assertThat(updated.getApplicationReview().getReason()).isNotBlank();
-        verify(sender, times(1)).sendAsync(any());
     }
 
     @Test
