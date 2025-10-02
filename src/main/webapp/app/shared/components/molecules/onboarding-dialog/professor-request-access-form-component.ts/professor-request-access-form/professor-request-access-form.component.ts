@@ -18,7 +18,7 @@ import { ToastService } from '../../../../../../service/toast-service';
 })
 export class ProfessorRequestAccessFormComponent {
   // Form
-  professorForm = this.createProfessorForm();
+  professorForm: FormGroup;
 
   // Loading state
   isSubmitting = signal(false);
@@ -31,6 +31,11 @@ export class ProfessorRequestAccessFormComponent {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
   private readonly translate = inject(TranslateService);
   private readonly toastService = inject(ToastService);
+
+  constructor() {
+    // Initialize form after dependency injection is complete
+    this.professorForm = this.createProfessorForm();
+  }
 
   onSubmit(): void {
     if (this.professorForm.valid) {
