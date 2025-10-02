@@ -1,20 +1,20 @@
 <div [class]="isSummaryPage() ? '' : 'page-container'">
   @if (application(); as application) {
     <!-- Header Section -->
-    <header class="header">
-      <div class="header-row">
-        <h1 class="title">{{ 'entity.application_detail.applicant.title_prefix' | translate }} '{{ application.jobTitle }}'</h1>
-        @if (!previewDetailData() && application.applicationState === 'SAVED') {
-          <jhi-button
-            [label]="'entity.applicationOverview.actions.update' | translate"
-            severity="primary"
-            icon="pencil"
-            (click)="onUpdateApplication()"
-          />
-        }
+    <div class="header-container">
+      <div>
+        <h1 class="page-header">{{ 'entity.application_detail.applicant.title_prefix' | translate }} '{{ application.jobTitle }}'</h1>
+        <jhi-application-state-for-applicants [state]="application.applicationState" />
       </div>
-      <jhi-application-state-for-applicants [state]="application.applicationState" />
-    </header>
+      @if (!previewDetailData() && application.applicationState === 'SAVED') {
+        <jhi-button
+          [label]="'entity.applicationOverview.actions.update' | translate"
+          severity="primary"
+          icon="pencil"
+          (click)="onUpdateApplication()"
+        />
+      }
+    </div>
 
     <!-- Position Overview -->
     <section class="card">
