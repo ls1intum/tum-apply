@@ -10,6 +10,82 @@
     "email": {
       "subject": "Request: Access to research group in TUMApply",
       "body": "=== IMPORTANT NOTES ===\n- Please do not change the subject of this email.\n- Please fill out all required fields below.\n- The optional fields do not have to be filled out.\n- Please send this email from your official TUM email address.\n=== IMPORTANT NOTES ===\n\n\n\n=== Required ===\n\nPersonal information:\n- Title (Prof./Dr./…): \n- First name: \n- Last name: \n- TUM ID (e.g. ab12cde): \n\nInformation about the research group:\n- Head (title, first and last name): \n- Name: \n\n\n=== Optional ===\n\nInformation about the research group:\n- Abbreviation: \n- Contact email: \n- Website: \n- School: \n- Description: \n- Default field of studies: \n- Address:\n  - Street and number: \n  - Postal code: \n  - City: "
+    },
+    "professorRequest": {
+      "dialogTitle": "Request Access",
+      "sections": {
+        "personalInfo": "Personal Information",
+        "researchGroupInfo": "Research Group Information",
+        "optionalInfo": "Optional Information",
+        "address": "Address"
+      },
+      "optionalHint": "The following fields are optional and can be filled in later.",
+      "title": {
+        "label": "Title",
+        "placeholder": "e.g. Prof., Dr., ..."
+      },
+      "firstName": {
+        "label": "First Name",
+        "placeholder": "Your first name"
+      },
+      "lastName": {
+        "label": "Last Name",
+        "placeholder": "Your last name"
+      },
+      "tumID": {
+        "label": "TUM ID",
+        "placeholder": "e.g. ab12cde"
+      },
+      "researchGroupHead": {
+        "label": "Research Group Head",
+        "placeholder": "Title, first and last name"
+      },
+      "researchGroupName": {
+        "label": "Research Group Name",
+        "placeholder": "Name of the research group"
+      },
+      "researchGroupAbbreviation": {
+        "label": "Abbreviation",
+        "placeholder": "e.g. TUM-AI"
+      },
+      "researchGroupContactEmail": {
+        "label": "Contact Email",
+        "placeholder": "contact@researchgroup.de"
+      },
+      "researchGroupWebsite": {
+        "label": "Website",
+        "placeholder": "https://www.researchgroup.tum.de"
+      },
+      "researchGroupSchool": {
+        "label": "School",
+        "placeholder": "e.g. Informatics"
+      },
+      "researchGroupDescription": {
+        "label": "Description",
+        "placeholder": "Brief description of the research group"
+      },
+      "researchGroupFieldOfStudies": {
+        "label": "Field of Studies",
+        "placeholder": "e.g. Computer Science, Mechanical Engineering"
+      },
+      "researchGroupStreetAndNumber": {
+        "label": "Street and Number",
+        "placeholder": "Street 1"
+      },
+      "researchGroupPostalCode": {
+        "label": "Postal Code",
+        "placeholder": "80333"
+      },
+      "researchGroupCity": {
+        "label": "City",
+        "placeholder": "Munich"
+      },
+      "additionalNotes": {
+        "label": "Additional Notes",
+        "placeholder": "Any additional information or comments..."
+      },
+      "cancel": "Cancel",
+      "submit": "Send Request"
     }
   }
 }
