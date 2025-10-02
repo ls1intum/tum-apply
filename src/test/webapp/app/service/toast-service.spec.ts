@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MessageService } from 'primeng/api';
-import { provideTranslateMock } from 'util/translate.mock';
+import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 import { ToastService } from 'app/service/toast-service';
 import { ApplicationRef, EnvironmentInjector } from '@angular/core';
 
@@ -10,6 +10,7 @@ describe('ToastService', () => {
   let messageService: MessageService;
   let appRef: ApplicationRef;
   let envInjector: EnvironmentInjector;
+  let translateMock: ReturnType<typeof createTranslateServiceMock>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,8 +21,10 @@ describe('ToastService', () => {
     messageService = TestBed.inject(MessageService);
     appRef = TestBed.inject(ApplicationRef);
     envInjector = TestBed.inject(EnvironmentInjector);
+    translateMock = TestBed.inject(TranslateService) as ReturnType<typeof createTranslateServiceMock>;
 
     vi.spyOn(messageService, 'add');
+    vi.spyOn(translateMock, 'instant');
 
     document.body.querySelectorAll('jhi-toast').forEach(el => el.remove());
   });
@@ -270,6 +273,9 @@ describe('ToastService', () => {
         summary: 'app.message.created.summary',
         detail: 'app.message.created.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.created.summary', undefined);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.created.detail', undefined);
     });
 
     it('should translate with parameters', () => {
@@ -282,6 +288,9 @@ describe('ToastService', () => {
         summary: 'app.message.saved.summary',
         detail: 'app.message.saved.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.detail', params);
     });
 
     it('should handle parameters with special characters', () => {
@@ -294,6 +303,9 @@ describe('ToastService', () => {
         summary: 'app.action.completed.summary',
         detail: 'app.action.completed.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.detail', params);
     });
   });
 
@@ -306,6 +318,9 @@ describe('ToastService', () => {
         summary: 'app.error.failed.summary',
         detail: 'app.error.failed.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.error.failed.summary', undefined);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.error.failed.detail', undefined);
     });
 
     it('should translate with parameters', () => {
@@ -318,6 +333,9 @@ describe('ToastService', () => {
         summary: 'app.message.saved.summary',
         detail: 'app.message.saved.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.detail', params);
     });
 
     it('should handle parameters with special characters', () => {
@@ -330,6 +348,9 @@ describe('ToastService', () => {
         summary: 'app.action.completed.summary',
         detail: 'app.action.completed.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.detail', params);
     });
   });
 
@@ -342,6 +363,9 @@ describe('ToastService', () => {
         summary: 'app.info.update.summary',
         detail: 'app.info.update.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.info.update.summary', undefined);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.info.update.detail', undefined);
     });
 
     it('should translate with parameters', () => {
@@ -354,6 +378,9 @@ describe('ToastService', () => {
         summary: 'app.message.saved.summary',
         detail: 'app.message.saved.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.detail', params);
     });
 
     it('should handle parameters with special characters', () => {
@@ -366,6 +393,9 @@ describe('ToastService', () => {
         summary: 'app.action.completed.summary',
         detail: 'app.action.completed.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.detail', params);
     });
   });
 
@@ -378,6 +408,9 @@ describe('ToastService', () => {
         summary: 'app.warning.limit.summary',
         detail: 'app.warning.limit.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.warning.limit.summary', undefined);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.warning.limit.detail', undefined);
     });
 
     it('should translate with parameters', () => {
@@ -390,6 +423,9 @@ describe('ToastService', () => {
         summary: 'app.message.saved.summary',
         detail: 'app.message.saved.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.message.saved.detail', params);
     });
 
     it('should handle parameters with special characters', () => {
@@ -402,6 +438,9 @@ describe('ToastService', () => {
         summary: 'app.action.completed.summary',
         detail: 'app.action.completed.detail',
       });
+
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.summary', params);
+      expect(translateMock.instant).toHaveBeenCalledWith('app.action.completed.detail', params);
     });
   });
 
