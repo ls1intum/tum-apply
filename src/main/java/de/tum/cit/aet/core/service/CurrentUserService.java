@@ -12,6 +12,9 @@ import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -20,10 +23,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -43,7 +42,7 @@ public class CurrentUserService {
      * @return the current user as a {@link CurrentUser} object
      */
     public CurrentUser getCurrentUser() {
-        if (currentUser==null) {
+        if (currentUser == null) {
             loadCurrentUser();
         }
         return currentUser;
@@ -56,7 +55,7 @@ public class CurrentUserService {
      * @return the current user as a {@link User} entity
      */
     public User getUser() {
-        if (user==null) {
+        if (user == null) {
             loadCurrentUser();
         }
         return user;
@@ -82,7 +81,7 @@ public class CurrentUserService {
         List<ResearchGroupRole> roles = user
             .getResearchGroupRoles()
             .stream()
-            .map(r -> new ResearchGroupRole(r.getRole(), r.getResearchGroup()!=null ? r.getResearchGroup().getResearchGroupId():null))
+            .map(r -> new ResearchGroupRole(r.getRole(), r.getResearchGroup() != null ? r.getResearchGroup().getResearchGroupId() : null))
             .toList();
 
         this.user = user;
@@ -170,7 +169,13 @@ public class CurrentUserService {
      * @throws AccessDeniedException if the current user does not belong to the research group
      */
     public void isAdminOrMemberOf(UUID researchGroupId) {
-        if (isAdmin() || getCurrentUser().getResearchGroupIdIfProfessor().map(id -> id.equals(researchGroupId)).orElse(false)) {
+        if (
+            isAdmin() ||
+            getCurrentUser()
+                .getResearchGroupIdIfProfessor()
+                .map(id -> id.equals(researchGroupId))
+                .orElse(false)
+        ) {
             return;
         }
         throw new AccessDeniedException("User has no access to the research group");
@@ -182,7 +187,7 @@ public class CurrentUserService {
      * @param researchGroup the research group to check
      */
     public void isAdminOrMemberOf(ResearchGroup researchGroup) {
-        if (researchGroup==null) {
+        if (researchGroup == null) {
             return;
         }
         isAdminOrMemberOf(researchGroup.getResearchGroupId());
@@ -196,13 +201,13 @@ public class CurrentUserService {
      * @throws AccessDeniedException if the professor cannot be found or has no research group
      */
     public void isAdminOrMemberOfResearchGroupOfProfessor(User professor) {
-        if (professor==null) {
+        if (professor == null) {
             throw new AccessDeniedException("Professor not found");
         }
         if (isAdmin()) {
             return;
         }
-        if (professor.getResearchGroup()==null) {
+        if (professor.getResearchGroup() == null) {
             throw new AccessDeniedException("Professor does not belong to a research group");
         }
         isAdminOrMemberOf(professor.getResearchGroup().getResearchGroupId());

@@ -60,10 +60,10 @@
 
   .filter-dropdown {
     position: absolute;
-    width: max-content;
-    max-width: 30rem;
-    right: 0;
-    top: 100%;
+    min-width: 12rem;
+    max-width: calc(100vw - 2rem);
+    width: 100%;
+    box-sizing: border-box;
     z-index: 3;
     background: var(--p-background-default);
     border: var(--p-border-default) solid 0.1rem;
@@ -95,6 +95,12 @@
       overflow-y: auto;
 
       .options-list {
+        .option-label {
+          white-space: normal;
+          overflow-wrap: break-word;
+          hyphens: auto;
+        }
+
         .option-item {
           display: flex;
           align-items: center;
