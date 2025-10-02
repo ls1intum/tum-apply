@@ -1,5 +1,8 @@
 package de.tum.cit.aet.job.web.rest;
 
+import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.job.constants.Campus;
@@ -18,17 +21,13 @@ import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
 import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.util.Map.entry;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class JobResourceTest extends AbstractResourceTest {
 
@@ -95,8 +94,7 @@ class JobResourceTest extends AbstractResourceTest {
         PageResponse<JobCardDTO> page = api.getAndRead(
             "/api/jobs/available",
             Map.of("pageNumber", "0", "pageSize", "10"),
-            new TypeReference<>() {
-            },
+            new TypeReference<>() {},
             200
         );
 
@@ -116,8 +114,7 @@ class JobResourceTest extends AbstractResourceTest {
 
     @Test
     void getAvailableJobsInvalidPaginationReturnsError() {
-        api.getAndRead("/api/jobs/available", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {
-        }, 400);
+        api.getAndRead("/api/jobs/available", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test
@@ -329,8 +326,7 @@ class JobResourceTest extends AbstractResourceTest {
     void getJobsByProfessor_returnsJobsCreatedByProfessor() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {
-            }, 200);
+            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
         assertThat(page.totalElements()).isEqualTo(2);
     }
 
@@ -339,8 +335,7 @@ class JobResourceTest extends AbstractResourceTest {
     void getJobsByProfessorInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {
-            }, 400);
+            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test

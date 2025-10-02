@@ -1,5 +1,7 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -10,15 +12,12 @@ import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import java.util.Map;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ResearchGroupResourceTest extends AbstractResourceTest {
 
