@@ -8,6 +8,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 // Interface for filter options which can be passed to the filter component
 export interface Filter {
+  filterId: string;
   filterLabel: string;
   filterSearchPlaceholder: string;
   filterOptions: string[];
@@ -15,7 +16,7 @@ export interface Filter {
 }
 
 export interface FilterChange {
-  filterLabel: string;
+  filterId: string;
   selectedValues: string[];
 }
 
@@ -30,6 +31,7 @@ export interface FilterChange {
   },
 })
 export class FilterMultiselect {
+  filterId = input.required<string>();
   filterLabel = input.required<string>();
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
@@ -41,7 +43,7 @@ export class FilterMultiselect {
   searchTerm = signal('');
 
   // gives the selected values back to the parent component
-  filterChange = output<{ filterLabel: string; selectedValues: string[] }>();
+  filterChange = output<{ filterId: string; selectedValues: string[] }>();
 
   filteredOptions = computed(() => {
     const search = this.searchTerm().toLowerCase().trim();
@@ -132,7 +134,7 @@ export class FilterMultiselect {
 
   private emitChange(): void {
     this.filterChange.emit({
-      filterLabel: this.filterLabel(),
+      filterId: this.filterId(),
       selectedValues: this.selectedValues(),
     });
   }

@@ -7,5 +7,5 @@ package de.tum.cit.aet.usermanagement.constants;
  */
 public enum OtpPurpose {
     LOGIN,
-    REGISTER
+    REGISTER,
 }

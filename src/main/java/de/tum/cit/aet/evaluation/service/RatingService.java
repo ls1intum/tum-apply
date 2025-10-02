@@ -8,14 +8,13 @@ import de.tum.cit.aet.evaluation.dto.RatingOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
