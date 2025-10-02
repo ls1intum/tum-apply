@@ -6,16 +6,15 @@ import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.NotNull;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 @Repository
 public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemplate, UUID> {
@@ -27,10 +26,10 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
      */
     @Query(
         """
-                SELECT et FROM EmailTemplate et
-                LEFT JOIN FETCH et.translations t
-                WHERE et.emailTemplateId = :id
-            """
+            SELECT et FROM EmailTemplate et
+            LEFT JOIN FETCH et.translations t
+            WHERE et.emailTemplateId = :id
+        """
     )
     Optional<EmailTemplate> findWithTranslationsById(@Param("id") @NotNull UUID id);
 
@@ -61,18 +60,18 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
      */
     @Query(
         """
-                SELECT new de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO(
-                    et.emailTemplateId,
-                    et.templateName,
-                    et.emailType,
-                    u.firstName,
-                    u.lastName,
-                    et.isDefault
-                )
-                FROM EmailTemplate et
-                LEFT JOIN et.createdBy u
-                WHERE et.researchGroup = :researchGroup AND et.emailType IN (:editableEmailTypes)
-            """
+            SELECT new de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO(
+                et.emailTemplateId,
+                et.templateName,
+                et.emailType,
+                u.firstName,
+                u.lastName,
+                et.isDefault
+            )
+            FROM EmailTemplate et
+            LEFT JOIN et.createdBy u
+            WHERE et.researchGroup = :researchGroup AND et.emailType IN (:editableEmailTypes)
+        """
     )
     Page<EmailTemplateOverviewDTO> findOverviewByResearchGroupAndEmailTypeIn(
         @Param("researchGroup") ResearchGroup researchGroup,
@@ -89,10 +88,10 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
      */
     @Query(
         """
-                SELECT DISTINCT et.emailType
-                FROM EmailTemplate et
-                WHERE et.researchGroup = :researchGroup
-            """
+            SELECT DISTINCT et.emailType
+            FROM EmailTemplate et
+            WHERE et.researchGroup = :researchGroup
+        """
     )
     Set<EmailType> findAllEmailTypesByResearchGroup(@Param("researchGroup") ResearchGroup researchGroup);
 }

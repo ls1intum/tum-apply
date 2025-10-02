@@ -9,5 +9,4 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(TestSecurityConfiguration.class)
-public abstract class AbstractResourceTest {
-}
+public abstract class AbstractResourceTest {}
