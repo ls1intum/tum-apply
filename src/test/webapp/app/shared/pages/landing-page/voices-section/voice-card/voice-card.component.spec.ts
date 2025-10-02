@@ -27,10 +27,17 @@ describe('VoiceCardComponent', () => {
     const fieldEl = nativeElement.querySelector('.field');
     const quoteEl = nativeElement.querySelector('.quote');
 
-    expect(imgEl?.getAttribute('src')).toBe('/assets/jane.webp');
-    expect(imgEl?.getAttribute('alt')).toBe('Jane Doe');
-    expect(nameEl?.textContent).toBe('Jane Doe');
-    expect(fieldEl?.textContent).toBe('Artificial Intelligence');
-    expect(quoteEl?.textContent).toBe('Doing a PhD at TUM changed my life.');
+    expect(imgEl).not.toBeNull();
+    expect(imgEl!.getAttribute('src')).toBe('/assets/jane.webp');
+    expect(imgEl!.getAttribute('alt')).toBe('Jane Doe');
+
+    expect(nameEl).not.toBeNull();
+    expect(nameEl!.textContent).toBe('Jane Doe');
+
+    expect(fieldEl).not.toBeNull();
+    expect(fieldEl!.textContent).toBe('Artificial Intelligence');
+
+    expect(quoteEl).not.toBeNull();
+    expect(quoteEl!.textContent).toBe('Doing a PhD at TUM changed my life.');
   });
 });
