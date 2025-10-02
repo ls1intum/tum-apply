@@ -5,7 +5,6 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.evaluation.dto.AcceptDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
@@ -25,6 +24,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.utility.MvcTestClient;
+import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,9 +67,6 @@ public class ApplicationEvaluationResourceTest {
     UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
     @MockitoBean
-    CurrentUserService currentUserService;
-
-    @MockitoBean
     AsyncEmailSender sender;
 
     @Autowired
@@ -77,7 +74,6 @@ public class ApplicationEvaluationResourceTest {
 
     User professor;
     ResearchGroup researchGroup;
-    User applicantUser;
     Applicant applicant;
     Job publishedJob;
     Application sentApp;
@@ -107,22 +103,20 @@ public class ApplicationEvaluationResourceTest {
         sentApp = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         inReviewApp = ApplicationTestData.savedInReview(applicationRepository, publishedJob, applicant);
 
-        when(currentUserService.getUser()).thenReturn(professor);
-        when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(researchGroup.getResearchGroupId());
-
         doNothing().when(sender).sendAsync(any());
     }
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsOverviews_onlyViewableStates() {
-        ApplicationEvaluationOverviewListDTO dto = api.getAndRead(
-            "/api/evaluation/applications",
-            Map.ofEntries(entry("offset", "0"), entry("limit", "10")),
-            ApplicationEvaluationOverviewListDTO.class,
-        200
-        );
+        ApplicationEvaluationOverviewListDTO dto = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(
+                "/api/evaluation/applications",
+                Map.ofEntries(entry("offset", "0"), entry("limit", "10")),
+                ApplicationEvaluationOverviewListDTO.class,
+                200
+            );
 
 
         assertThat(dto.totalRecords()).isGreaterThanOrEqualTo(2);
@@ -131,60 +125,65 @@ public class ApplicationEvaluationResourceTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetails_returnsDetails() {
-        ApplicationEvaluationDetailListDTO details = api.getAndRead(
-            "/api/evaluation/application-details",
-            Map.of("offset", "0", "limit", "10"),
-            ApplicationEvaluationDetailListDTO.class,
-            200
-        );
+        ApplicationEvaluationDetailListDTO details = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(
+                "/api/evaluation/application-details",
+                Map.of("offset", "0", "limit", "10"),
+                ApplicationEvaluationDetailListDTO.class,
+                200
+            );
 
         assertThat(details.totalRecords()).isGreaterThanOrEqualTo(2);
         assertThat(details.applications()).isNotEmpty();
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetailsWindow_validOddSize() {
-        ApplicationEvaluationDetailListDTO win = api.getAndRead(
-            "/api/evaluation/application-details/window",
-            Map.ofEntries(entry("applicationId", inReviewApp.getApplicationId().toString()), entry("windowSize", "3")),
-            ApplicationEvaluationDetailListDTO.class,
-            200
-        );
+        ApplicationEvaluationDetailListDTO win = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(
+                "/api/evaluation/application-details/window",
+                Map.ofEntries(entry("applicationId", inReviewApp.getApplicationId().toString()), entry("windowSize", "3")),
+                ApplicationEvaluationDetailListDTO.class,
+                200
+            );
         assertThat(win.applications().size()).isBetween(1, 3);
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetails_limitIsApplied() {
-        ApplicationEvaluationDetailListDTO details = api.getAndRead(
-            "/api/evaluation/application-details",
-            Map.of("offset", "0", "limit", "1"),
-            ApplicationEvaluationDetailListDTO.class,
-            200
-        );
+        ApplicationEvaluationDetailListDTO details = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(
+                "/api/evaluation/application-details",
+                Map.of("offset", "0", "limit", "1"),
+                ApplicationEvaluationDetailListDTO.class,
+                200
+            );
         assertThat(details.totalRecords()).isGreaterThanOrEqualTo(2);
         assertThat(details.applications()).hasSize(1);
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void markApplicationAsInReview_sent_becomesInReview() {
-        api.putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 204);
+        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 204);
 
         Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
         assertThat(updated.getState()).isEqualTo(ApplicationState.IN_REVIEW);
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void acceptApplication_sent_becomesAccepted_andMayCloseJob() {
         String message = "Accepted!";
         AcceptDTO payload = new AcceptDTO(message, true, true);
 
-        api.postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 204);
+        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 204);
 
         Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
         assertThat(updated.getState()).isEqualTo(ApplicationState.ACCEPTED);
@@ -197,11 +196,12 @@ public class ApplicationEvaluationResourceTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void rejectApplication_inReview_becomesRejected_andStoresReason() {
         RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
 
-        api.postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
+        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
 
         Application updated = applicationRepository.findById(inReviewApp.getApplicationId()).orElseThrow();
         assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
@@ -213,37 +213,38 @@ public class ApplicationEvaluationResourceTest {
     @Test
     void acceptApplication_unauthenticated_returns401() {
         AcceptDTO payload = new AcceptDTO("msg", false, false);
-        api.postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 401);
+        api.withoutPostProcessors().postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 401);
     }
 
     @Test
     void rejectApplication_unauthenticated_returns401() {
         RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
-        api.postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 401);
+        api.withoutPostProcessors().postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 401);
     }
 
     @Test
     void markApplicationAsInReview_unauthenticated_returns401() {
-        api.putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
+        api.withoutPostProcessors().putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsOverviews_withSorting_params_ok() {
         SortDTO sort = new SortDTO("appliedAt", SortDTO.Direction.DESC);
         OffsetPageDTO page = new OffsetPageDTO(0, 10);
 
-        ApplicationEvaluationOverviewListDTO dto = api.getAndRead(
-            "/api/evaluation/applications",
-            Map.of(
-                "offset", String.valueOf(page.offset()),
-                "limit", String.valueOf(page.limit()),
-                "sortBy", sort.sortBy(),
-                "direction", sort.direction().name()
-            ),
-            ApplicationEvaluationOverviewListDTO.class,
-            200
-        );
+        ApplicationEvaluationOverviewListDTO dto = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(
+                "/api/evaluation/applications",
+                Map.of(
+                    "offset", String.valueOf(page.offset()),
+                    "limit", String.valueOf(page.limit()),
+                    "sortBy", sort.sortBy(),
+                    "direction", sort.direction().name()
+                ),
+                ApplicationEvaluationOverviewListDTO.class,
+                200
+            );
 
         assertThat(dto.totalRecords()).isGreaterThan(0);
         assertThat(dto.applications()).isNotEmpty();
