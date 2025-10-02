@@ -1,3 +1,15 @@
+<!-- Confirmation Dialog -->
+<jhi-confirm-dialog
+  #confirmDialog
+  [header]="'onboarding.professorRequest.confirmDialog.header' | translate"
+  [message]="'onboarding.professorRequest.confirmDialog.message' | translate"
+  [label]="'onboarding.professorRequest.confirmDialog.confirm' | translate"
+  severity="primary"
+  confirmIcon="paper-plane"
+  [showOpenButton]="false"
+  (confirmed)="onConfirmSubmit()"
+/>
+
 <form [formGroup]="professorForm" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-6 py-4">
   <!-- Personal Information -->
   <div class="flex flex-col gap-4">
@@ -80,7 +92,7 @@
   </div>
 
   <!-- Optional Information -->
-  <div class="flex flex-col gap-4 border-l-4 border-green-500 pl-4 bg-gray-50">
+  <div class="flex flex-col gap-4 border-l-4 border-green-500 pl-6 pr-4 py-4 bg-gray-50 rounded-r-lg">
     <h3 class="m-0 mb-2 text-xl font-semibold text-green-600 border-b-2 border-gray-200 pb-2">
       {{ 'onboarding.professorRequest.sections.optionalInfo' | translate }}
     </h3>
@@ -188,14 +200,21 @@
 
   <!-- Form Actions -->
   <div class="flex justify-end gap-4 mt-8 pt-4 border-t border-gray-200">
-    <jhi-button type="button" (click)="onCancel()" [shouldTranslate]="true" label="entity.action.cancel" variant="outlined" />
+    <jhi-button
+      type="button"
+      (click)="onCancel()"
+      [shouldTranslate]="true"
+      label="entity.action.cancel"
+      variant="outlined"
+      [disabled]="isSubmitting()"
+    />
     <jhi-button
       type="submit"
-      [disabled]="professorForm.invalid"
+      [disabled]="professorForm.invalid || isSubmitting()"
       [shouldTranslate]="true"
-      label="onboarding.professorRequest.submit"
+      [label]="isSubmitting() ? 'entity.action.submitting' : 'onboarding.professorRequest.submit'"
       severity="primary"
-      icon="paper-plane"
+      [icon]="isSubmitting() ? 'spinner' : 'paper-plane'"
     />
   </div>
 </form>

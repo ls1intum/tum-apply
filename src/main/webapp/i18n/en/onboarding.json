@@ -84,6 +84,19 @@
         "label": "Additional Notes",
         "placeholder": "Any additional information or comments..."
       },
+      "confirmDialog": {
+        "header": "Confirm Request Submission",
+        "message": "Your request will be sent to the administrators for review. They will create your research group and contact you once it's approved. Do you want to proceed?",
+        "confirm": "Send Request"
+      },
+      "success": {
+        "summary": "Request Sent Successfully",
+        "detail": "Your research group request has been submitted. Administrators will review it and contact you soon."
+      },
+      "error": {
+        "summary": "Submission Failed",
+        "detail": "Failed to submit your request. Please try again or contact support."
+      },
       "cancel": "Cancel",
       "submit": "Send Request"
     }

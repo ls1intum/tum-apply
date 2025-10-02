@@ -39,9 +39,12 @@ export class OnboardingDialog {
         closable: true,
         dismissableMask: false,
         width: '900px',
-        style: { 'max-width': '95vw' },
+        style: {
+          'max-width': '95vw',
+          'background-color': 'white',
+          'border-radius': '8px',
+        },
         focusOnShow: false,
-        autoZIndex: false,
       });
     }
     void firstValueFrom(this.api.confirmOnboarding()).catch();
