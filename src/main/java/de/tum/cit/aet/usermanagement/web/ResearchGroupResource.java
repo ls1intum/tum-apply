@@ -4,7 +4,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupCreationDTO;
+import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
@@ -16,7 +16,6 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -110,5 +109,62 @@ public class ResearchGroupResource {
     ) {
         ResearchGroupDTO updatedResearchGroup = researchGroupService.updateResearchGroup(id, researchGroupDTO);
         return ResponseEntity.ok(updatedResearchGroup);
+    }
+
+    /**
+     * Creates a research group request from a professor during onboarding.
+     * The research group starts in DRAFT state and needs admin approval.
+     *
+     * @param request the professor's research group request
+     * @return the created research group in DRAFT state
+     */
+    @PostMapping("/professor-request")
+    @PreAuthorize("isAuthenticated()") // Any authenticated user can submit a request when using professor onboarding
+    public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(
+        @Valid @RequestBody ProfessorResearchGroupRequestDTO request
+    ) {
+        ResearchGroup created = researchGroupService.createProfessorResearchGroupRequest(request);
+        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(created));
+    }
+
+    /**
+     * Gets all DRAFT research groups for admin review.
+     *
+     * @param pageDTO the pagination parameters
+     * @return paginated list of DRAFT research groups
+     */
+    @GetMapping("/draft")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getDraftResearchGroups(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+    ) {
+        PageResponseDTO<ResearchGroupDTO> draftGroups = researchGroupService.getDraftResearchGroups(pageDTO);
+        return ResponseEntity.ok(draftGroups);
+    }
+
+    /**
+     * Activates a DRAFT research group (admin only).
+     *
+     * @param researchGroupId the ID of the research group to activate
+     * @return the activated research group
+     */
+    @PostMapping("/{researchGroupId}/activate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResearchGroupDTO> activateResearchGroup(@PathVariable UUID researchGroupId) {
+        ResearchGroup activated = researchGroupService.activateResearchGroup(researchGroupId);
+        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(activated));
+    }
+
+    /**
+     * Denies a DRAFT research group (admin only).
+     *
+     * @param researchGroupId the ID of the research group to deny
+     * @return the denied research group
+     */
+    @PostMapping("/{researchGroupId}/deny")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResearchGroupDTO> denyResearchGroup(@PathVariable UUID researchGroupId) {
+        ResearchGroup denied = researchGroupService.denyResearchGroup(researchGroupId);
+        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(denied));
     }
 }

@@ -18,5 +18,6 @@ public record ResearchGroupCreationDTO(
     String defaultFieldOfStudies,
     String street,
     String postalCode,
-    String city
+    String city,
+    String state
 ) {}

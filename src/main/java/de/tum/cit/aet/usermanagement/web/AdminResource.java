@@ -22,17 +22,6 @@ public class AdminResource {
     private final ResearchGroupService researchGroupService;
 
     /**
-     * Creates a new research group manually based on the provided data.
-     *
-     * @param request the DTO containing the information required to create a research group
-     * @return HTTP 200 OK with the created {@link ResearchGroup}
-     */
-    @PostMapping("/research-groups")
-    public ResponseEntity<ResearchGroup> createResearchGroup(@Valid @RequestBody ResearchGroupCreationDTO request) {
-        return ResponseEntity.ok(researchGroupService.createResearchGroup(request));
-    }
-
-    /**
      * Provisions a new research group, potentially including additional setup steps.
      *
      * @param request the DTO containing the information required to provision a research group
