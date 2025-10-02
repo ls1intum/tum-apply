@@ -3,18 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { DoctoralJourneySectionComponent } from 'app/shared/pages/landing-page/doctoral-journey-section/doctoral-journey-section.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
-
-import { Component, Input } from '@angular/core';
-import { ButtonGroupData } from 'app/shared/components/molecules/button-group/button-group.component';
-
-@Component({
-  selector: 'jhi-button-group',
-  standalone: true,
-  template: '',
-})
-class StubButtonGroupComponent {
-  @Input() data!: ButtonGroupData;
-}
+import { ButtonGroupStubComponent } from 'src/test/webapp/util/button-group.stub';
 
 describe('DoctoralJourneySectionComponent', () => {
   let fixture: ComponentFixture<DoctoralJourneySectionComponent>;
@@ -22,7 +11,7 @@ describe('DoctoralJourneySectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DoctoralJourneySectionComponent, StubButtonGroupComponent],
+      imports: [DoctoralJourneySectionComponent, ButtonGroupStubComponent],
       providers: [provideTranslateMock()],
     }).compileComponents();
 
@@ -34,7 +23,9 @@ describe('DoctoralJourneySectionComponent', () => {
   it('should render image with correct path', () => {
     const img = nativeElement.querySelector('img');
     expect(img).not.toBeNull();
-    expect(img?.getAttribute('src')).toBe('/content/images/landing-page/doctoral-journey-section/landing-page-doctoral-journey.webp');
+    expect(img?.getAttribute('src')).toBe(
+      '/content/images/landing-page/doctoral-journey-section/landing-page-doctoral-journey.webp',
+    );
   });
 
   it('should render headline with correct translation key', () => {
@@ -67,14 +58,20 @@ describe('DoctoralJourneySectionComponent', () => {
   it('should open correct URL for first button', () => {
     const spy = vi.spyOn(window, 'open').mockImplementation(() => null);
     fixture.componentInstance.buttons().buttons[0].onClick();
-    expect(spy).toHaveBeenCalledWith('https://www.gs.tum.de/en/gs/path-to-a-doctorate/why-do-your-doctorate-at-tum/', '_blank');
+    expect(spy).toHaveBeenCalledWith(
+      'https://www.gs.tum.de/en/gs/path-to-a-doctorate/why-do-your-doctorate-at-tum/',
+      '_blank',
+    );
     spy.mockRestore();
   });
 
   it('should open correct URL for second button', () => {
     const spy = vi.spyOn(window, 'open').mockImplementation(() => null);
     fixture.componentInstance.buttons().buttons[1].onClick();
-    expect(spy).toHaveBeenCalledWith('https://www.gs.tum.de/en/gs/doctorate-at-tum/', '_blank');
+    expect(spy).toHaveBeenCalledWith(
+      'https://www.gs.tum.de/en/gs/doctorate-at-tum/',
+      '_blank',
+    );
     spy.mockRestore();
   });
 });

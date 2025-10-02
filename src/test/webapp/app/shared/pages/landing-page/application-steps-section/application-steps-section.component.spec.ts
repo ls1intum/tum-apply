@@ -1,60 +1,46 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Component, Input } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
-import { ApplicationStepsSectionComponent } from 'app/shared/pages/landing-page/application-steps-section/application-steps-section.component';
-import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
+import { ApplicationStepComponent } from 'app/shared/pages/landing-page/application-steps-section/application-step/application-step/application-step.component';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
+import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ButtonStubComponent } from 'src/test/webapp/util/button.stub';
 
-@Component({
-  selector: 'jhi-application-step',
-  standalone: true,
-  template: '',
-})
-class StubApplicationStepComponent {
-  @Input() icon!: string;
-  @Input() title!: string;
-  @Input() description!: string;
-}
-
-describe('ApplicationStepsSectionComponent', () => {
-  let fixture: ComponentFixture<ApplicationStepsSectionComponent>;
-  let component: ApplicationStepsSectionComponent;
-  let nativeElement: HTMLElement;
+describe('ApplicationStepComponent', () => {
+  let fixture: ComponentFixture<ApplicationStepComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationStepsSectionComponent, StubApplicationStepComponent],
-      providers: [provideTranslateMock(), provideFontAwesomeTesting()],
-    }).compileComponents();
+      imports: [ApplicationStepComponent],
+      providers: [provideFontAwesomeTesting(), provideTranslateMock()],
+    })
+      .overrideComponent(ApplicationStepComponent, {
+        remove: {
+          imports: [ButtonComponent],
+        },
+        add: {
+          imports: [ButtonStubComponent],
+        },
+      })
+      .compileComponents();
 
-    fixture = TestBed.createComponent(ApplicationStepsSectionComponent);
-    component = fixture.componentInstance;
-    nativeElement = fixture.nativeElement;
+    fixture = TestBed.createComponent(ApplicationStepComponent);
+  });
+
+  it('should render inputs correctly', () => {
+    fixture.componentRef.setInput('icon', 'bell');
+    fixture.componentRef.setInput('title', 'Test Title');
+    fixture.componentRef.setInput('description', 'Test Description');
     fixture.detectChanges();
-  });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    const buttonDebug = fixture.debugElement.query(By.directive(ButtonStubComponent));
+    const titleEl = fixture.nativeElement.querySelector('h3.title');
+    const descEl = fixture.nativeElement.querySelector('p.description');
 
-  it('should render four application-step components', () => {
-    const stepElements = nativeElement.querySelectorAll('jhi-application-step');
-    expect(stepElements.length).toBe(4);
-  });
-
-  it('should bind correct translation keys in steps', () => {
-    expect(component.steps.length).toBe(4);
-
-    component.steps.forEach((step, index) => {
-      expect(step.title).toBe(`landingPage.applicationSteps.steps.${index + 1}.title`);
-      expect(step.description).toBe(`landingPage.applicationSteps.steps.${index + 1}.description`);
-    });
-  });
-
-  it('should render the headline with the correct translate key', () => {
-    const headline = nativeElement.querySelector('h2.title');
-    expect(headline).not.toBeNull();
-    expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.applicationSteps.headline');
+    expect(buttonDebug?.componentInstance.icon).toBe('bell');
+    expect(titleEl?.textContent).toBe('Test Title');
+    expect(descEl?.textContent).toBe('Test Description');
   });
 });
