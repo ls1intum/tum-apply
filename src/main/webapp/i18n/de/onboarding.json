@@ -20,7 +20,7 @@
         "address": "Adresse"
       },
       "optionalHint": "Die folgenden Felder sind optional und können später ausgefüllt werden.",
-      "titleField": {
+      "title": {
         "label": "Titel",
         "placeholder": "z.B. Prof., Dr., ..."
       },
@@ -85,11 +85,7 @@
         "placeholder": "Weitere Informationen oder Kommentare..."
       },
       "cancel": "Abbrechen",
-      "submit": "Anfrage senden",
-      "buttons": {
-        "next": "Weiter",
-        "previous": "Zurück"
-      }
+      "submit": "Anfrage senden"
     }
   }
 }
