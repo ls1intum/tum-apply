@@ -1,0 +1,80 @@
+meta {
+  name: Edit Job
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/jobs/update/:jobid
+  body: json
+  auth: inherit
+}
+
+params:path {
+  jobid: 00000000-0000-0000-0000-000000020001
+}
+
+body:json {
+  {
+    "title": "Working Student Software Engineering",
+    "researchArea": "Cloud Computing",
+    "fieldOfStudies": "Informatics",
+    "supervisingProfessor": "00000000-0000-0000-0000-000000000102",
+    "location": "GARCHING",
+    "startDate": "2024-10-01",
+    "endDate": "2025-03-31",
+    "workload": 16,
+    "contractDuration": 2,
+    "fundingType": "FULLY_FUNDED",
+    "description": "Support the development of scalable cloud applications in a research environment.",
+    "tasks": "Develop microservices, automate deployment, collaborate in agile teams",
+    "requirements": "Java, Spring Boot, Docker, good communication skills",
+    "state": "PUBLISHED"
+  }
+  
+}
+
+docs {
+  ### Update Job Posting
+  
+  This endpoint is used to update an existing job posting by providing the `jobId` in the URL path. The request should be sent as an HTTP PUT to `{{baseUrl}}/jobs/jobform/{jobId}`.
+  
+  #### Request Body
+  
+  The request should include the following parameters in the raw request body:
+  
+  - `professorId`: (string) The unique identifier of the professor associated with the job posting.
+      
+  - `fieldOfStudies`: (string) The field of studies related to the job posting.
+      
+  - `researchArea`: (string) The specific research area for the job posting.
+      
+  - `title`: (string) The title of the job posting.
+      
+  - `introduction`: (string) Introduction to the job posting.
+      
+  - `aboutUs`: (string) Information about the organization or department.
+      
+  - `tasks`: (string) Description of the tasks involved in the job.
+      
+  - `qualifications`: (string) Required qualifications for the job.
+      
+  - `weOffer`: (string) Details of what is offered as part of the job.
+      
+  - `applicationRequirements`: (string) Requirements for job application including documents.
+      
+  - `dataProtectionInformation`: (string) Information about the data protection and privacy.
+      
+  - `contact`: (string) Contact person for the job posting.
+      
+  - `state`: (string) Current state of the job posting.
+      
+  - `startDate`: (string) Start date of the job.
+      
+  - `applicationDeadline`: (string) Deadline for submitting the job application.
+      
+  
+  #### Response
+  
+  The response to the request will contain the updated job posting details if the operation is successful.
+}

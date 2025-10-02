@@ -6,7 +6,4 @@ package de.tum.cit.aet.usermanagement.dto;
  *
  * @param show whether the onboarding dialog should be displayed
  */
-public record ProfOnboardingDTO(
-    boolean show
-) {
-}
+public record ProfOnboardingDTO(boolean show) {}
