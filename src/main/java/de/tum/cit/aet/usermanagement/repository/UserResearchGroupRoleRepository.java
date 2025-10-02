@@ -4,7 +4,6 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -29,5 +28,4 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
     @Modifying
     @Query("UPDATE UserResearchGroupRole urgr SET urgr.researchGroup = null WHERE urgr.user.userId = :userId")
     void removeResearchGroupFromUserRoles(@Param("userId") UUID userId);
-
 }

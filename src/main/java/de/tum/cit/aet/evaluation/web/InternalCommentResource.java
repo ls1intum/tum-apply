@@ -4,14 +4,13 @@ import de.tum.cit.aet.evaluation.dto.InternalCommentDTO;
 import de.tum.cit.aet.evaluation.dto.InternalCommentUpdateDTO;
 import de.tum.cit.aet.evaluation.service.InternalCommentService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -41,7 +40,10 @@ public class InternalCommentResource {
      */
     @PostMapping(path = "/applications/{applicationId}/comments")
     @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<InternalCommentDTO> createComment(@PathVariable UUID applicationId, @Valid @RequestBody InternalCommentUpdateDTO body) {
+    public ResponseEntity<InternalCommentDTO> createComment(
+        @PathVariable UUID applicationId,
+        @Valid @RequestBody InternalCommentUpdateDTO body
+    ) {
         InternalCommentDTO created = internalCommentService.createComment(applicationId, body);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -55,7 +57,10 @@ public class InternalCommentResource {
      */
     @PutMapping(path = "/comments/{commentId}")
     @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<InternalCommentDTO> updateComment(@PathVariable UUID commentId, @Valid @RequestBody InternalCommentUpdateDTO body) {
+    public ResponseEntity<InternalCommentDTO> updateComment(
+        @PathVariable UUID commentId,
+        @Valid @RequestBody InternalCommentUpdateDTO body
+    ) {
         return ResponseEntity.ok(internalCommentService.updateComment(commentId, body));
     }
 
