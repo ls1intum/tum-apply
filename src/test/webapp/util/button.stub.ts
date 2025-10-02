@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'jhi-button',
@@ -6,10 +6,10 @@ import { Component, Input } from '@angular/core';
   template: '',
 })
 export class ButtonStubComponent {
-  @Input() icon?: string;
-  @Input() severity?: string;
-  @Input() label?: string;
-  @Input() disabled?: boolean;
-  @Input() type?: string;
-  @Input() size?: string;
+  icon = input<string>();
+  severity = input<string>();
+  label = input<string>();
+  disabled = input<boolean>();
+  type = input<string>();
+  size = input<string>();
 }

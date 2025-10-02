@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { ButtonGroupData } from 'app/shared/components/molecules/button-group/button-group.component';
 
 @Component({
@@ -7,5 +7,5 @@ import { ButtonGroupData } from 'app/shared/components/molecules/button-group/bu
   template: '',
 })
 export class ButtonGroupStubComponent {
-  @Input() data?: ButtonGroupData;
+  data = input<ButtonGroupData>();
 }
