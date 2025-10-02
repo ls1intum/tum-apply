@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/api';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 import { ToastService } from 'app/service/toast-service';
 import { ApplicationRef, EnvironmentInjector } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('ToastService', () => {
   let service: ToastService;
