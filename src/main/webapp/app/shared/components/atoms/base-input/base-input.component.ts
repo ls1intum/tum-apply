@@ -54,6 +54,8 @@ export abstract class BaseInputDirective<T> {
       pattern: this.translate.instant('global.input.error.pattern'),
       email: this.translate.instant('global.input.error.email'),
       invalidPostalCode: this.translate.instant('entity.applicationPage1.validation.postalCode'),
+      min: this.translate.instant('global.input.error.min', { min: val?.min }),
+      max: this.translate.instant('global.input.error.max', { max: val?.max }),
     };
     if (Object.prototype.hasOwnProperty.call(defaults, key)) {
       return defaults[key];

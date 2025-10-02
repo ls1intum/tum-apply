@@ -1,17 +1,10 @@
 meta {
-  name: Full Details of Job
-  type: http
+  name: Applicant
   seq: 1
 }
 
-get {
-  url: {{baseUrl}}/jobs/:jobid/details
-  body: none
-  auth: oauth2
-}
-
-params:path {
-  jobid: 
+auth {
+  mode: oauth2
 }
 
 auth:oauth2 {
@@ -26,26 +19,9 @@ auth:oauth2 {
   state: {{$guid}}
   pkce: true
   credentials_placement: basic_auth_header
-  credentials_id: 
+  credentials_id: credentials
   token_placement: header
   token_header_prefix: 
   auto_fetch_token: true
   auto_refresh_token: false
-}
-
-docs {
-  ### Get Job Details
-  
-  This endpoint retrieves the full details for a specific job.
-  
-  #### Request
-  
-  - Method: `GET`
-      
-  - URL: `{{baseUrl}}/jobs/{jobId}/details`
-      
-  
-  #### Response
-  
-  The response will include the full details of the specific job, including its title, description, location, and other relevant information.
 }

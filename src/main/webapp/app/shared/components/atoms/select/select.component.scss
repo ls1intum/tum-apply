@@ -6,6 +6,17 @@
     color: var(--p-text-color);
   }
 
+  .external-link {
+    color: var(--p-primary-color);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .helper-text {
+    color: var(--p-text-primary);
+    font-size: 0.8rem;
+  }
+
   // Add styling for labels on the top of the select component
   &.label-top .custom-label {
     margin-bottom: 0.25rem;
