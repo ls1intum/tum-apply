@@ -5,13 +5,13 @@ import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
-
 import java.util.UUID;
 
 /**
  * Test data helpers for Applicant.
  */
 public final class ApplicantTestData {
+
     private ApplicantTestData() {}
 
     /** Creates an unsaved Applicant with sensible defaults. */
@@ -101,8 +101,22 @@ public final class ApplicantTestData {
         String masterGrade,
         String masterUniversity
     ) {
-        return repo.save(newApplicantAll(user, street, postalCode, city, country,
-            bachelorDegreeName, bachelorScale, bachelorGrade, bachelorUniversity,
-            masterDegreeName, masterScale, masterGrade, masterUniversity));
+        return repo.save(
+            newApplicantAll(
+                user,
+                street,
+                postalCode,
+                city,
+                country,
+                bachelorDegreeName,
+                bachelorScale,
+                bachelorGrade,
+                bachelorUniversity,
+                masterDegreeName,
+                masterScale,
+                masterGrade,
+                masterUniversity
+            )
+        );
     }
 }

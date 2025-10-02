@@ -5,21 +5,17 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-
 import java.time.LocalDate;
 
 /**
  * Test data helpers for Application.
  */
 public final class ApplicationTestData {
+
     private ApplicationTestData() {}
 
     /** Creates an unsaved Application with sensible defaults. */
-    public static Application newApplication(
-        Job job,
-        Applicant applicant,
-        ApplicationState state
-    ) {
+    public static Application newApplication(Job job, Applicant applicant, ApplicationState state) {
         Application app = new Application();
         app.setJob(job);
         app.setApplicant(applicant);
@@ -53,12 +49,15 @@ public final class ApplicationTestData {
     public static Application sent(Job job, Applicant applicant) {
         return newApplication(job, applicant, ApplicationState.SENT);
     }
+
     public static Application inReview(Job job, Applicant applicant) {
         return newApplication(job, applicant, ApplicationState.IN_REVIEW);
     }
+
     public static Application accepted(Job job, Applicant applicant) {
         return newApplication(job, applicant, ApplicationState.ACCEPTED);
     }
+
     public static Application rejected(Job job, Applicant applicant) {
         return newApplication(job, applicant, ApplicationState.REJECTED);
     }
@@ -67,15 +66,19 @@ public final class ApplicationTestData {
     public static Application saved(ApplicationRepository repo, Job job, Applicant applicant, ApplicationState state) {
         return repo.save(newApplication(job, applicant, state));
     }
+
     public static Application savedSent(ApplicationRepository repo, Job job, Applicant applicant) {
         return repo.save(sent(job, applicant));
     }
+
     public static Application savedInReview(ApplicationRepository repo, Job job, Applicant applicant) {
         return repo.save(inReview(job, applicant));
     }
+
     public static Application savedAccepted(ApplicationRepository repo, Job job, Applicant applicant) {
         return repo.save(accepted(job, applicant));
     }
+
     public static Application savedRejected(ApplicationRepository repo, Job job, Applicant applicant) {
         return repo.save(rejected(job, applicant));
     }

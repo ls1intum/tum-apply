@@ -1,5 +1,8 @@
 package de.tum.cit.aet.evaluation.web.rest;
 
+import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -25,6 +28,8 @@ import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.*;
+import java.time.LocalDate;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +38,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
-import java.util.Map;
-
-import static java.util.Map.entry;
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -47,21 +45,27 @@ public class ApplicationEvaluationResourceTest {
 
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     ResearchGroupRepository researchGroupRepository;
+
     @Autowired
     ApplicantRepository applicantRepository;
+
     @Autowired
     JobRepository jobRepository;
+
     @Autowired
     ApplicationRepository applicationRepository;
+
     @Autowired
     ApplicationEvaluationRepository evaluationRepository;
+
     @Autowired
     ApplicationReviewRepository applicationReviewRepository;
+
     @Autowired
     UserResearchGroupRoleRepository userResearchGroupRoleRepository;
-
 
     @Autowired
     MvcTestClient api;
@@ -90,19 +94,23 @@ public class ApplicationEvaluationResourceTest {
         applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
 
         publishedJob = JobTestData.saved(
-            jobRepository, professor, researchGroup,
-            "Published Role", JobState.PUBLISHED, LocalDate.now().plusDays(7)
+            jobRepository,
+            professor,
+            researchGroup,
+            "Published Role",
+            JobState.PUBLISHED,
+            LocalDate.now().plusDays(7)
         );
 
         sentApp = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         inReviewApp = ApplicationTestData.savedInReview(applicationRepository, publishedJob, applicant);
     }
 
-
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getApplicationsOverviews_onlyViewableStates() {
-        ApplicationEvaluationOverviewListDTO dto = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        ApplicationEvaluationOverviewListDTO dto = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
                 "/api/evaluation/applications",
                 Map.ofEntries(entry("offset", "0"), entry("limit", "10")),
@@ -110,16 +118,15 @@ public class ApplicationEvaluationResourceTest {
                 200
             );
 
-
         assertThat(dto.totalRecords()).isGreaterThanOrEqualTo(2);
-        assertThat(dto.applications()).extracting("applicationId")
-            .contains(sentApp.getApplicationId(), inReviewApp.getApplicationId());
+        assertThat(dto.applications()).extracting("applicationId").contains(sentApp.getApplicationId(), inReviewApp.getApplicationId());
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetails_returnsDetails() {
-        ApplicationEvaluationDetailListDTO details = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        ApplicationEvaluationDetailListDTO details = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
                 "/api/evaluation/application-details",
                 Map.of("offset", "0", "limit", "10"),
@@ -134,7 +141,8 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetailsWindow_validOddSize() {
-        ApplicationEvaluationDetailListDTO win = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        ApplicationEvaluationDetailListDTO win = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
                 "/api/evaluation/application-details/window",
                 Map.ofEntries(entry("applicationId", inReviewApp.getApplicationId().toString()), entry("windowSize", "3")),
@@ -147,7 +155,8 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetails_limitIsApplied() {
-        ApplicationEvaluationDetailListDTO details = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        ApplicationEvaluationDetailListDTO details = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
                 "/api/evaluation/application-details",
                 Map.of("offset", "0", "limit", "1"),
@@ -161,7 +170,8 @@ public class ApplicationEvaluationResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void markApplicationAsInReview_sent_becomesInReview() {
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 204);
 
         Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
@@ -174,7 +184,8 @@ public class ApplicationEvaluationResourceTest {
         String message = "Accepted!";
         AcceptDTO payload = new AcceptDTO(message, true, true);
 
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 204);
 
         Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
@@ -191,7 +202,8 @@ public class ApplicationEvaluationResourceTest {
     void rejectApplication_inReview_becomesRejected_andStoresReason() {
         RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
 
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
 
         Application updated = applicationRepository.findById(inReviewApp.getApplicationId()).orElseThrow();
@@ -203,18 +215,24 @@ public class ApplicationEvaluationResourceTest {
     @Test
     void acceptApplication_unauthenticated_returns401() {
         AcceptDTO payload = new AcceptDTO("msg", false, false);
-        api.withoutPostProcessors().postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 401);
+        api
+            .withoutPostProcessors()
+            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 401);
     }
 
     @Test
     void rejectApplication_unauthenticated_returns401() {
         RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
-        api.withoutPostProcessors().postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 401);
+        api
+            .withoutPostProcessors()
+            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 401);
     }
 
     @Test
     void markApplicationAsInReview_unauthenticated_returns401() {
-        api.withoutPostProcessors().putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
+        api
+            .withoutPostProcessors()
+            .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
     }
 
     @Test
@@ -223,14 +241,19 @@ public class ApplicationEvaluationResourceTest {
         SortDTO sort = new SortDTO("appliedAt", SortDTO.Direction.DESC);
         OffsetPageDTO page = new OffsetPageDTO(0, 10);
 
-        ApplicationEvaluationOverviewListDTO dto = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+        ApplicationEvaluationOverviewListDTO dto = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
                 "/api/evaluation/applications",
                 Map.of(
-                    "offset", String.valueOf(page.offset()),
-                    "limit", String.valueOf(page.limit()),
-                    "sortBy", sort.sortBy(),
-                    "direction", sort.direction().name()
+                    "offset",
+                    String.valueOf(page.offset()),
+                    "limit",
+                    String.valueOf(page.limit()),
+                    "sortBy",
+                    sort.sortBy(),
+                    "direction",
+                    sort.direction().name()
                 ),
                 ApplicationEvaluationOverviewListDTO.class,
                 200
