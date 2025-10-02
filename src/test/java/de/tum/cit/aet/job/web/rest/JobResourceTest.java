@@ -14,6 +14,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
@@ -46,6 +47,9 @@ class JobResourceTest {
     ResearchGroupRepository researchGroupRepository;
 
     @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @Autowired
     MvcTestClient api;
 
     ResearchGroup researchGroup;
@@ -53,9 +57,7 @@ class JobResourceTest {
 
     @BeforeEach
     void setup() {
-        jobRepository.deleteAll();
-        userRepository.deleteAll();
-        researchGroupRepository.deleteAll();
+        databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,

@@ -13,8 +13,6 @@ import de.tum.cit.aet.evaluation.dto.AcceptDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.dto.RejectDTO;
-import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
-import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -24,7 +22,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.*;
@@ -59,13 +57,7 @@ public class ApplicationEvaluationResourceTest {
     ApplicationRepository applicationRepository;
 
     @Autowired
-    ApplicationEvaluationRepository evaluationRepository;
-
-    @Autowired
-    ApplicationReviewRepository applicationReviewRepository;
-
-    @Autowired
-    UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    DatabaseCleaner databaseCleaner;
 
     @Autowired
     MvcTestClient api;
@@ -79,14 +71,7 @@ public class ApplicationEvaluationResourceTest {
 
     @BeforeEach
     void setup() {
-        applicationReviewRepository.deleteAllInBatch();
-        evaluationRepository.deleteAllInBatch();
-        applicationRepository.deleteAllInBatch();
-        applicantRepository.deleteAllInBatch();
-        jobRepository.deleteAllInBatch();
-        userResearchGroupRoleRepository.deleteAllInBatch();
-        userRepository.deleteAllInBatch();
-        researchGroupRepository.deleteAllInBatch();
+        databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
