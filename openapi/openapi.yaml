@@ -720,6 +720,98 @@
         }
       }
     },
+    "/api/research-groups/{researchGroupId}/deny": {
+      "post": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "denyResearchGroup",
+        "parameters": [
+          {
+            "name": "researchGroupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/{researchGroupId}/activate": {
+      "post": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "activateResearchGroup",
+        "parameters": [
+          {
+            "name": "researchGroupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/professor-request": {
+      "post": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "createProfessorResearchGroupRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfessorResearchGroupRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGroupDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me/prof-onboarding/remind": {
       "post": {
         "tags": [
@@ -1134,36 +1226,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApplicationForApplicantDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/admin/research-groups": {
-      "post": {
-        "tags": [
-          "admin-resource"
-        ],
-        "operationId": "createResearchGroup",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResearchGroupCreationDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchGroup"
                 }
               }
             }
@@ -1854,6 +1916,48 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PageResponseDTOUserShortDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research-groups/draft": {
+      "get": {
+        "tags": [
+          "research-group-resource"
+        ],
+        "operationId": "getDraftResearchGroups",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseDTOResearchGroupDTO"
                 }
               }
             }
@@ -3129,6 +3233,9 @@
           },
           "city": {
             "type": "string"
+          },
+          "state": {
+            "type": "string"
           }
         },
         "required": [
@@ -3616,6 +3723,56 @@
           }
         }
       },
+      "ProfessorResearchGroupRequestDTO": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "universityID": {
+            "type": "string"
+          },
+          "researchGroupHead": {
+            "type": "string"
+          },
+          "researchGroupName": {
+            "type": "string"
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "contactEmail": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "defaultFieldOfStudies": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        }
+      },
       "RejectDTO": {
         "type": "object",
         "properties": {
@@ -3776,56 +3933,20 @@
           "size"
         ]
       },
-      "ResearchGroupCreationDTO": {
+      "ResearchGroupProvisionDTO": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 150,
-            "minLength": 3
-          },
-          "headName": {
-            "type": "string",
-            "maxLength": 150,
-            "minLength": 3
-          },
           "universityId": {
             "type": "string",
             "maxLength": 7,
             "minLength": 3
           },
-          "email": {
+          "researchGroupId": {
             "type": "string",
-            "format": "email"
-          },
-          "abbreviation": {
-            "type": "string"
-          },
-          "website": {
-            "type": "string"
-          },
-          "school": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "defaultFieldOfStudies": {
-            "type": "string"
-          },
-          "street": {
-            "type": "string"
-          },
-          "postalCode": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
+            "format": "uuid"
           }
         },
         "required": [
-          "headName",
-          "name",
           "universityId"
         ]
       },
@@ -4243,6 +4364,14 @@
           "universityId": {
             "type": "string"
           },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "DENIED"
+            ]
+          },
           "userRoles": {
             "type": "array",
             "items": {
@@ -4352,23 +4481,6 @@
             ]
           }
         }
-      },
-      "ResearchGroupProvisionDTO": {
-        "type": "object",
-        "properties": {
-          "universityId": {
-            "type": "string",
-            "maxLength": 7,
-            "minLength": 3
-          },
-          "researchGroupId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "universityId"
-        ]
       },
       "Link": {
         "type": "object",
@@ -4614,18 +4726,11 @@
             "type": "integer",
             "format": "int64"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -4644,6 +4749,13 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -4652,8 +4764,12 @@
       "PageableObject": {
         "type": "object",
         "properties": {
-          "unpaged": {
-            "type": "boolean"
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
           },
           "paged": {
             "type": "boolean"
@@ -4666,25 +4782,21 @@
             "type": "integer",
             "format": "int32"
           },
-          "offset": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
       "SortObject": {
         "type": "object",
         "properties": {
-          "unsorted": {
+          "empty": {
             "type": "boolean"
           },
           "sorted": {
             "type": "boolean"
           },
-          "empty": {
+          "unsorted": {
             "type": "boolean"
           }
         }
@@ -4819,18 +4931,11 @@
             "type": "integer",
             "format": "int64"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -4848,6 +4953,13 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
           },
           "empty": {
             "type": "boolean"
