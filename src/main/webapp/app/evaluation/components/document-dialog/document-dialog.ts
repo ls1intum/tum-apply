@@ -17,14 +17,14 @@ import TranslateDirective from '../../../shared/language/translate.directive';
   encapsulation: ViewEncapsulation.None,
 })
 export class DocumentDialog {
-  documents = input<DocumentHolder[]>([]);
+  documentHolders = input<DocumentHolder[]>([]);
   isOpen = model<boolean>(false);
 
   readonly selectedId = signal<string | undefined>(undefined);
   readonly checkedIds = signal<Set<string>>(new Set());
 
   _initSelection = effect(() => {
-    const list = this.documents();
+    const list = this.documentHolders();
     if (list.length && this.selectedId() === undefined) {
       this.selectedId.set(list[0].document.id);
     }
@@ -35,7 +35,7 @@ export class DocumentDialog {
     if (id === undefined) {
       return undefined;
     }
-    return this.documents().find(d => d.document.id === id)?.document ?? undefined;
+    return this.documentHolders().find(d => d.document.id === id)?.document ?? undefined;
   });
 
   isSelected: (documentId: string) => Signal<boolean> = (documentId: string) => computed(() => this.selectedDocument()?.id === documentId);
