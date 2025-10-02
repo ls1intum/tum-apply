@@ -1,41 +1,31 @@
 package de.tum.cit.aet.usermanagement.service;
 
-
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
+import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.dto.*;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
-import de.tum.cit.aet.core.util.StringUtil;
-import de.tum.cit.aet.usermanagement.dto.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-
-import de.tum.cit.aet.core.dto.PageDTO;
-import de.tum.cit.aet.core.dto.PageResponseDTO;
-import de.tum.cit.aet.core.exception.AccessDeniedException;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.domain.User;
-
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
-import de.tum.cit.aet.usermanagement.constants.UserRole;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
-
-
-import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
-
-import lombok.RequiredArgsConstructor;
 
 /**
  * Service for managing research groups.
@@ -48,7 +38,6 @@ public class ResearchGroupService {
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
-
 
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
@@ -75,10 +64,7 @@ public class ResearchGroupService {
         UUID currentUserId = currentUserService.getUserId();
         List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), currentUserId);
 
-        return new PageResponseDTO<>(
-            members.stream().map(UserShortDTO::new).toList(),
-            userIdsPage.getTotalElements()
-        );
+        return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
     }
 
     /**
@@ -93,12 +79,15 @@ public class ResearchGroupService {
         UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
         // Verify that the user exists and belongs to the same research group
-        User userToRemove = userRepository.findWithResearchGroupRolesByUserId(userId)
+        User userToRemove = userRepository
+            .findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
         // Ensure user belongs to the same research group
-        if (userToRemove.getResearchGroup() == null ||
-            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)) {
+        if (
+            userToRemove.getResearchGroup() == null ||
+            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)
+        ) {
             throw new AccessDeniedException("User is not a member of your research group");
         }
 
@@ -138,16 +127,18 @@ public class ResearchGroupService {
      */
 
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
-        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
-                .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
+        ResearchGroup researchGroup = researchGroupRepository
+            .findById(researchGroupId)
+            .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
 
         return new ResearchGroupLargeDTO(
-                researchGroup.getDescription(),
-                researchGroup.getEmail(),
-                researchGroup.getWebsite(),
-                researchGroup.getStreet(),
-                researchGroup.getPostalCode(),
-                researchGroup.getCity());
+            researchGroup.getDescription(),
+            researchGroup.getEmail(),
+            researchGroup.getWebsite(),
+            researchGroup.getStreet(),
+            researchGroup.getPostalCode(),
+            researchGroup.getCity()
+        );
     }
 
     /**
@@ -222,12 +213,14 @@ public class ResearchGroupService {
     public ResearchGroup createResearchGroup(ResearchGroupCreationDTO dto) {
         Optional<ResearchGroup> existing = researchGroupRepository.findByUniversityId(dto.universityId());
         if (existing.isPresent()) {
-            log.info("AUDIT research-group.create reused by={} groupId={} name={} headName={} universityId={}",
+            log.info(
+                "AUDIT research-group.create reused by={} groupId={} name={} headName={} universityId={}",
                 currentUserService.getUserId(),
                 existing.get().getResearchGroupId(),
                 dto.name(),
                 dto.headName(),
-                dto.universityId());
+                dto.universityId()
+            );
             throw new ResourceAlreadyExistsException(
                 "ResearchGroup for head with universityId '" + dto.universityId() + "' already exists"
             );
@@ -236,10 +229,9 @@ public class ResearchGroupService {
         ResearchGroup newResearchGroup = buildResearchGroupFromDTO(dto);
         ResearchGroup saved = researchGroupRepository.save(newResearchGroup);
 
-        User headUser = userRepository.findByUniversityIdIgnoreCase(dto.universityId())
-            .orElseThrow(() -> new EntityNotFoundException(
-                "User with universityId '%s' not found".formatted(dto.universityId())
-            ));
+        User headUser = userRepository
+            .findByUniversityIdIgnoreCase(dto.universityId())
+            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(dto.universityId())));
 
         headUser.setResearchGroup(saved);
         userRepository.save(headUser);
@@ -258,12 +250,14 @@ public class ResearchGroupService {
             userResearchGroupRoleRepository.save(existingMapping.get());
         }
 
-        log.info("AUDIT research-group.create created by={} groupId={} name={} headName={} universityId={}",
+        log.info(
+            "AUDIT research-group.create created by={} groupId={} name={} headName={} universityId={}",
             currentUserService.getUserId(),
             saved.getResearchGroupId(),
             dto.name(),
             dto.headName(),
-            dto.universityId());
+            dto.universityId()
+        );
 
         return saved;
     }
@@ -281,15 +275,13 @@ public class ResearchGroupService {
      */
     @Transactional
     public ResearchGroup provisionResearchGroup(ResearchGroupProvisionDTO dto) {
-        User user = userRepository.findByUniversityIdIgnoreCase(dto.universityId())
-            .orElseThrow(() -> new EntityNotFoundException(
-                "User with universityId '%s' not found".formatted(dto.universityId())
-            ));
+        User user = userRepository
+            .findByUniversityIdIgnoreCase(dto.universityId())
+            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(dto.universityId())));
 
-        ResearchGroup group = researchGroupRepository.findById(dto.researchGroupId())
-            .orElseThrow(() -> new EntityNotFoundException(
-                "ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())
-            ));
+        ResearchGroup group = researchGroupRepository
+            .findById(dto.researchGroupId())
+            .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
 
         boolean userGroupChanged = false;
         if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
@@ -315,17 +307,18 @@ public class ResearchGroupService {
             roleOutcome = "updated";
         }
 
-        log.info("AUDIT research-group.provision by={} targetUserId={} targetUniId={} groupId={} groupName={} userGroupChanged={} roleOutcome={}",
+        log.info(
+            "AUDIT research-group.provision by={} targetUserId={} targetUniId={} groupId={} groupName={} userGroupChanged={} roleOutcome={}",
             currentUserService.getUserId(),
             user.getUserId(),
             dto.universityId(),
             group.getResearchGroupId(),
             group.getName(),
             userGroupChanged,
-            roleOutcome);
+            roleOutcome
+        );
 
         return group;
     }
-
 }
 

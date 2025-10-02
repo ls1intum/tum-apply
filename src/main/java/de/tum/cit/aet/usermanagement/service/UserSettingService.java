@@ -2,11 +2,10 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * Service for managing user-specific settings.
@@ -26,7 +25,9 @@ public class UserSettingService {
      * @return the boolean value of the setting, or false if not set
      */
     public boolean getBool(UUID userId, String key) {
-        return get(userId, key).map(v -> "true".equalsIgnoreCase(v.trim())).orElse(false);
+        return get(userId, key)
+            .map(v -> "true".equalsIgnoreCase(v.trim()))
+            .orElse(false);
     }
 
     /**

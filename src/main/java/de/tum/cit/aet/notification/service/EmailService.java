@@ -10,6 +10,10 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -24,11 +28,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -138,13 +137,13 @@ public class EmailService {
     private void simulateEmail(Email email, String subject, String body) {
         log.info(
             """
-                >>>> Sending Simulated Email <<<<
-                  To: {}
-                  CC: {}
-                  BCC: {}
-                  Subject: {}
-                  Parsed Body: {}
-                """,
+            >>>> Sending Simulated Email <<<<
+              To: {}
+              CC: {}
+              BCC: {}
+              Subject: {}
+              Parsed Body: {}
+            """,
             getRecipientsToNotify(email.getTo(), email),
             getRecipientsToNotify(email.getCc(), email),
             getRecipientsToNotify(email.getBcc(), email),

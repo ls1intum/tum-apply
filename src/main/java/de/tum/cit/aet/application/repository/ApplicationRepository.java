@@ -318,10 +318,10 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     void updateApplicationsForJob(@Param("jobId") UUID jobId, @Param("targetState") String targetState);
-    
+
     @Query("SELECT a FROM Application a WHERE a.applicant.user.userId = :userId AND a.job.jobId = :jobId")
     Application getByApplicantByUserIdAndJobId(@Param("userId") UUID userId, @Param("jobId") UUID jobId);
-    
+
     @Query("SELECT COUNT(a) FROM Application a WHERE a.applicant.user.userId = :applicantId")
     long countByApplicantId(@Param("applicantId") UUID applicantId);
 }
