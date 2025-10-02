@@ -2,11 +2,10 @@ package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.usermanagement.domain.key.UserSettingId;
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Timestamp;
 
 /**
  * Entity representing a single user setting.

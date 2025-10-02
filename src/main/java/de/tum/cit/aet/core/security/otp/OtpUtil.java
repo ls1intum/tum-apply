@@ -1,19 +1,19 @@
 package de.tum.cit.aet.core.security.otp;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Utility class for generating and handling one-time passwords (OTPs) and related cryptographic operations.
  */
 public final class OtpUtil {
+
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private OtpUtil() {
-    }
+    private OtpUtil() {}
 
     /**
      * Generates an alphanumeric OTP consisting of uppercase letters and digits.

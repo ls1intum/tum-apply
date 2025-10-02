@@ -1,6 +1,6 @@
 meta {
   name: Applications
-  seq: 3
+  seq: 10
 }
 
 auth {
@@ -12,16 +12,16 @@ auth:oauth2 {
   callback_url: {{redirectUri}}
   authorization_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth
   access_token_url: {{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
-  refresh_token_url: 
+  refresh_token_url:
   client_id: {{clientId}}
-  client_secret: 
+  client_secret:
   scope: openid
   state: {{$guid}}
   pkce: true
   credentials_placement: basic_auth_header
   credentials_id: credentials
   token_placement: header
-  token_header_prefix: 
+  token_header_prefix:
   auto_fetch_token: true
   auto_refresh_token: false
 }

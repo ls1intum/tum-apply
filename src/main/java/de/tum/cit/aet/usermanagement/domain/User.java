@@ -4,15 +4,14 @@ import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * A user.

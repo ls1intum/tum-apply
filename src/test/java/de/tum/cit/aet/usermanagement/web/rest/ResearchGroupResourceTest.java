@@ -10,6 +10,8 @@ import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Autowired
     ResearchGroupRepository researchGroupRepository;
+
     @Autowired
     UserRepository userRepository;
 
@@ -38,19 +41,36 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     public void setup() {
-
         userRepository.deleteAll();
         researchGroupRepository.deleteAll();
         researchGroup = ResearchGroupTestData.savedAll(
-                researchGroupRepository,
-                "Machine Learning Lab", "Prof. Smith", "ml@example.com", "ML",
-                "Computer Science", "We research ML algorithms", "contact@ml.tum.de",
-                "80333", "TUM", "Arcisstr. 21", "https://ml.tum.de");
+            researchGroupRepository,
+            "Machine Learning Lab",
+            "Prof. Smith",
+            "ml@example.com",
+            "ML",
+            "Computer Science",
+            "We research ML algorithms",
+            "contact@ml.tum.de",
+            "80333",
+            "TUM",
+            "Arcisstr. 21",
+            "https://ml.tum.de"
+        );
         secondResearchGroup = ResearchGroupTestData.savedAll(
-                researchGroupRepository,
-                "Other Lab", "Dr. Doe", "other@example.com", "OL",
-                "Physics", "Other research", "contact@other.tum.de",
-                "80335", "TUM", "Otherstr. 10", "https://other.tum.de");
+            researchGroupRepository,
+            "Other Lab",
+            "Dr. Doe",
+            "other@example.com",
+            "OL",
+            "Physics",
+            "Other research",
+            "contact@other.tum.de",
+            "80335",
+            "TUM",
+            "Otherstr. 10",
+            "https://other.tum.de"
+        );
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
     }
@@ -59,14 +79,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     @WithMockUser(roles = "PROFESSOR")
     public void getResearchGroupDetailsExistingIdReturnsDetails() {
         ResearchGroupLargeDTO result = api
-                .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
-                .getAndReadOk(
-                        "/api/research-groups/detail/" + researchGroup.getResearchGroupId(),
-                        Map.of(),
-                        ResearchGroupLargeDTO.class);
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead("/api/research-groups/detail/" + researchGroup.getResearchGroupId(), Map.of(), ResearchGroupLargeDTO.class, 200);
 
-        assertThat(researchGroupUser.getResearchGroup().getResearchGroupId())
-                .isEqualTo(researchGroup.getResearchGroupId());
+        assertThat(researchGroupUser.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
         assertThat(result.description()).isEqualTo("We research ML algorithms");
         assertThat(result.email()).isEqualTo("contact@ml.tum.de");
         assertThat(result.website()).isEqualTo("https://ml.tum.de");
@@ -78,22 +94,19 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsNoIdAndNonExistingIdThrowsException() {
-        assertThatThrownBy(() -> api.getAndReadOk(
-                "/api/research-groups/detail/", Map.of(),
-                ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
+        api.getAndRead("/api/research-groups/detail/", Map.of(), ResearchGroupLargeDTO.class, 500);
         UUID nonExistingId = UUID.randomUUID();
-        assertThatThrownBy(() -> api.getAndReadOk(
-                "/api/research-groups/detail/" + nonExistingId, Map.of(),
-                ResearchGroupLargeDTO.class)).isInstanceOf(AssertionError.class);
+        api.getAndRead("/api/research-groups/detail/" + nonExistingId, Map.of(), ResearchGroupLargeDTO.class, 403);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsOtherUsersGroupReturnsForbidden() {
-        assertThatThrownBy(() -> api.getAndReadOk(
-                "/api/research-groups/detail/" + secondResearchGroup.getResearchGroupId(),
-                Map.of(),
-                ResearchGroupLargeDTO.class))
-                .isInstanceOf(AssertionError.class);
+        api.getAndRead(
+            "/api/research-groups/detail/" + secondResearchGroup.getResearchGroupId(),
+            Map.of(),
+            ResearchGroupLargeDTO.class,
+            403
+        );
     }
 }
