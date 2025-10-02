@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { VoicesSectionComponent } from 'app/shared/pages/landing-page/voices-section/voices-section.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
@@ -10,12 +10,7 @@ import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
   standalone: true,
   template: '',
 })
-class StubVoiceCardComponent {
-  @Input() name!: string;
-  @Input() field!: string;
-  @Input() quote!: string;
-  @Input() imageSrc!: string;
-}
+class StubVoiceCardComponent {}
 
 describe('VoicesSectionComponent', () => {
   let fixture: ComponentFixture<VoicesSectionComponent>;
