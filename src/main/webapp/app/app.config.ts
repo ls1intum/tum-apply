@@ -19,6 +19,9 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
+import { PublicConfigResourceApiService } from 'app/generated/api/publicConfigResourceApi.service';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
@@ -33,18 +36,23 @@ import { NotificationInterceptor } from './core/interceptor/notification.interce
 import { AuthFacadeService } from './core/auth/auth-facade.service';
 
 /**
- * Application initializer that tries email-session-refresh first,
- * then falls back to Keycloak SSO init via AuthFacadeService.
+ * Application initializer that enforces strict order:
+ * 1) Load runtime config
+ * 2) Initialize Auth
  */
-export async function initializeAuth(): Promise<void> {
+export async function initializeApp(): Promise<void> {
+  const api = inject(PublicConfigResourceApiService);
+  const appConfigService = inject(ApplicationConfigService);
   const authFacade = inject(AuthFacadeService);
+
+  await initializeAppConfig(api, appConfigService)();
   await authFacade.initAuth();
 }
 
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
-    provideAppInitializer(initializeAuth),
+    provideAppInitializer(initializeApp),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
