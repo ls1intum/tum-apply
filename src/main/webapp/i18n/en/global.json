@@ -239,7 +239,9 @@
       "personal_statements": "Personal Statements",
       "personal_information": "Personal Information",
       "personal_documents": "Personal Documents",
-      "not_found": "Application not found"
+      "not_found": "Application not found",
+      "withdraw_description": "Withdraw your submitted application. Once withdrawn, it will no longer be visible to the professor.",
+      "delete_description": "Permanently delete this application draft. Deleted drafts cannot be recovered."
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",
@@ -450,6 +452,26 @@
         "missingJobIdUnauthenticated": {
           "summary": "Error",
           "detail": "Job ID must be provided when not authenticated."
+        },
+        "applicationDeleted": {
+          "summary": "Application deleted",
+          "detail": "The application was deleted successfully."
+        },
+        "errorDeletingApplication": {
+          "summary": "Delete failed",
+          "detail": "The application could not be deleted. Please try again or contact an admin."
+        },
+        "applicationWithdrawn": {
+          "summary": "Application withdrawn",
+          "detail": "Your application was withdrawn successfully."
+        },
+        "errorWithdrawingApplication": {
+          "summary": "Withdrawal failed",
+          "detail": "The application could not be withdrawn. Please try again or contact an admin."
+        },
+        "jobIdNotAvailable": {
+          "summary": "Error",
+          "detail": "Job ID is not available for this application."
         }
       },
       "applicationOverview": {

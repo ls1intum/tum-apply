@@ -239,7 +239,9 @@
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",
       "personal_documents": "Persönliche Dokumente",
-      "not_found": "Bewerbung nicht gefunden"
+      "not_found": "Bewerbung nicht gefunden",
+      "withdraw_description": "Ziehe deine eingereichte Bewerbung zurück. Nach dem Zurückziehen ist sie für den Professor nicht mehr sichtbar.",
+      "delete_description": "Lösche diesen Bewerbungsentwurf dauerhaft. Gelöschte Entwürfe können nicht wiederhergestellt werden."
     },
     "applicationSteps": {
       "personalInformation": "Persönliche Informationen",
@@ -450,6 +452,26 @@
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
           "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+        },
+        "applicationDeleted": {
+          "summary": "Bewerbung gelöscht",
+          "detail": "Die Bewerbung wurde erfolgreich gelöscht."
+        },
+        "errorDeletingApplication": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "applicationWithdrawn": {
+          "summary": "Bewerbung zurückgezogen",
+          "detail": "Deine Bewerbung wurde erfolgreich zurückgezogen."
+        },
+        "errorWithdrawingApplication": {
+          "summary": "Zurückziehen fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "jobIdNotAvailable": {
+          "summary": "Fehler",
+          "detail": "Job-ID ist für diese Bewerbung nicht verfügbar."
         }
       },
       "applicationOverview": {

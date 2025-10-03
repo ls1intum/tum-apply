@@ -3,25 +3,28 @@
     <!-- Header Section -->
     <div class="header-container">
       <div>
-        <h1 class="page-header">{{ 'entity.application_detail.applicant.title_prefix' | translate }} '{{ application.jobTitle }}'</h1>
+        <h1
+          class="page-header"
+          jhiTranslate="entity.application_detail.applicant.header"
+          [translateValues]="{ jobTitle: application.jobTitle }"
+        ></h1>
         <jhi-application-state-for-applicants [state]="application.applicationState" />
       </div>
-      @if (!previewDetailData() && application.applicationState === 'SAVED') {
-        <jhi-button
-          [label]="'entity.applicationOverview.actions.update' | translate"
-          severity="primary"
-          icon="pencil"
-          (click)="onUpdateApplication()"
-        />
+      @if (!previewDetailData()) {
+        <!-- Keep only constructive actions at the top -->
+        @if (['SAVED'].includes(application.applicationState)) {
+          <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
+        }
       }
     </div>
 
     <!-- Position Overview -->
     <section class="card">
       <div class="section-header">
-        <h2 class="section-title">{{ 'entity.application_detail.position_overview' | translate }}</h2>
+        <h2 class="section-title" jhiTranslate="entity.application_detail.position_overview"></h2>
         <jhi-button
-          [label]="'entity.application_detail.view_job_details' | translate"
+          [label]="'entity.application_detail.view_job_details'"
+          [shouldTranslate]="true"
           severity="secondary"
           [variant]="'outlined'"
           (click)="onViewJobDetails()"
@@ -30,18 +33,18 @@
       <div class="overview-content">
         <div class="info-item">
           <fa-icon [icon]="['fas', 'user']" class="icon" />
-          <span class="label">{{ 'entity.application_detail.supervisor' | translate }}:</span>
-          <span class="value">{{ application.supervisingProfessorName || 'N/A' }}</span>
+          <span class="label" jhiTranslate="entity.application_detail.supervisor"></span>
+          <span class="value">{{ application.supervisingProfessorName || '-' }}</span>
         </div>
         <div class="info-item">
           <fa-icon [icon]="['fas', 'flask']" class="icon" />
-          <span class="label">{{ 'entity.application_detail.research_group' | translate }}:</span>
-          <span class="value">{{ application.researchGroup || 'N/A' }}</span>
+          <span class="label" jhiTranslate="entity.application_detail.research_group"></span>
+          <span class="value">{{ application.researchGroup || '-' }}</span>
         </div>
         <div class="info-item">
           <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-          <span class="label">{{ 'entity.application_detail.location' | translate }}:</span>
-          <span class="value">{{ application.jobLocation || 'N/A' }}</span>
+          <span class="label" jhiTranslate="entity.application_detail.location"></span>
+          <span class="value">{{ application.jobLocation || '-' }}</span>
         </div>
       </div>
     </section>
@@ -50,12 +53,12 @@
     <div class="content-grid">
       <!-- Personal Statements -->
       <section>
-        <h2 class="section-title">{{ 'entity.application_detail.personal_statements' | translate }}</h2>
+        <h2 class="section-title" jhiTranslate="entity.application_detail.personal_statements"></h2>
 
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'rocket']" class="card-icon" />
-            <h3 class="card-title">{{ 'entity.applicationDetail.motivation' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="entity.applicationDetail.motivation"></h3>
           </div>
           <div class="card-body">
             <div class="content" [innerHTML]="application.motivation"></div>
@@ -65,7 +68,7 @@
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'brain']" class="card-icon" />
-            <h3 class="card-title">{{ 'entity.applicationDetail.skills' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="entity.applicationDetail.skills"></h3>
           </div>
           <div class="card-body">
             <div class="content" [innerHTML]="application.specialSkills"></div>
@@ -75,7 +78,7 @@
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'flask']" class="card-icon" />
-            <h3 class="card-title">{{ 'entity.applicationDetail.researchExperience' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="entity.applicationDetail.researchExperience"></h3>
           </div>
           <div class="card-body">
             <div class="content" [innerHTML]="application.projects"></div>
@@ -85,30 +88,30 @@
 
       <!-- Personal Information -->
       <section>
-        <h2 class="section-title">{{ 'entity.application_detail.personal_information' | translate }}</h2>
+        <h2 class="section-title" jhiTranslate="entity.application_detail.personal_information"></h2>
 
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'circle-user']" class="card-icon" />
-            <h3 class="card-title">{{ 'entity.detail_card.applicant_info' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="entity.detail_card.applicant_info"></h3>
           </div>
           <div class="card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.preferred_language' | translate }}</span>
-                <span class="value">{{ application.applicant?.user?.preferredLanguage || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.preferred_language"></span>
+                <span class="value">{{ application.applicant?.user?.preferredLanguage || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.desired_start_date' | translate }}</span>
-                <span class="value">{{ application.desiredDate || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.desired_start_date"></span>
+                <span class="value">{{ application.desiredDate || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.gender' | translate }}</span>
-                <span class="value">{{ application.applicant?.user?.gender || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.gender"></span>
+                <span class="value">{{ application.applicant?.user?.gender || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.nationality' | translate }}</span>
-                <span class="value">{{ application.applicant?.user?.nationality || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.nationality"></span>
+                <span class="value">{{ application.applicant?.user?.nationality || '-' }}</span>
               </div>
             </div>
             @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
@@ -116,13 +119,13 @@
                 @if (application.applicant?.user?.website) {
                   <a class="link" [href]="application.applicant?.user?.website" target="_blank" rel="noopener noreferrer">
                     <fa-icon [icon]="['fas', 'link']" class="external-icon" />
-                    <span>{{ 'entity.detail_card.website' | translate }}</span>
+                    <span jhiTranslate="entity.detail_card.website"></span>
                   </a>
                 }
                 @if (application.applicant?.user?.linkedinUrl) {
                   <a class="link" [href]="application.applicant?.user?.linkedinUrl" target="_blank" rel="noopener noreferrer">
                     <fa-icon [icon]="['fab', 'linkedin']" class="external-icon" />
-                    <span>{{ 'entity.detail_card.linkedin' | translate }}</span>
+                    <span jhiTranslate="entity.detail_card.linkedin"></span>
                   </a>
                 }
               </div>
@@ -133,21 +136,21 @@
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'building-columns']" class="card-icon" />
-            <h3 class="card-title">{{ 'entity.detail_card.bachelor_info' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="entity.detail_card.bachelor_info"></h3>
           </div>
           <div class="card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.name' | translate }}</span>
-                <span class="value">{{ application.applicant?.bachelorDegreeName || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.name"></span>
+                <span class="value">{{ application.applicant?.bachelorDegreeName || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.university' | translate }}</span>
-                <span class="value">{{ application.applicant?.bachelorUniversity || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.university"></span>
+                <span class="value">{{ application.applicant?.bachelorUniversity || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.grade' | translate }}</span>
-                <span class="value">{{ application.applicant?.bachelorGrade || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.grade"></span>
+                <span class="value">{{ application.applicant?.bachelorGrade || '-' }}</span>
               </div>
             </div>
           </div>
@@ -156,21 +159,21 @@
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'building-columns']" class="card-icon" />
-            <h3 class="card-title">{{ 'entity.detail_card.master_info' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="entity.detail_card.master_info"></h3>
           </div>
           <div class="card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.name' | translate }}</span>
-                <span class="value">{{ application.applicant?.masterDegreeName || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.name"></span>
+                <span class="value">{{ application.applicant?.masterDegreeName || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.university' | translate }}</span>
-                <span class="value">{{ application.applicant?.masterUniversity || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.university"></span>
+                <span class="value">{{ application.applicant?.masterUniversity || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'entity.detail_card.grade' | translate }}</span>
-                <span class="value">{{ application.applicant?.masterGrade || 'N/A' }}</span>
+                <span class="label" jhiTranslate="entity.detail_card.grade"></span>
+                <span class="value">{{ application.applicant?.masterGrade || '-' }}</span>
               </div>
             </div>
           </div>
@@ -181,7 +184,7 @@
     <!-- Documents Section - Full Width -->
     @if (documentIds(); as documentIds) {
       <section class="documents-section">
-        <h2 class="section-title">{{ 'entity.application_detail.personal_documents' | translate }}</h2>
+        <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
 
         <!-- Unified document grid for all document types -->
         <div class="document-container">
@@ -190,7 +193,7 @@
               <div class="detail-card">
                 <div class="card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
-                  <h3 class="card-title">{{ 'entity.upload.document_type.BACHELOR_TRANSCRIPT' | translate }}</h3>
+                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
                 </div>
                 <div class="card-body">
                   <div class="document-viewer">
@@ -206,7 +209,7 @@
               <div class="detail-card">
                 <div class="card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
-                  <h3 class="card-title">{{ 'entity.upload.document_type.MASTER_TRANSCRIPT' | translate }}</h3>
+                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
                 </div>
                 <div class="card-body">
                   <div class="document-viewer">
@@ -221,7 +224,7 @@
             <div class="detail-card">
               <div class="card-header">
                 <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
-                <h3 class="card-title">{{ 'entity.upload.document_type.CV' | translate }}</h3>
+                <h3 class="card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
               </div>
               <div class="card-body">
                 <div class="document-viewer">
@@ -236,7 +239,7 @@
               <div class="detail-card">
                 <div class="card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
-                  <h3 class="card-title">{{ 'entity.upload.document_type.REFERENCES' | translate }}</h3>
+                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
                 </div>
                 <div class="card-body">
                   <div class="document-viewer">
@@ -249,7 +252,41 @@
         </div>
       </section>
     }
+
+    <!-- Destructive Actions - Placed at bottom for better UX -->
+    @if (!previewDetailData()) {
+      <section class="destructive-actions-section">
+        @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
+          <jhi-confirm-dialog
+            [label]="'entity.applicationOverview.actions.withdraw' | translate"
+            [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
+            [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
+            confirmIcon="file-circle-minus"
+            (confirmed)="onWithdrawApplication()"
+            severity="danger"
+            variant="outlined"
+          />
+        }
+
+        @if (['SAVED'].includes(application.applicationState)) {
+          <jhi-confirm-dialog
+            [label]="'entity.applicationOverview.actions.delete' | translate"
+            [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
+            [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
+            confirmIcon="trash"
+            (confirmed)="onDeleteApplication()"
+            severity="danger"
+          />
+        }
+        @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
+          <p class="actions-description" jhiTranslate="entity.application_detail.withdraw_description"></p>
+        }
+        @if (['SAVED'].includes(application.applicationState)) {
+          <p class="actions-description" jhiTranslate="entity.application_detail.delete_description"></p>
+        }
+      </section>
+    }
   } @else {
-    <p class="text-center">{{ 'entity.application_detail.not_found' | translate }}</p>
+    <p class="text-center" jhiTranslate="entity.application_detail.not_found"></p>
   }
 </div>

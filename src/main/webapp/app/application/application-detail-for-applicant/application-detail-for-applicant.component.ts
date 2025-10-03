@@ -6,6 +6,9 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { TranslateDirective, TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
@@ -14,7 +17,17 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [SharedModule, ButtonComponent, FontAwesomeModule, ApplicationStateForApplicantsComponent, DocumentViewerComponent],
+  imports: [
+    SharedModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    ApplicationStateForApplicantsComponent,
+    DocumentViewerComponent,
+    ConfirmDialogModule,
+    ConfirmDialog,
+    TranslateModule,
+    TranslateDirective,
+  ],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
@@ -49,6 +62,8 @@ export default class ApplicationDetailForApplicantComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
+  private readonly translationKey = 'entity.toast.applyFlow';
 
   constructor() {
     // Only initialize if we're on a detail page route (has application_id param)
@@ -62,7 +77,7 @@ export default class ApplicationDetailForApplicantComponent {
   async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
-      this.toastService.showErrorKey('entity.toast.applyFlow.invalidApplicationId');
+      this.toastService.showErrorKey(`${this.translationKey}.invalidApplicationId`);
     } else {
       this.applicationId.set(applicationId);
     }
@@ -76,7 +91,7 @@ export default class ApplicationDetailForApplicantComponent {
         this.actualDocumentData.set(ids);
         this.actualDocumentDataExists.set(true);
       })
-      .catch(() => this.toastService.showErrorKey('entity.toast.applyFlow.fetchDocumentIdsFailed'));
+      .catch(() => this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`));
   }
 
   onUpdateApplication(): void {
@@ -88,13 +103,42 @@ export default class ApplicationDetailForApplicantComponent {
   }
 
   onViewJobDetails(): void {
-    // TODO: Navigate to job details page once jobId is available from backend
-    // For now, show a toast message
     const jobIdValue = this.application()?.jobId;
     if (jobIdValue !== undefined && jobIdValue !== '') {
       void this.router.navigate(['/job/detail', jobIdValue]);
     } else {
-      this.toastService.showErrorKey('entity.toast.applyFlow.jobIdNotAvailable');
+      this.toastService.showErrorKey(`${this.translationKey}.jobIdNotAvailable`);
+    }
+  }
+
+  onDeleteApplication(): void {
+    const applicationId = this.applicationId();
+    if (applicationId) {
+      this.applicationService.deleteApplication(applicationId).subscribe({
+        next: () => {
+          this.toastService.showSuccessKey(`${this.translationKey}.applicationDeleted`);
+          void this.router.navigate(['/application/overview']);
+        },
+        error: () => {
+          this.toastService.showErrorKey(`${this.translationKey}.errorDeletingApplication`);
+        },
+      });
+    }
+  }
+
+  onWithdrawApplication(): void {
+    const applicationId = this.applicationId();
+    if (applicationId) {
+      this.applicationService.withdrawApplication(applicationId).subscribe({
+        next: () => {
+          this.toastService.showSuccessKey(`${this.translationKey}.applicationWithdrawn`);
+          // Refresh the application data to show updated state
+          void this.init();
+        },
+        error: () => {
+          this.toastService.showErrorKey(`${this.translationKey}.errorWithdrawingApplication`);
+        },
+      });
     }
   }
 }
