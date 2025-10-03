@@ -9,7 +9,7 @@ numberOfStarts=$(grep ":: Powered by Spring Boot[^:]* ::" tests.log | wc -l)
 echo "Number of Server Starts: $numberOfStarts"
 
 echo "Log-Datei Inhalt (Anfang):"
-head -n 20 tests.log
+head -n 100 tests.log
 
 if [[ $numberOfStarts -lt 1 ]]
 then
