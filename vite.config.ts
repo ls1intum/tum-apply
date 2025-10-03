@@ -26,7 +26,7 @@ export default defineConfig(({mode}) => ({
       exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts'],
       check: {
         global: {
-          all: false,
+          all: true,
           lines: 95,
           functions: 95,
           branches: 95,
