@@ -100,8 +100,8 @@ jobs:
         run: |
           docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
 
-      - name: Install yq
-        run: sudo snap install yq
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Normalize OpenAPI YAML for consistent diffing
         run: bash supporting_scripts/normalize_openapi_yaml.sh

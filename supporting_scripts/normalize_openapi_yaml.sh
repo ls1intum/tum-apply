@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-# Requires yq (v4+)
-echo "🔧 Sorting openapi.yaml keys for deterministic output..."
-yq eval '... comments="" | sort_keys(..)' openapi/openapi.yaml > openapi/openapi.sorted.yaml
-mv openapi/openapi.sorted.yaml openapi/openapi.yaml
+# Sort JSON keys using jq for deterministic output
+jq --sort-keys . openapi/openapi.yaml > openapi/openapi.normalized.json
+
+# Overwrite the original
+mv openapi/openapi.normalized.json openapi/openapi.yaml
