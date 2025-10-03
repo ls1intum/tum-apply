@@ -122,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Coverage Report Server Tests
-          path: build/reports/jacoco/test/html/index.html
+          path: build/reports/jacoco/test/html/
       #- name: Append Per-Module Coverage to Job Summary
       #  if: success() || failure()
       #  run: |
@@ -136,9 +136,21 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            **Coverage Report (index.html):**
+            📊 **Test Coverage Report Server**
+            Please review the server coverage report using one of the following methods, and consider adding tests to improve coverage in your modified files:
+            **🔍 View coverage locally**
             ```
-            $(cat build/reports/jacoco/test/html/index.html)
+            Please run following command in your terminal:
+            ./gradlew test jacocoTestReport
+
+            and then run:
+            open build/reports/jacoco/test/html/index.html
+            ```
+
+            **🌐 View coverage from GitHub**
+            ```
+            Download the HTML coverage report from the GitHub Actions artifacts (found at the bottom of the workflow run).
+            Open the downloaded index.html file in your browser to inspect the coverage details.
             ```
 
 
