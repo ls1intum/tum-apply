@@ -13,15 +13,15 @@ import { SortObject } from './sortObject';
 
 
 export interface PageJobCardDTO { 
-    totalPages?: number;
     totalElements?: number;
-    first?: boolean;
-    last?: boolean;
+    totalPages?: number;
     size?: number;
     content?: Array<JobCardDTO>;
     number?: number;
-    pageable?: PageableObject;
     sort?: SortObject;
+    pageable?: PageableObject;
+    first?: boolean;
+    last?: boolean;
     numberOfElements?: number;
     empty?: boolean;
 }
