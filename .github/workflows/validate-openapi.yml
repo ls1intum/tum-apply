@@ -93,7 +93,7 @@ jobs:
 
       - name: Run Gradle to generate OpenAPI docs
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
-        run: ./gradlew generateApiDocs -x webapp -Pprod
+        run: ./gradlew generateApiDocs -x webapp
 
       - name: Stop Keycloak
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true' || always()
