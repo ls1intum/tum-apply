@@ -4,132 +4,71 @@ The **Applications Review** page provides comprehensive tools for professors to 
 
 ---
 
-## 📊 Application Overview - Review Dashboard
+## ⚙️ Features
 
-This is the **centralized evaluation interface** for all application management activities.
+* **Application Carousel**  
+  Navigate seamlessly between multiple applications without returning to the overview. Each card displays the applicant’s name, status, and a summary of existing ratings, making comparisons quick and intuitive.
 
-- **Application counter** displays total number of applications received for the position
-- **Candidate card system** presenting each applicant with key information at a glance
-- **Status indicators** showing current review state for each application
-- **Quick action buttons** for immediate accept/reject decisions without detailed review
+* **Decision Actions**  
+  Prominently placed **Accept** and **Reject** buttons allow professors to make decisions directly on the page. Actions are clearly visible and easy to access, ensuring a smooth review flow.
 
-![Applications Review Dashboard](images/application-review-1.png)
-![Applications Review Dashboard](images/application-review-2.png)
-<div style={{textAlign:'center'}}>
-  <em>Applications Review Dashboard</em>
-</div>
+* **Applicant Details**  
+  A structured layout presents demographic information, academic background, and the motivation letter. Clear separation of structured (degrees, grades) and unstructured (free-text) data ensures readability and comparability.
 
-**Application Status System:**
-- 🟡 **In Review**: Applications currently under evaluation by the professor
-- 🟢 **Accepted**: Applications that have been approved and candidates notified
-- 🔴 **Rejected**: Applications that have been declined with automatic candidate notification
+* **Document Viewer** 
+  Inline previews of uploaded files (CV, transcripts, recommendation letters, etc.) enable quick inspection without leaving the system. A **Download All** option provides a ZIP archive for offline use, while standardized labels ensure clarity across all documents.
 
-**Candidate Information Cards:**
-- **Applicant Name**: Full name display with clear identification
-- **Application Position**: Title of the doctorate position applied for
-- **Status Badge**: Current evaluation state with color-coded visual indicators
-- **Quick Actions**: Direct accept/reject buttons for efficient decision-making
+* **Ratings System**
+  Evaluate candidates across predefined criteria using a five-point Likert scale (_Poor_, _Fair_, _Satisfactory_, _Good_, _Excellent_). Visual bars show aggregated ratings, helping professors see group tendencies at a glance.
+
+* **Comments Section**
+  Leave private comments or notes for colleagues. Comments remain internal to the research group and are not visible to applicants, supporting candid collaboration.
 
 ---
 
-## 🔍 Detailed Application Review
+## ⚠️ Application Status System
 
-Used for **comprehensive candidate evaluation** with complete application materials and detailed assessment capabilities.
+* ⚪ **Unopened**: Applications that have been submitted but not yet opened or reviewed
+* 🟡 **In Review**: Applications that are currently being evaluated
+* 🟢 **Accepted**: Applications that have been approved and where candidates have been notified
+* 🔴 **Rejected**: Applications that have been declined with automatic candidate notification
 
-- **Structured information layout** presenting candidate data in organized sections
-- **Document viewer system** for reviewing uploaded materials including CVs, transcripts, and reference letters
-- **Educational background display** with academic credentials and grading information
-- **Application-specific details** including motivation letters and project preferences
-
-**Comprehensive Review Sections:**
-- **Personal Information**: Contact details, nationality, and language preferences
-- **Educational Background**: Academic qualifications with institution details and grades
-- **Application Materials**: Motivation letters, skills assessment, and project descriptions
-- **Supporting Documents**: CV, academic transcripts, reference letters, and certificates
-
-**Document Management Features:**
-- **Integrated PDF viewer** for seamless document review without external applications
-- **Download functionality** allowing professors to save documents for offline review
-- **Document categorization** with clear labels for easy identification
-- **Multi-document support** enabling review of complete application packages
 
 ---
 
 ## ⚙️ Steps for Application Review
 
-This document outlines key steps for evaluating and managing applications through the review system.
+This section outlines key steps for evaluating and managing applications through the review page.
 
 ### 📌 Prerequisites
-
 - Professor account access with review permissions for published positions
 - Active positions that have received applications from candidates
 
-### 📊 Step 1: Accessing Application Review Dashboard
+### ▶️ Step-by-step
 
-**Goal:** Navigate to the centralized application review interface to begin candidate evaluation.
+1) **Open the Review Page & select an application**
+  - From the **Overview Page**, click **More** on an application, or use the **carousel** at the top of the Review Page to pick a candidate.
+  - **Status tip:** Opening an ⚪ *Unopened* application moves it into the 🟡 *In Review* state.
 
-**Steps:**
-1. Navigate to **"My Positions"** from the sidebar menu
-2. **Locate positions with applications** by checking the application counter or status indicators
-3. **Access the review interface** by clicking on positions that show received applications
-4. **Review the application overview** displaying:
-  - Total number of applications received for the position
-  - Candidate cards with essential information summary
-  - Current status indicators for each application
-  - Quick action buttons for immediate decisions
+2) **Scan the Applicant Details**
+  - Review the structured profile: personal info, education, degrees/grades, and the motivation letter.
+  - Use the consistent grid layout to quickly compare key qualifications across candidates.
 
-### 🔍 Step 2: Detailed Application Evaluation
+3) **Inspect Documents inline**
+  - Open transcripts, CV, and recommendation letters directly in the embedded **Document Viewer**.
+  - Use **View All** for the complete set, or **Download All** to get a ZIP for offline reading.
+  - Standardized labels (e.g., “CV”, “Master Transcript”) help you recognize files at a glance.
 
-**Goal:** Conduct thorough review of individual applications with complete candidate materials.
+4) **Provide Ratings & Comments**
+  - Rate the candidate on predefined criteria using the **five-point Likert scale** (_Poor_, _Fair_, _Satisfactory_, _Good_, _Excellent_).
+  - Check the **distribution bars** to see how others rated the same criteria.
+  - Add **comments** to justify your assessment or leave notes for colleagues. Comments are **internal** to your group and never visible to applicants.
 
-**Steps:**
-1. **Select a candidate** from the application dashboard to access detailed review
-2. **Review candidate information systematically**:
-  - **General Information**: Name, contact details, nationality, and language preferences
-  - **Educational Background**: Academic degrees, institutions, and grades
-  - **Application Details**: Preferred start dates, motivation, and skills assessment
-3. **Examine supporting documents**:
-  - **Curriculum Vitae**: Professional and academic background
-  - **Academic Transcripts**: Grade records and academic performance
-  - **Reference Letters**: Professional recommendations and endorsements
-  - **Additional Certificates**: Supplementary qualifications and achievements
-4. **Utilize document viewer tools**:
-  - View documents directly within the platform interface
-  - Download documents for detailed offline review
-  - Navigate between multiple documents efficiently
+5) **Make a decision: Accept or Reject**
+  - Click **Accept** ✅ or **Reject** ❌ directly on the page.
+  - If configured, select a **reject reason** before confirming.
+  - Upon confirmation, the status switches to 🟢 *Accepted* or 🔴 *Rejected* and the candidate is **automatically notified**.
+  - Use the **carousel** to move to the next application without returning to the overview.
 
-### ✅ Step 3: Making Application Decisions
+> **Tip:** Keep your browser window wide enough to view details, documents, and the rating panel comfortably—this reduces scrolling and speeds up reviews.
 
-**Goal:** Render final decisions on applications and notify candidates of outcomes.
-
-**Steps:**
-1. **From the detailed review page**:
-  - **Accept qualified candidates** using the green **"Accept"** button
-  - **Reject unsuitable applications** using the red **"Reject"** button
-2. **From the dashboard overview**:
-  - Use quick action buttons for efficient bulk decision-making
-  - Review status changes reflected immediately in the interface
-3. **Understand decision consequences**:
-  - **Accepted candidates** receive automatic notification with next steps
-  - **Rejected candidates** receive polite notification of decision
-  - **Status updates** are reflected across all management interfaces
-
-### 📋 Step 4: Application Management Best Practices
-
-**Goal:** Maintain efficient and fair evaluation processes throughout the review period.
-
-**Steps:**
-1. **Regular review sessions**:
-  - Check for new applications periodically
-  - Maintain consistent evaluation criteria across all candidates
-  - Document decision rationale for institutional records
-2. **Efficient workflow management**:
-  - Use quick actions for clear accept/reject decisions
-  - Reserve detailed review for borderline cases requiring thorough evaluation
-  - Monitor application deadlines and review timelines
-3. **Communication considerations**:
-  - Respond to applications within reasonable timeframes
-  - Maintain professional standards in all candidate interactions
-  - Coordinate with institutional policies for application processing
-
-This comprehensive review system enables fair and efficient candidate evaluation while maintaining professional standards and institutional compliance.
