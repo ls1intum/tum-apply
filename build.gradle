@@ -35,7 +35,12 @@ description = "Modern portal for streamlined, inclusive, and transparent doctora
 java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(25)
+  }
+}
 
+javaToolchains {
+  repositories {
+    adoptium()
   }
 }
 
