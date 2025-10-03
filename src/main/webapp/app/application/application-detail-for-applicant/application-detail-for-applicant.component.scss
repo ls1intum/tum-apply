@@ -2,7 +2,7 @@
 
 // Base card styles - shared between all card types
 .card {
-  border: 0.1rem solid var(--p-surface-200);
+  border: 0.05rem solid var(--p-border-default);
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -11,15 +11,14 @@
 // Detail card extends base card with additional structure
 .detail-card {
   @extend .card;
-  margin-bottom: 1rem; // Override for tighter spacing in grids
 
   .card-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    border-bottom: 0.05rem solid var(--p-border-default);
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 0.01rem solid var(--p-surface-200);
   }
 
   .card-title {
@@ -43,11 +42,10 @@
 .section-title {
   font-size: 1.25rem;
   font-weight: 600;
-  margin: 0;
   padding-bottom: 0.5rem;
 }
 
-// Overview section
+// Position Overview section
 .overview-content {
   display: flex;
   align-items: center;
@@ -63,58 +61,56 @@
   font-size: 0.875rem;
 }
 
-// Custom icon size override for small icons
 .icon {
   color: var(--p-primary-color);
 }
 
 .label {
   font-weight: 600;
-  color: var(--p-text-secondary-color);
 }
 
-// Main content grid
+// Main Content Grid
 .content-grid {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr 25rem;
   gap: 2rem;
   margin-bottom: 2rem;
 
   @media (max-width: bp.$xl) {
     grid-template-columns: 1fr;
   }
-}
 
-.info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.875rem;
-
-  .value {
-    text-align: right;
-  }
-}
-
-// Links container styling (uses global .link class for individual links)
-.links {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 0.01rem solid var(--p-surface-200);
-
-  .link-container {
+  .info-list {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+
+    .value {
+      text-align: right;
+    }
+  }
+
+  // Links container styling (uses global .link class for individual links)
+  .links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    border-top: 0.05rem solid var(--p-border-default);
+    margin-top: 1rem;
+    padding-top: 1rem;
+
+    .link-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
   }
 }
 
@@ -132,28 +128,25 @@
   @media (max-width: bp.$md) {
     grid-template-columns: 1fr; // Single column on mobile
   }
-}
 
-.document-viewer {
-  width: 100%;
-  height: 25rem; // 700px
-  border-radius: 0.5rem;
-  overflow: hidden;
+  .document-viewer {
+    height: 25rem;
 
-  // Adjust height for different screen sizes
-  @media (max-width: bp.$lg) {
-    height: 30rem; // 600px
-  }
+    // Adjust height for different screen sizes
+    @media (max-width: bp.$lg) {
+      height: 30rem;
+    }
 
-  @media (max-width: bp.$md) {
-    height: 31.25rem; // 500px
+    @media (max-width: bp.$md) {
+      height: 31.25rem;
+    }
   }
 }
 
 // Destructive actions section at bottom of page
 .destructive-actions-section {
-  margin-top: 3rem;
+  margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 0.01rem solid var(--p-surface-200);
+  border-top: 0.05rem solid var(--p-border-default);
   text-align: right;
 }

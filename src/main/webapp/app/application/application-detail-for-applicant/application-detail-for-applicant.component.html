@@ -16,7 +16,7 @@
         }
       </div>
 
-      <!-- Position Overview -->
+      <!-- Position Overview Section -->
       <section class="card">
         <div class="section-header">
           <h2 class="section-title" jhiTranslate="entity.application_detail.position_overview"></h2>
@@ -50,7 +50,7 @@
 
     <!-- Main Content Grid -->
     <div class="content-grid">
-      <!-- Personal Statements -->
+      <!-- Personal Statements Section -->
       <section>
         @if (!previewDetailData()) {
           <h2 class="section-title" jhiTranslate="entity.application_detail.personal_statements"></h2>
@@ -87,7 +87,7 @@
         </div>
       </section>
 
-      <!-- Personal Information -->
+      <!-- Personal Information Section -->
       <section>
         @if (!previewDetailData()) {
           <h2 class="section-title" jhiTranslate="entity.application_detail.personal_information"></h2>
@@ -195,7 +195,7 @@
           <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
         }
 
-        <!-- Unified document grid for all document types -->
+        <!-- Document grid for all document types -->
         <div class="document-container">
           @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
             @for (doc of bachelorDocs; track $index) {
@@ -262,7 +262,7 @@
       </section>
     }
 
-    <!-- Destructive Actions -->
+    <!-- Destructive Action Section -->
     @if (!previewDetailData()) {
       <section class="destructive-actions-section">
         @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
