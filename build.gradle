@@ -116,6 +116,27 @@ tasks.register("integrationTestReport", TestReport) {
   testResults.from(tasks.named("integrationTest"))
 }
 
+jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      limit {
+        minimum = 0.95
+        counter = 'LINE'
+        value = 'COVEREDRATIO'
+      }
+    }
+
+    rule {
+      limit {
+        minimum = 0.95
+        counter = 'BRANCH'
+        value = 'COVEREDRATIO'
+      }
+    }
+  }
+}
+
+
 tasks.withType(GenerateGitPropertiesTask).configureEach {
   outputs.doNotCacheIf("Task is always executed") { true }
 }

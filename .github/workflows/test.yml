@@ -117,18 +117,81 @@ jobs:
       #- name: Number of Server Starts
       #  if: success() || failure()
       #  run: bash supporting_scripts/extract_number_of_server_starts.sh
-      #- name: Upload Server Test Coverage Report
-      #  if: success() || failure()
-      #  uses: actions/upload-artifact@v4
-      # with:
-      #    name: Coverage Report Server Tests
-      #    path: build/reports/jacoco/aggregated/html
-      #- name: Append Per-Module Coverage to Job Summary
-      #  if: success() || failure()
-      #  run: |
-      #    AGGREGATED_REPORT_FILE=./module_coverage_report.md
-      #    python3 ./supporting_scripts/code-coverage/per_module_cov_report/parse_module_coverage.py build/reports/jacoco $AGGREGATED_REPORT_FILE
-      #    cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
+      - name: Upload Server Test Coverage Report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage Report Server Tests
+          path: build/reports/jacoco/aggregated/html
+      - name: Append Per-Module Coverage to Job Summary
+        if: success() || failure()
+        run: |
+          AGGREGATED_REPORT_FILE=./module_coverage_report.md
+          python3 ./supporting_scripts/code-coverage/per_module_cov_report/parse_module_coverage.py build/reports/jacoco $AGGREGATED_REPORT_FILE
+          cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
+      - name: Generate JaCoCo Badge
+        id: jacoco
+        if: success() || failure()
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          generate-coverage-badge: true
+
+      - name: Add Coverage Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request' && (success() || failure())
+        with:
+          header: coverage
+          message: |
+            ## Coverage Report
+
+            Gesamtabdeckung: ${{ steps.jacoco.outputs.coverage }}%
+
+            <details>
+            <summary>Details anzeigen</summary>
+
+            | Type | Coverage |
+            | ---- | -------- |
+            | Line | ${{ steps.jacoco.outputs.branches }}% |
+            | Branch | ${{ steps.jacoco.outputs.branches }}% |
+            </details>
+
+            [Vollständiger Bericht als Artefakt](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      - name: Check Coverage Threshold
+        id: coverage_check
+        if: success() || failure()
+        run: |
+          MIN_COVERAGE=80
+          COVERAGE=$(grep -o "Total.*[0-9]\{1,3\}\.[0-9]\{1,2\}%" build/reports/jacoco/test/html/index.html | grep -o "[0-9]\{1,3\}\.[0-9]\{1,2\}" || echo "0")
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          if (( $(echo "$COVERAGE < $MIN_COVERAGE" | bc -l) )); then
+            echo "below_threshold=true" >> $GITHUB_OUTPUT
+          else
+            echo "below_threshold=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Check Coverage Threshold
+        id: coverage_check
+        if: success() || failure()
+        run: |
+          MIN_COVERAGE=80
+          COVERAGE=$(grep -o "Total.*[0-9]\{1,3\}\.[0-9]\{1,2\}%" build/reports/jacoco/test/html/index.html | grep -o "[0-9]\{1,3\}\.[0-9]\{1,2\}" || echo "0")
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          if (( $(echo "$COVERAGE < $MIN_COVERAGE" | bc -l) )); then
+            echo "below_threshold=true" >> $GITHUB_OUTPUT
+          else
+            echo "below_threshold=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Post Coverage Warning
+        if: steps.coverage_check.outputs.below_threshold == 'true' && github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: low-coverage-warning
+          message: |
+            ⚠️ **Warnung: Test-Coverage zu niedrig!** ⚠️
+
+            Die aktuelle Coverage von ${{ steps.coverage_check.outputs.coverage }}% ist unter dem Mindestwert von 80%.
+            Bitte fügen Sie weitere Tests hinzu.
+
 
   server-style:
     environment: test-server
