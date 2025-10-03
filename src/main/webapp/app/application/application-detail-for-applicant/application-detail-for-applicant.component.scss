@@ -1,12 +1,46 @@
 @use '../../../content/scss/breakpoints' as bp;
 
-// Shared card styles
+// Base card styles - shared between all card types
 .card {
-  background: white;
   border: 0.1rem solid var(--p-surface-200);
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
+}
+
+// Detail card extends base card with additional structure
+.detail-card {
+  @extend .card;
+  margin-bottom: 1rem; // Override for tighter spacing in grids
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--p-surface-200);
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--p-text-color);
+  }
+
+  .card-body {
+    p {
+      margin: 0;
+    }
+
+    // Content styling
+    .content {
+      color: var(--p-text-color);
+      line-height: 1.6;
+      font-size: 0.9375rem;
+    }
+  }
 }
 
 // Section header (for sections with title and action button)
@@ -22,7 +56,6 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
-  color: var(--p-text-color);
   padding-bottom: 0.5rem;
 }
 
@@ -42,9 +75,8 @@
   font-size: 0.875rem;
 }
 
-// Shared icon, label, value styles
+// Custom icon size override for small icons
 .icon {
-  color: var(--p-primary-color);
   font-size: 1rem;
 }
 
@@ -82,85 +114,44 @@
   }
 }
 
-// Detail card layout
-jhi-detail-card {
-  display: block;
-  margin-bottom: 1rem;
-}
-
-// Styles for projected content using CSS custom properties
-.links {
-  display: var(--links-display);
-  gap: var(--links-gap);
-  margin-top: var(--links-margin-top);
-  padding-top: var(--links-padding-top);
-  border-top: var(--links-border-top);
+// Links container styling (uses global .link class for individual links)
+.detail-card .links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--p-surface-200);
 
   a {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--link-color);
+    font-size: 0.875rem;
     text-decoration: none;
-    font-size: var(--link-font-size);
-    transition: opacity 0.2s;
-
-    &:hover:not(.disabled) {
-      opacity: 0.8;
-    }
-
-    &.disabled {
-      color: var(--link-disabled-color);
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    fa-icon {
-      font-size: var(--link-icon-size);
-    }
   }
 }
 
-// Documents section - Full width
-.documents-section {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-// Document container - grid layout for all document cards
+// Document container - responsive grid layout
 .document-container {
   display: grid;
   gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr); // Default: 2 columns
 
-  // Default: 2 columns for most screens (MacBook Air and similar)
-  grid-template-columns: repeat(2, 1fr);
-
-  // For very wide screens (1440px+), allow 3 columns
+  // Responsive breakpoints
   @media (min-width: bp.$xl) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); // 3 columns on very wide screens
   }
 
-  // For large screens (1024px-1440px), ensure 2 columns (MacBook Air range)
-  @media (min-width: bp.$lg) and (max-width: bp.$xl) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  // For tablets (768px-1024px), 2 columns
-  @media (min-width: bp.$md) and (max-width: bp.$lg) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  // On mobile, single column
   @media (max-width: bp.$md) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; // Single column on mobile
   }
 
-  // Each document card in the grid
-  jhi-detail-card {
-    display: block;
-    margin-bottom: 0; // Remove default margin since grid handles spacing
+  // Reset card margins for grid layout
+  .detail-card {
+    margin-bottom: 0;
   }
 }
+
 .document-viewer {
   width: 100%;
   height: 25rem; // 700px

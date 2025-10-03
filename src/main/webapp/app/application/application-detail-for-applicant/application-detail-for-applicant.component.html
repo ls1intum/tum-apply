@@ -52,97 +52,129 @@
       <section>
         <h2 class="section-title">{{ 'entity.application_detail.personal_statements' | translate }}</h2>
 
-        <jhi-detail-card [title]="'entity.applicationDetail.motivation' | translate" icon="rocket">
-          <div class="content" [innerHTML]="application.motivation"></div>
-        </jhi-detail-card>
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'rocket']" class="card-icon" />
+            <h3 class="card-title">{{ 'entity.applicationDetail.motivation' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="content" [innerHTML]="application.motivation"></div>
+          </div>
+        </div>
 
-        <jhi-detail-card [title]="'entity.applicationDetail.skills' | translate" icon="brain">
-          <div class="content" [innerHTML]="application.specialSkills"></div>
-        </jhi-detail-card>
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'brain']" class="card-icon" />
+            <h3 class="card-title">{{ 'entity.applicationDetail.skills' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="content" [innerHTML]="application.specialSkills"></div>
+          </div>
+        </div>
 
-        <jhi-detail-card [title]="'entity.applicationDetail.researchExperience' | translate" icon="flask">
-          <div class="content" [innerHTML]="application.projects"></div>
-        </jhi-detail-card>
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'flask']" class="card-icon" />
+            <h3 class="card-title">{{ 'entity.applicationDetail.researchExperience' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="content" [innerHTML]="application.projects"></div>
+          </div>
+        </div>
       </section>
 
       <!-- Personal Information -->
       <section>
         <h2 class="section-title">{{ 'entity.application_detail.personal_information' | translate }}</h2>
 
-        <jhi-detail-card [title]="'entity.detail_card.applicant_info' | translate" icon="circle-user">
-          <div class="info-list">
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.preferred_language' | translate }}</span>
-              <span class="value">{{ application.applicant?.user?.preferredLanguage || 'N/A' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.desired_start_date' | translate }}</span>
-              <span class="value">{{ application.desiredDate || 'N/A' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.gender' | translate }}</span>
-              <span class="value">{{ application.applicant?.user?.gender || 'N/A' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.nationality' | translate }}</span>
-              <span class="value">{{ application.applicant?.user?.nationality || 'N/A' }}</span>
-            </div>
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'circle-user']" class="card-icon" />
+            <h3 class="card-title">{{ 'entity.detail_card.applicant_info' | translate }}</h3>
           </div>
-          <div class="links">
-            <a
-              [class.disabled]="!application.applicant?.user?.website"
-              [href]="application.applicant?.user?.website || '#'"
-              [attr.target]="application.applicant?.user?.website ? '_blank' : null"
-              rel="noopener noreferrer"
-            >
-              <fa-icon [icon]="['fas', 'link']" />
-              <span>{{ 'entity.detail_card.website' | translate }}</span>
-            </a>
-            <a
-              [class.disabled]="!application.applicant?.user?.linkedinUrl"
-              [href]="application.applicant?.user?.linkedinUrl || '#'"
-              [attr.target]="application.applicant?.user?.linkedinUrl ? '_blank' : null"
-              rel="noopener noreferrer"
-            >
-              <fa-icon [icon]="['fab', 'linkedin']" />
-              <span>{{ 'entity.detail_card.linkedin' | translate }}</span>
-            </a>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.preferred_language' | translate }}</span>
+                <span class="value">{{ application.applicant?.user?.preferredLanguage || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.desired_start_date' | translate }}</span>
+                <span class="value">{{ application.desiredDate || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.gender' | translate }}</span>
+                <span class="value">{{ application.applicant?.user?.gender || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.nationality' | translate }}</span>
+                <span class="value">{{ application.applicant?.user?.nationality || 'N/A' }}</span>
+              </div>
+            </div>
+            @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
+              <div class="links">
+                @if (application.applicant?.user?.website) {
+                  <a class="link" [href]="application.applicant?.user?.website" target="_blank" rel="noopener noreferrer">
+                    <fa-icon [icon]="['fas', 'link']" class="external-icon" />
+                    <span>{{ 'entity.detail_card.website' | translate }}</span>
+                  </a>
+                }
+                @if (application.applicant?.user?.linkedinUrl) {
+                  <a class="link" [href]="application.applicant?.user?.linkedinUrl" target="_blank" rel="noopener noreferrer">
+                    <fa-icon [icon]="['fab', 'linkedin']" class="external-icon" />
+                    <span>{{ 'entity.detail_card.linkedin' | translate }}</span>
+                  </a>
+                }
+              </div>
+            }
           </div>
-        </jhi-detail-card>
+        </div>
 
-        <jhi-detail-card [title]="'entity.detail_card.bachelor_info' | translate" icon="building-columns">
-          <div class="info-list">
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.name' | translate }}</span>
-              <span class="value">{{ application.applicant?.bachelorDegreeName || 'N/A' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.university' | translate }}</span>
-              <span class="value">{{ application.applicant?.bachelorUniversity || 'N/A' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.grade' | translate }}</span>
-              <span class="value">{{ application.applicant?.bachelorGrade || 'N/A' }}</span>
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'building-columns']" class="card-icon" />
+            <h3 class="card-title">{{ 'entity.detail_card.bachelor_info' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.name' | translate }}</span>
+                <span class="value">{{ application.applicant?.bachelorDegreeName || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.university' | translate }}</span>
+                <span class="value">{{ application.applicant?.bachelorUniversity || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.grade' | translate }}</span>
+                <span class="value">{{ application.applicant?.bachelorGrade || 'N/A' }}</span>
+              </div>
             </div>
           </div>
-        </jhi-detail-card>
+        </div>
 
-        <jhi-detail-card [title]="'entity.detail_card.master_info' | translate" icon="building-columns">
-          <div class="info-list">
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.name' | translate }}</span>
-              <span class="value">{{ application.applicant?.masterDegreeName || 'N/A' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.university' | translate }}</span>
-              <span class="value">{{ application.applicant?.masterUniversity || 'N/A' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">{{ 'entity.detail_card.grade' | translate }}</span>
-              <span class="value">{{ application.applicant?.masterGrade || 'N/A' }}</span>
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'building-columns']" class="card-icon" />
+            <h3 class="card-title">{{ 'entity.detail_card.master_info' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.name' | translate }}</span>
+                <span class="value">{{ application.applicant?.masterDegreeName || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.university' | translate }}</span>
+                <span class="value">{{ application.applicant?.masterUniversity || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">{{ 'entity.detail_card.grade' | translate }}</span>
+                <span class="value">{{ application.applicant?.masterGrade || 'N/A' }}</span>
+              </div>
             </div>
           </div>
-        </jhi-detail-card>
+        </div>
       </section>
     </div>
 
@@ -155,39 +187,63 @@
         <div class="document-container">
           @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
             @for (doc of bachelorDocs; track $index) {
-              <jhi-detail-card [title]="'entity.upload.document_type.BACHELOR_TRANSCRIPT' | translate" icon="file-lines">
-                <div class="document-viewer">
-                  <jhi-document-viewer [documentDictionaryId]="doc" />
+              <div class="detail-card">
+                <div class="card-header">
+                  <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
+                  <h3 class="card-title">{{ 'entity.upload.document_type.BACHELOR_TRANSCRIPT' | translate }}</h3>
                 </div>
-              </jhi-detail-card>
+                <div class="card-body">
+                  <div class="document-viewer">
+                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  </div>
+                </div>
+              </div>
             }
           }
 
           @if (documentIds.masterDocumentDictionaryIds; as masterDocs) {
             @for (doc of masterDocs; track $index) {
-              <jhi-detail-card [title]="'entity.upload.document_type.MASTER_TRANSCRIPT' | translate" icon="file-lines">
-                <div class="document-viewer">
-                  <jhi-document-viewer [documentDictionaryId]="doc" />
+              <div class="detail-card">
+                <div class="card-header">
+                  <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
+                  <h3 class="card-title">{{ 'entity.upload.document_type.MASTER_TRANSCRIPT' | translate }}</h3>
                 </div>
-              </jhi-detail-card>
+                <div class="card-body">
+                  <div class="document-viewer">
+                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  </div>
+                </div>
+              </div>
             }
           }
 
           @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
-            <jhi-detail-card [title]="'entity.upload.document_type.CV' | translate" icon="file-lines">
-              <div class="document-viewer">
-                <jhi-document-viewer [documentDictionaryId]="cvDoc" />
+            <div class="detail-card">
+              <div class="card-header">
+                <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
+                <h3 class="card-title">{{ 'entity.upload.document_type.CV' | translate }}</h3>
               </div>
-            </jhi-detail-card>
+              <div class="card-body">
+                <div class="document-viewer">
+                  <jhi-document-viewer [documentDictionaryId]="cvDoc" />
+                </div>
+              </div>
+            </div>
           }
 
           @if (documentIds.referenceDocumentDictionaryIds; as referenceDocs) {
             @for (doc of referenceDocs; track $index) {
-              <jhi-detail-card [title]="'entity.upload.document_type.REFERENCES' | translate" icon="file-lines">
-                <div class="document-viewer">
-                  <jhi-document-viewer [documentDictionaryId]="doc" />
+              <div class="detail-card">
+                <div class="card-header">
+                  <fa-icon [icon]="['fas', 'file-lines']" class="card-icon" />
+                  <h3 class="card-title">{{ 'entity.upload.document_type.REFERENCES' | translate }}</h3>
                 </div>
-              </jhi-detail-card>
+                <div class="card-body">
+                  <div class="document-viewer">
+                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  </div>
+                </div>
+              </div>
             }
           }
         </div>

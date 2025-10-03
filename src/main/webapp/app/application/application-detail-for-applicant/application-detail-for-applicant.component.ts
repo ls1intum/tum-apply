@@ -12,11 +12,9 @@ import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
-import { DetailCard } from './detail-card/detail-card';
-
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [SharedModule, ButtonComponent, FontAwesomeModule, DetailCard, ApplicationStateForApplicantsComponent, DocumentViewerComponent],
+  imports: [SharedModule, ButtonComponent, FontAwesomeModule, ApplicationStateForApplicantsComponent, DocumentViewerComponent],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
