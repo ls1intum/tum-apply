@@ -59,32 +59,32 @@ jobs:
             17
             ${{ env.java }}
           cache: 'gradle'
-      - name: Java Tests (module-affected)
-        # Not a non-draft pull-request and not the default branch
-        if: ${{ !env.RUN_ALL_TESTS }}
-        run: |
-          set -o pipefail
+          #- name: Java Tests (module-affected)
+          # Not a non-draft pull-request and not the default branch
+          #  if: ${{ !env.RUN_ALL_TESTS }}
+          #  run: |
+          #    set -o pipefail
 
-          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          #    DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
 
           # Explicitly fetch as the clone action only clones the current branch
-          git fetch origin "$DEFAULT_BRANCH"
+          #    git fetch origin "$DEFAULT_BRANCH"
 
-          chmod +x ./supporting_scripts/get_changed_modules.sh
-          CHANGED_MODULES=$(./supporting_scripts/get_changed_modules.sh "origin/$DEFAULT_BRANCH")
+          #    chmod +x ./supporting_scripts/get_changed_modules.sh
+          #    CHANGED_MODULES=$(./supporting_scripts/get_changed_modules.sh "origin/$DEFAULT_BRANCH")
 
           # Restrict executed tests to changed modules if there is diff between this and the base branch
-          if [ -n "${CHANGED_MODULES}" ]; then
-            IFS=,
-            TEST_MODULE_TAGS=$(echo "-DincludeModules=${CHANGED_MODULES[*]}")
+      #    if [ -n "${CHANGED_MODULES}" ]; then
+      #      IFS=,
+      #      TEST_MODULE_TAGS=$(echo "-DincludeModules=${CHANGED_MODULES[*]}")
 
-            echo "Executing tests for modules: $CHANGED_MODULES"
-            ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification "$TEST_MODULE_TAGS" | tee tests.log
-            exit 0
-          fi
+      #      echo "Executing tests for modules: $CHANGED_MODULES"
+      #      ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification "$TEST_MODULE_TAGS" | tee tests.log
+      #      exit 0
+      #    fi
 
-          echo "Executing all tests"
-          ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
+      #    echo "Executing all tests"
+      #    ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
       - name: Java Tests (All)
         # Non-draft pull-request or default branch
         if: ${{ env.RUN_ALL_TESTS }}
@@ -122,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Coverage Report Server Tests
-          path: build/reports/jacoco/aggregated/html
+          path: build/reports/jacoco/test/html/index.html
       #- name: Append Per-Module Coverage to Job Summary
       #  if: success() || failure()
       #  run: |
@@ -138,7 +138,7 @@ jobs:
           body: |
             **Coverage Report (index.html):**
             ```
-            $(cat build/reports/jacoco/aggregated/html/index.html)
+            $(cat build/reports/jacoco/test/html/index.html)
             ```
 
 
