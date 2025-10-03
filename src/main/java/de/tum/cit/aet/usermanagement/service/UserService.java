@@ -59,13 +59,9 @@ public class UserService {
      * @param email          the user's email (can be null/blank)
      * @param firstName      optional first name (can be null/blank)
      * @param lastName       optional last name (can be null/blank)
+     * @param universityId   optional university ID
      * @return the managed User entity
      */
-    @Transactional
-    public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
-        return upsertUser(keycloakUserId, email, firstName, lastName, null);
-    }
-
     @Transactional
     public User upsertUser(String keycloakUserId, String email, String firstName, String lastName, String universityId) {
         UUID userId = UUID.fromString(keycloakUserId);
@@ -95,6 +91,20 @@ public class UserService {
 
         assignApplicantRoleIfEmpty(user);
         return user;
+    }
+
+    /**
+     * Delegates to {@link #upsertUser(String, String, String, String, String)} without a universityId.
+     *
+     * @param keycloakUserId the Keycloak user ID to associate with the user
+     * @param email          the user's email (can be null/blank)
+     * @param firstName      optional first name (can be null/blank)
+     * @param lastName       optional last name (can be null/blank)
+     * @return the managed User entity
+     */
+    @Transactional
+    public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
+        return upsertUser(keycloakUserId, email, firstName, lastName, null);
     }
 
     /**
