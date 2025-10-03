@@ -3,6 +3,8 @@ name: Validate and Autocommit OpenAPI Spec & Client Code
 on:
   pull_request:
     types: [ labeled ]
+    paths:
+      - 'src/main/java/**/*.java'
 
 jobs:
   validate-and-commit-openapi:
