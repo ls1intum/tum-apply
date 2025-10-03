@@ -13,7 +13,6 @@ public class DatabaseCleaner {
 
     private static final List<String> TABLES = List.of(
         "application_reviews",
-        "application_evaluations",
         "applications",
         "applicants",
         "custom_field_answers",
