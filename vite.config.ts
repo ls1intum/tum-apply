@@ -1,10 +1,10 @@
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 
 import angular from '@analogjs/vite-plugin-angular';
 import path from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-export default defineConfig(({mode}) => ({
+export default defineConfig(({ mode }) => ({
   plugins: [
     angular(),
     tsconfigPaths({
