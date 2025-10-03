@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.repository;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +42,6 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
      */
     @Modifying
     @Query("DELETE FROM UserResearchGroupRole urgr WHERE urgr.user = :user AND urgr.role = :role")
-    void deleteByUserAndRole(@Param("user") User user, @Param("role") de.tum.cit.aet.usermanagement.constants.UserRole role);
+    void deleteByUserAndRole(@Param("user") User user, @Param("role") UserRole role);
 
 }
