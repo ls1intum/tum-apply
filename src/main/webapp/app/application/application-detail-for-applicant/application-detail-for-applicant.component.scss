@@ -132,11 +132,6 @@
   @media (max-width: bp.$md) {
     grid-template-columns: 1fr; // Single column on mobile
   }
-
-  // Reset card margins for grid layout
-  .detail-card {
-    margin-bottom: 0;
-  }
 }
 
 .document-viewer {
@@ -153,24 +148,12 @@
   @media (max-width: bp.$md) {
     height: 31.25rem; // 500px
   }
-
-  iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
 }
 
 // Destructive actions section at bottom of page
 .destructive-actions-section {
   margin-top: 3rem;
-  padding: 2rem;
+  padding-top: 2rem;
   border-top: 0.01rem solid var(--p-surface-200);
-  text-align: center;
-
-  .actions-description {
-    color: var(--p-text-secondary-color);
-    line-height: 1.5;
-    margin-top: 1rem;
-  }
+  text-align: right;
 }

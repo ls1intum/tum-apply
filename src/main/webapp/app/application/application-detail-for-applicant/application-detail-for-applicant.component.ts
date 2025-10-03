@@ -8,7 +8,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import { TranslateDirective, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
@@ -26,7 +26,6 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     ConfirmDialogModule,
     ConfirmDialog,
     TranslateModule,
-    TranslateDirective,
   ],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
@@ -62,7 +61,6 @@ export default class ApplicationDetailForApplicantComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
-  private readonly translate = inject(TranslateService);
   private readonly translationKey = 'entity.toast.applyFlow';
 
   constructor() {

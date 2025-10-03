@@ -239,9 +239,7 @@
       "personal_statements": "Personal Statements",
       "personal_information": "Personal Information",
       "personal_documents": "Personal Documents",
-      "not_found": "Application not found",
-      "withdraw_description": "Withdraw your submitted application. Once withdrawn, it will no longer be visible to the professor.",
-      "delete_description": "Permanently delete this application draft. Deleted drafts cannot be recovered."
+      "not_found": "Application not found"
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",

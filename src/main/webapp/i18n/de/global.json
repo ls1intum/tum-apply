@@ -239,9 +239,7 @@
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",
       "personal_documents": "Persönliche Dokumente",
-      "not_found": "Bewerbung nicht gefunden",
-      "withdraw_description": "Ziehe deine eingereichte Bewerbung zurück. Nach dem Zurückziehen ist sie für den Professor nicht mehr sichtbar.",
-      "delete_description": "Lösche diesen Bewerbungsentwurf dauerhaft. Gelöschte Entwürfe können nicht wiederhergestellt werden."
+      "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
       "personalInformation": "Persönliche Informationen",

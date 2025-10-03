@@ -1,59 +1,60 @@
 <div [class]="isSummaryPage() ? '' : 'page-container'">
   @if (application(); as application) {
-    <!-- Header Section -->
-    <div class="header-container">
-      <div>
-        <h1
-          class="page-header"
-          jhiTranslate="entity.application_detail.applicant.header"
-          [translateValues]="{ jobTitle: application.jobTitle }"
-        ></h1>
-        <jhi-application-state-for-applicants [state]="application.applicationState" />
-      </div>
-      @if (!previewDetailData()) {
-        <!-- Keep only constructive actions at the top -->
+    @if (!previewDetailData()) {
+      <!-- Header Section -->
+      <div class="header-container">
+        <div>
+          <h1
+            class="page-header"
+            jhiTranslate="entity.application_detail.applicant.header"
+            [translateValues]="{ jobTitle: application.jobTitle }"
+          ></h1>
+          <jhi-application-state-for-applicants [state]="application.applicationState" />
+        </div>
         @if (['SAVED'].includes(application.applicationState)) {
           <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
         }
-      }
-    </div>
+      </div>
 
-    <!-- Position Overview -->
-    <section class="card">
-      <div class="section-header">
-        <h2 class="section-title" jhiTranslate="entity.application_detail.position_overview"></h2>
-        <jhi-button
-          [label]="'entity.application_detail.view_job_details'"
-          [shouldTranslate]="true"
-          severity="secondary"
-          [variant]="'outlined'"
-          (click)="onViewJobDetails()"
-        />
-      </div>
-      <div class="overview-content">
-        <div class="info-item">
-          <fa-icon [icon]="['fas', 'user']" class="icon" />
-          <span class="label" jhiTranslate="entity.application_detail.supervisor"></span>
-          <span class="value">{{ application.supervisingProfessorName || '-' }}</span>
+      <!-- Position Overview -->
+      <section class="card">
+        <div class="section-header">
+          <h2 class="section-title" jhiTranslate="entity.application_detail.position_overview"></h2>
+          <jhi-button
+            [label]="'entity.application_detail.view_job_details'"
+            [shouldTranslate]="true"
+            severity="secondary"
+            [variant]="'outlined'"
+            (click)="onViewJobDetails()"
+          />
         </div>
-        <div class="info-item">
-          <fa-icon [icon]="['fas', 'flask']" class="icon" />
-          <span class="label" jhiTranslate="entity.application_detail.research_group"></span>
-          <span class="value">{{ application.researchGroup || '-' }}</span>
+        <div class="overview-content">
+          <div class="info-item">
+            <fa-icon [icon]="['fas', 'user']" class="icon" />
+            <span class="label" jhiTranslate="entity.application_detail.supervisor"></span>
+            <span class="value">{{ application.supervisingProfessorName || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <fa-icon [icon]="['fas', 'flask']" class="icon" />
+            <span class="label" jhiTranslate="entity.application_detail.research_group"></span>
+            <span class="value">{{ application.researchGroup || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
+            <span class="label" jhiTranslate="entity.application_detail.location"></span>
+            <span class="value">{{ application.jobLocation || '-' }}</span>
+          </div>
         </div>
-        <div class="info-item">
-          <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-          <span class="label" jhiTranslate="entity.application_detail.location"></span>
-          <span class="value">{{ application.jobLocation || '-' }}</span>
-        </div>
-      </div>
-    </section>
+      </section>
+    }
 
     <!-- Main Content Grid -->
     <div class="content-grid">
       <!-- Personal Statements -->
       <section>
-        <h2 class="section-title" jhiTranslate="entity.application_detail.personal_statements"></h2>
+        @if (!previewDetailData()) {
+          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_statements"></h2>
+        }
 
         <div class="detail-card">
           <div class="card-header">
@@ -88,7 +89,9 @@
 
       <!-- Personal Information -->
       <section>
-        <h2 class="section-title" jhiTranslate="entity.application_detail.personal_information"></h2>
+        @if (!previewDetailData()) {
+          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_information"></h2>
+        }
 
         <div class="detail-card">
           <div class="card-header">
@@ -185,10 +188,12 @@
       </section>
     </div>
 
-    <!-- Documents Section - Full Width -->
+    <!-- Documents Section -->
     @if (documentIds(); as documentIds) {
       <section class="documents-section">
-        <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
+        @if (!previewDetailData()) {
+          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
+        }
 
         <!-- Unified document grid for all document types -->
         <div class="document-container">
@@ -257,7 +262,7 @@
       </section>
     }
 
-    <!-- Destructive Actions - Placed at bottom for better UX -->
+    <!-- Destructive Actions -->
     @if (!previewDetailData()) {
       <section class="destructive-actions-section">
         @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
@@ -281,12 +286,6 @@
             (confirmed)="onDeleteApplication()"
             severity="danger"
           />
-        }
-        @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
-          <p class="actions-description" jhiTranslate="entity.application_detail.withdraw_description"></p>
-        }
-        @if (['SAVED'].includes(application.applicationState)) {
-          <p class="actions-description" jhiTranslate="entity.application_detail.delete_description"></p>
         }
       </section>
     }
