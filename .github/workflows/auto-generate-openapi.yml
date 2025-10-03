@@ -86,12 +86,6 @@ jobs:
           git commit -m "chore: update OpenAPI spec and generated client"
           git push https://x-access-token:${{ secrets.BOT_USER_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.event.pull_request.head.ref }}
 
-      - name: Remove `generate-openapi` label
-        run: |
-          curl -X DELETE \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/generate-openapi
-
       - name: Comment on PR
         run: |
           COMMENT=$([[ "${{ steps.check_changes.outputs.no_changes_detected }}" == "true" ]] && echo "🤖 No OpenAPI or client changes needed." || echo "🤖 OpenAPI spec and client code auto-updated and committed.")
