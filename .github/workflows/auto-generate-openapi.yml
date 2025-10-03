@@ -9,7 +9,6 @@ jobs:
   validate-and-commit-openapi:
     name: Validate & Autocommit OpenAPI Spec + Client
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'generate-openapi'
     permissions:
       contents: write
       pull-requests: write
