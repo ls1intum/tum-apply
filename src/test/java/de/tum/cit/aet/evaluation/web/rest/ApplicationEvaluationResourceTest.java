@@ -3,6 +3,7 @@ package de.tum.cit.aet.evaluation.web.rest;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -39,7 +40,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class ApplicationEvaluationResourceTest {
+public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Autowired
     UserRepository userRepository;
