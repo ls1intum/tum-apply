@@ -1,5 +1,4 @@
 import com.gorylenko.GenerateGitPropertiesTask
-import org.gradle.jvm.toolchain.JvmVendorSpec
 
 // This section is required so that the latest version of the liquibase gradle plugin works
 buildscript {
@@ -36,8 +35,6 @@ description = "Modern portal for streamlined, inclusive, and transparent doctora
 java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(25)
-    vendor = JvmVendorSpec.ADOPTIUM
-    
   }
 }
 
