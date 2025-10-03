@@ -1,7 +1,6 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
@@ -22,7 +21,6 @@ public record JobCardDTO(
     LocalDate startDate,
     String relativeTimeEnglish,
     String relativeTimeGerman
-
 ) {
     public JobCardDTO(
         @NotNull UUID jobId,

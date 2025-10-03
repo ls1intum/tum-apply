@@ -33,7 +33,8 @@
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
         "info": "TUMApply - Meine Gruppe"
-      }
+      },
+      "about-us": "TumApply - Über uns"
     },
     "menu": {
       "home": "Startseite",
@@ -105,7 +106,9 @@
         "minLength": "Dieses Feld muss mindestens {{min}} Zeichen lang sein.",
         "maxLength": "Dieses Feld darf höchstens {{max}} Zeichen lang sein.",
         "pattern": "Ungültiges Format.",
-        "email": "Ungültige Email-Adresse."
+        "email": "Ungültige Email-Adresse.",
+        "min": "Dieses Feld muss mind. {{min}} sein.",
+        "max": "Dieses Feld darf max. {{max}} sein."
       }
     },
     "editor": {
@@ -184,6 +187,7 @@
       "apply": "Anwenden",
       "recordsFound": "{{count}} {{entity}} gefunden"
     },
+    "filterBy": "Filtern nach:",
     "sortBy": "Sortieren nach:",
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",
@@ -242,7 +246,11 @@
       },
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
-        "SAVED": "Änderungen gespeichert"
+        "SAVED": "Änderungen gespeichert",
+        "FAILED": "Speichern fehlgeschlagen"
+      },
+      "gradingScale": {
+        "ONE_TO_FOUR": "Deutsche Skala (Eins bis Vier)"
       }
     },
     "applicationPage1": {
@@ -291,14 +299,16 @@
       "tooltip": {
         "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
         "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
-        "bachelorGradingScale": "Wähle die Benotungsskala deines Bachelors.",
+        "bachelorGradingScale": "Wähle die Benotungsskala deines Bachelors (derzeit nur deutsche Skala verfügbar).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterDegreeName": "Gib den Studiengang deines Masters an.",
         "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
-        "masterGradingScale": "Wähle die Benotungsskala deines Masters.",
+        "masterGradingScale": "Wähle die Benotungsskala deines Masters (derzeit nur deutsche Skala verfügbar).",
         "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
-      }
+      },
+      "gradingConversionBachelor": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Bachelor-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns.",
+      "gradingConversionMaster": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Master-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns."
     },
     "applicationPage3": {
       "label": {
@@ -367,6 +377,9 @@
       "motivation": "Motivation",
       "skills": "Fähigkeiten",
       "researchExperience": "Forschungserfahrung"
+    },
+    "comment": {
+      "placeholder": "Kommentar schreiben..."
     },
     "toast": {
       "applyFlow": {

@@ -65,10 +65,9 @@ public class AuthenticationResource {
                 }
             }
         }
-        if (refreshToken == null) {
-            throw new UnauthorizedException("Refresh token is missing for logout");
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
         }
-        keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
 
         CookieUtils.setAuthCookies(response, null);
         return ResponseEntity.ok().build();
@@ -113,7 +112,11 @@ public class AuthenticationResource {
      * @return DTO containing token lifetimes and profile completion flag
      */
     @PostMapping("/otp-complete")
-    public AuthSessionInfoDTO otpComplete(@Valid @RequestBody OtpCompleteDTO body, HttpServletRequest request, HttpServletResponse response) {
+    public AuthSessionInfoDTO otpComplete(
+        @Valid @RequestBody OtpCompleteDTO body,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
         return otpFlowService.otpComplete(body, HttpUtils.getClientIp(request), response);
     }
 }

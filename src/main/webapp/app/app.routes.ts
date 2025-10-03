@@ -268,6 +268,17 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // About Us
+  // ======================================================================================
+  {
+    path: 'about-us',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () => import('./shared/pages/about-us-page/about-us-page.component').then(m => m.AboutUsPageComponent),
+    title: 'global.routes.about-us',
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,

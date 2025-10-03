@@ -19,7 +19,10 @@
         "address": "Street and House Number",
         "postalCode": "Postal Code",
         "city": "City",
-        "description": "Description"
+        "description": "Description",
+        "section1": "Basic Information",
+        "section2": "School and Website",
+        "section3": "Address"
       },
       "placeholders": {
         "name": "e.g. Research Group for Artificial Intelligence",

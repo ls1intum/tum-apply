@@ -5,6 +5,8 @@ import de.tum.cit.aet.core.service.JwtService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import io.netty.channel.ChannelOption;
+import java.time.Duration;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
@@ -21,9 +23,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
-
-import java.time.Duration;
-import java.util.Map;
 
 /**
  * Service for authenticating users against Keycloak and handling token lifecycle operations (password login,
@@ -49,21 +48,16 @@ public class KeycloakAuthenticationService {
     private final WebClient webClient;
     private final JwtService jwtService;
 
-    public KeycloakAuthenticationService(@Value("${keycloak.url}") String keycloakUrl,
-                                         @Value("${keycloak.realm}") String realm,
-                                         @Value("${keycloak.server.client-id}") String clientId,
-                                         @Value("${keycloak.server.client-secret}") String clientSecret,
-                                         @Value("${keycloak.admin.client-id}") String adminClientId,
-                                         @Value("${keycloak.admin.client-secret}") String adminClientSecret,
-                                         JwtService jwtService
+    public KeycloakAuthenticationService(
+        @Value("${keycloak.url}") String keycloakUrl,
+        @Value("${keycloak.realm}") String realm,
+        @Value("${keycloak.server.client-id}") String clientId,
+        @Value("${keycloak.server.client-secret}") String clientSecret,
+        @Value("${keycloak.admin.client-id}") String adminClientId,
+        @Value("${keycloak.admin.client-secret}") String adminClientSecret,
+        JwtService jwtService
     ) {
-        this.authzClient = AuthzClient.create(new Configuration(
-            keycloakUrl,
-            realm,
-            clientId,
-            Map.of("secret", clientSecret),
-            null
-        ));
+        this.authzClient = AuthzClient.create(new Configuration(keycloakUrl, realm, clientId, Map.of("secret", clientSecret), null));
 
         this.keycloakUrl = keycloakUrl;
         this.realm = realm;
@@ -77,9 +71,7 @@ public class KeycloakAuthenticationService {
             .responseTimeout(Duration.ofSeconds(5))
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
 
-        this.webClient = WebClient.builder()
-            .clientConnector(new ReactorClientHttpConnector(httpClient))
-            .build();
+        this.webClient = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
         this.jwtService = jwtService;
     }
 
@@ -109,13 +101,14 @@ public class KeycloakAuthenticationService {
      */
     public void invalidateRefreshToken(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new UnauthorizedException("Missing refresh token");
+            return;
         }
 
-        if (!logoutWithClient(this.clientId, this.clientSecret, refreshToken)
-            && !logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)) {
+        if (
+            !logoutWithClient(this.clientId, this.clientSecret, refreshToken) &&
+            !logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)
+        ) {
             throw new UnauthorizedException("Failed to logout user");
-
         }
     }
 
@@ -214,9 +207,7 @@ public class KeycloakAuthenticationService {
             MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
             addClientAuth(form, clientId, clientSecret);
             form.add("refresh_token", refreshToken);
-            callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user")
-                .toBodilessEntity()
-                .block(Duration.ofSeconds(5));
+            callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user").toBodilessEntity().block(Duration.ofSeconds(5));
             return true;
         } catch (UnauthorizedException ex) {
             log.debug("Logout with client {} failed: {}", clientId, ex.getMessage());
@@ -271,7 +262,6 @@ public class KeycloakAuthenticationService {
         return keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/" + endpointPath;
     }
 
-
     /**
      * Adds client authentication parameters (client_id and client_secret) to the form.
      */
@@ -286,15 +276,18 @@ public class KeycloakAuthenticationService {
      */
     private WebClient.ResponseSpec callKeycloak(OidcEndpoint endpoint, MultiValueMap<String, String> form, String errorPrefix) {
         try {
-            return webClient.post()
+            return webClient
+                .post()
                 .uri(endpointUrl(endpoint))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(form))
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, r -> r.bodyToMono(String.class)
-                    .flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b))))
-                .onStatus(HttpStatusCode::is5xxServerError, r -> r.bodyToMono(String.class)
-                    .flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b))));
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                    r.bodyToMono(String.class).flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b)))
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                    r.bodyToMono(String.class).flatMap(b -> Mono.error(new UnauthorizedException(errorPrefix + ": " + b)))
+                );
         } catch (Exception e) {
             throw new UnauthorizedException(errorPrefix, e);
         }
@@ -312,11 +305,19 @@ public class KeycloakAuthenticationService {
             throw new UnauthorizedException("Token response is invalid");
         }
         String refreshToken = tokenResponse.getRefreshToken() != null ? tokenResponse.getRefreshToken() : "";
-        return new AuthResponseDTO(tokenResponse.getToken(), refreshToken, tokenResponse.getExpiresIn(), tokenResponse.getRefreshExpiresIn());
+        return new AuthResponseDTO(
+            tokenResponse.getToken(),
+            refreshToken,
+            tokenResponse.getExpiresIn(),
+            tokenResponse.getRefreshExpiresIn()
+        );
     }
 
     /**
      * Internal OIDC endpoints used by this service.
      */
-    private enum OidcEndpoint {TOKEN, LOGOUT}
+    private enum OidcEndpoint {
+        TOKEN,
+        LOGOUT,
+    }
 }

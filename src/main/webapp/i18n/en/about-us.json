@@ -1,0 +1,14 @@
+{
+  "about-us": {
+    "headline": "About Us",
+    "chair": {
+      "headline": "Chair Information",
+      "description": "This platform is developed and maintained by the AET Chair at TUM.",
+      "contact": "Applied Education Technologies<br>Postal address: Boltzmannstrasse 3, D-85748 Garching b. Muenchen<br>Telephone: <a href='tel:+498928918206' class='external-link'>+49 89 289-18206</a><br>Fax: +49 89 289-18207<br>"
+    },
+    "support": {
+      "headline": "Support Mailbox",
+      "mailbox": "For any questions, please contact us at: <a href='mailto:support-tum-apply.aet@xcit.tum.de' class='external-link'>support-tum-apply.aet@xcit.tum.de</a>"
+    }
+  }
+}

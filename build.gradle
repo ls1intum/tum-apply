@@ -13,7 +13,7 @@ plugins {
   id "java"
   id "jacoco"
   id "com.diffplug.spotless" version "7.2.1"
-  id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
+  //id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
   id "com.github.ben-manes.versions" version "0.52.0"
   id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
   id "com.google.cloud.tools.jib" version "3.4.5"
@@ -28,13 +28,13 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.0.0"
+version = "1.0.2"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
+    languageVersion = JavaLanguageVersion.of(25)
   }
 }
 
@@ -42,9 +42,8 @@ ext {
   springProfiles = ""
 }
 
-// TODO: upgrade to Gradle 9.0.0 and migrate liquibase to work with the new version
 wrapper {
-  gradleVersion = "8.14.3"
+  gradleVersion = "9.1.0"
 }
 
 spotless {
@@ -95,12 +94,16 @@ test {
   reports.html.required = false
 }
 
+// Disabled for now as it is not compatible with Java 25 yet
+// TODO: enable again once Java 25 is compatible
+// https://github.com/andygoossens/gradle-modernizer-plugin/issues/10
+/*
 modernizer {
   failOnViolations = false
   includeTestClasses = true
   // Copy the rule name as defined in https://github.com/gaul/modernizer-maven-plugin/blob/master/modernizer-maven-plugin/src/main/resources/modernizer.xml to exclude it
   exclusions = ["java/util/Optional.get:()Ljava/lang/Object;"]
-}
+}*/
 
 tasks.register("testReport", TestReport) {
   destinationDirectory.set(layout.buildDirectory.dir("reports/tests"))
@@ -222,7 +225,6 @@ dependencies {
 
   implementation "com.mysql:mysql-connector-j:9.4.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
-  implementation "io.github.cdimascio:java-dotenv:5.2.2"
 
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
@@ -279,7 +281,7 @@ tasks.register("cleanResources", Delete) {
 }
 
 wrapper {
-  gradleVersion = "8.13"
+  gradleVersion = "9.1.0"
 }
 
 node {

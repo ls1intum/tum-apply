@@ -116,6 +116,8 @@ $detail-card-2-column-max-width: bp.$xl;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+
+  overflow-wrap: anywhere;
 }
 
 .links-container {
