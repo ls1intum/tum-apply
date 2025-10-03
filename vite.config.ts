@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 
 import angular from '@analogjs/vite-plugin-angular';
 import path from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({mode}) => ({
   plugins: [
     angular(),
     tsconfigPaths({
@@ -28,10 +28,10 @@ export default defineConfig(({ mode }) => ({
         global: {
           //TODO: set this to true after we have client tests for all modules
           all: false,
-          lines: 80,
-          functions: 80,
-          branches: 70,
-          statements: 80,
+          lines: 95,
+          functions: 95,
+          branches: 95,
+          statements: 95,
         },
       },
     },
