@@ -2,6 +2,10 @@ server:
   - changed-files:
       - any-glob-to-any-file: src/main/java/**/*.java
 
+generate-openapi:
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/**/*.java
+
 client:
   - changed-files:
       - any-glob-to-any-file: src/main/webapp/**/*
