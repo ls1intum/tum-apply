@@ -34,12 +34,6 @@ export default class ApplicationDetailForApplicantComponent {
 
   applicationId = signal<string>('');
 
-  // Job information signals (placeholders until backend provides this data)
-  supervisorName = signal<string | undefined>(undefined);
-  researchGroup = signal<string | undefined>(undefined);
-  location = signal<string | undefined>(undefined);
-  jobId = signal<string | undefined>(undefined);
-
   application = computed(() => {
     const preview = this.previewDetailData();
     if (preview) return preview;
@@ -98,9 +92,9 @@ export default class ApplicationDetailForApplicantComponent {
   onViewJobDetails(): void {
     // TODO: Navigate to job details page once jobId is available from backend
     // For now, show a toast message
-    const jobIdValue = this.jobId();
+    const jobIdValue = this.application()?.jobId;
     if (jobIdValue !== undefined && jobIdValue !== '') {
-      void this.router.navigate(['/job', jobIdValue]);
+      void this.router.navigate(['/job/detail', jobIdValue]);
     } else {
       this.toastService.showErrorKey('entity.toast.applyFlow.jobIdNotAvailable');
     }

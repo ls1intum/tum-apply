@@ -31,17 +31,17 @@
         <div class="info-item">
           <fa-icon [icon]="['fas', 'user']" class="icon" />
           <span class="label">{{ 'entity.application_detail.supervisor' | translate }}:</span>
-          <span class="value">{{ supervisorName() || 'N/A' }}</span>
+          <span class="value">{{ application.supervisingProfessorName || 'N/A' }}</span>
         </div>
         <div class="info-item">
           <fa-icon [icon]="['fas', 'flask']" class="icon" />
           <span class="label">{{ 'entity.application_detail.research_group' | translate }}:</span>
-          <span class="value">{{ researchGroup() || 'N/A' }}</span>
+          <span class="value">{{ application.researchGroup || 'N/A' }}</span>
         </div>
         <div class="info-item">
           <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
           <span class="label">{{ 'entity.application_detail.location' | translate }}:</span>
-          <span class="value">{{ location() || 'N/A' }}</span>
+          <span class="value">{{ application.jobLocation || 'N/A' }}</span>
         </div>
       </div>
     </section>

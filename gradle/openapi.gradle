@@ -196,7 +196,7 @@ private static boolean operationContainsNullSchema(Map<String, Object> operation
 
 
 tasks.named("openApiGenerate") {
-  finalizedBy("postProcessTsFiles")
+  //finalizedBy("postProcessTsFiles")
   dependsOn("pruneOpenApiSpec")
 
   doFirst {

@@ -3,7 +3,7 @@
 // Shared card styles
 .card {
   background: white;
-  border: 1px solid var(--p-surface-200);
+  border: 0.1rem solid var(--p-surface-200);
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -53,10 +53,6 @@
   color: var(--p-text-secondary-color);
 }
 
-.value {
-  color: var(--p-text-color);
-}
-
 // Main content grid
 .content-grid {
   display: grid;
@@ -69,10 +65,60 @@
   }
 }
 
-// Detail card layout (only positioning/spacing)
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+
+  .value {
+    text-align: right;
+  }
+}
+
+// Detail card layout
 jhi-detail-card {
   display: block;
   margin-bottom: 1rem;
+}
+
+// Styles for projected content using CSS custom properties
+.links {
+  display: var(--links-display);
+  gap: var(--links-gap);
+  margin-top: var(--links-margin-top);
+  padding-top: var(--links-padding-top);
+  border-top: var(--links-border-top);
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--link-color);
+    text-decoration: none;
+    font-size: var(--link-font-size);
+    transition: opacity 0.2s;
+
+    &:hover:not(.disabled) {
+      opacity: 0.8;
+    }
+
+    &.disabled {
+      color: var(--link-disabled-color);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    fa-icon {
+      font-size: var(--link-icon-size);
+    }
+  }
 }
 
 // Documents section - Full width
@@ -115,18 +161,15 @@ jhi-detail-card {
     margin-bottom: 0; // Remove default margin since grid handles spacing
   }
 }
-
 .document-viewer {
   width: 100%;
   height: 25rem; // 700px
-  border: 1px solid var(--p-surface-200);
   border-radius: 0.5rem;
   overflow: hidden;
-  background: var(--p-surface-50);
 
   // Adjust height for different screen sizes
   @media (max-width: bp.$lg) {
-    height: 37.5rem; // 600px
+    height: 30rem; // 600px
   }
 
   @media (max-width: bp.$md) {

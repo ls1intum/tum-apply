@@ -14,9 +14,13 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationDetailDTO(
     @NotNull UUID applicationId,
+    @NotNull UUID jobId,
     ApplicantForApplicationDetailDTO applicant,
     @NotNull ApplicationState applicationState,
+    @NotNull String supervisingProfessorName,
+    @NotNull String researchGroup,
     String jobTitle,
+    String jobLocation,
     LocalDate desiredDate,
     String projects,
     String specialSkills,
@@ -34,9 +38,13 @@ public record ApplicationDetailDTO(
 
         return new ApplicationDetailDTO(
             application.getApplicationId(),
+            job.getJobId(),
             ApplicantForApplicationDetailDTO.getFromEntity(applicant),
             application.getState(),
+            job.getSupervisingProfessor().getLastName(),
+            job.getResearchGroup().getName(),
             job.getTitle(),
+            job.getLocation().name(),
             application.getDesiredStartDate(),
             application.getProjects(),
             application.getSpecialSkills(),
