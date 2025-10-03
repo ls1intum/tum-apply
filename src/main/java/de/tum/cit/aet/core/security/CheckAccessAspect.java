@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.security;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,8 +11,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 /**
  * Aspect to check whether the current user has access to the given research group ID.
@@ -40,24 +39,25 @@ public class CheckAccessAspect {
             switch (checkAccess.target()) {
                 case RESEARCH_GROUP_ID -> {
                     UUID researchGroupId = extractGroupId(arg);
-                    if (researchGroupId!=null) {
+                    if (researchGroupId != null) {
                         hasAccess(researchGroupId);
                         return joinPoint.proceed();
                     }
                 }
                 case USER_ID -> {
                     UUID userId = extractUuid(arg, "getUserId");
-                    if (userId!=null && !currentUserService.isCurrentUserOrAdmin(userId)) {
+                    if (userId != null && !currentUserService.isCurrentUserOrAdmin(userId)) {
                         throw new AccessDeniedException("Access denied for user ID " + userId);
                     }
-                    if (userId!=null) {
+                    if (userId != null) {
                         return joinPoint.proceed();
                     }
                 }
                 case PROFESSOR_ID -> {
                     UUID professorId = extractUuid(arg, "getProfessorId");
-                    if (professorId!=null) {
-                        boolean allowed = currentUserService.isAdmin() ||
+                    if (professorId != null) {
+                        boolean allowed =
+                            currentUserService.isAdmin() ||
                             (currentUserService.isCurrentUser(professorId) && currentUserService.isProfessor());
                         if (!allowed) {
                             throw new AccessDeniedException("Access denied: Not professor or admin for user ID " + professorId);
@@ -88,7 +88,7 @@ public class CheckAccessAspect {
      * @return the extracted research group ID, or null if not applicable
      */
     private @Nullable UUID extractGroupId(Object arg) {
-        if (arg==null) {
+        if (arg == null) {
             return null;
         }
 
@@ -129,11 +129,9 @@ public class CheckAccessAspect {
             case String s -> {
                 try {
                     return UUID.fromString(s);
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
-            default -> {
-            }
+            default -> {}
         }
         try {
             var method = arg.getClass().getMethod(accessorName);
@@ -144,8 +142,7 @@ public class CheckAccessAspect {
             if (value instanceof String s) {
                 try {
                     return UUID.fromString(s);
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
         } catch (Exception ignored) {
             // no accessor available

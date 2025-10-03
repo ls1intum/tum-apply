@@ -27,20 +27,23 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
     private EntityManager em;
 
     private static final Map<String, String> FILTER_COLUMNS = Map.ofEntries(
-            Map.entry("state", "a.application_state"),
-            Map.entry("job.jobId", "j.job_id"));
+        Map.entry("state", "a.application_state"),
+        Map.entry("job.jobId", "j.job_id")
+    );
 
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
-            Map.entry("name", "u.last_name"),
-            Map.entry("appliedAt", "a.created_at"),
-            Map.entry("status", "a.application_state"),
-            Map.entry("job", "j.title"));
+        Map.entry("name", "u.last_name"),
+        Map.entry("appliedAt", "a.created_at"),
+        Map.entry("status", "a.application_state"),
+        Map.entry("job", "j.title")
+    );
 
     private static final Map<String, String> SORT_FIELD_MAPPING = Map.ofEntries(
-            Map.entry("name", "applicant.user.lastName"),
-            Map.entry("appliedAt", "createdAt"),
-            Map.entry("status", "state"),
-            Map.entry("job", "job.title"));
+        Map.entry("name", "applicant.user.lastName"),
+        Map.entry("appliedAt", "createdAt"),
+        Map.entry("status", "state"),
+        Map.entry("job", "job.title")
+    );
 
     /**
      * Retrieves a paginated list of {@link Application} entities for a given
@@ -50,11 +53,12 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      */
     @Override
     public List<Application> findApplications(
-            UUID researchGroupId,
-            Collection<ApplicationState> states,
-            Pageable pageable,
-            Map<String, List<?>> dynamicFilters,
-            String searchQuery) {
+        UUID researchGroupId,
+        Collection<ApplicationState> states,
+        Pageable pageable,
+        Map<String, List<?>> dynamicFilters,
+        String searchQuery
+    ) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Application> cq = cb.createQuery(Application.class);
 
@@ -63,15 +67,12 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         Join<Application, Applicant> applicantJoin = root.join(Application_.APPLICANT, JoinType.LEFT);
         Join<Applicant, User> userJoin = applicantJoin.join(Applicant_.USER, JoinType.LEFT);
 
-        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin,
-                researchGroupId, states, dynamicFilters, searchQuery);
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters, searchQuery);
 
         Sort mappedSort = mapSortFields(pageable.getSort());
         List<Order> orders = buildCustomSortOrders(cb, root, jobJoin, userJoin, mappedSort);
 
-        cq.select(root)
-                .where(predicates.toArray(new Predicate[0]))
-                .orderBy(orders);
+        cq.select(root).where(predicates.toArray(new Predicate[0])).orderBy(orders);
 
         TypedQuery<Application> query = em.createQuery(cq);
         query.setFirstResult((int) pageable.getOffset());
@@ -85,7 +86,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      * "job.title").
      * This abstraction allows for cleaner URLs while maintaining proper entity
      * navigation.
-     * 
+     *
      * @param originalSort the {@link Sort} object containing user-friendly field
      *                     names
      * @return a new {@link Sort} object with mapped entity property paths
@@ -113,7 +114,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      * corresponding
      * JPA expressions, ensuring that sorting works correctly across entity
      * relationships.
-     * 
+     *
      * @param cb            the {@link CriteriaBuilder} for creating criteria
      *                      expressions
      * @param root          the root {@link Application} entity in the criteria
@@ -128,12 +129,12 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      *         orderBy clause
      */
     private List<Order> buildCustomSortOrders(
-            CriteriaBuilder cb,
-            Root<Application> root,
-            Join<Application, Job> jobJoin,
-            Join<Applicant, User> userJoin,
-            Sort sort) {
-
+        CriteriaBuilder cb,
+        Root<Application> root,
+        Join<Application, Job> jobJoin,
+        Join<Applicant, User> userJoin,
+        Sort sort
+    ) {
         List<Order> orders = new ArrayList<>();
 
         for (Sort.Order sortOrder : sort) {
@@ -174,16 +175,19 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      * and optional dynamic filters.
      */
     @Override
-    public long countApplications(UUID researchGroupId, Collection<ApplicationState> states,
-            Map<String, List<?>> dynamicFilters, String searchQuery) {
+    public long countApplications(
+        UUID researchGroupId,
+        Collection<ApplicationState> states,
+        Map<String, List<?>> dynamicFilters,
+        String searchQuery
+    ) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 
         Root<Application> root = cq.from(Application.class);
         Join<Application, Job> jobJoin = root.join(Application_.JOB, JoinType.INNER);
 
-        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters,
-                searchQuery);
+        List<Predicate> predicates = buildCommonPredicates(cb, root, jobJoin, researchGroupId, states, dynamicFilters, searchQuery);
 
         cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
 
@@ -197,12 +201,13 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      */
     @Override
     public long findIndexOfApplication(
-            UUID applicationId,
-            UUID researchGroupId,
-            Collection<ApplicationState> states,
-            Sort sort,
-            Map<String, List<?>> dynamicFilters,
-            String searchQuery) {
+        UUID applicationId,
+        UUID researchGroupId,
+        Collection<ApplicationState> states,
+        Sort sort,
+        Map<String, List<?>> dynamicFilters,
+        String searchQuery
+    ) {
         Map<String, Object> params = new HashMap<>();
         params.put("groupId", researchGroupId);
         params.put("states", states.stream().map(ApplicationState::toString).toList());
@@ -211,38 +216,42 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.created_at", "a.application_id");
 
         StringBuilder sql = new StringBuilder(
-                """
-                        WITH filtered_apps AS (
-                            SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
-                            FROM applications a
-                            JOIN jobs j ON j.job_id = a.job_id
-                            JOIN users u ON u.user_id = a.applicant_id
-                            WHERE j.research_group_id = :groupId
-                              AND a.application_state IN (:states)
-                        """.formatted(orderBy));
+            """
+            WITH filtered_apps AS (
+                SELECT a.*, ROW_NUMBER() OVER (%s) AS rn
+                FROM applications a
+                JOIN jobs j ON j.job_id = a.job_id
+                JOIN users u ON u.user_id = a.applicant_id
+                WHERE j.research_group_id = :groupId
+                  AND a.application_state IN (:states)
+            """.formatted(orderBy)
+        );
 
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
             String searchPattern = "%" + searchQuery.trim().toLowerCase() + "%";
             params.put("searchPattern", searchPattern);
-            sql.append("""
-                      AND (
-                        LOWER(u.first_name) LIKE :searchPattern OR
-                        LOWER(u.last_name) LIKE :searchPattern OR
-                        LOWER(CONCAT(u.first_name, ' ', u.last_name)) LIKE :searchPattern OR
-                        LOWER(j.title) LIKE :searchPattern
-                      )
-                    """);
+            sql.append(
+                """
+                  AND (
+                    LOWER(u.first_name) LIKE :searchPattern OR
+                    LOWER(u.last_name) LIKE :searchPattern OR
+                    LOWER(CONCAT(u.first_name, ' ', u.last_name)) LIKE :searchPattern OR
+                    LOWER(j.title) LIKE :searchPattern
+                  )
+                """
+            );
         }
 
         SqlQueryUtil.appendDynamicFilters(sql, FILTER_COLUMNS, dynamicFilters, params);
 
         sql.append(
-                """
-                            )
-                            SELECT rn
-                            FROM filtered_apps
-                            WHERE application_id = :applicationId
-                        """);
+            """
+                )
+                SELECT rn
+                FROM filtered_apps
+                WHERE application_id = :applicationId
+            """
+        );
 
         Query q = em.createNativeQuery(sql.toString());
         SqlQueryUtil.bindParameters(q, params);
@@ -263,15 +272,17 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      */
     @Override
     public List<String> findAllUniqueJobNames(UUID researchGroupId) {
-        return em.createQuery(
+        return em
+            .createQuery(
                 "SELECT DISTINCT j.title " +
-                        "FROM Application a " +
-                        "JOIN a.job j " +
-                        "WHERE j.researchGroup.researchGroupId = :researchGroupId " +
-                        "ORDER BY j.title ASC",
-                String.class)
-                .setParameter("researchGroupId", researchGroupId)
-                .getResultList();
+                    "FROM Application a " +
+                    "JOIN a.job j " +
+                    "WHERE j.researchGroup.researchGroupId = :researchGroupId " +
+                    "ORDER BY j.title ASC",
+                String.class
+            )
+            .setParameter("researchGroupId", researchGroupId)
+            .getResultList();
     }
 
     /**
@@ -280,23 +291,23 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
      * application states, and dynamic filters, and an optional search query.
      */
     private List<Predicate> buildCommonPredicates(
-            CriteriaBuilder cb,
-            Root<Application> root,
-            Join<Application, Job> jobJoin,
-            UUID researchGroupId,
-            Collection<ApplicationState> states,
-            Map<String, List<?>> dynamicFilters, String searchQuery) {
+        CriteriaBuilder cb,
+        Root<Application> root,
+        Join<Application, Job> jobJoin,
+        UUID researchGroupId,
+        Collection<ApplicationState> states,
+        Map<String, List<?>> dynamicFilters,
+        String searchQuery
+    ) {
         List<Predicate> predicates = new ArrayList<>();
 
-        predicates
-                .add(cb.equal(jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
+        predicates.add(cb.equal(jobJoin.get(Job_.RESEARCH_GROUP).get(ResearchGroup_.RESEARCH_GROUP_ID), researchGroupId));
 
         if (states != null && !states.isEmpty()) {
             predicates.add(root.get(Application_.STATE).in(states));
         }
 
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-
             String normalizedQuery = searchQuery.trim().toLowerCase();
             String searchPattern = "%" + normalizedQuery.toLowerCase() + "%";
 
@@ -311,8 +322,9 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
 
             // search for full name (format: firstname lastname)
             Expression<String> fullName = cb.concat(
-                    cb.concat(cb.lower(userJoin.get(User_.FIRST_NAME)), " "),
-                    cb.lower(userJoin.get(User_.LAST_NAME)));
+                cb.concat(cb.lower(userJoin.get(User_.FIRST_NAME)), " "),
+                cb.lower(userJoin.get(User_.LAST_NAME))
+            );
             searchPredicates.add(cb.like(fullName, searchPattern));
 
             // search for job title
