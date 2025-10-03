@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Sorting, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
@@ -22,6 +22,10 @@ describe('Sorting', () => {
       imports: [Sorting],
       providers: [provideFontAwesomeTesting()],
     }).compileComponents();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should use first sortable field as default current option', () => {
