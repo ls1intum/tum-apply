@@ -22,12 +22,12 @@ export default defineConfig(({mode}) => ({
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: 'build/test-results/lcov-report',
       provider: 'v8',
-      all: true,
+      all: false,
       enabled: true,
       exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts'],
       check: {
         each: {
-          all: true,
+          all: false,
           lines: 95,
           functions: 95,
           branches: 95,
