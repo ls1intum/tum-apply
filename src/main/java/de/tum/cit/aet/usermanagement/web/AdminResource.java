@@ -1,7 +1,6 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupProvisionDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
@@ -20,17 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminResource {
 
     private final ResearchGroupService researchGroupService;
-
-    /**
-     * Creates a new research group manually based on the provided data.
-     *
-     * @param request the DTO containing the information required to create a research group
-     * @return HTTP 200 OK with the created {@link ResearchGroup}
-     */
-    @PostMapping("/research-groups")
-    public ResponseEntity<ResearchGroup> createResearchGroup(@Valid @RequestBody ResearchGroupCreationDTO request) {
-        return ResponseEntity.ok(researchGroupService.createResearchGroup(request));
-    }
 
     /**
      * Provisions a new research group, potentially including additional setup steps.

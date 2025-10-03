@@ -1,0 +1,20 @@
+meta {
+  name: Get Draft Research Groups
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/research-groups/draft?pageNumber=0&pageSize=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  pageNumber: 0
+  pageSize: 10
+}
+
+settings {
+  encodeUrl: true
+}

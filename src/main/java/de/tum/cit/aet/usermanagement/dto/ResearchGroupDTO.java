@@ -21,7 +21,8 @@ public record ResearchGroupDTO(
     String defaultFieldOfStudies,
     String street,
     String postalCode,
-    String city
+    String city,
+    String state
 ) {
     /**
      * @param researchGroup the ResearchGroup entity
@@ -44,7 +45,8 @@ public record ResearchGroupDTO(
             researchGroup.getDefaultFieldOfStudies(),
             researchGroup.getStreet(),
             researchGroup.getPostalCode(),
-            researchGroup.getCity()
+            researchGroup.getCity(),
+            researchGroup.getState() != null ? researchGroup.getState().name() : null
         );
     }
 }
