@@ -1744,8 +1744,8 @@ components:
     PageCreatedJobDTO:
       type: object
       properties:
-        totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
+        totalElements: {type: integer, format: int64}
         first: {type: boolean}
         last: {type: boolean}
         size: {type: integer, format: int32}
@@ -1753,9 +1753,9 @@ components:
           type: array
           items: {$ref: '#/components/schemas/CreatedJobDTO'}
         number: {type: integer, format: int32}
-        numberOfElements: {type: integer, format: int32}
         pageable: {$ref: '#/components/schemas/PageableObject'}
         sort: {$ref: '#/components/schemas/SortObject'}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     PageableObject:
       type: object
@@ -1816,8 +1816,8 @@ components:
     PageJobCardDTO:
       type: object
       properties:
-        totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
+        totalElements: {type: integer, format: int64}
         first: {type: boolean}
         last: {type: boolean}
         size: {type: integer, format: int32}
@@ -1825,9 +1825,9 @@ components:
           type: array
           items: {$ref: '#/components/schemas/JobCardDTO'}
         number: {type: integer, format: int32}
-        numberOfElements: {type: integer, format: int32}
         pageable: {$ref: '#/components/schemas/PageableObject'}
         sort: {$ref: '#/components/schemas/SortObject'}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     JobFilterOptionDTO:
       type: object
