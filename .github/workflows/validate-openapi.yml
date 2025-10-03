@@ -96,8 +96,7 @@ jobs:
         run: ./gradlew generateApiDocs -x webapp -Pprod
 
       - name: Stop Keycloak
-        if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
-        if: always()
+        if: steps.check_changes.outputs.CHANGE_DETECTED == 'true' || always()
         run: |
           docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
 
