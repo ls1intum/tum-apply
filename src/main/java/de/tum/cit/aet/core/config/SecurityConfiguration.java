@@ -71,7 +71,8 @@ public class SecurityConfiguration {
                     // Disables HTTP Strict Transport Security as it is managed at the reverse proxy
                     // level (typically nginx).
                     .httpStrictTransportSecurity((HeadersConfigurer.HstsConfig::disable))
-                    // Defines Permissions Policy to restrict what features the browser is allowed to use.
+                    // Defines Permissions Policy to restrict what features the browser is allowed
+                    // to use.
                     .permissionsPolicyHeader(permissions ->
                         permissions.policy(
                             "camera=(), fullscreen=(*), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()"
