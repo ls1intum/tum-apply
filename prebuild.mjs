@@ -6,28 +6,12 @@
  * - MergeJsonWebpackPlugin
  */
 import fs from 'fs';
-import dotenv from 'dotenv';
 import path from 'path';
 import { hashElement } from 'folder-hash';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Load .env.local file only if no env variables are set (e.g. in CI they come from Docker ENV)
-if (!process.env.KEYCLOAK_URL) {
-  const envFiles = ['.env.local.local', '.env.local', '.env.local.test', '.env.local.prod'];
-  const selectedEnvFile = envFiles.find(f => fs.existsSync(path.resolve(__dirname, f)));
-  if (selectedEnvFile) {
-    dotenv.config({ path: path.resolve(__dirname, selectedEnvFile) });
-    console.log(`[prebuild] Loaded environment from ${selectedEnvFile}`);
-  } else {
-    console.error(
-      '[prebuild.mjs] No .env.local file found. Please add the file to the project root or set the environment variables manually.',
-    );
-    process.exit(1);
-  }
-}
 
 const languagesHash = await hashElement(path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n'), {
   algo: 'md5',
@@ -64,15 +48,7 @@ function inferVersion() {
 const args = process.argv.slice(2);
 const developFlag = args.includes('--develop');
 const keycloakConfig = {
-  url: process.env.KEYCLOAK_URL,
-  realm: process.env.KEYCLOAK_REALM,
-  clientId: process.env.KEYCLOAK_CLIENT_ID,
-  enableLogging: process.env.KEYCLOAK_ENABLE_LOGGING === 'true',
-};
-const otpConfig = {
-  length: process.env.OTP_LENGTH,
-  cooldown: process.env.OTP_RESEND_COOLDOWN_SECONDS,
-  ttlSeconds: process.env.OTP_TTL_SECONDS,
+  enableLogging: developFlag,
 };
 const environmentConfig = `// Don't change this file manually, it will be overwritten by the build process!
 export const __DEBUG_INFO_ENABLED__ = ${developFlag};
@@ -81,15 +57,7 @@ export const I18N_HASH = '${languagesHash.hash}';
 export const environment = {
   production: ${!developFlag},
   keycloak: {
-    url: '${keycloakConfig.url}',
-    realm: '${keycloakConfig.realm}',
-    clientId: '${keycloakConfig.clientId}',
     enableLogging: ${keycloakConfig.enableLogging},
-  },
-  otp: {
-    length: ${otpConfig.length},
-    cooldown: ${otpConfig.cooldown},
-    ttlSeconds: ${otpConfig.ttlSeconds},
   },
 };
 `;
