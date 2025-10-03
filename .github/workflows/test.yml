@@ -53,7 +53,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           # Install Java 17 to run programming templates
           java-version: |
             17
@@ -139,7 +139,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '${{ env.java }}'
           cache: 'gradle'
       - name: Java Code Style
