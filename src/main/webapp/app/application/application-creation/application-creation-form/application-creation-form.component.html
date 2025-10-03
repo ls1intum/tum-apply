@@ -67,7 +67,7 @@
   <div [formGroup]="additionalInfoForm">
     <label>
       <input type="checkbox" formControlName="privacyAccepted" />
-      <span jhiTranslate="privacy.privacyConsent.confirmationText"></span><span class="required ml-1">*</span>
+      <span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
     </label>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
