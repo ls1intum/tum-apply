@@ -104,7 +104,7 @@ jobs:
         run: sudo snap install yq
 
       - name: Normalize OpenAPI YAML for consistent diffing
-        run: bash scripts/normalize_openapi_yaml.sh
+        run: bash supporting_scripts/normalize_openapi_yaml.sh
 
       - name: Check for OpenAPI spec differences
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
