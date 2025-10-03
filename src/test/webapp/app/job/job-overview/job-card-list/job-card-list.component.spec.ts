@@ -7,6 +7,11 @@ import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service'
 import { ToastService } from 'app/service/toast-service';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
+import { ApplicationStatusExtended, JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
+import { Job } from 'app/generated/model/job';
+import LocationEnum = Job.LocationEnum;
+import { By } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('JobCardListComponent', () => {
   let fixture: ComponentFixture<JobCardListComponent>;
@@ -32,7 +37,14 @@ describe('JobCardListComponent', () => {
       ),
       getAvailableJobs: vi.fn().mockReturnValue(
         of({
-          content: [{ jobId: '1', title: 'Test Job', professorName: 'Prof. Y' }],
+          content: [
+            {
+              jobId: '1',
+              title: 'Test Job',
+              professorName: 'Prof. Y',
+              location: LocationEnum.Munich,
+            },
+          ],
           totalElements: 1,
         }),
       ),
@@ -168,5 +180,152 @@ describe('JobCardListComponent', () => {
     expect(component.page()).toBe(2);
     expect(component.pageSize()).toBe(8);
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should set empty jobs and totalRecords when API returns no content', async () => {
+    jobService.getAvailableJobs.mockReturnValueOnce(of({ content: undefined, totalElements: undefined }));
+
+    await component.loadJobs();
+
+    expect(component.jobs()).toEqual([]);
+    expect(component.totalRecords()).toBe(0);
+  });
+
+  it('should handle loadAllFilter when API returns null fields', async () => {
+    jobService.getAllFilters.mockReturnValueOnce(of({ jobNames: null, fieldsOfStudy: null, supervisorNames: null }));
+
+    await component.loadAllFilter();
+
+    expect(component.allJobNames()).toEqual([]);
+    expect(component.allFieldOfStudies()).toEqual([]);
+    expect(component.allSupervisorNames()).toEqual([]);
+  });
+
+  it('should ignore unknown filterId in onFilterEmit', async () => {
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+
+    component.onFilterEmit({ filterId: 'unknown', selectedValues: ['x'] });
+
+    expect(component.selectedJobFilters()).toEqual([]);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should clear search when only whitespace is entered', async () => {
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+
+    component.searchQuery.set('Existing');
+    component.onSearchEmit('   ');
+
+    expect(component.searchQuery()).toBe('');
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should update sort when called twice with different values', async () => {
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+
+    component.onSortEmit({ field: 'title', direction: 'ASC' });
+    component.onSortEmit({ field: 'startDate', direction: 'DESC' });
+
+    expect(component.sortBy()).toBe('startDate');
+    expect(component.sortDirection()).toBe('DESC');
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should calculate page correctly when rows are missing in lazy load', async () => {
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+
+    component.loadOnTableEmit({ first: 16, rows: undefined });
+    expect(component.page()).toBe(Math.floor(16 / component.pageSize()));
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should call loadAllFilter in constructor', () => {
+    expect(jobService.getAllFilters).toHaveBeenCalled();
+  });
+
+  it('should render "no jobs" message when jobs are empty', () => {
+    component.jobs.set([]);
+    fixture.detectChanges();
+
+    const noJobs = fixture.nativeElement.querySelector('.no-jobs-text');
+    const cards = fixture.nativeElement.querySelectorAll('jhi-job-card');
+    expect(noJobs).not.toBeNull();
+    expect(noJobs.getAttribute('jhiTranslate')).toBe('jobOverviewPage.noJobsFound');
+    expect(cards.length).toBe(0);
+  });
+
+  it('should render one job-card per job when jobs exist', () => {
+    component.jobs.set([
+      { jobId: '1', title: 'A', professorName: 'P1', location: LocationEnum.Heilbronn } as any,
+      { jobId: '2', title: 'B', professorName: 'P2', location: LocationEnum.Heilbronn } as any,
+    ]);
+    fixture.detectChanges();
+
+    const cards = fixture.debugElement.queryAll(By.directive(JobCardComponent));
+    expect(cards.length).toBe(2);
+  });
+
+  it('should pass NotYetApplied when applicationState is undefined', () => {
+    component.jobs.set([
+      { jobId: '1', title: 'A', professorName: 'P1', location: LocationEnum.Heilbronn, applicationState: undefined } as any,
+    ]);
+    fixture.detectChanges();
+
+    const cardDE = fixture.debugElement.query(By.directive(JobCardComponent));
+    const child = cardDE.componentInstance as JobCardComponent;
+
+    expect(child.applicationState()).toBe(ApplicationStatusExtended.NotYetApplied);
+  });
+
+  it('should use relativeTimeEnglish for EN and relativeTimeGerman after switching to DE', () => {
+    component.jobs.set([
+      {
+        jobId: '1',
+        title: 'A',
+        professorName: 'P1',
+        location: LocationEnum.Garching,
+        relativeTimeEnglish: '2 days ago',
+        relativeTimeGerman: 'vor 2 Tagen',
+      } as any,
+    ]);
+    fixture.detectChanges();
+
+    // initial EN
+    let cardDE = fixture.debugElement.query(By.directive(JobCardComponent));
+    let child = cardDE.componentInstance as JobCardComponent;
+    expect(child.relativeTime()).toBe('2 days ago');
+
+    // switch to German
+    const translate = TestBed.inject(TranslateService) as any;
+    translate.onLangChange.next({ lang: 'de' });
+    fixture.detectChanges();
+
+    cardDE = fixture.debugElement.query(By.directive(JobCardComponent));
+    child = cardDE.componentInstance as JobCardComponent;
+    expect(child.relativeTime()).toBe('vor 2 Tagen');
+  });
+
+  it('should compute page 0 when first is undefined but rows is defined (lazy load)', async () => {
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    component.page.set(5);
+    component.loadOnTableEmit({ rows: 20 });
+    expect(component.page()).toBe(0);
+    expect(component.pageSize()).toBe(20);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should default initial language to EN when translateService.currentLang is undefined', () => {
+    // Grab the mock that provideTranslateMock already gave us
+    const translate = TestBed.inject(TranslateService) as any;
+
+    // Override currentLang for this test
+    translate.currentLang = undefined;
+
+    // Recreate the component so constructor logic runs again
+    const fixture2 = TestBed.createComponent(JobCardListComponent);
+    const component2 = fixture2.componentInstance;
+    fixture2.detectChanges();
+
+    expect(component2.currentLanguage()).toBe('EN');
   });
 });
