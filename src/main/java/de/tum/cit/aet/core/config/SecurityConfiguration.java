@@ -72,7 +72,7 @@ public class SecurityConfiguration {
                     // level (typically nginx).
                     .httpStrictTransportSecurity((HeadersConfigurer.HstsConfig::disable))
                     // Defines Permissions Policy to restrict what features the browser is allowed
-                    // to use.
+                    //to use.
                     .permissionsPolicyHeader(permissions ->
                         permissions.policy(
                             "camera=(), fullscreen=(*), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()"
