@@ -8,14 +8,15 @@ import { TranslateDirective } from 'app/shared/language';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TagComponent } from '../../../shared/components/atoms/tag/tag.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
-import { Sort, SortBarComponent, SortOption } from '../../../shared/components/molecules/sort-bar/sort-bar.component';
 import { CreatedJobDTO } from '../../../generated/model/createdJobDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
-
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
@@ -26,8 +27,8 @@ import { JobResourceApiService } from '../../../generated/api/jobResourceApi.ser
     DynamicTableComponent,
     TranslateDirective,
     TranslateModule,
-    SortBarComponent,
     ConfirmDialog,
+    SearchFilterSortBar,
   ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
@@ -38,20 +39,40 @@ export class MyPositionsPageComponent {
   page = signal<number>(0);
   pageSize = signal<number>(10);
   userId = signal<string>('');
+  searchQuery = signal<string>('');
 
   sortBy = signal<string>('lastModifiedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'myPositionsPage.sortingOptions.lastModified', field: 'lastModifiedAt', type: 'NUMBER' },
-    { displayName: 'myPositionsPage.sortingOptions.jobTitle', field: 'title', type: 'TEXT' },
-    { displayName: 'myPositionsPage.sortingOptions.status', field: 'state', type: 'TEXT' },
-    { displayName: 'myPositionsPage.sortingOptions.startDate', field: 'startDate', type: 'NUMBER' },
-    { displayName: 'myPositionsPage.sortingOptions.created', field: 'createdAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.tableColumn.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.tableColumn.job', fieldName: 'title', type: 'TEXT' },
+    { displayName: 'myPositionsPage.tableColumn.status', fieldName: 'state', type: 'TEXT' },
+    { displayName: 'myPositionsPage.tableColumn.startDate', fieldName: 'startDate', type: 'NUMBER' },
+    { displayName: 'myPositionsPage.tableColumn.created', fieldName: 'createdAt', type: 'NUMBER' },
   ];
+
+  readonly availableStatusOptions: { key: string; label: string }[] = [
+    { key: 'DRAFT', label: 'jobState.draft' },
+    { key: 'PUBLISHED', label: 'jobState.published' },
+    { key: 'CLOSED', label: 'jobState.closed' },
+    { key: 'APPLICANT_FOUND', label: 'jobState.applicantFound' },
+  ];
+
+  readonly stateTextMap = computed<Record<string, string>>(() =>
+    this.availableStatusOptions.reduce<Record<string, string>>((acc, cur) => {
+      acc[cur.key] = cur.label;
+      return acc;
+    }, {}),
+  );
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
+
+  readonly selectedJobFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<string[]>([]);
+
+  readonly allJobNames = signal<string[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
@@ -75,12 +96,7 @@ export class MyPositionsPageComponent {
     ];
   });
 
-  readonly stateTextMap = computed<Record<string, string>>(() => ({
-    DRAFT: 'jobState.draft',
-    PUBLISHED: 'jobState.published',
-    CLOSED: 'jobState.closed',
-    APPLICANT_FOUND: 'jobState.applicantFound',
-  }));
+  readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
     DRAFT: 'info',
@@ -94,6 +110,10 @@ export class MyPositionsPageComponent {
   private router = inject(Router);
   private toastService = inject(ToastService);
 
+  constructor() {
+    void this.loadAllJobNames();
+  }
+
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
     const size = event.rows ?? this.pageSize();
@@ -103,9 +123,33 @@ export class MyPositionsPageComponent {
     void this.loadJobs();
   }
 
+  onSearchEmit(searchQuery: string): void {
+    const normalizedQuery = searchQuery.trim().replace(/\s+/g, ' ');
+    const currentQuery = this.searchQuery().trim().replace(/\s+/g, ' ');
+
+    if (normalizedQuery !== currentQuery) {
+      this.page.set(0);
+      this.searchQuery.set(normalizedQuery);
+      void this.loadJobs();
+    }
+  }
+
+  onFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterId === 'job') {
+      this.page.set(0);
+      this.selectedJobFilters.set(filterChange.selectedValues);
+      void this.loadJobs();
+    } else if (filterChange.filterId === 'status') {
+      this.page.set(0);
+      const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
+      this.selectedStatusFilters.set(enumValues);
+      void this.loadJobs();
+    }
+  }
+
   loadOnSortEmit(event: Sort): void {
     this.page.set(0);
-    this.sortBy.set(event.field ?? this.sortableFields[0].field);
+    this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
     void this.loadJobs();
   }
@@ -126,6 +170,16 @@ export class MyPositionsPageComponent {
       console.error('Unable to view job with job id:', jobId);
     }
     this.router.navigate([`/job/detail/${jobId}`]);
+  }
+
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.jobService.getAllJobNamesByProfessor());
+      this.allJobNames.set(jobNames.sort());
+    } catch {
+      this.allJobNames.set([]);
+      this.toastService.showErrorKey('myPositionsPage.errors.loadJobNames');
+    }
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
@@ -152,26 +206,34 @@ export class MyPositionsPageComponent {
     }
   }
 
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
   private async loadJobs(): Promise<void> {
     try {
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
       if (this.userId() === '') {
         return;
       }
+      const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getJobsByProfessor(
           this.pageSize(),
           this.page(),
-          undefined, // Optional title filter
-          undefined, // Optional state filter
+          jobNameFilters.length ? jobNameFilters : undefined,
+          statusFilters.length ? statusFilters : undefined,
           this.sortBy(),
           this.sortDirection(),
+          this.searchQuery(),
         ),
       );
       this.jobs.set(pageData.content ?? []);
       this.totalRecords.set(pageData.totalElements ?? 0);
-    } catch (error) {
-      console.error('Failed to load jobs from API:', error);
+    } catch {
+      this.toastService.showErrorKey('myPositionsPage.errors.loadJobs');
     }
   }
 }

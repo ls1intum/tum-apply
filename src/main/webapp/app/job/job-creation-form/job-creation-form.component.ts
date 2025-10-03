@@ -10,7 +10,7 @@ import { ProgressStepperComponent, StepData } from 'app/shared/components/molecu
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 
@@ -353,9 +353,9 @@ export class JobCreationFormComponent {
   private createPositionDetailsForm(): FormGroup {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
-      description: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
-      tasks: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
-      requirements: ['', [htmlTextRequiredValidator, Validators.maxLength(1000)]],
+      description: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
+      tasks: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
+      requirements: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
     });
   }
 

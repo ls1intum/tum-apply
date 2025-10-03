@@ -11,15 +11,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/evaluation")
@@ -153,16 +152,15 @@ public class ApplicationEvaluationResource {
      * @param response      the HTTP response used to write the ZIP content
      * @throws IOException if an I/O error occurs while writing to the response
      */
-    @ApiResponses({
-        @ApiResponse(
-            responseCode = "200",
-            description = "ZIP file containing all documents",
-            content = @Content(
-                mediaType = "application/zip",
-                schema = @Schema(type = "string", format = "binary")
-            )
-        )
-    })
+    @ApiResponses(
+        {
+            @ApiResponse(
+                responseCode = "200",
+                description = "ZIP file containing all documents",
+                content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary"))
+            ),
+        }
+    )
     @GetMapping(path = "/applications/{applicationId}/documents-download", produces = "application/zip")
     public void downloadAll(@PathVariable("applicationId") UUID applicationId, HttpServletResponse response) throws IOException {
         applicationEvaluationService.downloadAllDocumentsForApplication(applicationId, response);

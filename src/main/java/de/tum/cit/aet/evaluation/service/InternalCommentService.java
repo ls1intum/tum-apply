@@ -10,12 +10,11 @@ import de.tum.cit.aet.evaluation.dto.InternalCommentUpdateDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
@@ -39,7 +38,10 @@ public class InternalCommentService {
 
         User currentUser = currentUserService.getUser();
 
-        return comments.stream().map(comment -> InternalCommentDTO.from(comment, currentUser)).collect(Collectors.toList());
+        return comments
+            .stream()
+            .map(comment -> InternalCommentDTO.from(comment, currentUser))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -95,7 +97,9 @@ public class InternalCommentService {
      * @return the {@link InternalComment} entity
      */
     private InternalComment getInternalComment(UUID internalCommentId) {
-        return internalCommentRepository.findById(internalCommentId).orElseThrow(() -> EntityNotFoundException.forId("InternalComment", internalCommentId));
+        return internalCommentRepository
+            .findById(internalCommentId)
+            .orElseThrow(() -> EntityNotFoundException.forId("InternalComment", internalCommentId));
     }
 
     /**
@@ -125,7 +129,8 @@ public class InternalCommentService {
      * @return the {@link Application} entity
      */
     private Application getApplication(UUID applicationId) {
-        return applicationEvaluationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        return applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
     }
-
 }
