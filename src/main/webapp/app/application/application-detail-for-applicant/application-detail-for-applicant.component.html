@@ -262,31 +262,47 @@
       </section>
     }
 
-    <!-- Destructive Action Section -->
+    <!-- Action Buttons Section -->
     @if (!previewDetailData()) {
-      <section class="destructive-actions-section">
-        @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
-          <jhi-confirm-dialog
-            [label]="'entity.applicationOverview.actions.withdraw' | translate"
-            [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
-            [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-            confirmIcon="file-circle-minus"
-            (confirmed)="onWithdrawApplication()"
-            severity="danger"
-            variant="outlined"
-          />
-        }
+      <section class="action-buttons-section">
+        <div class="button-wrapper">
+          <!-- Left-aligned Back button -->
+          <div class="left-buttons">
+            <jhi-button
+              [label]="'jobActionButton.back'"
+              [shouldTranslate]="true"
+              severity="info"
+              [variant]="'outlined'"
+              (click)="onBack()"
+            />
+          </div>
 
-        @if (['SAVED'].includes(application.applicationState)) {
-          <jhi-confirm-dialog
-            [label]="'entity.applicationOverview.actions.delete' | translate"
-            [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
-            [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
-            confirmIcon="trash"
-            (confirmed)="onDeleteApplication()"
-            severity="danger"
-          />
-        }
+          <!-- Right-aligned Destructive actions -->
+          <div class="right-buttons">
+            @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
+              <jhi-confirm-dialog
+                [label]="'entity.applicationOverview.actions.withdraw' | translate"
+                [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
+                [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
+                confirmIcon="file-circle-minus"
+                (confirmed)="onWithdrawApplication()"
+                severity="danger"
+                variant="outlined"
+              />
+            }
+
+            @if (['SAVED'].includes(application.applicationState)) {
+              <jhi-confirm-dialog
+                [label]="'entity.applicationOverview.actions.delete' | translate"
+                [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
+                [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
+                confirmIcon="trash"
+                (confirmed)="onDeleteApplication()"
+                severity="danger"
+              />
+            }
+          </div>
+        </div>
       </section>
     }
   } @else {

@@ -143,10 +143,25 @@
   }
 }
 
-// Destructive actions section at bottom of page
-.destructive-actions-section {
+.action-buttons-section {
   margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 0.05rem solid var(--p-border-default);
-  text-align: right;
+
+  .button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-top: 0.05rem solid var(--p-border-default);
+    padding-top: 2rem;
+  }
+
+  .left-buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  .right-buttons {
+    display: flex;
+    align-items: center;
+  }
 }

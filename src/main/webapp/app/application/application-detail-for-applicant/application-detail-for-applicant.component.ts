@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
@@ -61,6 +62,7 @@ export default class ApplicationDetailForApplicantComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly translationKey = 'entity.toast.applyFlow';
 
   constructor() {
@@ -138,5 +140,9 @@ export default class ApplicationDetailForApplicantComponent {
         },
       });
     }
+  }
+
+  onBack(): void {
+    this.location.back();
   }
 }
