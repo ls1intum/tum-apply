@@ -321,4 +321,3 @@ public class ResearchGroupService {
         return group;
     }
 }
-
