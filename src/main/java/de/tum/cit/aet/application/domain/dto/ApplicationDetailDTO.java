@@ -3,7 +3,9 @@ package de.tum.cit.aet.application.domain.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ApplicantForApplicationDetailDTO;
@@ -41,10 +43,10 @@ public record ApplicationDetailDTO(
             job.getJobId(),
             ApplicantForApplicationDetailDTO.getFromEntity(applicant),
             application.getState(),
-            job.getSupervisingProfessor().getLastName(),
+            job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
             job.getResearchGroup().getName(),
             job.getTitle(),
-            job.getLocation().name(),
+            UiTextFormatter.formatEnumValue(job.getLocation()),
             application.getDesiredStartDate(),
             application.getProjects(),
             application.getSpecialSkills(),

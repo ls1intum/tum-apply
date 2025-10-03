@@ -232,9 +232,9 @@
         "title_prefix": "Bewerbung für"
       },
       "position_overview": "Stellenübersicht",
-      "supervisor": "Betreuer",
-      "research_group": "Forschungsgruppe",
-      "location": "Standort",
+      "supervisor": "Betreuer:",
+      "research_group": "Forschungsgruppe:",
+      "location": "Standort:",
       "view_job_details": "Stellendetails ansehen",
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",

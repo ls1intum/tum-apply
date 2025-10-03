@@ -232,9 +232,9 @@
         "title_prefix": "Application for"
       },
       "position_overview": "Position Overview",
-      "supervisor": "Supervisor",
-      "research_group": "Research Group",
-      "location": "Location",
+      "supervisor": "Supervisor:",
+      "research_group": "Research Group:",
+      "location": "Location:",
       "view_job_details": "View Job Details",
       "personal_statements": "Personal Statements",
       "personal_information": "Personal Information",

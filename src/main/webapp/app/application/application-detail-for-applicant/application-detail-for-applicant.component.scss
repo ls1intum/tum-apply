@@ -23,23 +23,11 @@
   }
 
   .card-title {
-    font-size: 1rem;
     font-weight: 600;
-    margin: 0;
-    color: var(--p-text-color);
   }
 
   .card-body {
-    p {
-      margin: 0;
-    }
-
-    // Content styling
-    .content {
-      color: var(--p-text-color);
-      line-height: 1.6;
-      font-size: 0.9375rem;
-    }
+    font-size: 0.875rem;
   }
 }
 
@@ -77,11 +65,11 @@
 
 // Custom icon size override for small icons
 .icon {
-  font-size: 1rem;
+  color: var(--p-primary-color);
 }
 
 .label {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--p-text-secondary-color);
 }
 
@@ -115,19 +103,18 @@
 }
 
 // Links container styling (uses global .link class for individual links)
-.detail-card .links {
+.links {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  align-items: center;
   padding-top: 1rem;
   border-top: 0.01rem solid var(--p-surface-200);
 
-  a {
+  .link-container {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
-    text-decoration: none;
   }
 }
 
