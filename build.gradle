@@ -1,4 +1,5 @@
 import com.gorylenko.GenerateGitPropertiesTask
+import org.gradle.jvm.toolchain.JvmVendorSpec
 
 // This section is required so that the latest version of the liquibase gradle plugin works
 buildscript {
