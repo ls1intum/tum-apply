@@ -40,7 +40,6 @@ if (isAutoDepJob) {
   java {
     toolchain {
       languageVersion = JavaLanguageVersion.of(21)
-      // Do not set vendor or nativeImageCapable here
     }
   }
 } else {
