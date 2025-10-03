@@ -65,40 +65,16 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
 
-      - name: Start Keycloak via docker compose
-        if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
-        run: |
-          # start only the keycloak service (uses your src/main/docker/services.yml which extends keycloak.yml)
-          docker compose -f src/main/docker/services.yml up -d keycloak
 
-          # wait for Keycloak to respond (health endpoint /realm config). retry up to 120s
-          echo "Waiting for Keycloak to be healthy on http://localhost:9080 ..."
-          for i in $(seq 1 60); do
-            if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
-              echo "Keycloak is up"
-              break
-            fi
-            echo "Keycloak not ready yet (attempt $i/60) — sleeping 2s"
-            sleep 2
-          done
-
-          # fail if Keycloak never came up
-          if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
-            echo "ERROR: Keycloak did not become healthy in time."
-            echo "Container logs:"
-            docker compose -f src/main/docker/services.yml logs keycloak || true
-            docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
-            exit 1
-          fi
 
       - name: Run Gradle to generate OpenAPI docs
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
         run: ./gradlew generateApiDocs -x webapp
 
-      - name: Stop Keycloak
-        if: steps.check_changes.outputs.CHANGE_DETECTED == 'true' || always()
-        run: |
-          docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
+      #- name: Stop Keycloak
+      #  if: steps.check_changes.outputs.CHANGE_DETECTED == 'true' || always()
+      #  run: |
+      #    docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
 
       - name: Check for OpenAPI spec differences
         if: steps.check_changes.outputs.CHANGE_DETECTED == 'true'
