@@ -5,11 +5,18 @@ if [ ! -f tests.log ]; then
   exit 1
 fi
 
-numberOfStarts=$(grep ":: Powered by Spring Boot[^:]* ::" tests.log | wc -l)
+# Erweiterte Suche nach verschiedenen Boot-Nachrichten
+numberOfStarts=$(grep -E "(:: Powered by Spring Boot|:: Spring Boot ::|Application 'TUMApply' is running!|Started TUMApplyApplication)" tests.log | wc -l)
 echo "Number of Server Starts: $numberOfStarts"
 
+# Ausgabe für Diagnose
 echo "Log-Datei Inhalt (Anfang):"
-head -n 100 tests.log
+head -n 20 tests.log
+
+# Suche nach Boot-Log in der gesamten Datei
+echo "Suche nach Boot-Log in der gesamten Datei:"
+grep -E "(:: Powered by Spring Boot|:: Spring Boot ::|Application 'TUMApply' is running!|Started TUMApplyApplication)" tests.log || echo "Keine Boot-Nachrichten gefunden"
+
 
 if [[ $numberOfStarts -lt 1 ]]
 then
