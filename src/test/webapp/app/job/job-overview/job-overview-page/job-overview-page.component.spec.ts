@@ -7,7 +7,6 @@ import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 
 @Component({
   selector: 'jhi-job-card-list',
-  standalone: true,
   template: '<p>Stub Job Card List</p>',
 })
 class StubJobCardListComponent {}

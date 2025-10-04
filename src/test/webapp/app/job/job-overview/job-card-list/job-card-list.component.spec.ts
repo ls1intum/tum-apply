@@ -296,8 +296,8 @@ describe('JobCardListComponent', () => {
     expect(child.relativeTime()).toBe('2 days ago');
 
     // switch to German
-    const translate = TestBed.inject(TranslateService) as any;
-    translate.onLangChange.next({ lang: 'de' });
+    const translate = TestBed.inject(TranslateService) as Partial<TranslateService & { currentLang?: string }>;
+    translate.onLangChange?.next({ lang: 'de', translations: {} });
     fixture.detectChanges();
 
     cardDE = fixture.debugElement.query(By.directive(JobCardComponent));
@@ -316,7 +316,7 @@ describe('JobCardListComponent', () => {
 
   it('should default initial language to EN when translateService.currentLang is undefined', () => {
     // Grab the mock that provideTranslateMock already gave us
-    const translate = TestBed.inject(TranslateService) as any;
+    const translate = TestBed.inject(TranslateService) as Partial<TranslateService & { currentLang?: string }>;
 
     // Override currentLang for this test
     translate.currentLang = undefined;
