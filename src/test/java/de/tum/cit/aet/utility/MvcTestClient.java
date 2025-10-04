@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.*;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
@@ -127,6 +129,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
@@ -146,6 +149,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
@@ -162,6 +166,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = putOk(url, body, accepts);
+            case 204 -> result = putNoContent(url, body, accepts);
             case 400 -> result = putInvalid(url, body, accepts);
             case 401 -> result = putUnauthorized(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
@@ -181,6 +186,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = putOk(url, body, accepts);
+            case 204 -> result = putNoContent(url, body, accepts);
             case 400 -> result = putInvalid(url, body, accepts);
             case 401 -> result = putUnauthorized(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
@@ -293,6 +299,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 204 No Content and returns the MvcResult.
+     */
+    private MvcResult postNoContent(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 204", e);
+        }
+    }
+
+    /**
      * Low-level POST that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult postInvalid(String url, Object body, MediaType... accepts) {
@@ -331,6 +348,17 @@ public class MvcTestClient {
     private MvcResult putOk(String url, Object body, MediaType... accepts) {
         try {
             return putJson(url, body, accepts).andExpect(status().isOk()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed", e);
+        }
+    }
+
+    /**
+     * Low-level PUT that asserts 204 No Content and returns the MvcResult.
+     */
+    private MvcResult putNoContent(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("PUT " + url + " failed", e);
         }
