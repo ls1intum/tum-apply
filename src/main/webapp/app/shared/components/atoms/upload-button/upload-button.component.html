@@ -10,7 +10,14 @@
 >
   <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
     <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full" (click)="fileupload_component.choose()">
-      <div [jhiTranslate]="uploadKey()" class="text-center flex items-center"></div>
+      <div class="text-center flex items-center">
+        <span class="inline-block whitespace-nowrap">
+          <span [jhiTranslate]="uploadKey()"></span>
+          @if (markAsRequired()) {
+            <span class="required">*</span>
+          }
+        </span>
+      </div>
     </div>
   </ng-template>
   <ng-template #empty>
