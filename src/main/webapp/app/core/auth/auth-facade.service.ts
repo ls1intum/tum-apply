@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { DocumentCacheService } from 'app/service/document-cache.service';
 
 import { OtpCompleteDTO } from '../../generated/model/otpCompleteDTO';
 import { UserProfileDTO } from '../../generated/model/userProfileDTO';
@@ -41,6 +42,7 @@ export class AuthFacadeService {
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
+  private readonly documentCache = inject(DocumentCacheService);
 
   private authMethod: AuthMethod = 'none';
 
@@ -159,6 +161,7 @@ export class AuthFacadeService {
       this.navigateAfterLogin();
       return;
     }
+    this.documentCache.clear();
     return this.runAuthAction(async () => {
       if (this.authMethod === 'server') {
         this.authMethod = 'none';
