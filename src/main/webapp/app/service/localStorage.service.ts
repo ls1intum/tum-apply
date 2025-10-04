@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApplicationCreationPage1Data } from 'app/application/application-creation/application-creation-page1/application-creation-page1.component';
 
 export interface ApplicationDraftData {
-  page1: ApplicationCreationPage1Data;
+  personalInfoData: ApplicationCreationPage1Data;
   applicationId: string;
   jobId: string;
   timestamp: string;
