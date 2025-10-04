@@ -12,14 +12,27 @@ import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 
 import * as DropdownOptions from 'app/job/dropdown-options';
-import { TemplateRef } from '@angular/core';
+import { signal } from '@angular/core';
+import { User } from 'app/core/auth/account.service';
+import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+
+interface Step {
+  name: string;
+  disabled?: boolean;
+  buttonGroupPrev?: { onClick: () => void }[];
+  buttonGroupNext?: { onClick: () => void; disabled?: boolean }[];
+}
 
 describe('JobCreationFormComponent', () => {
   let fixture: ComponentFixture<JobCreationFormComponent>;
   let component: JobCreationFormComponent;
 
   let accountService: Pick<AccountService, 'loadedUser'>;
-  let jobService: Pick<JobResourceApiService, 'getJobById' | 'createJob' | 'updateJob'>;
+  let jobService: {
+    getJobById: ReturnType<typeof vi.fn>;
+    createJob: ReturnType<typeof vi.fn>;
+    updateJob: ReturnType<typeof vi.fn>;
+  };
   let toast: Pick<ToastService, 'showErrorKey' | 'showSuccessKey'>;
   let router: Pick<Router, 'navigate'>;
   let location: Pick<Location, 'back'>;
@@ -27,7 +40,7 @@ describe('JobCreationFormComponent', () => {
 
   beforeEach(async () => {
     accountService = {
-      loadedUser: vi.fn().mockReturnValue({ id: 'u1', name: 'User X' }),
+      loadedUser: signal<User | undefined>({ id: 'u1', name: 'User X' } as User),
     };
 
     jobService = {
@@ -117,7 +130,7 @@ describe('JobCreationFormComponent', () => {
 
   it('should navigate to login if no user in init', async () => {
     vi.clearAllMocks();
-    accountService.loadedUser = vi.fn().mockReturnValue(null);
+    accountService.loadedUser = signal<User | undefined>(undefined);
 
     const fixture2 = TestBed.createComponent(JobCreationFormComponent);
     fixture2.detectChanges();
@@ -128,7 +141,7 @@ describe('JobCreationFormComponent', () => {
 
   it('should navigate to /my-positions if edit mode but no jobId', async () => {
     // emit "edit" mode
-    route$.next([{ path: 'job' }, { path: 'edit' }]);
+    route$.next([new UrlSegment('job', {}), new UrlSegment('edit', {})]);
     // snapshot with no job_id
     const routeMock = TestBed.inject(ActivatedRoute) as unknown as {
       url: Subject<UrlSegment[]>;
@@ -205,15 +218,15 @@ describe('JobCreationFormComponent', () => {
   });
 
   it('should disable steps in buildStepData when forms invalid', () => {
-    (component as unknown as { panel1: () => TemplateRef<unknown> }).panel1 = () => ({}) as TemplateRef<unknown>;
-    (component as unknown as { panel2: () => TemplateRef<unknown> }).panel2 = () => ({}) as TemplateRef<unknown>;
-    (component as unknown as { panel4: () => TemplateRef<unknown> }).panel4 = () => ({}) as TemplateRef<unknown>;
-    (component as unknown as { savingStatePanel: () => TemplateRef<unknown> }).savingStatePanel = () => ({}) as TemplateRef<unknown>;
+    (component as { panel1: () => object }).panel1 = () => ({});
+    (component as { panel2: () => object }).panel2 = () => ({});
+    (component as { panel4: () => object }).panel4 = () => ({});
+    (component as { savingStatePanel: () => object }).savingStatePanel = () => ({});
 
     component.basicInfoValid.set(false);
     component.positionDetailsValid.set(false);
 
-    const steps = (component as unknown as { buildStepData: () => unknown[] }).buildStepData();
+    const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
 
     const step2 = steps.find(s => s.name.includes('positionDetails'));
     const step4 = steps.find(s => s.name.includes('summary'));
@@ -280,21 +293,21 @@ describe('JobCreationFormComponent', () => {
   });
 
   it('should execute panel1 onClick in buildStepData', () => {
-    // force template refs
-    (component as unknown as { panel1: () => object }).panel1 = () => ({});
-    (component as unknown as { savingStatePanel: () => object }).savingStatePanel = () => ({});
+    // Mock template refs
+    (component as { panel1: () => object }).panel1 = () => ({});
+    (component as { savingStatePanel: () => object }).savingStatePanel = () => ({});
 
-    // make valid/invalid states so `disabled` is evaluated
+    // Make valid/invalid states so `disabled` is evaluated
     component.basicInfoValid.set(false);
-    let steps = (component as unknown as { buildStepData: () => Array<unknown> }).buildStepData();
-    expect(steps[0].buttonGroupNext[0].disabled).toBe(true);
+    let steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
+    expect(steps[0].buttonGroupNext?.[0].disabled).toBe(true);
 
     component.basicInfoValid.set(true);
-    steps = (component as unknown as { buildStepData: () => Array<unknown> }).buildStepData();
-    expect(steps[0].buttonGroupNext[0].disabled).toBe(false);
+    steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
+    expect(steps[0].buttonGroupNext?.[0].disabled).toBe(false);
 
-    // now call the anonymous onClick
-    expect(() => steps[0].buttonGroupNext[0].onClick()).not.toThrow();
+    // now call the anonymous onClick safely
+    steps[0].buttonGroupNext?.[0].onClick?.();
   });
 
   it('should return early in publishJob when jobData is undefined', async () => {
@@ -327,8 +340,7 @@ describe('JobCreationFormComponent', () => {
       fundingType: 'F',
     };
 
-    (component as unknown as { populateForm: (job) => void }).populateForm(job);
-
+    (component as unknown as { populateForm: (job: Record<string, unknown>) => void }).populateForm(job);
     expect(component.basicInfoForm.get('fundingType')).toBeDefined();
   });
 
@@ -338,10 +350,10 @@ describe('JobCreationFormComponent', () => {
     (component as unknown as { panel4: () => object }).panel4 = () => ({});
     (component as unknown as { savingStatePanel: () => object }).savingStatePanel = () => ({});
 
-    const steps = (component as unknown as { buildStepData: () => unknown[] }).buildStepData();
+    const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
 
-    const panel2Back = steps.find(s => s.name.includes('positionDetails'))?.buttonGroupPrev[0];
-    const panel4Back = steps.find(s => s.name.includes('summary'))?.buttonGroupPrev[0];
+    const panel2Back = steps.find(s => s.name.includes('positionDetails'))?.buttonGroupPrev?.[0];
+    const panel4Back = steps.find(s => s.name.includes('summary'))?.buttonGroupPrev?.[0];
 
     expect(() => panel2Back?.onClick()).not.toThrow();
     expect(() => panel4Back?.onClick()).not.toThrow();
@@ -356,7 +368,7 @@ describe('JobCreationFormComponent', () => {
 
   it('should populate fundingType when DropdownOptions match', () => {
     const job: { fundingType: string } = { fundingType: DropdownOptions.fundingTypes[0].value };
-    (component as unknown as { populateForm: (job) => void }).populateForm(job);
+    (component as unknown as { populateForm: (job: Record<string, unknown>) => void }).populateForm(job);
     expect(component.basicInfoForm.get('fundingType')?.value).toEqual(DropdownOptions.fundingTypes[0]);
   });
 
@@ -373,8 +385,8 @@ describe('JobCreationFormComponent', () => {
     component.basicInfoValid.set(true);
     component.positionDetailsValid.set(true);
 
-    const steps = (component as unknown as { buildStepData: () => unknown[] }).buildStepData();
-    const publishBtn = steps.find(s => s.name.includes('summary'))?.buttonGroupNext[0];
+    const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
+    const publishBtn = steps.find(s => s.name.includes('summary'))?.buttonGroupNext?.[0];
     publishBtn?.onClick();
 
     expect(confirmSpy).toHaveBeenCalled();
@@ -396,8 +408,13 @@ describe('JobCreationFormComponent', () => {
 
   it('should enter edit mode and call getJobById when jobId is present', async () => {
     const routeMock = TestBed.inject(ActivatedRoute) as ActivatedRoute;
-    routeMock.url = of([{ path: 'job' }, { path: 'edit' }]);
-    routeMock.snapshot.paramMap = { get: () => 'job123' };
+    routeMock.url = of([new UrlSegment('job', {}), new UrlSegment('edit', {})]);
+
+    (routeMock as any).snapshot = {
+      paramMap: {
+        get: (key: string) => (key === 'job_id' ? 'job123' : null),
+      },
+    };
 
     jobService.getJobById.mockReturnValueOnce(of({ title: 'JobX', description: 'Desc' }));
 
@@ -414,7 +431,7 @@ describe('JobCreationFormComponent', () => {
     component.basicInfoForm.reset();
     component.positionDetailsForm.reset();
 
-    const dto = (component as unknown as { createJobDTO: () => unknown }).createJobDTO();
+    const dto = (component as unknown as { createJobDTO: () => JobFormDTO }).createJobDTO();
 
     expect(dto.title).toBe('');
     expect(dto.researchArea).toBe('');
@@ -438,7 +455,7 @@ describe('JobCreationFormComponent', () => {
       requirements: 'Some requirements ',
     });
 
-    const dto = (component as unknown as { createJobDTO: () => unknown }).createJobDTO();
+    const dto = (component as unknown as { createJobDTO: () => JobFormDTO }).createJobDTO();
 
     expect(dto.title).toBe('My Job');
     expect(dto.researchArea).toBe('AI');
@@ -453,16 +470,16 @@ describe('JobCreationFormComponent', () => {
     (component as unknown as { panel1: () => object }).panel1 = () => ({});
     (component as unknown as { savingStatePanel: () => object }).savingStatePanel = () => ({});
 
-    const steps = (component as unknown as { buildStepData: () => unknown[] }).buildStepData();
+    const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
 
     // prev back button
-    const backBtn = steps[0].buttonGroupPrev[0];
-    backBtn.onClick();
+    const backBtn = steps[0].buttonGroupPrev?.[0];
+    backBtn?.onClick();
     expect(location.back).toHaveBeenCalled();
 
     // next button (noop)
-    const nextBtn = steps[0].buttonGroupNext[0];
-    expect(() => nextBtn.onClick()).not.toThrow();
+    const nextBtn = steps[0].buttonGroupNext?.[0];
+    expect(() => nextBtn?.onClick()).not.toThrow();
   });
 
   it('should execute panel2 next button onClick (noop)', () => {
@@ -470,9 +487,9 @@ describe('JobCreationFormComponent', () => {
     (component as unknown as { panel2: () => object }).panel2 = () => ({});
     (component as unknown as { savingStatePanel: () => object }).savingStatePanel = () => ({});
 
-    const steps = (component as unknown as { buildStepData: () => unknown[] }).buildStepData();
+    const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
 
-    const panel2Next = steps.find(s => s.name.includes('positionDetails'))?.buttonGroupNext[0];
+    const panel2Next = steps.find(s => s.name.includes('positionDetails'))?.buttonGroupNext?.[0];
     expect(() => panel2Next?.onClick()).not.toThrow();
   });
 });
