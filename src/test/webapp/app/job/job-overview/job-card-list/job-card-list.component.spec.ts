@@ -256,8 +256,20 @@ describe('JobCardListComponent', () => {
 
   it('should render one job-card per job when jobs exist', () => {
     component.jobs.set([
-      { jobId: '1', title: 'A', professorName: 'P1', location: LocationEnum.Heilbronn } as any,
-      { jobId: '2', title: 'B', professorName: 'P2', location: LocationEnum.Heilbronn } as any,
+      {
+        jobId: '1',
+        title: 'A',
+        professorName: 'P1',
+        location: LocationEnum.Heilbronn,
+        fieldOfStudies: '',
+      },
+      {
+        jobId: '2',
+        title: 'B',
+        professorName: 'P2',
+        location: LocationEnum.Heilbronn,
+        fieldOfStudies: '',
+      },
     ]);
     fixture.detectChanges();
 
@@ -267,7 +279,14 @@ describe('JobCardListComponent', () => {
 
   it('should pass NotYetApplied when applicationState is undefined', () => {
     component.jobs.set([
-      { jobId: '1', title: 'A', professorName: 'P1', location: LocationEnum.Heilbronn, applicationState: undefined } as any,
+      {
+        jobId: '1',
+        title: 'A',
+        professorName: 'P1',
+        location: LocationEnum.Heilbronn,
+        applicationState: undefined,
+        fieldOfStudies: '',
+      },
     ]);
     fixture.detectChanges();
 
@@ -286,7 +305,8 @@ describe('JobCardListComponent', () => {
         location: LocationEnum.Garching,
         relativeTimeEnglish: '2 days ago',
         relativeTimeGerman: 'vor 2 Tagen',
-      } as any,
+        fieldOfStudies: '',
+      },
     ]);
     fixture.detectChanges();
 
