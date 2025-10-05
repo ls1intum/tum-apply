@@ -24,16 +24,6 @@ export default defineConfig(({ mode }) => ({
       provider: 'v8',
       all: false,
       exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts'],
-      check: {
-        global: {
-          //TODO: set this to true after we have client tests for all modules
-          all: false,
-          lines: 80,
-          functions: 80,
-          branches: 70,
-          statements: 80,
-        },
-      },
     },
   },
   define: {

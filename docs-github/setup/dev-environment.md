@@ -8,7 +8,7 @@ This document explains how to set up and run the TUMApply project locally for de
 
 Make sure you have the following installed:
 
-- **Java 21**
+- **Java 25**
 - **Node.js v20+** and **npm** (installed via `./npmw` wrapper)
 - **Docker** and **Docker Compose**
 - **MySQL CLI**
