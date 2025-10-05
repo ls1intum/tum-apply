@@ -1,5 +1,9 @@
 @use '../../../content/scss/breakpoints' as bp;
 
+.title-with-label {
+  min-width: 0;
+}
+
 // Base card styles - shared between all card types
 .card {
   border: 0.05rem solid var(--p-border-default);
