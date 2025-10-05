@@ -8,16 +8,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/applications")
@@ -61,7 +60,7 @@ public class ApplicationResource {
     @GetMapping("/{applicationId}")
     public ResponseEntity<ApplicationForApplicantDTO> getApplicationById(@PathVariable UUID applicationId) {
         ApplicationForApplicantDTO application = applicationService.getApplicationById(applicationId);
-        if (application!=null) {
+        if (application != null) {
             return ResponseEntity.ok(application);
         } else {
             return ResponseEntity.notFound().build();

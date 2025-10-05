@@ -148,7 +148,7 @@ public class DocumentDictionaryService {
      * @throws IllegalArgumentException if the {@code application} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentIdsDTO(Application application) {
-        if (application==null) {
+        if (application == null) {
             throw new IllegalArgumentException("Application may not be null");
         }
         return documentDictionaryRepository.getApplicationDocumentIdsDTOByApplicationId(application.getApplicationId());
@@ -183,7 +183,8 @@ public class DocumentDictionaryService {
      * @return the documentDictionary entity if the user can manage it
      */
     private DocumentDictionary assertCanManageDocument(UUID documentId) {
-        DocumentDictionary documentDictionary = documentDictionaryRepository.findById(documentId)
+        DocumentDictionary documentDictionary = documentDictionaryRepository
+            .findById(documentId)
             .orElseThrow(() -> new EntityNotFoundException("Document with id " + documentId + " not found"));
         currentUserService.isCurrentUserOrAdmin(documentDictionary.getApplication().getApplicant().getUserId());
         return documentDictionary;
