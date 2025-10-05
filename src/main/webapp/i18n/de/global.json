@@ -438,10 +438,6 @@
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
           "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
-        },
-        "maxLength": {
-          "summary": "Maximale Länge überschritten",
-          "detail": "Die maximale erlaubte Länge von {{ max }} Zeichen wurde überschritten."
         }
       },
       "applicationOverview": {
@@ -453,6 +449,12 @@
           "error": {
             "summary": "Löschen fehlgeschlagen",
             "detail": "Der Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut."
+          }
+        },
+        "editor": {
+          "maxLength": {
+            "summary": "Maximale Länge überschritten",
+            "detail": "Die maximale erlaubte Länge von {{ max }} Zeichen wurde überschritten."
           }
         },
         "withdraw": {
