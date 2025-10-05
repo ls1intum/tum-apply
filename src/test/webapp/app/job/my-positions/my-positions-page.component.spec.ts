@@ -217,4 +217,76 @@ describe('MyPositionsPageComponent', () => {
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
     expect(spy).not.toHaveBeenCalled();
   });
+
+  it('should handle loadOnTableEmit when event.first and rows are undefined', async () => {
+    const spy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    component.pageSize.set(5);
+    component.loadOnTableEmit({});
+    expect(component.page()).toBe(0);
+    expect(component.pageSize()).toBe(5);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should fallback to original key when translation key not found in mapTranslationKeysToEnumValues', () => {
+    const result = (
+      component as unknown as { mapTranslationKeysToEnumValues: (keys: string[]) => string[] }
+    ).mapTranslationKeysToEnumValues(['unknownKey']);
+    expect(result).toEqual(['unknownKey']);
+  });
+
+  it('should set userId to empty string when loadedUser returns undefined', async () => {
+    vi.spyOn(accountService, 'loadedUser').mockReturnValue(undefined);
+    const spy = vi.spyOn(jobService, 'getJobsByProfessor');
+    await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
+    expect(component.userId()).toBe('');
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should default jobs and totalRecords when API returns undefined content and totalElements', async () => {
+    vi.spyOn(accountService, 'loadedUser').mockReturnValue({
+      id: 'u1',
+      email: '',
+      name: '',
+    });
+    jobService.getJobsByProfessor.mockReturnValueOnce(
+      of({ content: undefined, totalElements: undefined }) as unknown as ReturnType<typeof jobService.getJobsByProfessor>,
+    );
+    await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
+
+    expect(component.jobs()).toEqual([]);
+    expect(component.totalRecords()).toBe(0);
+  });
+
+  it('should call loadJobs with non-empty filters', async () => {
+    accountService.loadedUser.mockReturnValue({
+      id: 'u1',
+      name: 'User',
+      email: '',
+    });
+
+    component.selectedJobFilters.set(['FilterJob']);
+    component.selectedStatusFilters.set(['PUBLISHED']);
+
+    const mockResponse = {
+      content: [{ jobId: '123', title: 'Job Filtered', state: 'PUBLISHED' }],
+      totalElements: 1,
+    };
+
+    const spy = vi
+      .spyOn(jobService, 'getJobsByProfessor')
+      .mockReturnValue(of(mockResponse) as unknown as ReturnType<typeof jobService.getJobsByProfessor>);
+
+    await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
+
+    expect(spy).toHaveBeenCalledWith(
+      component.pageSize(),
+      component.page(),
+      ['FilterJob'],
+      ['PUBLISHED'],
+      component.sortBy(),
+      component.sortDirection(),
+      component.searchQuery(),
+    );
+    expect(component.jobs()).toEqual(mockResponse.content);
+  });
 });
