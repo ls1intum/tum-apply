@@ -195,9 +195,34 @@ describe('ResearchGroupMembersComponent', () => {
     });
   });
 
-  it('shows the no role text when roles array is empty', () => {
-    component.members.set([{ ...mockUserData, roles: [] }]);
-    const row = component.tableData()[0];
+  it('shows the no role text when roles is undefined or empty', () => {
+    component.members.set([{ ...mockUserData, roles: undefined }]);
+    let row = component.tableData()[0];
     expect(row.role).toBe('researchGroup.members.noRole');
+
+    component.members.set([{ ...mockUserData, roles: [] }]);
+    row = component.tableData()[0];
+    expect(row.role).toBe('researchGroup.members.noRole');
+  });
+
+  it('should handle member with undefined userId when removing', async () => {
+    const memberWithoutId = { ...mockUserData, userId: undefined };
+    mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
+    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+
+    await component.removeMember(memberWithoutId);
+
+    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith('');
+    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
+  });
+
+  it('should format role with proper capitalization', () => {
+    const memberWithLowercaseRole = {
+      ...mockUserData,
+      roles: [UserShortDTO.RolesEnum.Professor],
+    };
+    component.members.set([memberWithLowercaseRole]);
+    const row = component.tableData()[0];
+    expect(row.role).toBe('Professor');
   });
 });
