@@ -1,0 +1,96 @@
+name: Validate and Autocommit OpenAPI Spec & Client Code
+
+on:
+  pull_request:
+    paths:
+      - 'src/main/java/**/*.java'
+
+jobs:
+  validate-and-commit-openapi:
+    name: Validate & Autocommit OpenAPI Spec + Client
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.BOT_USER_TOKEN }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Start Keycloak via docker compose
+        run: |
+          docker compose -f src/main/docker/services.yml up -d keycloak
+          echo "Waiting for Keycloak to be healthy..."
+          for i in {1..60}; do
+            if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+              echo "Keycloak is up"
+              break
+            fi
+            echo "Waiting ($i/60)..."
+            sleep 2
+          done
+
+          if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+            echo "Keycloak did not start in time."
+            docker compose -f src/main/docker/services.yml logs keycloak || true
+            docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
+            exit 1
+          fi
+
+      - name: Generate OpenAPI Spec
+        run: ./gradlew generateApiDocs -x webapp
+
+      - name: Generate Client Code
+        run: ./gradlew openApiGenerate
+
+      - name: Stop Keycloak
+        if: always()
+        run: docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
+
+      - name: Format Client Code
+        run: npx prettier --write ./src/main/webapp/app/generated
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          git add openapi/openapi.yaml src/main/webapp/app/generated
+          if git diff --cached --quiet; then
+            echo "no_changes_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "no_changes_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit OpenAPI + Client changes
+        if: steps.check_changes.outputs.no_changes_detected == 'false'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update OpenAPI spec and generated client"
+          git push https://x-access-token:${{ secrets.BOT_USER_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.event.pull_request.head.ref }}
+
+      - name: Comment on PR
+        run: |
+          COMMENT=$([[ "${{ steps.check_changes.outputs.no_changes_detected }}" == "true" ]] && echo "🤖 No OpenAPI or client changes needed." || echo "🤖 OpenAPI spec and client code auto-updated and committed.")
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\":\"$COMMENT\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
