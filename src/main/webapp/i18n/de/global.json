@@ -438,6 +438,10 @@
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
           "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+        },
+        "maxLength": {
+          "summary": "Maximale Länge überschritten",
+          "detail": "Die maximale erlaubte Länge von {{ max }} Zeichen wurde überschritten."
         }
       },
       "applicationOverview": {

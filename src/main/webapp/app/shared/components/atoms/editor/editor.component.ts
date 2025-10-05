@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from 'app/service/toast-service';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -73,6 +74,11 @@ export class EditorComponent extends BaseInputDirective<string> {
     this.htmlValue.set(currentEditorValue);
   });
 
+  private readonly toastService = inject(ToastService);
+
+  private toastSuppressed = false;
+  private readonly toastCooldownMs = 2000;
+
   textChanged(event: ContentChange): void {
     const { source, oldDelta, editor } = event;
 
@@ -86,6 +92,15 @@ export class EditorComponent extends BaseInputDirective<string> {
       if (range) {
         editor.setSelection(range.index, range.length, 'silent');
       }
+
+      if (!this.toastSuppressed) {
+        this.toastService.showErrorKey('global.toast.editor.maxLength', { max: this.characterLimit()?.toString() ?? '' });
+        this.toastSuppressed = true;
+        setTimeout(() => {
+          this.toastSuppressed = false;
+        }, this.toastCooldownMs);
+      }
+
       return;
     }
 

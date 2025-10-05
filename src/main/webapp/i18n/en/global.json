@@ -461,6 +461,12 @@
             "detail": "The application could not be withdrawn. Please try again."
           }
         }
+      },
+      "editor": {
+        "maxLength": {
+          "summary": "Maximum length exceeded",
+          "detail": "You have exceeded the maximum allowed length of {{ max }} characters."
+        }
       }
     }
   },
