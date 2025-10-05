@@ -13,7 +13,7 @@ plugins {
   id "java"
   id "jacoco"
   id "com.diffplug.spotless" version "7.2.1"
-  //id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
+  id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
   id "com.github.ben-manes.versions" version "0.52.0"
   id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
   id "com.google.cloud.tools.jib" version "3.4.5"
@@ -32,9 +32,22 @@ version = "1.0.2"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
-java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(25)
+// Remove this once we have a way to run the dependency submission job with Java 25
+def isAutoDepJob = System.getenv("GITHUB_ACTIONS") == "true" &&
+                   System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
+
+if (isAutoDepJob) {
+  println "Auto dependency submission detected, using Java 21 toolchain for this run"
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(21)
+    }
+  }
+} else {
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(25)
+    }
   }
 }
 
@@ -94,16 +107,12 @@ test {
   reports.html.required = false
 }
 
-// Disabled for now as it is not compatible with Java 25 yet
-// TODO: enable again once Java 25 is compatible
-// https://github.com/andygoossens/gradle-modernizer-plugin/issues/10
-/*
 modernizer {
   failOnViolations = false
   includeTestClasses = true
   // Copy the rule name as defined in https://github.com/gaul/modernizer-maven-plugin/blob/master/modernizer-maven-plugin/src/main/resources/modernizer.xml to exclude it
   exclusions = ["java/util/Optional.get:()Ljava/lang/Object;"]
-}*/
+}
 
 tasks.register("testReport", TestReport) {
   destinationDirectory.set(layout.buildDirectory.dir("reports/tests"))
@@ -114,6 +123,27 @@ tasks.register("integrationTestReport", TestReport) {
   destinationDirectory.set(layout.buildDirectory.dir("reports/tests"))
   testResults.from(tasks.named("integrationTest"))
 }
+
+jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      limit {
+        minimum = 0.95
+        counter = 'LINE'
+        value = 'COVEREDRATIO'
+      }
+    }
+
+    rule {
+      limit {
+        minimum = 0.95
+        counter = 'BRANCH'
+        value = 'COVEREDRATIO'
+      }
+    }
+  }
+}
+
 
 tasks.withType(GenerateGitPropertiesTask).configureEach {
   outputs.doNotCacheIf("Task is always executed") { true }
