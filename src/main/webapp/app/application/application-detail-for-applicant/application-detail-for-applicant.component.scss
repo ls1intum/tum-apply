@@ -118,7 +118,7 @@
 // Document container - responsive grid layout
 .document-container {
   display: grid;
-  gap: 1.5rem;
+  column-gap: 2rem;
   grid-template-columns: repeat(2, 1fr); // Default: 2 columns
 
   // Responsive breakpoints

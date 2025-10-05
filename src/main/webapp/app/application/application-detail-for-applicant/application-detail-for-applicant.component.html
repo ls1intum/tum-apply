@@ -191,10 +191,16 @@
     <!-- Documents Section -->
     @if (documentIds(); as documentIds) {
       <section class="documents-section">
-        @if (!previewDetailData()) {
-          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
+        @if (
+          documentIds.bachelorDocumentDictionaryIds ||
+          documentIds.masterDocumentDictionaryIds ||
+          documentIds.cvDocumentDictionaryId ||
+          documentIds.referenceDocumentDictionaryIds
+        ) {
+          @if (!previewDetailData()) {
+            <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
+          }
         }
-
         <!-- Document grid for all document types -->
         <div class="document-container">
           @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
