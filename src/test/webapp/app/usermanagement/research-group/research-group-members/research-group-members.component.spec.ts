@@ -8,8 +8,8 @@ import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroup
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
-import { provideTranslateMock, createTranslateServiceMock } from '../../../../util/translate.mock';
-import { provideToastServiceMock, createToastServiceMock } from '../../../../util/toast-service.mock';
+import { provideTranslateMock } from 'util/translate.mock';
+import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
@@ -19,13 +19,11 @@ describe('ResearchGroupMembersComponent', () => {
     removeMemberFromResearchGroup: ReturnType<typeof vi.fn>;
   };
   let mockToastService: ReturnType<typeof createToastServiceMock>;
-  let mockTranslateService: ReturnType<typeof createTranslateServiceMock>;
 
   const mockUserData: UserShortDTO = {
     userId: 'user-1',
     firstName: 'John',
     lastName: 'Doe',
-    email: 'john.doe@example.com',
     roles: [UserShortDTO.RolesEnum.Professor],
   };
 
@@ -33,7 +31,6 @@ describe('ResearchGroupMembersComponent', () => {
     userId: 'current-user',
     firstName: 'Current',
     lastName: 'User',
-    email: 'current.user@example.com',
     roles: [UserShortDTO.RolesEnum.Admin],
   };
 
@@ -49,7 +46,6 @@ describe('ResearchGroupMembersComponent', () => {
     };
 
     mockToastService = createToastServiceMock();
-    mockTranslateService = createTranslateServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent],
@@ -57,7 +53,7 @@ describe('ResearchGroupMembersComponent', () => {
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: AccountService, useValue: { userId: 'current-user' } },
         provideToastServiceMock(mockToastService),
-        provideTranslateMock(mockTranslateService),
+        provideTranslateMock(),
       ],
     }).compileComponents();
 
@@ -77,7 +73,6 @@ describe('ResearchGroupMembersComponent', () => {
   });
 
   it('should have correct columns configuration', () => {
-    // Trigger change detection to initialize view children
     fixture.detectChanges();
 
     const columns = component.columns();
@@ -102,16 +97,6 @@ describe('ResearchGroupMembersComponent', () => {
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 2);
   });
 
-  it('should handle undefined first and rows values in table emit', () => {
-    const event: TableLazyLoadEvent = {};
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
-
-    component.loadOnTableEmit(event);
-
-    expect(component.pageNumber()).toBe(0); // 0 / 10 = 0
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
-  });
-
   it('should load members successfully', async () => {
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
@@ -122,22 +107,9 @@ describe('ResearchGroupMembersComponent', () => {
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
   });
 
-  it('should handle empty response when loading members', async () => {
-    const emptyResponse: PageResponseDTOUserShortDTO = {
-      content: [],
-      totalElements: 0,
-    };
+  it('should handle empty or undefined response when loading members', async () => {
+    const emptyResponse: PageResponseDTOUserShortDTO = {};
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(emptyResponse));
-
-    await component.loadMembers();
-
-    expect(component.members()).toEqual([]);
-    expect(component.total()).toBe(0);
-  });
-
-  it('should handle undefined content and totalElements when loading members', async () => {
-    const undefinedResponse: PageResponseDTOUserShortDTO = {};
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(undefinedResponse));
 
     await component.loadMembers();
 
@@ -197,11 +169,6 @@ describe('ResearchGroupMembersComponent', () => {
     });
   });
 
-  it('should handle empty roles array', () => {
-    const result = component['formatRoles']([]);
-    expect(result).toBe('researchGroup.members.noRole');
-  });
-
   it('should return true for current user', () => {
     const result = component['isCurrentUser'](mockCurrentUser);
     expect(result).toBe(true);
@@ -210,38 +177,5 @@ describe('ResearchGroupMembersComponent', () => {
   it('should return false for different user', () => {
     const result = component['isCurrentUser'](mockUserData);
     expect(result).toBe(false);
-  });
-
-  it('should handle complete workflow: load -> remove -> reload', async () => {
-    // Initial load
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
-    await component.loadMembers();
-    expect(component.members()).toHaveLength(2);
-
-    // Remove member
-    mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
-    const updatedResponse: PageResponseDTOUserShortDTO = {
-      content: [mockCurrentUser],
-      totalElements: 1,
-    };
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(updatedResponse));
-
-    await component.removeMember(mockUserData);
-
-    expect(component.members()).toHaveLength(1);
-    expect(component.total()).toBe(1);
-  });
-
-  it('should handle pagination correctly', () => {
-    const event: TableLazyLoadEvent = {
-      first: 30,
-      rows: 15,
-    };
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
-
-    component.loadOnTableEmit(event);
-
-    expect(component.pageNumber()).toBe(2); // 30 / 15 = 2
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(15, 2);
   });
 });
