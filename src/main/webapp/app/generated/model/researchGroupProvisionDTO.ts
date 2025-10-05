@@ -9,8 +9,8 @@
  */
 
 
-export interface Link { 
-    href?: string;
-    templated?: boolean;
+export interface ResearchGroupProvisionDTO { 
+    universityId: string;
+    researchGroupId?: string;
 }
 

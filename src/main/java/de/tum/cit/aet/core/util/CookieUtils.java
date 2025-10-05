@@ -2,17 +2,16 @@ package de.tum.cit.aet.core.util;
 
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-
-import java.time.Duration;
 
 /**
  * Helpers for writing and clearing cookies.
  */
 public class CookieUtils {
-    private CookieUtils() {
-    }
+
+    private CookieUtils() {}
 
     /**
      * Sets or clears authentication cookies. If {@code tokens} is non-null, new cookies are set;

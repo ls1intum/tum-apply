@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class EmailVerificationResource {
+
     private final EmailVerificationService service;
 
     public EmailVerificationResource(EmailVerificationService service) {
@@ -41,9 +42,5 @@ public class EmailVerificationResource {
         return ResponseEntity.accepted().build();
     }
 
-    public record SendCodeRequest(
-        @NotBlank @Email String email,
-        boolean registration
-    ) {
-    }
+    public record SendCodeRequest(@NotBlank @Email String email, boolean registration) {}
 }

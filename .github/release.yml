@@ -1,60 +1,60 @@
 changelog:
   exclude:
     labels:
-      - "invalid"
-      - "wontfix"
-      - "prototype"
+      - 'invalid'
+      - 'wontfix'
+      - 'prototype'
 
   categories:
     - title: 🧱 Application
-      labels: [ "application" ]
+      labels: ['application']
     - title: 🧱 Database
-      labels: [ "database" ]
+      labels: ['database']
     - title: 🧱 Job
-      labels: [ "job" ]
+      labels: ['job']
     - title: 🧱 User management
-      labels: [ "user management" ]
+      labels: ['user management']
     - title: 🧱 Evaluation
-      labels: [ "evaluation" ]
+      labels: ['evaluation']
 
     - title: 🚀 General Improvements
       labels:
-        - "enhancement"
-        - "ui/ux improvement"
+        - 'enhancement'
+        - 'ui/ux improvement'
 
     - title: 🐛 Bug fixes
       labels:
-        - "bug"
+        - 'bug'
 
     - title: 🔐 Security
       labels:
-        - "security fix"
-        - "Mend: dependency security vulnerability"
-        - "Mend: configuration error"
+        - 'security fix'
+        - 'Mend: dependency security vulnerability'
+        - 'Mend: configuration error'
 
     - title: 📦 Dependencies
       labels:
-        - "dependencies"
+        - 'dependencies'
 
     - title: 📝 Documentation
       labels:
-        - "documentation"
+        - 'documentation'
 
     - title: 🧪 Tests
       labels:
-        - "tests"
+        - 'tests'
 
     - title: 🧰 Maintenance & Config
       labels:
-        - "task"
-        - "config-change"
-        - "shared"
+        - 'task'
+        - 'config-change'
+        - 'shared'
 
     - title: 🏗 DevOps / Infra
       labels:
-        - "docker"
-        - "keycloak"
+        - 'docker'
+        - 'keycloak'
 
     - title: Other changes
       labels:
-        - "*"
+        - '*'
