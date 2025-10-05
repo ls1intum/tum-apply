@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -61,6 +61,10 @@ describe('ResearchGroupMembersComponent', () => {
     component = fixture.componentInstance;
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -95,6 +99,19 @@ describe('ResearchGroupMembersComponent', () => {
 
     expect(component.pageNumber()).toBe(2); // 20 / 10 = 2
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 2);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle undefined first and rows values in table emit with fallback to defaults', () => {
+    const event: TableLazyLoadEvent = {};
+    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+
+    component.loadOnTableEmit(event);
+
+    expect(component.pageNumber()).toBe(0);
+    expect(component.pageSize()).toBe(10);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should load members successfully', async () => {
@@ -105,6 +122,7 @@ describe('ResearchGroupMembersComponent', () => {
     expect(component.members()).toEqual(mockPageResponse.content);
     expect(component.total()).toBe(mockPageResponse.totalElements);
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle empty or undefined response when loading members', async () => {
@@ -115,6 +133,7 @@ describe('ResearchGroupMembersComponent', () => {
 
     expect(component.members()).toEqual([]);
     expect(component.total()).toBe(0);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle error and show error toast when loading members fails', async () => {
@@ -123,6 +142,8 @@ describe('ResearchGroupMembersComponent', () => {
     await component.loadMembers();
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadFailed');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should remove member successfully', async () => {
@@ -132,10 +153,12 @@ describe('ResearchGroupMembersComponent', () => {
     await component.removeMember(mockUserData);
 
     expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
+    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
     expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.removeSuccess', {
       memberName: 'John Doe',
     });
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalled(); // Refresh call
+    expect(mockToastService.showSuccessKey).toHaveBeenCalledTimes(1);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1); // Refresh call
   });
 
   it('should handle error and show error toast when removing member fails', async () => {
@@ -143,13 +166,16 @@ describe('ResearchGroupMembersComponent', () => {
 
     await component.removeMember(mockUserData);
 
+    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
+    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.removeFailed', {
       memberName: 'John Doe',
     });
+    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
     expect(mockResearchGroupService.getResearchGroupMembers).not.toHaveBeenCalled(); // No refresh on error
   });
 
-  it('should transform members data correctly in tableData computed', () => {
+  it('should transform members data correctly in tableData computed and identify current user', () => {
     component.members.set([mockUserData, mockCurrentUser]);
 
     const tableData = component.tableData();
@@ -169,13 +195,9 @@ describe('ResearchGroupMembersComponent', () => {
     });
   });
 
-  it('should return true for current user', () => {
-    const result = component['isCurrentUser'](mockCurrentUser);
-    expect(result).toBe(true);
-  });
-
-  it('should return false for different user', () => {
-    const result = component['isCurrentUser'](mockUserData);
-    expect(result).toBe(false);
+  it('shows the no role text when roles array is empty', () => {
+    component.members.set([{ ...mockUserData, roles: [] }]);
+    const row = component.tableData()[0];
+    expect(row.role).toBe('researchGroup.members.noRole');
   });
 });
