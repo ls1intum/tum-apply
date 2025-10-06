@@ -129,7 +129,7 @@ jobs:
       #    AGGREGATED_REPORT_FILE=./module_coverage_report.md
       #    python3 ./supporting_scripts/code-coverage/per_module_cov_report/parse_module_coverage.py build/reports/jacoco $AGGREGATED_REPORT_FILE
       #    cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
-      - name: Coverage Report als Kommentar posten, wenn Coverage zu niedrig
+      - name: Post Coverage Report as Comment if Server Coverage is too low
         if: failure() && github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@v4
         with:
@@ -149,7 +149,7 @@ jobs:
 
             **🌐 View coverage from GitHub**
             ```
-            Download the HTML coverage report from the GitHub Actions artifacts (found at the bottom of the workflow run).
+            Download the HTML coverage report from the GitHub Actions artifacts found at the bottom of the workflow run (under the section called Upload Server Test Coverage Report).
             Open the downloaded index.html file in your browser to inspect the coverage details.
             ```
 
@@ -210,12 +210,35 @@ jobs:
         with:
           name: Coverage Report Client Tests
           path: build/test-results/lcov-report/
-      - name: Upload JUnit Test Results
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
+      #- name: Upload JUnit Test Results
+      #  if: success() || failure()
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: Client JUnit Test Results
+      #    path: junit.xml
+      - name: Post Coverage Report as Comment if Client Coverage is too low
+        if: failure() && github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          name: Client JUnit Test Results
-          path: junit.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            📊 **Test Coverage Report Client**
+            Please review the client coverage report using one of the following methods, and consider adding tests to improve coverage in your modified files:
+            **🔍 View coverage locally**
+            ```
+            Please run following command in your terminal:
+            npm run test:ci
+
+            and then run:
+            open build/test-results/lcov-report/index.html
+            ```
+
+            **🌐 View coverage from GitHub**
+            ```
+            Download the HTML coverage report from the GitHub Actions artifacts found at the bottom of the workflow run (under the section called Upload Client Test Coverage Report).
+            Open the downloaded index.html file in your browser to inspect the coverage details.
+            ```
 
   client-tests-selected:
     environment: test-server
