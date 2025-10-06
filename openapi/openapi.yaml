@@ -1491,6 +1491,7 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         desiredStartDate: {type: string, format: date}
+        appliedAt: {type: string, format: date-time}
         projects: {type: string}
         specialSkills: {type: string}
         motivation: {type: string}
