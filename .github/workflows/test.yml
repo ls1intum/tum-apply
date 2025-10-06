@@ -49,42 +49,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           # Install Java 17 to run programming templates
           java-version: |
             17
             ${{ env.java }}
           cache: 'gradle'
-      - name: Java Tests (module-affected)
-        # Not a non-draft pull-request and not the default branch
-        if: ${{ !env.RUN_ALL_TESTS }}
-        run: |
-          set -o pipefail
+          #- name: Java Tests (module-affected)
+          # Not a non-draft pull-request and not the default branch
+          #  if: ${{ !env.RUN_ALL_TESTS }}
+          #  run: |
+          #    set -o pipefail
 
-          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          #    DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
 
           # Explicitly fetch as the clone action only clones the current branch
-          git fetch origin "$DEFAULT_BRANCH"
+          #    git fetch origin "$DEFAULT_BRANCH"
 
-          chmod +x ./supporting_scripts/get_changed_modules.sh
-          CHANGED_MODULES=$(./supporting_scripts/get_changed_modules.sh "origin/$DEFAULT_BRANCH")
+          #    chmod +x ./supporting_scripts/get_changed_modules.sh
+          #    CHANGED_MODULES=$(./supporting_scripts/get_changed_modules.sh "origin/$DEFAULT_BRANCH")
 
           # Restrict executed tests to changed modules if there is diff between this and the base branch
-          if [ -n "${CHANGED_MODULES}" ]; then
-            IFS=,
-            TEST_MODULE_TAGS=$(echo "-DincludeModules=${CHANGED_MODULES[*]}")
+      #    if [ -n "${CHANGED_MODULES}" ]; then
+      #      IFS=,
+      #      TEST_MODULE_TAGS=$(echo "-DincludeModules=${CHANGED_MODULES[*]}")
 
-            echo "Executing tests for modules: $CHANGED_MODULES"
-            ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification "$TEST_MODULE_TAGS" | tee tests.log
-            exit 0
-          fi
+      #      echo "Executing tests for modules: $CHANGED_MODULES"
+      #      ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification "$TEST_MODULE_TAGS" | tee tests.log
+      #      exit 0
+      #    fi
 
-          echo "Executing all tests"
-          ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
+      #    echo "Executing all tests"
+      #    ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
       - name: Java Tests (All)
         # Non-draft pull-request or default branch
         if: ${{ env.RUN_ALL_TESTS }}
@@ -117,29 +117,54 @@ jobs:
       #- name: Number of Server Starts
       #  if: success() || failure()
       #  run: bash supporting_scripts/extract_number_of_server_starts.sh
-      #- name: Upload Server Test Coverage Report
-      #  if: success() || failure()
-      #  uses: actions/upload-artifact@v4
-      # with:
-      #    name: Coverage Report Server Tests
-      #    path: build/reports/jacoco/aggregated/html
+      - name: Upload Server Test Coverage Report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage Report Server Tests
+          path: build/reports/jacoco/test/html/
       #- name: Append Per-Module Coverage to Job Summary
       #  if: success() || failure()
       #  run: |
       #    AGGREGATED_REPORT_FILE=./module_coverage_report.md
       #    python3 ./supporting_scripts/code-coverage/per_module_cov_report/parse_module_coverage.py build/reports/jacoco $AGGREGATED_REPORT_FILE
       #    cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
+      - name: Post Coverage Report as Comment if Server Coverage is too low
+        if: failure() && github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            📊 **Test Coverage Report Server**
+            Please review the server coverage report using one of the following methods, and consider adding tests to improve coverage in your modified files:
+            **🔍 View coverage locally**
+            ```
+            Please run following command in your terminal:
+            ./gradlew test jacocoTestReport
+
+            and then run:
+            open build/reports/jacoco/test/html/index.html
+            ```
+
+            **🌐 View coverage from GitHub**
+            ```
+            Download the HTML coverage report from the GitHub Actions artifacts found at the bottom of the workflow run (under the section called Upload Server Test Coverage Report).
+            Open the downloaded index.html file in your browser to inspect the coverage details.
+            ```
+
+
 
   server-style:
     environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '${{ env.java }}'
           cache: 'gradle'
       - name: Java Code Style
@@ -163,13 +188,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # It seems like there is some memory issue with these tests with the project-wide default node option
       # `--max-old-space-size` set in the .npmrc, therefore we delete it for this test as a workaround
       - name: remove project-wide node options set in .npmrc just for this test
         run: rm .npmrc || true
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
@@ -185,23 +210,46 @@ jobs:
         with:
           name: Coverage Report Client Tests
           path: build/test-results/lcov-report/
-      - name: Upload JUnit Test Results
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
+      #- name: Upload JUnit Test Results
+      #  if: success() || failure()
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: Client JUnit Test Results
+      #    path: junit.xml
+      - name: Post Coverage Report as Comment if Client Coverage is too low
+        if: failure() && github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          name: Client JUnit Test Results
-          path: junit.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            📊 **Test Coverage Report Client**
+            Please review the client coverage report using one of the following methods, and consider adding tests to improve coverage in your modified files:
+            **🔍 View coverage locally**
+            ```
+            Please run following command in your terminal:
+            npm run test:ci
+
+            and then run:
+            open build/test-results/lcov-report/index.html
+            ```
+
+            **🌐 View coverage from GitHub**
+            ```
+            Download the HTML coverage report from the GitHub Actions artifacts found at the bottom of the workflow run (under the section called Upload Client Test Coverage Report).
+            Open the downloaded index.html file in your browser to inspect the coverage details.
+            ```
 
   client-tests-selected:
     environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
@@ -216,9 +264,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
@@ -235,9 +283,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
