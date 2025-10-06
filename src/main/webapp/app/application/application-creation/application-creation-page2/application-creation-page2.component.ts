@@ -90,16 +90,10 @@ export default class ApplicationCreationPage2Component {
     return this.formbuilder.group({
       bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
       bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
-      bachelorGrade: [
-        currentData.bachelorGrade,
-        [Validators.required, Validators.min(1), Validators.max(4)],
-      ],
+      bachelorGrade: [currentData.bachelorGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
       masterDegreeName: [currentData.masterDegreeName, Validators.required],
       masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
-      masterGrade: [
-        currentData.masterGrade,
-        [Validators.required, Validators.min(1), Validators.max(4)],
-      ],
+      masterGrade: [currentData.masterGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
     });
   });
 
