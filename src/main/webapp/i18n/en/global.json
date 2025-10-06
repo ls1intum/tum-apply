@@ -310,7 +310,7 @@
       "gradingConversionBachelor": "Please enter your grade in the German grading system in the field <em>Bachelor grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us.",
       "gradingConversionMaster": "Please enter your grade in the German grading system in the field <em>Master grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us.",
       "validation": {
-        "invalidGrade": "Please enter a valid grade between 1,0 and 4,0"
+        "invalidGrade": "Please enter a valid grade between 1.0 and 4.0"
       }
     },
     "applicationPage3": {
