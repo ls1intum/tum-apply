@@ -11,12 +11,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { deepEqual } from 'app/core/util/deepequal-util';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicantDTO } from '../../../generated/model/applicantDTO';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { deepEqual } from '../application-creation-page3/application-creation-page3.component';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
