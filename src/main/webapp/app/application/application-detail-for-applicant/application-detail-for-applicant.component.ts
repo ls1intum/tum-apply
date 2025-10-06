@@ -82,16 +82,21 @@ export default class ApplicationDetailForApplicantComponent {
       this.applicationId.set(applicationId);
     }
 
-    const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
-    this.actualDetailData.set(application);
-    this.actualDetailDataExists.set(true);
+    try {
+      const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
+      this.actualDetailData.set(application);
+      this.actualDetailDataExists.set(true);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.fetchApplicationFailed`);
+    }
 
-    void firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
-      .then(ids => {
-        this.actualDocumentData.set(ids);
-        this.actualDocumentDataExists.set(true);
-      })
-      .catch(() => this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`));
+    try {
+      const ids = await firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()));
+      this.actualDocumentData.set(ids);
+      this.actualDocumentDataExists.set(true);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`);
+    }
   }
 
   onUpdateApplication(): void {

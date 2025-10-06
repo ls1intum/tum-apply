@@ -423,6 +423,10 @@
           "summary": "Submission failed",
           "detail": "Failed to submit application: {{status}}"
         },
+        "fetchApplicationFailed": {
+          "summary": "Application not loaded",
+          "detail": "The application could not be loaded. Please try again."
+        },
         "fetchDocumentIdsFailed": {
           "summary": "Error",
           "detail": "Failed to fetch document IDs for this application."

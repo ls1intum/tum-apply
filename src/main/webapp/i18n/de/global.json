@@ -423,6 +423,10 @@
           "summary": "Übermittlung fehlgeschlagen",
           "detail": "Bewerbung konnte nicht übermittelt werden: {{status}}"
         },
+        "fetchApplicationFailed": {
+          "summary": "Bewerbung nicht geladen",
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte versuche es erneut."
+        },
         "fetchDocumentIdsFailed": {
           "summary": "Dokumente nicht geladen",
           "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut."
