@@ -2,6 +2,8 @@
 
 The **Applications Review** page is your workspace for evaluating and managing applications. It provides a structured overview, inline access to documents, and simple tools for recording ratings, comments, and decisions.
 
+![Application Review Page (1/2)](images/application-review-1.png)
+![Application Review Page (2/2)](images/application-review-2.png)
 ---
 
 ## ⚙️ Features
@@ -80,7 +82,5 @@ For a visual walkthrough of the application and review workflow, check out this 
 ---
 
 > **Tip:** Keep your browser window wide enough to show details, documents, and the rating panel side by side — this reduces scrolling and speeds up your review workflow.
-
----
 
 
