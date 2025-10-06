@@ -25,6 +25,7 @@ export interface ResearchGroup {
     street?: string;
     postalCode?: string;
     city?: string;
+    universityId?: string;
     userRoles?: Array<UserResearchGroupRole>;
 }
 

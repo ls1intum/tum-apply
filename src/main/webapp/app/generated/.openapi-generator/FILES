@@ -1,6 +1,6 @@
 .gitignore
 api.base.service.ts
-api/actuatorApi.service.ts
+api/adminResourceApi.service.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
@@ -11,6 +11,7 @@ api/emailVerificationResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
 api/jobResourceApi.service.ts
 api/profOnboardingResourceApi.service.ts
+api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
 api/researchGroupResourceApi.service.ts
 api/userResourceApi.service.ts
@@ -49,8 +50,8 @@ model/jobCardDTO.ts
 model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFilterOptionDTO.ts
+model/jobFiltersDTO.ts
 model/jobFormDTO.ts
-model/link.ts
 model/loginRequestDTO.ts
 model/otpCompleteDTO.ts
 model/pageCreatedJobDTO.ts
@@ -65,8 +66,10 @@ model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
+model/researchGroupCreationDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
+model/researchGroupProvisionDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
 model/sortObject.ts
