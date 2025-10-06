@@ -23,6 +23,25 @@ interface Step {
   buttonGroupNext?: { onClick: () => void; disabled?: boolean }[];
 }
 
+function fillValidJobForm(component: JobCreationFormComponent) {
+  component.basicInfoForm.patchValue({
+    title: 'T',
+    researchArea: 'AI',
+    fieldOfStudies: { value: 'CS' },
+    location: { value: 'MUNICH' },
+    supervisingProfessor: 'Prof',
+  });
+  component.positionDetailsForm.patchValue({
+    description: 'desc',
+    tasks: 'tasks',
+    requirements: 'reqs',
+  });
+  component.additionalInfoForm.patchValue({ privacyAccepted: true });
+
+  component.basicInfoForm.updateValueAndValidity();
+  component.positionDetailsForm.updateValueAndValidity();
+}
+
 describe('JobCreationFormComponent', () => {
   let fixture: ComponentFixture<JobCreationFormComponent>;
   let component: JobCreationFormComponent;
@@ -81,6 +100,11 @@ describe('JobCreationFormComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+    fixture?.destroy();
+  });
+
   it('should create component', () => {
     expect(component).toBeTruthy();
   });
@@ -129,7 +153,6 @@ describe('JobCreationFormComponent', () => {
   });
 
   it('should navigate to login if no user in init', async () => {
-    vi.clearAllMocks();
     accountService.loadedUser = signal<User | undefined>(undefined);
 
     const fixture2 = TestBed.createComponent(JobCreationFormComponent);
@@ -157,22 +180,7 @@ describe('JobCreationFormComponent', () => {
   });
 
   it('should publish successfully and navigate', async () => {
-    component.basicInfoForm.patchValue({
-      title: 'T',
-      researchArea: 'AI',
-      fieldOfStudies: { value: 'CS' },
-      location: { value: 'MUNICH' },
-      supervisingProfessor: 'Prof',
-    });
-    component.positionDetailsForm.patchValue({
-      description: 'desc',
-      tasks: 'tasks',
-      requirements: 'reqs',
-    });
-    component.additionalInfoForm.patchValue({ privacyAccepted: true });
-
-    component.basicInfoForm.updateValueAndValidity();
-    component.positionDetailsForm.updateValueAndValidity();
+    fillValidJobForm(component);
     fixture.detectChanges();
 
     component.jobId.set('id123');
@@ -185,22 +193,7 @@ describe('JobCreationFormComponent', () => {
   it('should handle publishJob failure', async () => {
     jobService.updateJob.mockReturnValueOnce(throwError(() => new Error('fail')));
 
-    component.basicInfoForm.patchValue({
-      title: 'T',
-      researchArea: 'AI',
-      fieldOfStudies: { value: 'CS' },
-      location: { value: 'MUNICH' },
-      supervisingProfessor: 'Prof',
-    });
-    component.positionDetailsForm.patchValue({
-      description: 'desc',
-      tasks: 'tasks',
-      requirements: 'reqs',
-    });
-    component.additionalInfoForm.patchValue({ privacyAccepted: true });
-
-    component.basicInfoForm.updateValueAndValidity();
-    component.positionDetailsForm.updateValueAndValidity();
+    fillValidJobForm(component);
     fixture.detectChanges();
 
     component.jobId.set('id123');
@@ -236,8 +229,6 @@ describe('JobCreationFormComponent', () => {
   });
 
   it('should handle init error by showing toast and navigating', async () => {
-    vi.clearAllMocks();
-
     const routeMock = TestBed.inject(ActivatedRoute) as ActivatedRoute;
     routeMock.url = throwError(() => new Error('fail'));
 
