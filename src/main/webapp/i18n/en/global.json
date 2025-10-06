@@ -425,11 +425,11 @@
         },
         "fetchApplicationFailed": {
           "summary": "Application not loaded",
-          "detail": "The application could not be loaded. Please try again."
+          "detail": "The application could not be loaded. Please try again or contact an admin."
         },
         "fetchDocumentIdsFailed": {
           "summary": "Error",
-          "detail": "Failed to fetch document IDs for this application."
+          "detail": "Failed to fetch document IDs for this application. Please try again or contact an admin."
         },
         "notEditable": {
           "summary": "Error",
@@ -441,15 +441,15 @@
         },
         "saveFailed": {
           "summary": "Error",
-          "detail": "Failed to save application."
+          "detail": "Failed to save application. Please try again or contact an admin."
         },
         "loadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application."
+          "detail": "Failed to load application. Please try again or contact an admin."
         },
         "initLoadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application."
+          "detail": "Failed to load application. Please try again or contact an admin."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Error",

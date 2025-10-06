@@ -425,11 +425,11 @@
         },
         "fetchApplicationFailed": {
           "summary": "Bewerbung nicht geladen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte versuche es erneut."
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
         "fetchDocumentIdsFailed": {
           "summary": "Dokumente nicht geladen",
-          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut."
+          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
         "notEditable": {
           "summary": "Nicht bearbeitbar",
@@ -441,15 +441,15 @@
         },
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut."
+          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite."
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite oder kontaktiere einen Admin."
         },
         "initLoadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut."
+          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
