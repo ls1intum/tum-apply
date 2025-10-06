@@ -1,74 +1,86 @@
 # Application Review
 
-The **Applications Review** page provides comprehensive tools for professors to evaluate and manage applications for their published positions through an intuitive review interface.
+The **Applications Review** page is your workspace for evaluating and managing applications. It provides a structured overview, inline access to documents, and simple tools for recording ratings, comments, and decisions.
 
 ---
 
 ## ⚙️ Features
 
-* **Application Carousel**  
-  Navigate seamlessly between multiple applications without returning to the overview. Each card displays the applicant’s name, status, and a summary of existing ratings, making comparisons quick and intuitive.
-
-* **Decision Actions**  
-  Prominently placed **Accept** and **Reject** buttons allow professors to make decisions directly on the page. Actions are clearly visible and easy to access, ensuring a smooth review flow.
-
-* **Applicant Details**  
-  A structured layout presents demographic information, academic background, and the motivation letter. Clear separation of structured (degrees, grades) and unstructured (free-text) data ensures readability and comparability.
-
-* **Document Viewer** 
-  Inline previews of uploaded files (CV, transcripts, recommendation letters, etc.) enable quick inspection without leaving the system. A **Download All** option provides a ZIP archive for offline use, while standardized labels ensure clarity across all documents.
-
-* **Ratings System**
-  Evaluate candidates across predefined criteria using a five-point Likert scale (_Poor_, _Fair_, _Satisfactory_, _Good_, _Excellent_). Visual bars show aggregated ratings, helping professors see group tendencies at a glance.
-
-* **Comments Section**
-  Leave private comments or notes for colleagues. Comments remain internal to the research group and are not visible to applicants, supporting candid collaboration.
+* **Overview dashboard**: See all applications for your open positions, with color-coded status labels.
+* **Inline document viewer**: Open CVs, transcripts, and other documents directly in the browser without downloads.
+* **Structured details**: Applicant information (education, background, motivation) is presented in a clear, comparable layout.
+* **Ratings and comments**: Record your own evaluations and view input from colleagues in your research group.
+* **Carousel navigation**: Move quickly between applications without returning to the overview.
+* **Decision dialogs**: Accept or reject applicants through a guided dialog that confirms your choice and prepares communication.
+* **Email notifications**: Send professional, multilingual acceptance or rejection messages with customizable templates.
+* **Filtering and sorting**: Focus on applications by status, rating, or submission date.
+* **Export**: Save applications as PDF reports, including submitted documents.
 
 ---
 
 ## ⚠️ Application Status System
 
-* ⚪ **Unopened**: Applications that have been submitted but not yet opened or reviewed
-* 🟡 **In Review**: Applications that are currently being evaluated
-* 🟢 **Accepted**: Applications that have been approved and where candidates have been notified
-* 🔴 **Rejected**: Applications that have been declined with automatic candidate notification
-
+* ⚪ **Unopened**: Submitted but not yet opened.
+* 🟡 **In Review**: Currently being evaluated.
+* 🟢 **Accepted**: Approved; candidate has been notified.
+* 🔴 **Rejected**: Declined; candidate has been notified.
 
 ---
 
-## ⚙️ Steps for Application Review
+## ⚙️ Steps for Reviewing an Application
 
-This section outlines key steps for evaluating and managing applications through the review page.
+Follow these steps to evaluate and manage applications.
 
 ### 📌 Prerequisites
-- Professor account access with review permissions for published positions
-- Active positions that have received applications from candidates
 
-### ▶️ Step-by-step
+* You are logged in to TUMApply.
+* You belong to a research group or have permissions to access the position.
+* At least one candidate has submitted an application.
 
-1) **Open the Review Page & select an application**
-  - From the **Overview Page**, click **More** on an application, or use the **carousel** at the top of the Review Page to pick a candidate.
-  - **Status tip:** Opening an ⚪ *Unopened* application moves it into the 🟡 *In Review* state.
+### ▶️ Step-by-Step
 
-2) **Scan the Applicant Details**
-  - Review the structured profile: personal info, education, degrees/grades, and the motivation letter.
-  - Use the consistent grid layout to quickly compare key qualifications across candidates.
+1. **Open the Applications Overview**
+   Go to the *Review* tab. You’ll see all applications for your positions.
 
-3) **Inspect Documents inline**
-  - Open transcripts, CV, and recommendation letters directly in the embedded **Document Viewer**.
-  - Use **View All** for the complete set, or **Download All** to get a ZIP for offline reading.
-  - Standardized labels (e.g., “CV”, “Master Transcript”) help you recognize files at a glance.
+2. **Select a candidate**
+   Click on an application to open the detailed review view.
 
-4) **Provide Ratings & Comments**
-  - Rate the candidate on predefined criteria using the **five-point Likert scale** (_Poor_, _Fair_, _Satisfactory_, _Good_, _Excellent_).
-  - Check the **distribution bars** to see how others rated the same criteria.
-  - Add **comments** to justify your assessment or leave notes for colleagues. Comments are **internal** to your group and never visible to applicants.
+3. **Inspect documents**
+   Use the inline viewer to read submitted files (CV, transcripts, letters). For full access, click *View All* or *Download All*.
 
-5) **Make a decision: Accept or Reject**
-  - Click **Accept** ✅ or **Reject** ❌ directly on the page.
-  - If configured, select a **reject reason** before confirming.
-  - Upon confirmation, the status switches to 🟢 *Accepted* or 🔴 *Rejected* and the candidate is **automatically notified**.
-  - Use the **carousel** to move to the next application without returning to the overview.
+4. **Review applicant profile**
+   Look at structured data — education, previous experience, and motivation statements.
 
-> **Tip:** Keep your browser window wide enough to view details, documents, and the rating panel comfortably—this reduces scrolling and speeds up reviews.
+5. **Provide a rating**
+   Use the predefined criteria and assign scores (e.g. on a 5-point scale) to evaluate fit.
+
+6. **Leave comments**
+   Add qualitative feedback or observations. These comments are internal to your research group.
+
+7. **Decide**
+   Use the *Accept* or *Reject* buttons in the carousel. A confirmation dialog will appear.
+
+  * If you accept, you can optionally close the position and notify the applicant.
+  * If you reject, select a reason and confirm.
+
+8. **Notify the applicant**
+   The dialog includes a *Notify Applicant* checkbox (pre-checked). You may uncheck if you wish to send a message later or externally.
+
+9. **Continue with next applications**
+   Use the carousel to move to the next candidate seamlessly.
+
+10. **Track status changes**
+    After decisions, application statuses update automatically (e.g. “In Review” → “Accepted” or “Rejected”).
+
+### 🎥 Help Video
+
+For a visual walkthrough of the application and review workflow, check out this video:
+[How to review an application](https://www.youtube.com/watch?v=5bqUYhrwyK0)
+
+---
+
+> **Tip:** Keep your browser window wide enough to show details, documents, and the rating panel side by side — this reduces scrolling and speeds up your review workflow.
+
+---
+
 
