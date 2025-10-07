@@ -9,15 +9,12 @@
  */
 
 
-export interface ProfessorResearchGroupRequestDTO { 
-    title?: string;
-    firstName?: string;
-    lastName?: string;
-    universityID?: string;
-    researchGroupHead?: string;
-    researchGroupName?: string;
+export interface ResearchGroupCreationDTO { 
+    name: string;
+    headName: string;
+    universityId: string;
+    email?: string;
     abbreviation?: string;
-    contactEmail?: string;
     website?: string;
     school?: string;
     description?: string;

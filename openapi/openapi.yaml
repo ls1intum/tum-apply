@@ -299,51 +299,6 @@ paths:
         schema: {type: string}
       responses:
         '200': {description: OK}
-  /api/research-groups/{researchGroupId}/deny:
-    post:
-      tags: [research-group-resource]
-      operationId: denyResearchGroup
-      parameters:
-      - name: researchGroupId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-  /api/research-groups/{researchGroupId}/activate:
-    post:
-      tags: [research-group-resource]
-      operationId: activateResearchGroup
-      parameters:
-      - name: researchGroupId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-  /api/research-groups/professor-request:
-    post:
-      tags: [research-group-resource]
-      operationId: createProfessorResearchGroupRequest
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ProfessorResearchGroupRequestDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
   /api/me/prof-onboarding/remind:
     post:
       tags: [prof-onboarding-resource]
@@ -548,6 +503,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
+  /api/admin/research-groups:
+    post:
+      tags: [admin-resource]
+      operationId: createResearchGroup
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ResearchGroupCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResearchGroup'}
   /api/admin/research-groups/provision:
     post:
       tags: [admin-resource]
@@ -611,25 +581,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
-  /api/research-groups/draft:
-    get:
-      tags: [research-group-resource]
-      operationId: getDraftResearchGroups
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]
@@ -1250,7 +1201,6 @@ components:
         street: {type: string}
         postalCode: {type: string}
         city: {type: string}
-        state: {type: string}
       required: [head, name]
     JobFormDTO:
       type: object
@@ -1425,24 +1375,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
-    ProfessorResearchGroupRequestDTO:
-      type: object
-      properties:
-        title: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        universityID: {type: string}
-        researchGroupHead: {type: string}
-        researchGroupName: {type: string}
-        abbreviation: {type: string}
-        contactEmail: {type: string}
-        website: {type: string}
-        school: {type: string}
-        description: {type: string}
-        defaultFieldOfStudies: {type: string}
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
     RejectDTO:
       type: object
       properties:
@@ -1505,12 +1437,22 @@ components:
         size: {type: integer, format: int64}
         name: {type: string}
       required: [id, size]
-    ResearchGroupProvisionDTO:
+    ResearchGroupCreationDTO:
       type: object
       properties:
+        name: {type: string, maxLength: 150, minLength: 3}
+        headName: {type: string, maxLength: 150, minLength: 3}
         universityId: {type: string, maxLength: 7, minLength: 3}
-        researchGroupId: {type: string, format: uuid}
-      required: [universityId]
+        email: {type: string, format: email}
+        abbreviation: {type: string}
+        website: {type: string}
+        school: {type: string}
+        description: {type: string}
+        defaultFieldOfStudies: {type: string}
+        street: {type: string}
+        postalCode: {type: string}
+        city: {type: string}
+      required: [headName, name, universityId]
     Applicant:
       type: object
       properties:
@@ -1668,9 +1610,6 @@ components:
         postalCode: {type: string}
         city: {type: string}
         universityId: {type: string}
-        state:
-          type: string
-          enum: [DRAFT, ACTIVE, DENIED]
         userRoles:
           type: array
           items: {$ref: '#/components/schemas/UserResearchGroupRole'}
@@ -1715,6 +1654,12 @@ components:
         role:
           type: string
           enum: [APPLICANT, PROFESSOR, ADMIN]
+    ResearchGroupProvisionDTO:
+      type: object
+      properties:
+        universityId: {type: string, maxLength: 7, minLength: 3}
+        researchGroupId: {type: string, format: uuid}
+      required: [universityId]
     UserShortDTO:
       type: object
       properties:
@@ -1816,11 +1761,11 @@ components:
       type: object
       properties:
         offset: {type: integer, format: int64}
-        unpaged: {type: boolean}
         sort: {$ref: '#/components/schemas/SortObject'}
         paged: {type: boolean}
         pageNumber: {type: integer, format: int32}
         pageSize: {type: integer, format: int32}
+        unpaged: {type: boolean}
     SortObject:
       type: object
       properties:
