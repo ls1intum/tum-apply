@@ -1250,7 +1250,9 @@ components:
         street: {type: string}
         postalCode: {type: string}
         city: {type: string}
-        state: {type: string}
+        state:
+          type: string
+          enum: [DRAFT, ACTIVE, DENIED]
       required: [head, name]
     JobFormDTO:
       type: object
@@ -1431,7 +1433,7 @@ components:
         title: {type: string}
         firstName: {type: string}
         lastName: {type: string}
-        universityID: {type: string}
+        universityId: {type: string}
         researchGroupHead: {type: string}
         researchGroupName: {type: string}
         abbreviation: {type: string}

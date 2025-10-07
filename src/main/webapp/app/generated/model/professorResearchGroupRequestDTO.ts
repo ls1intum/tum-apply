@@ -13,7 +13,7 @@ export interface ProfessorResearchGroupRequestDTO {
     title?: string;
     firstName?: string;
     lastName?: string;
-    universityID?: string;
+    universityId?: string;
     researchGroupHead?: string;
     researchGroupName?: string;
     abbreviation?: string;
