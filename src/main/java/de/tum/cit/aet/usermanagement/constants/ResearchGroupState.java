@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.constants;
+package de.tum.cit.aet.usermanagement.constants;
 
 public enum ResearchGroupState {
     DRAFT,

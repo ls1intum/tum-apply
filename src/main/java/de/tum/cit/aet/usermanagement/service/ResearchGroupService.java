@@ -1,6 +1,5 @@
 package de.tum.cit.aet.usermanagement.service;
 
-import de.tum.cit.aet.core.constants.ResearchGroupState;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
@@ -8,6 +7,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -183,26 +183,6 @@ public class ResearchGroupService {
         entity.setCity(dto.city());
         entity.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
         entity.setState(ResearchGroupState.valueOf(dto.state()));
-    }
-
-    /**
-     * Creates a ResearchGroup entity from the given DTO and normalizes all fields.
-     */
-    private ResearchGroup buildResearchGroupFromDTO(ResearchGroupCreationDTO dto) {
-        ResearchGroup group = new ResearchGroup();
-        group.setName(StringUtil.normalize(dto.name(), false));
-        group.setHead(StringUtil.normalize(dto.headName(), false));
-        group.setUniversityId(StringUtil.normalize(dto.universityId(), false));
-        group.setDescription(StringUtil.normalize(dto.description(), false));
-        group.setStreet(StringUtil.normalize(dto.street(), false));
-        group.setPostalCode(StringUtil.normalize(dto.postalCode(), false));
-        group.setCity(StringUtil.normalize(dto.city(), false));
-        group.setDefaultFieldOfStudies(StringUtil.normalize(dto.defaultFieldOfStudies(), false));
-        group.setAbbreviation(StringUtil.normalize(dto.abbreviation(), false));
-        group.setWebsite(StringUtil.normalize(dto.website(), false));
-        group.setSchool(StringUtil.normalize(dto.school(), false));
-        group.setState(ResearchGroupState.valueOf(dto.state()));
-        return group;
     }
 
     /**

@@ -1,8 +1,8 @@
 package de.tum.cit.aet.usermanagement.repository;
 
-import de.tum.cit.aet.core.constants.ResearchGroupState;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;

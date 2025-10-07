@@ -46,7 +46,7 @@ public record ResearchGroupDTO(
             researchGroup.getStreet(),
             researchGroup.getPostalCode(),
             researchGroup.getCity(),
-            researchGroup.getState() != null ? researchGroup.getState().name() : null
+            researchGroup.getState().name()
         );
     }
 }
