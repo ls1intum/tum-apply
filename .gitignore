@@ -169,5 +169,10 @@ storage
 ######################
 # Environment files
 ######################
-.env.local
 /junit.xml
+
+######################
+# Generated files
+######################
+/openapi/openapi.yaml
+/src/main/webapp/app/generated/
