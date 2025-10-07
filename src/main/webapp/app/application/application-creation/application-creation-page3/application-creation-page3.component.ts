@@ -16,6 +16,7 @@ import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/date
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { deepEqual } from 'app/core/util/deepequal-util';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
@@ -32,23 +33,6 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
     experiences: application.projects ?? '',
   };
 };
-
-function deepEqual(obj1: any, obj2: any): boolean {
-  if (obj1 === obj2) return true;
-
-  if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 == null || obj2 == null) return false;
-
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
-
-  if (keys1.length !== keys2.length) return false;
-
-  for (const key of keys1) {
-    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) return false;
-  }
-
-  return true;
-}
 
 @Component({
   selector: 'jhi-application-creation-page3',
