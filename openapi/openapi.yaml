@@ -1752,8 +1752,8 @@ components:
           type: array
           items: {$ref: '#/components/schemas/CreatedJobDTO'}
         number: {type: integer, format: int32}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
         sort: {$ref: '#/components/schemas/SortObject'}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
         first: {type: boolean}
         last: {type: boolean}
         numberOfElements: {type: integer, format: int32}
@@ -1762,10 +1762,10 @@ components:
       type: object
       properties:
         offset: {type: integer, format: int64}
+        sort: {$ref: '#/components/schemas/SortObject'}
         paged: {type: boolean}
         pageNumber: {type: integer, format: int32}
         pageSize: {type: integer, format: int32}
-        sort: {$ref: '#/components/schemas/SortObject'}
         unpaged: {type: boolean}
     SortObject:
       type: object
@@ -1824,8 +1824,8 @@ components:
           type: array
           items: {$ref: '#/components/schemas/JobCardDTO'}
         number: {type: integer, format: int32}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
         sort: {$ref: '#/components/schemas/SortObject'}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
         first: {type: boolean}
         last: {type: boolean}
         numberOfElements: {type: integer, format: int32}
