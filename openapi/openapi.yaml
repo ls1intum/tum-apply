@@ -1808,19 +1808,19 @@ components:
         number: {type: integer, format: int32}
         sort: {$ref: '#/components/schemas/SortObject'}
         pageable: {$ref: '#/components/schemas/PageableObject'}
-        numberOfElements: {type: integer, format: int32}
         first: {type: boolean}
         last: {type: boolean}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     PageableObject:
       type: object
       properties:
         offset: {type: integer, format: int64}
-        unpaged: {type: boolean}
         sort: {$ref: '#/components/schemas/SortObject'}
         paged: {type: boolean}
         pageNumber: {type: integer, format: int32}
         pageSize: {type: integer, format: int32}
+        unpaged: {type: boolean}
     SortObject:
       type: object
       properties:
@@ -1880,9 +1880,9 @@ components:
         number: {type: integer, format: int32}
         sort: {$ref: '#/components/schemas/SortObject'}
         pageable: {$ref: '#/components/schemas/PageableObject'}
-        numberOfElements: {type: integer, format: int32}
         first: {type: boolean}
         last: {type: boolean}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     JobFilterOptionDTO:
       type: object
