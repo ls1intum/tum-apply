@@ -957,7 +957,7 @@ paths:
       responses:
         '200':
           description: OK
-          content:
+          content :
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationEvaluationDetailListDTO'}
   /api/email-templates/{templateId}:
