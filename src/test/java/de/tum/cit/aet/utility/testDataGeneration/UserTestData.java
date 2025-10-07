@@ -5,6 +5,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -14,7 +15,9 @@ public final class UserTestData {
 
     private UserTestData() {}
 
-    /** Unsaved professor with defaults. */
+    /**
+     * Unsaved professor with defaults.
+     */
     public static User newProfessor(ResearchGroup rg) {
         User u = new User();
         u.setUserId(UUID.randomUUID());
@@ -28,7 +31,9 @@ public final class UserTestData {
         return u;
     }
 
-    /** Unsaved professor; all fields optional (null = keep default). */
+    /**
+     * Unsaved professor; all fields optional (null = keep default).
+     */
     public static User newProfessorAll(
         ResearchGroup researchGroup,
         UUID userId,
@@ -56,11 +61,106 @@ public final class UserTestData {
         if (nationality != null) u.setNationality(nationality);
         if (avatar != null) u.setAvatar(avatar);
         if (gender != null) u.setGender(gender);
-        if (universityId != null) {
-            u.setUniversityId(universityId);
-        } else {
-            u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        }
+        u.setUniversityId(Objects.requireNonNullElseGet(universityId, () -> UUID.randomUUID().toString().replace("-", "").substring(0, 7)));
+        return u;
+    }
+
+    /**
+     * Unsaved normal user (without ResearchGroup) with defaults.
+     */
+    // TODO: change this! by default, all normal Users have a UserResearchGroupRole with role APPLICANT and no research group
+    public static User newNormalUser() {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setFirstName("Bob");
+        u.setLastName("Johnson");
+        u.setEmail("bob.johnson@example.com");
+        u.setSelectedLanguage("en");
+        u.setResearchGroup(null);
+        u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        return u;
+    }
+
+    /**
+     * Unsaved normal user; all fields optional (null = keep default).
+     * Normal users have NO research group and NO roles.
+     */
+    public static User newNormalUserAll(
+        UUID userId,
+        String email,
+        String firstName,
+        String lastName,
+        String selectedLanguage,
+        String phoneNumber,
+        String website,
+        String linkedinUrl,
+        String nationality,
+        String avatar,
+        String gender,
+        String universityId
+    ) {
+        User u = newNormalUser();
+        if (userId != null) u.setUserId(userId);
+        if (email != null) u.setEmail(email);
+        if (firstName != null) u.setFirstName(firstName);
+        if (lastName != null) u.setLastName(lastName);
+        if (selectedLanguage != null) u.setSelectedLanguage(selectedLanguage);
+        if (phoneNumber != null) u.setPhoneNumber(phoneNumber);
+        if (website != null) u.setWebsite(website);
+        if (linkedinUrl != null) u.setLinkedinUrl(linkedinUrl);
+        if (nationality != null) u.setNationality(nationality);
+        if (avatar != null) u.setAvatar(avatar);
+        if (gender != null) u.setGender(gender);
+        u.setUniversityId(Objects.requireNonNullElseGet(universityId, () -> UUID.randomUUID().toString().replace("-", "").substring(0, 7)));
+        return u;
+    }
+
+    /**
+     * Unsaved admin with defaults.
+     */
+    public static User newAdmin() {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setFirstName("Admin");
+        u.setLastName("User");
+        u.setEmail("admin.user@example.com");
+        u.setSelectedLanguage("en");
+        u.setResearchGroup(null);
+        u.setUniversityId("admin" + UUID.randomUUID().toString().substring(0, 4));
+        attachAdminRole(u);
+        return u;
+    }
+
+    /**
+     * Unsaved admin user; all fields optional (null = keep default).
+     */
+    public static User newAdminAll(
+        UUID userId,
+        String email,
+        String firstName,
+        String lastName,
+        String selectedLanguage,
+        String phoneNumber,
+        String website,
+        String linkedinUrl,
+        String nationality,
+        String avatar,
+        String gender,
+        String universityId
+    ) {
+        User u = newAdmin();
+        if (userId != null) u.setUserId(userId);
+        if (email != null) u.setEmail(email);
+        if (firstName != null) u.setFirstName(firstName);
+        if (lastName != null) u.setLastName(lastName);
+        if (selectedLanguage != null) u.setSelectedLanguage(selectedLanguage);
+        if (phoneNumber != null) u.setPhoneNumber(phoneNumber);
+        if (website != null) u.setWebsite(website);
+        if (linkedinUrl != null) u.setLinkedinUrl(linkedinUrl);
+        if (nationality != null) u.setNationality(nationality);
+        if (avatar != null) u.setAvatar(avatar);
+        if (gender != null) u.setGender(gender);
+        u.setUniversityId(Objects.requireNonNullElseGet(universityId, () -> UUID.randomUUID().toString().replace("-", "").substring(0, 7)));
         return u;
     }
 
@@ -104,6 +204,87 @@ public final class UserTestData {
         );
     }
 
+    public static User savedNormalUser(UserRepository repo) {
+        return repo.save(newNormalUser());
+    }
+
+    /**
+     * Saved normal user with all fields customizable.
+     */
+    public static User savedNormalUserAll(
+        UserRepository repo,
+        UUID userId,
+        String email,
+        String firstName,
+        String lastName,
+        String selectedLanguage,
+        String phoneNumber,
+        String website,
+        String linkedinUrl,
+        String nationality,
+        String avatar,
+        String gender,
+        String universityId
+    ) {
+        return repo.save(
+            newNormalUserAll(
+                userId,
+                email,
+                firstName,
+                lastName,
+                selectedLanguage,
+                phoneNumber,
+                website,
+                linkedinUrl,
+                nationality,
+                avatar,
+                gender,
+                universityId
+            )
+        );
+    }
+
+    public static User savedAdmin(UserRepository repo) {
+        return repo.save(newAdmin());
+    }
+
+    /**
+     * Saved admin user with all fields customizable.
+     */
+    public static User savedAdminAll(
+        UserRepository repo,
+        UUID userId,
+        String email,
+        String firstName,
+        String lastName,
+        String selectedLanguage,
+        String phoneNumber,
+        String website,
+        String linkedinUrl,
+        String nationality,
+        String avatar,
+        String gender,
+        String universityId
+    ) {
+        return repo.save(
+            newAdminAll(
+                userId,
+                email,
+                firstName,
+                lastName,
+                selectedLanguage,
+                phoneNumber,
+                website,
+                linkedinUrl,
+                nationality,
+                avatar,
+                gender,
+                universityId
+            )
+        );
+    }
+
+    // --- Helpers -------------------------------------------------------------------------
     private static void attachProfessorRole(User user, ResearchGroup rg) {
         UserResearchGroupRole link = new UserResearchGroupRole();
         link.setUser(user);
@@ -112,5 +293,14 @@ public final class UserTestData {
 
         user.getResearchGroupRoles().add(link);
         rg.getUserRoles().add(link);
+    }
+
+    private static void attachAdminRole(User user) {
+        UserResearchGroupRole link = new UserResearchGroupRole();
+        link.setUser(user);
+        link.setResearchGroup(null);
+        link.setRole(UserRole.ADMIN);
+
+        user.getResearchGroupRoles().add(link);
     }
 }

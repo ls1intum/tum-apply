@@ -3,8 +3,10 @@ package de.tum.cit.aet.usermanagement.web.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -34,6 +36,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     ResearchGroup secondResearchGroup;
     User researchGroupUser;
     User secondResearchGroupUser;
+    User normalUser;
+    User adminUser;
 
     @BeforeEach
     public void setup() {
@@ -69,6 +73,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         );
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
+        normalUser = UserTestData.savedNormalUser(userRepository);
+        adminUser = UserTestData.savedAdmin(userRepository);
     }
 
     @Test
@@ -104,5 +110,13 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             ResearchGroupLargeDTO.class,
             403
         );
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getAllDraftResearchGroups() {
+        PageResponseDTO<ResearchGroupDTO> result = api
+            .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+            .getAndRead("/api/research-groups/draft", Map.of("page", "0", "size", "10"), PageResponseDTO.class, 200);
     }
 }
