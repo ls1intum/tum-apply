@@ -21,5 +21,6 @@ export interface ResearchGroupDTO {
     street?: string;
     postalCode?: string;
     city?: string;
+    state?: string;
 }
 
