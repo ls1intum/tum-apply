@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -124,7 +125,7 @@ public class ResearchGroupResource {
         @Valid @RequestBody ProfessorResearchGroupRequestDTO request
     ) {
         ResearchGroup created = researchGroupService.createProfessorResearchGroupRequest(request);
-        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(created));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
     }
 
     /**
