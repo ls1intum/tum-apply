@@ -320,7 +320,10 @@
         "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
       },
       "gradingConversionBachelor": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Bachelor-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns.",
-      "gradingConversionMaster": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Master-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns."
+      "gradingConversionMaster": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Master-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns.",
+      "validation": {
+        "invalidGrade": "Bitte gib eine gültige Note zwischen 1.0 und 4.0 ein."
+      }
     },
     "applicationPage3": {
       "label": {
