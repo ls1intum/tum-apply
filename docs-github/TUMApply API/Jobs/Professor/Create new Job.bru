@@ -1,0 +1,74 @@
+meta {
+  name: Create new Job
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/jobs/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "Working Student Software Engineering",
+    "researchArea": "Cloud Computing",
+    "fieldOfStudies": "Informatics",
+    "supervisingProfessor": "00000000-0000-0000-0000-000000000102",
+    "location": "GARCHING",
+    "startDate": "2024-10-01",
+    "endDate": "2025-03-31",
+    "workload": 16,
+    "contractDuration": 2,
+    "fundingType": "FULLY_FUNDED",
+    "description": "Support the development of scalable cloud applications in a research environment.",
+    "tasks": "Develop microservices, automate deployment, collaborate in agile teams",
+    "requirements": "Java, Spring Boot, Docker, good communication skills",
+    "state": "PUBLISHED"
+  }
+  
+}
+
+docs {
+  ### Create Job Posting
+  
+  This API endpoint allows you to create a new job posting.
+  
+  #### Request Body
+  
+  - `professorId`: The ID of the professor associated with the job posting.
+      
+  - `fieldOfStudies`: The field of studies related to the job.
+      
+  - `researchArea`: The research area for the job posting.
+      
+  - `title`: The title of the job posting.
+      
+  - `introduction`: Introduction for the job posting.
+      
+  - `aboutUs`: Information about the organization or company.
+      
+  - `tasks`: Description of the tasks associated with the job.
+      
+  - `qualifications`: Qualifications required for the job.
+      
+  - `weOffer`: Details about what the organization offers to the applicants.
+      
+  - `applicationRequirements`: Requirements for the job application.
+      
+  - `dataProtectionInformation`: Information about data protection policies.
+      
+  - `contact`: Contact information for the job posting.
+      
+  - `state`: The state of the job posting (e.g., DRAFT).
+      
+  - `startDate`: The start date for the job posting.
+      
+  - `applicationDeadline`: The deadline for job applications.
+      
+  
+  #### Response Body
+  
+  The response will contain the status of the job posting creation.
+}

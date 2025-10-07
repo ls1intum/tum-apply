@@ -1,15 +1,14 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UuidGenerator;
-
 import java.io.Serializable;
 import java.sql.Types;
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Entity representing a one-time password (OTP) used for email verification.
@@ -19,13 +18,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "email_verification_otp",
+@Table(
+    name = "email_verification_otp",
     indexes = {
         @Index(name = "idx_evo_email_created", columnList = "email, created_at"),
         @Index(name = "idx_evo_jti", columnList = "jti", unique = true),
         @Index(name = "idx_evo_email_used_expires", columnList = "email, used, expires_at"),
-        @Index(name = "idx_evo_expires_at", columnList = "expires_at")
-    })
+        @Index(name = "idx_evo_expires_at", columnList = "expires_at"),
+    }
+)
 public class EmailVerificationOtp implements Serializable {
 
     @Id

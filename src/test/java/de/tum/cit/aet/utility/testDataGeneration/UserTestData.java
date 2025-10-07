@@ -5,13 +5,13 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-
 import java.util.UUID;
 
 /**
  * Test data helpers for User (professor).
  */
 public final class UserTestData {
+
     private UserTestData() {}
 
     /** Unsaved professor with defaults. */
@@ -85,8 +85,23 @@ public final class UserTestData {
         String gender,
         String universityId
     ) {
-        return repo.save(newProfessorAll(researchGroup, userId, email, firstName, lastName,
-            selectedLanguage, phoneNumber, website, linkedinUrl, nationality, avatar, gender,universityId));
+        return repo.save(
+            newProfessorAll(
+                researchGroup,
+                userId,
+                email,
+                firstName,
+                lastName,
+                selectedLanguage,
+                phoneNumber,
+                website,
+                linkedinUrl,
+                nationality,
+                avatar,
+                gender,
+                universityId
+            )
+        );
     }
 
     private static void attachProfessorRole(User user, ResearchGroup rg) {

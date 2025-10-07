@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
@@ -12,10 +12,10 @@ import SharedModule from 'app/shared/shared.module';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-
-import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
+import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
@@ -85,9 +85,9 @@ export default class ApplicationCreationPage3Component {
   hasInitialized = signal(false);
 
   page3Form: FormGroup = this.formbuilder.group({
-    experiences: [this.data()?.experiences ?? '', Validators.required],
-    motivation: [this.data()?.motivation ?? '', Validators.required],
-    skills: [this.data()?.skills ?? '', Validators.required],
+    experiences: [this.data()?.experiences ?? '', htmlTextRequiredValidator], // TODO: tried putting htmlTextMaxLengthValidator(1000) but it created bugs such as step 3 not loading fully and auto-save breaking
+    motivation: [this.data()?.motivation ?? '', htmlTextRequiredValidator],
+    skills: [this.data()?.skills ?? '', htmlTextRequiredValidator],
     desiredStartDate: [this.data()?.desiredStartDate ?? ''],
   });
 
@@ -104,6 +104,8 @@ export default class ApplicationCreationPage3Component {
     return docInfoHolder ? [docInfoHolder] : undefined;
   });
 
+  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
+
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;
     const raw = this.formValue();
@@ -114,7 +116,7 @@ export default class ApplicationCreationPage3Component {
       this.data.set(newData);
       this.changed.emit(true);
     }
-    this.valid.emit(this.page3Form.valid);
+    this.valid.emit(this.page3Form.valid && this.cvValid());
   });
 
   private initializeFormEffect = effect(() => {
@@ -130,8 +132,21 @@ export default class ApplicationCreationPage3Component {
     this.hasInitialized.set(true);
   });
 
+  private initializeCvDocs = effect(() => {
+    const cvDocs = this.computedDocumentIdsCvSet();
+    this.cvDocsSetValidity(cvDocs);
+  });
+
   emitChanged(): void {
     this.changed.emit(true);
+  }
+
+  cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
+    if (cvDocs === undefined || cvDocs.length === 0) {
+      this.cvValid.set(false);
+    } else {
+      this.cvValid.set(true);
+    }
   }
 
   setDesiredStartDate($event: string | undefined): void {

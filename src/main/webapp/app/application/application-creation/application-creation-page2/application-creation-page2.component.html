@@ -34,9 +34,11 @@
         width="100%"
         [required]="true"
         [items]="bachelorGradingScaleLocal"
+        [translateItems]="true"
         [(selected)]="data().bachelorGradingScale"
         icon="circle-info"
         [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradingScale' | translate"
+        [helperText]="'entity.applicationPage2.gradingConversionBachelor'"
       />
     </div>
     <div class="form-field">
@@ -117,8 +119,10 @@
         [required]="true"
         [items]="masterGradingScaleLocal"
         [(selected)]="data().masterGradingScale"
+        [translateItems]="true"
         icon="circle-info"
         [tooltipText]="'entity.applicationPage2.tooltip.masterGradingScale' | translate"
+        [helperText]="'entity.applicationPage2.gradingConversionMaster'"
       />
     </div>
     <div class="form-field">
@@ -184,5 +188,6 @@
     [max]="4"
     [minFractionDigits]="0"
     [maxFractionDigits]="1"
+    [customErrorKey]="'entity.applicationPage2.validation.invalidGrade'"
   />
 </ng-template>

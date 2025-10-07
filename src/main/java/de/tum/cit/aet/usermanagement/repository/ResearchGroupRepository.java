@@ -22,8 +22,8 @@ public interface ResearchGroupRepository extends TumApplyJpaRepository<ResearchG
     default ResearchGroup findByUniversityIdElseThrow(String universityId) {
         return getArbitraryValueElseThrow(findByUniversityId(universityId));
     }
-    Optional<ResearchGroup> findByUniversityId(String universityId);
 
+    Optional<ResearchGroup> findByUniversityId(String universityId);
 
     boolean existsByNameIgnoreCase(String name);
     Optional<ResearchGroup> findByNameIgnoreCase(String name);

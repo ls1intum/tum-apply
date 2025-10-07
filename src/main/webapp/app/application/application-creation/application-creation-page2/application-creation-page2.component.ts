@@ -28,17 +28,11 @@ export type ApplicationCreationPage2Data = {
 
 export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
   value: v,
-  name: v
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase()),
+  name: `entity.applicationSteps.gradingScale.${v}`,
 }));
 export const masterGradingScale: SelectOption[] = Object.values(ApplicantDTO.MasterGradingScaleEnum).map(v => ({
   value: v,
-  name: v
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase()),
+  name: `entity.applicationSteps.gradingScale.${v}`,
 }));
 
 export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
@@ -96,10 +90,10 @@ export default class ApplicationCreationPage2Component {
     return this.formbuilder.group({
       bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
       bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
-      bachelorGrade: [currentData.bachelorGrade, Validators.required],
+      bachelorGrade: [currentData.bachelorGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
       masterDegreeName: [currentData.masterDegreeName, Validators.required],
       masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
-      masterGrade: [currentData.masterGrade, Validators.required],
+      masterGrade: [currentData.masterGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
     });
   });
 

@@ -7,14 +7,13 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -23,7 +22,11 @@ public class UserService {
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final KeycloakUserService keycloakUserService;
 
-    public UserService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository, KeycloakUserService keycloakUserService) {
+    public UserService(
+        UserRepository userRepository,
+        UserResearchGroupRoleRepository userResearchGroupRoleRepository,
+        KeycloakUserService keycloakUserService
+    ) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
         this.keycloakUserService = keycloakUserService;
@@ -68,9 +71,7 @@ public class UserService {
         Optional<User> existingUser = userRepository.findWithResearchGroupRolesByUserId(userId);
         final boolean isNewUser = existingUser.isEmpty();
 
-        User user = existingUser.orElseGet(() ->
-            createNewUser(userId, normalizedEmail, normalizedFirstName, normalizedLastName)
-        );
+        User user = existingUser.orElseGet(() -> createNewUser(userId, normalizedEmail, normalizedFirstName, normalizedLastName));
 
         boolean updated = isNewUser;
         updated |= setIfPresentAndChanged(user::getEmail, user::setEmail, normalizedEmail);
