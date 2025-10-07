@@ -26,7 +26,7 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
-import de.tum.cit.aet.utility.testDataGeneration.*;
+import de.tum.cit.aet.utility.testdata.*;
 import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,7 +94,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getApplicationsOverviews_onlyViewableStates() {
+    void getApplicationsOverviewsOnlyViewableStates() {
         ApplicationEvaluationOverviewListDTO dto = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
@@ -110,7 +110,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getApplicationsDetails_returnsDetails() {
+    void getApplicationsDetailsReturnsDetails() {
         ApplicationEvaluationDetailListDTO details = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
@@ -126,7 +126,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getApplicationsDetailsWindow_validOddSize() {
+    void getApplicationsDetailsWindowValidOddSize() {
         ApplicationEvaluationDetailListDTO win = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
@@ -140,7 +140,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getApplicationsDetails_limitIsApplied() {
+    void getApplicationsDetailsLimitIsApplied() {
         ApplicationEvaluationDetailListDTO details = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
@@ -155,7 +155,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void markApplicationAsInReview_sent_becomesInReview() {
+    void markApplicationAsInReviewSentBecomesInReview() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 204);
@@ -166,7 +166,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void acceptApplication_sent_becomesAccepted_andMayCloseJob() {
+    void acceptApplicationSentBecomesAcceptedAndMayCloseJob() {
         String message = "Accepted!";
         AcceptDTO payload = new AcceptDTO(message, true, true);
 
@@ -185,7 +185,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void rejectApplication_inReview_becomesRejected_andStoresReason() {
+    void rejectApplicationInReviewBecomesRejectedAndStoresReason() {
         RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
 
         api
@@ -199,7 +199,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void acceptApplication_unauthenticated_returns401() {
+    void acceptApplicationUnauthenticatedReturns401() {
         AcceptDTO payload = new AcceptDTO("msg", false, false);
         api
             .withoutPostProcessors()
@@ -207,7 +207,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void rejectApplication_unauthenticated_returns401() {
+    void rejectApplicationUnauthenticatedReturns401() {
         RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
         api
             .withoutPostProcessors()
@@ -215,7 +215,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void markApplicationAsInReview_unauthenticated_returns401() {
+    void markApplicationAsInReviewUnauthenticatedReturns401() {
         api
             .withoutPostProcessors()
             .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
@@ -223,7 +223,7 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getApplicationsOverviews_withSorting_params_ok() {
+    void getApplicationsOverviewsWithSortingParamsOk() {
         SortDTO sort = new SortDTO("appliedAt", SortDTO.Direction.DESC);
         OffsetPageDTO page = new OffsetPageDTO(0, 10);
 

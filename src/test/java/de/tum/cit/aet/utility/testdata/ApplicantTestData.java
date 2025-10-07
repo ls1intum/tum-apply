@@ -1,4 +1,4 @@
-package de.tum.cit.aet.utility.testDataGeneration;
+package de.tum.cit.aet.utility.testdata;
 
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.usermanagement.constants.GradingScale;
@@ -36,10 +36,6 @@ public final class ApplicantTestData {
     /** Unsaved Applicant with override options (null = keep default). */
     public static Applicant newApplicantAll(
         User user,
-        String street,
-        String postalCode,
-        String city,
-        String country,
         String bachelorDegreeName,
         GradingScale bachelorScale,
         String bachelorGrade,
@@ -50,10 +46,6 @@ public final class ApplicantTestData {
         String masterUniversity
     ) {
         Applicant a = newApplicant(user);
-        if (street != null) a.setStreet(street);
-        if (postalCode != null) a.setPostalCode(postalCode);
-        if (city != null) a.setCity(city);
-        if (country != null) a.setCountry(country);
         if (bachelorDegreeName != null) a.setBachelorDegreeName(bachelorDegreeName);
         if (bachelorScale != null) a.setBachelorGradingScale(bachelorScale);
         if (bachelorGrade != null) a.setBachelorGrade(bachelorGrade);
@@ -83,40 +75,5 @@ public final class ApplicantTestData {
 
     public static Applicant savedWithNewUser(ApplicantRepository repo) {
         return saved(repo, newApplicantUser());
-    }
-
-    public static Applicant savedAll(
-        ApplicantRepository repo,
-        User user,
-        String street,
-        String postalCode,
-        String city,
-        String country,
-        String bachelorDegreeName,
-        GradingScale bachelorScale,
-        String bachelorGrade,
-        String bachelorUniversity,
-        String masterDegreeName,
-        GradingScale masterScale,
-        String masterGrade,
-        String masterUniversity
-    ) {
-        return repo.save(
-            newApplicantAll(
-                user,
-                street,
-                postalCode,
-                city,
-                country,
-                bachelorDegreeName,
-                bachelorScale,
-                bachelorGrade,
-                bachelorUniversity,
-                masterDegreeName,
-                masterScale,
-                masterGrade,
-                masterUniversity
-            )
-        );
     }
 }
