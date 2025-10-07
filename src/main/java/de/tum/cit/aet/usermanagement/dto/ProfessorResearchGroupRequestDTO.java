@@ -9,7 +9,7 @@ public record ProfessorResearchGroupRequestDTO(
     String title,
     String firstName,
     String lastName,
-    String universityID,
+    String universityId,
 
     // Required Research Group Information
     String researchGroupHead,

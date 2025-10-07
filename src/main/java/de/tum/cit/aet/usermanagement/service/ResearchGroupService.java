@@ -182,7 +182,7 @@ public class ResearchGroupService {
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
         entity.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
-        entity.setState(ResearchGroupState.valueOf(dto.state()));
+        entity.setState(dto.state());
     }
 
     /**
@@ -331,11 +331,11 @@ public class ResearchGroupService {
         // TODO: should we update existing user data with the provided info?
         // if (request.firstName() != null) currentUser.setFirstName(request.firstName());
         // if (request.lastName() != null) currentUser.setLastName(request.lastName());
-        // if (request.universityID() != null) currentUser.setUniversityId(request.universityID());
+        // if (request.universityId() != null) currentUser.setUniversityId(request.universityID());
 
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setName(StringUtil.normalize(request.researchGroupName(), false));
-        researchGroup.setUniversityId(request.universityID());
+        researchGroup.setUniversityId(request.universityId());
         researchGroup.setHead(request.researchGroupHead());
         researchGroup.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
         researchGroup.setEmail(request.contactEmail());
@@ -349,8 +349,6 @@ public class ResearchGroupService {
         researchGroup.setState(ResearchGroupState.DRAFT);
 
         ResearchGroup saved = researchGroupRepository.save(researchGroup);
-
-        userRepository.save(currentUser);
 
         currentUser.setResearchGroup(saved);
         userRepository.save(currentUser);
