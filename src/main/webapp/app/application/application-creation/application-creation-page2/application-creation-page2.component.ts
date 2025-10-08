@@ -171,12 +171,15 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
     // Check if all three values have the same format
     const format = validateSameFormat(values);
     if (!format) {
-      [upper, lower, grade].forEach(ctrl => setError(ctrl, 'formatMismatch'));
+      [upper, lower, grade].forEach(ctrl => {
+        setError(ctrl, 'formatMismatch');
+      });
       return { formatMismatch: true };
     } else {
-      [upper, lower, grade].forEach(ctrl => clearError(ctrl, 'formatMismatch'));
+      [upper, lower, grade].forEach(ctrl => {
+        clearError(ctrl, 'formatMismatch');
+      });
     }
-
     // Check if upper limit is greater than lower limit
     if (validateBoundaryMismatch(format, upper!.value, lower!.value)) {
       setError(upper, 'boundaryMismatch');
