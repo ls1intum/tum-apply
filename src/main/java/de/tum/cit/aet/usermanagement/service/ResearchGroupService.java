@@ -182,7 +182,6 @@ public class ResearchGroupService {
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
         entity.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
-        entity.setState(dto.state());
     }
 
     /**
