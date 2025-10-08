@@ -69,6 +69,13 @@ describe('ResearchGroupMembersComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should load members automatically via table lazy load on component init', () => {
+    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+    fixture.detectChanges();
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+  });
+
   it('should initialize with default values', () => {
     expect(component.members()).toEqual([]);
     expect(component.pageNumber()).toBe(0);
@@ -77,15 +84,31 @@ describe('ResearchGroupMembersComponent', () => {
   });
 
   it('should have correct columns configuration', () => {
+    const columns = component.columns();
+    const expectedColumns = [
+      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem' },
+      { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
+      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
+      { field: 'actions', header: '', width: '5rem' },
+    ];
+
+    expect(columns).toHaveLength(4);
+    expectedColumns.forEach((expectedColumn, index) => {
+      expect(columns[index]).toEqual(expect.objectContaining(expectedColumn));
+    });
+  });
+
+  it('should assign templates to correct columns', () => {
     fixture.detectChanges();
 
     const columns = component.columns();
-    expect(columns).toHaveLength(4);
-    expect(columns[0].field).toBe('name');
-    expect(columns[0].header).toBe('researchGroup.members.tableColumns.name');
-    expect(columns[1].field).toBe('email');
-    expect(columns[2].field).toBe('role');
-    expect(columns[3].field).toBe('actions');
+    const nameColumn = columns.find(c => c.field === 'name');
+    const actionsColumn = columns.find(c => c.field === 'actions');
+
+    expect(nameColumn?.template).toBeTruthy();
+    expect(actionsColumn?.template).toBeTruthy();
+    expect(columns.find(c => c.field === 'email')?.template).toBeUndefined();
+    expect(columns.find(c => c.field === 'role')?.template).toBeUndefined();
   });
 
   it('should update page number and load members on table emit', () => {
