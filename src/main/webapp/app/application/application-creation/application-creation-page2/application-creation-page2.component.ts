@@ -44,7 +44,8 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 type FormatValidator = (value: string) => boolean;
 
 function isNumeric(val: string): boolean {
-  return /^\d{1,10}(?:[.,]\d{1,10})?$/.test(val.trim());
+  const trimmed = val.trim();
+  return /^\d+$/.test(trimmed) || /^\d+[.,]\d+$/.test(trimmed);
 }
 
 function isLetter(val: string): boolean {
