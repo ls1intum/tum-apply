@@ -19,59 +19,61 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID>, ApplicationEntityRepository {
     @Query(
         """
-        SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
-            a.applicationId,
-            new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
-                new de.tum.cit.aet.usermanagement.dto.UserDTO(
-                    ap.user.userId,
-                    ap.user.email,
-                    ap.user.avatar,
-                    ap.user.firstName,
-                    ap.user.lastName,
-                    ap.user.gender,
-                    ap.user.nationality,
-                    ap.user.birthday,
-                    ap.user.phoneNumber,
-                    ap.user.website,
-                    ap.user.linkedinUrl,
-                    ap.user.selectedLanguage,
-                    NULL
-                ),
-                ap.street,
-                ap.postalCode,
-                ap.city,
-                ap.country,
-                ap.bachelorDegreeName,
-                ap.bachelorGradingScale,
-                ap.bachelorGrade,
-                ap.bachelorUniversity,
-                ap.masterDegreeName,
-                ap.masterGradingScale,
-                ap.masterGrade,
-                ap.masterUniversity
-            ),
-            new de.tum.cit.aet.job.dto.JobCardDTO(
-                j.jobId,
-                j.title,
-                j.fieldOfStudies,
-                j.location,
-                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
                 a.applicationId,
+                new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
+                    new de.tum.cit.aet.usermanagement.dto.UserDTO(
+                        ap.user.userId,
+                        ap.user.email,
+                        ap.user.avatar,
+                        ap.user.firstName,
+                        ap.user.lastName,
+                        ap.user.gender,
+                        ap.user.nationality,
+                        ap.user.birthday,
+                        ap.user.phoneNumber,
+                        ap.user.website,
+                        ap.user.linkedinUrl,
+                        ap.user.selectedLanguage,
+                        NULL
+                    ),
+                    ap.street,
+                    ap.postalCode,
+                    ap.city,
+                    ap.country,
+                    ap.bachelorDegreeName,
+                    ap.bachelorGradeUpperLimit,
+                    ap.bachelorGradeLowerLimit,
+                    ap.bachelorGrade,
+                    ap.bachelorUniversity,
+                    ap.masterDegreeName,
+                    ap.masterGradeUpperLimit,
+                    ap.masterGradeLowerLimit,
+                    ap.masterGrade,
+                    ap.masterUniversity
+                ),
+                new de.tum.cit.aet.job.dto.JobCardDTO(
+                    j.jobId,
+                    j.title,
+                    j.fieldOfStudies,
+                    j.location,
+                    CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    a.applicationId,
+                    a.state,
+                    j.workload,
+                    j.startDate,
+                    j.endDate
+                ),
                 a.state,
-                j.workload,
-                j.startDate,
-                j.endDate
-            ),
-            a.state,
-            a.desiredStartDate,
-            a.projects,
-            a.specialSkills,
-            a.motivation,
-            NULL
-        )
-        FROM Application a
-        LEFT JOIN a.applicant ap
-        LEFT JOIN a.job j
+                a.desiredStartDate,
+                a.projects,
+                a.specialSkills,
+                a.motivation,
+                NULL
+            )
+            FROM Application a
+            LEFT JOIN a.applicant ap
+            LEFT JOIN a.job j
 
         WHERE a.applicationId = :id
         """
@@ -103,11 +105,13 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 ap.city,
                 ap.country,
                 ap.bachelorDegreeName,
-                ap.bachelorGradingScale,
+                ap.bachelorGradeUpperLimit,
+                ap.bachelorGradeLowerLimit,
                 ap.bachelorGrade,
                 ap.bachelorUniversity,
                 ap.masterDegreeName,
-                ap.masterGradingScale,
+                ap.masterGradeUpperLimit,
+                ap.masterGradeLowerLimit,
                 ap.masterGrade,
                 ap.masterUniversity
             ),
@@ -163,11 +167,13 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 ap.city,
                 ap.country,
                 ap.bachelorDegreeName,
-                ap.bachelorGradingScale,
+                ap.bachelorGradeUpperLimit,
+                ap.bachelorGradeLowerLimit,
                 ap.bachelorGrade,
                 ap.bachelorUniversity,
                 ap.masterDegreeName,
-                ap.masterGradingScale,
+                 ap.masterGradeUpperLimit,
+                ap.masterGradeLowerLimit,
                 ap.masterGrade,
                 ap.masterUniversity
             ),
@@ -245,11 +251,13 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     ap.city,
                     ap.country,
                     ap.bachelorDegreeName,
-                    ap.bachelorGradingScale,
+                    ap.bachelorGradeUpperLimit,
+                    ap.bachelorGradeLowerLimit,
                     ap.bachelorGrade,
                     ap.bachelorUniversity,
                     ap.masterDegreeName,
-                    ap.masterGradingScale,
+                    ap.masterGradeUpperLimit,
+                    ap.masterGradeLowerLimit,
                     ap.masterGrade,
                     ap.masterUniversity
                 ),

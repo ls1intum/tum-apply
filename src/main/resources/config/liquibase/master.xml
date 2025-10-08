@@ -13,6 +13,7 @@
   <include file="changelog/00000000000006_add_user_settings.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000007_alter_jobs_make_location_nullable.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000008_add_university_id.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000009_add_grade_limits.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
