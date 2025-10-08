@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.repository;
 
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
@@ -28,4 +29,18 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
     @Modifying
     @Query("UPDATE UserResearchGroupRole urgr SET urgr.researchGroup = null WHERE urgr.user.userId = :userId")
     void removeResearchGroupFromUserRoles(@Param("userId") UUID userId);
+
+    /**
+     * Deletes a specific role entry for a user from the UserResearchGroupRole table.
+     * <p>
+     * This method removes the association between a given user and a role
+     * (e.g., APPLICANT or PROFESSOR) in the context of any research group.
+     * It does not affect other roles or the research group membership itself.
+     *
+     * @param user the user whose role should be removed
+     * @param role the specific role to remove for the user
+     */
+    @Modifying
+    @Query("DELETE FROM UserResearchGroupRole urgr WHERE urgr.user = :user AND urgr.role = :role")
+    void deleteByUserAndRole(@Param("user") User user, @Param("role") UserRole role);
 }
