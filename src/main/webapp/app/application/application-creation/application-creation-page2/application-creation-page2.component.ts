@@ -41,6 +41,8 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   };
 };
 
+type FormatValidator = (value: string) => boolean;
+
 function isNumeric(val: string): boolean {
   return /^[0-9]+([.,][0-9]+)?$/.test(val.trim());
 }
@@ -76,7 +78,7 @@ function clearError(ctrl: AbstractControl | null | undefined, key: string): void
   ctrl.setErrors(Object.keys(rest).length ? rest : null);
 }
 
-function validateFormat(ctrls: (AbstractControl | null)[], formats: ((v: string) => boolean)[]): string | null {
+function validateFormat(ctrls: (AbstractControl | null)[], formats: FormatValidator[]): string | null {
   for (const ctrl of ctrls) {
     const val = ctrl?.value;
     if (!val) continue;
