@@ -287,28 +287,28 @@
         "master": "Master"
       },
       "label": {
+        "gradeUpperLimit": "Obere Bestehensgrenze",
+        "gradeLowerLimit": "Untere Bestehensgrenze",
         "bachelorDegreeName": "Bachelor-Studiengang",
         "bachelorDegreeUniversity": "Universität des Bachelors",
-        "bachelorGradingScale": "Benotungsskala Bachelor",
         "bachelorGrade": "Bachelor-Abschlussnote",
         "masterDegreeName": "Master-Studiengang",
         "masterDegreeUniversity": "Universität des Masters",
-        "masterGradingScale": "Benotungsskala Master",
         "masterGrade": "Master-Abschlussnote"
       },
       "tooltip": {
         "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
         "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
-        "bachelorGradingScale": "Wähle die Benotungsskala deines Bachelors (derzeit nur deutsche Skala verfügbar).",
+        "bachelorGradeUpperLimit": "Gib die beste Note zum Bestehen im Notensystem Ihres Bachelorabschlusses an (z. B. 1,0 in Deutschland).",
+        "bachelorGradeLowerLimit": "Gib die schlechteste Note zum Bestehen im Notensystem Ihres Bachelorabschlusses an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterDegreeName": "Gib den Studiengang deines Masters an.",
         "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
-        "masterGradingScale": "Wähle die Benotungsskala deines Masters (derzeit nur deutsche Skala verfügbar).",
+        "masterGradeUpperLimit": "Gib die beste Note zum Bestehen im Notensystem Ihres Masterabschlusses an (z. B. 1,0 in Deutschland).",
+        "masterGradeLowerLimit": "Gib die schlechteste Note zum Bestehen im Notensystem Ihres Masterabschlusses an (z. B. 4,0 in Deutschland).",
         "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
-      },
-      "gradingConversionBachelor": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Bachelor-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns.",
-      "gradingConversionMaster": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Master-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns."
+      }
     },
     "applicationPage3": {
       "label": {
