@@ -41,7 +41,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   };
 };
 
-type FormatValidator = (value: string) => boolean;
+type FormatValidator = (_: string) => boolean;
 
 function isNumeric(val: string): boolean {
   const trimmed = val.trim();
