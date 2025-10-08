@@ -154,6 +154,8 @@
     },
     "detail_card": {
       "name": "Name",
+      "upper_passing_limit": "Upper Passing Limit",
+      "lower_passing_limit": "Lower Passing Limit",
       "grade": "Grade",
       "university": "University",
       "motivation": "Motivation",

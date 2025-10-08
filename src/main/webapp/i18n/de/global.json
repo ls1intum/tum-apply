@@ -154,6 +154,8 @@
     },
     "detail_card": {
       "name": "Name",
+      "upper_passing_limit": "Obere Bestehensgrenze",
+      "lower_passing_limit": "Untere Bestehensgrenze",
       "grade": "Note",
       "university": "Universität",
       "motivation": "Motivation",
