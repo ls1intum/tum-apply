@@ -164,11 +164,11 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
     const values = [upper?.value, lower?.value, grade?.value];
     if (values.some(v => !v)) return null;
 
-    // Step 1: individual format check
+    // Check individual format validity
     const formatErr = validateFormat([upper, lower, grade], [isNumeric, isLetter, isPercentage]);
     if (formatErr) return { invalidGrade: true };
 
-    // Step 2: same format check
+    // Check if all three values have the same format
     const format = validateSameFormat(values);
     if (!format) {
       [upper, lower, grade].forEach(ctrl => setError(ctrl, 'formatMismatch'));
@@ -177,7 +177,7 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
       [upper, lower, grade].forEach(ctrl => clearError(ctrl, 'formatMismatch'));
     }
 
-    // Step 3: boundary check
+    // Check if upper limit is greater than lower limit
     if (validateBoundaryMismatch(format, upper!.value, lower!.value)) {
       setError(upper, 'boundaryMismatch');
       setError(lower, 'boundaryMismatch');
@@ -187,7 +187,7 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
       clearError(lower, 'boundaryMismatch');
     }
 
-    // Step 4: grade range check
+    // Check if grade is within the limits
     if (validateGradeRange(format, upper!.value, lower!.value, grade!.value)) {
       setError(grade, 'outOfRange');
       return { outOfRange: true };
