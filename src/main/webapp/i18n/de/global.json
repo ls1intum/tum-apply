@@ -108,7 +108,11 @@
         "pattern": "Ungültiges Format.",
         "email": "Ungültige Email-Adresse.",
         "min": "Dieses Feld muss mind. {{min}} sein.",
-        "max": "Dieses Feld darf max. {{max}} sein."
+        "max": "Dieses Feld darf max. {{max}} sein.",
+        "invalidGrade": "Bitte gib die Note als Zahl, Prozentwert oder Buchstabe an.",
+        "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
+        "boundaryMismatch": "Die obere Grenze muss größer als die untere Grenze sein.",
+        "outOfRange": "Die Note muss zwischen der oberen und unteren Bestehensgrenze liegen."
       }
     },
     "editor": {
