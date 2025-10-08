@@ -165,7 +165,9 @@
       "desired_start_date": "Desired Start Date",
       "preferred_language": "Preferred Language",
       "applicant_info": "Applicant Information",
-      "nationality": "Nationality"
+      "nationality": "Nationality",
+      "website": "Website",
+      "linkedin": "LinkedIn"
     },
     "delete": {
       "title": "Confirm delete operation"
@@ -230,8 +232,18 @@
     },
     "application_detail": {
       "applicant": {
-        "header": "Application for '{{jobTitle}}'"
-      }
+        "header": "Application for '{{jobTitle}}'",
+        "title_prefix": "Application for"
+      },
+      "position_overview": "Position Overview",
+      "supervisor": "Supervisor:",
+      "research_group": "Research Group:",
+      "location": "Location:",
+      "view_job_details": "View Job Details",
+      "personal_statements": "Personal Statements",
+      "personal_information": "Personal Information",
+      "personal_documents": "Personal Documents",
+      "not_found": "Application not found"
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",
@@ -415,9 +427,13 @@
           "summary": "Submission failed",
           "detail": "Failed to submit application: {{status}}"
         },
+        "fetchApplicationFailed": {
+          "summary": "Application not loaded",
+          "detail": "The application could not be loaded. Please try again or contact an admin."
+        },
         "fetchDocumentIdsFailed": {
           "summary": "Error",
-          "detail": "Failed to fetch document IDs for this application."
+          "detail": "Failed to fetch document IDs for this application. Please try again or contact an admin."
         },
         "notEditable": {
           "summary": "Error",
@@ -429,19 +445,39 @@
         },
         "saveFailed": {
           "summary": "Error",
-          "detail": "Failed to save application."
+          "detail": "Failed to save application. Please try again or contact an admin."
         },
         "loadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application."
+          "detail": "Failed to load application. Please try again or contact an admin."
         },
         "initLoadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application."
+          "detail": "Failed to load application. Please try again or contact an admin."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Error",
           "detail": "Job ID must be provided when not authenticated."
+        },
+        "applicationDeleted": {
+          "summary": "Application deleted",
+          "detail": "The application was deleted successfully."
+        },
+        "errorDeletingApplication": {
+          "summary": "Delete failed",
+          "detail": "The application could not be deleted. Please try again or contact an admin."
+        },
+        "applicationWithdrawn": {
+          "summary": "Application withdrawn",
+          "detail": "Your application was withdrawn successfully."
+        },
+        "errorWithdrawingApplication": {
+          "summary": "Withdrawal failed",
+          "detail": "The application could not be withdrawn. Please try again or contact an admin."
+        },
+        "jobIdNotAvailable": {
+          "summary": "Error",
+          "detail": "Job ID is not available for this application."
         }
       },
       "applicationOverview": {
