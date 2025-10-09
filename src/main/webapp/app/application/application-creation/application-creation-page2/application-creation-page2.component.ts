@@ -65,7 +65,9 @@ function parseNumeric(val: string): number {
 
 function setError(ctrl: AbstractControl | null | undefined, key: string): void {
   if (!ctrl) return;
-  const errors: ValidationErrors = { ...(ctrl.errors ?? {}) };
+
+  const errors: ValidationErrors = Object.create(null);
+  Object.assign(errors, ctrl.errors ?? {});
   errors[key] = true;
   ctrl.setErrors(errors);
 }
