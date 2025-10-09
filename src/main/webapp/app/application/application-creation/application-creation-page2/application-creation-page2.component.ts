@@ -96,14 +96,9 @@ function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: strin
 }
 
 function validateSameFormat(values: string[]): 'numeric' | 'letter' | 'percentage' | null {
-  const [u, l, g] = values;
-  const allNumeric = isNumeric(u) && isNumeric(l) && isNumeric(g);
-  const allLetters = isLetter(u) && isLetter(l) && isLetter(g);
-  const allPercentages = isPercentage(u) && isPercentage(l) && isPercentage(g);
-
-  if (allNumeric) return 'numeric';
-  if (allLetters) return 'letter';
-  if (allPercentages) return 'percentage';
+  if (values.every(isNumeric)) return 'numeric';
+  if (values.every(isLetter)) return 'letter';
+  if (values.every(isPercentage)) return 'percentage';
   return null;
 }
 
