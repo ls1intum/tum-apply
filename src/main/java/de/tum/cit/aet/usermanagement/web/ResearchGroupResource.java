@@ -3,6 +3,9 @@ package de.tum.cit.aet.usermanagement.web;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.CheckAccess;
+import de.tum.cit.aet.core.security.annotations.Admin;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
@@ -52,7 +55,7 @@ public class ResearchGroupResource {
      * @return paginated list of members
      */
     @GetMapping("/members")
-    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
+    @Admin
     public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembers(pageDTO);
         return ResponseEntity.ok(members);
@@ -65,7 +68,7 @@ public class ResearchGroupResource {
      * @return no content response
      */
     @DeleteMapping("/members/{userId}")
-    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
+    @ProfessorOrAdmin
     public ResponseEntity<Void> removeMemberFromResearchGroup(@PathVariable UUID userId) {
         researchGroupService.removeMemberFromResearchGroup(userId);
         return ResponseEntity.noContent().build();
@@ -120,7 +123,7 @@ public class ResearchGroupResource {
      * @return the created research group in DRAFT state
      */
     @PostMapping("/professor-request")
-    @PreAuthorize("isAuthenticated()") // Any authenticated user can submit a request when using professor onboarding
+    @Authenticated // Any authenticated user can submit a request when using professor onboarding
     public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(
         @Valid @RequestBody ProfessorResearchGroupRequestDTO request
     ) {
@@ -150,7 +153,7 @@ public class ResearchGroupResource {
      * @return the activated research group
      */
     @PostMapping("/{researchGroupId}/activate")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Admin
     public ResponseEntity<ResearchGroupDTO> activateResearchGroup(@PathVariable UUID researchGroupId) {
         ResearchGroup activated = researchGroupService.activateResearchGroup(researchGroupId);
         return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(activated));
@@ -163,7 +166,7 @@ public class ResearchGroupResource {
      * @return the denied research group
      */
     @PostMapping("/{researchGroupId}/deny")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Admin
     public ResponseEntity<ResearchGroupDTO> denyResearchGroup(@PathVariable UUID researchGroupId) {
         ResearchGroup denied = researchGroupService.denyResearchGroup(researchGroupId);
         return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(denied));
