@@ -248,11 +248,11 @@ describe('FilterMultiselect', () => {
     const mockInput = document.createElement('input');
     mockInput.value = 'new search term';
 
-    const mockEvent = {
+    const mockEvent: Partial<Event> = {
       target: mockInput,
-    } as unknown as Event;
+    };
 
-    filterFixture.componentInstance.onSearchChange(mockEvent);
+    filterFixture.componentInstance.onSearchChange(mockEvent as Event);
 
     expect(filterFixture.componentInstance.searchTerm()).toBe('new search term');
   });
@@ -263,9 +263,11 @@ describe('FilterMultiselect', () => {
     filterFixture.componentInstance.isOpen.set(true);
 
     const outsideElement = document.createElement('div');
-    const mockEvent = { target: outsideElement } as unknown as Event;
+    const mockEvent: Partial<Event> = {
+      target: outsideElement,
+    };
 
-    filterFixture.componentInstance.onDocumentClick(mockEvent);
+    filterFixture.componentInstance.onDocumentClick(mockEvent as Event);
 
     expect(filterFixture.componentInstance.isOpen()).toBe(false);
   });
@@ -273,8 +275,14 @@ describe('FilterMultiselect', () => {
   it('should not close dropdown on clicks inside component', () => {
     const fx = createFilterMultiselectFixture();
     fx.componentInstance.isOpen.set(true);
+
     const insideEl = fx.nativeElement.querySelector('.filter-multiselect') ?? fx.nativeElement;
-    fx.componentInstance.onDocumentClick({ target: insideEl } as unknown as Event);
+    const mockEvent: Partial<Event> = {
+      target: insideEl,
+    };
+
+    fx.componentInstance.onDocumentClick(mockEvent as Event);
+
     expect(fx.componentInstance.isOpen()).toBe(true);
   });
 
