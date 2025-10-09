@@ -20,6 +20,7 @@ export abstract class BaseInputDirective<T> {
   tooltipText = input<string | undefined>(undefined);
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
+  customErrorKey = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
   isTouched = signal(false);
@@ -45,6 +46,10 @@ export abstract class BaseInputDirective<T> {
     const ctrl = this.formControl();
     const errors = ctrl.errors;
     if (!errors) return null;
+    const customKey = this.customErrorKey();
+    if (customKey) {
+      return this.translate.instant(customKey);
+    }
     const key = Object.keys(errors)[0];
     const val = errors[key];
     const defaults: Record<string, string> = {
