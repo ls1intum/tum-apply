@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, model, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,70 +10,224 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ApplicantDTO } from '../../../generated/model/applicantDTO';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradingScale: SelectOption;
-  bachelorGrade?: number;
+  bachelorGradeUpperLimit: string;
+  bachelorGradeLowerLimit: string;
+  bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
-  masterGradingScale: SelectOption;
-  masterGrade?: number;
+  masterGradeUpperLimit: string;
+  masterGradeLowerLimit: string;
+  masterGrade: string;
 };
 
-export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
-  value: v,
-  name: `entity.applicationSteps.gradingScale.${v}`,
-}));
-export const masterGradingScale: SelectOption[] = Object.values(ApplicantDTO.MasterGradingScaleEnum).map(v => ({
-  value: v,
-  name: `entity.applicationSteps.gradingScale.${v}`,
-}));
-
 export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
-  const bachelorGradeApplicant = application.applicant?.bachelorGrade;
-  const masterGradeApplicant = application.applicant?.masterGrade;
   return {
     bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
     bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-    bachelorGradingScale: bachelorGradingScale[0], // TODO
-    bachelorGrade: bachelorGradeApplicant !== undefined ? Number.parseFloat(bachelorGradeApplicant) : undefined,
+    bachelorGradeUpperLimit: application.applicant?.bachelorGradeUpperLimit ?? '',
+    bachelorGradeLowerLimit: application.applicant?.bachelorGradeLowerLimit ?? '',
+    bachelorGrade: application.applicant?.bachelorGrade ?? '',
     masterDegreeName: application.applicant?.masterDegreeName ?? '',
     masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: masterGradeApplicant !== undefined ? Number.parseFloat(masterGradeApplicant) : undefined,
+    masterGradeUpperLimit: application.applicant?.masterGradeUpperLimit ?? '',
+    masterGradeLowerLimit: application.applicant?.masterGradeLowerLimit ?? '',
+    masterGrade: application.applicant?.masterGrade ?? '',
   };
 };
+
+function isNumeric(val: string): boolean {
+  const trimmed = val.trim();
+  return /^\d+$/.test(trimmed) || /^\d+[.,]\d+$/.test(trimmed);
+}
+
+function isLetter(val: string): boolean {
+  return /^[A-Za-z][+-]?$/.test(val.trim());
+}
+
+function isPercentage(val: string): boolean {
+  const trimmed = val.trim();
+  return /^\d+%$/.test(trimmed) || /^\d+[.,]\d+%$/.test(trimmed);
+}
+
+function cleanLetter(val: string): string {
+  return val.replace(/[+-]/g, '').toUpperCase().trim();
+}
+
+function parseNumeric(val: string): number {
+  return parseFloat(val.replace('%', '').replace(',', '.'));
+}
+
+function setError(ctrl: AbstractControl | null | undefined, key: string): void {
+  if (!ctrl) return;
+
+  const errors: ValidationErrors = Object.create(null);
+  Object.assign(errors, ctrl.errors ?? {});
+  errors[key] = true;
+  ctrl.setErrors(errors);
+}
+
+function clearError(ctrl: AbstractControl | null | undefined, key: string): void {
+  if (!ctrl?.errors || !(key in ctrl.errors)) return;
+
+  const rest = Object.fromEntries(Object.entries(ctrl.errors).filter(([k]) => k !== key));
+
+  ctrl.setErrors(Object.keys(rest).length ? rest : null);
+}
+
+function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: string) => boolean)[]): string | null {
+  for (const ctrl of ctrls) {
+    const val = ctrl?.value;
+    if (!val) continue;
+    const isValid = formats.some(fn => fn(val));
+    if (!isValid) {
+      setError(ctrl, 'invalidGrade');
+      return 'invalidGrade';
+    } else {
+      clearError(ctrl, 'invalidGrade');
+    }
+  }
+  return null;
+}
+
+function validateSameFormat(values: string[]): 'numeric' | 'letter' | 'percentage' | null {
+  if (values.every(isNumeric)) return 'numeric';
+  if (values.every(isLetter)) return 'letter';
+  if (values.every(isPercentage)) return 'percentage';
+  return null;
+}
+
+function validateBoundaryMismatch(format: string, upper: string, lower: string): boolean {
+  if (format === 'percentage') {
+    return parseNumeric(upper) < parseNumeric(lower);
+  }
+
+  const upperClean = cleanLetter(upper);
+  const lowerClean = cleanLetter(lower);
+  if (upperClean > lowerClean) return true;
+
+  if (upperClean === lowerClean) {
+    const upperSign = upper.slice(-1);
+    const lowerSign = lower.slice(-1);
+
+    return (!/[+-]/.test(upperSign) && lowerSign === '+') || (upperSign === '-' && (lowerSign === '+' || !/[+-]/.test(lowerSign)));
+  }
+
+  return false;
+}
+
+function validateGradeRange(format: string, upper: string, lower: string, grade: string): boolean {
+  if (format === 'percentage') {
+    const u = parseNumeric(upper);
+    const l = parseNumeric(lower);
+    const g = parseNumeric(grade);
+    return g < l || g > u;
+  }
+
+  if (format === 'numeric') {
+    const u = parseNumeric(upper);
+    const l = parseNumeric(lower);
+    const g = parseNumeric(grade);
+    return (l > u && (g < u || g > l)) || (u >= l && (g > u || g < l));
+  }
+
+  const upperClean = cleanLetter(upper);
+  const lowerClean = cleanLetter(lower);
+  const gradeClean = cleanLetter(grade);
+  const outside = gradeClean < upperClean || gradeClean > lowerClean;
+
+  const sameAsUpper = gradeClean === upperClean;
+  const sameAsLower = gradeClean === lowerClean;
+
+  let forbidden = false;
+
+  if (sameAsUpper) {
+    if (upper.endsWith('-') && (!/[+-]$/.test(grade) || grade.endsWith('+'))) forbidden = true;
+    else if (!/[+-]$/.test(upper) && grade.endsWith('+')) forbidden = true;
+  }
+
+  if (sameAsLower) {
+    if (lower.endsWith('+') && (!/[+-]$/.test(grade) || grade.endsWith('-'))) forbidden = true;
+    else if (!/[+-]$/.test(lower) && grade.endsWith('-')) forbidden = true;
+  }
+
+  return outside || forbidden;
+}
+
+export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: string, gradeKey: string) {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const upper = control.get(upperLimitKey);
+    const lower = control.get(lowerLimitKey);
+    const grade = control.get(gradeKey);
+
+    const values = [upper?.value, lower?.value, grade?.value];
+    if (values.some(v => !v)) return null;
+
+    // Check individual format validity
+    const formatErr = validateFormat([upper, lower, grade], [isNumeric, isLetter, isPercentage]);
+    if (formatErr) return { invalidGrade: true };
+
+    // Check if all three values have the same format
+    const format = validateSameFormat(values);
+    if (!format) {
+      [upper, lower, grade].forEach(ctrl => {
+        setError(ctrl, 'formatMismatch');
+      });
+      return { formatMismatch: true };
+    } else {
+      [upper, lower, grade].forEach(ctrl => {
+        clearError(ctrl, 'formatMismatch');
+      });
+    }
+
+    // Check if upper limit is greater than lower limit (not necessary for numeric to allow 1.0 to 4.0 (1.0<4.0) and 100 to 40 (100>40))
+    if (format !== 'numeric') {
+      if (validateBoundaryMismatch(format, upper!.value, lower!.value)) {
+        setError(upper, 'boundaryMismatch');
+        setError(lower, 'boundaryMismatch');
+        return { boundaryMismatch: true };
+      } else {
+        clearError(upper, 'boundaryMismatch');
+        clearError(lower, 'boundaryMismatch');
+      }
+    }
+
+    // Check if grade is within the limits
+    if (validateGradeRange(format, upper!.value, lower!.value, grade!.value)) {
+      setError(grade, 'outOfRange');
+      return { outOfRange: true };
+    } else {
+      clearError(grade, 'outOfRange');
+    }
+
+    return null;
+  };
+}
 
 @Component({
   selector: 'jhi-application-creation-page2',
   imports: [
     CommonModule,
     DividerModule,
-    SelectComponent,
     UploadButtonComponent,
     ReactiveFormsModule,
     StringInputComponent,
     TranslateModule,
-    NumberInputComponent,
     TooltipModule,
     FontAwesomeModule,
     TranslateDirective,
+    NumberInputComponent,
   ],
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
   standalone: true,
 })
 export default class ApplicationCreationPage2Component {
-  BachelorGradingScaleEnumLocal = ApplicantDTO.BachelorGradingScaleEnum;
-  MasterGradingScaleEnumLocal = ApplicantDTO.MasterGradingScaleEnum;
-  bachelorGradingScaleLocal = bachelorGradingScale;
-  masterGradingScaleLocal = masterGradingScale;
-
   data = model.required<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
@@ -87,14 +240,28 @@ export default class ApplicationCreationPage2Component {
   formbuilder = inject(FormBuilder);
   page2Form = computed(() => {
     const currentData = this.data();
-    return this.formbuilder.group({
-      bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
-      bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
-      bachelorGrade: [currentData.bachelorGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
-      masterDegreeName: [currentData.masterDegreeName, Validators.required],
-      masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
-      masterGrade: [currentData.masterGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
-    });
+    const form = this.formbuilder.group(
+      {
+        bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
+        bachelorGradeUpperLimit: [currentData.bachelorGradeUpperLimit, Validators.required],
+        bachelorGradeLowerLimit: [currentData.bachelorGradeLowerLimit, Validators.required],
+        bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
+        bachelorGrade: [currentData.bachelorGrade, Validators.required],
+        masterDegreeName: [currentData.masterDegreeName, Validators.required],
+        masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
+        masterGradeUpperLimit: [currentData.masterGradeUpperLimit, Validators.required],
+        masterGradeLowerLimit: [currentData.masterGradeLowerLimit, Validators.required],
+        masterGrade: [currentData.masterGrade, Validators.required],
+      },
+      {
+        validators: [
+          gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
+          gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
+        ],
+      },
+    );
+
+    return form;
   });
 
   constructor() {
@@ -123,18 +290,4 @@ export default class ApplicationCreationPage2Component {
       });
     });
   }
-
-  setBachelorGradeAsNumber = (gradeInputValue: number | undefined): void => {
-    this.data.set({
-      ...this.data(),
-      bachelorGrade: gradeInputValue,
-    });
-  };
-
-  setMasterGradeAsNumber = (gradeInputValue: number | undefined): void => {
-    this.data.set({
-      ...this.data(),
-      masterGrade: gradeInputValue,
-    });
-  };
 }

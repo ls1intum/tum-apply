@@ -20,23 +20,14 @@ export interface Applicant {
     city?: string;
     country?: string;
     bachelorDegreeName?: string;
-    bachelorGradingScale?: Applicant.BachelorGradingScaleEnum;
+    bachelorGradeUpperLimit?: string;
+    bachelorGradeLowerLimit?: string;
     bachelorGrade?: string;
     bachelorUniversity?: string;
     masterDegreeName?: string;
-    masterGradingScale?: Applicant.MasterGradingScaleEnum;
+    masterGradeUpperLimit?: string;
+    masterGradeLowerLimit?: string;
     masterGrade?: string;
     masterUniversity?: string;
 }
-export namespace Applicant {
-    export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
-    export const BachelorGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
-    };
-    export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
-    export const MasterGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
-    };
-}
-
 

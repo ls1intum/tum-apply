@@ -1268,15 +1268,13 @@ components:
         city: {type: string}
         country: {type: string}
         bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        bachelorGradeUpperLimit: {type: string}
+        bachelorGradeLowerLimit: {type: string}
         bachelorGrade: {type: string}
         bachelorUniversity: {type: string}
         masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        masterGradeUpperLimit: {type: string}
+        masterGradeLowerLimit: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
       required: [user]
@@ -1467,15 +1465,13 @@ components:
         city: {type: string}
         country: {type: string}
         bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        bachelorGradeUpperLimit: {type: string}
+        bachelorGradeLowerLimit: {type: string}
         bachelorGrade: {type: string}
         bachelorUniversity: {type: string}
         masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        masterGradeUpperLimit: {type: string}
+        masterGradeLowerLimit: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
     Application:
@@ -1857,15 +1853,13 @@ components:
       properties:
         user: {$ref: '#/components/schemas/UserForApplicationDetailDTO'}
         bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        bachelorGradeUpperLimit: {type: string}
+        bachelorGradeLowerLimit: {type: string}
         bachelorGrade: {type: string}
         bachelorUniversity: {type: string}
         masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        masterGradeUpperLimit: {type: string}
+        masterGradeLowerLimit: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
       required: [user]

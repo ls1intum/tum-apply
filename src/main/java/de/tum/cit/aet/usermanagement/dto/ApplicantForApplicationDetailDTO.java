@@ -1,18 +1,19 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.validation.constraints.NotNull;
 
 public record ApplicantForApplicationDetailDTO(
     @NotNull UserForApplicationDetailDTO user,
     String bachelorDegreeName,
-    GradingScale bachelorGradingScale,
+    String bachelorGradeUpperLimit,
+    String bachelorGradeLowerLimit,
     String bachelorGrade,
     String bachelorUniversity,
     String masterDegreeName,
-    GradingScale masterGradingScale,
+    String masterGradeUpperLimit,
+    String masterGradeLowerLimit,
     String masterGrade,
     String masterUniversity
 ) {
@@ -28,11 +29,13 @@ public record ApplicantForApplicationDetailDTO(
         return new ApplicantForApplicationDetailDTO(
             UserForApplicationDetailDTO.getFromEntity(applicant.getUser()),
             applicant.getBachelorDegreeName(),
-            applicant.getBachelorGradingScale(),
+            applicant.getBachelorGradeUpperLimit(),
+            applicant.getBachelorGradeLowerLimit(),
             applicant.getBachelorGrade(),
             applicant.getBachelorUniversity(),
             applicant.getMasterDegreeName(),
-            applicant.getMasterGradingScale(),
+            applicant.getMasterGradeUpperLimit(),
+            applicant.getMasterGradeLowerLimit(),
             applicant.getMasterGrade(),
             applicant.getMasterUniversity()
         );

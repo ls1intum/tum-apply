@@ -19,13 +19,13 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
         value = """
             INSERT INTO applicants (
                 user_id, street, postal_code, city, country,
-                bachelor_degree_name, bachelor_grading_scale, bachelor_grade, bachelor_university,
-                master_degree_name, master_grading_scale, master_grade, master_university
+                bachelor_degree_name, bachelor_grade_upper_limit, bachelor_grade_lower_limit, bachelor_grade, bachelor_university,
+                master_degree_name, master_grade_upper_limit, master_grade_lower_limit, master_grade, master_university
             )
             VALUES (
                 :userId, :street, :postalCode, :city, :country,
-                :bachelorDegreeName, :bachelorGradingScale, :bachelorGrade, :bachelorUniversity,
-                :masterDegreeName, :masterGradingScale, :masterGrade, :masterUniversity
+                :bachelorDegreeName, :bachelorGradeUpperLimit, :bachelorGradeLowerLimit, :bachelorGrade, :bachelorUniversity,
+                :masterDegreeName, :masterGradeUpperLimit, :masterGradeLowerLimit, :masterGrade, :masterUniversity
             )
         """,
         nativeQuery = true
@@ -37,11 +37,13 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
         @Param("city") String city,
         @Param("country") String country,
         @Param("bachelorDegreeName") String bachelorDegreeName,
-        @Param("bachelorGradingScale") String bachelorGradingScale,
+        @Param("bachelorGradeUpperLimit") String bachelorGradeUpperLimit,
+        @Param("bachelorGradeLowerLimit") String bachelorGradeLowerLimit,
         @Param("bachelorGrade") String bachelorGrade,
         @Param("bachelorUniversity") String bachelorUniversity,
         @Param("masterDegreeName") String masterDegreeName,
-        @Param("masterGradingScale") String masterGradingScale,
+        @Param("masterGradeUpperLimit") String masterGradeUpperLimit,
+        @Param("masterGradeLowerLimit") String masterGradeLowerLimit,
         @Param("masterGrade") String masterGrade,
         @Param("masterUniversity") String masterUniversity
     );
@@ -55,11 +57,13 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
                 city = :city,
                 country = :country,
                 bachelor_degree_name = :bachelorDegreeName,
-                bachelor_grading_scale = :bachelorGradingScale,
+                bachelor_grade_upper_limit = :bachelorGradeUpperLimit,
+                bachelor_grade_lower_limit = :bachelorGradeLowerLimit,
                 bachelor_grade = :bachelorGrade,
                 bachelor_university = :bachelorUniversity,
                 master_degree_name = :masterDegreeName,
-                master_grading_scale = :masterGradingScale,
+                master_grade_upper_limit = :masterGradeUpperLimit,
+                master_grade_lower_limit = :masterGradeLowerLimit,
                 master_grade = :masterGrade,
                 master_university = :masterUniversity
             WHERE user_id = :userId
@@ -72,11 +76,13 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
         @Param("city") String city,
         @Param("country") String country,
         @Param("bachelorDegreeName") String bachelorDegreeName,
-        @Param("bachelorGradingScale") String bachelorGradingScale,
+        @Param("bachelorGradeUpperLimit") String bachelorGradeUpperLimit,
+        @Param("bachelorGradeLowerLimit") String bachelorGradeLowerLimit,
         @Param("bachelorGrade") String bachelorGrade,
         @Param("bachelorUniversity") String bachelorUniversity,
         @Param("masterDegreeName") String masterDegreeName,
-        @Param("masterGradingScale") String masterGradingScale,
+        @Param("masterGradeUpperLimit") String masterGradeUpperLimit,
+        @Param("masterGradeLowerLimit") String masterGradeLowerLimit,
         @Param("masterGrade") String masterGrade,
         @Param("masterUniversity") String masterUniversity,
         @Param("userId") UUID userId
