@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -227,17 +228,6 @@ public class ResearchGroupService {
             roleOutcome = "updated";
         }
 
-        log.info(
-            "AUDIT research-group.provision by={} targetUserId={} targetUniId={} groupId={} groupName={} userGroupChanged={} roleOutcome={}",
-            currentUserService.getUserId(),
-            user.getUserId(),
-            dto.universityId(),
-            group.getResearchGroupId(),
-            group.getName(),
-            userGroupChanged,
-            roleOutcome
-        );
-
         return group;
     }
 
@@ -260,13 +250,6 @@ public class ResearchGroupService {
         group.setState(ResearchGroupState.ACTIVE);
         ResearchGroup saved = researchGroupRepository.save(group);
 
-        log.info(
-            "AUDIT research-group.activate by={} groupId={} name={}",
-            currentUserService.getUserId(),
-            researchGroupId,
-            group.getName()
-        );
-
         return saved;
     }
 
@@ -288,8 +271,6 @@ public class ResearchGroupService {
         }
         group.setState(ResearchGroupState.DENIED);
         ResearchGroup saved = researchGroupRepository.save(group);
-
-        log.info("AUDIT research-group.deny by={} groupId={} name={}", currentUserService.getUserId(), researchGroupId, group.getName());
 
         return saved;
     }
@@ -320,17 +301,12 @@ public class ResearchGroupService {
         User currentUser = currentUserService.getUser();
 
         if (currentUser.getResearchGroup() != null) {
-            throw new IllegalStateException("User already belongs to a research group");
+            throw new AlreadyMemberOfResearchGroupException("User already belongs to a research group");
         }
 
         if (researchGroupRepository.existsByNameIgnoreCase(request.researchGroupName())) {
             throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
         }
-
-        // TODO: should we update existing user data with the provided info?
-        // if (request.firstName() != null) currentUser.setFirstName(request.firstName());
-        // if (request.lastName() != null) currentUser.setLastName(request.lastName());
-        // if (request.universityId() != null) currentUser.setUniversityId(request.universityID());
 
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setName(StringUtil.normalize(request.researchGroupName(), false));
@@ -357,13 +333,6 @@ public class ResearchGroupService {
         role.setResearchGroup(saved);
         role.setRole(UserRole.PROFESSOR);
         userResearchGroupRoleRepository.save(role);
-
-        log.info(
-            "AUDIT professor-onboarding.create-research-group userId={} groupId={} name={}",
-            currentUser.getUserId(),
-            saved.getResearchGroupId(),
-            request.researchGroupName()
-        );
 
         return saved;
     }

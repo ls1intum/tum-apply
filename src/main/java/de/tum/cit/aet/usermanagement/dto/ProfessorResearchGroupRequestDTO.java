@@ -1,9 +1,12 @@
 package de.tum.cit.aet.usermanagement.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * DTO for professor research group creation requests during onboarding.
  * Contains all fields that a professor can fill in the onboarding form.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ProfessorResearchGroupRequestDTO(
     // Required Personal Information
     String title,

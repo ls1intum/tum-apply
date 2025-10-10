@@ -15,20 +15,17 @@ import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST controller for managing research groups.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/research-groups")
 @RequiredArgsConstructor
@@ -44,6 +41,7 @@ public class ResearchGroupResource {
      */
     @GetMapping
     public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getAllResearchGroups(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+        log.info("GET /api/research-groups?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<ResearchGroupDTO> researchGroups = researchGroupService.getAllResearchGroups(pageDTO);
         return ResponseEntity.ok(researchGroups);
     }
@@ -57,6 +55,7 @@ public class ResearchGroupResource {
     @GetMapping("/members")
     @Admin
     public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+        log.info("GET /api/research-groups/members?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembers(pageDTO);
         return ResponseEntity.ok(members);
     }
@@ -70,6 +69,7 @@ public class ResearchGroupResource {
     @DeleteMapping("/members/{userId}")
     @ProfessorOrAdmin
     public ResponseEntity<Void> removeMemberFromResearchGroup(@PathVariable UUID userId) {
+        log.info("DELETE /api/research-groups/members/{}", userId);
         researchGroupService.removeMemberFromResearchGroup(userId);
         return ResponseEntity.noContent().build();
     }
@@ -82,6 +82,7 @@ public class ResearchGroupResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResearchGroupDTO> getResearchGroup(@PathVariable UUID id) {
+        log.info("GET /api/research-groups/{}", id);
         ResearchGroupDTO researchGroup = researchGroupService.getResearchGroup(id);
         return ResponseEntity.ok(researchGroup);
     }
@@ -95,6 +96,7 @@ public class ResearchGroupResource {
     @GetMapping("/detail/{researchGroupId}")
     @CheckAccess
     public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
+        log.info("GET /api/research-groups/detail/{}", researchGroupId);
         return ResponseEntity.ok(researchGroupService.getResearchGroupDetails(researchGroupId));
     }
 
@@ -111,6 +113,7 @@ public class ResearchGroupResource {
         @PathVariable UUID id,
         @Valid @RequestBody ResearchGroupDTO researchGroupDTO
     ) {
+        log.info("PUT /api/research-groups/{}", id);
         ResearchGroupDTO updatedResearchGroup = researchGroupService.updateResearchGroup(id, researchGroupDTO);
         return ResponseEntity.ok(updatedResearchGroup);
     }
@@ -123,10 +126,11 @@ public class ResearchGroupResource {
      * @return the created research group in DRAFT state
      */
     @PostMapping("/professor-request")
-    @Authenticated // Any authenticated user can submit a request when using professor onboarding
+    @Authenticated
     public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(
         @Valid @RequestBody ProfessorResearchGroupRequestDTO request
     ) {
+        log.info("POST /api/research-groups/professor-request name={} uniId={}", request.researchGroupName(), request.universityId());
         ResearchGroup created = researchGroupService.createProfessorResearchGroupRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
     }
@@ -142,6 +146,7 @@ public class ResearchGroupResource {
     public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getDraftResearchGroups(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
     ) {
+        log.info("GET /api/research-groups/draft?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<ResearchGroupDTO> draftGroups = researchGroupService.getDraftResearchGroups(pageDTO);
         return ResponseEntity.ok(draftGroups);
     }
@@ -155,6 +160,7 @@ public class ResearchGroupResource {
     @PostMapping("/{researchGroupId}/activate")
     @Admin
     public ResponseEntity<ResearchGroupDTO> activateResearchGroup(@PathVariable UUID researchGroupId) {
+        log.info("POST /api/research-groups/{}/activate", researchGroupId);
         ResearchGroup activated = researchGroupService.activateResearchGroup(researchGroupId);
         return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(activated));
     }
@@ -168,6 +174,7 @@ public class ResearchGroupResource {
     @PostMapping("/{researchGroupId}/deny")
     @Admin
     public ResponseEntity<ResearchGroupDTO> denyResearchGroup(@PathVariable UUID researchGroupId) {
+        log.info("POST /api/research-groups/{}/deny", researchGroupId);
         ResearchGroup denied = researchGroupService.denyResearchGroup(researchGroupId);
         return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(denied));
     }
