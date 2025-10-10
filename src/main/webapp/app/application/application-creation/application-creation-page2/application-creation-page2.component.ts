@@ -103,7 +103,7 @@ function validateSameFormat(values: string[]): 'numeric' | 'letter' | 'percentag
 }
 
 function validateBoundaryMismatch(format: string, upper: string, lower: string): boolean {
-  if (format === 'numeric' || format === 'percentage') {
+  if (format === 'percentage') {
     return parseNumeric(upper) < parseNumeric(lower);
   }
 
@@ -122,11 +122,18 @@ function validateBoundaryMismatch(format: string, upper: string, lower: string):
 }
 
 function validateGradeRange(format: string, upper: string, lower: string, grade: string): boolean {
-  if (format === 'numeric' || format === 'percentage') {
+  if (format === 'percentage') {
     const u = parseNumeric(upper);
     const l = parseNumeric(lower);
     const g = parseNumeric(grade);
     return g < l || g > u;
+  }
+
+  if (format === 'numeric') {
+    const u = parseNumeric(upper);
+    const l = parseNumeric(lower);
+    const g = parseNumeric(grade);
+    return (l > u && (g < u || g > l)) || (u >= l && (g > u || g < l));
   }
 
   const upperClean = cleanLetter(upper);
@@ -177,14 +184,17 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
         clearError(ctrl, 'formatMismatch');
       });
     }
-    // Check if upper limit is greater than lower limit
-    if (validateBoundaryMismatch(format, upper!.value, lower!.value)) {
-      setError(upper, 'boundaryMismatch');
-      setError(lower, 'boundaryMismatch');
-      return { boundaryMismatch: true };
-    } else {
-      clearError(upper, 'boundaryMismatch');
-      clearError(lower, 'boundaryMismatch');
+
+    // Check if upper limit is greater than lower limit (not necessary for numeric to allow 1.0 to 4.0 (1.0<4.0) and 100 to 40 (100>40))
+    if (format !== 'numeric') {
+      if (validateBoundaryMismatch(format, upper!.value, lower!.value)) {
+        setError(upper, 'boundaryMismatch');
+        setError(lower, 'boundaryMismatch');
+        return { boundaryMismatch: true };
+      } else {
+        clearError(upper, 'boundaryMismatch');
+        clearError(lower, 'boundaryMismatch');
+      }
     }
 
     // Check if grade is within the limits
