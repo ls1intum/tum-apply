@@ -31,7 +31,21 @@ public class PageUtil {
         /**
          * Sortable columns used in research group listings.
          */
-        RESEARCH_GROUPS(Set.of("head", "name", "abbreviation", "email", "website", "school", "description", "defaultFieldOfStudies", "street", "postalCode", "city"));
+        RESEARCH_GROUPS(
+            Set.of(
+                "head",
+                "name",
+                "abbreviation",
+                "email",
+                "website",
+                "school",
+                "description",
+                "defaultFieldOfStudies",
+                "street",
+                "postalCode",
+                "city"
+            )
+        );
 
         private final Set<String> sortableColumns;
 

@@ -2,9 +2,14 @@ package de.tum.cit.aet.usermanagement.repository;
 
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,4 +21,17 @@ public interface ResearchGroupRepository extends TumApplyJpaRepository<ResearchG
     default ResearchGroup findByIdElseThrow(UUID researchGroupId) {
         return getArbitraryValueElseThrow(findById(researchGroupId));
     }
+
+    @NotNull
+    default ResearchGroup findByUniversityIdElseThrow(String universityId) {
+        return getArbitraryValueElseThrow(findByUniversityId(universityId));
+    }
+
+    Optional<ResearchGroup> findByUniversityId(String universityId);
+
+    boolean existsByNameIgnoreCase(String name);
+    Optional<ResearchGroup> findByNameIgnoreCase(String name);
+
+    List<ResearchGroup> findByState(ResearchGroupState state);
+    Page<ResearchGroup> findByState(ResearchGroupState state, Pageable pageable);
 }

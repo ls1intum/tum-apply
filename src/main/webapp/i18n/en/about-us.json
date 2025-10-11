@@ -1,0 +1,13 @@
+{
+  "about-us": {
+    "headline": "About Us",
+    "chair": {
+      "description": "This platform is developed and maintained by the Applied Education Technologies Team at TUM.",
+      "contact": "Postal address: Boltzmannstrasse 3, D-85748 Garching b. Muenchen"
+    },
+    "support": {
+      "headline": "Support Mailbox",
+      "mailbox": "For any questions, please contact us at: <a href='mailto:support-tum-apply.aet@xcit.tum.de' class='external-link'>support-tum-apply.aet@xcit.tum.de</a>"
+    }
+  }
+}

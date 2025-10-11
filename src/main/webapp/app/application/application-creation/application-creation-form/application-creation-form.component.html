@@ -10,18 +10,23 @@
   (confirmed)="onConfirmSend()"
 />
 
-<ng-template #panel1>
+<ng-template #personalInfoPanel>
   <div class="panel">
-    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
+    <jhi-application-creation-page1
+      class="w-full"
+      [(data)]="personalInfoData"
+      (valid)="onPersonalInfoDataValidityChanged($event)"
+      (changed)="onValueChanged()"
+    />
   </div>
 </ng-template>
 
-<ng-template #panel2>
+<ng-template #educationPanel>
   <div class="panel">
     <jhi-application-creation-page2
       class="w-full"
-      [(data)]="page2"
-      (valid)="onPage2ValidityChanged($event)"
+      [(data)]="educationData"
+      (valid)="onEducationDataValidityChanged($event)"
       (changed)="onValueChanged()"
       [applicationIdForDocuments]="applicationId()"
       [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
@@ -30,14 +35,14 @@
   </div>
 </ng-template>
 
-<ng-template #panel3>
+<ng-template #applicationDetailsPanel>
   <div class="panel">
-    @if (page3()) {
+    @if (applicationDetailsData()) {
       <jhi-application-creation-page3
         class="w-full"
-        [(data)]="page3"
+        [(data)]="applicationDetailsData"
         (changed)="onValueChanged()"
-        (valid)="onPage3ValidityChanged($event)"
+        (valid)="onApplicationDetailsDataValidityChanged($event)"
         [applicationIdForDocuments]="applicationId()"
         [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
         [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
@@ -46,16 +51,15 @@
   </div>
 </ng-template>
 
-<ng-template #panel4>
-  <div class="panel">
-    <!-- Summary panel -->
-    <div class="summary_page">
-      <h2 jhiTranslate="entity.applicationPage4.title"></h2>
-      <p jhiTranslate="entity.applicationPage4.message"></p>
-
-      <jhi-application-detail-for-applicant [previewDetailData]="previewData()" [previewDocumentData]="documentIds()" class="w-full" />
-    </div>
-  </div>
+<ng-template #summaryPanel>
+  <p jhiTranslate="entity.applicationPage4.message"></p>
+  <!-- Summary panel -->
+  <jhi-application-detail-for-applicant
+    [previewDetailData]="previewData()"
+    [previewDocumentData]="documentIds()"
+    [isSummaryPage]="true"
+    class="w-full"
+  />
 
   <p-divider layout="horizontal">
     <span jhiTranslate="privacy.privacyConsent.title"></span>
@@ -68,7 +72,7 @@
   <div [formGroup]="additionalInfoForm">
     <label>
       <input type="checkbox" formControlName="privacyAccepted" />
-      <span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
+      <span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
     </label>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
@@ -84,13 +88,9 @@
   </div>
 </ng-template>
 
-<div class="ml-8 mb-8 p-2">
-  <header>
+<div class="page-container">
+  <div class="page-header">
     <h1>{{ this.title() }}</h1>
-  </header>
-  <span class="font-bold">Technical University of Munich - School of Computation, Information and Technology</span>
-</div>
-
-<div class="m-4 p-1">
+  </div>
   <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
 </div>

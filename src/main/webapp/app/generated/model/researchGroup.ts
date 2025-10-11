@@ -25,6 +25,17 @@ export interface ResearchGroup {
     street?: string;
     postalCode?: string;
     city?: string;
+    universityId?: string;
+    state?: ResearchGroup.StateEnum;
     userRoles?: Array<UserResearchGroupRole>;
 }
+export namespace ResearchGroup {
+    export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
+    export const StateEnum = {
+        Draft: 'DRAFT' as StateEnum,
+        Active: 'ACTIVE' as StateEnum,
+        Denied: 'DENIED' as StateEnum
+    };
+}
+
 

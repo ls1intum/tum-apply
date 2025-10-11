@@ -10,8 +10,8 @@ import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-
-import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { DividerModule } from 'primeng/divider';
 
 export interface ResearchGroupFormData {
   name: string;
@@ -28,7 +28,16 @@ export interface ResearchGroupFormData {
 
 @Component({
   selector: 'jhi-research-group-info',
-  imports: [CommonModule, StringInputComponent, ButtonComponent, EditorComponent, TranslateModule, TranslateDirective, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    StringInputComponent,
+    ButtonComponent,
+    EditorComponent,
+    TranslateModule,
+    TranslateDirective,
+    ReactiveFormsModule,
+    DividerModule,
+  ],
   templateUrl: './research-group-info.component.html',
   styleUrl: './research-group-info.component.scss',
 })

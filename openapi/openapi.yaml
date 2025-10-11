@@ -2,10 +2,6 @@ openapi: 3.1.0
 info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
-tags:
-- name: Actuator
-  description: Monitor and interact
-  externalDocs: {description: Spring Boot Actuator Web API Documentation, url: 'https://docs.spring.io/spring-boot/docs/current/actuator-api/html/'}
 paths:
   /api/users/password:
     put:
@@ -303,45 +299,51 @@ paths:
         schema: {type: string}
       responses:
         '200': {description: OK}
-  /management/loggers/{name}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers-name'
-      operationId: loggerLevels
+  /api/research-groups/{researchGroupId}/deny:
+    post:
+      tags: [research-group-resource]
+      operationId: denyResearchGroup
       parameters:
-      - name: name
+      - name: researchGroupId
         in: path
         required: true
-        schema: {type: string}
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
           content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
             application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
+              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/{researchGroupId}/activate:
     post:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers-name'
-      operationId: configureLogLevel
+      tags: [research-group-resource]
+      operationId: activateResearchGroup
       parameters:
-      - name: name
+      - name: researchGroupId
         in: path
         required: true
-        schema: {type: string}
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/professor-request:
+    post:
+      tags: [research-group-resource]
+      operationId: createProfessorResearchGroupRequest
       requestBody:
         content:
           application/json:
-            schema:
-              type: string
-              enum: [TRACE, DEBUG, INFO, WARN, ERROR, FATAL, 'OFF']
+            schema: {$ref: '#/components/schemas/ProfessorResearchGroupRequestDTO'}
+        required: true
       responses:
-        '204': {description: No Content}
-        '400': {description: Bad Request}
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
   /api/me/prof-onboarding/remind:
     post:
       tags: [prof-onboarding-resource]
@@ -546,276 +548,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /management:
-    get:
-      tags: [Actuator]
-      summary: Actuator root web endpoint
-      operationId: links
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-  /management/threaddump:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'threaddump'
-      operationId: threadDump
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain;charset=UTF-8:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/loggers:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers'
-      operationId: loggers
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/liquibase:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'liquibase'
-      operationId: liquibaseBeans
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/jhiopenapigroups:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'jhiopenapigroups'
-      operationId: allOpenApi
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/jhimetrics:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'jhimetrics'
-      operationId: allMetrics
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/info:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'info'
-      operationId: info
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/health:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'health'
-      operationId: health
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/env:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'env'
-      operationId: environment
-      parameters:
-      - name: pattern
-        in: query
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/env/{toMatch}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'env-toMatch'
-      operationId: environmentEntry
-      parameters:
-      - name: toMatch
-        in: path
+  /api/admin/research-groups/provision:
+    post:
+      tags: [admin-resource]
+      operationId: provisionResearchGroup
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ResearchGroupProvisionDTO'}
         required: true
-        schema: {type: string}
       responses:
         '200':
           description: OK
           content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
             application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-  /management/configprops:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'configprops'
-      operationId: configurationProperties
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/configprops/{prefix}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'configprops-prefix'
-      operationId: configurationPropertiesWithPrefix
-      parameters:
-      - name: prefix
-        in: path
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-  /management/caches:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches'
-      operationId: caches
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-    delete:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches'
-      operationId: clearCaches
-      responses:
-        '204': {description: No Content}
-  /management/caches/{cache}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches-cache'
-      operationId: cache
-      parameters:
-      - name: cache
-        in: path
-        required: true
-        schema: {type: string}
-      - name: cacheManager
-        in: query
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-    delete:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches-cache'
-      operationId: clearCache
-      parameters:
-      - name: cache
-        in: path
-        required: true
-        schema: {type: string}
-      - name: cacheManager
-        in: query
-        schema: {type: string}
-      responses:
-        '204': {description: No Content}
-        '404': {description: Not Found}
+              schema: {$ref: '#/components/schemas/ResearchGroup'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -864,6 +611,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
+  /api/research-groups/draft:
+    get:
+      tags: [research-group-resource]
+      operationId: getDraftResearchGroups
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]
@@ -879,6 +645,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupLargeDTO'}
+  /api/public/config:
+    get:
+      tags: [public-config-resource]
+      operationId: config
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
   /api/me/prof-onboarding:
     get:
       tags: [prof-onboarding-resource]
@@ -927,16 +705,18 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32, minimum: 0}
-      - name: title
-        in: query
-        required: false
-        schema: {type: string}
-      - name: state
+      - name: titles
         in: query
         required: false
         schema:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+          type: array
+          items: {type: string}
+      - name: states
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
       - name: sortBy
         in: query
         required: false
@@ -947,12 +727,26 @@ paths:
         schema:
           type: string
           enum: [ASC, DESC]
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageCreatedJobDTO'}
+  /api/jobs/filters:
+    get:
+      tags: [job-resource]
+      operationId: getAllFilters
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JobFiltersDTO'}
   /api/jobs/detail/{jobId}:
     get:
       tags: [job-resource]
@@ -981,29 +775,33 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32, minimum: 0}
-      - name: title
-        in: query
-        required: false
-        schema: {type: string}
-      - name: fieldOfStudies
-        in: query
-        required: false
-        schema: {type: string}
-      - name: location
+      - name: titles
         in: query
         required: false
         schema:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
-      - name: professorName
+          type: array
+          items: {type: string}
+      - name: fieldOfStudies
         in: query
         required: false
-        schema: {type: string}
-      - name: workload
+        schema:
+          type: array
+          items: {type: string}
+      - name: locations
         in: query
         required: false
-        schema: {type: integer, format: int32, minimum: 0}
+        schema:
+          type: array
+          items:
+            type: string
+            enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+              SINGAPORE]
+      - name: professorNames
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
       - name: sortBy
         in: query
         required: false
@@ -1014,12 +812,28 @@ paths:
         schema:
           type: string
           enum: [ASC, DESC]
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageJobCardDTO'}
+  /api/jobs/allNames:
+    get:
+      tags: [job-resource]
+      operationId: getAllJobNamesByProfessor
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {type: string}
   /api/evaluation/jobs:
     get:
       tags: [application-evaluation-resource]
@@ -1436,6 +1250,9 @@ components:
         street: {type: string}
         postalCode: {type: string}
         city: {type: string}
+        state:
+          type: string
+          enum: [DRAFT, ACTIVE, DENIED]
       required: [head, name]
     JobFormDTO:
       type: object
@@ -1610,6 +1427,24 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
+    ProfessorResearchGroupRequestDTO:
+      type: object
+      properties:
+        title: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        universityId: {type: string}
+        researchGroupHead: {type: string}
+        researchGroupName: {type: string}
+        abbreviation: {type: string}
+        contactEmail: {type: string}
+        website: {type: string}
+        school: {type: string}
+        description: {type: string}
+        defaultFieldOfStudies: {type: string}
+        street: {type: string}
+        postalCode: {type: string}
+        city: {type: string}
     RejectDTO:
       type: object
       properties:
@@ -1635,6 +1470,7 @@ components:
       properties:
         expiresIn: {type: integer, format: int64}
         refreshExpiresIn: {type: integer, format: int64}
+        profileRequired: {type: boolean}
     OtpCompleteDTO:
       type: object
       properties:
@@ -1671,123 +1507,12 @@ components:
         size: {type: integer, format: int64}
         name: {type: string}
       required: [id, size]
-    Link:
+    ResearchGroupProvisionDTO:
       type: object
       properties:
-        href: {type: string}
-        templated: {type: boolean}
-    UserShortDTO:
-      type: object
-      properties:
-        userId: {type: string, format: uuid}
-        email: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        roles:
-          type: array
-          items:
-            type: string
-            enum: [APPLICANT, PROFESSOR, ADMIN]
-        researchGroup: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
-    PageResponseDTOResearchGroupDTO:
-      type: object
-      properties:
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/ResearchGroupDTO'}
-        totalElements: {type: integer, format: int64}
-    PageResponseDTOUserShortDTO:
-      type: object
-      properties:
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/UserShortDTO'}
-        totalElements: {type: integer, format: int64}
-    ResearchGroupLargeDTO:
-      type: object
-      properties:
-        description: {type: string}
-        email: {type: string}
-        website: {type: string}
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
-    ProfOnboardingDTO:
-      type: object
-      properties:
-        show: {type: boolean}
-    JobDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        title: {type: string}
-        researchArea: {type: string}
-        fieldOfStudies: {type: string}
-        supervisingProfessor: {type: string, format: uuid}
-        location:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
-        startDate: {type: string, format: date}
-        endDate: {type: string, format: date}
-        workload: {type: integer, format: int32}
-        contractDuration: {type: integer, format: int32}
-        fundingType:
-          type: string
-          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-            GOVERNMENT_FUNDED, RESEARCH_GRANT]
-        description: {type: string}
-        tasks: {type: string}
-        requirements: {type: string}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-      required: [jobId, state, supervisingProfessor, title]
-    CreatedJobDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        avatar: {type: string}
-        professorName: {type: string}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-        title: {type: string}
-        startDate: {type: string, format: date}
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-      required: [jobId, title]
-    PageCreatedJobDTO:
-      type: object
-      properties:
-        totalElements: {type: integer, format: int64}
-        totalPages: {type: integer, format: int32}
-        first: {type: boolean}
-        last: {type: boolean}
-        size: {type: integer, format: int32}
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/CreatedJobDTO'}
-        number: {type: integer, format: int32}
-        sort: {$ref: '#/components/schemas/SortObject'}
-        numberOfElements: {type: integer, format: int32}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
-        empty: {type: boolean}
-    PageableObject:
-      type: object
-      properties:
-        offset: {type: integer, format: int64}
-        sort: {$ref: '#/components/schemas/SortObject'}
-        paged: {type: boolean}
-        pageNumber: {type: integer, format: int32}
-        pageSize: {type: integer, format: int32}
-        unpaged: {type: boolean}
-    SortObject:
-      type: object
-      properties:
-        empty: {type: boolean}
-        sorted: {type: boolean}
-        unsorted: {type: boolean}
+        universityId: {type: string, maxLength: 7, minLength: 3}
+        researchGroupId: {type: string, format: uuid}
+      required: [universityId]
     Applicant:
       type: object
       properties:
@@ -1927,6 +1652,195 @@ components:
           type: array
           items: {$ref: '#/components/schemas/Application'}
           uniqueItems: true
+    ResearchGroup:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        lastModifiedAt: {type: string, format: date-time}
+        researchGroupId: {type: string, format: uuid}
+        head: {type: string}
+        name: {type: string}
+        abbreviation: {type: string}
+        email: {type: string}
+        website: {type: string}
+        school: {type: string}
+        description: {type: string}
+        defaultFieldOfStudies: {type: string}
+        street: {type: string}
+        postalCode: {type: string}
+        city: {type: string}
+        universityId: {type: string}
+        state:
+          type: string
+          enum: [DRAFT, ACTIVE, DENIED]
+        userRoles:
+          type: array
+          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
+          uniqueItems: true
+    User:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        lastModifiedAt: {type: string, format: date-time}
+        userId: {type: string, format: uuid}
+        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
+        email: {type: string}
+        avatar: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        gender: {type: string}
+        nationality: {type: string}
+        birthday: {type: string, format: date}
+        phoneNumber: {type: string}
+        website: {type: string}
+        linkedinUrl: {type: string}
+        selectedLanguage: {type: string}
+        universityId: {type: string}
+        postedJobs:
+          type: array
+          items: {$ref: '#/components/schemas/Job'}
+          uniqueItems: true
+        researchGroupRoles:
+          type: array
+          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
+          uniqueItems: true
+        emailSettings:
+          type: array
+          items: {$ref: '#/components/schemas/EmailSetting'}
+          uniqueItems: true
+    UserResearchGroupRole:
+      type: object
+      properties:
+        userResearchGroupRoleId: {type: string, format: uuid}
+        user: {$ref: '#/components/schemas/User'}
+        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
+        role:
+          type: string
+          enum: [APPLICANT, PROFESSOR, ADMIN]
+    UserShortDTO:
+      type: object
+      properties:
+        userId: {type: string, format: uuid}
+        email: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        roles:
+          type: array
+          items:
+            type: string
+            enum: [APPLICANT, PROFESSOR, ADMIN]
+        researchGroup: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
+    PageResponseDTOResearchGroupDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/ResearchGroupDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOUserShortDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/UserShortDTO'}
+        totalElements: {type: integer, format: int64}
+    ResearchGroupLargeDTO:
+      type: object
+      properties:
+        description: {type: string}
+        email: {type: string}
+        website: {type: string}
+        street: {type: string}
+        postalCode: {type: string}
+        city: {type: string}
+    ProfOnboardingDTO:
+      type: object
+      properties:
+        show: {type: boolean}
+    JobDTO:
+      type: object
+      properties:
+        jobId: {type: string, format: uuid}
+        title: {type: string}
+        researchArea: {type: string}
+        fieldOfStudies: {type: string}
+        supervisingProfessor: {type: string, format: uuid}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
+        startDate: {type: string, format: date}
+        endDate: {type: string, format: date}
+        workload: {type: integer, format: int32}
+        contractDuration: {type: integer, format: int32}
+        fundingType:
+          type: string
+          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
+            GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        description: {type: string}
+        tasks: {type: string}
+        requirements: {type: string}
+        state:
+          type: string
+          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+      required: [jobId, state, supervisingProfessor, title]
+    CreatedJobDTO:
+      type: object
+      properties:
+        jobId: {type: string, format: uuid}
+        avatar: {type: string}
+        professorName: {type: string}
+        state:
+          type: string
+          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        title: {type: string}
+        startDate: {type: string, format: date}
+        createdAt: {type: string, format: date-time}
+        lastModifiedAt: {type: string, format: date-time}
+      required: [jobId, title]
+    PageCreatedJobDTO:
+      type: object
+      properties:
+        totalElements: {type: integer, format: int64}
+        totalPages: {type: integer, format: int32}
+        size: {type: integer, format: int32}
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/CreatedJobDTO'}
+        number: {type: integer, format: int32}
+        sort: {$ref: '#/components/schemas/SortObject'}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        numberOfElements: {type: integer, format: int32}
+        first: {type: boolean}
+        last: {type: boolean}
+        empty: {type: boolean}
+    PageableObject:
+      type: object
+      properties:
+        offset: {type: integer, format: int64}
+        sort: {$ref: '#/components/schemas/SortObject'}
+        paged: {type: boolean}
+        pageNumber: {type: integer, format: int32}
+        pageSize: {type: integer, format: int32}
+        unpaged: {type: boolean}
+    SortObject:
+      type: object
+      properties:
+        empty: {type: boolean}
+        sorted: {type: boolean}
+        unsorted: {type: boolean}
+    JobFiltersDTO:
+      type: object
+      properties:
+        jobNames:
+          type: array
+          items: {type: string}
+        fieldsOfStudy:
+          type: array
+          items: {type: string}
+        supervisorNames:
+          type: array
+          items: {type: string}
     JobDetailDTO:
       type: object
       properties:
@@ -1956,81 +1870,21 @@ components:
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
         title]
-    ResearchGroup:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        researchGroupId: {type: string, format: uuid}
-        head: {type: string}
-        name: {type: string}
-        abbreviation: {type: string}
-        email: {type: string}
-        website: {type: string}
-        school: {type: string}
-        description: {type: string}
-        defaultFieldOfStudies: {type: string}
-        street: {type: string}
-        postalCode: {type: string}
-        city: {type: string}
-        userRoles:
-          type: array
-          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
-          uniqueItems: true
-    User:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        userId: {type: string, format: uuid}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        email: {type: string}
-        avatar: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        gender: {type: string}
-        nationality: {type: string}
-        birthday: {type: string, format: date}
-        phoneNumber: {type: string}
-        website: {type: string}
-        linkedinUrl: {type: string}
-        selectedLanguage: {type: string}
-        postedJobs:
-          type: array
-          items: {$ref: '#/components/schemas/Job'}
-          uniqueItems: true
-        researchGroupRoles:
-          type: array
-          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
-          uniqueItems: true
-        emailSettings:
-          type: array
-          items: {$ref: '#/components/schemas/EmailSetting'}
-          uniqueItems: true
-    UserResearchGroupRole:
-      type: object
-      properties:
-        userResearchGroupRoleId: {type: string, format: uuid}
-        user: {$ref: '#/components/schemas/User'}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        role:
-          type: string
-          enum: [APPLICANT, PROFESSOR, ADMIN]
     PageJobCardDTO:
       type: object
       properties:
         totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
-        first: {type: boolean}
-        last: {type: boolean}
         size: {type: integer, format: int32}
         content:
           type: array
           items: {$ref: '#/components/schemas/JobCardDTO'}
         number: {type: integer, format: int32}
         sort: {$ref: '#/components/schemas/SortObject'}
-        numberOfElements: {type: integer, format: int32}
         pageable: {$ref: '#/components/schemas/PageableObject'}
+        numberOfElements: {type: integer, format: int32}
+        first: {type: boolean}
+        last: {type: boolean}
         empty: {type: boolean}
     JobFilterOptionDTO:
       type: object
@@ -2076,16 +1930,20 @@ components:
       type: object
       properties:
         applicationId: {type: string, format: uuid}
+        jobId: {type: string, format: uuid}
         applicant: {$ref: '#/components/schemas/ApplicantForApplicationDetailDTO'}
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
+        supervisingProfessorName: {type: string}
+        researchGroup: {type: string}
         jobTitle: {type: string}
+        jobLocation: {type: string}
         desiredDate: {type: string, format: date}
         projects: {type: string}
         specialSkills: {type: string}
         motivation: {type: string}
-      required: [applicationId, applicationState]
+      required: [applicationId, applicationState, jobId, researchGroup, supervisingProfessorName]
     ApplicationEvaluationDetailDTO:
       type: object
       properties:

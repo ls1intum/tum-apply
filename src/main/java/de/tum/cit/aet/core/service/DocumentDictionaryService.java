@@ -10,13 +10,12 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.service.support.DocumentDictionaryOwnerSetter;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import lombok.AllArgsConstructor;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Service;
-
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor

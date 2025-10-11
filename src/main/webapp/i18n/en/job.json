@@ -10,6 +10,10 @@
         "positionDetails": "Position Details",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
+      },
+      "basicInfo": {
+        "section1": "Overview",
+        "section2": "Employment Terms"
       }
     },
     "basicInformationSection": {
@@ -101,12 +105,25 @@
   "jobOverviewPage": {
     "title": "Find Your Perfect Position",
     "noJobsFound": "No Jobs Found.",
+    "searchFilterSortBar": {
+      "searchText": "Search Positions...",
+      "filterOptions": {
+        "job": "Position",
+        "jobSearchPlaceholder": "Search Positions...",
+        "fieldOfStudies": "Field of Studies",
+        "fieldOfStudiesPlaceholder": "Search Field of Studies...",
+        "location": "Location",
+        "LocationSearchPlaceholder": "Search Locations...",
+        "supervisor": "Supervisor",
+        "supervisorSearchPlaceholder": "Search Supervisors..."
+      }
+    },
     "sortingOptions": {
       "startDate": "Start Date",
       "jobTitle": "Job Title",
       "fieldOfStudies": "Field of Studies",
       "location": "Location",
-      "professor": "Professor",
+      "professor": "Supervisor (Last name)",
       "workload": "Workload"
     },
     "tooltips": {
@@ -116,12 +133,29 @@
       "workload": "Workload",
       "startDate": "Start Date"
     },
-    "hoursPerWeek": "{{workload}} h/week"
+    "hoursPerWeek": "{{workload}} h/week",
+    "errors": {
+      "loadFilter": {
+        "summary": "Error loading filter options",
+        "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+      },
+      "loadJobs": {
+        "summary": "Error loading positions",
+        "detail": "Failed to load available positions. Please try refreshing the page, or contact us if the problem continues."
+      }
+    }
   },
   "myPositionsPage": {
     "header": {
       "title": "Manage your Doctorate Positions",
       "createButton": "Create New Position"
+    },
+    "searchFilterSortBar": {
+      "searchText": "Search Positions...",
+      "filterOptions": {
+        "jobSearchPlaceholder": "Search Jobs...",
+        "stateSearchPlaceholder": "Search Status..."
+      }
     },
     "tableColumn": {
       "supervisingProfessor": "Supervising Professor",
@@ -131,18 +165,15 @@
       "created": "Created",
       "lastModified": "Last Modified"
     },
-    "sortingOptions": {
-      "lastModified": "Last Modified",
-      "jobTitle": "Job Title",
-      "status": "Status",
-      "startDate": "Start Date",
-      "created": "Created"
-    },
     "confirmDialog": {
       "closeHeader": "Confirm Position Closure",
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",
       "deleteHeader": "Confirm Delete Operation",
       "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!"
+    },
+    "errors": {
+      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues.",
+      "loadJobs": "Failed to load jobs. Please try refreshing the page, or contact us if the problem continues."
     }
   },
   "jobDetailPage": {
@@ -202,5 +233,31 @@
     "unknown": "Unknown"
   },
   "job": "Position",
-  "jobs": "Positions"
+  "jobs": "Positions",
+  "toast": {
+    "published": {
+      "summary": "Published",
+      "detail": "Thank you. The job has been published successfully."
+    },
+    "publishFailed": {
+      "summary": "Publish failed",
+      "detail": "The job could not be published. Please review your inputs or try again."
+    },
+    "loadFailed": {
+      "summary": "Load failed",
+      "detail": "The form could not be loaded. Please refresh the page."
+    },
+    "saveFailed": {
+      "summary": "Save failed",
+      "detail": "Changes could not be saved. Please check your connection and save again."
+    },
+    "invalidJobId": {
+      "summary": "Invalid job ID",
+      "detail": "We couldn't find this job. Please open it from “My Positions” and try again."
+    },
+    "authRequired": {
+      "summary": "Sign-in required",
+      "detail": "Please sign in to continue."
+    }
+  }
 }

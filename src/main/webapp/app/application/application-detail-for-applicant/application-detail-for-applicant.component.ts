@@ -1,20 +1,33 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import DocumentGroupComponent from 'app/shared/components/molecules/document-group/document-group.component';
-import { ApplicationDetailCardComponent } from 'app/shared/components/organisms/application-detail-card/application-detail-card.component';
+import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
-  imports: [ApplicationDetailCardComponent, DocumentGroupComponent, SharedModule, ApplicationStateForApplicantsComponent, ButtonComponent],
+  imports: [
+    SharedModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    ApplicationStateForApplicantsComponent,
+    DocumentViewerComponent,
+    ConfirmDialogModule,
+    ConfirmDialog,
+    TranslateModule,
+  ],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
@@ -22,6 +35,7 @@ export default class ApplicationDetailForApplicantComponent {
   // preview application data passed from parent component (if any)
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
+  isSummaryPage = input<boolean>(false);
 
   // actual application data fetched from the backend
   actualDetailDataExists = signal<boolean>(false);
@@ -48,41 +62,92 @@ export default class ApplicationDetailForApplicantComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private readonly translationKey = 'entity.toast.applyFlow';
 
   constructor() {
     // Only initialize if we're on a detail page route (has application_id param)
     // and not in preview mode
     const applicationId = this.route.snapshot.paramMap.get('application_id');
-    if (applicationId && !this.previewDetailData()) {
-      this.init();
+    if (applicationId !== null && !this.previewDetailData()) {
+      void this.init();
     }
   }
 
   async init(): Promise<void> {
     const applicationId = this.route.snapshot.paramMap.get('application_id');
     if (applicationId === null) {
-      this.toastService.showErrorKey('entity.toast.applyFlow.invalidApplicationId');
+      this.toastService.showErrorKey(`${this.translationKey}.invalidApplicationId`);
     } else {
       this.applicationId.set(applicationId);
     }
 
-    const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
-    this.actualDetailData.set(application);
-    this.actualDetailDataExists.set(true);
+    try {
+      const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
+      this.actualDetailData.set(application);
+      this.actualDetailDataExists.set(true);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.fetchApplicationFailed`);
+    }
 
-    firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()))
-      .then(ids => {
-        this.actualDocumentData.set(ids);
-        this.actualDocumentDataExists.set(true);
-      })
-      .catch(() => this.toastService.showErrorKey('entity.toast.applyFlow.fetchDocumentIdsFailed'));
+    try {
+      const ids = await firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()));
+      this.actualDocumentData.set(ids);
+      this.actualDocumentDataExists.set(true);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`);
+    }
   }
 
   onUpdateApplication(): void {
-    this.router.navigate(['/application/form'], {
+    void this.router.navigate(['/application/form'], {
       queryParams: {
         application: this.applicationId(),
       },
     });
+  }
+
+  onViewJobDetails(): void {
+    const jobIdValue = this.application()?.jobId;
+    if (jobIdValue !== undefined && jobIdValue !== '') {
+      void this.router.navigate(['/job/detail', jobIdValue]);
+    } else {
+      this.toastService.showErrorKey(`${this.translationKey}.jobIdNotAvailable`);
+    }
+  }
+
+  onDeleteApplication(): void {
+    const applicationId = this.applicationId();
+    if (applicationId) {
+      this.applicationService.deleteApplication(applicationId).subscribe({
+        next: () => {
+          this.toastService.showSuccessKey(`${this.translationKey}.applicationDeleted`);
+          void this.router.navigate(['/application/overview']);
+        },
+        error: () => {
+          this.toastService.showErrorKey(`${this.translationKey}.errorDeletingApplication`);
+        },
+      });
+    }
+  }
+
+  onWithdrawApplication(): void {
+    const applicationId = this.applicationId();
+    if (applicationId) {
+      this.applicationService.withdrawApplication(applicationId).subscribe({
+        next: () => {
+          this.toastService.showSuccessKey(`${this.translationKey}.applicationWithdrawn`);
+          // Refresh the application data to show updated state
+          void this.init();
+        },
+        error: () => {
+          this.toastService.showErrorKey(`${this.translationKey}.errorWithdrawingApplication`);
+        },
+      });
+    }
+  }
+
+  onBack(): void {
+    this.location.back();
   }
 }

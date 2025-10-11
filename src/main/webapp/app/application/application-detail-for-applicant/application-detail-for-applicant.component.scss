@@ -1,26 +1,173 @@
 @use '../../../content/scss/breakpoints' as bp;
-@use '../../../content/scss/_header';
 
-$detail-card-2-column-max-width: bp.$xl;
-
-.text-primary {
-  color: var(--p-text-primary);
+.title-with-label {
+  min-width: 0;
 }
 
-.border-neutral-rounded {
-  border: var(--p-border-default) solid 0.1rem;
+// Base card styles - shared between all card types
+.card {
+  border: 0.05rem solid var(--p-border-default);
   border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.h-remaining-viewheight {
-  height: calc(100vh - 8rem); //subtracted the footer and the header
-  overflow-y: hidden;
+// Detail card extends base card with additional structure
+.detail-card {
+  @extend .card;
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 0.05rem solid var(--p-border-default);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .card-title {
+    font-weight: 600;
+  }
+
+  .card-body {
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+  }
 }
 
-.slot-right-width {
-  width: 21.5rem;
+// Section header (for sections with title and action button)
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+}
 
-  @media (max-width: $detail-card-2-column-max-width) {
-    width: 100%;
+// Section title (used across all sections)
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+}
+
+// Position Overview section
+.overview-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+// Generic info item (used for overview and other info displays)
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.icon {
+  color: var(--p-primary-color);
+}
+
+.label {
+  font-weight: 600;
+}
+
+// Main Content Grid
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 25rem;
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: bp.$xl) {
+    grid-template-columns: 1fr;
+  }
+
+  .info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+
+    .value {
+      text-align: right;
+    }
+  }
+
+  // Links container styling (uses global .link class for individual links)
+  .links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    border-top: 0.05rem solid var(--p-border-default);
+    margin-top: 1rem;
+    padding-top: 1rem;
+
+    .link-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+}
+
+// Document container - responsive grid layout
+.document-container {
+  display: grid;
+  column-gap: 2rem;
+  grid-template-columns: repeat(2, 1fr); // Default: 2 columns
+
+  // Responsive breakpoints
+  @media (min-width: bp.$xl) {
+    grid-template-columns: repeat(3, 1fr); // 3 columns on very wide screens
+  }
+
+  @media (max-width: bp.$md) {
+    grid-template-columns: 1fr; // Single column on mobile
+  }
+
+  .document-viewer {
+    height: 25rem;
+
+    // Adjust height for different screen sizes
+    @media (max-width: bp.$lg) {
+      height: 30rem;
+    }
+
+    @media (max-width: bp.$md) {
+      height: 31.25rem;
+    }
+  }
+}
+
+.action-buttons-section {
+  margin-top: 2rem;
+
+  .button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-top: 0.05rem solid var(--p-border-default);
+    padding-top: 2rem;
+    gap: 1rem;
+  }
+
+  .left-buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  .right-buttons {
+    display: flex;
+    align-items: center;
   }
 }

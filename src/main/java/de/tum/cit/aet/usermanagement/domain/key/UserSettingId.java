@@ -3,12 +3,11 @@ package de.tum.cit.aet.usermanagement.domain.key;
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Composite primary key for a {@link UserSetting}.

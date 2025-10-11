@@ -1,4 +1,6 @@
 @use 'tailwindcss' as *;
+@use './_header.scss';
+@use './_layout.scss';
 
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
@@ -180,6 +182,7 @@
 .ql-editor {
   background: transparent;
   color: var(--p-text-primary);
+  overflow-wrap: anywhere;
 }
 
 .ql-editor.ql-blank {
@@ -322,7 +325,10 @@
 }
 
 /* Styling for links */
-.link {
+.link,
+.description-text a,
+.text-card a,
+.detail-card a {
   color: var(--p-primary-color);
 
   &:hover {
@@ -343,14 +349,21 @@
 
 /* Styles for overriding list styles in Job Detail Page */
 .description-text ol,
-.description-text ul {
+.description-text ul,
+.text-card ol,
+.text-card ul,
+.detail-card ol,
+.detail-card ul {
   margin-left: 2rem;
   list-style: initial;
 }
-
-.description-text ol {
+/*
+TODO: temporarily disabled due to issues with PrimeNG Editor component converting unordered lists to ordered lists
+.description-text ol,
+.text-card ol,
+.detail-card ol {
   list-style-type: decimal;
-}
+}*/
 
 /* ---------------------------
  Style for file upload component
@@ -398,6 +411,20 @@
   width: 0.8rem;
   height: 0.8rem;
   border-radius: 50%;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 2;
+  pointer-events: none; // Disable pointer events for the carousel indicators
+
+  .pointer-event-button {
+    pointer-events: auto; // Enable pointer events for the button
+  }
 }
 
 /* -------------------------------

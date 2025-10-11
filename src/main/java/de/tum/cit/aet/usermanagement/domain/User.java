@@ -4,15 +4,14 @@ import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * A user.
@@ -64,6 +63,9 @@ public class User extends AbstractAuditingEntity {
 
     @Column(name = "selected_language", nullable = false)
     private String selectedLanguage;
+
+    @Column(name = "university_id", length = 7, unique = true)
+    private String universityId;
 
     // Contains all the Jobs that a User (Professor) has posted
     @OneToMany(mappedBy = "supervisingProfessor", cascade = CascadeType.ALL, orphanRemoval = true)

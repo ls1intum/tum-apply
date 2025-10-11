@@ -28,13 +28,26 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.0.0"
+version = "1.0.2"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
-java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
+// Remove this once we have a way to run the dependency submission job with Java 25
+def isAutoDepJob = System.getenv("GITHUB_ACTIONS") == "true" &&
+                   System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
+
+if (isAutoDepJob) {
+  println "Auto dependency submission detected, using Java 21 toolchain for this run"
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(21)
+    }
+  }
+} else {
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(25)
+    }
   }
 }
 
@@ -42,9 +55,8 @@ ext {
   springProfiles = ""
 }
 
-// TODO: upgrade to Gradle 9.0.0 and migrate liquibase to work with the new version
 wrapper {
-  gradleVersion = "8.14.3"
+  gradleVersion = "9.1.0"
 }
 
 spotless {
@@ -112,6 +124,27 @@ tasks.register("integrationTestReport", TestReport) {
   testResults.from(tasks.named("integrationTest"))
 }
 
+jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      limit {
+        minimum = 0.95
+        counter = 'LINE'
+        value = 'COVEREDRATIO'
+      }
+    }
+
+    rule {
+      limit {
+        minimum = 0.95
+        counter = 'BRANCH'
+        value = 'COVEREDRATIO'
+      }
+    }
+  }
+}
+
+
 tasks.withType(GenerateGitPropertiesTask).configureEach {
   outputs.doNotCacheIf("Task is always executed") { true }
 }
@@ -163,7 +196,7 @@ dependencies {
   testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
-  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.3"
+  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.4"
   implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
   implementation "org.apache.commons:commons-lang3:3.18.0"
   annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -222,7 +255,6 @@ dependencies {
 
   implementation "com.mysql:mysql-connector-j:9.4.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
-  implementation "io.github.cdimascio:java-dotenv:5.2.2"
 
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
 
@@ -279,7 +311,7 @@ tasks.register("cleanResources", Delete) {
 }
 
 wrapper {
-  gradleVersion = "8.13"
+  gradleVersion = "9.1.0"
 }
 
 node {

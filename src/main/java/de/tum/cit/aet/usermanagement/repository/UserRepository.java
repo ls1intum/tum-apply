@@ -4,16 +4,15 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Spring Data JPA repository for the {@link Job} entity.
@@ -25,7 +24,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         return getArbitraryValueElseThrow(findById(userId));
     }
 
-    @EntityGraph(attributePaths = {"researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup"})
+    @EntityGraph(attributePaths = { "researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup" })
     Optional<User> findWithResearchGroupRolesByUserId(UUID userId);
 
     /**
@@ -34,12 +33,14 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      * @param userIds the list of user IDs
      * @return list of users with eagerly loaded collections
      */
-    @Query("""
+    @Query(
+        """
             SELECT u FROM User u
             LEFT JOIN FETCH u.researchGroupRoles
             WHERE u.userId IN :userIds
             ORDER BY u.firstName, u.lastName
-        """)
+        """
+    )
     List<User> findUsersWithRolesByIds(@Param("userIds") List<UUID> userIds);
 
     /**
@@ -49,11 +50,13 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      * @param pageable        the pagination information
      * @return page of user IDs in the research group
      */
-    @Query("""
+    @Query(
+        """
             SELECT DISTINCT u.userId FROM User u
             JOIN u.researchGroupRoles rgr
             WHERE rgr.researchGroup.researchGroupId = :researchGroupId
-        """)
+        """
+    )
     Page<UUID> findUserIdsByResearchGroupId(@Param("researchGroupId") UUID researchGroupId, Pageable pageable);
 
     /**
@@ -64,7 +67,8 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      * @param currentUserId the current user's ID to display first
      * @return list of users with eagerly loaded collections
      */
-    @Query("""
+    @Query(
+        """
             SELECT u FROM User u
             LEFT JOIN FETCH u.researchGroupRoles
             LEFT JOIN FETCH u.researchGroup
@@ -72,8 +76,17 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             ORDER BY
             CASE WHEN u.userId = :currentUserId THEN 0 ELSE 1 END,
             u.firstName, u.lastName
-        """)
+        """
+    )
     List<User> findUsersWithRolesByIdsForResearchGroup(@Param("userIds") List<UUID> userIds, @Param("currentUserId") UUID currentUserId);
+
+    /**
+     * Finds a user by their university ID in a case-insensitive manner.
+     *
+     * @param universityId normalized university ID (e.g., "ab12cde")
+     * @return optional user with matching university ID
+     */
+    Optional<User> findByUniversityIdIgnoreCase(String universityId);
 
     /**
      * Finds a user by email in a case-insensitive manner.
