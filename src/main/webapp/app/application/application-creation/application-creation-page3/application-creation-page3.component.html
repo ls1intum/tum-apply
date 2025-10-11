@@ -38,6 +38,8 @@
             documentType="CV"
             [applicationId]="applicationId"
             [documentIds]="computedDocumentIdsCvSet()"
+            (documentIdsChange)="cvDocsSetValidity($event)"
+            [markAsRequired]="true"
           />
         </div>
 
