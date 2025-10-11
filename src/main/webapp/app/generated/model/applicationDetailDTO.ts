@@ -12,9 +12,13 @@ import { ApplicantForApplicationDetailDTO } from './applicantForApplicationDetai
 
 export interface ApplicationDetailDTO { 
     applicationId: string;
+    jobId: string;
     applicant?: ApplicantForApplicationDetailDTO;
     applicationState: ApplicationDetailDTO.ApplicationStateEnum;
+    supervisingProfessorName: string;
+    researchGroup: string;
     jobTitle?: string;
+    jobLocation?: string;
     desiredDate?: string;
     projects?: string;
     specialSkills?: string;

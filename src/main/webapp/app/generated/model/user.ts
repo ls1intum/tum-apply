@@ -29,6 +29,7 @@ export interface User {
     website?: string;
     linkedinUrl?: string;
     selectedLanguage?: string;
+    universityId?: string;
     postedJobs?: Array<Job>;
     researchGroupRoles?: Array<UserResearchGroupRole>;
     emailSettings?: Array<EmailSetting>;

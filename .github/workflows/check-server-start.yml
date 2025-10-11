@@ -14,24 +14,20 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.1.0'
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
 
       - name: Start Spring Boot and check log
-        env:
-          KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
-          KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-          KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
-          KEYCLOAK_ENABLE_LOGGING: ${{ vars.KEYCLOAK_ENABLE_LOGGING }}
-          OTP_LENGTH: ${{ vars.OTP_LENGTH }}
-          OTP_RESEND_COOLDOWN_SECONDS: ${{ vars.OTP_RESEND_COOLDOWN_SECONDS }}
-          OTP_TTL_SECONDS: ${{ vars.OTP_TTL_SECONDS }}
-          AET_CLIENT_URL: 'https://dummy-client-url-for-test.com'
         run: |
           ./gradlew -Pprod bootRun > boot.log 2>&1 & SERVER_PID=$!
 
