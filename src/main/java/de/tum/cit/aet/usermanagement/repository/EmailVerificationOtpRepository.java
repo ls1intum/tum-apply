@@ -2,14 +2,13 @@ package de.tum.cit.aet.usermanagement.repository;
 
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.usermanagement.domain.EmailVerificationOtp;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Spring Data JPA repository for the {@link EmailVerificationOtp} entity.
@@ -17,7 +16,6 @@ import java.util.UUID;
  */
 @Repository
 public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<EmailVerificationOtp, UUID> {
-
     /**
      * Returns the most recent active OTP for the given email.
      * <p>
@@ -27,10 +25,7 @@ public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<Em
      * @param now   current timestamp used for the expiry comparison
      * @return the newest matching OTP, if present
      */
-    Optional<EmailVerificationOtp> findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
-        String email,
-        Instant now
-    );
+    Optional<EmailVerificationOtp> findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(String email, Instant now);
 
     /**
      * Invalidates all unused OTPs for the given email by setting {@code used=true}.
@@ -67,6 +62,8 @@ public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<Em
      * @param now current timestamp used for the expiry comparison
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update EmailVerificationOtp e set e.used = (case when e.attempts >= e.maxAttempts - 1 then true else e.used end), e.attempts = e.attempts + 1 where e.id = :id and e.used = false and e.expiresAt > :now")
+    @Query(
+        "update EmailVerificationOtp e set e.used = (case when e.attempts >= e.maxAttempts - 1 then true else e.used end), e.attempts = e.attempts + 1 where e.id = :id and e.used = false and e.expiresAt > :now"
+    )
     void incrementAttemptsIfActive(@Param("id") UUID id, @Param("now") Instant now);
 }

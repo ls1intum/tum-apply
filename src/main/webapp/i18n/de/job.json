@@ -17,7 +17,7 @@
       }
     },
     "basicInformationSection": {
-      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende/r Professor/in.",
+      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende:r Professor:in.",
       "jobTitle": {
         "label": "Stellentitel",
         "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
@@ -32,7 +32,7 @@
         "placeholder": "Wähle ein Studienfach..."
       },
       "supervisingProfessor": {
-        "label": "Betreuende/r Professor/in"
+        "label": "Betreuende:r Professor:in"
       },
       "location": {
         "label": "Standort",
@@ -105,53 +105,80 @@
   "jobOverviewPage": {
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
+    "searchFilterSortBar": {
+      "searchText": "Stellen suchen...",
+      "filterOptions": {
+        "job": "Stelle",
+        "jobSearchPlaceholder": "Stellen suchen...",
+        "fieldOfStudies": "Studienrichtung",
+        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
+        "location": "Standort",
+        "LocationSearchPlaceholder": "Standorte suchen...",
+        "supervisor": "Betreuer:in",
+        "supervisorSearchPlaceholder": "Betreuer:in suchen..."
+      }
+    },
     "sortingOptions": {
       "startDate": "Startdatum",
       "jobTitle": "Jobtitel",
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "professor": "Betreuer/in",
+      "professor": "Betreuer:in (Nachname)",
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {
       "fieldOfStudies": "Studienrichtung",
       "location": "Standort",
-      "supervisor": "Betreuer/in",
+      "supervisor": "Betreuer:in",
       "workload": "Arbeitsaufwand",
       "startDate": "Startdatum"
     },
-    "hoursPerWeek": "{{workload}} h/Woche"
+    "hoursPerWeek": "{{workload}} h/Woche",
+    "errors": {
+      "loadFilter": {
+        "summary": "Laden der Filteroptionen fehlgeschlagen",
+        "detail": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "loadJobs": {
+        "summary": "Laden der Stellen fehlgeschlagen",
+        "detail": "Fehler beim Laden der verfügbaren Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      }
+    }
   },
   "myPositionsPage": {
     "header": {
       "title": "Verwalte deine Doktorandenstellen",
       "createButton": "Neue Stelle erstellen"
     },
+    "searchFilterSortBar": {
+      "searchText": "Stellen suchen...",
+      "filterOptions": {
+        "jobSearchPlaceholder": "Suche Stellen...",
+        "stateSearchPlaceholder": "Suche Status..."
+      }
+    },
     "tableColumn": {
       "supervisingProfessor": "Betreuender Professor",
       "job": "Stelle",
       "status": "Status",
       "startDate": "Startdatum",
-      "created": "Erstellt am",
+      "created": "Erstellt",
       "lastModified": "Zuletzt geändert"
-    },
-    "sortingOptions": {
-      "lastModified": "Zuletzt geändert",
-      "jobTitle": "Stellentitel",
-      "status": "Status",
-      "startDate": "Startdatum",
-      "created": "Erstellt"
     },
     "confirmDialog": {
       "closeHeader": "Schließung der Position bestätigen",
       "closeMessage": "Bist du sicher, dass du diese Position schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
       "deleteHeader": "Löschvorgang bestätigen",
       "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
+    },
+    "errors": {
+      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+      "loadJobs": "Fehler beim Laden der Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   },
   "jobDetailPage": {
     "header": {
-      "supervisor": "Betreuer/in: ",
+      "supervisor": "Betreuer:in: ",
       "researchGroup": "Forschungsgruppe: ",
       "location": "Standort: "
     },

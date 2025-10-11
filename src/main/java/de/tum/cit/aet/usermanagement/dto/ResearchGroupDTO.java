@@ -1,10 +1,9 @@
 package de.tum.cit.aet.usermanagement.dto;
 
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -23,9 +22,9 @@ public record ResearchGroupDTO(
     String defaultFieldOfStudies,
     String street,
     String postalCode,
-    String city
+    String city,
+    ResearchGroupState state
 ) {
-    
     /**
      * @param researchGroup the ResearchGroup entity
      * @return the ResearchGroupDTO from the entity
@@ -35,7 +34,7 @@ public record ResearchGroupDTO(
         if (researchGroup == null) {
             throw new EntityNotFoundException("ResearchGroup entity should not be null");
         }
-        
+
         return new ResearchGroupDTO(
             researchGroup.getName(),
             researchGroup.getAbbreviation(),
@@ -47,8 +46,8 @@ public record ResearchGroupDTO(
             researchGroup.getDefaultFieldOfStudies(),
             researchGroup.getStreet(),
             researchGroup.getPostalCode(),
-            researchGroup.getCity()
+            researchGroup.getCity(),
+            researchGroup.getState()
         );
     }
-    
 }
