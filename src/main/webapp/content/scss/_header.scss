@@ -3,12 +3,16 @@
   padding-bottom: 4rem;
   font-size: 2rem;
   color: var(--p-primary-color);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .header-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
   padding-bottom: 4rem;
 
   .page-header {
