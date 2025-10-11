@@ -1,5 +1,7 @@
 package de.tum.cit.aet.application.service;
 
+import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
+
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -26,17 +28,14 @@ import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.service.UserService;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
 
 @AllArgsConstructor
 @Service
@@ -69,7 +68,7 @@ public class ApplicationService {
 
         UUID userId = currentUserService.getUserId();
 
-        if (userId==null) {
+        if (userId == null) {
             Application application = new Application();
             application.setJob(job);
             application.setState(ApplicationState.SAVED);
@@ -77,7 +76,7 @@ public class ApplicationService {
         }
 
         Application existingApplication = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
-        if (existingApplication!=null) {
+        if (existingApplication != null) {
             return getFromEntity(existingApplication);
         }
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
@@ -142,7 +141,7 @@ public class ApplicationService {
         user.setPhoneNumber(applicantDTO.user().phoneNumber());
         user.setWebsite(applicantDTO.user().website());
         user.setLinkedinUrl(applicantDTO.user().linkedinUrl());
-        if (applicantDTO.user().selectedLanguage()!=null) {
+        if (applicantDTO.user().selectedLanguage() != null) {
             applicant.getUser().setSelectedLanguage(applicantDTO.user().selectedLanguage());
         }
 
@@ -395,7 +394,7 @@ public class ApplicationService {
      * @return ApplicationDetailDTO for application id
      */
     public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
-        if (applicationId==null) {
+        if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
         Application application = assertCanManageApplication(applicationId);
@@ -434,7 +433,7 @@ public class ApplicationService {
      * @return the application entity if the user can manage it
      */
     private Application assertCanManageApplication(UUID applicationId) {
-        if (applicationId==null) {
+        if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
         Application application = applicationRepository
@@ -451,7 +450,7 @@ public class ApplicationService {
      * @return the applicationForApplicantDTO entity if the user can manage it
      */
     private ApplicationForApplicantDTO assertCanManageApplicationDTO(UUID applicationId) {
-        if (applicationId==null) {
+        if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
         ApplicationForApplicantDTO application = applicationRepository.findDtoById(applicationId);
@@ -466,7 +465,7 @@ public class ApplicationService {
      * @return the application entity if the user can manage it
      */
     private Applicant assertCanManageApplicant(UUID applicantId) {
-        if (applicantId==null) {
+        if (applicantId == null) {
             throw new InvalidParameterException("The applicantId may not be null.");
         }
         Applicant applicant = applicantRepository.getReferenceById(applicantId);
