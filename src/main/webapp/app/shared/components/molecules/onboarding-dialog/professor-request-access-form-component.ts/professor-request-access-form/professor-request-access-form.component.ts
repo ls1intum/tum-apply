@@ -7,12 +7,13 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { StringInputComponent } from '../../../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../../../atoms/button/button.component';
 import { ConfirmDialog } from '../../../../atoms/confirm-dialog/confirm-dialog';
+import { EditorComponent } from '../../../../atoms/editor/editor.component';
 import { ToastService } from '../../../../../../service/toast-service';
 
 @Component({
   selector: 'jhi-professor-request-access-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, StringInputComponent, ButtonComponent, TranslateModule, ConfirmDialog],
+  imports: [CommonModule, ReactiveFormsModule, StringInputComponent, ButtonComponent, TranslateModule, ConfirmDialog, EditorComponent],
   templateUrl: './professor-request-access-form.component.html',
   styleUrl: './professor-request-access-form.component.scss',
 })
