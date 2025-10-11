@@ -29,8 +29,8 @@ export class OnboardingDialog {
   private readonly translate = inject(TranslateService);
   private readonly dialogService = inject(DialogService);
 
-  markOnboarded(openEmail = true): void {
-    if (openEmail) {
+  markOnboarded(openForm = true): void {
+    if (openForm) {
       this.ref?.close();
 
       this.dialogService.open(ProfessorRequestAccessFormComponent, {
