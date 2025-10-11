@@ -98,7 +98,8 @@
         "detail": "Fehler beim Senden Ihrer Anfrage. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
       },
       "cancel": "Abbrechen",
-      "submit": "Anfrage senden"
+      "submit": "Anfrage senden",
+      "submitting": "Anfrage wird gesendet"
     }
   }
 }

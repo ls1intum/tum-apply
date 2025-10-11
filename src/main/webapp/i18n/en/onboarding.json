@@ -98,7 +98,8 @@
         "detail": "Failed to submit your request. Please try again or contact support."
       },
       "cancel": "Cancel",
-      "submit": "Send Request"
+      "submit": "Send Request",
+      "submitting": "Sending Request"
     }
   }
 }
