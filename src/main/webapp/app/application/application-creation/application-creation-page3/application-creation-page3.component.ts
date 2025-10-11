@@ -88,6 +88,8 @@ export default class ApplicationCreationPage3Component {
     return docInfoHolder ? [docInfoHolder] : undefined;
   });
 
+  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
+
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;
     const raw = this.formValue();
@@ -98,7 +100,7 @@ export default class ApplicationCreationPage3Component {
       this.data.set(newData);
       this.changed.emit(true);
     }
-    this.valid.emit(this.page3Form.valid);
+    this.valid.emit(this.page3Form.valid && this.cvValid());
   });
 
   private initializeFormEffect = effect(() => {
@@ -114,8 +116,21 @@ export default class ApplicationCreationPage3Component {
     this.hasInitialized.set(true);
   });
 
+  private initializeCvDocs = effect(() => {
+    const cvDocs = this.computedDocumentIdsCvSet();
+    this.cvDocsSetValidity(cvDocs);
+  });
+
   emitChanged(): void {
     this.changed.emit(true);
+  }
+
+  cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
+    if (cvDocs === undefined || cvDocs.length === 0) {
+      this.cvValid.set(false);
+    } else {
+      this.cvValid.set(true);
+    }
   }
 
   setDesiredStartDate($event: string | undefined): void {

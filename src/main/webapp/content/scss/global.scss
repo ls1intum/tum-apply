@@ -327,7 +327,8 @@
 /* Styling for links */
 .link,
 .description-text a,
-.text-card a {
+.text-card a,
+.detail-card a {
   color: var(--p-primary-color);
 
   &:hover {
@@ -350,13 +351,15 @@
 .description-text ol,
 .description-text ul,
 .text-card ol,
-.text-card ul {
+.text-card ul,
+.detail-card ul {
   margin-left: 2rem;
   list-style: initial;
 }
 
 .description-text ol,
-.text-card ol {
+.text-card ol,
+.detail-card ol {
   list-style-type: decimal;
 }
 
