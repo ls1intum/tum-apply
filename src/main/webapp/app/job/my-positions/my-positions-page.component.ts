@@ -12,11 +12,11 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
-import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
-import { TagComponent } from '../../../shared/components/atoms/tag/tag.component';
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
-import { CreatedJobDTO } from '../../../generated/model/createdJobDTO';
-import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
+import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
+import { CreatedJobDTO } from '../../generated/model/createdJobDTO';
+import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
