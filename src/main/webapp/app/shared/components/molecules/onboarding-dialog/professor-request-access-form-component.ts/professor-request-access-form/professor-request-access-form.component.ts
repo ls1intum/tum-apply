@@ -13,6 +13,7 @@ import { ButtonComponent } from '../../../../atoms/button/button.component';
 import { ConfirmDialog } from '../../../../atoms/confirm-dialog/confirm-dialog';
 import { EditorComponent } from '../../../../atoms/editor/editor.component';
 import { ToastService } from '../../../../../../service/toast-service';
+import { tumIdValidator } from '../../../../../validators/custom-validators';
 
 @Component({
   selector: 'jhi-professor-request-access-form',
@@ -40,13 +41,11 @@ export class ProfessorRequestAccessFormComponent {
   private readonly toastService = inject(ToastService);
 
   constructor() {
-    // Initialize form after dependency injection is complete
     this.professorForm = this.createProfessorForm();
   }
 
   onSubmit(): void {
     if (this.professorForm.valid) {
-      // Show confirmation dialog before submitting
       this.confirmDialog()?.confirm();
     }
   }
@@ -66,7 +65,7 @@ export class ProfessorRequestAccessFormComponent {
       title: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      tumID: ['', [Validators.required]],
+      tumID: ['', [Validators.required, tumIdValidator]],
       researchGroupHead: ['', [Validators.required]],
       researchGroupName: ['', [Validators.required]],
       researchGroupAbbreviation: [''],
