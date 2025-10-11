@@ -20,6 +20,8 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
 
     Optional<UserResearchGroupRole> findByUserAndResearchGroup(User user, ResearchGroup researchGroup);
 
+    Set<UserResearchGroupRole> findAllByResearchGroup(ResearchGroup researchGroup);
+
     /**
      * Removes research group association from all roles for a specific user.
      *

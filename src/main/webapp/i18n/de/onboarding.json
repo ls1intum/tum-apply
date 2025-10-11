@@ -1,15 +1,105 @@
 {
   "onboarding": {
     "title": "Du bist Professor:in oder Mitarbeiter:in?",
-    "body": "Du bist eingeloggt, hast aber noch keine Rechte. Wenn du Professor:in oder Mitarbeiter:in bist, sende uns bitte eine E-Mail, damit wir dir deine Forschungsgruppe zuteilen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
+    "body": "Du bist eingeloggt, hast aber noch keine Rechte. Wenn du Professor:in oder Mitarbeiter:in bist, fülle das Formular aus, damit wir dir deine Forschungsgruppe zuteilen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
     "disclaimer": "Wir werden dir eine E-Mail schicken, sobald dein Account freigeschaltet wurde. Das kann ein paar Tage dauern.",
     "actions": {
-      "sendEmail": "Zugang anfragen",
+      "openForm": "Öffne Forschungsgruppen-Formular",
       "imApplicant": "Ich bin Bewerber:in"
     },
     "email": {
       "subject": "Anfrage: Zugriff zu Lehrstuhl / Professur in TUMApply",
       "body": "=== WICHTIGE HINWEISE ===\n- Bitte ändere den Betreff dieser E-Mail nicht.\n- Fülle bitte alle notwendigen Felder unten aus.\n- Die optionalen Felder müssen nicht zwingend ausgefüllt werden.\n- Bitte sende diese E-Mail von deiner offiziellen TUM E-Mail-Adresse aus.\n=== WICHTIGE HINWEISE ===\n\n\n\n=== Notwendig ===\n\nPersönliche Informationen:\n- Titel (Prof./Dr./…): \n- Vorname: \n- Nachname: \n- TUM-ID (z. B. ab12cde): \n\nAngaben zum Lehrstuhl / zur Professur:\n- Leitung (Titel, Vor- und Nachname): \n- Name: \n\n\n=== Optional ===\n\nAngaben zum Lehrstuhl / zur Professur:\n- Abkürzung: \n- Kontakt E-Mail: \n- Webseite: \n- School: \n- Beschreibung: \n- Standard-Studienfach: \n- Adresse:\n  - Straße und Hausnummer: \n  - Postleitzahl: \n  - Stadt: "
+    },
+    "professorRequest": {
+      "dialogTitle": "Zugang anfragen",
+      "sections": {
+        "personalInfo": "Persönliche Informationen",
+        "researchGroupInfo": "Forschungsgruppen-Informationen",
+        "optionalInfo": "Optionale Informationen",
+        "address": "Adresse"
+      },
+      "optionalHint": "Die folgenden Felder sind optional und können später ausgefüllt werden.",
+      "title": {
+        "label": "Titel",
+        "placeholder": "z.B. Prof., Dr., ..."
+      },
+      "firstName": {
+        "label": "Vorname",
+        "placeholder": "Vorname"
+      },
+      "lastName": {
+        "label": "Nachname",
+        "placeholder": "Nachname"
+      },
+      "tumID": {
+        "label": "TUM-ID",
+        "placeholder": "z.B. ab12cde"
+      },
+      "researchGroupHead": {
+        "label": "Leitung der Forschungsgruppe",
+        "placeholder": "Titel, Vor- und Nachname"
+      },
+      "researchGroupName": {
+        "label": "Name der Forschungsgruppe",
+        "placeholder": "Name der Forschungsgruppe"
+      },
+      "researchGroupAbbreviation": {
+        "label": "Abkürzung",
+        "placeholder": "z.B. TUM-AI"
+      },
+      "researchGroupContactEmail": {
+        "label": "Kontakt-E-Mail",
+        "placeholder": "kontakt@forschungsgruppe.de"
+      },
+      "researchGroupWebsite": {
+        "label": "Website",
+        "placeholder": "https://www.forschungsgruppe.tum.de"
+      },
+      "researchGroupSchool": {
+        "label": "School",
+        "placeholder": "z.B. Informatik"
+      },
+      "researchGroupDescription": {
+        "label": "Beschreibung",
+        "placeholder": "Kurze Beschreibung der Forschungsgruppe"
+      },
+      "researchGroupFieldOfStudies": {
+        "label": "Studienfach",
+        "placeholder": "z.B. Informatik, Maschinenbau"
+      },
+      "researchGroupStreetAndNumber": {
+        "label": "Straße und Hausnummer",
+        "placeholder": "Straße 1"
+      },
+      "researchGroupPostalCode": {
+        "label": "Postleitzahl",
+        "placeholder": "80333"
+      },
+      "researchGroupCity": {
+        "label": "Stadt",
+        "placeholder": "München"
+      },
+      "additionalNotes": {
+        "label": "Zusätzliche Notizen",
+        "placeholder": "Weitere Informationen oder Kommentare..."
+      },
+      "confirmDialog": {
+        "header": "Anfrage bestätigen",
+        "message": "Ihre Anfrage wird an die Administratoren zur Prüfung gesendet. Sie werden Ihre Forschungsgruppe erstellen und Sie kontaktieren, sobald sie genehmigt ist. Möchten Sie fortfahren?",
+        "confirm": "Anfrage senden"
+      },
+      "success": {
+        "summary": "Anfrage erfolgreich gesendet",
+        "detail": "Ihre Forschungsgruppen-Anfrage wurde eingereicht. Die Administratoren werden sie prüfen und Sie bald kontaktieren."
+      },
+      "error": {
+        "summary": "Übermittlung fehlgeschlagen",
+        "detail": "Fehler beim Senden Ihrer Anfrage. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+      },
+      "cancel": "Abbrechen",
+      "submit": "Anfrage senden",
+      "submitting": "Anfrage wird gesendet"
     }
   }
 }

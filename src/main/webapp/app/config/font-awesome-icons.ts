@@ -86,6 +86,7 @@ import {
   faSort,
   faSortDown,
   faSortUp,
+  faSpinner,
   faStar,
   faSun,
   faSync,
@@ -220,4 +221,5 @@ export const fontAwesomeIcons = [
   faUsersCog,
   faWrench,
   faXmark,
+  faSpinner,
 ];
