@@ -444,7 +444,7 @@
         },
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und versuche es erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
@@ -477,6 +477,26 @@
         "jobIdNotAvailable": {
           "summary": "Fehler",
           "detail": "Job-ID ist für diese Bewerbung nicht verfügbar."
+        },
+        "invalidEmail": {
+          "summary": "Fehler",
+          "detail": "Bitte gib eine gültige E-Mail-Adresse an."
+        },
+        "invalidFirstName": {
+          "summary": "Fehler",
+          "detail": "Bitte gib einen gültigen Vornamen an."
+        },
+        "invalidLastName": {
+          "summary": "Fehler",
+          "detail": "Bitte gib einen gültigen Nachnamen an."
+        },
+        "migrationFailed": {
+          "summary": "Fehler",
+          "detail": "Der lokale Entwurf konnte nicht gespeichert werden. Versuche es erneut, lade die Seite neu oder überprüfe deine Verbindung."
+        },
+        "otpVerificationFailed": {
+          "summary": "Fehler",
+          "detail": "E-Mail-Verifizierung fehlgeschlagen. Bitte versuch es erneut."
         }
       },
       "applicationOverview": {
