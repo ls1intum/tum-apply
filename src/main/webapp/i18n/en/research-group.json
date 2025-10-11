@@ -108,13 +108,25 @@
       },
 
       "toastMessages": {
-        "loadFailed": "Failed to load. Please try again or contact an admin.",
-        "addSuccess": "Successfully added to the research group.",
-        "removeSuccess": "{{memberName}} has been removed from the research group.",
-        "removeFailed": "Failed to remove. Please try again or contact an admin."
+        "loadFailed": {
+          "summary": "Load Failed",
+          "detail": "Failed to load. Please try again or contact an admin."
+        },
+        "addSuccess": {
+          "summary": "Member Added",
+          "detail": "{{memberName}} has been added to the research group."
+        },
+        "removeSuccess": {
+          "summary": "Member Removed",
+          "detail": "{{memberName}} has been removed from the research group."
+        },
+        "removeFailed": {
+          "summary": "Remove Failed",
+          "detail": "Failed to remove. Please try again or contact an admin."
+        }
       },
 
-      "noRole": "No role"
+      "noRole": "No Role"
     }
   }
 }

@@ -108,10 +108,22 @@
       },
 
       "toastMessages": {
-        "loadFailed": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin.",
-        "addSuccess": "Erfolgreich zur Forschungsgruppe hinzugefügt.",
-        "removeSuccess": "{{memberName}} wurde aus der Forschungsgruppe entfernt.",
-        "removeFailed": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
+        "loadFailed": {
+          "summary": "Fehler beim Laden",
+          "detail": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "addSuccess": {
+          "summary": "Mitglied hinzugefügt",
+          "detail": "{{memberName}} wurde zur Forschungsgruppe hinzugefügt."
+        },
+        "removeSuccess": {
+          "summary": "Mitglied entfernt",
+          "detail": "{{memberName}} wurde aus der Forschungsgruppe entfernt."
+        },
+        "removeFailed": {
+          "summary": "Fehler beim Entfernen",
+          "detail": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
       },
 
       "noRole": "Keine Rolle"
