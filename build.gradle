@@ -12,9 +12,9 @@ plugins {
   id "idea"
   id "java"
   id "jacoco"
-  id "com.diffplug.spotless" version "7.2.1"
+  id "com.diffplug.spotless" version "8.0.0"
   id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
-  id "com.github.ben-manes.versions" version "0.52.0"
+  id "com.github.ben-manes.versions" version "0.53.0"
   id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
   id "com.google.cloud.tools.jib" version "3.4.5"
   id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
@@ -275,7 +275,7 @@ dependencies {
       // needed to reduce the number of vulnerabilities, also see https://mvnrepository.com/artifact/org.yaml/snakeyaml
     }
   }
-  runtimeOnly "com.h2database:h2:2.3.232"
+  runtimeOnly "com.h2database:h2:2.4.240"
 
 
   testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
