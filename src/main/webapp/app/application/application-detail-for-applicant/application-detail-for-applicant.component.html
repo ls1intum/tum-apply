@@ -2,10 +2,10 @@
   @if (application(); as application) {
     @if (!previewDetailData()) {
       <!-- Header Section -->
-      <div class="header-container mb-4">
+      <div class="header-container">
         <div class="title-with-label">
           <h1
-            class="page-header mb-2"
+            class="page-header"
             jhiTranslate="entity.application_detail.applicant.header"
             [translateValues]="{ jobTitle: application.jobTitle }"
           ></h1>
