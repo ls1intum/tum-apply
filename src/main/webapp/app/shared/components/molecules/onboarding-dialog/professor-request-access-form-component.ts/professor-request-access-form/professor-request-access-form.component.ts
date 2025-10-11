@@ -3,6 +3,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { ProfessorResearchGroupRequestDTO } from 'app/generated/model/professorResearchGroupRequestDTO';
+import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { firstValueFrom } from 'rxjs';
 
 import { StringInputComponent } from '../../../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../../../atoms/button/button.component';
@@ -30,6 +34,8 @@ export class ProfessorRequestAccessFormComponent {
   // Services
   private readonly fb = inject(FormBuilder);
   private readonly ref = inject(DynamicDialogRef, { optional: true });
+  private readonly researchGroupService = inject(ResearchGroupResourceApiService);
+  private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
   private readonly translate = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
@@ -47,21 +53,7 @@ export class ProfessorRequestAccessFormComponent {
 
   onConfirmSubmit(): void {
     if (this.professorForm.valid && !this.isSubmitting()) {
-      this.isSubmitting.set(true);
-
-      // TODO: Replace with actual API call
-      this.submitRequest()
-        .then(result => {
-          this.toastService.showSuccessKey('onboarding.professorRequest.success');
-          this.ref?.close(result);
-        })
-        .catch((error: unknown) => {
-          this.toastService.showErrorKey('onboarding.professorRequest.error');
-          console.error('Failed to submit professor request:', error);
-        })
-        .finally(() => {
-          this.isSubmitting.set(false);
-        });
+      void this.submitProfessorRequest();
     }
   }
 
@@ -78,26 +70,64 @@ export class ProfessorRequestAccessFormComponent {
       researchGroupHead: ['', [Validators.required]],
       researchGroupName: ['', [Validators.required]],
       researchGroupAbbreviation: [''],
-      researchGroupContactEmail: [''],
+      researchGroupContactEmail: ['', [Validators.email]],
       researchGroupWebsite: [''],
       researchGroupSchool: [''],
-      researchGroupDescription: [''],
+      researchGroupDescription: ['', [Validators.maxLength(1000)]],
       researchGroupFieldOfStudies: [''],
       researchGroupStreetAndNumber: [''],
       researchGroupPostalCode: [''],
       researchGroupCity: [''],
-      additionalNotes: ['', [Validators.maxLength(1000)]],
+      additionalNotes: [''],
     });
   }
 
-  private async submitRequest(): Promise<Record<string, unknown>> {
-    // TODO: Implement actual API call to POST /api/onboarding/research-group/request
-    // For now, simulate API call with timeout
-    return new Promise(resolve => {
-      setTimeout(() => {
-        console.warn('Submitting form data:', this.professorForm.value);
-        resolve(this.professorForm.value);
-      }, 1000);
-    });
+  private async submitProfessorRequest(): Promise<void> {
+    this.isSubmitting.set(true);
+    const requestData = this.createProfessorResearchGroupRequestDTO();
+
+    try {
+      const result = await firstValueFrom(this.researchGroupService.createProfessorResearchGroupRequest(requestData));
+
+      // Mark onboarding as confirmed after successful research group request submission
+      await firstValueFrom(this.profOnboardingService.confirmOnboarding());
+
+      this.toastService.showSuccessKey('onboarding.professorRequest.success');
+      this.ref?.close(result);
+    } catch (error: unknown) {
+      this.toastService.showErrorKey('onboarding.professorRequest.error');
+      console.error('Failed to submit professor request:', error);
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
+
+  private createProfessorResearchGroupRequestDTO(): ProfessorResearchGroupRequestDTO {
+    const v = this.professorForm.getRawValue();
+
+    const s = (val: unknown): string => {
+      if (val === undefined || val === null || val === '') return '';
+      if (typeof val !== 'string') return '';
+      const str = val.trim();
+      return str.length === 0 ? '' : str;
+    };
+
+    return {
+      title: v.title.trim(),
+      firstName: v.firstName.trim(),
+      lastName: v.lastName.trim(),
+      universityId: v.tumID.trim(),
+      researchGroupHead: v.researchGroupHead.trim(),
+      researchGroupName: v.researchGroupName.trim(),
+      abbreviation: s(v.researchGroupAbbreviation),
+      contactEmail: s(v.researchGroupContactEmail),
+      website: s(v.researchGroupWebsite),
+      school: s(v.researchGroupSchool),
+      description: s(v.researchGroupDescription),
+      defaultFieldOfStudies: s(v.researchGroupFieldOfStudies),
+      street: s(v.researchGroupStreetAndNumber),
+      postalCode: s(v.researchGroupPostalCode),
+      city: s(v.researchGroupCity),
+    };
   }
 }

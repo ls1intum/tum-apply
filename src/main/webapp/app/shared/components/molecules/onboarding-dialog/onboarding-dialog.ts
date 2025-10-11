@@ -46,8 +46,9 @@ export class OnboardingDialog {
         },
         focusOnShow: false,
       });
+    } else {
+      void firstValueFrom(this.api.confirmOnboarding()).catch();
+      this.ref?.close();
     }
-    void firstValueFrom(this.api.confirmOnboarding()).catch();
-    this.ref?.close();
   }
 }
