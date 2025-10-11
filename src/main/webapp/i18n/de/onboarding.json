@@ -1,10 +1,10 @@
 {
   "onboarding": {
     "title": "Du bist Professor:in oder Mitarbeiter:in?",
-    "body": "Du bist eingeloggt, hast aber noch keine Rechte. Wenn du Professor:in oder Mitarbeiter:in bist, sende uns bitte eine E-Mail, damit wir dir deine Forschungsgruppe zuteilen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
+    "body": "Du bist eingeloggt, hast aber noch keine Rechte. Wenn du Professor:in oder Mitarbeiter:in bist, fülle das Formular aus, damit wir dir deine Forschungsgruppe zuteilen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
     "disclaimer": "Wir werden dir eine E-Mail schicken, sobald dein Account freigeschaltet wurde. Das kann ein paar Tage dauern.",
     "actions": {
-      "openForm": "Zugang anfragen",
+      "openForm": "Öffne Forschungsgruppen-Formular",
       "imApplicant": "Ich bin Bewerber:in"
     },
     "email": {
