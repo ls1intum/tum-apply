@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -14,27 +15,22 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
-import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
-import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
-import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
+import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-class JobResourceTest {
+class JobResourceTest extends AbstractResourceTest {
 
     @Autowired
     JobRepository jobRepository;
@@ -46,6 +42,9 @@ class JobResourceTest {
     ResearchGroupRepository researchGroupRepository;
 
     @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @Autowired
     MvcTestClient api;
 
     ResearchGroup researchGroup;
@@ -53,9 +52,7 @@ class JobResourceTest {
 
     @BeforeEach
     void setup() {
-        jobRepository.deleteAll();
-        userRepository.deleteAll();
-        researchGroupRepository.deleteAll();
+        databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
