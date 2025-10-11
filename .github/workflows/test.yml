@@ -131,7 +131,7 @@ jobs:
       #    cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
       - name: Post Coverage Report as Comment if Server Coverage is too low
         if: failure() && github.event_name == 'pull_request'
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -218,7 +218,7 @@ jobs:
       #    path: junit.xml
       - name: Post Coverage Report as Comment if Client Coverage is too low
         if: failure() && github.event_name == 'pull_request'
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
