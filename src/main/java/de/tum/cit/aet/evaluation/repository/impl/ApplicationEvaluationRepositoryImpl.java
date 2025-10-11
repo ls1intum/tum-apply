@@ -33,14 +33,14 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
 
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
         Map.entry("name", "u.last_name"),
-        Map.entry("appliedAt", "a.created_at"),
+        Map.entry("appliedAt", "a.applied_at"),
         Map.entry("status", "a.application_state"),
         Map.entry("job", "j.title")
     );
 
     private static final Map<String, String> SORT_FIELD_MAPPING = Map.ofEntries(
         Map.entry("name", "applicant.user.lastName"),
-        Map.entry("appliedAt", "createdAt"),
+        Map.entry("appliedAt", "appliedAt"),
         Map.entry("status", "state"),
         Map.entry("job", "job.title")
     );
