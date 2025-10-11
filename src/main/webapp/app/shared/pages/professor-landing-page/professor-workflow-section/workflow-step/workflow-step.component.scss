@@ -28,13 +28,10 @@
   .description {
     color: var(--p-text-primary);
     text-align: center;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
     line-height: 1.4;
-    /* height = font-size (1rem) × line-height (1.4) × lines (3) */
-    height: calc(1rem * 1.4 * 3);
+    word-wrap: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: anywhere;
   }
 }
