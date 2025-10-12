@@ -9,13 +9,13 @@ import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
-import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.service.JobService;
@@ -25,6 +25,7 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -48,7 +49,8 @@ public class ApplicationEvaluationService {
     private final DocumentService documentService;
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
-    private final JobEvaluationRepository jobEvaluationRepository;
+    private final CurrentUserService currentUserService;
+    private final ResearchGroupRepository researchGroupRepository;
 
     @Value("${aet.download.deterministic-zip:false}")
     private boolean DETERMINISTIC_ZIP;
@@ -76,7 +78,7 @@ public class ApplicationEvaluationService {
             .findById(applicationId)
             .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
-        //TODO add authorization
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
         if (!REVIEW_STATES.contains(application.getState())) {
             throw new IllegalArgumentException("Application can not be reviewed");
@@ -121,7 +123,7 @@ public class ApplicationEvaluationService {
             .findById(applicationId)
             .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
-        //TODO add authorization
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
         if (!REVIEW_STATES.contains(application.getState())) {
             throw new IllegalArgumentException("Application can not be reviewed");
@@ -180,6 +182,7 @@ public class ApplicationEvaluationService {
         SortDTO sortDTO,
         EvaluationFilterDTO filterDTO
     ) {
+        checkResearchGroupAccess(researchGroupId);
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
@@ -208,6 +211,8 @@ public class ApplicationEvaluationService {
         SortDTO sortDTO,
         EvaluationFilterDTO filterDTO
     ) {
+        checkResearchGroupAccess(researchGroupId);
+
         String searchQuery = filterDTO.getSearch();
 
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
@@ -259,6 +264,7 @@ public class ApplicationEvaluationService {
         SortDTO sortDTO,
         EvaluationFilterDTO filterDTO
     ) {
+        checkResearchGroupAccess(researchGroupId);
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
@@ -266,15 +272,11 @@ public class ApplicationEvaluationService {
         return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null);
     }
 
-    /**
-     * Retrieves all job filter options associated with the given research group.
-     *
-     * @param researchGroupId the {@link UUID} for which to retrieve job filter options
-     * @return a set of {@link JobFilterOptionDTO} representing the available job filter options
-     * for the specified research group
-     */
-    public Set<JobFilterOptionDTO> getJobFilterOptions(UUID researchGroupId) {
-        return jobEvaluationRepository.findAllByResearchGroup(researchGroupId);
+    private void checkResearchGroupAccess(UUID researchGroupId) {
+        ResearchGroup researchGroup = researchGroupRepository
+            .findById(researchGroupId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Research Group", researchGroupId));
+        currentUserService.assertAccessTo(researchGroup);
     }
 
     /**
@@ -283,6 +285,11 @@ public class ApplicationEvaluationService {
      * @param applicationId the Application to update the state
      */
     public void markApplicationAsInReview(UUID applicationId) {
+        Application application = applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
+
         applicationEvaluationRepository.markApplicationAsInReview(applicationId);
     }
 
@@ -297,6 +304,8 @@ public class ApplicationEvaluationService {
      */
     public void downloadAllDocumentsForApplication(UUID applicationId, HttpServletResponse response) throws IOException {
         Application application = getApplication(applicationId);
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
+
         Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
 
         User user = application.getApplicant().getUser();
