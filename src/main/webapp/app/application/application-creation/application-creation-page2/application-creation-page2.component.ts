@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, model, output } from '@angular/core';
+import { Component, effect, inject, input, model, output, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
@@ -8,6 +8,9 @@ import { NumberInputComponent } from 'app/shared/components/atoms/number-input/n
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { deepEqual } from 'app/core/util/deepequal-util';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
@@ -211,6 +214,9 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
 
 @Component({
   selector: 'jhi-application-creation-page2',
+  standalone: true,
+  templateUrl: './application-creation-page2.component.html',
+  styleUrl: './application-creation-page2.component.scss',
   imports: [
     CommonModule,
     DividerModule,
@@ -223,12 +229,9 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
     TranslateDirective,
     NumberInputComponent,
   ],
-  templateUrl: './application-creation-page2.component.html',
-  styleUrl: './application-creation-page2.component.scss',
-  standalone: true,
 })
 export default class ApplicationCreationPage2Component {
-  data = model.required<ApplicationCreationPage2Data>();
+  data = model<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
   documentIdsBachelorTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
@@ -238,56 +241,75 @@ export default class ApplicationCreationPage2Component {
   changed = output<boolean>();
 
   formbuilder = inject(FormBuilder);
-  page2Form = computed(() => {
-    const currentData = this.data();
-    const form = this.formbuilder.group(
-      {
-        bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
-        bachelorGradeUpperLimit: [currentData.bachelorGradeUpperLimit, Validators.required],
-        bachelorGradeLowerLimit: [currentData.bachelorGradeLowerLimit, Validators.required],
-        bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
-        bachelorGrade: [currentData.bachelorGrade, Validators.required],
-        masterDegreeName: [currentData.masterDegreeName, Validators.required],
-        masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
-        masterGradeUpperLimit: [currentData.masterGradeUpperLimit, Validators.required],
-        masterGradeLowerLimit: [currentData.masterGradeLowerLimit, Validators.required],
-        masterGrade: [currentData.masterGrade, Validators.required],
-      },
-      {
-        validators: [
-          gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
-          gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
-        ],
-      },
-    );
 
-    return form;
+  page2Form = this.formbuilder.group(
+    {
+      bachelorDegreeName: ['', Validators.required],
+      bachelorDegreeUniversity: ['', Validators.required],
+      bachelorGradeUpperLimit: ['', Validators.required],
+      bachelorGradeLowerLimit: ['', Validators.required],
+      bachelorGrade: ['', Validators.required],
+      masterDegreeName: ['', Validators.required],
+      masterDegreeUniversity: ['', Validators.required],
+      masterGradeUpperLimit: ['', Validators.required],
+      masterGradeLowerLimit: ['', Validators.required],
+      masterGrade: ['', Validators.required],
+    },
+    {
+      validators: [
+        gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
+        gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
+      ],
+    },
+  );
+
+  private hasInitialized = signal(false);
+
+  private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
+    initialValue: this.page2Form.value,
   });
 
-  constructor() {
-    effect(onCleanup => {
-      const form = this.page2Form();
-      const valueSubscription = form.valueChanges.subscribe(value => {
-        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-        this.data.set({
-          ...this.data(),
-          ...normalizedValue,
-        });
+  private formStatus = toSignal(this.page2Form.statusChanges, {
+    initialValue: this.page2Form.status,
+  });
 
-        this.valid.emit(form.valid);
-        this.changed.emit(true);
-      });
+  private initializeFormEffect = effect(() => {
+    if (this.hasInitialized()) return;
+    const data = this.data();
+    if (!data) return;
 
-      const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(form.valid);
-      });
-
-      this.valid.emit(form.valid);
-
-      onCleanup(() => {
-        valueSubscription.unsubscribe();
-        statusSubscription.unsubscribe();
-      });
+    this.page2Form.patchValue({
+      bachelorDegreeName: data.bachelorDegreeName,
+      bachelorDegreeUniversity: data.bachelorDegreeUniversity,
+      bachelorGradeUpperLimit: data.bachelorGradeUpperLimit,
+      bachelorGradeLowerLimit: data.bachelorGradeLowerLimit,
+      bachelorGrade: data.bachelorGrade,
+      masterDegreeName: data.masterDegreeName,
+      masterDegreeUniversity: data.masterDegreeUniversity,
+      masterGradeUpperLimit: data.masterGradeUpperLimit,
+      masterGradeLowerLimit: data.masterGradeLowerLimit,
+      masterGrade: data.masterGrade,
     });
-  }
+
+    this.hasInitialized.set(true);
+  });
+
+  private updateEffect = effect(() => {
+    if (!this.hasInitialized()) return;
+
+    const formData = this.formValue() as Partial<ApplicationCreationPage2Data>;
+    const normalized = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v])) as ApplicationCreationPage2Data;
+
+    const updatedData = {
+      ...this.data(),
+      ...normalized,
+    };
+
+    if (!deepEqual(updatedData, this.data())) {
+      this.data.set(updatedData);
+      this.changed.emit(true);
+    }
+
+    this.valid.emit(this.page2Form.valid);
+  });
 }

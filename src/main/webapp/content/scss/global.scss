@@ -352,16 +352,18 @@
 .description-text ul,
 .text-card ol,
 .text-card ul,
+.detail-card ol,
 .detail-card ul {
   margin-left: 2rem;
   list-style: initial;
 }
-
+/*
+TODO: temporarily disabled due to issues with PrimeNG Editor component converting unordered lists to ordered lists
 .description-text ol,
 .text-card ol,
 .detail-card ol {
   list-style-type: decimal;
-}
+}*/
 
 /* ---------------------------
  Style for file upload component

@@ -480,6 +480,26 @@
         "jobIdNotAvailable": {
           "summary": "Error",
           "detail": "Job ID is not available for this application."
+        },
+        "invalidEmail": {
+          "summary": "Error",
+          "detail": "Please provide a valid email address."
+        },
+        "invalidFirstName": {
+          "summary": "Error",
+          "detail": "Please provide a valid first name."
+        },
+        "invalidLastName": {
+          "summary": "Error",
+          "detail": "Please provide a valid last name."
+        },
+        "migrationFailed": {
+          "summary": "Error",
+          "detail": "Failed to save local draft. Try again, reload the page or check your connection."
+        },
+        "otpVerificationFailed": {
+          "summary": "Error",
+          "detail": "Email verification failed. Please try again."
         }
       },
       "applicationOverview": {
