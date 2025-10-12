@@ -8,10 +8,20 @@ import {
 } from '@ngx-translate/core';
 import { EventEmitter, type Provider } from '@angular/core';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 export function createTranslateServiceMock(): Pick<
   TranslateService,
-  'instant' | 'get' | 'stream' | 'onTranslationChange' | 'onLangChange' | 'onDefaultLangChange' | 'currentLang' | 'use' | 'setDefaultLang'
+  | 'instant'
+  | 'get'
+  | 'getParsedResult'
+  | 'stream'
+  | 'onTranslationChange'
+  | 'onLangChange'
+  | 'onDefaultLangChange'
+  | 'currentLang'
+  | 'use'
+  | 'setDefaultLang'
 > {
   const onTranslationChange = new EventEmitter<TranslationChangeEvent>();
   const onLangChange = new EventEmitter<LangChangeEvent>();
@@ -20,6 +30,8 @@ export function createTranslateServiceMock(): Pick<
   const instant: TranslateService['instant'] = key => (Array.isArray(key) ? key.map(k => String(k)) : String(key));
 
   const get: TranslateService['get'] = key => of(Array.isArray(key) ? key.map(k => String(k)) : String(key));
+
+  const getParsedResult = vi.fn((translations: any, key: string) => key);
 
   const stream: TranslateService['stream'] = key => of(Array.isArray(key) ? key.map(k => String(k)) : String(key));
 
@@ -31,6 +43,7 @@ export function createTranslateServiceMock(): Pick<
   return {
     instant,
     get,
+    getParsedResult,
     stream,
     onTranslationChange,
     onLangChange,

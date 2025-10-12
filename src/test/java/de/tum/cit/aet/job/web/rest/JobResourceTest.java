@@ -15,12 +15,13 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
-import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
-import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
-import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
+import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
@@ -41,6 +42,9 @@ class JobResourceTest extends AbstractResourceTest {
     ResearchGroupRepository researchGroupRepository;
 
     @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @Autowired
     MvcTestClient api;
 
     ResearchGroup researchGroup;
@@ -48,9 +52,7 @@ class JobResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     void setup() {
-        jobRepository.deleteAll();
-        userRepository.deleteAll();
-        researchGroupRepository.deleteAll();
+        databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,

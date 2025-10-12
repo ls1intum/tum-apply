@@ -1491,6 +1491,7 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         desiredStartDate: {type: string, format: date}
+        appliedAt: {type: string, format: date-time}
         projects: {type: string}
         specialSkills: {type: string}
         motivation: {type: string}
@@ -1873,16 +1874,20 @@ components:
       type: object
       properties:
         applicationId: {type: string, format: uuid}
+        jobId: {type: string, format: uuid}
         applicant: {$ref: '#/components/schemas/ApplicantForApplicationDetailDTO'}
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
+        supervisingProfessorName: {type: string}
+        researchGroup: {type: string}
         jobTitle: {type: string}
+        jobLocation: {type: string}
         desiredDate: {type: string, format: date}
         projects: {type: string}
         specialSkills: {type: string}
         motivation: {type: string}
-      required: [applicationId, applicationState]
+      required: [applicationId, applicationState, jobId, researchGroup, supervisingProfessorName]
     ApplicationEvaluationDetailDTO:
       type: object
       properties:
