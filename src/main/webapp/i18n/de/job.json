@@ -136,12 +136,12 @@
     "hoursPerWeek": "{{workload}} h/Woche",
     "errors": {
       "loadFilter": {
-        "summary": "Laden der Filteroptionen fehlgeschlagen",
-        "detail": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der Filteroptionen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       },
       "loadJobs": {
-        "summary": "Laden der Stellen fehlgeschlagen",
-        "detail": "Fehler beim Laden der verfügbaren Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der verfügbaren Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   },
@@ -173,12 +173,12 @@
     },
     "errors": {
       "loadJobNames": {
-        "summary": "Laden der Jobnamen fehlgeschlagen",
-        "detail": "Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Error",
+        "detail": "Laden der Jobnamen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       },
       "loadJobs": {
-        "summary": "Laden der Stellen fehlgeschlagen",
-        "detail": "Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Error",
+        "detail": "Laden der Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   },

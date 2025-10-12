@@ -136,11 +136,11 @@
     "hoursPerWeek": "{{workload}} h/week",
     "errors": {
       "loadFilter": {
-        "summary": "Error loading filter options",
+        "summary": "Error",
         "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
       },
       "loadJobs": {
-        "summary": "Error loading positions",
+        "summary": "Error",
         "detail": "Failed to load available positions. Please try refreshing the page, or contact us if the problem continues."
       }
     }
@@ -173,12 +173,12 @@
     },
     "errors": {
       "loadJobNames": {
-        "summary": "Failed to load job names",
-        "detail": "Please try refreshing the page, or contact us if the problem continues."
+        "summary": "Error",
+        "detail": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
       },
       "loadJobs": {
-        "summary": "Failed to load jobs",
-        "detail": "Please try refreshing the page, or contact us if the problem continues."
+        "summary": "Error",
+        "detail": "Failed to load jobs. Please try refreshing the page, or contact us if the problem continues."
       }
     }
   },

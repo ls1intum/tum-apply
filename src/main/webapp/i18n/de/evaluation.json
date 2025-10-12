@@ -99,12 +99,12 @@
     },
     "errors": {
       "loadJobNames": {
-        "summary": "Laden der Jobnamen fehlgeschlagen",
-        "detail": "Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der Jobnamen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       },
       "loadApplications": {
-        "summary": "Laden der Bewerbungen fehlgeschlagen",
-        "detail": "Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der Bewerbungen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   }

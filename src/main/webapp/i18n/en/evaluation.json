@@ -99,12 +99,12 @@
     },
     "errors": {
       "loadJobNames": {
-        "summary": "Failed to load job names",
-        "detail": "Please try refreshing the page, or contact us if the problem continues."
+        "summary": "Error",
+        "detail": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
       },
       "loadApplications": {
-        "summary": "Failed to load applications",
-        "detail": "Please try refreshing the page, or contact us if the problem continues."
+        "summary": "Error",
+        "detail": "Failed to load applications. Please try refreshing the page, or contact us if the problem continues."
       }
     }
   }
