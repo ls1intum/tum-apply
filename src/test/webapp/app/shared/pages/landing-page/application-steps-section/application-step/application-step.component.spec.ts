@@ -37,7 +37,7 @@ describe('ApplicationStepComponent', () => {
 
     const buttonDebug = fixture.debugElement.query(By.directive(ButtonStubComponent));
 
-    expect(buttonDebug?.componentInstance.icon()).toBe('bell'); // ✅ Signal aufgerufen
+    expect(buttonDebug?.componentInstance.icon()).toBe('bell'); 
     const titleEl = fixture.nativeElement.querySelector('h3.title');
     const descEl = fixture.nativeElement.querySelector('p.description');
 
