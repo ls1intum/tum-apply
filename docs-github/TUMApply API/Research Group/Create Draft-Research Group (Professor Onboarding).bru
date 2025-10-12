@@ -1,0 +1,39 @@
+meta {
+  name: Create Draft-Research Group (Professor Onboarding)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/research-groups/professor-request
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Prof. Dr.",
+    "firstName": "Max", 
+    "lastName": "Mustermann",
+    "universityId": "ab12cde",
+    "researchGroupHead": "Prof. Dr. Max Mustermann",
+    "researchGroupName": "Advanced Software Engineering Research Group",
+    "abbreviation": "ASERG",
+    "contactEmail": "max.mustermann@tum.de", 
+    "website": "https://www.aserg.tum.de",
+    "school": "Informatics",
+    "description": "Research in software engineering methodologies and tools",
+    "defaultFieldOfStudies": "Computer Science",
+    "street": "Boltzmannstr. 3",
+    "postalCode": "85748",
+    "city": "Garching bei München"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
