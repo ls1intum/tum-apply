@@ -109,6 +109,7 @@
         "email": "Ungültige Email-Adresse.",
         "min": "Dieses Feld muss mind. {{min}} sein.",
         "max": "Dieses Feld darf max. {{max}} sein.",
+        "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
         "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
         "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
         "boundaryMismatch": "Die obere Grenze muss größer als die untere Grenze sein.",

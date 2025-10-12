@@ -109,6 +109,7 @@
         "email": "Invalid email.",
         "min": "This field should be at least {{ min }}.",
         "max": "This field cannot be more than {{ max }}.",
+        "tooManyDecimals": "Please enter at most two decimal places.",
         "invalidGrade": "Please enter the grade as a positive number, percentage, or letter.",
         "formatMismatch": "Please enter all values in the same format.",
         "boundaryMismatch": "The upper limit must be greater than the lower limit.",

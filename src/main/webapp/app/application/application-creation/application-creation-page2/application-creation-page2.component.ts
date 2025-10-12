@@ -83,10 +83,21 @@ function clearError(ctrl: AbstractControl | null | undefined, key: string): void
   ctrl.setErrors(Object.keys(rest).length ? rest : null);
 }
 
+function hasTooManyDecimals(val: string): boolean {
+  const trimmed = val.trim();
+  return /^\d+[.,]\d{3,}$/.test(trimmed);
+}
+
 function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: string) => boolean)[]): string | null {
   for (const ctrl of ctrls) {
     const val = ctrl?.value;
     if (!val) continue;
+
+    if (hasTooManyDecimals(val)) {
+      setError(ctrl, 'tooManyDecimals');
+      return 'tooManyDecimals';
+    }
+
     const isValid = formats.some(fn => fn(val));
     if (!isValid) {
       setError(ctrl, 'invalidGrade');

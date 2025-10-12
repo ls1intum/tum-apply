@@ -61,6 +61,7 @@ export abstract class BaseInputDirective<T> {
       invalidPostalCode: this.translate.instant('entity.applicationPage1.validation.postalCode'),
       min: this.translate.instant('global.input.error.min', { min: val?.min }),
       max: this.translate.instant('global.input.error.max', { max: val?.max }),
+      tooManyDecimals: this.translate.instant('global.input.error.tooManyDecimals'),
       invalidGrade: this.translate.instant('global.input.error.invalidGrade'),
       formatMismatch: this.translate.instant('global.input.error.formatMismatch'),
       boundaryMismatch: this.translate.instant('global.input.error.boundaryMismatch'),
