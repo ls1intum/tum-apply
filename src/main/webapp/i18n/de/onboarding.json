@@ -37,24 +37,24 @@
         "placeholder": "z.B. ab12cde"
       },
       "researchGroupHead": {
-        "label": "Leitung der Forschungsgruppe",
-        "placeholder": "Titel, Vor- und Nachname"
+        "label": "Leitung",
+        "placeholder": "z.B. Prof. Dr. Max Mustermann"
       },
       "researchGroupName": {
-        "label": "Name der Forschungsgruppe",
-        "placeholder": "Name der Forschungsgruppe"
+        "label": "Name",
+        "placeholder": "z.B. Forschungsgruppe für Künstliche Intelligenz"
       },
       "researchGroupAbbreviation": {
         "label": "Abkürzung",
-        "placeholder": "z.B. TUM-AI"
+        "placeholder": "z.B. KI"
       },
       "researchGroupContactEmail": {
-        "label": "Kontakt-E-Mail",
-        "placeholder": "kontakt@forschungsgruppe.de"
+        "label": "E-Mail",
+        "placeholder": "z.B. kontakt@forschung.de"
       },
       "researchGroupWebsite": {
-        "label": "Website",
-        "placeholder": "https://www.forschungsgruppe.tum.de"
+        "label": "Webseite",
+        "placeholder": "z.B. https://www.forschung.de/gruppe"
       },
       "researchGroupSchool": {
         "label": "School",
@@ -62,23 +62,23 @@
       },
       "researchGroupDescription": {
         "label": "Beschreibung",
-        "placeholder": "Kurze Beschreibung der Forschungsgruppe"
+        "placeholder": "Beschreibe kurz die Forschungsrichtung, Ziele und Schwerpunkte deiner Gruppe."
       },
       "researchGroupFieldOfStudies": {
-        "label": "Studienfach",
-        "placeholder": "z.B. Informatik, Maschinenbau"
+        "label": "Studienrichtung",
+        "placeholder": "z.B. Computer Science"
       },
       "researchGroupStreetAndNumber": {
         "label": "Straße und Hausnummer",
-        "placeholder": "Straße 1"
+        "placeholder": "z.B. Musterstraße 123"
       },
       "researchGroupPostalCode": {
         "label": "Postleitzahl",
-        "placeholder": "80333"
+        "placeholder": "z.B. 12345"
       },
       "researchGroupCity": {
         "label": "Stadt",
-        "placeholder": "München"
+        "placeholder": "z.B. Berlin"
       },
       "additionalNotes": {
         "label": "Zusätzliche Notizen",
