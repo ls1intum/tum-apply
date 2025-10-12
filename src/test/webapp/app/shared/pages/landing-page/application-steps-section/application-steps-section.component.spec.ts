@@ -39,7 +39,7 @@ describe('ApplicationStepComponent', () => {
     const titleEl = fixture.nativeElement.querySelector('h3.title');
     const descEl = fixture.nativeElement.querySelector('p.description');
 
-    expect(buttonDebug?.componentInstance.icon()).toBe('bell'); // <- korrigiert
+    expect(buttonDebug?.componentInstance.icon()).toBe('bell');
     expect(titleEl?.textContent).toBe('Test Title');
     expect(descEl?.textContent).toBe('Test Description');
   });
