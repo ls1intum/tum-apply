@@ -150,8 +150,8 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
                 case "job.title":
                     sortExpression = jobJoin.get(Job_.TITLE);
                     break;
-                case "createdAt":
-                    sortExpression = root.get(Application_.CREATED_AT);
+                case "appliedAt":
+                    sortExpression = root.get(Application_.appliedAt);
                     break;
                 case "state":
                     sortExpression = root.get(Application_.STATE);
@@ -213,7 +213,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         params.put("states", states.stream().map(ApplicationState::toString).toList());
         params.put("applicationId", applicationId);
 
-        String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.created_at", "a.application_id");
+        String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.applied_at", "a.application_id");
 
         StringBuilder sql = new StringBuilder(
             """

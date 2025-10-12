@@ -24,6 +24,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -137,14 +138,26 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
-        applicationRepository.updateApplication(
-            updateApplicationDTO.applicationId(),
-            updateApplicationDTO.applicationState().name(),
-            updateApplicationDTO.desiredDate(),
-            updateApplicationDTO.projects(),
-            updateApplicationDTO.specialSkills(),
-            updateApplicationDTO.motivation()
-        );
+        if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
+            applicationRepository.updateApplicationSubmit(
+                updateApplicationDTO.applicationId(),
+                updateApplicationDTO.applicationState().name(),
+                updateApplicationDTO.desiredDate(),
+                updateApplicationDTO.projects(),
+                updateApplicationDTO.specialSkills(),
+                updateApplicationDTO.motivation(),
+                LocalDateTime.now()
+            );
+        } else {
+            applicationRepository.updateApplication(
+                updateApplicationDTO.applicationId(),
+                updateApplicationDTO.applicationState().name(),
+                updateApplicationDTO.desiredDate(),
+                updateApplicationDTO.projects(),
+                updateApplicationDTO.specialSkills(),
+                updateApplicationDTO.motivation()
+            );
+        }
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
 
         Applicant applicant = applicantRepository.getReferenceById(applicantDTO.user().userId());

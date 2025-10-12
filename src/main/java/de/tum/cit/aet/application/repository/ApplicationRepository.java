@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
@@ -218,6 +219,30 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         @Param("projects") String projects,
         @Param("specialSkills") String specialSkills,
         @Param("motivation") String motivation
+    );
+
+    @Modifying
+    @Query(
+        value = """
+            UPDATE applications SET
+                application_state = :state,
+                desired_start_date = :desiredDate,
+                projects = :projects,
+                special_skills = :specialSkills,
+                motivation = :motivation,
+                applied_at = :appliedAt
+            WHERE application_id = :applicationId
+        """,
+        nativeQuery = true
+    )
+    void updateApplicationSubmit(
+        @Param("applicationId") UUID applicationId,
+        @Param("state") String state,
+        @Param("desiredDate") LocalDate desiredDate,
+        @Param("projects") String projects,
+        @Param("specialSkills") String specialSkills,
+        @Param("motivation") String motivation,
+        @Param("appliedAt") LocalDateTime appliedAt
     );
 
     @Query(
