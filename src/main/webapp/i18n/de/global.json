@@ -112,8 +112,8 @@
         "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
         "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
         "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
-        "boundaryMismatch": "Die obere Grenze muss größer als die untere Grenze sein.",
-        "outOfRange": "Die Note muss zwischen der oberen und unteren Bestehensgrenze liegen."
+        "boundaryMismatch": "Die höchstmögliche Note muss besser sein als die niedrigste Note zum Bestehen.",
+        "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
       }
     },
     "editor": {
@@ -155,8 +155,8 @@
     },
     "detail_card": {
       "name": "Name",
-      "upper_passing_limit": "Obere Bestehensgrenze",
-      "lower_passing_limit": "Untere Bestehensgrenze",
+      "upper_passing_limit": "Höchstmögliche Note",
+      "lower_passing_limit": "Niedrigste Note zum Bestehen",
       "grade": "Note",
       "university": "Universität",
       "motivation": "Motivation",
@@ -306,8 +306,8 @@
         "master": "Master"
       },
       "label": {
-        "gradeUpperLimit": "Obere Bestehensgrenze",
-        "gradeLowerLimit": "Untere Bestehensgrenze",
+        "gradeUpperLimit": "Höchstmögliche Note",
+        "gradeLowerLimit": "Niedrigste Note zum Bestehen",
         "bachelorDegreeName": "Bachelor-Studiengang",
         "bachelorDegreeUniversity": "Universität des Bachelors",
         "bachelorGrade": "Bachelor-Abschlussnote",
@@ -318,13 +318,13 @@
       "tooltip": {
         "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
         "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
-        "bachelorGradeUpperLimit": "Gib die beste Note zum Bestehen im Notensystem Ihres Bachelorabschlusses an (z. B. 1,0 in Deutschland).",
-        "bachelorGradeLowerLimit": "Gib die schlechteste Note zum Bestehen im Notensystem Ihres Bachelorabschlusses an (z. B. 4,0 in Deutschland).",
+        "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
+        "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterDegreeName": "Gib den Studiengang deines Masters an.",
         "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
-        "masterGradeUpperLimit": "Gib die beste Note zum Bestehen im Notensystem Ihres Masterabschlusses an (z. B. 1,0 in Deutschland).",
-        "masterGradeLowerLimit": "Gib die schlechteste Note zum Bestehen im Notensystem Ihres Masterabschlusses an (z. B. 4,0 in Deutschland).",
+        "masterGradeUpperLimit": "Gib die bestmögliche Note in deinem Master-Notensystem an (z. B. 1,0 in Deutschland).",
+        "masterGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Master-Notensystem an (z. B. 4,0 in Deutschland).",
         "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
       }

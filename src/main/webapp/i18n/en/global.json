@@ -112,8 +112,8 @@
         "tooManyDecimals": "Please enter at most two decimal places.",
         "invalidGrade": "Please enter the grade as a positive number, percentage, or letter.",
         "formatMismatch": "Please enter all values in the same format.",
-        "boundaryMismatch": "The upper limit must be greater than the lower limit.",
-        "outOfRange": "The grade must be between the upper and lower passing limits."
+        "boundaryMismatch": "The highest achievable grade must be better than the lowest passing grade.",
+        "outOfRange": "The grade must be between the highest achievable and lowest passing grades."
       }
     },
     "editor": {
@@ -155,8 +155,8 @@
     },
     "detail_card": {
       "name": "Name",
-      "upper_passing_limit": "Upper Passing Limit",
-      "lower_passing_limit": "Lower Passing Limit",
+      "upper_passing_limit": "Highest Achievable Grade",
+      "lower_passing_limit": "Lowest Passing Grade",
       "grade": "Grade",
       "university": "University",
       "motivation": "Motivation",
@@ -306,7 +306,7 @@
         "master": "Master"
       },
       "label": {
-        "gradeUpperLimit": "Upper passing limit",
+        "gradeUpperLimit": "Highest Achievable Grade",
         "gradeLowerLimit": "Lower passing limit",
         "bachelorDegreeName": "Bachelor Degree Name",
         "bachelorDegreeUniversity": "Bachelor Degree University",
@@ -318,12 +318,12 @@
       "tooltip": {
         "bachelorDegreeName": "Specify the study program of your Bachelor's Degree.",
         "bachelorDegreeUniversity": "Enter the name of the University where you completed your Bachelor's Degree.",
-        "bachelorGradeUpperLimit": "Enter the highest passing grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
+        "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
         "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
         "masterDegreeName": "Specify the study program of your Master's Degree.",
         "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
-        "masterGradeUpperLimit": "Enter the highest passing grade in your Master's degree grading system (e.g. 1.0 in Germany).",
+        "masterGradeUpperLimit": "Enter the highest achievable grade in your Master's degree grading system (e.g. 1.0 in Germany).",
         "masterGradeLowerLimit": "Enter the lowest passing grade in your Master's degree grading system (e.g. 4.0 in Germany)",
         "masterGrade": "Enter your final Master's Grade according to your institution's grading system.",
         "filenamePrivacy": "File names stay private and are not shown to professors."
