@@ -53,7 +53,7 @@ public class ResearchGroupResource {
      * @return paginated list of members
      */
     @GetMapping("/members")
-    @Admin
+    @ProfessorOrAdmin
     public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         log.info("GET /api/research-groups/members?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembers(pageDTO);
