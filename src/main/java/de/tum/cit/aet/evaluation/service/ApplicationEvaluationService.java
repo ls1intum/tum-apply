@@ -215,6 +215,7 @@ public class ApplicationEvaluationService {
         if (windowSize == null || windowSize <= 0 || (windowSize % 2) != 1) {
             throw new IllegalArgumentException("Window size must be a positive and odd integer");
         }
+
         long idx = applicationEvaluationRepository.findIndexOfApplication(
             applicationId,
             researchGroupId,
