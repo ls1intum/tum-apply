@@ -1,6 +1,6 @@
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -14,11 +14,21 @@ import { ConfirmDialog } from '../../../../atoms/confirm-dialog/confirm-dialog';
 import { EditorComponent } from '../../../../atoms/editor/editor.component';
 import { ToastService } from '../../../../../../service/toast-service';
 import { tumIdValidator } from '../../../../../validators/custom-validators';
+import TranslateDirective from '../../../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-request-access-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, StringInputComponent, ButtonComponent, TranslateModule, ConfirmDialog, EditorComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    StringInputComponent,
+    ButtonComponent,
+    TranslateModule,
+    TranslateDirective,
+    ConfirmDialog,
+    EditorComponent,
+  ],
   templateUrl: './professor-request-access-form.component.html',
   styleUrl: './professor-request-access-form.component.scss',
 })
@@ -37,7 +47,6 @@ export class ProfessorRequestAccessFormComponent {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
   private readonly researchGroupService = inject(ResearchGroupResourceApiService);
   private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
-  private readonly translate = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
   constructor() {
@@ -69,7 +78,7 @@ export class ProfessorRequestAccessFormComponent {
       researchGroupHead: ['', [Validators.required]],
       researchGroupName: ['', [Validators.required]],
       researchGroupAbbreviation: [''],
-      researchGroupContactEmail: ['', [Validators.email]],
+      researchGroupContactEmail: ['', [Validators.email, Validators.pattern(/.+\..{2,}$/)]],
       researchGroupWebsite: [''],
       researchGroupSchool: [''],
       researchGroupDescription: ['', [Validators.maxLength(1000)]],
@@ -93,9 +102,8 @@ export class ProfessorRequestAccessFormComponent {
 
       this.toastService.showSuccessKey('onboarding.professorRequest.success');
       this.ref?.close(result);
-    } catch (error: unknown) {
+    } catch {
       this.toastService.showErrorKey('onboarding.professorRequest.error');
-      console.error('Failed to submit professor request:', error);
     } finally {
       this.isSubmitting.set(false);
     }

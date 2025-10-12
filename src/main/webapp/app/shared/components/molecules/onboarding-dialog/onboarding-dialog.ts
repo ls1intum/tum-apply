@@ -38,11 +38,11 @@ export class OnboardingDialog {
         modal: true,
         closable: true,
         dismissableMask: false,
-        width: '900px',
+        width: '56.25rem',
         style: {
           'max-width': '95vw',
           'background-color': 'white',
-          'border-radius': '8px',
+          'border-radius': '0.5rem',
         },
         focusOnShow: false,
       });
