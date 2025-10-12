@@ -66,21 +66,19 @@ function parseNumeric(val: string): number {
   return parseFloat(val.replace('%', '').replace(',', '.'));
 }
 
-function setError(ctrl: AbstractControl | null | undefined, key: string): void {
+function toggleError(ctrl: AbstractControl | null | undefined, key: string, shouldSet: boolean): void {
   if (!ctrl) return;
 
-  const errors: ValidationErrors = Object.create(null);
-  Object.assign(errors, ctrl.errors ?? {});
-  errors[key] = true;
-  ctrl.setErrors(errors);
-}
-
-function clearError(ctrl: AbstractControl | null | undefined, key: string): void {
-  if (!ctrl?.errors || !(key in ctrl.errors)) return;
-
-  const rest = Object.fromEntries(Object.entries(ctrl.errors).filter(([k]) => k !== key));
-
-  ctrl.setErrors(Object.keys(rest).length ? rest : null);
+  if (shouldSet) {
+    const errors: ValidationErrors = Object.create(null);
+    Object.assign(errors, ctrl.errors ?? {});
+    errors[key] = true;
+    ctrl.setErrors(errors);
+  } else {
+    if (!ctrl.errors || !(key in ctrl.errors)) return;
+    const rest = Object.fromEntries(Object.entries(ctrl.errors).filter(([k]) => k !== key));
+    ctrl.setErrors(Object.keys(rest).length ? rest : null);
+  }
 }
 
 function hasTooManyDecimals(val: string): boolean {
@@ -94,17 +92,15 @@ function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: strin
     if (!val) continue;
 
     if (hasTooManyDecimals(val)) {
-      setError(ctrl, 'tooManyDecimals');
+      toggleError(ctrl, 'tooManyDecimals', true);
       return 'tooManyDecimals';
     }
 
     const isValid = formats.some(fn => fn(val));
-    if (!isValid) {
-      setError(ctrl, 'invalidGrade');
-      return 'invalidGrade';
-    } else {
-      clearError(ctrl, 'invalidGrade');
-    }
+    toggleError(ctrl, 'invalidGrade', !isValid);
+    toggleError(ctrl, 'tooManyDecimals', false);
+
+    if (!isValid) return 'invalidGrade';
   }
   return null;
 }
@@ -184,39 +180,39 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
 
     // Check individual format validity
     const formatErr = validateFormat([upper, lower, grade], [isNumeric, isLetter, isPercentage]);
-    if (formatErr) return { invalidGrade: true };
+    if (formatErr) return { [formatErr]: true };
 
     // Check if all three values have the same format
     const format = validateSameFormat(values);
     if (!format) {
       [upper, lower, grade].forEach(ctrl => {
-        setError(ctrl, 'formatMismatch');
+        toggleError(ctrl, 'formatMismatch', true);
       });
       return { formatMismatch: true };
     } else {
       [upper, lower, grade].forEach(ctrl => {
-        clearError(ctrl, 'formatMismatch');
+        toggleError(ctrl, 'formatMismatch', false);
       });
     }
 
     // Check if upper limit is greater than lower limit (not necessary for numeric to allow 1.0 to 4.0 (1.0<4.0) and 100 to 40 (100>40))
     if (format !== 'numeric') {
       if (validateBoundaryMismatch(format, upper!.value, lower!.value)) {
-        setError(upper, 'boundaryMismatch');
-        setError(lower, 'boundaryMismatch');
+        toggleError(upper, 'boundaryMismatch', true);
+        toggleError(lower, 'boundaryMismatch', true);
         return { boundaryMismatch: true };
       } else {
-        clearError(upper, 'boundaryMismatch');
-        clearError(lower, 'boundaryMismatch');
+        toggleError(upper, 'boundaryMismatch', false);
+        toggleError(lower, 'boundaryMismatch', false);
       }
     }
 
     // Check if grade is within the limits
     if (validateGradeRange(format, upper!.value, lower!.value, grade!.value)) {
-      setError(grade, 'outOfRange');
+      toggleError(grade, 'outOfRange', true);
       return { outOfRange: true };
     } else {
-      clearError(grade, 'outOfRange');
+      toggleError(grade, 'outOfRange', false);
     }
 
     return null;
