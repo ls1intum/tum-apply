@@ -3,8 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
 import { AccountService } from 'app/core/auth/account.service';
@@ -16,6 +15,8 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { signal } from '@angular/core';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideTranslateMock } from '../../../util/translate.mock';
+import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
@@ -53,7 +54,7 @@ describe('JobDetailComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [JobDetailComponent, FontAwesomeModule, TranslateModule.forRoot()],
+      imports: [JobDetailComponent],
       providers: [
         { provide: Router, useValue: router },
         { provide: Location, useValue: location },
@@ -62,7 +63,8 @@ describe('JobDetailComponent', () => {
         { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
         { provide: AccountService, useValue: accountService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
-        TranslateService,
+        provideTranslateMock(),
+        provideFontAwesomeTesting(),
       ],
     }).compileComponents();
 
@@ -250,7 +252,7 @@ describe('JobDetailComponent', () => {
 
     await TestBed.resetTestingModule()
       .configureTestingModule({
-        imports: [JobDetailComponent, TranslateModule.forRoot()],
+        imports: [JobDetailComponent],
         providers: [
           { provide: Router, useValue: router },
           { provide: Location, useValue: location },
@@ -259,7 +261,7 @@ describe('JobDetailComponent', () => {
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
           { provide: AccountService, useValue: accountService },
           { provide: ActivatedRoute, useValue: invalidRoute },
-          TranslateService,
+          provideTranslateMock(),
         ],
       })
       .compileComponents();
@@ -468,7 +470,7 @@ describe('JobDetailComponent', () => {
 
     await TestBed.resetTestingModule()
       .configureTestingModule({
-        imports: [JobDetailComponent, TranslateModule.forRoot()],
+        imports: [JobDetailComponent],
         providers: [
           { provide: Router, useValue: router },
           { provide: Location, useValue: location },
@@ -477,7 +479,7 @@ describe('JobDetailComponent', () => {
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
           { provide: AccountService, useValue: accountServiceNoId },
           { provide: ActivatedRoute, useValue: routeNoJobId },
-          TranslateService,
+          provideTranslateMock(),
         ],
       })
       .compileComponents();
