@@ -102,7 +102,6 @@ public class UserService {
      * @param lastName       optional last name (can be null/blank)
      * @return the managed User entity
      */
-    @Transactional
     public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
         return upsertUser(keycloakUserId, email, firstName, lastName, null);
     }
