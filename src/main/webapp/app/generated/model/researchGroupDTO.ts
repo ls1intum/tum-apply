@@ -21,5 +21,15 @@ export interface ResearchGroupDTO {
     street?: string;
     postalCode?: string;
     city?: string;
+    state?: ResearchGroupDTO.StateEnum;
 }
+export namespace ResearchGroupDTO {
+    export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
+    export const StateEnum = {
+        Draft: 'DRAFT' as StateEnum,
+        Active: 'ACTIVE' as StateEnum,
+        Denied: 'DENIED' as StateEnum
+    };
+}
+
 

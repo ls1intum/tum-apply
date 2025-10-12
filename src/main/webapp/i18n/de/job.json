@@ -17,7 +17,7 @@
       }
     },
     "basicInformationSection": {
-      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende/r Professor/in.",
+      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende:r Professor:in.",
       "jobTitle": {
         "label": "Stellentitel",
         "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
@@ -32,7 +32,7 @@
         "placeholder": "Wähle ein Studienfach..."
       },
       "supervisingProfessor": {
-        "label": "Betreuende/r Professor/in"
+        "label": "Betreuende:r Professor:in"
       },
       "location": {
         "label": "Standort",

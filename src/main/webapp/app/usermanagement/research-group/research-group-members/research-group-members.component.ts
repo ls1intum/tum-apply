@@ -76,6 +76,7 @@ export class ResearchGroupMembersComponent {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
+    this.pageSize.set(rows);
 
     void this.loadMembers();
   }
@@ -83,22 +84,15 @@ export class ResearchGroupMembersComponent {
   async removeMember(member: UserShortDTO): Promise<void> {
     try {
       await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
-
-      const successMessage = this.translate.instant(`${this.translationKey}.toastMessages.removeSuccess`, {
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
         memberName: `${member.firstName} ${member.lastName}`,
-      });
-      this.toastService.showSuccess({
-        detail: successMessage,
       });
 
       // Refresh the members list
       await this.loadMembers();
     } catch {
-      const errorMessage = this.translate.instant(`${this.translationKey}.toastMessages.removeFailed`, {
+      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`, {
         memberName: `${member.firstName} ${member.lastName}`,
-      });
-      this.toastService.showError({
-        detail: errorMessage,
       });
     }
   }
@@ -110,8 +104,7 @@ export class ResearchGroupMembersComponent {
       this.members.set(members.content ?? []);
       this.total.set(members.totalElements ?? 0);
     } catch {
-      const errorMessage = this.translate.instant(`${this.translationKey}.toastMessages.loadFailed`);
-      this.toastService.showError({ detail: errorMessage });
+      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
     }
   }
 
