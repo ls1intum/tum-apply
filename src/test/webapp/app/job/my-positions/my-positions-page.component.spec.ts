@@ -5,23 +5,30 @@ import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { MyPositionsPageComponent } from 'app/job/my-positions/my-positions-page.component';
-import { ToastService } from 'app/service/toast-service';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
+import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 describe('MyPositionsPageComponent', () => {
   let fixture: ComponentFixture<MyPositionsPageComponent>;
   let component: MyPositionsPageComponent;
 
-  let jobService: Mocked<JobResourceApiService>;
   let accountService: Mocked<AccountService>;
-  let toastService: Mocked<ToastService>;
   let router: Mocked<Router>;
 
+  let mockJobService: {
+    getAllJobNamesByProfessor: ReturnType<typeof vi.fn>;
+    getJobsByProfessor: ReturnType<typeof vi.fn>;
+    deleteJob: ReturnType<typeof vi.fn>;
+    changeJobState: ReturnType<typeof vi.fn>;
+  };
+
+  let mockToastService: ReturnType<typeof createToastServiceMock>;
+
   beforeEach(async () => {
-    jobService = {
+    mockJobService = {
       getAllJobNamesByProfessor: vi.fn().mockReturnValue(of(['A', 'B'])),
       getJobsByProfessor: vi.fn().mockReturnValue(
         of({
@@ -31,17 +38,13 @@ describe('MyPositionsPageComponent', () => {
       ),
       deleteJob: vi.fn().mockReturnValue(of({})),
       changeJobState: vi.fn().mockReturnValue(of({})),
-    } as unknown as Mocked<JobResourceApiService>;
+    };
+
+    mockToastService = createToastServiceMock();
 
     accountService = {
       loadedUser: vi.fn().mockReturnValue({ id: 'u1', name: 'User' }),
     } as unknown as Mocked<AccountService>;
-
-    toastService = {
-      showErrorKey: vi.fn(),
-      showSuccess: vi.fn(),
-      showError: vi.fn(),
-    } as unknown as Mocked<ToastService>;
 
     router = {
       navigate: vi.fn(),
@@ -50,10 +53,10 @@ describe('MyPositionsPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MyPositionsPageComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: JobResourceApiService, useValue: jobService },
+        { provide: JobResourceApiService, useValue: mockJobService },
         { provide: AccountService, useValue: accountService },
-        { provide: ToastService, useValue: toastService },
         { provide: Router, useValue: router },
+        provideToastServiceMock(mockToastService),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
       ],
@@ -64,20 +67,40 @@ describe('MyPositionsPageComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('should load all job names on init', async () => {
     await component.loadAllJobNames();
-    expect(jobService.getAllJobNamesByProfessor).toHaveBeenCalled();
+    expect(mockJobService.getAllJobNamesByProfessor).toHaveBeenCalled();
     expect(component.allJobNames()).toEqual(['A', 'B']);
   });
 
+  it('should assign templates to correct columns', () => {
+    fixture.detectChanges();
+
+    const columns = component.columns();
+
+    expect(columns.find(c => c.field === 'actions')?.template).toBeTruthy();
+    expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
+
+    expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();
+    expect(columns.find(c => c.field === 'professorName')?.template).toBeUndefined();
+    expect(columns.find(c => c.field === 'title')?.template).toBeUndefined();
+    expect(columns.find(c => c.field === 'startDate')?.template).toBeUndefined();
+    expect(columns.find(c => c.field === 'createdAt')?.template).toBeUndefined();
+    expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeUndefined();
+  });
+
   it('should handle error when loading job names', async () => {
-    jobService.getAllJobNamesByProfessor.mockReturnValueOnce(throwError(() => new Error('fail')));
+    mockJobService.getAllJobNamesByProfessor.mockReturnValueOnce(throwError(() => new Error('fail')));
     await component.loadAllJobNames();
-    expect(toastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobNames');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobNames');
     expect(component.allJobNames()).toEqual([]);
   });
 
@@ -124,6 +147,13 @@ describe('MyPositionsPageComponent', () => {
     expect(loadSpy).not.toHaveBeenCalled();
   });
 
+  it('should trim and normalize whitespace in search query', () => {
+    const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    component.onSearchEmit(' test multiple spaces here ');
+    expect(component.searchQuery()).toBe('test multiple spaces here');
+    expect(loadSpy).toHaveBeenCalled();
+  });
+
   it('should handle filterEmit for job', async () => {
     const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
     component.onFilterEmit({ filterId: 'job', selectedValues: ['AI'] });
@@ -148,37 +178,39 @@ describe('MyPositionsPageComponent', () => {
 
   it('should handle loadOnTableEmit with pagination', async () => {
     const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
-    component.loadOnTableEmit({ first: 20, rows: 10 });
-    expect(component.page()).toBe(2);
-    expect(component.pageSize()).toBe(10);
+    const first = 20,
+      rows = 10;
+    component.loadOnTableEmit({ first, rows });
+    expect(component.page()).toBe(Math.floor(first / rows));
+    expect(component.pageSize()).toBe(rows);
     expect(loadSpy).toHaveBeenCalled();
   });
 
   it('should load jobs successfully', async () => {
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-    expect(jobService.getJobsByProfessor).toHaveBeenCalled();
+    expect(mockJobService.getJobsByProfessor).toHaveBeenCalled();
     expect(component.jobs().length).toBe(1);
     expect(component.totalRecords()).toBe(1);
   });
 
   it('should handle loadJobs API error', async () => {
-    jobService.getJobsByProfessor.mockReturnValueOnce(throwError(() => new Error('fail')));
+    mockJobService.getJobsByProfessor.mockReturnValueOnce(throwError(() => new Error('fail')));
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-    expect(toastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobs');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobs');
   });
 
   it('should delete job successfully', async () => {
     const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
     await component.onDeleteJob('1');
-    expect(jobService.deleteJob).toHaveBeenCalledWith('1');
-    expect(toastService.showSuccess).toHaveBeenCalled();
+    expect(mockJobService.deleteJob).toHaveBeenCalledWith('1');
+    expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(loadSpy).toHaveBeenCalled();
   });
 
   it('should handle delete job error', async () => {
-    vi.spyOn(jobService, 'deleteJob').mockReturnValueOnce(throwError(() => new Error('delete failed')));
+    vi.spyOn(mockJobService, 'deleteJob').mockReturnValueOnce(throwError(() => new Error('delete failed')));
     await component.onDeleteJob('1');
-    expect(toastService.showError).toHaveBeenCalledWith({
+    expect(mockToastService.showError).toHaveBeenCalledWith({
       detail: expect.stringContaining('delete failed'),
     });
   });
@@ -186,15 +218,15 @@ describe('MyPositionsPageComponent', () => {
   it('should close job successfully', async () => {
     const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
     await component.onCloseJob('1');
-    expect(jobService.changeJobState).toHaveBeenCalledWith('1', 'CLOSED');
-    expect(toastService.showSuccess).toHaveBeenCalled();
+    expect(mockJobService.changeJobState).toHaveBeenCalledWith('1', 'CLOSED');
+    expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(loadSpy).toHaveBeenCalled();
   });
 
   it('should handle close job error', async () => {
-    vi.spyOn(jobService, 'changeJobState').mockReturnValueOnce(throwError(() => new Error('close fail')));
+    vi.spyOn(mockJobService, 'changeJobState').mockReturnValueOnce(throwError(() => new Error('close fail')));
     await component.onCloseJob('1');
-    expect(toastService.showError).toHaveBeenCalledWith({
+    expect(mockToastService.showError).toHaveBeenCalledWith({
       detail: expect.stringContaining('close fail'),
     });
   });
@@ -213,7 +245,7 @@ describe('MyPositionsPageComponent', () => {
       email: '',
       name: '',
     });
-    const spy = vi.spyOn(jobService, 'getJobsByProfessor');
+    const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
     expect(spy).not.toHaveBeenCalled();
   });
@@ -236,7 +268,7 @@ describe('MyPositionsPageComponent', () => {
 
   it('should set userId to empty string when loadedUser returns undefined', async () => {
     vi.spyOn(accountService, 'loadedUser').mockReturnValue(undefined);
-    const spy = vi.spyOn(jobService, 'getJobsByProfessor');
+    const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
     expect(component.userId()).toBe('');
     expect(spy).not.toHaveBeenCalled();
@@ -248,8 +280,8 @@ describe('MyPositionsPageComponent', () => {
       email: '',
       name: '',
     });
-    jobService.getJobsByProfessor.mockReturnValueOnce(
-      of({ content: undefined, totalElements: undefined }) as unknown as ReturnType<typeof jobService.getJobsByProfessor>,
+    mockJobService.getJobsByProfessor.mockReturnValueOnce(
+      of({ content: undefined, totalElements: undefined }) as unknown as ReturnType<typeof mockJobService.getJobsByProfessor>,
     );
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
@@ -258,7 +290,7 @@ describe('MyPositionsPageComponent', () => {
   });
 
   it('should call loadJobs with non-empty filters', async () => {
-    accountService.loadedUser.mockReturnValue({
+    vi.spyOn(accountService, 'loadedUser').mockReturnValue({
       id: 'u1',
       name: 'User',
       email: '',
@@ -273,8 +305,8 @@ describe('MyPositionsPageComponent', () => {
     };
 
     const spy = vi
-      .spyOn(jobService, 'getJobsByProfessor')
-      .mockReturnValue(of(mockResponse) as unknown as ReturnType<typeof jobService.getJobsByProfessor>);
+      .spyOn(mockJobService, 'getJobsByProfessor')
+      .mockReturnValue(of(mockResponse) as unknown as ReturnType<typeof mockJobService.getJobsByProfessor>);
 
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
@@ -288,5 +320,36 @@ describe('MyPositionsPageComponent', () => {
       component.searchQuery(),
     );
     expect(component.jobs()).toEqual(mockResponse.content);
+  });
+
+  it('should update job order when sorted by title', async () => {
+    vi.spyOn(accountService, 'loadedUser').mockReturnValue({ id: 'u1', name: 'User', email: '' });
+
+    mockJobService.getJobsByProfessor.mockReturnValueOnce(
+      of({
+        content: [
+          { jobId: '2', title: 'Zebra', state: 'PUBLISHED' },
+          { jobId: '1', title: 'Alpha', state: 'DRAFT' },
+          { jobId: '3', title: 'Monkey', state: 'CLOSED' },
+        ],
+        totalElements: 3,
+      }) as any,
+    );
+    await (component as any).loadJobs();
+    expect(component.jobs().map(j => j.title)).toEqual(['Zebra', 'Alpha', 'Monkey']);
+
+    component.loadOnSortEmit({ field: 'title', direction: 'ASC' });
+    mockJobService.getJobsByProfessor.mockReturnValueOnce(
+      of({
+        content: [
+          { jobId: '1', title: 'Alpha', state: 'DRAFT' },
+          { jobId: '3', title: 'Monkey', state: 'CLOSED' },
+          { jobId: '2', title: 'Zebra', state: 'PUBLISHED' },
+        ],
+        totalElements: 3,
+      }) as any,
+    );
+    await (component as any).loadJobs();
+    expect(component.jobs().map(j => j.title)).toEqual(['Alpha', 'Monkey', 'Zebra']);
   });
 });
