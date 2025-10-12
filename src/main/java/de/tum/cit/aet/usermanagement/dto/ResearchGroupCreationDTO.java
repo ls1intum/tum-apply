@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -18,5 +19,6 @@ public record ResearchGroupCreationDTO(
     String defaultFieldOfStudies,
     String street,
     String postalCode,
-    String city
+    String city,
+    ResearchGroupState state
 ) {}
