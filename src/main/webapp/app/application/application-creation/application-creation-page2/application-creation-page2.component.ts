@@ -46,7 +46,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
 
 function isNumeric(val: string): boolean {
   const trimmed = val.trim();
-  return /^\d+$/.test(trimmed) || /^\d+[.,]\d+$/.test(trimmed);
+  return /^\d+$/.test(trimmed) || /^\d+[.,]\d{1,2}$/.test(trimmed);
 }
 
 function isLetter(val: string): boolean {
@@ -55,7 +55,7 @@ function isLetter(val: string): boolean {
 
 function isPercentage(val: string): boolean {
   const trimmed = val.trim();
-  return /^\d+%$/.test(trimmed) || /^\d+[.,]\d+%$/.test(trimmed);
+  return /^\d+%$/.test(trimmed) || /^\d+[.,]\d{1,2}%$/.test(trimmed);
 }
 
 function cleanLetter(val: string): string {
@@ -85,7 +85,7 @@ function clearError(ctrl: AbstractControl | null | undefined, key: string): void
 
 function hasTooManyDecimals(val: string): boolean {
   const trimmed = val.trim();
-  return /^\d+[.,]\d{3,}$/.test(trimmed);
+  return /^\d+[.,]\d{3,}%?$/.test(trimmed);
 }
 
 function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: string) => boolean)[]): string | null {
