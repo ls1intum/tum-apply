@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage1Component, {
@@ -9,46 +9,84 @@ import ApplicationCreationPage1Component, {
   selectLanguage,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page1/application-creation-page1.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { AccountService, User } from 'app/core/auth/account.service';
 
 describe('ApplicationPage1Component', () => {
+  let accountService: Pick<AccountService, 'signedIn'>;
   let fixture: ComponentFixture<ApplicationCreationPage1Component>;
   let comp: ApplicationCreationPage1Component;
   beforeEach(async () => {
+    accountService = {
+      signedIn: signal<boolean>(true),
+    };
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationPage1Component],
-      providers: [provideRouter([]), provideTranslateMock(), provideFontAwesomeTesting()],
+      providers: [
+        { provide: AccountService, useValue: accountService },
+        provideRouter([]),
+        provideTranslateMock(),
+        provideFontAwesomeTesting()
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
     fixture = TestBed.createComponent(ApplicationCreationPage1Component);
     comp = fixture.componentInstance;
+    comp.data.set({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      gender: undefined,
+      nationality: undefined,
+      language: undefined,
+      dateOfBirth: '',
+      website: '',
+      linkedIn: '',
+      street: '',
+      city: '',
+      country: undefined,
+      postcode: '',
+    });
     fixture.detectChanges();
   });
   it('should create the component and initial form is invalid', () => {
     expect(comp).toBeTruthy();
     const form = comp.page1Form();
     expect(form).toBeDefined();
-    // Since required fields are empty by default, form.invalid should be true
     expect(form.valid).toBe(false);
   });
 
   it('should become valid when all required fields are filled and postal code passes validation', () => {
+    const countryOption = { value: 'DE', name: 'Germany' };
+    comp.data.set({
+      ...comp.data(),
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      street: '',
+      city: '',
+      country: countryOption,
+      postcode: '',
+      gender: undefined,
+      nationality: undefined,
+      language: undefined,
+      dateOfBirth: '',
+      website: '',
+      linkedIn: '',
+    });
+
     const form = comp.page1Form();
-    // Set required fields
+
+    // Set required values
     form.controls.firstName.setValue('Alice');
     form.controls.lastName.setValue('Smith');
     form.controls.email.setValue('alice@example.com');
     form.controls.phoneNumber.setValue('123456');
     form.controls.street.setValue('Main St');
     form.controls.city.setValue('Munich');
+    form.controls.postcode.setValue('80331'); // Valid German postcode
 
-    // You also need to provide a country (SelectOption) in data so that postal code validation can run
-    const countryOption = { value: 'DE', name: 'Germany' };
-    comp.data.set({ ...comp.data(), country: countryOption });
-    // Because country is used in the postal code validator getCountryFn
-
-    form.controls.postcode.setValue('80331'); // valid German postal code (for example)
-
-    // Trigger statusChanges emission
     form.updateValueAndValidity();
 
     expect(form.valid).toBe(true);
@@ -65,7 +103,7 @@ describe('ApplicationPage1Component', () => {
     const countryOption = { value: 'DE', name: 'Germany' };
     comp.data.set({ ...comp.data(), country: countryOption });
 
-    form.controls.postcode.setValue('INVALIDCODE');
+    form.controls.postcode.setValue('987877');
     form.updateValueAndValidity();
 
     expect(form.valid).toBe(false);
