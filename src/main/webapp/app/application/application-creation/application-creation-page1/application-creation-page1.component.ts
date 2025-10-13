@@ -63,7 +63,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   };
 };
 
-function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
+export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
   return (control: AbstractControl): ValidationErrors => {
     const country = getCountryFn()?.toUpperCase();
     const value: string = control.value as string;

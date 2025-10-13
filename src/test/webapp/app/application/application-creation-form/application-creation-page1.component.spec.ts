@@ -5,11 +5,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage1Component, {
   getPage1FromApplication,
+  postalCodeValidator,
   selectGender,
   selectLanguage,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page1/application-creation-page1.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService, User } from 'app/core/auth/account.service';
+import { AbstractControl } from '@angular/forms';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -49,6 +51,7 @@ describe('ApplicationPage1Component', () => {
     });
     fixture.detectChanges();
   });
+  
   it('should create the component and initial form is invalid', () => {
     expect(comp).toBeTruthy();
     const form = comp.page1Form();
@@ -145,14 +148,11 @@ describe('ApplicationPage1Component', () => {
     const validSpy = vi.fn();
     comp.changed.subscribe(changedSpy);
     comp.valid.subscribe(validSpy);
-
-    // Now change a field
     form.controls.firstName.setValue('Bob');
-
-    // After change detection / effect, should have emitted
     expect(changedSpy).toHaveBeenCalled();
     expect(validSpy).toHaveBeenCalled();
   });
+
   it('setDateOfBirth should update data and emit changed', () => {
     const changedSpy = vi.fn();
     comp.changed.subscribe(changedSpy);
@@ -171,4 +171,78 @@ describe('ApplicationPage1Component', () => {
     expect(comp.data().nationality).toBe(nationalityOption);
     expect(changedSpy).toHaveBeenCalled();
   });
+
+  it('should not return an error when country is undefined in postalCodeValidator', () => {
+    const validator = (postalCodeValidator(() => undefined));
+    const control = { value: '12345' } as AbstractControl;
+    const result = validator(control);
+    expect(result).toEqual({}); // No validation error
+  });
+
+  it('should not return an error when postal code is empty', () => {
+    const validator = (postalCodeValidator(() => 'DE'));
+    const control = { value: '' } as AbstractControl;
+    const result = validator(control);
+    expect(result).toEqual({}); // No error when value is empty
+  });
+
+  it('should return an error when country code is invalid or unsupported', () => {
+    const validator = (postalCodeValidator(() => 'ZZ')); // ZZ is unsupported
+    const control = { value: '12345' } as AbstractControl;
+    const result = validator(control);
+    expect(result).toEqual({ invalidPostalCode: 'entity.applicationPage1.validation.postalCode' });
+  });
+
+  it('updateSelect should allow setting undefined value', () => {
+    const changedSpy = vi.fn();
+    comp.changed.subscribe(changedSpy);
+    comp.updateSelect('gender', undefined);
+    expect(comp.data().gender).toBeUndefined();
+    expect(changedSpy).toHaveBeenCalled();
+  });
+
+  it('setDateOfBirth should handle undefined input', () => {
+    const changedSpy = vi.fn();
+    comp.changed.subscribe(changedSpy);
+    comp.setDateOfBirth(undefined);
+    expect(comp.data().dateOfBirth).toBe('');
+    expect(changedSpy).toHaveBeenCalled();
+  });
+
+  it('should include optional fields in form and allow valid values', () => {
+    comp.data.set({
+      ...comp.data(),
+      firstName: 'Foo',
+      lastName: 'Bar',
+      email: 'foo@bar.com',
+      phoneNumber: '55555',
+      street: '123 Street',
+      city: 'Townsville',
+      postcode: '80331',
+      country: { value: 'DE', name: 'Germany' },
+      gender: { value: 'male', name: 'Male' },
+      nationality: { value: 'FR', name: 'France' },
+      language: { value: 'en', name: 'English' },
+      dateOfBirth: '1990-01-01',
+      website: 'https://example.com',
+      linkedIn: 'https://linkedin.com/in/example',
+    });
+
+    const form = comp.page1Form();
+    form.updateValueAndValidity();
+    expect(form.valid).toBe(true);
+  });
+
+  it('getPage1FromApplication handles missing fields gracefully', () => {
+    const app: any = {
+      applicant: {
+        user: {},
+      },
+    };
+    const page1 = getPage1FromApplication(app);
+    expect(page1.firstName).toBe('');
+    expect(page1.gender).toBeUndefined();
+    expect(page1.language).toBeUndefined();
+  });
+
 });
