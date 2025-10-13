@@ -23,12 +23,26 @@ export abstract class BaseInputDirective<T> {
   customErrorKey = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
-  isTouched = signal(false);
   isFocused = signal(false);
 
   formControl = computed(() => {
     const ctrl = this.control();
     return ctrl instanceof FormControl ? ctrl : new FormControl('');
+  });
+
+  isTouched = computed(() => {
+    this.formValidityVersion();
+    const ctrl = this.formControl();
+
+    if (this._isTouched()) return true;
+
+    if (ctrl.touched && ctrl.errors) {
+      const errorKeys = Object.keys(ctrl.errors);
+      const hasNonRequiredErrors = errorKeys.some(key => key !== 'required');
+      return hasNonRequiredErrors;
+    }
+
+    return false;
   });
 
   inputState = computed(() => {
@@ -73,6 +87,8 @@ export abstract class BaseInputDirective<T> {
     return `Invalid: ${key}`;
   });
 
+  private _isTouched = signal(false);
+
   constructor() {
     effect(onCleanup => {
       const sub = this.formControl().statusChanges.subscribe(() => {
@@ -83,12 +99,16 @@ export abstract class BaseInputDirective<T> {
   }
 
   onBlur(): void {
-    this.isTouched.set(true);
+    this._isTouched.set(true);
     this.isFocused.set(false);
   }
 
   onFocus(): void {
     this.isFocused.set(true);
+  }
+
+  protected markAsTouchedManually(): void {
+    this._isTouched.set(true);
   }
 
   // TODO: Add optional tooltip handling
