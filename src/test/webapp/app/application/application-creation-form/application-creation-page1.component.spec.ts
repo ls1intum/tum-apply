@@ -27,7 +27,7 @@ describe('ApplicationPage1Component', () => {
         { provide: AccountService, useValue: accountService },
         provideRouter([]),
         provideTranslateMock(),
-        provideFontAwesomeTesting()
+        provideFontAwesomeTesting(),
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -51,7 +51,7 @@ describe('ApplicationPage1Component', () => {
     });
     fixture.detectChanges();
   });
-  
+
   it('should create the component and initial form is invalid', () => {
     expect(comp).toBeTruthy();
     const form = comp.page1Form();
@@ -173,21 +173,21 @@ describe('ApplicationPage1Component', () => {
   });
 
   it('should not return an error when country is undefined in postalCodeValidator', () => {
-    const validator = (postalCodeValidator(() => undefined));
+    const validator = postalCodeValidator(() => undefined);
     const control = { value: '12345' } as AbstractControl;
     const result = validator(control);
     expect(result).toEqual({}); // No validation error
   });
 
   it('should not return an error when postal code is empty', () => {
-    const validator = (postalCodeValidator(() => 'DE'));
+    const validator = postalCodeValidator(() => 'DE');
     const control = { value: '' } as AbstractControl;
     const result = validator(control);
     expect(result).toEqual({}); // No error when value is empty
   });
 
   it('should return an error when country code is invalid or unsupported', () => {
-    const validator = (postalCodeValidator(() => 'ZZ')); // ZZ is unsupported
+    const validator = postalCodeValidator(() => 'ZZ'); // ZZ is unsupported
     const control = { value: '12345' } as AbstractControl;
     const result = validator(control);
     expect(result).toEqual({ invalidPostalCode: 'entity.applicationPage1.validation.postalCode' });
@@ -244,5 +244,4 @@ describe('ApplicationPage1Component', () => {
     expect(page1.gender).toBeUndefined();
     expect(page1.language).toBeUndefined();
   });
-
 });
