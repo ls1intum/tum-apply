@@ -18,13 +18,15 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
+import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
   let component: JobDetailComponent;
   let translate: TranslateService;
 
-  let router: Router;
+  const mockRouter = createRouterMock();
+
   let location: Location;
   let jobService: {
     getJobDetails: ReturnType<typeof vi.fn>;
@@ -36,7 +38,6 @@ describe('JobDetailComponent', () => {
   let researchGroupService: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    router = { navigate: vi.fn() } as unknown as Router;
     location = { back: vi.fn() } as unknown as Location;
     toastService = {
       showError: vi.fn(),
@@ -56,12 +57,12 @@ describe('JobDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [JobDetailComponent],
       providers: [
-        { provide: Router, useValue: router },
         { provide: Location, useValue: location },
         { provide: ToastService, useValue: toastService },
         { provide: JobResourceApiService, useValue: jobService },
         { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
+        provideRouterMock(mockRouter),
         provideAccountServiceMock(mockAccountService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
@@ -86,7 +87,7 @@ describe('JobDetailComponent', () => {
   it('should navigate to apply form on onApply()', () => {
     component.jobId.set('job123');
     component.onApply();
-    expect(router.navigate).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'job123' } });
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'job123' } });
   });
 
   it('should navigate to edit application on onEditApplication()', () => {
@@ -101,7 +102,7 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: '',
     } as JobDetails);
     component.onEditApplication();
-    expect(router.navigate).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'job123', application: 'app42' } });
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'job123', application: 'app42' } });
   });
 
   it('should navigate to view application on onViewApplication()', () => {
@@ -115,13 +116,13 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: '',
     } as JobDetails);
     component.onViewApplication();
-    expect(router.navigate).toHaveBeenCalledWith(['/application/detail/app88']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/application/detail/app88']);
   });
 
   it('should navigate to edit job on onEditJob()', () => {
     component.jobId.set('job777');
     component.onEditJob();
-    expect(router.navigate).toHaveBeenCalledWith(['/job/edit/job777']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/job/edit/job777']);
   });
 
   it('should handle missing jobId in onEditJob()', () => {
@@ -254,12 +255,12 @@ describe('JobDetailComponent', () => {
       .configureTestingModule({
         imports: [JobDetailComponent],
         providers: [
-          { provide: Router, useValue: router },
           { provide: Location, useValue: location },
           { provide: ToastService, useValue: toastService },
           { provide: JobResourceApiService, useValue: jobService },
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
           { provide: ActivatedRoute, useValue: invalidRoute },
+          provideRouterMock(mockRouter),
           provideAccountServiceMock(mockAccountService),
           provideTranslateMock(),
         ],
@@ -474,12 +475,12 @@ describe('JobDetailComponent', () => {
       .configureTestingModule({
         imports: [JobDetailComponent],
         providers: [
-          { provide: Router, useValue: router },
           { provide: Location, useValue: location },
           { provide: ToastService, useValue: toastService },
           { provide: JobResourceApiService, useValue: jobService },
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
           { provide: ActivatedRoute, useValue: routeNoJobId },
+          provideRouterMock(mockRouter),
           provideAccountServiceMock(accountServiceNoId),
           provideTranslateMock(),
         ],
