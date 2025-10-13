@@ -104,23 +104,23 @@ describe('SelectComponent', () => {
 
     const icons = fixture.debugElement.queryAll(By.css('fa-icon'));
     expect(icons.length).toBeGreaterThan(0);
+  });
 
-    it('should accept translateItems=true without error', () => {
-      const fixture = createFixture();
-      fixture.componentRef.setInput('translateItems', true);
-      fixture.detectChanges();
+  it('should accept translateItems=true without error', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('translateItems', true);
+    fixture.detectChanges();
 
-      expect(fixture.componentInstance.translateItems()).toBe(true);
-    });
+    expect(fixture.componentInstance.translateItems()).toBe(true);
+  });
 
-    it('should update selected and placeholder dynamically', () => {
-      const fixture = createFixture();
-      fixture.componentRef.setInput('selected', mockItems[1]);
-      fixture.componentRef.setInput('placeholder', 'Pick one');
-      fixture.detectChanges();
+  it('should update selected and placeholder dynamically', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('selected', mockItems[1]);
+    fixture.componentRef.setInput('placeholder', 'Pick one');
+    fixture.detectChanges();
 
-      expect(fixture.componentInstance.selected()).toEqual(mockItems[1]);
-      expect(fixture.componentInstance.placeholder()).toBe('Pick one');
-    });
+    expect(fixture.componentInstance.selected()).toEqual(mockItems[1]);
+    expect(fixture.componentInstance.placeholder()).toBe('Pick one');
   });
 });
