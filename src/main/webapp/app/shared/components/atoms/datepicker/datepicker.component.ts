@@ -98,11 +98,7 @@ export class DatePickerComponent {
         }
       }
 
-      // Only update modelDate if we have a valid target date
-      // This prevents interfering with PrimeNG's internal state when selectedDate is undefined
-      if (targetDate) {
-        this.modelDate.set(targetDate);
-      }
+      this.modelDate.set(targetDate);
     } catch {
       this.modelDate.set(undefined);
     }
