@@ -99,7 +99,10 @@ export default class ApplicationCreationPage1Component {
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
   readonly minDate = new Date(1900, 0, 1);
-  readonly maxDate = new Date(); // Today's date to prevent future birthdates
+  readonly maxDate = (() => {
+    const today = new Date();
+    return new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  })(); // ensures minimum age of 18
 
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
