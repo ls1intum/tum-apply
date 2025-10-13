@@ -94,6 +94,7 @@ describe('ApplicationPage1Component', () => {
 
     expect(form.valid).toBe(true);
   });
+
   it('should mark invalidPostalCode error when country is set and postal code is invalid', () => {
     const form = comp.page1Form();
     form.controls.firstName.setValue('Alice');
