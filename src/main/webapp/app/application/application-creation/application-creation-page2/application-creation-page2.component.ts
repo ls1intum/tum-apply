@@ -299,6 +299,25 @@ export default class ApplicationCreationPage2Component {
     });
 
     this.hasInitialized.set(true);
+
+    // mark prefilled grade fields as touched to show validation errors right away
+    const gradeFields = [
+      'bachelorGradeUpperLimit',
+      'bachelorGradeLowerLimit',
+      'bachelorGrade',
+      'masterGradeUpperLimit',
+      'masterGradeLowerLimit',
+      'masterGrade',
+    ];
+
+    gradeFields.forEach(fieldName => {
+      const control = this.page2Form.get(fieldName);
+      if (control?.value) {
+        control.markAsTouched();
+      }
+    });
+
+    this.page2Form.updateValueAndValidity();
   });
 
   private updateEffect = effect(() => {
