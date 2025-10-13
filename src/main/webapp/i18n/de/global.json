@@ -360,7 +360,7 @@
       "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst.",
       "doctoralRequirements": {
         "title": "Anforderungen für eine deutsche Doktorandenstelle",
-        "text": "Bitte stelle sicher, dass du dich über die <a class=\"link\" href=\"https://www.gs.tum.de/en/gs/qualification-career/transferable-skills-training/eligibility-requirements/\" target=\"_blank\" rel=\"noopener noreferrer\">Anforderungen für eine deutsche Doktorandenstelle</a> informiert hast.",
+        "text": "Bitte stelle sicher, dass du dich über die <a class=\"link\" href=\"https://www.gs.tum.de/gs/qualifizierung-karriere/fachuebergreifende-qualifizierung/teilnahmebedingungen/\" target=\"_blank\" rel=\"noopener noreferrer\">Anforderungen für eine deutsche Doktorandenstelle</a> informiert hast.",
         "confirmationText": "Ich habe mich über die Anforderungen für eine deutsche Doktorandenstelle informiert.",
         "missingConfirmation": "Bitte bestätige, dass du dich über die Anforderungen für eine deutsche Doktorandenstelle informiert hast.",
         "toastError": {
