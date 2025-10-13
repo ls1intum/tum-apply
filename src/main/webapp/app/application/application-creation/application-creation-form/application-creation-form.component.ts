@@ -473,7 +473,7 @@ export default class ApplicationCreationFormComponent {
       return;
     }
     if (!this.doctoralRequirementsAcceptedSignal()) {
-      this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.errorText');
+      this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
     void this.sendCreateApplicationData('SENT', true);
