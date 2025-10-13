@@ -98,7 +98,7 @@ export default class ApplicationCreationPage2Component {
     masterGrade: [0, [Validators.required, Validators.min(1), Validators.max(4)]],
   });
 
-  private hasInitialized = signal(false);
+  hasInitialized = signal(false);
 
   private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
     initialValue: this.page2Form.value,
