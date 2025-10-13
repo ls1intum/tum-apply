@@ -360,11 +360,11 @@
       "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst.",
       "doctoralRequirements": {
         "title": "Anforderungen für eine deutsche Doktorandenstelle",
-        "text": "Bitte stellen Sie sicher, dass Sie sich über die <a class=\"link\" href=\"https://www.daad.de/de/studium-in-deutschland/bewerbung/doktorandenprogramme/\" target=\"_blank\" rel=\"noopener noreferrer\">Anforderungen für eine deutsche Doktorandenstelle</a> informiert haben.",
+        "text": "Bitte stelle sicher, dass du dich über die <a class=\"link\" href=\"https://www.daad.de/de/studium-in-deutschland/bewerbung/doktorandenprogramme/\" target=\"_blank\" rel=\"noopener noreferrer\">Anforderungen für eine deutsche Doktorandenstelle</a> informiert hast.",
         "confirmationText": "Ich habe mich über die Anforderungen für eine deutsche Doktorandenstelle informiert.",
         "errorText": {
           "summary": "Bestätigung der Doktorandenanforderungen fehlt",
-          "detail": "Bitte bestätigen Sie, dass Sie sich über die Anforderungen für eine deutsche Doktorandenstelle informiert haben."
+          "detail": "Bitte bestätige, dass du dich über die Anforderungen für eine deutsche Doktorandenstelle informiert hast."
         }
       }
     },
