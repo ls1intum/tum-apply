@@ -3,7 +3,11 @@ import { provideRouter, Router } from '@angular/router';
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
-import ApplicationCreationPage2Component, { bachelorGradingScale, getPage2FromApplication, masterGradingScale } from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
+import ApplicationCreationPage2Component, {
+  bachelorGradingScale,
+  getPage2FromApplication,
+  masterGradingScale,
+} from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
@@ -24,7 +28,7 @@ describe('ApplicationPage2Component', () => {
         { provide: AccountService, useValue: accountService },
         provideRouter([]),
         provideTranslateMock(),
-        provideFontAwesomeTesting()
+        provideFontAwesomeTesting(),
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -379,5 +383,4 @@ describe('ApplicationPage2Component', () => {
     expect(formValues.bachelorGrade).toBe(null);
     expect(formValues.masterGrade).toBe(null);
   });
-
 });
