@@ -98,6 +98,9 @@ export default class ApplicationCreationPage1Component {
 
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
+  readonly minDate = new Date(1900, 0, 1);
+  readonly maxDate = new Date(); // Today's date to prevent future birthdates
+
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
