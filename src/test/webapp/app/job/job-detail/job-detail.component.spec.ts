@@ -1,13 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
 import { User } from 'app/core/auth/account.service';
-import { ToastService } from 'app/service/toast-service';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
@@ -19,6 +18,7 @@ import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
+import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
@@ -34,15 +34,11 @@ describe('JobDetailComponent', () => {
     deleteJob: ReturnType<typeof vi.fn>;
   };
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
-  let toastService: { showError: ReturnType<typeof vi.fn>; showSuccess: ReturnType<typeof vi.fn> };
+  let mockToastService = createToastServiceMock();
   let researchGroupService: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     location = { back: vi.fn() } as unknown as Location;
-    toastService = {
-      showError: vi.fn(),
-      showSuccess: vi.fn(),
-    };
     jobService = {
       getJobDetails: vi.fn(),
       changeJobState: vi.fn(),
@@ -58,10 +54,10 @@ describe('JobDetailComponent', () => {
       imports: [JobDetailComponent],
       providers: [
         { provide: Location, useValue: location },
-        { provide: ToastService, useValue: toastService },
         { provide: JobResourceApiService, useValue: jobService },
         { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
+        provideToastServiceMock(mockToastService),
         provideRouterMock(mockRouter),
         provideAccountServiceMock(mockAccountService),
         provideTranslateMock(),
@@ -136,27 +132,27 @@ describe('JobDetailComponent', () => {
     jobService.changeJobState.mockReturnValue(of({}));
     await component.onCloseJob();
     expect(jobService.changeJobState).toHaveBeenCalledWith('job123', 'CLOSED');
-    expect(toastService.showSuccess).toHaveBeenCalled();
+    expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(location.back).toHaveBeenCalled();
   });
 
   it('should handle close job error', async () => {
     jobService.changeJobState.mockReturnValue(throwError(() => new Error('fail')));
     await component.onCloseJob();
-    expect(toastService.showError).toHaveBeenCalled();
+    expect(mockToastService.showError).toHaveBeenCalled();
   });
 
   it('should delete job successfully', async () => {
     jobService.deleteJob.mockReturnValue(of({}));
     await component.onDeleteJob();
     expect(jobService.deleteJob).toHaveBeenCalledWith('job123');
-    expect(toastService.showSuccess).toHaveBeenCalled();
+    expect(mockToastService.showSuccess).toHaveBeenCalled();
   });
 
   it('should handle delete job error', async () => {
     jobService.deleteJob.mockReturnValue(throwError(() => new Error('boom')));
     await component.onDeleteJob();
-    expect(toastService.showError).toHaveBeenCalled();
+    expect(mockToastService.showError).toHaveBeenCalled();
   });
 
   it('should load job details via init()', async () => {
@@ -179,7 +175,7 @@ describe('JobDetailComponent', () => {
   it('should handle init error with HttpErrorResponse', async () => {
     jobService.getJobDetails.mockReturnValue(throwError(() => new Error('fail')));
     await component.init();
-    expect(toastService.showError).toHaveBeenCalled();
+    expect(mockToastService.showError).toHaveBeenCalled();
     expect(location.back).toHaveBeenCalled();
   });
 
@@ -194,7 +190,7 @@ describe('JobDetailComponent', () => {
     researchGroupService.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
     const form: JobFormDTO = { title: 'FormJob' } as JobFormDTO;
     await (component as unknown as { loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void> }).loadJobDetailsFromForm(form);
-    expect(toastService.showError).toHaveBeenCalled();
+    expect(mockToastService.showError).toHaveBeenCalled();
   });
 
   it('should compute jobStateText and jobStateColor correctly', () => {
@@ -256,10 +252,10 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: ToastService, useValue: toastService },
           { provide: JobResourceApiService, useValue: jobService },
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
           { provide: ActivatedRoute, useValue: invalidRoute },
+          provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
           provideAccountServiceMock(mockAccountService),
           provideTranslateMock(),
@@ -369,7 +365,7 @@ describe('JobDetailComponent', () => {
     const httpError = new HttpErrorResponse({ status: 500, statusText: 'Server Error' });
     jobService.getJobDetails.mockReturnValue(throwError(() => httpError));
     await component.init();
-    expect(toastService.showError).toHaveBeenCalledWith({
+    expect(mockToastService.showError).toHaveBeenCalledWith({
       detail: expect.stringContaining('500'),
     });
   });
@@ -476,10 +472,10 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: ToastService, useValue: toastService },
           { provide: JobResourceApiService, useValue: jobService },
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
           { provide: ActivatedRoute, useValue: routeNoJobId },
+          provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
           provideAccountServiceMock(accountServiceNoId),
           provideTranslateMock(),
