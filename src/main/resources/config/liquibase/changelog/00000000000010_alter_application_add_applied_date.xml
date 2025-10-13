@@ -5,7 +5,7 @@
 
 <changeSet id="023_add_applied_at" author="sarah-douglas">
 
-  <!-- Add a new column called end_date -->
+  <!-- Add a new column called applied_at -->
   <addColumn tableName="applications">
     <column name="applied_at" type="DATETIME(3)"/>
   </addColumn>
