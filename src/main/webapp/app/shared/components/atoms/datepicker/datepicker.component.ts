@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
@@ -59,13 +60,30 @@ export class DatePickerComponent {
    */
   effectiveMinDate = computed(() => this.minDate() ?? new Date());
 
-  private scrollListener?: (event: Event) => void;
-  private elementRef = inject(ElementRef);
+  /**
+   * Current language signal - updated when language changes
+   */
+  currentLanguage = signal<string>('en');
 
   /**
-   * Effect to sync modelDate whenever selectedDate input changes
+   * Computed date format based on current language signal
+   * English: 'dd/mm/yy' (with slashes)
+   * German: 'dd.mm.yy' (with dots)
    */
-  private syncModelDate = effect(() => {
+  dateFormat = computed(() => {
+    const currentLang = this.currentLanguage();
+    return currentLang === 'en' ? 'dd/mm/yy' : 'dd.mm.yy';
+  });
+
+  private scrollListener?: (event: Event) => void;
+  private elementRef = inject(ElementRef);
+  private translateService = inject(TranslateService);
+
+  /**
+   * Effect to sync modelDate and handle language changes
+   */
+  private syncModelDateAndLanguage = effect(onCleanup => {
+    // Sync modelDate whenever selectedDate input changes
     try {
       const value = this.selectedDate();
       let targetDate: Date | undefined = undefined;
@@ -85,6 +103,15 @@ export class DatePickerComponent {
     } catch {
       this.modelDate.set(undefined);
     }
+
+    // Set initial language and listen for changes
+    this.currentLanguage.set(this.translateService.currentLang || 'en');
+
+    const subscription = this.translateService.onLangChange.subscribe(event => {
+      this.currentLanguage.set(event.lang);
+    });
+
+    onCleanup(() => subscription.unsubscribe());
   });
 
   /**
