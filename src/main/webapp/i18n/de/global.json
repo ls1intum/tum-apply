@@ -253,7 +253,7 @@
         "send": "Senden"
       },
       "confirmDialog": {
-        "header": "Bewerbung abschicken",
+        "header": "Bewerbung absenden",
         "message": "Bist du sicher, dass du deine Bewerbung absenden möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
       },
       "status": {
@@ -357,7 +357,13 @@
     },
     "applicationPage4": {
       "title": "Übersicht",
-      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst."
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst.",
+      "doctoralRequirements": {
+        "title": "Anforderungen für eine deutsche Doktorandenstelle",
+        "text": "Bitte stelle sicher, dass du dich über die <a class=\"link\" href=\"https://www.gs.tum.de/gs/qualifizierung-karriere/fachuebergreifende-qualifizierung/teilnahmebedingungen/\" target=\"_blank\" rel=\"noopener noreferrer\">Anforderungen für eine deutsche Doktorandenstelle</a> informiert hast.",
+        "confirmationText": "Ich habe mich über die Anforderungen für eine deutsche Doktorandenstelle informiert.",
+        "errorText": "Bitte bestätige, dass du dich über die Anforderungen für eine deutsche Doktorandenstelle informiert hast."
+      }
     },
     "applicationOverview": {
       "header": "Deine Bewerbungen",
