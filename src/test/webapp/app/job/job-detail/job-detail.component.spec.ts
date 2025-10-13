@@ -6,7 +6,7 @@ import { Location } from '@angular/common';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
-import { AccountService } from 'app/core/auth/account.service';
+import { User } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -17,6 +17,7 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { HttpErrorResponse } from '@angular/common/http';
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
+import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
@@ -30,7 +31,7 @@ describe('JobDetailComponent', () => {
     changeJobState: ReturnType<typeof vi.fn>;
     deleteJob: ReturnType<typeof vi.fn>;
   };
-  let accountService: { loadedUser: () => { id: string; name: string; researchGroup?: { name: string; researchGroupId: string } } };
+  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let toastService: { showError: ReturnType<typeof vi.fn>; showSuccess: ReturnType<typeof vi.fn> };
   let researchGroupService: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
 
@@ -46,9 +47,8 @@ describe('JobDetailComponent', () => {
       changeJobState: vi.fn(),
       deleteJob: vi.fn(),
     };
-    accountService = {
-      loadedUser: () => ({ id: 'u1', name: 'User X', researchGroup: { name: 'AI Lab', researchGroupId: 'rg1' } }),
-    };
+    mockAccountService = createAccountServiceMock();
+
     researchGroupService = {
       getResourceGroupDetails: vi.fn().mockReturnValue(of({ description: 'RG Desc' })),
     };
@@ -61,8 +61,8 @@ describe('JobDetailComponent', () => {
         { provide: ToastService, useValue: toastService },
         { provide: JobResourceApiService, useValue: jobService },
         { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
-        { provide: AccountService, useValue: accountService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
+        provideAccountServiceMock(mockAccountService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -211,10 +211,10 @@ describe('JobDetailComponent', () => {
       createdAt: new Date().toISOString(),
       lastModifiedAt: new Date().toISOString(),
     } as JobDetailDTO;
-    const user = accountService.loadedUser();
+    const user = mockAccountService.loadedUser();
     const result = (
       component as unknown as {
-        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof accountService.loadedUser>) => JobDetails;
+        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof mockAccountService.loadedUser>) => JobDetails;
       }
     ).mapToJobDetails(dto, user);
     expect(result.title).toBe('Mapped');
@@ -259,8 +259,8 @@ describe('JobDetailComponent', () => {
           { provide: ToastService, useValue: toastService },
           { provide: JobResourceApiService, useValue: jobService },
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
-          { provide: AccountService, useValue: accountService },
           { provide: ActivatedRoute, useValue: invalidRoute },
+          provideAccountServiceMock(mockAccountService),
           provideTranslateMock(),
         ],
       })
@@ -280,12 +280,12 @@ describe('JobDetailComponent', () => {
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
     } as JobFormDTO;
-    const user = accountService.loadedUser();
+    const user = mockAccountService.loadedUser();
     const result = (
       component as unknown as {
         mapToJobDetails: (
           d: JobFormDTO,
-          u?: ReturnType<typeof accountService.loadedUser>,
+          u?: ReturnType<typeof mockAccountService.loadedUser>,
           rg?: { description?: string },
           f?: boolean,
         ) => JobDetails;
@@ -294,7 +294,7 @@ describe('JobDetailComponent', () => {
 
     expect(result.title).toBe('Form Job');
     expect(result.jobState).toBe('DRAFT');
-    expect(result.supervisingProfessor).toBe(user.name);
+    expect(result.supervisingProfessor).toBe(user?.name);
   });
 
   it('should handle unknown job state in jobStateText and jobStateColor', () => {
@@ -390,11 +390,11 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: new Date().toISOString(),
     } as unknown as JobDetailDTO;
 
-    const user = accountService.loadedUser();
+    const user = mockAccountService.loadedUser();
 
     const result = (
       component as unknown as {
-        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof accountService.loadedUser>) => JobDetails;
+        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof mockAccountService.loadedUser>) => JobDetails;
       }
     ).mapToJobDetails(dto, user);
     // covers ?? fallbacks for supervisingProfessor, researchGroup, workload, contractDuration
@@ -428,10 +428,10 @@ describe('JobDetailComponent', () => {
       contractDuration: undefined,
     } as unknown as JobDetailDTO;
 
-    const user = accountService.loadedUser();
+    const user = mockAccountService.loadedUser();
     const result = (
       component as unknown as {
-        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof accountService.loadedUser>) => JobDetails;
+        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof mockAccountService.loadedUser>) => JobDetails;
       }
     ).mapToJobDetails(dto, user);
 
@@ -463,7 +463,9 @@ describe('JobDetailComponent', () => {
 
   it('should set empty string when user id or job_id are missing', async () => {
     // user has no id, and route provides no job_id
-    const accountServiceNoId = { loadedUser: () => ({ name: 'Anon' }) };
+    const accountServiceNoId = createAccountServiceMock();
+    accountServiceNoId.setLoadedUser({ name: 'Anon' } as User);
+
     const routeNoJobId = {
       snapshot: { paramMap: new Map([['job_id', null]]) },
     } as unknown as ActivatedRoute;
@@ -477,8 +479,8 @@ describe('JobDetailComponent', () => {
           { provide: ToastService, useValue: toastService },
           { provide: JobResourceApiService, useValue: jobService },
           { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
-          { provide: AccountService, useValue: accountServiceNoId },
           { provide: ActivatedRoute, useValue: routeNoJobId },
+          provideAccountServiceMock(accountServiceNoId),
           provideTranslateMock(),
         ],
       })
@@ -516,11 +518,11 @@ describe('JobDetailComponent', () => {
       contractDuration: 9 as unknown as number,
     };
 
-    const user = accountService.loadedUser();
+    const user = mockAccountService.loadedUser();
 
     const result = (
       component as unknown as {
-        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof accountService.loadedUser>) => JobDetails;
+        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof mockAccountService.loadedUser>) => JobDetails;
       }
     ).mapToJobDetails(dto, user);
 
@@ -540,7 +542,7 @@ describe('JobDetailComponent', () => {
 
     const result = (
       component as unknown as {
-        mapToJobDetails: (d: JobFormDTO, u?: ReturnType<typeof accountService.loadedUser>, rg?: unknown, f?: boolean) => JobDetails;
+        mapToJobDetails: (d: JobFormDTO, u?: ReturnType<typeof mockAccountService.loadedUser>, rg?: unknown, f?: boolean) => JobDetails;
       }
     ).mapToJobDetails(form, undefined, undefined, true);
 
@@ -549,9 +551,9 @@ describe('JobDetailComponent', () => {
   });
 
   it('should call getResourceGroupDetails with empty string when user has no researchGroup', async () => {
-    const userWithoutGroup = { id: 'u2', name: 'NoGroupUser' };
+    const userWithoutGroup = { id: 'u2', name: 'NoGroupUser', researchGroup: {} };
 
-    accountService.loadedUser = vi.fn().mockReturnValue(userWithoutGroup);
+    mockAccountService.setLoadedUser(userWithoutGroup as User);
 
     const form: JobFormDTO = {
       title: 'Form Job',
@@ -570,5 +572,30 @@ describe('JobDetailComponent', () => {
     ).loadJobDetailsFromForm(form);
 
     expect(spy).toHaveBeenCalledWith('');
+  });
+
+  it('should map jobDetails with belongsToResearchGroup true when user and job share group id', () => {
+    const user = {
+      id: 'u1',
+      name: 'Researcher',
+      researchGroup: { researchGroupId: 'rgX', name: 'RGX' },
+    };
+    mockAccountService.setLoadedUser(user as User);
+
+    const dto: JobDetailDTO = {
+      title: 'RG Job',
+      state: 'PUBLISHED',
+      supervisingProfessorName: 'ProfX',
+      researchGroup: { name: 'RGX', researchGroupId: 'rgX' },
+      createdAt: new Date().toISOString(),
+      lastModifiedAt: new Date().toISOString(),
+    } as JobDetailDTO;
+
+    const result = (
+      component as unknown as {
+        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof mockAccountService.loadedUser>) => JobDetails;
+      }
+    ).mapToJobDetails(dto, user as User);
+    expect(result.belongsToResearchGroup).toBe(true);
   });
 });
