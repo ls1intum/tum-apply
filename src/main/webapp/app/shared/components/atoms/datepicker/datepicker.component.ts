@@ -98,8 +98,11 @@ export class DatePickerComponent {
         }
       }
 
-      // Always set the value, even if undefined, to ensure proper synchronization
-      this.modelDate.set(targetDate);
+      // Only update modelDate if we have a valid target date
+      // This prevents interfering with PrimeNG's internal state when selectedDate is undefined
+      if (targetDate) {
+        this.modelDate.set(targetDate);
+      }
     } catch {
       this.modelDate.set(undefined);
     }
@@ -163,7 +166,12 @@ export class DatePickerComponent {
       const day = date.getDate().toString().padStart(2, '0');
       const localDate = `${year}-${month}-${day}`;
       this.selectedDateChange.emit(localDate);
+
+      setTimeout(() => {
+        this.modelDate.set(date);
+      }, 0);
     } else {
+      this.modelDate.set(undefined);
       this.selectedDateChange.emit(undefined);
     }
   }
