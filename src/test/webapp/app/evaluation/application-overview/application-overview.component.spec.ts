@@ -9,7 +9,7 @@ import { ApplicationEvaluationResourceApiService } from 'app/generated/api/appli
 import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/applicationEvaluationOverviewDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
-import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
+import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 
 type GetOverviewsArgs = Parameters<ApplicationEvaluationResourceApiService['getApplicationsOverviews']>;
 

@@ -113,28 +113,29 @@ export class ApplicationDetailComponent {
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
+  private _queryParamEffect = effect(() => {
+    const qp = this.qpSignal();
+    const rawSD = qp.get('sortDir');
+    this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+
+    if (!this.isSortInitiatedByUser) {
+      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
+      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+    } else {
+      this.isSortInitiatedByUser = false;
+    }
+
+    if (!this.isSearchInitiatedByUser) {
+      this.searchQuery.set(qp.get('search') ?? '');
+    }
+    this.isSearchInitiatedByUser = false;
+  });
+
   constructor() {
     void this.init();
   }
 
   async init(): Promise<void> {
-    effect(() => {
-      const qp = this.qpSignal();
-      const rawSD = qp.get('sortDir');
-      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
-
-      if (!this.isSortInitiatedByUser) {
-        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
-        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
-      } else {
-        this.isSortInitiatedByUser = false;
-      }
-
-      if (!this.isSearchInitiatedByUser) {
-        this.searchQuery.set(qp.get('search') ?? '');
-      }
-      this.isSearchInitiatedByUser = false;
-    });
     await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
