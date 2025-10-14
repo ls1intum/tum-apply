@@ -92,10 +92,10 @@ export default class ApplicationCreationPage2Component {
   page2Form = this.formbuilder.group({
     bachelorDegreeName: ['', Validators.required],
     bachelorDegreeUniversity: ['', Validators.required],
-    bachelorGrade: [0, Validators.required, Validators.min(1), Validators.max(4)],
+    bachelorGrade: [0, [Validators.required, Validators.min(1), Validators.max(4)]],
     masterDegreeName: ['', Validators.required],
     masterDegreeUniversity: ['', Validators.required],
-    masterGrade: [0, Validators.required, Validators.min(1), Validators.max(4)],
+    masterGrade: [0, [Validators.required, Validators.min(1), Validators.max(4)]],
   });
 
   private hasInitialized = signal(false);
