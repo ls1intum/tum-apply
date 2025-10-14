@@ -37,6 +37,8 @@ describe('ApplicationOverviewComponent', () => {
 
   let q$: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
 
+  const lastGetArgs = (): GetOverviewsArgs => api.getApplicationsOverviews.mock.calls.at(-1) as GetOverviewsArgs;
+
   beforeEach(async () => {
     vi.useFakeTimers();
 
@@ -66,7 +68,6 @@ describe('ApplicationOverviewComponent', () => {
         provideFontAwesomeTesting(),
         provideTranslateMock(),
       ],
-
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
@@ -84,10 +85,10 @@ describe('ApplicationOverviewComponent', () => {
     fixture?.destroy();
   });
 
-  it('should create and load initial data (job names sorted, page data & total set)', async () => {
+  // ---------------- INIT ----------------
+  it('initializes with job names sorted and first page loaded', async () => {
     expect(component).toBeTruthy();
     expect(api.getAllJobNames).toHaveBeenCalled();
-
     expect(api.getApplicationsOverviews).toHaveBeenCalled();
 
     vi.runOnlyPendingTimers();
@@ -96,134 +97,87 @@ describe('ApplicationOverviewComponent', () => {
     expect(component.total()).toBe(1);
   });
 
-  it('should compute columns with templates and expected fields', () => {
+  // ---------------- COLUMNS & MAPPING ----------------
+  it('exposes expected columns and state mappings', () => {
     const cols = component.columns();
     expect(cols.length).toBe(5);
+    expect(cols.find(c => c.field === 'state')?.alignCenter).toBe(true);
+    expect(cols.find(c => c.field === 'state')?.template).toBeDefined();
+    expect(cols.find(c => c.field === 'actions')?.template).toBeDefined();
 
-    const stateCol = cols.find(c => c.field === 'state');
-    expect(stateCol?.alignCenter).toBe(true);
-    expect(stateCol?.template).toBeDefined();
-
-    const actionsCol = cols.find(c => c.field === 'actions');
-    expect(actionsCol?.template).toBeDefined();
-  });
-
-  it('should expose stateSeverityMap mapping', () => {
     const map = component.stateSeverityMap();
     expect(map.SENT).toBe('info');
     expect(map.ACCEPTED).toBe('success');
     expect(map.REJECTED).toBe('danger');
     expect(map.IN_REVIEW).toBe('warn');
-  });
 
-  it('should derive availableStatusLabels from availableStatusOptions', () => {
     const labelsFromSource = availableStatusOptions.map(o => o.label);
     expect(component.availableStatusLabels).toEqual(labelsFromSource);
   });
 
-  it('should filter by job titles', async () => {
+  // ---------------- FILTERS ----------------
+  it('applies/clears job & status filters and maps labels to keys (unknown kept as-is)', async () => {
     api.getApplicationsOverviews.mockClear();
 
-    component.loadOnFilterEmit({
-      filterId: 'jobTitle',
-      selectedValues: ['AI Group', 'HCI Lab'],
-    });
+    component.loadOnFilterEmit({ filterId: 'jobTitle', selectedValues: ['AI Group', 'HCI Lab'] });
     vi.runOnlyPendingTimers();
     await fixture.whenStable();
+    expect(lastGetArgs()[5]).toEqual(['AI Group', 'HCI Lab']);
 
-    const [, , , , , jobFilters] = api.getApplicationsOverviews.mock.calls.at(-1) as GetOverviewsArgs;
-    expect(jobFilters).toEqual(['AI Group', 'HCI Lab']);
-  });
-
-  it('should apply both job and status filters simultaneously', async () => {
-    api.getApplicationsOverviews.mockClear();
-
-    component.loadOnFilterEmit({
-      filterId: 'jobTitle',
-      selectedValues: ['AI Group'],
-    });
-
-    component.loadOnFilterEmit({
-      filterId: 'status',
-      selectedValues: [availableStatusOptions[0].label],
-    });
-
+    const known = availableStatusOptions[0];
+    const unknown = 'status.unknown.label';
+    component.loadOnFilterEmit({ filterId: 'status', selectedValues: [known.label, unknown] });
     vi.runOnlyPendingTimers();
     await fixture.whenStable();
+    const [, , , , statusFilters] = lastGetArgs();
+    expect(statusFilters).toContain(known.key);
+    expect(statusFilters).toContain(unknown);
 
-    const args = api.getApplicationsOverviews.mock.calls.at(-1) as GetOverviewsArgs;
-    expect(args[4]).toBeDefined();
-    expect(args[5]).toBeDefined();
-  });
-
-  it('should clear filters and reload when filter is emptied', async () => {
     component.selectedJobFilters.set(['AI Group']);
-
-    component.loadOnFilterEmit({
-      filterId: 'jobTitle',
-      selectedValues: [],
-    });
-
+    component.loadOnFilterEmit({ filterId: 'jobTitle', selectedValues: [] });
     vi.runOnlyPendingTimers();
     await fixture.whenStable();
-
     expect(component.selectedJobFilters()).toEqual([]);
-    const args = api.getApplicationsOverviews.mock.calls.at(-1) as GetOverviewsArgs;
-    expect(args[5]).toBeUndefined();
+    expect(lastGetArgs()[5]).toBeUndefined();
   });
 
-  it('should map translated status labels to enum keys and pass them as filters (fallback on unknown)', async () => {
+  // ---------------- SEARCH ----------------
+  it('includes search in URL only when non-empty', async () => {
+    (router.navigate as any).mockClear();
     api.getApplicationsOverviews.mockClear();
 
-    const one = availableStatusOptions[0];
-    const knownLabel = one.label;
-    const expectedKey = one.key;
-    const unknownLabel = 'status.unknown.label';
-
-    component.loadOnFilterEmit({
-      filterId: 'status',
-      selectedValues: [knownLabel, unknownLabel],
-    });
+    component.loadOnSearchEmit('');
     vi.runOnlyPendingTimers();
     await fixture.whenStable();
+    let nav = (router.navigate as any).mock.calls.at(-1) as [unknown[], { queryParams: Params; replaceUrl: boolean }];
+    expect(nav[1].queryParams.search).toBeUndefined();
 
-    const [, , , , statusFilters] = api.getApplicationsOverviews.mock.calls.at(-1) as GetOverviewsArgs;
-    expect(statusFilters).toContain(expectedKey);
-    expect(statusFilters).toContain(unknownLabel);
+    (router.navigate as any).mockClear();
+    component.loadOnSearchEmit('abc');
+    vi.runOnlyPendingTimers();
+    await fixture.whenStable();
+    nav = (router.navigate as any).mock.calls.at(-1) as [unknown[], { queryParams: Params; replaceUrl: boolean }];
+    expect(nav[1].queryParams.search).toBe('abc');
   });
 
-  it('should sort and pass sort field/direction; user-initiated sort should not be overridden by query params immediately', async () => {
+  // ---------------- SORTING & QUERY PARAMS ----------------
+  it('keeps user-initiated sort over query params; reacts to valid/invalid query params otherwise', async () => {
     api.getApplicationsOverviews.mockClear();
 
     component.loadOnSortEmit({ field: 'name', direction: 'ASC' });
-
     q$.next(convertToParamMap({ sortBy: 'createdAt', sortDir: 'DESC' }));
-
     vi.runOnlyPendingTimers();
     await fixture.whenStable();
-
     expect(component.sortBy()).toBe('name');
     expect(component.sortDirection()).toBe('ASC');
-  });
 
-  it('should handle invalid query params gracefully', async () => {
-    q$.next(
-      convertToParamMap({
-        page: '-5',
-        pageSize: '0',
-        sortDir: 'INVALID',
-      }),
-    );
-
+    q$.next(convertToParamMap({ page: '-5', pageSize: '0', sortDir: 'INVALID' }));
     vi.runOnlyPendingTimers();
     await fixture.whenStable();
-
     expect(component.page()).toBe(0);
     expect(component.pageSize()).toBe(1);
     expect(component.sortDirection()).toBe('DESC');
-  });
 
-  it('should react to query params (page, pageSize, sortBy, sortDir, search) when not user-initiated', async () => {
     q$.next(
       convertToParamMap({
         page: '2',
@@ -235,7 +189,6 @@ describe('ApplicationOverviewComponent', () => {
     );
     vi.runOnlyPendingTimers();
     await fixture.whenStable();
-
     expect(component.page()).toBe(2);
     expect(component.pageSize()).toBe(25);
     expect(component.sortBy()).toBe(sortableFields[0].fieldName);
@@ -243,9 +196,9 @@ describe('ApplicationOverviewComponent', () => {
     expect(component.searchQuery()).toBe('ml');
   });
 
-  it('should navigate to detail with current sort params and applicationId', async () => {
+  // ---------------- NAVIGATION ----------------
+  it('navigates to detail with current sort params and applicationId', async () => {
     (router.navigate as any).mockClear();
-
     component.sortBy.set('name');
     component.sortDirection.set('DESC');
 
@@ -259,46 +212,50 @@ describe('ApplicationOverviewComponent', () => {
     expect(call[1].queryParams.sortDirection).toBe('DESC');
   });
 
-  it('should include search in URL query params only when non-empty', async () => {
-    (router.navigate as any).mockClear();
-    api.getApplicationsOverviews.mockClear();
-
-    component.loadOnSearchEmit('');
-
-    vi.runOnlyPendingTimers();
-    await fixture.whenStable();
-
-    let nav = (router.navigate as any).mock.calls.at(-1) as [unknown[], { queryParams: Params; replaceUrl: boolean }];
-    expect(nav[1].queryParams.search).toBeUndefined();
-
-    (router.navigate as any).mockClear();
-    component.loadOnSearchEmit('abc');
-
-    vi.runOnlyPendingTimers();
-    await fixture.whenStable();
-
-    nav = (router.navigate as any).mock.calls.at(-1) as [unknown[], { queryParams: Params; replaceUrl: boolean }];
-    expect(nav[1].queryParams.search).toBe('abc');
-  });
-
-  it('should handle getAllJobNames failure by setting empty list', async () => {
-    api.getAllJobNames.mockReturnValueOnce(throwError(() => new Error('fail')));
-
-    await component.loadAllJobNames();
-    expect(component.allAvailableJobNames()).toEqual([]);
-  });
-
-  it('should call service with undefined filters when none selected (not empty arrays)', async () => {
+  // ---------------- SERVICE CALL ARGUMENT ----------------
+  it('passes undefined for filters when none are selected', async () => {
     api.getApplicationsOverviews.mockClear();
 
     component.loadOnSearchEmit('');
     await fixture.whenStable();
     vi.runOnlyPendingTimers();
 
-    const args = api.getApplicationsOverviews.mock.calls.at(-1) as GetOverviewsArgs;
-
+    const args = lastGetArgs();
     expect(args[4]).toBeUndefined();
     expect(args[5]).toBeUndefined();
     expect(args[6]).toBeUndefined();
+  });
+
+  // ---------------- API RESULT NORMALIZATION ----------------
+  it('normalizes missing properties from API responses', async () => {
+    api.getApplicationsOverviews
+      .mockReturnValueOnce(of({} as any))
+      .mockReturnValueOnce(of({ applications: undefined, totalRecords: 7 } as any));
+
+    await component.loadPage();
+    await vi.runAllTimersAsync();
+    expect(component.pageData()).toEqual([]);
+    expect(component.total()).toBe(0);
+
+    await component.loadPage();
+    await vi.runAllTimersAsync();
+    expect(component.pageData()).toEqual([]);
+    expect(component.total()).toBe(7);
+  });
+
+  // ---------------- TABLE PAGING EVENTS ----------------
+  it('defaults first=0 and rows=10 when table event fields are undefined', async () => {
+    const spy = vi.spyOn(component, 'loadPage').mockResolvedValue();
+    component.loadOnTableEmit({ first: undefined, rows: undefined } as any);
+    expect(component.page()).toBe(0);
+    expect(component.pageSize()).toBe(10);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  // ---------------- ERROR HANDLING ----------------
+  it('sets available job names to [] when loading job names fails', async () => {
+    api.getAllJobNames.mockReturnValueOnce(throwError(() => new Error('fail')));
+    await component.loadAllJobNames();
+    expect(component.allAvailableJobNames()).toEqual([]);
   });
 });
