@@ -173,11 +173,11 @@
     },
     "errors": {
       "loadJobNames": {
-        "summary": "Error",
+        "summary": "Fehler",
         "detail": "Laden der Jobnamen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       },
       "loadJobs": {
-        "summary": "Error",
+        "summary": "Fehler",
         "detail": "Laden der Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
