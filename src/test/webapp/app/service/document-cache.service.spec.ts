@@ -165,4 +165,42 @@ describe('DocumentCacheService', () => {
 
     expect(mockDomSanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith('blob:test-url#toolbar=0&navpanes=0');
   });
+
+  it('should clear all documents and revoke their URLs', () => {
+    const doc1 = 'doc-1';
+    const doc2 = 'doc-2';
+
+    mockCreateObjectURL.mockReturnValueOnce('blob:url-1').mockReturnValueOnce('blob:url-2');
+
+    service.set(doc1, mockBlob);
+    service.set(doc2, mockBlob);
+
+    expect(service.get(doc1)).toBeDefined();
+    expect(service.get(doc2)).toBeDefined();
+
+    service.clear();
+
+    expect(service.get(doc1)).toBeUndefined();
+    expect(service.get(doc2)).toBeUndefined();
+
+    expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:url-1');
+    expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:url-2');
+  });
+
+  it('should handle exception in revoke gracefully', () => {
+    const docId = 'doc-exception';
+    mockCreateObjectURL.mockReturnValueOnce('blob:url-exception');
+
+    service.set(docId, mockBlob);
+    mockRevokeObjectURL.mockImplementation(() => {
+      throw new Error('test error');
+    });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    service.clear();
+
+    expect(warnSpy).toHaveBeenCalledWith('Failed to revoke object URL:', 'blob:url-exception', expect.any(Error));
+
+    warnSpy.mockRestore();
+  });
 });
