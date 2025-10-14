@@ -25,7 +25,6 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -50,7 +49,6 @@ public class ApplicationEvaluationService {
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final CurrentUserService currentUserService;
-    private final ResearchGroupRepository researchGroupRepository;
 
     @Value("${aet.download.deterministic-zip:false}")
     private boolean DETERMINISTIC_ZIP;
@@ -182,7 +180,6 @@ public class ApplicationEvaluationService {
         SortDTO sortDTO,
         EvaluationFilterDTO filterDTO
     ) {
-        checkResearchGroupAccess(researchGroupId);
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
@@ -211,8 +208,6 @@ public class ApplicationEvaluationService {
         SortDTO sortDTO,
         EvaluationFilterDTO filterDTO
     ) {
-        checkResearchGroupAccess(researchGroupId);
-
         String searchQuery = filterDTO.getSearch();
 
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
@@ -264,19 +259,11 @@ public class ApplicationEvaluationService {
         SortDTO sortDTO,
         EvaluationFilterDTO filterDTO
     ) {
-        checkResearchGroupAccess(researchGroupId);
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
         return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null);
-    }
-
-    private void checkResearchGroupAccess(UUID researchGroupId) {
-        ResearchGroup researchGroup = researchGroupRepository
-            .findById(researchGroupId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Research Group", researchGroupId));
-        currentUserService.assertAccessTo(researchGroup);
     }
 
     /**

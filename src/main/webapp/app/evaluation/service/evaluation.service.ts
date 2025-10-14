@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { JobFilterOptionDTO } from 'app/generated/model/jobFilterOptionDTO';
 
 import { filterFields } from '../filterSortOptions';
-import { FilterField, FilterOption } from '../../shared/filter';
+import { FilterField } from '../../shared/filter';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
 
 @Injectable({
@@ -16,22 +16,6 @@ export class EvaluationService {
 
   async getJobFilterOptions(): Promise<JobFilterOptionDTO[]> {
     return await firstValueFrom(this.evaluationService.getJobFilterOptions());
-  }
-
-  async getFilterFields(): Promise<FilterField[]> {
-    const jobFilters = await this.getJobFilterOptions();
-
-    const jobOptions: FilterOption[] = [];
-
-    jobFilters.forEach(job => jobOptions.push(new FilterOption(job.jobName ?? '', job.jobId ?? '', undefined)));
-
-    const jobField = this.filterFields.find(f => f.field === 'job');
-    if (jobField) {
-      jobField.options = jobOptions;
-      jobField.selected = [];
-    }
-
-    return this.filterFields;
   }
 
   collectFiltersByKey(filters: FilterField[]): Record<string, Set<string> | undefined> {
