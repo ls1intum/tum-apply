@@ -68,6 +68,8 @@ public class ResearchGroupService {
         return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
     }
 
+    // testitest
+
     /**
      * Removes a member from the current user's research group.
      * This operation removes both associated roles and direct research group membership.
