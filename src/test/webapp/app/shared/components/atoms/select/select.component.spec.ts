@@ -123,4 +123,30 @@ describe('SelectComponent', () => {
     expect(fixture.componentInstance.selected()).toEqual(mockItems[1]);
     expect(fixture.componentInstance.placeholder()).toBe('Pick one');
   });
+
+  it('should enable filtering when filter=true', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('filter', true);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.filter()).toBe(true);
+    const selectEl = fixture.debugElement.query(By.css('p-select'));
+    expect(selectEl.componentInstance.filter).toBe(true);
+  });
+
+  it('should handle empty items array gracefully', () => {
+    const fixture = TestBed.createComponent(SelectComponent);
+    fixture.componentRef.setInput('items', []);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.items()).toEqual([]);
+    expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should handle null/undefined selected value', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('selected', undefined);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selected()).toBeUndefined();
+    expect(() => fixture.detectChanges()).not.toThrow();
+  });
 });
