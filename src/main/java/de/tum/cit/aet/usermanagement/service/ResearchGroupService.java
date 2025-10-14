@@ -333,7 +333,6 @@ public class ResearchGroupService {
         role.setResearchGroup(saved);
         role.setRole(UserRole.PROFESSOR);
         userResearchGroupRoleRepository.save(role);
-
         return saved;
     }
 }
