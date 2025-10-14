@@ -314,13 +314,13 @@ describe('ApplicationPage2Component', () => {
   });
 
   it('should not set bachelor grade if data is undefined', () => {
-    comp.data.set(undefined as any); // Explicitly clear the data
+    comp.data.set(undefined);
     comp.setBachelorGradeAsNumber(3.2);
 
     expect(comp.page2Form.get('bachelorGrade')?.value).toBe(0); // default value
   });
   it('should not set master grade if data is undefined', () => {
-    comp.data.set(undefined as any); // Explicitly clear the data
+    comp.data.set(undefined);
     comp.setMasterGradeAsNumber(3.9);
 
     expect(comp.page2Form.get('masterGrade')?.value).toBe(0); // default value
@@ -341,7 +341,7 @@ describe('ApplicationPage2Component', () => {
     comp.setBachelorGradeAsNumber(undefined);
 
     expect(comp.page2Form.get('bachelorGrade')?.value).toBeNull();
-    expect(comp.data()?.bachelorGrade).toBeUndefined(); // still undefined in signal
+    expect(comp.data()?.bachelorGrade).toBeUndefined();
   });
 
   it('should patch null to masterGrade if grade is undefined', () => {
