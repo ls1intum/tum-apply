@@ -55,7 +55,7 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
   standalone: true,
 })
 export default class ApplicationCreationPage3Component {
-  data = model<ApplicationCreationPage3Data>();
+  data = model.required<ApplicationCreationPage3Data>();
 
   applicationIdForDocuments = input<string | undefined>();
   documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
@@ -69,10 +69,10 @@ export default class ApplicationCreationPage3Component {
   hasInitialized = signal(false);
 
   page3Form: FormGroup = this.formbuilder.group({
-    experiences: [this.data()?.experiences ?? '', htmlTextRequiredValidator], // TODO: tried putting htmlTextMaxLengthValidator(1000) but it created bugs such as step 3 not loading fully and auto-save breaking
-    motivation: [this.data()?.motivation ?? '', htmlTextRequiredValidator],
-    skills: [this.data()?.skills ?? '', htmlTextRequiredValidator],
-    desiredStartDate: [this.data()?.desiredStartDate ?? ''],
+    experiences: ['', htmlTextRequiredValidator], // TODO: tried putting htmlTextMaxLengthValidator(1000) but it created bugs such as step 3 not loading fully and auto-save breaking
+    motivation: ['', htmlTextRequiredValidator],
+    skills: ['', htmlTextRequiredValidator],
+    desiredStartDate: [''],
   });
 
   formValue = toSignal(this.page3Form.valueChanges.pipe(debounceTime(100)).pipe(distinctUntilChanged(deepEqual)), {
@@ -106,7 +106,7 @@ export default class ApplicationCreationPage3Component {
   private initializeFormEffect = effect(() => {
     if (this.hasInitialized()) return;
     const data = this.data();
-    if (!data) return;
+    // if (!data) return;
     this.page3Form.patchValue({
       experiences: data.experiences,
       motivation: data.motivation,
@@ -135,12 +135,10 @@ export default class ApplicationCreationPage3Component {
 
   setDesiredStartDate($event: string | undefined): void {
     const currentData = this.data();
-    if (currentData !== undefined) {
-      this.data.set({
-        ...currentData,
-        desiredStartDate: $event ?? '',
-      });
-    }
+    this.data.set({
+      ...currentData,
+      desiredStartDate: $event ?? '',
+    });
 
     this.page3Form.patchValue({
       desiredStartDate: $event ?? '',

@@ -99,12 +99,7 @@ export default class ApplicationCreationFormComponent {
     masterGrade: undefined,
   });
 
-  applicationDetailsData = signal<ApplicationCreationPage3Data>({
-    desiredStartDate: '',
-    motivation: '',
-    skills: '',
-    experiences: '',
-  });
+  applicationDetailsData = signal<ApplicationCreationPage3Data | undefined>(undefined);
 
   previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
 
@@ -545,6 +540,12 @@ export default class ApplicationCreationFormComponent {
         await this.openOtpAndWaitForLogin(email, firstName, lastName);
         this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
         void this.migrateDraftIfNeeded();
+        this.applicationDetailsData.set({
+          desiredStartDate: '',
+          experiences: '',
+          motivation: '',
+          skills: '',
+        });
         this.progressStepper()?.goToStep(2);
       } catch {
         this.toastService.showErrorKey(`${applyflow}.otpVerificationFailed`);
@@ -651,10 +652,10 @@ export default class ApplicationCreationFormComponent {
         masterGrade: p2.masterGrade,
         masterGradingScale: p2.masterGradingScale.value,
       },
-      motivation: p3.motivation,
-      specialSkills: p3.skills,
-      desiredDate: p3.desiredStartDate,
-      projects: p3.experiences,
+      motivation: p3?.motivation,
+      specialSkills: p3?.skills,
+      desiredDate: p3?.desiredStartDate,
+      projects: p3?.experiences,
       jobTitle: this.title(),
     };
 
