@@ -10,8 +10,9 @@ import ApplicationCreationPage1Component, {
   selectLanguage,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page1/application-creation-page1.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { AccountService, User } from 'app/core/auth/account.service';
+import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -29,7 +30,6 @@ describe('ApplicationPage1Component', () => {
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
     fixture = TestBed.createComponent(ApplicationCreationPage1Component);
     comp = fixture.componentInstance;
@@ -115,7 +115,7 @@ describe('ApplicationPage1Component', () => {
   });
 
   it('getPage1FromApplication maps fields properly', () => {
-    const fakeApp: any = {
+    const fakeApp: ApplicationForApplicantDTO = {
       applicant: {
         user: {
           firstName: 'John',
@@ -133,6 +133,14 @@ describe('ApplicationPage1Component', () => {
         city: 'CityX',
         country: 'US',
         postalCode: '12345',
+      },
+      applicationState: 'SAVED',
+      job: {
+        jobId: '2345',
+        professorName: 'Professor Name',
+        fieldOfStudies: 'Field of Studies',
+        location: 'Garching',
+        title: 'Example Job',
       },
     };
 
@@ -235,9 +243,14 @@ describe('ApplicationPage1Component', () => {
   });
 
   it('getPage1FromApplication handles missing fields gracefully', () => {
-    const app: any = {
-      applicant: {
-        user: {},
+    const app: ApplicationForApplicantDTO = {
+      applicationState: 'SAVED',
+      job: {
+        jobId: '2345',
+        professorName: 'Professor Name',
+        fieldOfStudies: 'Field of Studies',
+        location: 'Garching',
+        title: 'Example Job',
       },
     };
     const page1 = getPage1FromApplication(app);
