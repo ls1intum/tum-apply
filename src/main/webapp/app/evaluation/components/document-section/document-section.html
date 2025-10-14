@@ -23,9 +23,9 @@
       />
     </div>
   }
-  <div class="mt-8 w-full flex justify-between">
+  <div class="mt-8 w-full flex justify-end gap-4">
     <jhi-button
-      class="h-1/2"
+      class="h-1/2 whitespace-nowrap"
       label="evaluation.details.documentView"
       [shouldTranslate]="true"
       icon="eye"
@@ -33,7 +33,7 @@
       (click)="dialogVisible.set(true)"
     />
     <jhi-button
-      class="h-1/2"
+      class="h-1/2 whitespace-nowrap"
       label="evaluation.details.documentDownloadAll"
       [shouldTranslate]="true"
       icon="download"
