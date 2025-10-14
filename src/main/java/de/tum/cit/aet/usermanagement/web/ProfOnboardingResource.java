@@ -58,4 +58,15 @@ public class ProfOnboardingResource {
         UUID userId = currentUserService.getUserId();
         userSettingService.setBool(userId, ONBOARDED, false);
     }
+
+    /**
+     * Reset the onboarding state for the current user.
+     * This will force the onboarding dialog to appear again on next login.
+     */
+    @DeleteMapping("/prof-onboarding")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetOnboarding() {
+        UUID userId = currentUserService.getUserId();
+        userSettingService.setBool(userId, ONBOARDED, false);
+    }
 }
