@@ -1,31 +1,317 @@
 <div [class]="isSummaryPage() ? '' : 'page-container'">
   @if (application(); as application) {
-    <div class="header-container">
-      @if (!previewDetailData()) {
-        <div class="page-header">
-          <h1 jhiTranslate="entity.application_detail.applicant.header" [translateValues]="{ jobTitle: application.jobTitle }"></h1>
+    @if (!previewDetailData()) {
+      <!-- Header Section -->
+      <div class="header-container">
+        <div class="title-with-label">
+          <h1
+            class="page-header"
+            jhiTranslate="entity.application_detail.applicant.header"
+            [translateValues]="{ jobTitle: application.jobTitle }"
+          ></h1>
+          <jhi-application-state-for-applicants [state]="application.applicationState" />
         </div>
-        <jhi-application-state-for-applicants [state]="application.applicationState" />
-      }
-    </div>
-    <jhi-application-detail-card [application]="application">
-      <div class="slot-right-width" slot-vertical-right>
-        @if (documentIds(); as documentIds) {
-          <jhi-document-group [documentIds]="documentIds" />
+        @if (['SAVED'].includes(application.applicationState)) {
+          <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
         }
       </div>
-    </jhi-application-detail-card>
-    <div class="w-full flex justify-end">
-      @if (!previewDetailData() && application.applicationState === 'SAVED') {
-        <jhi-button
-          [label]="'entity.applicationOverview.actions.update' | translate"
-          severity="primary"
-          icon="arrow-right"
-          (click)="onUpdateApplication()"
-        />
-      }
+
+      <!-- Position Overview Section -->
+      <section class="card">
+        <div class="section-header">
+          <h2 class="section-title" jhiTranslate="entity.application_detail.position_overview"></h2>
+          <jhi-button
+            [label]="'entity.application_detail.view_job_details'"
+            [shouldTranslate]="true"
+            severity="secondary"
+            [variant]="'outlined'"
+            (click)="onViewJobDetails()"
+          />
+        </div>
+        <div class="overview-content">
+          <div class="info-item">
+            <fa-icon [icon]="['fas', 'user']" class="icon" />
+            <span class="label" jhiTranslate="entity.application_detail.supervisor"></span>
+            <span class="value">{{ application.supervisingProfessorName || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <fa-icon [icon]="['fas', 'flask']" class="icon" />
+            <span class="label" jhiTranslate="entity.application_detail.research_group"></span>
+            <span class="value">{{ application.researchGroup || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
+            <span class="label" jhiTranslate="entity.application_detail.location"></span>
+            <span class="value">{{ application.jobLocation || '-' }}</span>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Personal Statements Section -->
+      <section>
+        @if (!previewDetailData()) {
+          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_statements"></h2>
+        }
+
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'rocket']" class="icon" />
+            <h3 class="card-title" jhiTranslate="entity.applicationDetail.motivation"></h3>
+          </div>
+          <div class="card-body">
+            <div class="content" [innerHTML]="application.motivation"></div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'brain']" class="icon" />
+            <h3 class="card-title" jhiTranslate="entity.applicationDetail.skills"></h3>
+          </div>
+          <div class="card-body">
+            <div class="content" [innerHTML]="application.specialSkills"></div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'flask']" class="icon" />
+            <h3 class="card-title" jhiTranslate="entity.applicationDetail.researchExperience"></h3>
+          </div>
+          <div class="card-body">
+            <div class="content" [innerHTML]="application.projects"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Personal Information Section -->
+      <section>
+        @if (!previewDetailData()) {
+          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_information"></h2>
+        }
+
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'circle-user']" class="icon" />
+            <h3 class="card-title" jhiTranslate="entity.detail_card.applicant_info"></h3>
+          </div>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.preferred_language"></span>
+                <span class="value">{{ application.applicant?.user?.preferredLanguage || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.desired_start_date"></span>
+                <span class="value">{{ application.desiredDate || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.gender"></span>
+                <span class="value">{{ application.applicant?.user?.gender || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.nationality"></span>
+                <span class="value">{{ application.applicant?.user?.nationality || '-' }}</span>
+              </div>
+            </div>
+            @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
+              <div class="links">
+                @if (application.applicant?.user?.website) {
+                  <div class="link-container">
+                    <fa-icon [icon]="['fas', 'link']" class="icon" />
+                    <a class="link" [href]="application.applicant?.user?.website" target="_blank" rel="noopener noreferrer">
+                      <span jhiTranslate="entity.detail_card.website"></span>
+                    </a>
+                  </div>
+                }
+                @if (application.applicant?.user?.linkedinUrl) {
+                  <div class="link-container">
+                    <fa-icon [icon]="['fab', 'linkedin']" class="icon" />
+                    <a class="link" [href]="application.applicant?.user?.linkedinUrl" target="_blank" rel="noopener noreferrer">
+                      <span jhiTranslate="entity.detail_card.linkedin"></span>
+                    </a>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
+            <h3 class="card-title" jhiTranslate="entity.detail_card.bachelor_info"></h3>
+          </div>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.name"></span>
+                <span class="value">{{ application.applicant?.bachelorDegreeName || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.university"></span>
+                <span class="value">{{ application.applicant?.bachelorUniversity || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.grade"></span>
+                <span class="value">{{ application.applicant?.bachelorGrade || '-' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
+            <h3 class="card-title" jhiTranslate="entity.detail_card.master_info"></h3>
+          </div>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.name"></span>
+                <span class="value">{{ application.applicant?.masterDegreeName || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.university"></span>
+                <span class="value">{{ application.applicant?.masterUniversity || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" jhiTranslate="entity.detail_card.grade"></span>
+                <span class="value">{{ application.applicant?.masterGrade || '-' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
+
+    <!-- Documents Section -->
+    @if (documentIds(); as documentIds) {
+      <section class="documents-section">
+        @if (
+          documentIds.bachelorDocumentDictionaryIds ||
+          documentIds.masterDocumentDictionaryIds ||
+          documentIds.cvDocumentDictionaryId ||
+          documentIds.referenceDocumentDictionaryIds
+        ) {
+          @if (!previewDetailData()) {
+            <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
+          }
+        }
+        <!-- Document grid for all document types -->
+        <div class="document-container">
+          @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
+            @for (doc of bachelorDocs; track $index) {
+              <div class="detail-card">
+                <div class="card-header">
+                  <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
+                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
+                </div>
+                <div class="card-body">
+                  <div class="document-viewer">
+                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  </div>
+                </div>
+              </div>
+            }
+          }
+
+          @if (documentIds.masterDocumentDictionaryIds; as masterDocs) {
+            @for (doc of masterDocs; track $index) {
+              <div class="detail-card">
+                <div class="card-header">
+                  <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
+                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
+                </div>
+                <div class="card-body">
+                  <div class="document-viewer">
+                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  </div>
+                </div>
+              </div>
+            }
+          }
+
+          @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
+            <div class="detail-card">
+              <div class="card-header">
+                <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
+                <h3 class="card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
+              </div>
+              <div class="card-body">
+                <div class="document-viewer">
+                  <jhi-document-viewer [documentDictionaryId]="cvDoc" />
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (documentIds.referenceDocumentDictionaryIds; as referenceDocs) {
+            @for (doc of referenceDocs; track $index) {
+              <div class="detail-card">
+                <div class="card-header">
+                  <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
+                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
+                </div>
+                <div class="card-body">
+                  <div class="document-viewer">
+                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Action Buttons Section -->
+    @if (!previewDetailData()) {
+      <section class="action-buttons-section">
+        <div class="button-wrapper">
+          <!-- Left-aligned Back button -->
+          <div class="left-buttons">
+            <jhi-button
+              [label]="'jobActionButton.back'"
+              [shouldTranslate]="true"
+              severity="info"
+              [variant]="'outlined'"
+              (click)="onBack()"
+            />
+          </div>
+
+          <!-- Right-aligned Destructive actions -->
+          <div class="right-buttons">
+            @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
+              <jhi-confirm-dialog
+                [label]="'entity.applicationOverview.actions.withdraw' | translate"
+                [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
+                [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
+                confirmIcon="file-circle-minus"
+                (confirmed)="onWithdrawApplication()"
+                severity="danger"
+                variant="outlined"
+              />
+            }
+
+            @if (['SAVED'].includes(application.applicationState)) {
+              <jhi-confirm-dialog
+                [label]="'entity.applicationOverview.actions.delete' | translate"
+                [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
+                [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
+                confirmIcon="trash"
+                (confirmed)="onDeleteApplication()"
+                severity="danger"
+              />
+            }
+          </div>
+        </div>
+      </section>
+    }
   } @else {
-    <p class="text-center">Application not found</p>
+    <p class="text-center" jhiTranslate="entity.application_detail.not_found"></p>
   }
 </div>

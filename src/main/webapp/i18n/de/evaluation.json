@@ -51,7 +51,7 @@
     "reason": "Grund",
     "selectReason": "Wähle einen Grund...",
     "closeJobAndRejectAll": "Stelle schließen und alle anderen Bewerbungen ablehnen",
-    "notifyApplicant": "Bewerber*in benachrichtigen",
+    "notifyApplicant": "Bewerber:in benachrichtigen",
     "rejectReasons": {
       "jobFilled": "Position bereits besetzt",
       "jobOutdated": "Position nicht mehr aktuell",
