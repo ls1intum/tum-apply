@@ -667,6 +667,11 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ProfOnboardingDTO'}
+    delete:
+      tags: [prof-onboarding-resource]
+      operationId: resetOnboarding
+      responses:
+        '204': {description: No Content}
   /api/jobs/{jobId}:
     get:
       tags: [job-resource]
@@ -1810,9 +1815,9 @@ components:
         number: {type: integer, format: int32}
         sort: {$ref: '#/components/schemas/SortObject'}
         pageable: {$ref: '#/components/schemas/PageableObject'}
-        numberOfElements: {type: integer, format: int32}
         first: {type: boolean}
         last: {type: boolean}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     PageableObject:
       type: object
@@ -1882,9 +1887,9 @@ components:
         number: {type: integer, format: int32}
         sort: {$ref: '#/components/schemas/SortObject'}
         pageable: {$ref: '#/components/schemas/PageableObject'}
-        numberOfElements: {type: integer, format: int32}
         first: {type: boolean}
         last: {type: boolean}
+        numberOfElements: {type: integer, format: int32}
         empty: {type: boolean}
     JobFilterOptionDTO:
       type: object
