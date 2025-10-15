@@ -5,10 +5,13 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MessageModule } from 'primeng/message';
 import { firstValueFrom } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ProfOnboardingResourceApiService } from '../../../../generated/api/profOnboardingResourceApi.service';
+
+import { ProfessorRequestAccessFormComponent } from './professor-request-access-form-component.ts/professor-request-access-form/professor-request-access-form.component';
 
 /**
  * Professor onboarding dialog.
@@ -24,18 +27,28 @@ export class OnboardingDialog {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
   private readonly api = inject(ProfOnboardingResourceApiService);
   private readonly translate = inject(TranslateService);
+  private readonly dialogService = inject(DialogService);
 
-  private static buildMailto(translate: TranslateService): string {
-    const subject = translate.instant('onboarding.email.subject');
-    const body = translate.instant('onboarding.email.body');
-    return `mailto:TUMApply Support <support-tum-apply.aet@xcit.tum.de>?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
+  markOnboarded(openForm = true): void {
+    if (openForm) {
+      this.ref?.close();
 
-  markOnboarded(openEmail = true): void {
-    if (openEmail) {
-      window.location.href = OnboardingDialog.buildMailto(this.translate);
+      this.dialogService.open(ProfessorRequestAccessFormComponent, {
+        header: this.translate.instant('onboarding.professorRequest.dialogTitle'),
+        modal: true,
+        closable: true,
+        dismissableMask: false,
+        width: '56.25rem',
+        style: {
+          'max-width': '95vw',
+          'background-color': 'white',
+          'border-radius': '0.5rem',
+        },
+        focusOnShow: false,
+      });
+    } else {
+      void firstValueFrom(this.api.confirmOnboarding()).catch();
+      this.ref?.close();
     }
-    void firstValueFrom(this.api.confirmOnboarding()).catch();
-    this.ref?.close();
   }
 }
