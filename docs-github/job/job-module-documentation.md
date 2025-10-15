@@ -1,274 +1,162 @@
-# Doctorate Application Website Documentation
+# TUMApply — Job Module: Developer Guide
 
-## Table of Contents
-
-1. [Overview](#1-overview)
-2. [Applicant Features](#2-applicant-features)
-
-- 2.1 [Find Positions Page](#21-find-positions-page)
-- 2.2 [Job Detail Page](#22-job-detail-page)
-
-3. [Professor Features](#3-professor-features)
-
-- 3.1 [Position Management Dashboard](#31-position-management-dashboard)
-- 3.2 [Position Creation Form](#32-position-creation-form)
-- 3.3 [Job Detail Page (Professor View)](#33-job-detail-page-professor-view)
+Welcome! This document orients new contributors to the Job Module in **TUMApply**. It focuses on what you need to know to navigate the codebase, understand the core concepts, and make changes.
 
 ---
 
-## 1. Overview
+## 1) What this module does (at a glance)
 
-This documentation covers the key features and user flows for the job module of the TUMApply website, designed to connect professors with potential doctoral candidates. The platform provides two main user perspectives: **applicants** seeking positions and **professors** creating and managing job postings.
+The Job Module provides the UI and server-side logic for:
+- Creating structured doctorate position postings (multi-step form)
+- Managing positions (list, state badges, context-aware actions)
+- Discovering positions (applicant-facing overview and detail views)
 
-The system supports a complete lifecycle from position creation to position management, with distinct interfaces optimized for each user type.
-
----
-
-## 2. Applicant Features
-
-### 2.1 Find Positions Page
-
-![Find Positions Page](images/find-positions.png)
-
-#### 2.1.1 Purpose
-
-The **Find Positions** page serves as the main discovery hub where applicants can browse available doctorate positions across various fields and institutions.
-
-#### 2.1.2 Position Cards Display
-
-Positions are displayed as organized cards in a responsive grid layout. Each card contains:
-
-- **Position Title**: Clear job titles (e.g., "EdTech Interface Designer", "Carbon Capture Researcher")
-- **Field of Study**: Academic discipline (Informatics, Environmental Science, Data Science, etc.)
-- **Location**: Geographic location (Garching, Heilbronn, Straubing, etc.)
-- **Supervisor Name**: Responsible faculty member (Stephan Krusche, etc.)
-- **Workload Percentage**: Time commitment (20%, 30%, 40%, etc.)
-- **Start Date**: Position commencement date (01.11.2025, 15.10.2025, etc.)
-- **Posted Timeline**: Time since publication ("5 months ago")
-
-#### 2.1.3 Interactive Elements
-
-- **View Button**: Access detailed position information
-- **Apply Button**: Direct application submission for interested candidates
-- **Pagination Controls**: Navigate through multiple pages of positions
-
-### 2.2 Job Detail Page
-
-![Job Details Page 1 (for Applicants)](images/job-detail-1.png)
-![Job Details Page 2 (for Applicants)](images/job-detail-2.png)
-
-#### 2.2.1 Purpose
-
-Provides comprehensive information about a specific doctorate position to help applicants make informed decisions before applying.
-
-#### 2.2.2 Position Overview Section
-
-Contains essential position details:
-
-- **Field of Studies**: Academic discipline classification
-- **Research Area**: Specific focus area within the field
-- **Workload**: Time commitment requirements (in hours/week)
-- **Contract Duration**: Employment period specifications (in years)
-- **Funding Type**: Financial support classification (Research Grant, etc.)
-- **Start Date**: Position commencement timeline
-- **Creation Date**: When position was first posted
-- **Last Modified**: Most recent update timestamp
-
-#### 2.2.3 Research Group Information
-
-Displays comprehensive contact and organizational details:
-
-- **Research Group**: Name of the academic research team or lab offering the position (e.g., Applied Education Technologies)
-- **Contact Email**: Direct communication channel (e.g. aet@tum.de)
-- **Website**: Research group web presence (e.g. https://aet.cit.tum.de)
-- **Physical Address**:
-  - Street address (e.g. Boltzmannstrasse 3)
-  - Postal code and city (e.g. 85748 Garching b. München)
-
-#### 2.2.4 Position Details Section
-
-Provides specific job information:
-
-- **Project Description**: Detailed explanation of research project
-- **Key Tasks & Responsibilities**: Expected duties and activities
-- **Requirements**: Qualifications and prerequisites for applicants
-
-#### 2.2.5 Data Protection Information
-
-Comprehensive GDPR compliance section including:
-
-- **Privacy Notice**: Data collection and processing explanation
-- **Legal Framework**: Reference to Art. 13 DSGVO (General Data Protection Regulation)
-- **Consent Information**: Clear explanation of data usage rights
-
-#### 2.2.6 Navigation Controls
-
-- **Back Button**: Return to previous page
-- **Apply Button**: Initiate application process
+It is intentionally **role-aware**: some controls render only for professors, while applicants see read-only information.
 
 ---
 
-## 3. Professor Features
+## 2) Client-side
 
-### 3.1 Position Management Dashboard
+> Base path for the module: `src/main/webapp/app/job`
 
-![My Positions Page](images/my-positions.png)
+Common locations you’ll work with:
 
-#### 3.1.1 Purpose
+- **My Positions Dashboard** (professor view)
+  - `job-overview/` - dashboard for managing my positions 
 
-Central management hub where professors can oversee all their posted doctorate positions with comprehensive status tracking and action capabilities.
+- **Find Positions Page** (applicant view)
+  - `job-overview/job-overview-page/` – entry page for applicants to browse positions
+  - `job-overview/job-card-list/` – list container, sorting/filter integration
+  - `job-overview/job-card/` – single card for a position
 
-#### 3.1.2 Position Management Table Structure
+- **Job Creation** (professor only)
+  - `job-creation-form/` – multi-step form (stepper, validation, autosave)
 
-The dashboard displays positions in a structured table format with the following columns:
+- **Job Detail** (both roles)
+  - `job-detail/` – applicant and professor views share the same base component, with role-based rendering
 
-- **Selection Checkbox**: Bulk selection for multiple positions
-- **Supervising Professor**: Faculty member responsible for the position
-- **Job Title**: Position name
-- **Status**: Current position state with visual indicators
-- **Start Date**: Position commencement timeline
-- **Created**: Position creation timestamp
-- **Last Modified**: Most recent update timestamp
-- **Actions**: Context-sensitive management buttons
+- **Options & Utilities**
+  - `dropdown-options.ts` – central lists for select/sort options
+  - `../../shared/constants/saving-states.ts` – shared saving-state labels
 
-#### 3.1.3 Status Types and Visual Indicators
+- **Shared UI Library**
+  - `src/main/webapp/app/shared/components/`
+    - **atoms**: `string-input`, `number-input`, `select`, `datepicker`, `button`, `tag`, `editor`, etc.
+    - **molecules**: `progress-stepper`, `button-group`, `search-filter-sort-bar`, etc.
+    - **organisms**: `dynamic-table`, etc.
 
-##### Closed Status
+- **Language**
+  - `src/main/webapp/i18n/` (dictionaries to add translation keys)
 
-- **Visual Indicator**: Red badge with "Closed" text
-- **Meaning**: Position is no longer accepting applications
-
-##### Applicant Found Status
-
-- **Visual Indicator**: Orange badge with "Applicant Found" text
-- **Meaning**: Suitable candidate has been identified
-
-##### Published Status
-
-- **Visual Indicator**: Green badge with "Published" text
-- **Meaning**: Position is live and accepting applications
-
-##### Draft Status
-
-- **Visual Indicator**: Gray badge with "Draft" text
-- **Meaning**: Position is being prepared but not yet published
-
-#### 3.1.4 Dynamic Action Buttons
-
-##### View Button
-
-- **Availability**: All positions regardless of status
-- **Function**: Access detailed position information
-
-##### Edit Button
-
-- **Availability**: All positions regardless of status
-- **Function**: Modify position details and specifications
-
-##### Delete Button
-
-- **Availability**: Draft positions only
-- **Function**: Remove unpublished positions from the system
-
-##### Close Button
-
-- **Availability**: Published positions only
-- **Function**: End application acceptance and notify all applicants
-- **Process**: Automatically sends notifications to all applicants about position closure
-
-### 3.2 Position Creation Form
-
-![Job Creation Form Page 1](images/job-creation-form-page-1.png)
-![Job Creation Form Page 2.1](images/job-creation-form-page-2-1.png)
-![Job Creation Form Page 2.2](images/job-creation-form-page-2-2.png)
-![Job Creation Form Page 3](images/job-creation-form-page-3.png)
-
-#### 3.2.1 Purpose
-
-Comprehensive multi-step form allowing professors to create detailed doctorate position postings with all necessary information for potential applicants.
-
-#### 3.2.2 Step 1: Basic Information
-
-##### Required Fields
-
-- **Job Title**:
-  - Input type: Text field
-  - Validation: Required field (indicated by red asterisk)
-
-- **Field of Studies**:
-  - Input type: Dropdown selection
-  - Validation: Required field
-
-- **Location**:
-  - Input type: Dropdown selection
-  - Validation: Required field
-
-- **Funding Type**:
-  - Input type: Dropdown selection
-  - Validation: Required field
-
-##### Research Details
-
-- **Research Area**:
-  - Input type: Text field
-  - Validation: Optional field with informational tooltip
-
-- **Supervising Professor**:
-  - Input type: Pre-populated field
-  - Status: Non-editable
-
-##### Timeline and Workload
-
-- **Start Date**:
-  - Input type: Date picker
-
-- **Workload**:
-  - Input type: Dropdown selection
-  - Values: in percentage (%)
-
-- **Contract Duration**:
-  - Input type: Dropdown selection
-  - Values: in years
-
-##### Form Controls
-
-- **Cancel Button**: Return to previous page
-- **Next Button**: Continue to position details step
-
-#### 3.2.3 Step 2: Position Details
-
-Multi-section form for detailed position information including project description, key tasks, and requirements.
-
-#### 3.2.4 Step 3: Additional Information
-
-Final step containing data protection information and additional terms applicable to all positions.
-
-### 3.3 Job Detail Page (Professor View)
-
-![Job Details Page 1 (for Professors)](images/job-detail-prof-1.png)
-![Job Details Page 2(for Professors)](images/job-detail-prof-2.png)
-
-#### 3.3.1 Purpose
-
-Provides professors with a comprehensive view of their position details, including status indicators and management capabilities not available to applicants.
-
-#### 3.3.2 Status Display
-
-- **Current Status**: Prominently displayed in the top-right corner
-- **Visual Design**: Matches status indicators from the management dashboard
-- **Dynamic Updates**: Changes based on position lifecycle
-
-#### 3.3.3 Status-Dependent Actions
-
-The available actions mirror those from the "My Positions" dashboard:
-
-- **Draft Positions**: Edit and Delete options available
-- **Published Positions**: View and Close options available
-- **Closed Positions**: View-only access
-- **Applicant Found Status**: View-only access
-
-#### 3.3.4 Enhanced Information Display
-
-Contains the same comprehensive information as the applicant view, but with additional management context and editing capabilities for the position owner.
+> Tip: The module favors **reusable atomic components**. Prefer composing existing atoms/molecules before introducing new ones.
 
 ---
+
+## 3) Server-side
+
+> Base path for the module: `src/main/java/de/tum/cit/aet/job/`
+
+### 3.1 Package map (what lives where)
+- **`constants/`**
+  - `Campus`, `CustomFieldType`, `FundingType`, `JobState`  
+    Enum sources used across DTOs
+- **`domain/`**
+  - `Job`, `CustomField`
+    JPA entities with validation annotations and state transition helpers.
+- **`dto/`**
+    Data transfer objects for API boundaries; separate create/update shapes.
+- **`repository/`**
+  - `JobRepository`, `CustomFieldRepository`  
+    Spring Data repositories with custom query methods for filtering/sorting.
+- **`service/`**
+  - `JobService`  
+    Core business logic: state transitions, validation, filtering, and orchestration of persistence.
+- **`web/`**
+  - `JobResource`  
+    REST controller exposing endpoints for job operations.
+
+---
+
+## 4) Core concepts
+
+### 4.1 Position state model
+The UI recognizes these states and surfaces them via badges and available actions:
+- **Draft** – not visible to applicants
+- **Published** – visible to applicants
+- **Applicant Found** – visible, but not accepting further applications
+- **Closed** – not accepting applications
+
+Action availability is state-dependent (e.g., **Delete** is only allowed for Draft, **Close** is only allowed for Published).
+
+### 4.2 Role awareness
+- **Professors** see management controls (create, edit, delete drafts, close published).
+- **Applicants** see a read-only view with apply affordances (navigation to application flow is wired outside this module).
+
+### 4.3 Form design & autosave
+- Multi-step creation form with progressive disclosure.
+- Inline validation and tooltips reduce user error.
+- Autosave/draft-save prevents data loss; saving state strings are unified in `shared/constants/saving-states.ts`.
+
+### 4.4 Sorting & filtering (client-side)
+- Sorting and filter UIs are provided by `search-filter-sort-bar` and `filter-multiselect` (molecules), and fed by `dropdown-options.ts`.
+
+### 4.5 Internationalization (DE/EN)
+- All visible strings must be translation-driven.
+- Add keys in the translation files and use the `translate` directive in templates.
+- Keep labels short and consistent to preserve layout in both languages.
+
+---
+
+## 5) Key components to know
+
+- **`JobOverviewPageComponent`**  
+  Orchestrates the list view. Hosts the search/filter/sort bar and the card list.
+
+- **`JobCardListComponent`**  
+  Loads and renders position cards; applies current sort/filter model; handles empty/error states.
+
+- **`JobCardComponent`**  
+  Displays the compact card view (title, location, workload, dates, supervisor, etc.). Includes computed display helpers (e.g., formatted dates, relative times).
+
+- **`JobCreationFormComponent`**  
+  Multi-step form (Step 1: basics; Step 2: details; Step 3: summary). Manages validation, autosave, and summary before publish.
+
+- **`JobDetailComponent`**  
+  Structured details (overview, research group, description, tasks, requirements, data protection). Renders management controls when the viewer is the owning professor.
+
+---
+
+## 6) Testing and quality bars
+
+### 6.1 Client-side tests
+
+- Test runner: **Vitest**  
+  Example command:
+  ```bash
+  npm run test:ci
+  ```
+- Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
+  Keep unit tests close to the component you change. Prefer focused DOM and behavior tests (validation, visibility of actions, rendering of states, sorting/filter effects).
+
+- Useful spec locations:
+  - `src/test/webapp/app/job/job-creation-form/*.spec.ts`
+  - `src/test/webapp/app/job/job-detail/*.spec.ts`
+  - `src/test/webapp/app/job/job-overview/*.spec.ts`
+  - `src/test/webapp/app/job/my-positions/*.spec.ts`
+  - `src/test/webapp/app/shared/components/**` (atoms/molecules used by this module)
+
+### 6.2 Server-side tests
+  Useful test locations:
+- `src/test/java/de/tum/cit/aet/job/web/rest/JobServiceTest.java`
+- 
+---
+
+## 7) TL;DR for new devs
+
+- Start in `src/main/webapp/app/job/`.
+- Learn the **state model** (Draft/Published/Applicant Found/Closed) and how it controls **badges and actions**.
+- Use the **shared atom/molecule** components and add DE/EN translations.
+- Update **tests** and keep coverage above the CI thresholds.
+- For list sorting/filter options, go through `dropdown-options.ts` and the `search-filter-sort-bar` + `job-card-list` wiring.
+
+Happy developing! 🎉
