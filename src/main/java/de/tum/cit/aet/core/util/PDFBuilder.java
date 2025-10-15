@@ -214,12 +214,11 @@ public class PDFBuilder {
             container.add(title);
         }
 
-        // Ein Paragraph für alle Pärchen
         Paragraph inlineParagraph = new Paragraph();
         for (OverviewItem item : overviewItems) {
             inlineParagraph.add(new Text(item.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT));
             inlineParagraph.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
-            inlineParagraph.add(new Text("    ")); // Abstand zwischen den Pärchen
+            inlineParagraph.add(new Text("    "));
         }
 
         container.add(inlineParagraph);
