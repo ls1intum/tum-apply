@@ -29,30 +29,30 @@ export interface JobFormDTO {
 export namespace JobFormDTO {
     export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
     export const LocationEnum = {
-        GARCHING: 'GARCHING' as LocationEnum,
-        GARCHING_HOCHBRUECK: 'GARCHING_HOCHBRUECK' as LocationEnum,
-        HEILBRONN: 'HEILBRONN' as LocationEnum,
-        MUNICH: 'MUNICH' as LocationEnum,
-        STRAUBING: 'STRAUBING' as LocationEnum,
-        WEIHENSTEPHAN: 'WEIHENSTEPHAN' as LocationEnum,
-        SINGAPORE: 'SINGAPORE' as LocationEnum
+        Garching: 'GARCHING' as LocationEnum,
+        GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
+        Heilbronn: 'HEILBRONN' as LocationEnum,
+        Munich: 'MUNICH' as LocationEnum,
+        Straubing: 'STRAUBING' as LocationEnum,
+        Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
+        Singapore: 'SINGAPORE' as LocationEnum
     };
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {
-        DRAFT: 'DRAFT' as StateEnum,
-        PUBLISHED: 'PUBLISHED' as StateEnum,
-        CLOSED: 'CLOSED' as StateEnum,
-        APPLICANT_FOUND: 'APPLICANT_FOUND' as StateEnum
+        Draft: 'DRAFT' as StateEnum,
+        Published: 'PUBLISHED' as StateEnum,
+        Closed: 'CLOSED' as StateEnum,
+        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
     };
     export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
     export const FundingTypeEnum = {
-        FULLY_FUNDED: 'FULLY_FUNDED' as FundingTypeEnum,
-        PARTIALLY_FUNDED: 'PARTIALLY_FUNDED' as FundingTypeEnum,
-        SCHOLARSHIP: 'SCHOLARSHIP' as FundingTypeEnum,
-        SELF_FUNDED: 'SELF_FUNDED' as FundingTypeEnum,
-        INDUSTRY_SPONSORED: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
-        GOVERNMENT_FUNDED: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
-        RESEARCH_GRANT: 'RESEARCH_GRANT' as FundingTypeEnum
+        FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
+        PartiallyFunded: 'PARTIALLY_FUNDED' as FundingTypeEnum,
+        Scholarship: 'SCHOLARSHIP' as FundingTypeEnum,
+        SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
+        IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
+        GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
+        ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
     };
 }
 

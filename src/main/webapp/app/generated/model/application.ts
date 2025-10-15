@@ -31,13 +31,13 @@ export interface Application {
 export namespace Application {
     export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
     export const StateEnum = {
-        SAVED: 'SAVED' as StateEnum,
-        SENT: 'SENT' as StateEnum,
-        ACCEPTED: 'ACCEPTED' as StateEnum,
-        IN_REVIEW: 'IN_REVIEW' as StateEnum,
-        REJECTED: 'REJECTED' as StateEnum,
-        WITHDRAWN: 'WITHDRAWN' as StateEnum,
-        JOB_CLOSED: 'JOB_CLOSED' as StateEnum
+        Saved: 'SAVED' as StateEnum,
+        Sent: 'SENT' as StateEnum,
+        Accepted: 'ACCEPTED' as StateEnum,
+        InReview: 'IN_REVIEW' as StateEnum,
+        Rejected: 'REJECTED' as StateEnum,
+        Withdrawn: 'WITHDRAWN' as StateEnum,
+        JobClosed: 'JOB_CLOSED' as StateEnum
     };
 }
 

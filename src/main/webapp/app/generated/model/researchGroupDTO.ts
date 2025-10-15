@@ -26,9 +26,9 @@ export interface ResearchGroupDTO {
 export namespace ResearchGroupDTO {
     export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
     export const StateEnum = {
-        DRAFT: 'DRAFT' as StateEnum,
-        ACTIVE: 'ACTIVE' as StateEnum,
-        DENIED: 'DENIED' as StateEnum
+        Draft: 'DRAFT' as StateEnum,
+        Active: 'ACTIVE' as StateEnum,
+        Denied: 'DENIED' as StateEnum
     };
 }
 

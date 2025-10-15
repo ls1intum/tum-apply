@@ -16,10 +16,10 @@ export interface RejectDTO {
 export namespace RejectDTO {
     export type ReasonEnum = 'JOB_FILLED' | 'JOB_OUTDATED' | 'FAILED_REQUIREMENTS' | 'OTHER_REASON';
     export const ReasonEnum = {
-        JOB_FILLED: 'JOB_FILLED' as ReasonEnum,
-        JOB_OUTDATED: 'JOB_OUTDATED' as ReasonEnum,
-        FAILED_REQUIREMENTS: 'FAILED_REQUIREMENTS' as ReasonEnum,
-        OTHER_REASON: 'OTHER_REASON' as ReasonEnum
+        JobFilled: 'JOB_FILLED' as ReasonEnum,
+        JobOutdated: 'JOB_OUTDATED' as ReasonEnum,
+        FailedRequirements: 'FAILED_REQUIREMENTS' as ReasonEnum,
+        OtherReason: 'OTHER_REASON' as ReasonEnum
     };
 }
 

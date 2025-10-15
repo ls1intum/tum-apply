@@ -28,11 +28,11 @@ export interface ApplicantDTO {
 export namespace ApplicantDTO {
     export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
     export const BachelorGradingScaleEnum = {
-        ONE_TO_FOUR: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
+        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
     };
     export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
     export const MasterGradingScaleEnum = {
-        ONE_TO_FOUR: 'ONE_TO_FOUR' as MasterGradingScaleEnum
+        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
     };
 }
 
