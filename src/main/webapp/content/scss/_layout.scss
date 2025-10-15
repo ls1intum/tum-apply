@@ -1,3 +1,5 @@
+@use 'breakpoints' as bp;
+
 @mixin flex-col-center {
   display: flex;
   flex-direction: column;
@@ -61,7 +63,10 @@
 
 .page-container {
   padding: 2rem 4rem;
-  width: 100%;
+
+  @media (max-width: bp.$md) {
+    padding: 1rem;
+  }
 }
 
 /* -------------------------------
