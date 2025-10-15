@@ -36,16 +36,14 @@ public class PDFBuilder {
     private final String mainHeading;
     private final List<OverviewItem> overviewItems = new ArrayList<>();
     private String overviewTitle;
-
     private final List<SectionGroup> sectionGroups = new ArrayList<>();
     private SectionGroup currentGroup;
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
-
-    // ----------------- Border & Padding -----------------
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(0xC0, 0xC0, 0xC1);
+
+    // ----------------- Borders -----------------
     private static final float BORDER_WIDTH = 0.8f;
-    private static final float CONTAINER_PADDING = 12f;
     private static final BorderRadius BORDER_RADIUS = new BorderRadius(8f);
     private static final SolidBorder DEFAULT_BORDER = new SolidBorder(BORDER_COLOR, BORDER_WIDTH);
 
@@ -55,6 +53,18 @@ public class PDFBuilder {
     private static final float FONT_SIZE_GROUP_TITLE = 15f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
+
+    // ----------------- Spacing -----------------
+    private static final float PADDING_CONTAINER = 12f;
+    private static final float PADDING_CELL_BOTTOM = 8f;
+    private static final float PADDING_CELL_RIGHT = 5f;
+    private static final float MARGIN_TITLE_BOTTOM = 8f;
+    private static final float MARGIN_OVERVIEW_TITLE_BOTTOM = 12f;
+    private static final float MARGIN_DATA_ROW_BOTTOM = 8f;
+    private static final float DIVIDER_HEIGHT = 1f;
+    private static final float HEADER_SPACING = 5f;
+    private static final float HEADER_MARGIN_TOP = 20f;
+    private static final float HEADER_MARGIN_BOTTOM = 16f;
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
@@ -122,8 +132,8 @@ public class PDFBuilder {
                 .setFontColor(PRIMARY_COLOR)
                 .setFontSize(FONT_SIZE_MAIN_HEADING)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginTop(20)
-                .setMarginBottom(16);
+                .setMarginTop(HEADER_MARGIN_TOP)
+                .setMarginBottom(HEADER_MARGIN_BOTTOM);
             document.add(mainHeadingParagraph);
 
             // Overview Section
@@ -137,10 +147,9 @@ public class PDFBuilder {
                     Paragraph groupTitle = new Paragraph(group.title)
                         .setFont(boldFont)
                         .setFontSize(FONT_SIZE_GROUP_TITLE)
-                        .setMarginBottom(8);
+                        .setMarginBottom(MARGIN_TITLE_BOTTOM);
                     document.add(groupTitle);
                 }
-
                 for (InfoSection section : group.sections) {
                     addInfoSection(document, section, normalFont, boldFont);
                 }
@@ -169,7 +178,7 @@ public class PDFBuilder {
                     .add(logo)
                     .setBorder(Border.NO_BORDER)
                     .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                    .setPaddingRight(5);
+                    .setPaddingRight(HEADER_SPACING);
                 headerTable.addCell(logoCell);
             } else {
                 headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -195,12 +204,15 @@ public class PDFBuilder {
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
         Div container = new Div()
             .setBorder(DEFAULT_BORDER)
-            .setPadding(CONTAINER_PADDING)
-            .setMarginBottom(20)
+            .setPadding(PADDING_CONTAINER)
+            .setMarginBottom(HEADER_MARGIN_BOTTOM)
             .setBorderRadius(BORDER_RADIUS);
 
         if (overviewTitle != null) {
-            Paragraph title = new Paragraph(overviewTitle).setFont(boldFont).setFontSize(FONT_SIZE_GROUP_TITLE).setMarginBottom(12);
+            Paragraph title = new Paragraph(overviewTitle)
+                .setFont(boldFont)
+                .setFontSize(FONT_SIZE_GROUP_TITLE)
+                .setMarginBottom(MARGIN_OVERVIEW_TITLE_BOTTOM);
             container.add(title);
         }
 
@@ -208,7 +220,7 @@ public class PDFBuilder {
 
         for (int i = 0; i < overviewItems.size(); i += 2) {
             OverviewItem item1 = overviewItems.get(i);
-            Cell cell1 = new Cell().setBorder(null).setPaddingBottom(8).setPaddingRight(16);
+            Cell cell1 = new Cell().setBorder(null).setPaddingBottom(PADDING_CELL_BOTTOM).setPaddingRight(PADDING_CELL_RIGHT);
             Paragraph p1 = new Paragraph()
                 .add(new Paragraph(item1.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
                 .add(new Paragraph(item1.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
@@ -217,7 +229,7 @@ public class PDFBuilder {
 
             if (i + 1 < overviewItems.size()) {
                 OverviewItem item2 = overviewItems.get(i + 1);
-                Cell cell2 = new Cell().setBorder(null).setPaddingBottom(8);
+                Cell cell2 = new Cell().setBorder(null).setPaddingBottom(PADDING_CELL_BOTTOM);
                 Paragraph p2 = new Paragraph()
                     .add(new Paragraph(item2.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
                     .add(new Paragraph(item2.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
@@ -235,14 +247,17 @@ public class PDFBuilder {
     private void addInfoSection(Document document, InfoSection section, PdfFont normalFont, PdfFont boldFont) {
         Div container = new Div()
             .setBorder(DEFAULT_BORDER)
-            .setPadding(CONTAINER_PADDING)
-            .setMarginBottom(20)
+            .setPadding(PADDING_CONTAINER)
+            .setMarginBottom(HEADER_MARGIN_BOTTOM)
             .setBorderRadius(BORDER_RADIUS);
 
-        Paragraph title = new Paragraph(section.title).setFont(boldFont).setFontSize(FONT_SIZE_SECTION_TITLE).setMarginBottom(8);
+        Paragraph title = new Paragraph(section.title)
+            .setFont(boldFont)
+            .setFontSize(FONT_SIZE_SECTION_TITLE)
+            .setMarginBottom(MARGIN_TITLE_BOTTOM);
         container.add(title);
 
-        Div divider = new Div().setHeight(1).setBackgroundColor(BORDER_COLOR).setMarginBottom(12);
+        Div divider = new Div().setHeight(DIVIDER_HEIGHT).setBackgroundColor(BORDER_COLOR).setMarginBottom(MARGIN_TITLE_BOTTOM);
         container.add(divider);
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
@@ -255,7 +270,7 @@ public class PDFBuilder {
             Paragraph dataRow = new Paragraph()
                 .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
                 .add(new Paragraph(row.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT))
-                .setMarginBottom(8);
+                .setMarginBottom(MARGIN_DATA_ROW_BOTTOM);
             container.add(dataRow);
         }
 
