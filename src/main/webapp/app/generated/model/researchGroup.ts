@@ -32,9 +32,9 @@ export interface ResearchGroup {
 export namespace ResearchGroup {
     export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
     export const StateEnum = {
-        Draft: 'DRAFT' as StateEnum,
-        Active: 'ACTIVE' as StateEnum,
-        Denied: 'DENIED' as StateEnum
+        DRAFT: 'DRAFT' as StateEnum,
+        ACTIVE: 'ACTIVE' as StateEnum,
+        DENIED: 'DENIED' as StateEnum
     };
 }
 

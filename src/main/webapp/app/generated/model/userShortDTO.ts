@@ -21,9 +21,9 @@ export interface UserShortDTO {
 export namespace UserShortDTO {
     export type RolesEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';
     export const RolesEnum = {
-        Applicant: 'APPLICANT' as RolesEnum,
-        Professor: 'PROFESSOR' as RolesEnum,
-        Admin: 'ADMIN' as RolesEnum
+        APPLICANT: 'APPLICANT' as RolesEnum,
+        PROFESSOR: 'PROFESSOR' as RolesEnum,
+        ADMIN: 'ADMIN' as RolesEnum
     };
 }
 
