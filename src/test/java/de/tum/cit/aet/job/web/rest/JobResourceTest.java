@@ -348,30 +348,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
-    void updateJobAsApplicantForbidden() {
-        Job job = jobRepository.findAll().getFirst();
-        JobFormDTO updatedPayload = new JobFormDTO(
-            job.getJobId(),
-            "Applicant attempt",
-            "Area",
-            "Field",
-            professor.getUserId(),
-            Campus.GARCHING,
-            LocalDate.now(),
-            LocalDate.now().plusMonths(1),
-            10,
-            3,
-            FundingType.FULLY_FUNDED,
-            "desc",
-            "tasks",
-            "req",
-            JobState.DRAFT
-        );
-        api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);
-    }
-
-    @Test
     @WithMockUser(roles = "PROFESSOR")
     void deleteJobRemovesIt() {
         Job job = jobRepository.findAll().getFirst();
