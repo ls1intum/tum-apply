@@ -35,7 +35,9 @@ public class PDFBuilder {
     private final String mainHeading;
     private final List<OverviewItem> overviewItems = new ArrayList<>();
     private String overviewTitle;
-    private final List<InfoSection> infoSections = new ArrayList<>();
+
+    private final List<SectionGroup> sectionGroups = new ArrayList<>();
+    private SectionGroup currentGroup;
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(224, 224, 224);
@@ -44,52 +46,51 @@ public class PDFBuilder {
         this.mainHeading = mainHeading;
     }
 
-    /**
-     * Sets the title for the overview section
-     */
+    // ----------------- Overview -----------------
     public PDFBuilder setOverviewTitle(String title) {
         this.overviewTitle = title;
         return this;
     }
 
-    /**
-     * Adds a row to the overview section (displayed as columns)
-     */
     public PDFBuilder addOverviewItem(String label, String value) {
         overviewItems.add(new OverviewItem(label, value));
         return this;
     }
 
-    /**
-     * Starts a new info section
-     */
+    // ----------------- Section Groups -----------------
+    public PDFBuilder startSectionGroup(String title) {
+        currentGroup = new SectionGroup(title);
+        sectionGroups.add(currentGroup);
+        return this;
+    }
+
     public PDFBuilder startInfoSection(String title) {
-        infoSections.add(new InfoSection(title));
+        InfoSection section = new InfoSection(title);
+        if (currentGroup == null) {
+            currentGroup = new SectionGroup(null); // fallback ohne Gruppentitel
+            sectionGroups.add(currentGroup);
+        }
+        currentGroup.addSection(section);
         return this;
     }
 
-    /**
-     * Adds HTML content to the current info section
-     */
     public PDFBuilder addSectionContent(String htmlContent) {
-        if (infoSections.isEmpty()) {
+        if (currentGroup == null || currentGroup.sections.isEmpty()) {
             throw new IllegalStateException("Call startInfoSection first");
         }
-        infoSections.get(infoSections.size() - 1).setHtmlContent(htmlContent);
+        currentGroup.sections.get(currentGroup.sections.size() - 1).setHtmlContent(htmlContent);
         return this;
     }
 
-    /**
-     * Adds a data row to the current info section
-     */
     public PDFBuilder addSectionData(String label, String value) {
-        if (infoSections.isEmpty()) {
+        if (currentGroup == null || currentGroup.sections.isEmpty()) {
             throw new IllegalStateException("Call startInfoSection first");
         }
-        infoSections.get(infoSections.size() - 1).addDataRow(label, value);
+        currentGroup.sections.get(currentGroup.sections.size() - 1).addDataRow(label, value);
         return this;
     }
 
+    // ----------------- Build PDF -----------------
     public Resource build() {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(baos);
@@ -116,9 +117,16 @@ public class PDFBuilder {
                 addOverviewSection(document, normalFont, boldFont);
             }
 
-            // Info Sections
-            for (InfoSection section : infoSections) {
-                addInfoSection(document, section, normalFont, boldFont);
+            // Section Groups
+            for (SectionGroup group : sectionGroups) {
+                if (group.title != null) {
+                    Paragraph groupTitle = new Paragraph(group.title).setFont(boldFont).setFontSize(16).setMarginTop(20).setMarginBottom(8);
+                    document.add(groupTitle);
+                }
+
+                for (InfoSection section : group.sections) {
+                    addInfoSection(document, section, normalFont, boldFont);
+                }
             }
 
             document.close();
@@ -128,32 +136,29 @@ public class PDFBuilder {
         }
     }
 
+    // ----------------- Helpers -----------------
     private void addLogoHeader(Document document, PdfFont boldFont) throws IOException {
         float logoSize = 35;
-
         Table headerTable = new Table(new float[] { 1, 4 });
         headerTable.setBorder(Border.NO_BORDER);
         headerTable.setHorizontalAlignment(HorizontalAlignment.LEFT);
+
         try {
             URL logoUrl = getClass().getClassLoader().getResource(LOGO_PATH);
-
             if (logoUrl != null) {
                 Image logo = new Image(ImageDataFactory.create(logoUrl));
                 logo.scaleToFit(logoSize, logoSize);
-
                 Cell logoCell = new Cell()
                     .add(logo)
                     .setBorder(Border.NO_BORDER)
                     .setVerticalAlignment(VerticalAlignment.MIDDLE)
                     .setPaddingRight(5);
-
                 headerTable.addCell(logoCell);
             } else {
-                System.err.println("Logo not found at path: " + LOGO_PATH);
                 headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
             }
         } catch (Exception e) {
-            System.err.println("Could not load logo image: " + e.getMessage());
+            headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
         }
 
         Paragraph appNamePara = new Paragraph(new Text("Apply").setFont(boldFont).setFontSize(12)).setFontColor(PRIMARY_COLOR).setMargin(0);
@@ -163,49 +168,39 @@ public class PDFBuilder {
             .setBorder(Border.NO_BORDER)
             .setVerticalAlignment(VerticalAlignment.MIDDLE)
             .setPaddingLeft(0);
-
         headerTable.addCell(textCell);
 
         document.add(headerTable);
     }
 
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
-        // Container with border
         Div container = new Div().setBorder(new SolidBorder(BORDER_COLOR, 1)).setPadding(16).setMarginBottom(20);
 
-        // Title
         if (overviewTitle != null) {
             Paragraph title = new Paragraph(overviewTitle).setFont(boldFont).setFontSize(14).setMarginBottom(12);
             container.add(title);
         }
 
-        // Create table with 2 columns per row (label and value side by side)
         Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 1 })).useAllAvailableWidth().setBorder(null);
 
         for (int i = 0; i < overviewItems.size(); i += 2) {
             OverviewItem item1 = overviewItems.get(i);
-
-            // First column
             Cell cell1 = new Cell().setBorder(null).setPaddingBottom(8).setPaddingRight(16);
-
             Paragraph p1 = new Paragraph()
                 .add(new Paragraph(item1.label + ": ").setFont(boldFont).setFontSize(10).setMarginBottom(2))
                 .add(new Paragraph(item1.value).setFont(normalFont).setFontSize(10));
             cell1.add(p1);
             table.addCell(cell1);
 
-            // Second column (if exists)
             if (i + 1 < overviewItems.size()) {
                 OverviewItem item2 = overviewItems.get(i + 1);
                 Cell cell2 = new Cell().setBorder(null).setPaddingBottom(8);
-
                 Paragraph p2 = new Paragraph()
                     .add(new Paragraph(item2.label + ": ").setFont(boldFont).setFontSize(10).setMarginBottom(2))
                     .add(new Paragraph(item2.value).setFont(normalFont).setFontSize(10));
                 cell2.add(p2);
                 table.addCell(cell2);
             } else {
-                // Empty cell if odd number of items
                 table.addCell(new Cell().setBorder(null));
             }
         }
@@ -215,42 +210,32 @@ public class PDFBuilder {
     }
 
     private void addInfoSection(Document document, InfoSection section, PdfFont normalFont, PdfFont boldFont) {
-        // Container with border
         Div container = new Div().setBorder(new SolidBorder(BORDER_COLOR, 1)).setPadding(16).setMarginBottom(20);
 
-        // Section Title
         Paragraph title = new Paragraph(section.title).setFont(boldFont).setFontSize(14).setMarginBottom(8);
         container.add(title);
 
-        // Divider
         Div divider = new Div().setHeight(1).setBackgroundColor(BORDER_COLOR).setMarginBottom(12);
         container.add(divider);
 
-        // Content (either HTML or data rows)
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
-            // Convert HTML to plain text for now (you can use iText's HTML converter for
-            // better formatting)
             String plainText = section.htmlContent.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
-
             Paragraph content = new Paragraph(plainText).setFont(normalFont).setFontSize(10);
             container.add(content);
         }
 
-        // Data rows (vertical layout)
-        if (!section.dataRows.isEmpty()) {
-            for (DataRow row : section.dataRows) {
-                Paragraph dataRow = new Paragraph()
-                    .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(10).setMarginBottom(2))
-                    .add(new Paragraph(row.value).setFont(normalFont).setFontSize(10))
-                    .setMarginBottom(8);
-                container.add(dataRow);
-            }
+        for (DataRow row : section.dataRows) {
+            Paragraph dataRow = new Paragraph()
+                .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(10).setMarginBottom(2))
+                .add(new Paragraph(row.value).setFont(normalFont).setFontSize(10))
+                .setMarginBottom(8);
+            container.add(dataRow);
         }
 
         document.add(container);
     }
 
-    // Helper classes
+    // ----------------- Inner Classes -----------------
     private static class OverviewItem {
 
         String label;
@@ -259,6 +244,20 @@ public class PDFBuilder {
         OverviewItem(String label, String value) {
             this.label = label;
             this.value = value;
+        }
+    }
+
+    private static class SectionGroup {
+
+        String title;
+        List<InfoSection> sections = new ArrayList<>();
+
+        SectionGroup(String title) {
+            this.title = title;
+        }
+
+        void addSection(InfoSection section) {
+            sections.add(section);
         }
     }
 

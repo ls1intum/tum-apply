@@ -7,8 +7,6 @@ import de.tum.cit.aet.core.util.PDFBuilder;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.core.io.Resource;
@@ -95,29 +93,29 @@ public class PDFExportService {
 
         // Overview Section
         builder
-            .setOverviewTitle(labels.get("overview")) // Oder "Job Overview"
-            // .addOverviewItem("Application State",
-            // formatApplicationState(app.applicationState()))
+            .setOverviewTitle(labels.getOrDefault("overview", "Job Overview"))
             .addOverviewItem("Supervisor", getValue(app.supervisingProfessorName()))
             .addOverviewItem("Research Group", getValue(app.researchGroup()))
             .addOverviewItem("Location", getValue(app.jobLocation()));
 
-        // Motivation Section
+        // Personal Statements Group
+        builder.startSectionGroup("Personal Statements");
+
         if (app.motivation() != null && !app.motivation().isEmpty()) {
             builder.startInfoSection("Motivation").addSectionContent(app.motivation());
         }
 
-        // Special Skills Section
         if (app.specialSkills() != null && !app.specialSkills().isEmpty()) {
             builder.startInfoSection("Special Skills").addSectionContent(app.specialSkills());
         }
 
-        // Research Experience Section
         if (app.projects() != null && !app.projects().isEmpty()) {
             builder.startInfoSection("Research Experience").addSectionContent(app.projects());
         }
 
-        // Personal Info Section
+        // Personal Information Group
+        builder.startSectionGroup("Personal Information");
+
         builder
             .startInfoSection("Applicant Information")
             .addSectionData("Preferred Language", getValue(app.applicant().user().preferredLanguage()))
@@ -132,14 +130,14 @@ public class PDFExportService {
             builder.addSectionData("LinkedIn", app.applicant().user().linkedinUrl());
         }
 
-        // Bachelor Education Section
+        // Bachelor Section
         builder
             .startInfoSection("Bachelor Degree Information")
             .addSectionData("Degree Name", getValue(app.applicant().bachelorDegreeName()))
             .addSectionData("University", getValue(app.applicant().bachelorUniversity()))
             .addSectionData("Grade", getValue(app.applicant().bachelorGrade()));
 
-        // Master Education Section (if exists)
+        // Master Section
         if (app.applicant().masterDegreeName() != null) {
             builder
                 .startInfoSection("Master Degree Information")
