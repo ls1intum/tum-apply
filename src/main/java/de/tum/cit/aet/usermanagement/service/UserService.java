@@ -59,14 +59,16 @@ public class UserService {
      * @param email          the user's email (can be null/blank)
      * @param firstName      optional first name (can be null/blank)
      * @param lastName       optional last name (can be null/blank)
+     * @param universityId   optional university ID
      * @return the managed User entity
      */
     @Transactional
-    public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
+    public User upsertUser(String keycloakUserId, String email, String firstName, String lastName, String universityId) {
         UUID userId = UUID.fromString(keycloakUserId);
         final String normalizedEmail = StringUtil.normalize(email, true);
         final String normalizedFirstName = StringUtil.normalize(firstName, false);
         final String normalizedLastName = StringUtil.normalize(lastName, false);
+        final String normalizedUniversityId = StringUtil.normalize(universityId, false);
 
         Optional<User> existingUser = userRepository.findWithResearchGroupRolesByUserId(userId);
         final boolean isNewUser = existingUser.isEmpty();
@@ -78,12 +80,30 @@ public class UserService {
         updated |= setIfPresentAndChanged(user::getFirstName, user::setFirstName, normalizedFirstName);
         updated |= setIfPresentAndChanged(user::getLastName, user::setLastName, normalizedLastName);
 
+        if (normalizedUniversityId != null && !normalizedUniversityId.isBlank() && user.getUniversityId() == null) {
+            user.setUniversityId(normalizedUniversityId);
+            updated = true;
+        }
+
         if (updated) {
             user = userRepository.save(user);
         }
 
         assignApplicantRoleIfEmpty(user);
         return user;
+    }
+
+    /**
+     * Delegates to {@link #upsertUser(String, String, String, String, String)} without a universityId.
+     *
+     * @param keycloakUserId the Keycloak user ID to associate with the user
+     * @param email          the user's email (can be null/blank)
+     * @param firstName      optional first name (can be null/blank)
+     * @param lastName       optional last name (can be null/blank)
+     * @return the managed User entity
+     */
+    public User upsertUser(String keycloakUserId, String email, String firstName, String lastName) {
+        return upsertUser(keycloakUserId, email, firstName, lastName, null);
     }
 
     /**
