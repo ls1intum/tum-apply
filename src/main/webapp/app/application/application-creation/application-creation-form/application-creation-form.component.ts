@@ -150,10 +150,17 @@ export default class ApplicationCreationFormComponent {
     privacyAccepted: this.formbuilder.nonNullable.control(false, {
       validators: Validators.requiredTrue,
     }),
+    doctoralRequirementsAccepted: this.formbuilder.nonNullable.control(false, {
+      validators: Validators.requiredTrue,
+    }),
   });
 
   readonly privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls.privacyAccepted.valueChanges, {
     initialValue: this.additionalInfoForm.controls.privacyAccepted.value,
+  });
+
+  readonly doctoralRequirementsAcceptedSignal = toSignal(this.additionalInfoForm.controls.doctoralRequirementsAccepted.valueChanges, {
+    initialValue: this.additionalInfoForm.controls.doctoralRequirementsAccepted.value,
   });
 
   submitAttempted = signal(false);
@@ -463,6 +470,10 @@ export default class ApplicationCreationFormComponent {
     this.submitAttempted.set(true);
     if (!this.privacyAcceptedSignal()) {
       this.toastService.showErrorKey('privacy.privacyConsent.toastError');
+      return;
+    }
+    if (!this.doctoralRequirementsAcceptedSignal()) {
+      this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
     void this.sendCreateApplicationData('SENT', true);

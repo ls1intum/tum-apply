@@ -361,7 +361,17 @@
     },
     "applicationPage4": {
       "title": "Overview",
-      "message": "Please review your entries before submitting the application."
+      "message": "Please review your entries before submitting the application.",
+      "doctoralRequirements": {
+        "title": "German Doctoral Position Requirements",
+        "text": "Please ensure you have informed yourself about the <a class=\"link\" href=\"https://www.gs.tum.de/en/gs/qualification-career/transferable-skills-training/eligibility-requirements/\" target=\"_blank\" rel=\"noopener noreferrer\">requirements for a German Doctoral Position</a>.",
+        "confirmationText": "I have informed myself about the requirements for a German Doctoral Position.",
+        "missingConfirmation": "Please confirm that you have informed yourself about the requirements for a German Doctoral Position.",
+        "toastError": {
+          "summary": "Doctoral requirements confirmation missing",
+          "detail": "Please confirm that you have informed yourself about the requirements for a German Doctoral Position to proceed."
+        }
+      }
     },
     "applicationOverview": {
       "header": "Your Applications",
