@@ -1,5 +1,7 @@
 package de.tum.cit.aet.application.service;
 
+import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
+
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -9,6 +11,7 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
@@ -23,9 +26,11 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.service.UserService;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +49,7 @@ public class ApplicationService {
     private final DocumentDictionaryService documentDictionaryService;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
+    private final UserService userService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -65,12 +71,12 @@ public class ApplicationService {
             Application application = new Application();
             application.setJob(job);
             application.setState(ApplicationState.SAVED);
-            return ApplicationForApplicantDTO.getFromEntity(application);
+            return getFromEntity(application);
         }
 
         Application existingApplication = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
         if (existingApplication != null) {
-            return ApplicationForApplicantDTO.getFromEntity(existingApplication);
+            return getFromEntity(existingApplication);
         }
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
         Applicant applicant;
@@ -94,27 +100,7 @@ public class ApplicationService {
             new HashSet<>()
         );
         Application savedApplication = applicationRepository.save(newApplication);
-        return ApplicationForApplicantDTO.getFromEntity(savedApplication);
-    }
-
-    /**
-     * Retrieves all applications submitted by a specific applicant.
-     *
-     * @param applicantId the UUID of the applicant
-     * @return a set of ApplicationForApplicantDTO for the given applicant
-     */
-    public Set<ApplicationForApplicantDTO> getAllApplicationsOfApplicant(UUID applicantId) {
-        return applicationRepository.findAllDtosByApplicantUserId(applicantId);
-    }
-
-    /**
-     * Retrieves all applications for a specific job.
-     *
-     * @param jobId the UUID of the job
-     * @return a set of ApplicationForApplicantDTO for the given job
-     */
-    public Set<ApplicationForApplicantDTO> getAllApplicationsOfJob(UUID jobId) {
-        return applicationRepository.findAllDtosByJobJobId(jobId);
+        return getFromEntity(savedApplication);
     }
 
     /**
@@ -124,7 +110,7 @@ public class ApplicationService {
      * @return the ApplicationForApplicantDTO with the given ID
      */
     public ApplicationForApplicantDTO getApplicationById(UUID applicationId) {
-        return applicationRepository.findDtoById(applicationId);
+        return assertCanManageApplicationDTO(applicationId);
     }
 
     /**
@@ -135,17 +121,16 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
-        applicationRepository.updateApplication(
-            updateApplicationDTO.applicationId(),
-            updateApplicationDTO.applicationState().name(),
-            updateApplicationDTO.desiredDate(),
-            updateApplicationDTO.projects(),
-            updateApplicationDTO.specialSkills(),
-            updateApplicationDTO.motivation()
-        );
-        ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
+        Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
+        application.setState(updateApplicationDTO.applicationState());
+        application.setDesiredStartDate(updateApplicationDTO.desiredDate());
+        application.setProjects(updateApplicationDTO.projects());
+        application.setSpecialSkills(updateApplicationDTO.specialSkills());
+        application.setMotivation(updateApplicationDTO.motivation());
+        application = applicationRepository.save(application);
 
-        Applicant applicant = applicantRepository.getReferenceById(applicantDTO.user().userId());
+        ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
+        Applicant applicant = assertCanManageApplicant(application.getApplicant().getUserId());
         User user = applicant.getUser();
         user.setFirstName(applicantDTO.user().firstName());
         user.setLastName(applicantDTO.user().lastName());
@@ -175,17 +160,11 @@ public class ApplicationService {
         applicant.setMasterUniversity(applicantDTO.masterUniversity());
         applicantRepository.save(applicant);
 
-        ApplicationForApplicantDTO application = applicationRepository.findDtoById(updateApplicationDTO.applicationId());
-
         if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
-            Application app = applicationRepository
-                .findById(application.applicationId())
-                .orElseThrow(() -> EntityNotFoundException.forId("Application", application.applicationId()));
-
-            confirmApplicationToApplicant(app);
-            confirmApplicationToProfessor(app);
+            confirmApplicationToApplicant(application);
+            confirmApplicationToProfessor(application);
         }
-        return application;
+        return ApplicationForApplicantDTO.getFromEntity(application);
     }
 
     private void confirmApplicationToApplicant(Application application) {
@@ -220,12 +199,12 @@ public class ApplicationService {
      */
     @Transactional
     public void withdrawApplication(UUID applicationId) {
-        Application application = applicationRepository.findById(applicationId).orElse(null);
-        if (application == null) {
-            return;
-        }
+        Application application = assertCanManageApplication(applicationId);
         User user = application.getApplicant().getUser();
         Job job = application.getJob();
+
+        application.setState(ApplicationState.WITHDRAWN);
+        application = applicationRepository.save(application);
 
         Email email = Email.builder()
             .to(user)
@@ -236,9 +215,6 @@ public class ApplicationService {
             .build();
 
         sender.sendAsync(email);
-
-        application.setState(ApplicationState.WITHDRAWN);
-        applicationRepository.save(application);
     }
 
     /**
@@ -248,9 +224,7 @@ public class ApplicationService {
      */
     @Transactional
     public void deleteApplication(UUID applicationId) {
-        if (!applicationRepository.existsById(applicationId)) {
-            throw new EntityNotFoundException("Application with ID " + applicationId + " not found");
-        }
+        assertCanManageApplication(applicationId);
         applicationRepository.deleteById(applicationId);
     }
 
@@ -282,6 +256,7 @@ public class ApplicationService {
      * @return the total number of applications
      */
     public long getNumberOfTotalApplications(UUID applicantId) {
+        currentUserService.isCurrentUserOrAdmin(applicantId);
         return this.applicationRepository.countByApplicantId(applicantId);
     }
 
@@ -331,7 +306,7 @@ public class ApplicationService {
      * @param cv          the uploaded CV file
      * @param application the application the CV belongs to
      */
-    public void uploadCV(MultipartFile cv, Application application) {
+    private void uploadCV(MultipartFile cv, Application application) {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Document document = documentService.upload(cv, user);
@@ -345,7 +320,7 @@ public class ApplicationService {
      * @param type        the type of the transcript
      * @param application the application the transcripts belong to
      */
-    public void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application) {
+    private void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application) {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Pair<Document, String>> documents = transcripts
@@ -371,20 +346,32 @@ public class ApplicationService {
 
     /**
      * Retrieves the set of document IDs for the given application filtered by the
-     * specified document type.
+     * specified document type and uploads new documents.
      *
-     * @param application the application whose documents are queried; must not be
-     *                    {@code null}
-     * @param type        the document type to filter by; must not be {@code null}
+     * @param applicationId the UUID of the application
+     * @param documentType  the type of documents to filter by
+     * @param files         the list of files to be uploaded
      * @return a set of document IDs matching the given application and document
-     *         type; never {@code null}
      */
-    public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(Application application, DocumentType type) {
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
-        return existingEntries
-            .stream()
-            .map(e -> DocumentInformationHolderDTO.getFromDocumentDictionary(e))
-            .collect(Collectors.toSet());
+    public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(
+        UUID applicationId,
+        DocumentType documentType,
+        List<MultipartFile> files
+    ) {
+        Application application = assertCanManageApplication(applicationId);
+
+        switch (documentType) {
+            case BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE:
+                uploadAdditionalTranscripts(files, documentType, application);
+                break;
+            case CV:
+                uploadCV(files.getFirst(), application);
+                break; // TODO only one file allowed
+            default:
+                throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
+        }
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, documentType);
+        return existingEntries.stream().map(DocumentInformationHolderDTO::getFromDocumentDictionary).collect(Collectors.toSet());
     }
 
     /**
@@ -393,14 +380,11 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     *         document IDs for the application
+     * document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
-        if (applicationId == null) {
-            throw new IllegalArgumentException("The applicationId may not be null.");
-        }
-        Application application = applicationRepository.getReferenceById(applicationId);
+        Application application = assertCanManageApplication(applicationId);
         return documentDictionaryService.getDocumentIdsDTO(application);
     }
 
@@ -414,27 +398,8 @@ public class ApplicationService {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
-        Application application = applicationRepository
-            .findById(applicationId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
-
+        Application application = assertCanManageApplication(applicationId);
         return ApplicationDetailDTO.getFromEntity(application, application.getJob());
-    }
-
-    /**
-     * Deletes all documents of a specific type associated with the given
-     * application.
-     *
-     * @param applicationId the ID of the application
-     * @param documentType  the type of documents to delete
-     * @throws EntityNotFoundException if the application does not exist
-     */
-    public void deleteDocumentTypeOfDocuments(UUID applicationId, DocumentType documentType) {
-        Optional<Application> application = this.applicationRepository.findById(applicationId);
-        if (application.isEmpty()) {
-            throw new EntityNotFoundException("Application does not exist");
-        }
-        this.documentDictionaryService.deleteByApplicationAndType(application.get(), documentType);
     }
 
     /**
@@ -458,5 +423,52 @@ public class ApplicationService {
         Applicant applicant = new Applicant();
         applicant.setUser(user);
         return applicantRepository.save(applicant);
+    }
+
+    /**
+     * Asserts that the current user can manage the application with the given ID.
+     *
+     * @param applicationId the ID of the application to check
+     * @return the application entity if the user can manage it
+     */
+    private Application assertCanManageApplication(UUID applicationId) {
+        if (applicationId == null) {
+            throw new InvalidParameterException("The applicationId may not be null.");
+        }
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+        return application;
+    }
+
+    /**
+     * Asserts that the current user can manage the application with the given ID.
+     *
+     * @param applicationId the ID of the application to check
+     * @return the applicationForApplicantDTO entity if the user can manage it
+     */
+    private ApplicationForApplicantDTO assertCanManageApplicationDTO(UUID applicationId) {
+        if (applicationId == null) {
+            throw new InvalidParameterException("The applicationId may not be null.");
+        }
+        ApplicationForApplicantDTO application = applicationRepository.findDtoById(applicationId);
+        currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
+        return application;
+    }
+
+    /**
+     * Asserts that the current user can manage the applicant with the given ID.
+     *
+     * @param applicantId the id of the applicant to check
+     * @return the application entity if the user can manage it
+     */
+    private Applicant assertCanManageApplicant(UUID applicantId) {
+        if (applicantId == null) {
+            throw new InvalidParameterException("The applicantId may not be null.");
+        }
+        Applicant applicant = applicantRepository.getReferenceById(applicantId);
+        currentUserService.isCurrentUserOrAdmin(applicant.getUserId());
+        return applicant;
     }
 }
