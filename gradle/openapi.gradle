@@ -61,7 +61,14 @@ openApiGenerate {
   configOptions = [
     serviceSuffix    : "ApiService",
     supportsES6      : "true",
-    serviceFileSuffix: "Api.service"
+    serviceFileSuffix: "Api.service",
+
+    sortParamsByRequiredFlag: "true",
+    sortModelPropertiesByRequiredFlag: "true",
+    ensureUniqueParams: "true",
+
+    modelPropertyNaming: "camelCase",
+    enumPropertyNaming: "UPPERCASE"
   ]
 }
 

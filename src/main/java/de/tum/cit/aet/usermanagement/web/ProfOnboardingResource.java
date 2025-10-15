@@ -69,12 +69,4 @@ public class ProfOnboardingResource {
         UUID userId = currentUserService.getUserId();
         userSettingService.setBool(userId, ONBOARDED, false);
     }
-
-    @PostMapping("/prof-onboarding/skip")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void skipOnboardingPermanently() {
-        UUID userId = currentUserService.getUserId();
-        userSettingService.setBool(userId, ONBOARDED, true);
-        userSettingService.setBool(userId, "onboarding_skipped", true);
-    }
 }
