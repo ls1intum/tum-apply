@@ -35,20 +35,20 @@ export interface JobDetailDTO {
 export namespace JobDetailDTO {
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {
-        DRAFT: 'DRAFT' as StateEnum,
-        PUBLISHED: 'PUBLISHED' as StateEnum,
-        CLOSED: 'CLOSED' as StateEnum,
-        APPLICANT_FOUND: 'APPLICANT_FOUND' as StateEnum
+        Draft: 'DRAFT' as StateEnum,
+        Published: 'PUBLISHED' as StateEnum,
+        Closed: 'CLOSED' as StateEnum,
+        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
     };
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
     export const ApplicationStateEnum = {
-        SAVED: 'SAVED' as ApplicationStateEnum,
-        SENT: 'SENT' as ApplicationStateEnum,
-        ACCEPTED: 'ACCEPTED' as ApplicationStateEnum,
-        IN_REVIEW: 'IN_REVIEW' as ApplicationStateEnum,
-        REJECTED: 'REJECTED' as ApplicationStateEnum,
-        WITHDRAWN: 'WITHDRAWN' as ApplicationStateEnum,
-        JOB_CLOSED: 'JOB_CLOSED' as ApplicationStateEnum
+        Saved: 'SAVED' as ApplicationStateEnum,
+        Sent: 'SENT' as ApplicationStateEnum,
+        Accepted: 'ACCEPTED' as ApplicationStateEnum,
+        InReview: 'IN_REVIEW' as ApplicationStateEnum,
+        Rejected: 'REJECTED' as ApplicationStateEnum,
+        Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
+        JobClosed: 'JOB_CLOSED' as ApplicationStateEnum
     };
 }
 
