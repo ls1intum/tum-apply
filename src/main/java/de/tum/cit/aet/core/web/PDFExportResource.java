@@ -1,12 +1,13 @@
 package de.tum.cit.aet.core.web;
 
+import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.PDFExportService;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -28,10 +29,10 @@ public class PDFExportResource {
      * @param id the job ID
      * @return the PDF file as downloadable attachment
      */
-    @GetMapping(value = "/job/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    @PreAuthorize("hasAnyRole('APPLICANT', 'PROFESSOR')")
-    public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id) {
-        Resource pdf = pdfExportService.exportJobToPDF(id);
+    @PostMapping(value = "/job/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    @Public
+    public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
+        Resource pdf = pdfExportService.exportJobToPDF(id, labels);
         String filename = pdfExportService.generateJobFilename(id);
 
         return ResponseEntity.ok()
@@ -46,10 +47,10 @@ public class PDFExportResource {
      * @param id the application ID
      * @return the PDF file as downloadable attachment
      */
-    @GetMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    @PreAuthorize("hasAnyRole('APPLICANT', 'PROFESSOR')")
-    public ResponseEntity<Resource> exportApplicationToPDF(@PathVariable UUID id) {
-        Resource pdf = pdfExportService.exportApplicationToPDF(id);
+    @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    @Public
+    public ResponseEntity<Resource> exportApplicationToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
+        Resource pdf = pdfExportService.exportApplicationToPDF(id, labels);
         String filename = pdfExportService.generateApplicationFilename(id);
 
         return ResponseEntity.ok()
