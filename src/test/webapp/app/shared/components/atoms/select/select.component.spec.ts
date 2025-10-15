@@ -30,6 +30,10 @@ describe('SelectComponent', () => {
     }).compileComponents();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     const fixture = createFixture();
     expect(fixture.componentInstance).toBeTruthy();
@@ -42,6 +46,15 @@ describe('SelectComponent', () => {
     expect(label.textContent).toContain('*');
 
     expect(fixture.componentInstance.placeholder()).toBe('Choose...');
+  });
+
+  it('should not show asterisk when required=false', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('required', false);
+    fixture.detectChanges();
+
+    const label = fixture.debugElement.query(By.css('label')).nativeElement;
+    expect(label.textContent).not.toContain('*');
   });
 
   it('should emit selectedChange when onSelectionChange called', () => {
@@ -148,5 +161,21 @@ describe('SelectComponent', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance.selected()).toBeUndefined();
     expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should show clear button when showClear=true', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('showClear', true);
+    fixture.detectChanges();
+
+    const selectEl = fixture.debugElement.query(By.css('p-select'));
+    expect(selectEl.componentInstance.showClear).toBe(true);
+  });
+
+  it('should not show clear button by default', () => {
+    const fixture = createFixture();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.showClear()).toBe(false);
   });
 });
