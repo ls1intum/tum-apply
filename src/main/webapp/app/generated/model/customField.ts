@@ -24,10 +24,10 @@ export interface CustomField {
 export namespace CustomField {
     export type CustomFieldTypeEnum = 'FREE_TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILE_UPLOAD';
     export const CustomFieldTypeEnum = {
-        FreeText: 'FREE_TEXT' as CustomFieldTypeEnum,
-        SingleChoice: 'SINGLE_CHOICE' as CustomFieldTypeEnum,
-        MultipleChoice: 'MULTIPLE_CHOICE' as CustomFieldTypeEnum,
-        FileUpload: 'FILE_UPLOAD' as CustomFieldTypeEnum
+        FREE_TEXT: 'FREE_TEXT' as CustomFieldTypeEnum,
+        SINGLE_CHOICE: 'SINGLE_CHOICE' as CustomFieldTypeEnum,
+        MULTIPLE_CHOICE: 'MULTIPLE_CHOICE' as CustomFieldTypeEnum,
+        FILE_UPLOAD: 'FILE_UPLOAD' as CustomFieldTypeEnum
     };
 }
 

@@ -11,10 +11,10 @@
 
 export interface CreatedJobDTO { 
     jobId: string;
+    title: string;
     avatar?: string;
     professorName?: string;
     state?: CreatedJobDTO.StateEnum;
-    title: string;
     startDate?: string;
     createdAt?: string;
     lastModifiedAt?: string;
@@ -22,10 +22,10 @@ export interface CreatedJobDTO {
 export namespace CreatedJobDTO {
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {
-        Draft: 'DRAFT' as StateEnum,
-        Published: 'PUBLISHED' as StateEnum,
-        Closed: 'CLOSED' as StateEnum,
-        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
+        DRAFT: 'DRAFT' as StateEnum,
+        PUBLISHED: 'PUBLISHED' as StateEnum,
+        CLOSED: 'CLOSED' as StateEnum,
+        APPLICANT_FOUND: 'APPLICANT_FOUND' as StateEnum
     };
 }
 

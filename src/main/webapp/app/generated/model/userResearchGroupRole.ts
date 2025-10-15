@@ -20,9 +20,9 @@ export interface UserResearchGroupRole {
 export namespace UserResearchGroupRole {
     export type RoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';
     export const RoleEnum = {
-        Applicant: 'APPLICANT' as RoleEnum,
-        Professor: 'PROFESSOR' as RoleEnum,
-        Admin: 'ADMIN' as RoleEnum
+        APPLICANT: 'APPLICANT' as RoleEnum,
+        PROFESSOR: 'PROFESSOR' as RoleEnum,
+        ADMIN: 'ADMIN' as RoleEnum
     };
 }
 

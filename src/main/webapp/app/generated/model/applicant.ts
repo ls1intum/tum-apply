@@ -31,11 +31,11 @@ export interface Applicant {
 export namespace Applicant {
     export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
     export const BachelorGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
+        ONE_TO_FOUR: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
     };
     export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
     export const MasterGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
+        ONE_TO_FOUR: 'ONE_TO_FOUR' as MasterGradingScaleEnum
     };
 }
 
