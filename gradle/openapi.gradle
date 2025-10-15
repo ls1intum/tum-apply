@@ -67,8 +67,6 @@ openApiGenerate {
     sortModelPropertiesByRequiredFlag: "true",
     ensureUniqueParams: "true",
 
-    modelPropertyNaming: "camelCase",
-    enumPropertyNaming: "UPPERCASE"
   ]
 }
 
