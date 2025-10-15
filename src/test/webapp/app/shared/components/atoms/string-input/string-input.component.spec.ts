@@ -82,17 +82,20 @@ describe('StringInputComponent', () => {
     expect(hasTooltip).toBe(false);
   });
 
-  it('should show tooltip when icon is circle-info and tooltipText is provided', () => {
+  it('should show tooltip when icon is circle-info and tooltipText is provided', async () => {
     const fixture = createFixture();
     fixture.componentRef.setInput('icon', 'circle-info');
     fixture.componentRef.setInput('tooltipText', 'Helpful information');
     fixture.detectChanges();
+    await fixture.whenStable();
 
-    fixture.whenStable().then(() => {
-      const iconWithTooltip = fixture.debugElement.query(By.css('fa-icon[pTooltip]'));
-      expect(iconWithTooltip).toBeTruthy();
-      expect(fixture.componentInstance.tooltipText()).toBe('Helpful information');
-    });
+    const iconEl = fixture.debugElement.query(By.css('fa-icon'));
+    expect(iconEl).toBeTruthy();
+
+    const svgEl = iconEl.nativeElement.querySelector('svg[data-icon="circle-info"]');
+    expect(svgEl).toBeTruthy();
+
+    expect(fixture.componentInstance.tooltipText()).toBe('Helpful information');
   });
 
   it('should show translated label when shouldTranslate=true', async () => {
