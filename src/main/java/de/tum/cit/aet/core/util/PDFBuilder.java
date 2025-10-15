@@ -16,6 +16,7 @@ import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -40,7 +41,12 @@ public class PDFBuilder {
     private SectionGroup currentGroup;
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
-    private static final DeviceRgb BORDER_COLOR = new DeviceRgb(224, 224, 224);
+
+    private static final DeviceRgb BORDER_COLOR = new DeviceRgb(0xC0, 0xC0, 0xC1); // #C0C0C1
+    private static final float BORDER_WIDTH = 0.8f;
+    private static final float CONTAINER_PADDING = 12f;
+    private static final BorderRadius BORDER_RADIUS = new BorderRadius(8f);
+    private static final SolidBorder DEFAULT_BORDER = new SolidBorder(BORDER_COLOR, BORDER_WIDTH);
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
@@ -120,7 +126,7 @@ public class PDFBuilder {
             // Section Groups
             for (SectionGroup group : sectionGroups) {
                 if (group.title != null) {
-                    Paragraph groupTitle = new Paragraph(group.title).setFont(boldFont).setFontSize(16).setMarginTop(20).setMarginBottom(8);
+                    Paragraph groupTitle = new Paragraph(group.title).setFont(boldFont).setFontSize(16).setMarginBottom(8);
                     document.add(groupTitle);
                 }
 
@@ -174,7 +180,11 @@ public class PDFBuilder {
     }
 
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
-        Div container = new Div().setBorder(new SolidBorder(BORDER_COLOR, 1)).setPadding(16).setMarginBottom(20);
+        Div container = new Div()
+            .setBorder(DEFAULT_BORDER)
+            .setPadding(CONTAINER_PADDING)
+            .setMarginBottom(20)
+            .setBorderRadius(BORDER_RADIUS);
 
         if (overviewTitle != null) {
             Paragraph title = new Paragraph(overviewTitle).setFont(boldFont).setFontSize(14).setMarginBottom(12);
@@ -210,8 +220,11 @@ public class PDFBuilder {
     }
 
     private void addInfoSection(Document document, InfoSection section, PdfFont normalFont, PdfFont boldFont) {
-        Div container = new Div().setBorder(new SolidBorder(BORDER_COLOR, 1)).setPadding(16).setMarginBottom(20);
-
+        Div container = new Div()
+            .setBorder(DEFAULT_BORDER)
+            .setPadding(CONTAINER_PADDING)
+            .setMarginBottom(20)
+            .setBorderRadius(BORDER_RADIUS);
         Paragraph title = new Paragraph(section.title).setFont(boldFont).setFontSize(14).setMarginBottom(8);
         container.add(title);
 
