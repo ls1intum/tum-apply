@@ -107,7 +107,7 @@ Action availability is state-dependent (e.g., **Delete** is only allowed for Dra
 
 ---
 
-## 5) Key components to know
+## 5) Key components to know (Client-side)
 
 - **`JobOverviewPageComponent`**  
   Orchestrates the list view. Hosts the search/filter/sort bar and the card list.
@@ -151,7 +151,7 @@ Action availability is state-dependent (e.g., **Delete** is only allowed for Dra
 - 
 ---
 
-## 7) TL;DR for new devs
+## 7) TL;DR for new developers
 
 - Start in `src/main/webapp/app/job/`.
 - Learn the **state model** (Draft/Published/Applicant Found/Closed) and how it controls **badges and actions**.
