@@ -54,8 +54,7 @@ public class PDFBuilder {
     private static final float FONT_SIZE_MAIN_HEADING = 20f;
     private static final float FONT_SIZE_GROUP_TITLE = 15f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
-    private static final float FONT_SIZE_LABEL = 10f; // Label in Overview/Section
-    private static final float FONT_SIZE_VALUE = 10f; // Value in Overview/Section
+    private static final float FONT_SIZE_TEXT = 10f;
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
@@ -211,8 +210,8 @@ public class PDFBuilder {
             OverviewItem item1 = overviewItems.get(i);
             Cell cell1 = new Cell().setBorder(null).setPaddingBottom(8).setPaddingRight(16);
             Paragraph p1 = new Paragraph()
-                .add(new Paragraph(item1.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_LABEL).setMarginBottom(2))
-                .add(new Paragraph(item1.value).setFont(normalFont).setFontSize(FONT_SIZE_VALUE));
+                .add(new Paragraph(item1.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
+                .add(new Paragraph(item1.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
             cell1.add(p1);
             table.addCell(cell1);
 
@@ -220,8 +219,8 @@ public class PDFBuilder {
                 OverviewItem item2 = overviewItems.get(i + 1);
                 Cell cell2 = new Cell().setBorder(null).setPaddingBottom(8);
                 Paragraph p2 = new Paragraph()
-                    .add(new Paragraph(item2.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_LABEL).setMarginBottom(2))
-                    .add(new Paragraph(item2.value).setFont(normalFont).setFontSize(FONT_SIZE_VALUE));
+                    .add(new Paragraph(item2.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
+                    .add(new Paragraph(item2.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
                 cell2.add(p2);
                 table.addCell(cell2);
             } else {
@@ -248,14 +247,14 @@ public class PDFBuilder {
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             String plainText = section.htmlContent.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
-            Paragraph content = new Paragraph(plainText).setFont(normalFont).setFontSize(FONT_SIZE_VALUE);
+            Paragraph content = new Paragraph(plainText).setFont(normalFont).setFontSize(FONT_SIZE_TEXT);
             container.add(content);
         }
 
         for (DataRow row : section.dataRows) {
             Paragraph dataRow = new Paragraph()
-                .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_LABEL).setMarginBottom(2))
-                .add(new Paragraph(row.value).setFont(normalFont).setFontSize(FONT_SIZE_VALUE))
+                .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
+                .add(new Paragraph(row.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT))
                 .setMarginBottom(8);
             container.add(dataRow);
         }
