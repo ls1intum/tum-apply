@@ -1125,24 +1125,6 @@ paths:
           content:
             application/json:
               schema: {type: integer, format: int64}
-  /api/applications/job/{jobId}:
-    get:
-      tags: [application-resource]
-      operationId: getAllApplicationsOfJob
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-                uniqueItems: true
   /api/applications/getDocumentIds/{applicationId}:
     get:
       tags: [application-resource]
@@ -1158,24 +1140,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
-  /api/applications/applicant/{applicantId}:
-    get:
-      tags: [application-resource]
-      operationId: getAllApplicationsOfApplicant
-      parameters:
-      - name: applicantId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-                uniqueItems: true
   /api/research-groups/members/{userId}:
     delete:
       tags: [research-group-resource]
@@ -1196,23 +1160,6 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications/batch-delete-document/{applicationId}/{documentType}:
-    delete:
-      tags: [application-resource]
-      operationId: deleteDocumentBatchByTypeFromApplication
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: documentType
-        in: path
-        required: true
-        schema:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
       responses:
         '200': {description: OK}
 components:
