@@ -108,7 +108,12 @@
         "pattern": "Invalid format.",
         "email": "Invalid email.",
         "min": "This field should be at least {{ min }}.",
-        "max": "This field cannot be more than {{ max }}."
+        "max": "This field cannot be more than {{ max }}.",
+        "tooManyDecimals": "Please enter at most two decimal places.",
+        "invalidGrade": "Please enter the grade as a positive number, percentage, or letter.",
+        "formatMismatch": "Please enter all values in the same format.",
+        "boundaryMismatch": "The highest achievable grade must be better than the lowest passing grade.",
+        "outOfRange": "The grade must be between the highest achievable and lowest passing grades."
       }
     },
     "editor": {
@@ -150,6 +155,8 @@
     },
     "detail_card": {
       "name": "Name",
+      "upper_passing_limit": "Highest Achievable Grade",
+      "lower_passing_limit": "Lowest Passing Grade",
       "grade": "Grade",
       "university": "University",
       "motivation": "Motivation",
@@ -299,30 +306,27 @@
         "master": "Master"
       },
       "label": {
+        "gradeUpperLimit": "Highest Achievable Grade",
+        "gradeLowerLimit": "Lowest Passing Grade",
         "bachelorDegreeName": "Bachelor Degree Name",
         "bachelorDegreeUniversity": "Bachelor Degree University",
-        "bachelorGradingScale": "Bachelor Grading Scale",
         "bachelorGrade": "Bachelor Grade",
         "masterDegreeName": "Master Degree Name",
         "masterDegreeUniversity": "Master Degree University",
-        "masterGradingScale": "Master Grading Scale",
         "masterGrade": "Master Grade"
       },
       "tooltip": {
         "bachelorDegreeName": "Specify the study program of your Bachelor's Degree.",
         "bachelorDegreeUniversity": "Enter the name of the University where you completed your Bachelor's Degree.",
-        "bachelorGradingScale": "Choose the Grading Scale used for your Bachelor's Degree (only German scale available at the moment).",
+        "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
+        "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
         "masterDegreeName": "Specify the study program of your Master's Degree.",
         "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
-        "masterGradingScale": "Choose the Grading Scale used for your Master's Degree (only German scale available at the moment).",
+        "masterGradeUpperLimit": "Enter the highest achievable grade in your Master's degree grading system (e.g. 1.0 in Germany).",
+        "masterGradeLowerLimit": "Enter the lowest passing grade in your Master's degree grading system (e.g. 4.0 in Germany)",
         "masterGrade": "Enter your final Master's Grade according to your institution's grading system.",
         "filenamePrivacy": "File names stay private and are not shown to professors."
-      },
-      "gradingConversionBachelor": "Please enter your grade in the German grading system in the field <em>Bachelor grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us.",
-      "gradingConversionMaster": "Please enter your grade in the German grading system in the field <em>Master grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us.",
-      "validation": {
-        "invalidGrade": "Please enter a valid grade between 1.0 and 4.0"
       }
     },
     "applicationPage3": {
