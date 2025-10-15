@@ -24,6 +24,10 @@ describe('EditorComponent', () => {
     }).compileComponents();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     const fixture = createFixture();
     expect(fixture.componentInstance).toBeTruthy();
