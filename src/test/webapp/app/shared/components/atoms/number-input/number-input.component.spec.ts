@@ -139,4 +139,29 @@ describe('NumberInputComponent', () => {
     expect(spyFocus).toHaveBeenCalled();
     expect(spyBlur).toHaveBeenCalled();
   });
+
+  it('should handle null value gracefully', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const ctrl = new FormControl(null);
+    comp['validateMinMax'](null, ctrl);
+    expect(ctrl.errors).toBeNull();
+  });
+
+  it('should handle undefined value gracefully', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const ctrl = new FormControl(undefined);
+    comp['validateMinMax'](undefined, ctrl);
+    expect(ctrl.errors).toBeNull();
+  });
+
+  it('should not show validation errors when model is undefined', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('model', undefined);
+    fixture.detectChanges();
+    const comp = fixture.componentInstance;
+    expect(comp.smallerThanMin()).toBe(false);
+    expect(comp.largerThanMax()).toBe(false);
+  });
 });
