@@ -307,7 +307,7 @@
       },
       "label": {
         "gradeUpperLimit": "Highest Achievable Grade",
-        "gradeLowerLimit": "Lower passing limit",
+        "gradeLowerLimit": "Lowest Passing Grade",
         "bachelorDegreeName": "Bachelor Degree Name",
         "bachelorDegreeUniversity": "Bachelor Degree University",
         "bachelorGrade": "Bachelor Grade",
