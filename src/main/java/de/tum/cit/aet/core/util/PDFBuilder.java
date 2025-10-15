@@ -42,11 +42,20 @@ public class PDFBuilder {
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
 
-    private static final DeviceRgb BORDER_COLOR = new DeviceRgb(0xC0, 0xC0, 0xC1); // #C0C0C1
+    // ----------------- Border & Padding -----------------
+    private static final DeviceRgb BORDER_COLOR = new DeviceRgb(0xC0, 0xC0, 0xC1);
     private static final float BORDER_WIDTH = 0.8f;
     private static final float CONTAINER_PADDING = 12f;
     private static final BorderRadius BORDER_RADIUS = new BorderRadius(8f);
     private static final SolidBorder DEFAULT_BORDER = new SolidBorder(BORDER_COLOR, BORDER_WIDTH);
+
+    // ----------------- Font Sizes -----------------
+    private static final float FONT_SIZE_HEADER = 12f;
+    private static final float FONT_SIZE_MAIN_HEADING = 20f;
+    private static final float FONT_SIZE_GROUP_TITLE = 15f;
+    private static final float FONT_SIZE_SECTION_TITLE = 12f;
+    private static final float FONT_SIZE_LABEL = 10f; // Label in Overview/Section
+    private static final float FONT_SIZE_VALUE = 10f; // Value in Overview/Section
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
@@ -73,7 +82,7 @@ public class PDFBuilder {
     public PDFBuilder startInfoSection(String title) {
         InfoSection section = new InfoSection(title);
         if (currentGroup == null) {
-            currentGroup = new SectionGroup(null); // fallback ohne Gruppentitel
+            currentGroup = new SectionGroup(null);
             sectionGroups.add(currentGroup);
         }
         currentGroup.addSection(section);
@@ -112,7 +121,7 @@ public class PDFBuilder {
             Paragraph mainHeadingParagraph = new Paragraph(mainHeading)
                 .setFont(boldFont)
                 .setFontColor(PRIMARY_COLOR)
-                .setFontSize(20)
+                .setFontSize(FONT_SIZE_MAIN_HEADING)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setMarginTop(20)
                 .setMarginBottom(16);
@@ -126,7 +135,10 @@ public class PDFBuilder {
             // Section Groups
             for (SectionGroup group : sectionGroups) {
                 if (group.title != null) {
-                    Paragraph groupTitle = new Paragraph(group.title).setFont(boldFont).setFontSize(16).setMarginBottom(8);
+                    Paragraph groupTitle = new Paragraph(group.title)
+                        .setFont(boldFont)
+                        .setFontSize(FONT_SIZE_GROUP_TITLE)
+                        .setMarginBottom(8);
                     document.add(groupTitle);
                 }
 
@@ -167,7 +179,9 @@ public class PDFBuilder {
             headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
         }
 
-        Paragraph appNamePara = new Paragraph(new Text("Apply").setFont(boldFont).setFontSize(12)).setFontColor(PRIMARY_COLOR).setMargin(0);
+        Paragraph appNamePara = new Paragraph(new Text("Apply").setFont(boldFont).setFontSize(FONT_SIZE_HEADER))
+            .setFontColor(PRIMARY_COLOR)
+            .setMargin(0);
 
         Cell textCell = new Cell()
             .add(appNamePara)
@@ -187,7 +201,7 @@ public class PDFBuilder {
             .setBorderRadius(BORDER_RADIUS);
 
         if (overviewTitle != null) {
-            Paragraph title = new Paragraph(overviewTitle).setFont(boldFont).setFontSize(14).setMarginBottom(12);
+            Paragraph title = new Paragraph(overviewTitle).setFont(boldFont).setFontSize(FONT_SIZE_GROUP_TITLE).setMarginBottom(12);
             container.add(title);
         }
 
@@ -197,8 +211,8 @@ public class PDFBuilder {
             OverviewItem item1 = overviewItems.get(i);
             Cell cell1 = new Cell().setBorder(null).setPaddingBottom(8).setPaddingRight(16);
             Paragraph p1 = new Paragraph()
-                .add(new Paragraph(item1.label + ": ").setFont(boldFont).setFontSize(10).setMarginBottom(2))
-                .add(new Paragraph(item1.value).setFont(normalFont).setFontSize(10));
+                .add(new Paragraph(item1.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_LABEL).setMarginBottom(2))
+                .add(new Paragraph(item1.value).setFont(normalFont).setFontSize(FONT_SIZE_VALUE));
             cell1.add(p1);
             table.addCell(cell1);
 
@@ -206,8 +220,8 @@ public class PDFBuilder {
                 OverviewItem item2 = overviewItems.get(i + 1);
                 Cell cell2 = new Cell().setBorder(null).setPaddingBottom(8);
                 Paragraph p2 = new Paragraph()
-                    .add(new Paragraph(item2.label + ": ").setFont(boldFont).setFontSize(10).setMarginBottom(2))
-                    .add(new Paragraph(item2.value).setFont(normalFont).setFontSize(10));
+                    .add(new Paragraph(item2.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_LABEL).setMarginBottom(2))
+                    .add(new Paragraph(item2.value).setFont(normalFont).setFontSize(FONT_SIZE_VALUE));
                 cell2.add(p2);
                 table.addCell(cell2);
             } else {
@@ -225,7 +239,8 @@ public class PDFBuilder {
             .setPadding(CONTAINER_PADDING)
             .setMarginBottom(20)
             .setBorderRadius(BORDER_RADIUS);
-        Paragraph title = new Paragraph(section.title).setFont(boldFont).setFontSize(14).setMarginBottom(8);
+
+        Paragraph title = new Paragraph(section.title).setFont(boldFont).setFontSize(FONT_SIZE_SECTION_TITLE).setMarginBottom(8);
         container.add(title);
 
         Div divider = new Div().setHeight(1).setBackgroundColor(BORDER_COLOR).setMarginBottom(12);
@@ -233,14 +248,14 @@ public class PDFBuilder {
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             String plainText = section.htmlContent.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
-            Paragraph content = new Paragraph(plainText).setFont(normalFont).setFontSize(10);
+            Paragraph content = new Paragraph(plainText).setFont(normalFont).setFontSize(FONT_SIZE_VALUE);
             container.add(content);
         }
 
         for (DataRow row : section.dataRows) {
             Paragraph dataRow = new Paragraph()
-                .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(10).setMarginBottom(2))
-                .add(new Paragraph(row.value).setFont(normalFont).setFontSize(10))
+                .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_LABEL).setMarginBottom(2))
+                .add(new Paragraph(row.value).setFont(normalFont).setFontSize(FONT_SIZE_VALUE))
                 .setMarginBottom(8);
             container.add(dataRow);
         }
