@@ -19,7 +19,6 @@ import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,9 +55,8 @@ public class PDFBuilder {
 
     // ----------------- Spacing -----------------
     private static final float PADDING_CONTAINER = 12f;
-    private static final float PADDING_CELL_BOTTOM = 8f;
-    private static final float PADDING_CELL_RIGHT = 5f;
     private static final float MARGIN_TITLE_BOTTOM = 8f;
+    private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 20f;
     private static final float MARGIN_OVERVIEW_TITLE_BOTTOM = 12f;
     private static final float MARGIN_DATA_ROW_BOTTOM = 8f;
     private static final float DIVIDER_HEIGHT = 1f;
@@ -205,7 +203,7 @@ public class PDFBuilder {
         Div container = new Div()
             .setBorder(DEFAULT_BORDER)
             .setPadding(PADDING_CONTAINER)
-            .setMarginBottom(HEADER_MARGIN_BOTTOM)
+            .setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM)
             .setBorderRadius(BORDER_RADIUS);
 
         if (overviewTitle != null) {
@@ -216,31 +214,15 @@ public class PDFBuilder {
             container.add(title);
         }
 
-        Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 1 })).useAllAvailableWidth().setBorder(null);
-
-        for (int i = 0; i < overviewItems.size(); i += 2) {
-            OverviewItem item1 = overviewItems.get(i);
-            Cell cell1 = new Cell().setBorder(null).setPaddingBottom(PADDING_CELL_BOTTOM).setPaddingRight(PADDING_CELL_RIGHT);
-            Paragraph p1 = new Paragraph()
-                .add(new Paragraph(item1.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
-                .add(new Paragraph(item1.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
-            cell1.add(p1);
-            table.addCell(cell1);
-
-            if (i + 1 < overviewItems.size()) {
-                OverviewItem item2 = overviewItems.get(i + 1);
-                Cell cell2 = new Cell().setBorder(null).setPaddingBottom(PADDING_CELL_BOTTOM);
-                Paragraph p2 = new Paragraph()
-                    .add(new Paragraph(item2.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
-                    .add(new Paragraph(item2.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
-                cell2.add(p2);
-                table.addCell(cell2);
-            } else {
-                table.addCell(new Cell().setBorder(null));
-            }
+        // Ein Paragraph für alle Pärchen
+        Paragraph inlineParagraph = new Paragraph();
+        for (OverviewItem item : overviewItems) {
+            inlineParagraph.add(new Text(item.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT));
+            inlineParagraph.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
+            inlineParagraph.add(new Text("    ")); // Abstand zwischen den Pärchen
         }
 
-        container.add(table);
+        container.add(inlineParagraph);
         document.add(container);
     }
 
