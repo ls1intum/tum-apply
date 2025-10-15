@@ -19,6 +19,10 @@ describe('DatePickerComponent', () => {
     }).compileComponents();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     const fixture = createFixture();
     expect(fixture.componentInstance).toBeTruthy();
@@ -29,6 +33,22 @@ describe('DatePickerComponent', () => {
     fixture.componentRef.setInput('selectedDate', 'invalid-date');
     fixture.detectChanges();
     expect(fixture.componentInstance.modelDate()).toBeUndefined();
+  });
+
+  it('should update modelDate when selectedDate changes from invalid to valid', () => {
+    const fixture = createFixture();
+
+    fixture.componentRef.setInput('selectedDate', 'invalid');
+    fixture.detectChanges();
+    expect(fixture.componentInstance.modelDate()).toBeUndefined();
+
+    fixture.componentRef.setInput('selectedDate', '2024-10-13');
+    fixture.detectChanges();
+    const modelDate = fixture.componentInstance.modelDate();
+    expect(modelDate).toBeInstanceOf(Date);
+    expect(modelDate?.getFullYear()).toBe(2024);
+    expect(modelDate?.getMonth()).toBe(9); // October (0-indexed)
+    expect(modelDate?.getDate()).toBe(13);
   });
 
   it('should reset modelDate when selectedDate is undefined', () => {
