@@ -71,6 +71,10 @@ describe('JobDetailComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create component', () => {
     expect(component).toBeTruthy();
   });
