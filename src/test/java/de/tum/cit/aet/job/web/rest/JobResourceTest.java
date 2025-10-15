@@ -368,7 +368,7 @@ class JobResourceTest extends AbstractResourceTest {
             "req",
             JobState.DRAFT
         );
-        api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 500);
+        api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);
     }
 
     @Test
