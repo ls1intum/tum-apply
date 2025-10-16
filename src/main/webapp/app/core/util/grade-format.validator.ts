@@ -9,13 +9,6 @@ export function isNumeric(val: string): boolean {
 }
 
 /**
- * Checks if a value is a letter grade (e.g., "A", "B+", "C-")
- */
-export function isLetter(val: string): boolean {
-  return /^[A-Za-z][+*]?$/.test(val.trim());
-}
-
-/**
  * Checks if a value is a valid upper limit letter grade.
  * Allows base letter or letter with + or * modifier (e.g., "A", "A+", "A*")
  */
