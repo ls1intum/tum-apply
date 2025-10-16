@@ -14,4 +14,5 @@ export class ApplicationStepComponent {
   icon = input<string>('search');
   title = input<string>('');
   description = input<string>('');
+  index = input<number>(0);
 }
