@@ -3,8 +3,6 @@ package de.tum.cit.aet.application.repository;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
@@ -83,172 +81,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
 
     @Query(
         """
-        SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
-            a.applicationId,
-            new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
-                new de.tum.cit.aet.usermanagement.dto.UserDTO(
-                    ap.user.userId,
-                    ap.user.email,
-                    ap.user.avatar,
-                    ap.user.firstName,
-                    ap.user.lastName,
-                    ap.user.gender,
-                    ap.user.nationality,
-                    ap.user.birthday,
-                    ap.user.phoneNumber,
-                    ap.user.website,
-                    ap.user.linkedinUrl,
-                    ap.user.selectedLanguage,
-                    NULL
-                ),
-                ap.street,
-                ap.postalCode,
-                ap.city,
-                ap.country,
-                ap.bachelorDegreeName,
-                ap.bachelorGradingScale,
-                ap.bachelorGrade,
-                ap.bachelorUniversity,
-                ap.masterDegreeName,
-                ap.masterGradingScale,
-                ap.masterGrade,
-                ap.masterUniversity
-            ),
-            new de.tum.cit.aet.job.dto.JobCardDTO(
-                j.jobId,
-                j.title,
-                j.fieldOfStudies,
-                j.location,
-                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-                a.applicationId,
-                a.state,
-                j.workload,
-                j.startDate,
-                j.endDate
-            ),
-            a.state,
-            a.desiredStartDate,
-            a.projects,
-            a.specialSkills,
-            a.motivation,
-            NULL
-        )
-        FROM Application a
-        LEFT JOIN a.applicant ap
-        LEFT JOIN a.job j
-        WHERE ap.user.userId = :applicantId
-        """
-    )
-    Set<ApplicationForApplicantDTO> findAllDtosByApplicantUserId(UUID applicantId);
-
-    @Query(
-        """
-        SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
-            a.applicationId,
-            new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
-                new de.tum.cit.aet.usermanagement.dto.UserDTO(
-                    ap.user.userId,
-                    ap.user.email,
-                    ap.user.avatar,
-                    ap.user.firstName,
-                    ap.user.lastName,
-                    ap.user.gender,
-                    ap.user.nationality,
-                    ap.user.birthday,
-                    ap.user.phoneNumber,
-                    ap.user.website,
-                    ap.user.linkedinUrl,
-                    ap.user.selectedLanguage,
-                    NULL
-                ),
-                ap.street,
-                ap.postalCode,
-                ap.city,
-                ap.country,
-                ap.bachelorDegreeName,
-                ap.bachelorGradingScale,
-                ap.bachelorGrade,
-                ap.bachelorUniversity,
-                ap.masterDegreeName,
-                ap.masterGradingScale,
-                ap.masterGrade,
-                ap.masterUniversity
-            ),
-            new de.tum.cit.aet.job.dto.JobCardDTO(
-                j.jobId,
-                j.title,
-                j.fieldOfStudies,
-                j.location,
-                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-                a.applicationId,
-                a.state,
-                j.workload,
-                j.startDate,
-                j.endDate
-            ),
-            a.state,
-            a.desiredStartDate,
-            a.projects,
-            a.specialSkills,
-            a.motivation,
-            NULL
-        )
-        FROM Application a
-        LEFT JOIN a.applicant ap
-        LEFT JOIN a.job j
-        WHERE j.jobId = :jobId
-        """
-    )
-    Set<ApplicationForApplicantDTO> findAllDtosByJobJobId(UUID jobId);
-
-    @Modifying
-    @Query(
-        value = """
-            UPDATE applications SET
-                application_state = :state,
-                desired_start_date = :desiredDate,
-                projects = :projects,
-                special_skills = :specialSkills,
-                motivation = :motivation
-            WHERE application_id = :applicationId
-        """,
-        nativeQuery = true
-    )
-    void updateApplication(
-        @Param("applicationId") UUID applicationId,
-        @Param("state") String state,
-        @Param("desiredDate") LocalDate desiredDate,
-        @Param("projects") String projects,
-        @Param("specialSkills") String specialSkills,
-        @Param("motivation") String motivation
-    );
-
-    @Modifying
-    @Query(
-        value = """
-            UPDATE applications SET
-                application_state = :state,
-                desired_start_date = :desiredDate,
-                projects = :projects,
-                special_skills = :specialSkills,
-                motivation = :motivation,
-                applied_at = :appliedAt
-            WHERE application_id = :applicationId
-        """,
-        nativeQuery = true
-    )
-    void updateApplicationSubmit(
-        @Param("applicationId") UUID applicationId,
-        @Param("state") String state,
-        @Param("desiredDate") LocalDate desiredDate,
-        @Param("projects") String projects,
-        @Param("specialSkills") String specialSkills,
-        @Param("motivation") String motivation,
-        @Param("appliedAt") LocalDateTime appliedAt
-    );
-
-    @Query(
-        """
             SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
                 a.applicationId,
                 new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
@@ -314,11 +146,13 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     void withdrawApplicationById(UUID applicationId);
 
     /**
-     * Finds all applicants for a specific job that are in the 'SENT' or 'IN_REVIEW' state.
+     * Finds all applicants for a specific job that are in the 'SENT' or 'IN_REVIEW'
+     * state.
      * This is used to notify applicants about the job status update.
      *
      * @param jobId the ID of the job for which to find applicants
-     * @return a set of {@link Application} containing all important applicant details
+     * @return a set of {@link Application} containing all important applicant
+     *         details
      */
     @Query(
         """
