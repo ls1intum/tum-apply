@@ -27,7 +27,6 @@ import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
-import de.tum.cit.aet.usermanagement.service.UserService;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -50,7 +49,6 @@ public class ApplicationService {
     private final DocumentDictionaryService documentDictionaryService;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
-    private final UserService userService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -385,7 +383,7 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     * document IDs for the application
+     *         document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
