@@ -352,7 +352,6 @@ public class ResearchGroupService {
             .orElseGet(() -> {
                 UserResearchGroupRole newRole = new UserResearchGroupRole();
                 newRole.setUser(currentUser);
-                newRole.setResearchGroup(saved);
                 return newRole;
             });
         role.setRole(UserRole.APPLICANT);
