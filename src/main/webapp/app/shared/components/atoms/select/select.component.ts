@@ -39,8 +39,6 @@ export class SelectComponent {
   translateItems = input<boolean>(false);
   filter = input<boolean>(false);
   showClear = input<boolean>(false);
-  // TODO: can be removed after new grading converter
-  helperText = input<string | undefined>(undefined);
 
   selectedChange = output<SelectOption>();
 
