@@ -15,6 +15,10 @@ describe('JobCardComponent', () => {
     }).compileComponents();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should format the start date via computed signal', () => {
     const jobCardFixture = TestBed.createComponent(JobCardComponent);
     jobCardFixture.componentRef.setInput('startDate', '2025-11-01');
