@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, beforeEach, expect, vi } from 'vitest';
+import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 import { By } from '@angular/platform-browser';
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -96,10 +96,10 @@ describe('DatePickerComponent', () => {
     const picker = fixture.debugElement.query(By.css('p-datepicker'));
 
     picker.triggerEventHandler('onShow', {});
-    expect(comp.isCalendarOpen).toBe(true);
+    expect(comp.isCalendarOpen()).toBe(true);
 
     picker.triggerEventHandler('onHide', {});
-    expect(comp.isCalendarOpen).toBe(false);
+    expect(comp.isCalendarOpen()).toBe(false);
   });
 
   it('should apply disabled state', () => {
