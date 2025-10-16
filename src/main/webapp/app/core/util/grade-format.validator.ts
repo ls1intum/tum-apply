@@ -12,7 +12,23 @@ export function isNumeric(val: string): boolean {
  * Checks if a value is a letter grade (e.g., "A", "B+", "C-")
  */
 export function isLetter(val: string): boolean {
-  return /^[A-Za-z][+-]?$/.test(val.trim());
+  return /^[A-Za-z][+*]?$/.test(val.trim());
+}
+
+/**
+ * Checks if a value is a valid upper limit letter grade.
+ * Allows base letter or letter with + or * modifier (e.g., "A", "A+", "A*")
+ */
+export function isUpperLimitLetter(val: string): boolean {
+  return /^[A-Za-z](\+|\*)?$/.test(val.trim());
+}
+
+/**
+ * Checks if a value is a valid lower limit or grade letter.
+ * Only allows base letters without modifiers (e.g., "D", "E")
+ */
+export function isLowerLimitOrGradeLetter(val: string): boolean {
+  return /^[A-Za-z]$/.test(val.trim());
 }
 
 /**
@@ -27,7 +43,7 @@ export function isPercentage(val: string): boolean {
  * Removes +/- modifiers from letter grades and converts to uppercase
  */
 export function cleanLetter(val: string): string {
-  return val.replace(/[+-]/g, '').toUpperCase().trim();
+  return val.replace(/[+*]/g, '').toUpperCase().trim();
 }
 
 /**
@@ -64,24 +80,55 @@ export function toggleError(ctrl: AbstractControl | null | undefined, key: strin
 }
 
 /**
- * Validates the format of multiple grade controls
+ * Validates the format of grade controls with specific rules for upper/lower limits
  */
-export function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: string) => boolean)[]): string | null {
-  for (const ctrl of ctrls) {
-    const val = ctrl?.value;
-    if (!val) continue;
+export function validateFormat(upper: AbstractControl | null, lower: AbstractControl | null, grade: AbstractControl | null): string | null {
+  const upperVal = upper?.value;
+  const lowerVal = lower?.value;
+  const gradeVal = grade?.value;
 
-    if (hasTooManyDecimals(val)) {
-      toggleError(ctrl, 'tooManyDecimals', true);
+  // Check upper limit
+  if (upperVal) {
+    if (hasTooManyDecimals(upperVal)) {
+      toggleError(upper, 'tooManyDecimals', true);
       return 'tooManyDecimals';
     }
 
-    const isValid = formats.some(fn => fn(val));
-    toggleError(ctrl, 'invalidGrade', !isValid);
-    toggleError(ctrl, 'tooManyDecimals', false);
+    const isValidUpper = isNumeric(upperVal) || isPercentage(upperVal) || isUpperLimitLetter(upperVal);
+    toggleError(upper, 'invalidGrade', !isValidUpper);
+    toggleError(upper, 'tooManyDecimals', false);
 
-    if (!isValid) return 'invalidGrade';
+    if (!isValidUpper) return 'invalidGrade';
   }
+
+  // Check lower limit (no +/- allowed for letters)
+  if (lowerVal) {
+    if (hasTooManyDecimals(lowerVal)) {
+      toggleError(lower, 'tooManyDecimals', true);
+      return 'tooManyDecimals';
+    }
+
+    const isValidLower = isNumeric(lowerVal) || isPercentage(lowerVal) || isLowerLimitOrGradeLetter(lowerVal);
+    toggleError(lower, 'invalidGrade', !isValidLower);
+    toggleError(lower, 'tooManyDecimals', false);
+
+    if (!isValidLower) return 'invalidGrade';
+  }
+
+  // Check grade (no +/- allowed for letters)
+  if (gradeVal) {
+    if (hasTooManyDecimals(gradeVal)) {
+      toggleError(grade, 'tooManyDecimals', true);
+      return 'tooManyDecimals';
+    }
+
+    const isValidGrade = isNumeric(gradeVal) || isPercentage(gradeVal) || isLowerLimitOrGradeLetter(gradeVal);
+    toggleError(grade, 'invalidGrade', !isValidGrade);
+    toggleError(grade, 'tooManyDecimals', false);
+
+    if (!isValidGrade) return 'invalidGrade';
+  }
+
   return null;
 }
 
@@ -90,7 +137,7 @@ export function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val
  */
 export function validateSameFormat(values: string[]): 'numeric' | 'letter' | 'percentage' | null {
   if (values.every(isNumeric)) return 'numeric';
-  if (values.every(isLetter)) return 'letter';
+  if (values.every(v => isUpperLimitLetter(v) || isLowerLimitOrGradeLetter(v))) return 'letter';
   if (values.every(isPercentage)) return 'percentage';
   return null;
 }
@@ -107,11 +154,11 @@ export function validateBoundaryMismatch(format: string, upper: string, lower: s
   const lowerClean = cleanLetter(lower);
   if (upperClean > lowerClean) return true;
 
+  // If same letter, check modifiers
   if (upperClean === lowerClean) {
-    const upperSign = upper.slice(-1);
-    const lowerSign = lower.slice(-1);
-
-    return (!/[+-]/.test(upperSign) && lowerSign === '+') || (upperSign === '-' && (lowerSign === '+' || !/[+-]/.test(lowerSign)));
+    const upperHasPlus = upper.endsWith('+');
+    // Lower limit should never have modifiers now, but just in case
+    return !upperHasPlus; // If upper is just "A" and lower is "A", that's invalid
   }
 
   return false;
@@ -140,22 +187,7 @@ export function validateGradeRange(format: string, upper: string, lower: string,
   const gradeClean = cleanLetter(grade);
   const outside = gradeClean < upperClean || gradeClean > lowerClean;
 
-  const sameAsUpper = gradeClean === upperClean;
-  const sameAsLower = gradeClean === lowerClean;
-
-  let forbidden = false;
-
-  if (sameAsUpper) {
-    if (upper.endsWith('-') && (!/[+-]$/.test(grade) || grade.endsWith('+'))) forbidden = true;
-    else if (!/[+-]$/.test(upper) && grade.endsWith('+')) forbidden = true;
-  }
-
-  if (sameAsLower) {
-    if (lower.endsWith('+') && (!/[+-]$/.test(grade) || grade.endsWith('-'))) forbidden = true;
-    else if (!/[+-]$/.test(lower) && grade.endsWith('-')) forbidden = true;
-  }
-
-  return outside || forbidden;
+  return outside;
 }
 
 /**
@@ -173,7 +205,7 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
     if (values.some(v => !v)) return null;
 
     // Check individual format validity
-    const formatErr = validateFormat([upper, lower, grade], [isNumeric, isLetter, isPercentage]);
+    const formatErr = validateFormat(upper, lower, grade);
     if (formatErr) return { [formatErr]: true };
 
     // Check if all three values have the same format
