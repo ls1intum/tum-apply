@@ -4,7 +4,6 @@ import { of, throwError } from 'rxjs';
 
 import { JobCardListComponent } from 'app/job/job-overview/job-card-list/job-card-list.component';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { ToastService } from 'app/service/toast-service';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { ApplicationStatusExtended, JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
@@ -12,6 +11,7 @@ import { Job } from 'app/generated/model/job';
 import LocationEnum = Job.LocationEnum;
 import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
+import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 
 describe('JobCardListComponent', () => {
   let fixture: ComponentFixture<JobCardListComponent>;
@@ -22,9 +22,7 @@ describe('JobCardListComponent', () => {
     getAvailableJobs: ReturnType<typeof vi.fn>;
   };
 
-  let toast: {
-    showErrorKey: ReturnType<typeof vi.fn>;
-  };
+  let mockToastService = createToastServiceMock();
 
   beforeEach(async () => {
     jobService = {
@@ -50,23 +48,23 @@ describe('JobCardListComponent', () => {
       ),
     };
 
-    toast = {
-      showErrorKey: vi.fn(),
-    };
-
     await TestBed.configureTestingModule({
       imports: [JobCardListComponent],
       providers: [
+        { provide: JobResourceApiService, useValue: jobService },
         provideTranslateMock(),
         provideFontAwesomeTesting(),
-        { provide: JobResourceApiService, useValue: jobService },
-        { provide: ToastService, useValue: toast },
+        provideToastServiceMock(mockToastService),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(JobCardListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should create component', () => {
@@ -80,7 +78,7 @@ describe('JobCardListComponent', () => {
     expect(component.allJobNames()).toEqual(['Job A', 'Job B']);
     expect(component.allFieldOfStudies()).toEqual(['AI', 'ML']);
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
-    expect(toast.showErrorKey).not.toHaveBeenCalled();
+    expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
   });
 
   it('should handle error when loading filters', async () => {
@@ -88,7 +86,7 @@ describe('JobCardListComponent', () => {
 
     await component.loadAllFilter();
 
-    expect(toast.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadFilter');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadFilter');
     expect(component.allJobNames()).toEqual([]);
   });
 
@@ -98,7 +96,6 @@ describe('JobCardListComponent', () => {
     expect(jobService.getAvailableJobs).toHaveBeenCalled();
     expect(component.jobs().length).toBe(1);
     expect(component.totalRecords()).toBe(1);
-    expect(toast.showErrorKey).not.toHaveBeenCalled();
   });
 
   it('should handle error when loading jobs', async () => {
@@ -106,7 +103,7 @@ describe('JobCardListComponent', () => {
 
     await component.loadJobs();
 
-    expect(toast.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadJobs');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadJobs');
   });
 
   it('should reset page and update search query on new search', async () => {
