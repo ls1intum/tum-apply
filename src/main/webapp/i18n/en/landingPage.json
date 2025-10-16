@@ -12,23 +12,27 @@
       "button2": "Find out more"
     },
     "applicationSteps": {
-      "headline": "Your Application in 4 Steps",
+      "headline": "Your Application in 5 Steps",
       "steps": {
-        "1": {
-          "title": "1. Browse Open Positions",
+        "checkPrerequisites": {
+          "title": "Check Prerequisites",
+          "description": "Ensure you meet the eligibility criteria to pursue a doctorate at TUM."
+        },
+        "browsePositions": {
+          "title": "Browse Positions",
           "description": "Use filters to find relevant positions across different research groups."
         },
-        "2": {
-          "title": "2. Check Details",
+        "checkDetails": {
+          "title": "Check Details",
           "description": "Read the job description, check eligibility, and see which documents are required."
         },
-        "3": {
-          "title": "3. Submit Application",
+        "submitApplication": {
+          "title": "Submit Application",
           "description": "Create an account, upload your documents, and submit your application."
         },
-        "4": {
-          "title": "4. Track Status",
-          "description": "Stay updated. Get notified via mail when your application is reviewed, new job postings are available, or saved postings are deleted."
+        "trackStatus": {
+          "title": "Track Status",
+          "description": "Get email updates on your application, new openings, and saved postings."
         }
       },
       "button": "View Process"
