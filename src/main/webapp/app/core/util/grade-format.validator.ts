@@ -20,7 +20,7 @@ export function isLetter(val: string): boolean {
  * Allows base letter or letter with + or * modifier (e.g., "A", "A+", "A*")
  */
 export function isUpperLimitLetter(val: string): boolean {
-  return /^[A-Za-z](\+|\*)?$/.test(val.trim());
+  return /^[A-Za-z][+*]?$/.test(val.trim());
 }
 
 /**
@@ -40,7 +40,7 @@ export function isPercentage(val: string): boolean {
 }
 
 /**
- * Removes +/- modifiers from letter grades and converts to uppercase
+ * Removes +/* modifiers from letter grades and converts to uppercase
  */
 export function cleanLetter(val: string): string {
   return val.replace(/[+*]/g, '').toUpperCase().trim();
@@ -101,7 +101,7 @@ export function validateFormat(upper: AbstractControl | null, lower: AbstractCon
     if (!isValidUpper) return 'invalidGrade';
   }
 
-  // Check lower limit (no +/- allowed for letters)
+  // Check lower limit (no modifiers allowed for letters)
   if (lowerVal) {
     if (hasTooManyDecimals(lowerVal)) {
       toggleError(lower, 'tooManyDecimals', true);
@@ -115,7 +115,7 @@ export function validateFormat(upper: AbstractControl | null, lower: AbstractCon
     if (!isValidLower) return 'invalidGrade';
   }
 
-  // Check grade (no +/- allowed for letters)
+  // Check grade (no modifiers allowed for letters)
   if (gradeVal) {
     if (hasTooManyDecimals(gradeVal)) {
       toggleError(grade, 'tooManyDecimals', true);
@@ -152,14 +152,10 @@ export function validateBoundaryMismatch(format: string, upper: string, lower: s
 
   const upperClean = cleanLetter(upper);
   const lowerClean = cleanLetter(lower);
-  if (upperClean > lowerClean) return true;
 
-  // If same letter, check modifiers
-  if (upperClean === lowerClean) {
-    const upperHasPlus = upper.endsWith('+');
-    // Lower limit should never have modifiers now, but just in case
-    return !upperHasPlus; // If upper is just "A" and lower is "A", that's invalid
-  }
+  // Upper must be "better" (earlier in alphabet) than or equal to lower
+  // A < B < C, so A is better than B
+  if (upperClean > lowerClean) return true;
 
   return false;
 }
