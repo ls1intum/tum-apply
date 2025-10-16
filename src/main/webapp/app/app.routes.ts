@@ -221,7 +221,7 @@ const routes: Routes = [
   // Research Group
   // ======================================================================================
   {
-    path: 'research-group/admin-vew',
+    path: 'research-group/admin-view',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () =>
