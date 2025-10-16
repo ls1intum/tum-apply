@@ -30,7 +30,6 @@ import TranslateDirective from '../../../../../language/translate.directive';
     EditorComponent,
   ],
   templateUrl: './professor-request-access-form.component.html',
-  styleUrl: './professor-request-access-form.component.scss',
 })
 export class ProfessorRequestAccessFormComponent {
   // Form
