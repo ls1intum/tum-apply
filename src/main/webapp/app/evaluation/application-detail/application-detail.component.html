@@ -126,36 +126,12 @@
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Bachelor -->
                 <jhi-sub-section titleKey="evaluation.details.educationBachelors">
-                  <jhi-description-list
-                    [items]="[
-                      {
-                        labelKey: 'evaluation.details.educationDegree',
-                        value: application.applicationDetailDTO.applicant?.bachelorDegreeName,
-                      },
-                      {
-                        labelKey: 'evaluation.details.educationUniversity',
-                        value: application.applicationDetailDTO.applicant?.bachelorUniversity,
-                      },
-                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.bachelorGrade },
-                    ]"
-                  />
+                  <jhi-description-list [items]="getBachelorItems(application.applicationDetailDTO.applicant)" />
                 </jhi-sub-section>
 
                 <!-- Master -->
                 <jhi-sub-section titleKey="evaluation.details.educationMasters">
-                  <jhi-description-list
-                    [items]="[
-                      {
-                        labelKey: 'evaluation.details.educationDegree',
-                        value: application.applicationDetailDTO.applicant?.masterDegreeName,
-                      },
-                      {
-                        labelKey: 'evaluation.details.educationUniversity',
-                        value: application.applicationDetailDTO.applicant?.masterUniversity,
-                      },
-                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.masterGrade },
-                    ]"
-                  />
+                  <jhi-description-list [items]="getMasterItems(application.applicationDetailDTO.applicant)" />
                 </jhi-sub-section>
               </div>
             </jhi-section>
