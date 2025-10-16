@@ -356,6 +356,7 @@ public class ResearchGroupService {
                 return newRole;
             });
         role.setRole(UserRole.APPLICANT);
+        role.setResearchGroup(researchGroup);
         userResearchGroupRoleRepository.save(role);
 
         return saved;
