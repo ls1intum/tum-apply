@@ -12,6 +12,7 @@
     },
     "professorRequest": {
       "dialogTitle": "Zugang anfragen",
+      "approvalNotice": "Bitte beachte: Die Genehmigung deiner Forschungsgruppe kann einige Tage dauern. Unsere Administratoren werden deine Anfrage prüfen und dich kontaktieren, sobald sie genehmigt wurde.",
       "sections": {
         "personalInfo": "Persönliche Informationen",
         "researchGroupInfo": "Forschungsgruppen-Informationen",
