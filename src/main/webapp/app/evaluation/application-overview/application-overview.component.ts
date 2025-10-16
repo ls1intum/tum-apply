@@ -12,7 +12,6 @@ import { DynamicTableColumn, DynamicTableComponent } from '../../shared/componen
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { EvaluationService } from '../service/evaluation.service';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
@@ -85,7 +84,6 @@ export class ApplicationOverviewComponent {
   private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
-  private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
