@@ -90,19 +90,23 @@
       "documentDownloadAll": "Alle herunterladen",
       "moreDocument": "+1 weiteres Dokument",
       "moreDocuments": "+{{count}} weitere Dokumente",
-
       "ratingTitle": "Bewertungen",
       "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben. Diese Angaben sind für die Bewerber:innen nicht sichtbar.",
       "ratingYourRating": "Deine Bewertung",
       "ratingYourRatingLabel": "Klicke auf ein Feld, um deine Bewertung auszuwählen",
       "ratingOtherRatings": "Bewertungen Anderer",
-
       "commentTitle": "Kommentare",
       "commentDescription": "Hinterlasse interne Kommentare, um die Bewerbung mit anderen zu diskutieren oder persönliche Notizen zu machen. Diese sind für die Bewerber:innen nicht sichtbar."
     },
     "errors": {
-      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
-      "loadApplication": "Fehler beim Laden der Bewerbungen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      "loadJobNames": {
+        "summary": "Fehler",
+        "detail": "Laden der Jobnamen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "loadApplications": {
+        "summary": "Fehler",
+        "detail": "Laden der Bewerbungen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 .datepicker-container {
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .custom-label {
     color: var(--p-text-color);
