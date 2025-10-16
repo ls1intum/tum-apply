@@ -2,6 +2,7 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
@@ -17,7 +18,6 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,7 +36,7 @@ public class ApplicationEvaluationResource {
      * @return HTTP 204 No Content response
      */
     @PostMapping("/applications/{applicationId}/accept")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
         applicationEvaluationService.acceptApplication(applicationId, acceptDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
@@ -50,7 +50,7 @@ public class ApplicationEvaluationResource {
      * @return HTTP 204 No Content response
      */
     @PostMapping("/applications/{applicationId}/reject")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
         applicationEvaluationService.rejectApplication(applicationId, rejectDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
@@ -66,7 +66,7 @@ public class ApplicationEvaluationResource {
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationOverviewListDTO}
      */
     @GetMapping("/applications")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplicationsOverviews(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto,
@@ -89,7 +89,7 @@ public class ApplicationEvaluationResource {
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
     @GetMapping("/application-details")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetails(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto,
@@ -111,7 +111,7 @@ public class ApplicationEvaluationResource {
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
     @GetMapping("/application-details/window")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetailsWindow(
         @RequestParam UUID applicationId,
         @RequestParam int windowSize,
@@ -132,7 +132,7 @@ public class ApplicationEvaluationResource {
      * @return 204 No Content if the update was processed successfully
      */
     @PutMapping("/applications/{applicationId}/open")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<Void> markApplicationAsInReview(@PathVariable UUID applicationId) {
         applicationEvaluationService.markApplicationAsInReview(applicationId);
         return ResponseEntity.noContent().build();
@@ -156,7 +156,7 @@ public class ApplicationEvaluationResource {
         }
     )
     @GetMapping(path = "/applications/{applicationId}/documents-download", produces = "application/zip")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public void downloadAll(@PathVariable("applicationId") UUID applicationId, HttpServletResponse response) throws IOException {
         applicationEvaluationService.downloadAllDocumentsForApplication(applicationId, response);
     }
@@ -168,7 +168,7 @@ public class ApplicationEvaluationResource {
      * @return ResponseEntity with list of job names
      */
     @GetMapping("/job-names")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<List<String>> getAllJobNames() {
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
