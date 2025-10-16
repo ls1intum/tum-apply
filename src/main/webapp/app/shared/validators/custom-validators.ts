@@ -45,3 +45,29 @@ export function htmlTextMaxLengthValidator(maxLength: number): ValidatorFn {
     return actualLength > maxLength ? { maxlength: { requiredLength: maxLength, actualLength } } : null;
   };
 }
+
+/**
+ * Custom validator that checks whether a TUM ID follows the correct format.
+ *
+ * TUM IDs must consist of exactly 7 characters:
+ * - 2 lowercase letters
+ * - 2 digits
+ * - 3 lowercase letters
+ *
+ * Example: ab12cde
+ *
+ * @param control - The form control containing the TUM ID string.
+ * @returns A `ValidationErrors` object with `{ pattern: true }` if invalid, otherwise `undefined`.
+ */
+export function tumIdValidator(control: AbstractControl): ValidationErrors | undefined {
+  const value = control.value;
+
+  // Allow empty values (use Validators.required separately if needed)
+  if (!value || value === '') {
+    return undefined;
+  }
+
+  const tumIdPattern = /^[a-z]{2}[0-9]{2}[a-z]{3}$/;
+
+  return tumIdPattern.test(value) ? undefined : { pattern: true };
+}

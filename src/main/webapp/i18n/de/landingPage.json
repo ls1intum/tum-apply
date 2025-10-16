@@ -12,23 +12,27 @@
       "button2": "Mehr erfahren"
     },
     "applicationSteps": {
-      "headline": "Deine Bewerbung in 4 Schritten",
+      "headline": "Deine Bewerbung in 5 Schritten",
       "steps": {
-        "1": {
-          "title": "1. Offene Stellen finden",
+        "checkPrerequisites": {
+          "title": "Voraussetzungen prüfen",
+          "description": "Stelle sicher, dass du die Zulassungskriterien erfüllst, um eine Promotion an der TUM zu beginnen."
+        },
+        "browsePositions": {
+          "title": "Stellen finden",
           "description": "Nutze Filter, um passende Stellen in verschiedenen Forschungsgruppen zu finden."
         },
-        "2": {
-          "title": "2. Details prüfen",
+        "checkDetails": {
+          "title": "Details prüfen",
           "description": "Lies die Stellenbeschreibung, prüfe die Voraussetzungen und sieh nach, welche Dokumente benötigt werden."
         },
-        "3": {
-          "title": "3. Bewerbung einreichen",
+        "submitApplication": {
+          "title": "Bewerbung einreichen",
           "description": "Erstelle ein Konto, lade deine Dokumente hoch und reiche deine Bewerbung ein."
         },
-        "4": {
-          "title": "4. Status verfolgen",
-          "description": "Bleib informiert. Du erhältst Benachrichtigungen, wenn deine Bewerbung geprüft wurde, neue Stellen verfügbar sind oder gespeicherte Stellen entfernt werden."
+        "trackStatus": {
+          "title": "Status verfolgen",
+          "description": "Erhalte Benachrichtigungen zu deinem Bewerbungsstatus, neuen Stellen und gespeicherten Anzeigen."
         }
       },
       "button": "Prozess ansehen"
