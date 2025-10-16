@@ -96,10 +96,10 @@ describe('DatePickerComponent', () => {
     const picker = fixture.debugElement.query(By.css('p-datepicker'));
 
     picker.triggerEventHandler('onShow', {});
-    expect(comp.isCalendarOpen).toBe(true);
+    expect(comp.isCalendarOpen()).toBe(true);
 
     picker.triggerEventHandler('onHide', {});
-    expect(comp.isCalendarOpen).toBe(false);
+    expect(comp.isCalendarOpen()).toBe(false);
   });
 
   it('should apply disabled state', () => {
