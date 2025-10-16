@@ -341,12 +341,20 @@ public class ResearchGroupService {
 
         ResearchGroup saved = researchGroupRepository.save(researchGroup);
 
+        currentUser.setUniversityId(request.universityId());
         currentUser.setResearchGroup(saved);
         userRepository.save(currentUser);
 
-        UserResearchGroupRole role = new UserResearchGroupRole();
-        role.setUser(currentUser);
-        role.setResearchGroup(saved);
+        UserResearchGroupRole role = userResearchGroupRoleRepository
+            .findAllByUser(currentUser)
+            .stream()
+            .findFirst()
+            .orElseGet(() -> {
+                UserResearchGroupRole newRole = new UserResearchGroupRole();
+                newRole.setUser(currentUser);
+                newRole.setResearchGroup(saved);
+                return newRole;
+            });
         role.setRole(UserRole.APPLICANT);
         userResearchGroupRoleRepository.save(role);
 
