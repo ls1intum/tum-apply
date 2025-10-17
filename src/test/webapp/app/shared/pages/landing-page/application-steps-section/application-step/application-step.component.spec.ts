@@ -33,6 +33,7 @@ describe('ApplicationStepComponent', () => {
     fixture.componentRef.setInput('icon', 'bell');
     fixture.componentRef.setInput('title', 'Test Title');
     fixture.componentRef.setInput('description', 'Test Description');
+    fixture.componentRef.setInput('index', 2);
     fixture.detectChanges();
 
     const buttonDebug = fixture.debugElement.query(By.directive(ButtonStubComponent));
@@ -41,7 +42,7 @@ describe('ApplicationStepComponent', () => {
     const titleEl = fixture.nativeElement.querySelector('h3.title');
     const descEl = fixture.nativeElement.querySelector('p.description');
 
-    expect(titleEl?.textContent).toBe('Test Title');
+    expect(titleEl?.textContent).toBe('3. Test Title');
     expect(descEl?.textContent).toBe('Test Description');
   });
 });
