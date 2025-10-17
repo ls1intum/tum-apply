@@ -35,8 +35,12 @@ export function convertToGermanGrade(upperLimit: string, lowerLimit: string, gra
     nMax = parseNumeric(upperLimit);
     nMin = parseNumeric(lowerLimit);
     nd = parseNumeric(grade);
-  } else if (isUpperLimitLetter(upperLimit) && isLowerLimitOrGradeLetter(lowerLimit) && isLowerLimitOrGradeLetter(grade)) {
-    // Letter format (e.g., A+, B)
+  } else if (
+    (isUpperLimitLetter(upperLimit) || isLowerLimitOrGradeLetter(upperLimit)) &&
+    (isUpperLimitLetter(lowerLimit) || isLowerLimitOrGradeLetter(lowerLimit)) &&
+    (isUpperLimitLetter(grade) || isLowerLimitOrGradeLetter(grade))
+  ) {
+    // Letter format (e.g., A+, A, B)
     // Convert letters to numerical values
     const letterValues = convertLettersToNumerical(upperLimit, lowerLimit, grade);
     if (!letterValues) {

@@ -108,14 +108,30 @@ export function validateFormat(upper: AbstractControl | null, lower: AbstractCon
     if (!isValidLower) return 'invalidGrade';
   }
 
-  // Check grade (no modifiers allowed for letters)
+  // Check grade (modifiers only allowed if grade equals upper limit)
   if (gradeVal) {
     if (hasTooManyDecimals(gradeVal)) {
       toggleError(grade, 'tooManyDecimals', true);
       return 'tooManyDecimals';
     }
 
-    const isValidGrade = isNumeric(gradeVal) || isPercentage(gradeVal) || isLowerLimitOrGradeLetter(gradeVal);
+    // Check if grade has modifiers
+    const gradeHasModifier = /[+*]/.test(gradeVal);
+    const gradeEqualsUpper = upperVal && gradeVal.trim() === upperVal.trim();
+
+    // If grade has modifier but doesn't equal upper limit, that's invalid
+    if (gradeHasModifier && !gradeEqualsUpper) {
+      toggleError(grade, 'invalidModifierUsage', true);
+      return 'invalidModifierUsage';
+    } else {
+      toggleError(grade, 'invalidModifierUsage', false);
+    }
+
+    const isValidGrade =
+      isNumeric(gradeVal) ||
+      isPercentage(gradeVal) ||
+      (gradeEqualsUpper ? isUpperLimitLetter(gradeVal) : isLowerLimitOrGradeLetter(gradeVal));
+
     toggleError(grade, 'invalidGrade', !isValidGrade);
     toggleError(grade, 'tooManyDecimals', false);
 
