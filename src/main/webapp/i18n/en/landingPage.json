@@ -16,7 +16,7 @@
       "steps": {
         "checkPrerequisites": {
           "title": "Check Prerequisites",
-          "description": "Ensure you meet the eligibility criteria to pursue a doctorate at TUM."
+          "description": "Ensure you meet the {{startLink}}eligibility criteria{{endLink}} to pursue a doctorate at TUM."
         },
         "browsePositions": {
           "title": "Browse Positions",
