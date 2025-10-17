@@ -158,7 +158,7 @@ public class ResearchGroupResource {
      * @return paginated list of DRAFT research groups
      */
     @GetMapping("/draft")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Admin
     public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getDraftResearchGroups(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
     ) {

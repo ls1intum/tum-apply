@@ -48,7 +48,8 @@ public class ResearchGroupService {
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final AsyncEmailSender emailSender;
 
-    @Value("${aet.contact-email:support@tumapply.de}")
+    // @Value("${aet.contact-email:support@tumapply.de}")
+    @Value("${aet.contact-email:sehmuel.wagner@tum.de}")
     private String supportEmail;
 
     /**
@@ -426,5 +427,6 @@ public class ResearchGroupService {
             .build();
 
         emailSender.sendAsync(email);
+        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
 }
