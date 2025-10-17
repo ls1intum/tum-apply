@@ -48,7 +48,7 @@ public class ResearchGroupService {
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final AsyncEmailSender emailSender;
 
-    @Value("${aet.contact-email:support@tumapply.de}")
+    @Value("${aet.contact-email:support-tum-apply.aet@xcit.tum.de}")
     private String supportEmail;
 
     /**
