@@ -212,9 +212,13 @@ export class ApplicationDetailComponent {
     const originalGrade = grade ?? '';
     const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
 
-    const normalizedOriginal = originalGrade.replace('.', ',');
+    const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
+    const roundedOriginal = Math.floor(numericOriginal * 10) / 10;
 
-    if (!convertedGrade || normalizedOriginal === originalGrade) {
+    const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
+    const roundedConverted = Math.floor(numericConverted * 10) / 10;
+
+    if (!convertedGrade || roundedOriginal === roundedConverted) {
       return [];
     }
 
