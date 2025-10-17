@@ -84,6 +84,7 @@ tasks.register('pruneOpenApiSpec') {
       pruneInvalidReferences(specificationMap, componentsMap)
 
     removeOperationsWithNullSchemas(prunedSpecificationMap)
+    sortComponentsAndPaths(prunedSpecificationMap)
 
     outputFile.text = yamlParser.dump(prunedSpecificationMap)
     println "✔ Pruned specification written to ${outputFile}"
@@ -181,6 +182,28 @@ private static void removeOperationsWithNullSchemas(Map<String, Object> specific
   }.keySet().toList()
 
   emptyPathNames.each { pathsMap.remove(it) }
+}
+
+private static void sortComponentsAndPaths(Map<String, Object> specificationMap) {
+  // Sort components
+  Map<String, Map<String, Object>> componentsMap = specificationMap.components as Map<String, Map<String, Object>>
+  if (componentsMap != null) {
+    componentsMap.each { String category, Map<String, Object> categoryMap ->
+      if (categoryMap != null) {
+        def sorted = new LinkedHashMap()
+        categoryMap.entrySet().sort { it.key }.each { sorted[it.key] = it.value }
+        componentsMap[category] = sorted
+      }
+    }
+  }
+
+  // Sort paths
+  Map<String, Map<String, Object>> pathsMap = specificationMap.paths as Map<String, Map<String, Object>>
+  if (pathsMap != null) {
+    def sortedPaths = new LinkedHashMap()
+    pathsMap.entrySet().sort { it.key }.each { sortedPaths[it.key] = it.value }
+    specificationMap.paths = sortedPaths
+  }
 }
 
 private static boolean operationContainsNullSchema(Map<String, Object> operationDefinition) {
