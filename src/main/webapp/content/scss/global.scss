@@ -433,10 +433,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   padding: 1rem;
   z-index: 2;
   pointer-events: none; // Disable pointer events for the carousel indicators
-
-  .pointer-event-button {
-    pointer-events: auto; // Enable pointer events for the button
-  }
 }
 
 /* -------------------------------

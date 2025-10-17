@@ -3,12 +3,7 @@
   <div class="application-steps">
     <div class="steps">
       @for (step of steps; track step.title; let i = $index) {
-        <jhi-application-step
-          [index]="i"
-          [icon]="step.icon"
-          [title]="step.title | translate"
-          [description]="step.description | translate"
-        />
+        <jhi-application-step [index]="i" [icon]="step.icon" [title]="step.title" [description]="step.description" />
       }
     </div>
   </div>
