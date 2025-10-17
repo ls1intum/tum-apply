@@ -71,8 +71,8 @@ export function convertToGermanGrade(upperLimit: string, lowerLimit: string, gra
 
   const germanGrade = 1 + 3 * ((nMax - nd) / denominator);
 
-  // Round to one decimal place and ensure it's within German grade range (1.0 - 4.0)
-  const rounded = Math.round(germanGrade * 10) / 10;
+  // Truncate to one decimal place and clamp the value to the valid German grade range (1.0–4.0)
+  const rounded = Math.floor(germanGrade * 10) / 10;
 
   // Clamp to valid German grade range
   return Math.max(1.0, Math.min(4.0, rounded));
