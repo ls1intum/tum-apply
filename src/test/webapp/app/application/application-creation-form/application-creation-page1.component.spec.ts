@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
-import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage1Component, {
