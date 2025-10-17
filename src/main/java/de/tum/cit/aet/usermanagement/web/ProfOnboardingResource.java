@@ -58,14 +58,4 @@ public class ProfOnboardingResource {
         UUID userId = currentUserService.getUserId();
         userSettingService.setBool(userId, ONBOARDED, false);
     }
-
-    /**
-     * Test endpoint for random testing purposes.
-     *
-     * @return a test message
-     */
-    @GetMapping("/test")
-    public String test() {
-        return "Hello from the test endpoint!";
-    }
 }
