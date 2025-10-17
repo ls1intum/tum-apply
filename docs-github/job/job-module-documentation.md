@@ -83,8 +83,8 @@ Common locations you’ll work with:
 The UI recognizes these states and surfaces them via badges and available actions:
 - **Draft** – not visible to applicants
 - **Published** – visible to applicants
-- **Applicant Found** – visible, but not accepting further applications
-- **Closed** – not accepting applications
+- **Applicant Found** – visible, but not accepting further applications (not visible in the **Find Positions** Overview)
+- **Closed** – visible, but not accepting any applications (not visible in the **Find Positions** Overview)
 
 Action availability is state-dependent (e.g., **Delete** is only allowed for Draft, **Close** is only allowed for Published).
 
@@ -98,7 +98,7 @@ Action availability is state-dependent (e.g., **Delete** is only allowed for Dra
 - Autosave/draft-save prevents data loss; saving state strings are unified in `shared/constants/saving-states.ts`.
 
 ### 4.4 Sorting & filtering (client-side)
-- Sorting and filter UIs are provided by `search-filter-sort-bar` and `filter-multiselect` (molecules), and fed by `dropdown-options.ts`.
+- Sorting and filter UIs are provided by `search-filter-sort-bar`, `filter-multiselect` (molecules), and `sorting` component (atoms), and fed by `dropdown-options.ts`.
 
 ### 4.5 Internationalization (DE/EN)
 - All visible strings must be translation-driven.
@@ -148,7 +148,7 @@ Action availability is state-dependent (e.g., **Delete** is only allowed for Dra
 ### 6.2 Server-side tests
   Useful test locations:
 - `src/test/java/de/tum/cit/aet/job/web/rest/JobServiceTest.java`
-- 
+
 ---
 
 ## 7) TL;DR for new developers
