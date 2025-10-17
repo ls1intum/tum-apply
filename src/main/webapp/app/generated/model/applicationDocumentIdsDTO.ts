@@ -12,8 +12,8 @@ import { DocumentInformationHolderDTO } from './documentInformationHolderDTO';
 
 export interface ApplicationDocumentIdsDTO { 
     bachelorDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
-    cvDocumentDictionaryId?: DocumentInformationHolderDTO;
     masterDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
     referenceDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
+    cvDocumentDictionaryId?: DocumentInformationHolderDTO;
 }
 

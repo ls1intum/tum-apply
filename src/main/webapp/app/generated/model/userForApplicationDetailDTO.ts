@@ -10,16 +10,16 @@
 
 
 export interface UserForApplicationDetailDTO { 
-    avatar?: string;
-    birthday?: string;
-    email?: string;
-    gender?: string;
-    linkedinUrl?: string;
-    name?: string;
-    nationality?: string;
-    phoneNumber?: string;
-    preferredLanguage?: string;
     userId: string;
+    email?: string;
+    avatar?: string;
+    name?: string;
+    gender?: string;
+    nationality?: string;
+    preferredLanguage?: string;
+    birthday?: string;
+    phoneNumber?: string;
     website?: string;
+    linkedinUrl?: string;
 }
 

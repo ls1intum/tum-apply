@@ -11,12 +11,12 @@ import { ResearchGroupShortDTO } from './researchGroupShortDTO';
 
 
 export interface UserShortDTO { 
+    userId?: string;
     email?: string;
     firstName?: string;
     lastName?: string;
-    researchGroup?: ResearchGroupShortDTO;
     roles?: Array<UserShortDTO.RolesEnum>;
-    userId?: string;
+    researchGroup?: ResearchGroupShortDTO;
 }
 export namespace UserShortDTO {
     export type RolesEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';

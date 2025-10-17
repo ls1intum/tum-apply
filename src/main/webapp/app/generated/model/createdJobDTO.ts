@@ -10,14 +10,14 @@
 
 
 export interface CreatedJobDTO { 
-    avatar?: string;
-    createdAt?: string;
     jobId: string;
-    lastModifiedAt?: string;
+    avatar?: string;
     professorName?: string;
-    startDate?: string;
     state?: CreatedJobDTO.StateEnum;
     title: string;
+    startDate?: string;
+    createdAt?: string;
+    lastModifiedAt?: string;
 }
 export namespace CreatedJobDTO {
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';

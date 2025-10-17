@@ -11,7 +11,7 @@
 
 export interface AuthSessionInfoDTO { 
     expiresIn?: number;
-    profileRequired?: boolean;
     refreshExpiresIn?: number;
+    profileRequired?: boolean;
 }
 

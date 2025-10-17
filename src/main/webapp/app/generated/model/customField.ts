@@ -12,14 +12,14 @@ import { CustomFieldAnswer } from './customFieldAnswer';
 
 
 export interface CustomField { 
-    answerOptions?: Array<string>;
-    customFieldAnswers?: Array<CustomFieldAnswer>;
     customFieldId?: string;
-    customFieldType?: CustomField.CustomFieldTypeEnum;
     job?: Job;
     question?: string;
-    required?: boolean;
+    customFieldType?: CustomField.CustomFieldTypeEnum;
+    answerOptions?: Array<string>;
     sequence?: number;
+    customFieldAnswers?: Array<CustomFieldAnswer>;
+    required?: boolean;
 }
 export namespace CustomField {
     export type CustomFieldTypeEnum = 'FREE_TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILE_UPLOAD';

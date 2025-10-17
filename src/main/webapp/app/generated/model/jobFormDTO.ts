@@ -10,33 +10,23 @@
 
 
 export interface JobFormDTO { 
-    contractDuration?: number;
-    description?: string;
-    endDate?: string;
-    fieldOfStudies: string;
-    fundingType?: JobFormDTO.FundingTypeEnum;
     jobId?: string;
-    location: JobFormDTO.LocationEnum;
-    requirements?: string;
-    researchArea?: string;
-    startDate?: string;
-    state: JobFormDTO.StateEnum;
-    supervisingProfessor: string;
-    tasks?: string;
     title: string;
+    researchArea?: string;
+    fieldOfStudies: string;
+    supervisingProfessor: string;
+    location: JobFormDTO.LocationEnum;
+    startDate?: string;
+    endDate?: string;
     workload?: number;
+    contractDuration?: number;
+    fundingType?: JobFormDTO.FundingTypeEnum;
+    description?: string;
+    tasks?: string;
+    requirements?: string;
+    state: JobFormDTO.StateEnum;
 }
 export namespace JobFormDTO {
-    export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
-    export const FundingTypeEnum = {
-        FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
-        PartiallyFunded: 'PARTIALLY_FUNDED' as FundingTypeEnum,
-        Scholarship: 'SCHOLARSHIP' as FundingTypeEnum,
-        SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
-        IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
-        GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
-        ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
-    };
     export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
     export const LocationEnum = {
         Garching: 'GARCHING' as LocationEnum,
@@ -46,6 +36,16 @@ export namespace JobFormDTO {
         Straubing: 'STRAUBING' as LocationEnum,
         Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
         Singapore: 'SINGAPORE' as LocationEnum
+    };
+    export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
+    export const FundingTypeEnum = {
+        FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
+        PartiallyFunded: 'PARTIALLY_FUNDED' as FundingTypeEnum,
+        Scholarship: 'SCHOLARSHIP' as FundingTypeEnum,
+        SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
+        IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
+        GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
+        ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
     };
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {

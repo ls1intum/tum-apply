@@ -10,7 +10,7 @@
 
 
 export interface JobFilterOptionDTO { 
-    jobId?: string;
     jobName?: string;
+    jobId?: string;
 }
 

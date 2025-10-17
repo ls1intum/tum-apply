@@ -11,10 +11,10 @@
 
 export interface ApplicationOverviewDTO { 
     applicationId?: string;
-    applicationState?: ApplicationOverviewDTO.ApplicationStateEnum;
     jobId?: string;
     jobTitle?: string;
     researchGroup?: string;
+    applicationState?: ApplicationOverviewDTO.ApplicationStateEnum;
     timeSinceCreation?: string;
 }
 export namespace ApplicationOverviewDTO {

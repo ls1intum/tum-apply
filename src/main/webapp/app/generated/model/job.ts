@@ -14,38 +14,28 @@ import { Application } from './application';
 
 
 export interface Job { 
-    applications?: Array<Application>;
-    contractDuration?: number;
     createdAt?: string;
-    customFields?: Array<CustomField>;
-    description?: string;
-    endDate?: string;
-    fieldOfStudies?: string;
-    fundingType?: Job.FundingTypeEnum;
-    jobId?: string;
     lastModifiedAt?: string;
-    location?: Job.LocationEnum;
-    requirements?: string;
-    researchArea?: string;
-    researchGroup?: ResearchGroup;
-    startDate?: string;
-    state?: Job.StateEnum;
+    jobId?: string;
     supervisingProfessor?: User;
-    tasks?: string;
-    title?: string;
+    researchGroup?: ResearchGroup;
+    fieldOfStudies?: string;
+    researchArea?: string;
+    location?: Job.LocationEnum;
     workload?: number;
+    contractDuration?: number;
+    fundingType?: Job.FundingTypeEnum;
+    title?: string;
+    description?: string;
+    tasks?: string;
+    requirements?: string;
+    state?: Job.StateEnum;
+    endDate?: string;
+    startDate?: string;
+    customFields?: Array<CustomField>;
+    applications?: Array<Application>;
 }
 export namespace Job {
-    export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
-    export const FundingTypeEnum = {
-        FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
-        PartiallyFunded: 'PARTIALLY_FUNDED' as FundingTypeEnum,
-        Scholarship: 'SCHOLARSHIP' as FundingTypeEnum,
-        SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
-        IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
-        GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
-        ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
-    };
     export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
     export const LocationEnum = {
         Garching: 'GARCHING' as LocationEnum,
@@ -55,6 +45,16 @@ export namespace Job {
         Straubing: 'STRAUBING' as LocationEnum,
         Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
         Singapore: 'SINGAPORE' as LocationEnum
+    };
+    export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
+    export const FundingTypeEnum = {
+        FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
+        PartiallyFunded: 'PARTIALLY_FUNDED' as FundingTypeEnum,
+        Scholarship: 'SCHOLARSHIP' as FundingTypeEnum,
+        SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
+        IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
+        GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
+        ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
     };
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {

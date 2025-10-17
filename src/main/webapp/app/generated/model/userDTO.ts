@@ -11,18 +11,18 @@ import { ResearchGroupShortDTO } from './researchGroupShortDTO';
 
 
 export interface UserDTO { 
-    avatar?: string;
-    birthday?: string;
-    email?: string;
-    firstName?: string;
-    gender?: string;
-    lastName?: string;
-    linkedinUrl?: string;
-    nationality?: string;
-    phoneNumber?: string;
-    researchGroupShortDTO?: ResearchGroupShortDTO;
-    selectedLanguage?: string;
     userId?: string;
+    email?: string;
+    avatar?: string;
+    firstName?: string;
+    lastName?: string;
+    gender?: string;
+    nationality?: string;
+    birthday?: string;
+    phoneNumber?: string;
     website?: string;
+    linkedinUrl?: string;
+    selectedLanguage?: string;
+    researchGroupShortDTO?: ResearchGroupShortDTO;
 }
 

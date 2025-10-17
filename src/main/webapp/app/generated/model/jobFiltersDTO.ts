@@ -10,8 +10,8 @@
 
 
 export interface JobFiltersDTO { 
-    fieldsOfStudy?: Array<string>;
     jobNames?: Array<string>;
+    fieldsOfStudy?: Array<string>;
     supervisorNames?: Array<string>;
 }
 

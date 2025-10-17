@@ -10,7 +10,7 @@
 
 
 export interface ResearchGroupShortDTO { 
-    name?: string;
     researchGroupId?: string;
+    name?: string;
 }
 

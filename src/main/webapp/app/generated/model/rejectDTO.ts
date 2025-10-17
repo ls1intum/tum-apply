@@ -10,8 +10,8 @@
 
 
 export interface RejectDTO { 
-    notifyApplicant?: boolean;
     reason: RejectDTO.ReasonEnum;
+    notifyApplicant?: boolean;
 }
 export namespace RejectDTO {
     export type ReasonEnum = 'JOB_FILLED' | 'JOB_OUTDATED' | 'FAILED_REQUIREMENTS' | 'OTHER_REASON';

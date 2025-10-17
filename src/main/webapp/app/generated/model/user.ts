@@ -14,24 +14,24 @@ import { Job } from './job';
 
 
 export interface User { 
-    avatar?: string;
-    birthday?: string;
     createdAt?: string;
-    email?: string;
-    emailSettings?: Array<EmailSetting>;
-    firstName?: string;
-    gender?: string;
     lastModifiedAt?: string;
-    lastName?: string;
-    linkedinUrl?: string;
-    nationality?: string;
-    phoneNumber?: string;
-    postedJobs?: Array<Job>;
+    userId?: string;
     researchGroup?: ResearchGroup;
-    researchGroupRoles?: Array<UserResearchGroupRole>;
+    email?: string;
+    avatar?: string;
+    firstName?: string;
+    lastName?: string;
+    gender?: string;
+    nationality?: string;
+    birthday?: string;
+    phoneNumber?: string;
+    website?: string;
+    linkedinUrl?: string;
     selectedLanguage?: string;
     universityId?: string;
-    userId?: string;
-    website?: string;
+    postedJobs?: Array<Job>;
+    researchGroupRoles?: Array<UserResearchGroupRole>;
+    emailSettings?: Array<EmailSetting>;
 }
 

@@ -58,26 +58,4 @@ public class ProfOnboardingResource {
         UUID userId = currentUserService.getUserId();
         userSettingService.setBool(userId, ONBOARDED, false);
     }
-
-    /**
-     * Get the current onboarding status for the user.
-     *
-     * @return ProfOnboardingDTO with the current onboarding state
-     */
-    @GetMapping("/prof-onboarding/status")
-    public ProfOnboardingDTO getOnboardingStatus() {
-        UUID userId = currentUserService.getUserId();
-        boolean onboarded = userSettingService.getBool(userId, ONBOARDED);
-        return new ProfOnboardingDTO(onboarded);
-    }
-
-    /**
-     * Reset the onboarding state for the current user.
-     */
-    @DeleteMapping("/prof-onboarding/reset")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void resetOnboarding() {
-        UUID userId = currentUserService.getUserId();
-        userSettingService.setBool(userId, ONBOARDED, false);
-    }
 }

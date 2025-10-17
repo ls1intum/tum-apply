@@ -11,11 +11,11 @@
 
 export interface EmailTemplateOverviewDTO { 
     emailTemplateId?: string;
+    templateName?: string;
     emailType?: EmailTemplateOverviewDTO.EmailTypeEnum;
     firstName?: string;
-    isDefault?: boolean;
     lastName?: string;
-    templateName?: string;
+    isDefault?: boolean;
 }
 export namespace EmailTemplateOverviewDTO {
     export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN';

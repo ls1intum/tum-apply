@@ -12,8 +12,8 @@ import { ApplicationEvaluationDetailDTO } from './applicationEvaluationDetailDTO
 
 export interface ApplicationEvaluationDetailListDTO { 
     applications?: Array<ApplicationEvaluationDetailDTO>;
-    currentIndex?: number;
     totalRecords?: number;
+    currentIndex?: number;
     windowIndex?: number;
 }
 

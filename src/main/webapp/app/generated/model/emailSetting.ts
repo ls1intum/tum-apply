@@ -12,9 +12,9 @@ import { User } from './user';
 
 export interface EmailSetting { 
     emailSettingId?: string;
+    user?: User;
     emailType?: EmailSetting.EmailTypeEnum;
     enabled?: boolean;
-    user?: User;
 }
 export namespace EmailSetting {
     export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN';

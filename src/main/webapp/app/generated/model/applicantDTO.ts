@@ -11,20 +11,20 @@ import { UserDTO } from './userDTO';
 
 
 export interface ApplicantDTO { 
-    bachelorDegreeName?: string;
-    bachelorGrade?: string;
-    bachelorGradeLowerLimit?: string;
-    bachelorGradeUpperLimit?: string;
-    bachelorUniversity?: string;
+    user: UserDTO;
+    street?: string;
+    postalCode?: string;
     city?: string;
     country?: string;
+    bachelorDegreeName?: string;
+    bachelorGradeUpperLimit?: string;
+    bachelorGradeLowerLimit?: string;
+    bachelorGrade?: string;
+    bachelorUniversity?: string;
     masterDegreeName?: string;
-    masterGrade?: string;
-    masterGradeLowerLimit?: string;
     masterGradeUpperLimit?: string;
+    masterGradeLowerLimit?: string;
+    masterGrade?: string;
     masterUniversity?: string;
-    postalCode?: string;
-    street?: string;
-    user: UserDTO;
 }
 

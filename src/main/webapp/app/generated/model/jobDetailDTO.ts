@@ -11,28 +11,35 @@ import { ResearchGroup } from './researchGroup';
 
 
 export interface JobDetailDTO { 
+    jobId: string;
+    supervisingProfessorName: string;
+    researchGroup: ResearchGroup;
+    title: string;
+    fieldOfStudies?: string;
+    researchArea?: string;
+    location?: string;
+    workload?: number;
+    contractDuration?: number;
+    fundingType?: string;
+    description?: string;
+    tasks?: string;
+    requirements?: string;
+    startDate?: string;
+    endDate?: string;
+    createdAt: string;
+    lastModifiedAt: string;
+    state?: JobDetailDTO.StateEnum;
     applicationId?: string;
     applicationState?: JobDetailDTO.ApplicationStateEnum;
-    contractDuration?: number;
-    createdAt: string;
-    description?: string;
-    endDate?: string;
-    fieldOfStudies?: string;
-    fundingType?: string;
-    jobId: string;
-    lastModifiedAt: string;
-    location?: string;
-    requirements?: string;
-    researchArea?: string;
-    researchGroup: ResearchGroup;
-    startDate?: string;
-    state?: JobDetailDTO.StateEnum;
-    supervisingProfessorName: string;
-    tasks?: string;
-    title: string;
-    workload?: number;
 }
 export namespace JobDetailDTO {
+    export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
+    export const StateEnum = {
+        Draft: 'DRAFT' as StateEnum,
+        Published: 'PUBLISHED' as StateEnum,
+        Closed: 'CLOSED' as StateEnum,
+        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
+    };
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
     export const ApplicationStateEnum = {
         Saved: 'SAVED' as ApplicationStateEnum,
@@ -42,13 +49,6 @@ export namespace JobDetailDTO {
         Rejected: 'REJECTED' as ApplicationStateEnum,
         Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
         JobClosed: 'JOB_CLOSED' as ApplicationStateEnum
-    };
-    export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
-    export const StateEnum = {
-        Draft: 'DRAFT' as StateEnum,
-        Published: 'PUBLISHED' as StateEnum,
-        Closed: 'CLOSED' as StateEnum,
-        ApplicantFound: 'APPLICANT_FOUND' as StateEnum
     };
 }
 

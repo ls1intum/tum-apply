@@ -14,19 +14,19 @@ import { CustomFieldAnswer } from './customFieldAnswer';
 
 
 export interface Application { 
-    applicant?: Applicant;
+    createdAt?: string;
+    lastModifiedAt?: string;
     applicationId?: string;
     applicationReview?: ApplicationReview;
-    createdAt?: string;
-    customFieldAnswers?: Array<CustomFieldAnswer>;
-    desiredStartDate?: string;
-    internalComments?: Array<InternalComment>;
+    applicant?: Applicant;
     job?: any | null;
-    lastModifiedAt?: string;
-    motivation?: string;
+    state?: Application.StateEnum;
+    desiredStartDate?: string;
     projects?: string;
     specialSkills?: string;
-    state?: Application.StateEnum;
+    motivation?: string;
+    customFieldAnswers?: Array<CustomFieldAnswer>;
+    internalComments?: Array<InternalComment>;
 }
 export namespace Application {
     export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';

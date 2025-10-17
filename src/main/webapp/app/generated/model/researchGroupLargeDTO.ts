@@ -10,11 +10,11 @@
 
 
 export interface ResearchGroupLargeDTO { 
-    city?: string;
     description?: string;
     email?: string;
-    postalCode?: string;
-    street?: string;
     website?: string;
+    street?: string;
+    postalCode?: string;
+    city?: string;
 }
 

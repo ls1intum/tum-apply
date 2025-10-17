@@ -11,18 +11,18 @@ import { ApplicantForApplicationDetailDTO } from './applicantForApplicationDetai
 
 
 export interface ApplicationDetailDTO { 
-    applicant?: ApplicantForApplicationDetailDTO;
     applicationId: string;
-    applicationState: ApplicationDetailDTO.ApplicationStateEnum;
-    desiredDate?: string;
     jobId: string;
-    jobLocation?: string;
-    jobTitle?: string;
-    motivation?: string;
-    projects?: string;
-    researchGroup: string;
-    specialSkills?: string;
+    applicant?: ApplicantForApplicationDetailDTO;
+    applicationState: ApplicationDetailDTO.ApplicationStateEnum;
     supervisingProfessorName: string;
+    researchGroup: string;
+    jobTitle?: string;
+    jobLocation?: string;
+    desiredDate?: string;
+    projects?: string;
+    specialSkills?: string;
+    motivation?: string;
 }
 export namespace ApplicationDetailDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';

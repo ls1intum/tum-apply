@@ -11,11 +11,11 @@ import { User } from './user';
 
 
 export interface InternalComment { 
-    application?: any | null;
     createdAt?: string;
-    createdBy?: User;
-    internalCommentId?: string;
     lastModifiedAt?: string;
+    internalCommentId?: string;
+    application?: any | null;
+    createdBy?: User;
     message?: string;
 }
 

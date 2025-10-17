@@ -12,11 +12,11 @@ import { EmailTemplateTranslationDTO } from './emailTemplateTranslationDTO';
 
 export interface EmailTemplateDTO { 
     emailTemplateId?: string;
+    templateName?: string;
     emailType?: EmailTemplateDTO.EmailTypeEnum;
+    isDefault?: boolean;
     english?: EmailTemplateTranslationDTO;
     german?: EmailTemplateTranslationDTO;
-    isDefault?: boolean;
-    templateName?: string;
 }
 export namespace EmailTemplateDTO {
     export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN';
