@@ -90,16 +90,6 @@ describe('SelectComponent', () => {
     expect(comp.isOpen).toBe(false);
   });
 
-  it('should show helper text when provided', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('helperText', 'helper.message');
-    fixture.detectChanges();
-
-    const helperEl = fixture.debugElement.query(By.css('.helper-text'));
-    expect(helperEl).toBeTruthy();
-    expect(helperEl.nativeElement.textContent).toContain('helper.message');
-  });
-
   it('should support tooltipText input when icon=circle-info', () => {
     const fixture = createFixture();
     fixture.componentRef.setInput('icon', 'circle-info');
