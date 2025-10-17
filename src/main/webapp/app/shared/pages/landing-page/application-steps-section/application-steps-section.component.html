@@ -2,8 +2,13 @@
   <h2 class="title" jhiTranslate="landingPage.applicationSteps.headline"></h2>
   <div class="application-steps">
     <div class="steps">
-      @for (step of steps; track step.title) {
-        <jhi-application-step [icon]="step.icon" [title]="step.title | translate" [description]="step.description | translate" />
+      @for (step of steps; track step.title; let i = $index) {
+        <jhi-application-step
+          [index]="i"
+          [icon]="step.icon"
+          [title]="step.title | translate"
+          [description]="step.description | translate"
+        />
       }
     </div>
   </div>

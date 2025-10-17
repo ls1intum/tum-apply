@@ -14,24 +14,29 @@ import { ApplicationStepComponent } from './application-step/application-step/ap
 export class ApplicationStepsSectionComponent {
   steps = [
     {
+      icon: 'clipboard-check',
+      title: 'landingPage.applicationSteps.steps.checkPrerequisites.title',
+      description: 'landingPage.applicationSteps.steps.checkPrerequisites.description',
+    },
+    {
       icon: 'search',
-      title: 'landingPage.applicationSteps.steps.1.title',
-      description: 'landingPage.applicationSteps.steps.1.description',
+      title: 'landingPage.applicationSteps.steps.browsePositions.title',
+      description: 'landingPage.applicationSteps.steps.browsePositions.description',
     },
     {
       icon: 'info',
-      title: 'landingPage.applicationSteps.steps.2.title',
-      description: 'landingPage.applicationSteps.steps.2.description',
+      title: 'landingPage.applicationSteps.steps.checkDetails.title',
+      description: 'landingPage.applicationSteps.steps.checkDetails.description',
     },
     {
       icon: 'paper-plane',
-      title: 'landingPage.applicationSteps.steps.3.title',
-      description: 'landingPage.applicationSteps.steps.3.description',
+      title: 'landingPage.applicationSteps.steps.submitApplication.title',
+      description: 'landingPage.applicationSteps.steps.submitApplication.description',
     },
     {
       icon: 'bell',
-      title: 'landingPage.applicationSteps.steps.4.title',
-      description: 'landingPage.applicationSteps.steps.4.description',
+      title: 'landingPage.applicationSteps.steps.trackStatus.title',
+      description: 'landingPage.applicationSteps.steps.trackStatus.description',
     },
   ];
 }
