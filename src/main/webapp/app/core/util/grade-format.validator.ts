@@ -196,7 +196,6 @@ export function validateGradeRange(format: string, upper: string, lower: string,
 }
 
 /**
- * Angular FormGroup validator for grade format validation
  * Validates that upper limit, lower limit, and grade all use the same format
  * and that the grade falls within the specified range
  */

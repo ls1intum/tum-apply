@@ -79,9 +79,9 @@ export function convertToGermanGrade(upperLimit: string, lowerLimit: string, gra
 }
 
 /**
- * Wandelt Buchstaben-Noten (z. B. A+, A, B, C, D, E) in numerische Werte für die Konvertierung um.
- * A+ ist am besten (= 1), danach A (= 2), B (= 3), usw.
- * Unterstützt auch A* als Synonym für A+.
+ * Converts letter grades (e.g., A+, A, B, C, D, E) into numerical values for conversion purposes.
+ * A+ is the highest (= 1), followed by A (= 2), B (= 3), and so on.
+ * Also supports A* as a synonym for A+.
  */
 function convertLettersToNumerical(
   upperLimit: string,
