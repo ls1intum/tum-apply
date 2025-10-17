@@ -923,16 +923,22 @@ paths:
       operationId: remindLater
       responses:
         '204': {description: No Content}
-  /api/me/test:
+  /api/me/prof-onboarding/reset:
+    delete:
+      tags: [prof-onboarding-resource]
+      operationId: resetOnboarding
+      responses:
+        '204': {description: No Content}
+  /api/me/prof-onboarding/status:
     get:
       tags: [prof-onboarding-resource]
-      operationId: test
+      operationId: getOnboardingStatus
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: {type: string}
+              schema: {$ref: '#/components/schemas/ProfOnboardingDTO'}
   /api/public/config:
     get:
       tags: [public-config-resource]
