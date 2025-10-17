@@ -11,16 +11,16 @@ import { UserForApplicationDetailDTO } from './userForApplicationDetailDTO';
 
 
 export interface ApplicantForApplicationDetailDTO { 
-    user: UserForApplicationDetailDTO;
     bachelorDegreeName?: string;
-    bachelorGradeUpperLimit?: string;
-    bachelorGradeLowerLimit?: string;
     bachelorGrade?: string;
+    bachelorGradeLowerLimit?: string;
+    bachelorGradeUpperLimit?: string;
     bachelorUniversity?: string;
     masterDegreeName?: string;
-    masterGradeUpperLimit?: string;
-    masterGradeLowerLimit?: string;
     masterGrade?: string;
+    masterGradeLowerLimit?: string;
+    masterGradeUpperLimit?: string;
     masterUniversity?: string;
+    user: UserForApplicationDetailDTO;
 }
 

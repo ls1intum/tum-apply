@@ -10,9 +10,9 @@
 
 
 export interface ProfessorDTO { 
+    email?: string;
     firstName?: string;
     lastName?: string;
-    email?: string;
     researchGroupName?: string;
     researchGroupWebsite?: string;
 }
