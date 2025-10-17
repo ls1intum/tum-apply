@@ -212,7 +212,9 @@ export class ApplicationDetailComponent {
     const originalGrade = grade ?? '';
     const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
 
-    if (!convertedGrade || convertedGrade === originalGrade) {
+    const normalizedOriginal = originalGrade.replace('.', ',');
+
+    if (!convertedGrade || normalizedOriginal === originalGrade) {
       return [];
     }
 
