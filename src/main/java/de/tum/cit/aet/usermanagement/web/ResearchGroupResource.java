@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
@@ -133,6 +134,21 @@ public class ResearchGroupResource {
         log.info("POST /api/research-groups/professor-request name={} uniId={}", request.researchGroupName(), request.universityId());
         ResearchGroup created = researchGroupService.createProfessorResearchGroupRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
+    }
+
+    /**
+     * Creates an employee research group access request during onboarding.
+     * Sends an email to administrators with user and professor information.
+     *
+     * @param request the employee's research group request
+     * @return HTTP 204 No Content on success
+     */
+    @PostMapping("/employee-request")
+    @Authenticated
+    public ResponseEntity<Void> createEmployeeResearchGroupRequest(@Valid @RequestBody EmployeeResearchGroupRequestDTO request) {
+        log.info("POST /api/research-groups/employee-request professorName={}", request.professorName());
+        researchGroupService.createEmployeeResearchGroupRequest(request);
+        return ResponseEntity.noContent().build();
     }
 
     /**

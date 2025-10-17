@@ -4,11 +4,35 @@
     "body": "You are logged in but do not have any rights yet. If you are a professor or staff, please fill out the form so that we can assign you to your research group and grant the appropriate rights. Please click the button below to do so.",
     "actions": {
       "openForm": "Open Research Group Form",
-      "imApplicant": "I'm an applicant"
+      "imApplicant": "I'm an applicant",
+      "imEmployee": "I'm an employee"
     },
     "email": {
       "subject": "Request: Access to research group in TUMApply",
       "body": "=== IMPORTANT NOTES ===\n- Please do not change the subject of this email.\n- Please fill out all required fields below.\n- The optional fields do not have to be filled out.\n- Please send this email from your official TUM email address.\n=== IMPORTANT NOTES ===\n\n\n\n=== Required ===\n\nPersonal information:\n- Title (Prof./Dr./…): \n- First name: \n- Last name: \n- TUM ID (e.g. ab12cde): \n\nInformation about the research group:\n- Head (title, first and last name): \n- Name: \n\n\n=== Optional ===\n\nInformation about the research group:\n- Abbreviation: \n- Contact email: \n- Website: \n- School: \n- Description: \n- Default field of studies: \n- Address:\n  - Street and number: \n  - Postal code: \n  - City: "
+    },
+    "employeeRequest": {
+      "dialogTitle": "Request Access as Employee",
+      "professorName": {
+        "label": "Professor Name",
+        "placeholder": "e.g. Prof. Dr. Max Mustermann"
+      },
+      "notice": "Your request will be sent to the administrators. They will assign you to the research group of the professor you entered and contact you.",
+      "confirmDialog": {
+        "header": "Confirm Request Submission",
+        "message": "Your request will be sent to the administrators for review. They will assign you to your research group and contact you. Do you want to proceed?",
+        "confirm": "Send Request"
+      },
+      "success": {
+        "summary": "Request Sent Successfully",
+        "detail": "Your employee access request has been submitted. Administrators will review it and contact you soon."
+      },
+      "error": {
+        "summary": "Submission Failed",
+        "detail": "Failed to submit your request. Please try again or contact support."
+      },
+      "submit": "Send Request",
+      "submitting": "Sending Request"
     },
     "professorRequest": {
       "dialogTitle": "Request Access",
