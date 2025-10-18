@@ -534,6 +534,12 @@
             "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut."
           }
         }
+      },
+      "editor": {
+        "maxLength": {
+          "summary": "Maximale Länge überschritten",
+          "detail": "Die maximale erlaubte Länge von {{ max }} Zeichen wurde überschritten."
+        }
       }
     }
   },
