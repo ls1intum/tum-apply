@@ -85,23 +85,24 @@ export class ApplicationCarouselComponent {
 
   private readonly bp = inject(BreakpointObserver);
 
-  constructor() {
-    const breakpoint = toSignal<BreakpointState | null>(this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]), {
+  private readonly breakpoint = toSignal<BreakpointState | null>(
+    this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]),
+    {
       initialValue: null,
-    });
+    },
+  );
 
-    effect(() => {
-      const result = breakpoint();
-      if (!result) return;
-      if (result.breakpoints[BREAKPOINT_QUERIES.onlyMobile]) {
-        this.cardsVisible.set(1);
-      } else if (result.breakpoints[BREAKPOINT_QUERIES.ultraWide]) {
-        this.cardsVisible.set(5);
-      } else {
-        this.cardsVisible.set(VISIBLE_DESKTOP);
-      }
-    });
-  }
+  private readonly _breakPointEffect = effect(() => {
+    const result = this.breakpoint();
+    if (!result) return;
+    if (result.breakpoints[BREAKPOINT_QUERIES.onlyMobile]) {
+      this.cardsVisible.set(1);
+    } else if (result.breakpoints[BREAKPOINT_QUERIES.ultraWide]) {
+      this.cardsVisible.set(5);
+    } else {
+      this.cardsVisible.set(VISIBLE_DESKTOP);
+    }
+  });
 
   // Listen to arrow keys for navigation
   @HostListener('document:keydown', ['$event'])
