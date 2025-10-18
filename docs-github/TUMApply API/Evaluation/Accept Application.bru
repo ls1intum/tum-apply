@@ -1,0 +1,23 @@
+meta {
+  name: Accept Application
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/evaluation/applications/:applicationId/accept
+  body: json
+  auth: inherit
+}
+
+params:path {
+  applicationId: 
+}
+
+body:json {
+  {
+    "message": "You have been accepted!",
+    "notifyApplicant": true,
+    "closeJob": false
+  }
+}

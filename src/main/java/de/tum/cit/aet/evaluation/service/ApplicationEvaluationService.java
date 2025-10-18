@@ -9,13 +9,13 @@ import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
-import de.tum.cit.aet.evaluation.repository.JobEvaluationRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.service.JobService;
@@ -48,7 +48,7 @@ public class ApplicationEvaluationService {
     private final DocumentService documentService;
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
-    private final JobEvaluationRepository jobEvaluationRepository;
+    private final CurrentUserService currentUserService;
 
     @Value("${aet.download.deterministic-zip:false}")
     private boolean DETERMINISTIC_ZIP;
@@ -76,7 +76,7 @@ public class ApplicationEvaluationService {
             .findById(applicationId)
             .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
-        //TODO add authorization
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
         if (!REVIEW_STATES.contains(application.getState())) {
             throw new IllegalArgumentException("Application can not be reviewed");
@@ -121,7 +121,7 @@ public class ApplicationEvaluationService {
             .findById(applicationId)
             .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
-        //TODO add authorization
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
         if (!REVIEW_STATES.contains(application.getState())) {
             throw new IllegalArgumentException("Application can not be reviewed");
@@ -267,22 +267,16 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Retrieves all job filter options associated with the given research group.
-     *
-     * @param researchGroupId the {@link UUID} for which to retrieve job filter options
-     * @return a set of {@link JobFilterOptionDTO} representing the available job filter options
-     * for the specified research group
-     */
-    public Set<JobFilterOptionDTO> getJobFilterOptions(UUID researchGroupId) {
-        return jobEvaluationRepository.findAllByResearchGroup(researchGroupId);
-    }
-
-    /**
      * Sets the application state from "UNOPENED" to "IN_REVIEW"
      *
      * @param applicationId the Application to update the state
      */
     public void markApplicationAsInReview(UUID applicationId) {
+        Application application = applicationEvaluationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
+
         applicationEvaluationRepository.markApplicationAsInReview(applicationId);
     }
 
@@ -297,6 +291,8 @@ public class ApplicationEvaluationService {
      */
     public void downloadAllDocumentsForApplication(UUID applicationId, HttpServletResponse response) throws IOException {
         Application application = getApplication(applicationId);
+        currentUserService.assertAccessTo(application.getJob().getResearchGroup());
+
         Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
 
         User user = application.getApplicant().getUser();

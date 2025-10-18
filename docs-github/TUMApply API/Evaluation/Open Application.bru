@@ -1,0 +1,15 @@
+meta {
+  name: Open Application
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/evaluation/applications/:applicationId/open
+  body: none
+  auth: inherit
+}
+
+params:path {
+  applicationId: 
+}

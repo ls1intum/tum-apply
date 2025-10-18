@@ -10,33 +10,23 @@
 
 
 export interface JobDTO { 
-    jobId: string;
-    title: string;
-    researchArea?: string;
-    fieldOfStudies?: string;
-    supervisingProfessor: string;
-    location?: JobDTO.LocationEnum;
-    startDate?: string;
-    endDate?: string;
-    workload?: number;
     contractDuration?: number;
-    fundingType?: JobDTO.FundingTypeEnum;
     description?: string;
-    tasks?: string;
+    endDate?: string;
+    fieldOfStudies?: string;
+    fundingType?: JobDTO.FundingTypeEnum;
+    jobId: string;
+    location?: JobDTO.LocationEnum;
     requirements?: string;
+    researchArea?: string;
+    startDate?: string;
     state: JobDTO.StateEnum;
+    supervisingProfessor: string;
+    tasks?: string;
+    title: string;
+    workload?: number;
 }
 export namespace JobDTO {
-    export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
-    export const LocationEnum = {
-        Garching: 'GARCHING' as LocationEnum,
-        GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
-        Heilbronn: 'HEILBRONN' as LocationEnum,
-        Munich: 'MUNICH' as LocationEnum,
-        Straubing: 'STRAUBING' as LocationEnum,
-        Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
-        Singapore: 'SINGAPORE' as LocationEnum
-    };
     export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
     export const FundingTypeEnum = {
         FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
@@ -46,6 +36,16 @@ export namespace JobDTO {
         IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
         GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
         ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
+    };
+    export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
+    export const LocationEnum = {
+        Garching: 'GARCHING' as LocationEnum,
+        GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
+        Heilbronn: 'HEILBRONN' as LocationEnum,
+        Munich: 'MUNICH' as LocationEnum,
+        Straubing: 'STRAUBING' as LocationEnum,
+        Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
+        Singapore: 'SINGAPORE' as LocationEnum
     };
     export type StateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
     export const StateEnum = {

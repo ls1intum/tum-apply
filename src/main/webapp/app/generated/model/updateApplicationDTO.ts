@@ -11,13 +11,13 @@ import { ApplicantDTO } from './applicantDTO';
 
 
 export interface UpdateApplicationDTO { 
-    applicationId: string;
     applicant: ApplicantDTO;
-    desiredDate?: string;
+    applicationId: string;
     applicationState: UpdateApplicationDTO.ApplicationStateEnum;
+    desiredDate?: string;
+    motivation?: string;
     projects?: string;
     specialSkills?: string;
-    motivation?: string;
 }
 export namespace UpdateApplicationDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';

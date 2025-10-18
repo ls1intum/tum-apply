@@ -10,10 +10,10 @@
 
 
 export interface InternalCommentDTO { 
-    commentId?: string;
     author?: string;
-    message?: string;
-    createdAt?: string;
     canEdit?: boolean;
+    commentId?: string;
+    createdAt?: string;
+    message?: string;
 }
 

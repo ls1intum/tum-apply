@@ -12,10 +12,10 @@ import { User } from './user';
 
 
 export interface UserResearchGroupRole { 
-    userResearchGroupRoleId?: string;
-    user?: User;
     researchGroup?: ResearchGroup;
     role?: UserResearchGroupRole.RoleEnum;
+    user?: User;
+    userResearchGroupRoleId?: string;
 }
 export namespace UserResearchGroupRole {
     export type RoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';

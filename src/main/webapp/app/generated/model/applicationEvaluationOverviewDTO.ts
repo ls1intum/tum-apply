@@ -11,11 +11,11 @@
 
 export interface ApplicationEvaluationOverviewDTO { 
     applicationId?: string;
+    appliedAt?: string;
     avatar?: string;
+    jobName?: string;
     name?: string;
     state?: ApplicationEvaluationOverviewDTO.StateEnum;
-    jobName?: string;
-    appliedAt?: string;
 }
 export namespace ApplicationEvaluationOverviewDTO {
     export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';

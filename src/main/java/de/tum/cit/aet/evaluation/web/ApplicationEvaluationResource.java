@@ -2,6 +2,7 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
@@ -13,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -36,6 +36,7 @@ public class ApplicationEvaluationResource {
      * @return HTTP 204 No Content response
      */
     @PostMapping("/applications/{applicationId}/accept")
+    @Professor
     public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
         applicationEvaluationService.acceptApplication(applicationId, acceptDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
@@ -49,6 +50,7 @@ public class ApplicationEvaluationResource {
      * @return HTTP 204 No Content response
      */
     @PostMapping("/applications/{applicationId}/reject")
+    @Professor
     public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
         applicationEvaluationService.rejectApplication(applicationId, rejectDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
@@ -64,6 +66,7 @@ public class ApplicationEvaluationResource {
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationOverviewListDTO}
      */
     @GetMapping("/applications")
+    @Professor
     public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplicationsOverviews(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto,
@@ -86,6 +89,7 @@ public class ApplicationEvaluationResource {
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
     @GetMapping("/application-details")
+    @Professor
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetails(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto,
@@ -107,6 +111,7 @@ public class ApplicationEvaluationResource {
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
     @GetMapping("/application-details/window")
+    @Professor
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetailsWindow(
         @RequestParam UUID applicationId,
         @RequestParam int windowSize,
@@ -121,24 +126,13 @@ public class ApplicationEvaluationResource {
     }
 
     /**
-     * Retrieves the available job filter options for the current research group.
-     *
-     * @return a {@link ResponseEntity} containing a set of {@link JobFilterOptionDTO}
-     */
-    @GetMapping("/jobs")
-    public ResponseEntity<Set<JobFilterOptionDTO>> getJobFilterOptions() {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
-
-        return ResponseEntity.ok(applicationEvaluationService.getJobFilterOptions(researchGroupId));
-    }
-
-    /**
      * Marks the specified application as IN_REVIEW if its current state is SENT.
      *
      * @param applicationId the ID of the application to update
      * @return 204 No Content if the update was processed successfully
      */
     @PutMapping("/applications/{applicationId}/open")
+    @Professor
     public ResponseEntity<Void> markApplicationAsInReview(@PathVariable UUID applicationId) {
         applicationEvaluationService.markApplicationAsInReview(applicationId);
         return ResponseEntity.noContent().build();
@@ -162,6 +156,7 @@ public class ApplicationEvaluationResource {
         }
     )
     @GetMapping(path = "/applications/{applicationId}/documents-download", produces = "application/zip")
+    @Professor
     public void downloadAll(@PathVariable("applicationId") UUID applicationId, HttpServletResponse response) throws IOException {
         applicationEvaluationService.downloadAllDocumentsForApplication(applicationId, response);
     }
@@ -173,6 +168,7 @@ public class ApplicationEvaluationResource {
      * @return ResponseEntity with list of job names
      */
     @GetMapping("/job-names")
+    @Professor
     public ResponseEntity<List<String>> getAllJobNames() {
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
 
