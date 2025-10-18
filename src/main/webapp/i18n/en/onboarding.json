@@ -12,6 +12,7 @@
     },
     "professorRequest": {
       "dialogTitle": "Request Access",
+      "approvalNotice": "Please note: The approval process for your research group may take a few days. Our administrators will review your request and contact you once it has been approved.",
       "sections": {
         "personalInfo": "Personal Information",
         "researchGroupInfo": "Research Group Information",
