@@ -20,7 +20,6 @@ import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicat
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 
-import { EvaluationService } from '../service/evaluation.service';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../components/section/section';
 import { SubSection } from '../components/sub-section/sub-section';
@@ -105,7 +104,6 @@ export class ApplicationDetailComponent {
   private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
-  private readonly evaluationService = inject(EvaluationService);
   private readonly applicationResourceService = inject(ApplicationResourceApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
