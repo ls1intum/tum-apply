@@ -21,11 +21,4 @@ export class TagComponent {
   width = input<string | undefined>(undefined);
 
   readonly iconProp = computed(() => this.icon() as IconDefinition);
-
-  widthValue = computed(() => {
-    if (this.width() !== undefined) {
-      return this.width();
-    }
-    return undefined;
-  });
 }

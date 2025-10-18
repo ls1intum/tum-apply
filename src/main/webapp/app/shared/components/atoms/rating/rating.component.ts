@@ -52,8 +52,6 @@ export class RatingComponent {
           return 'var(--p-success-hover-color)';
         case 2:
           return 'var(--p-success-active-color)';
-        default:
-          return 'var(--p-background-surface-alt)';
       }
     }
     return 'var(--p-background-surface-alt)';
