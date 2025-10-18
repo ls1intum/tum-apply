@@ -1,9 +1,9 @@
 import { Component, ViewEncapsulation, computed, effect, input, model, output } from '@angular/core';
 import { TextareaModule } from 'primeng/textarea';
 import { TranslateModule } from '@ngx-translate/core';
+import { TimeAgoPipe } from 'app/shared/pipes';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { TimeAgoPipe } from '../../../pipes/time-ago.pipe';
 
 @Component({
   selector: 'jhi-comment',
