@@ -18,6 +18,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -250,6 +251,21 @@ public class ResearchGroupService {
         group.setState(ResearchGroupState.ACTIVE);
         ResearchGroup saved = researchGroupRepository.save(group);
 
+        Set<UserResearchGroupRole> roles = userResearchGroupRoleRepository.findAllByResearchGroup(group);
+
+        if (roles.size() != 1) {
+            log.warn("Expected exactly 1 user for draft research group {}, found {}", researchGroupId, roles.size());
+        }
+
+        roles
+            .stream()
+            .filter(role -> role.getRole() == UserRole.APPLICANT)
+            .forEach(role -> {
+                role.setRole(UserRole.PROFESSOR);
+                userResearchGroupRoleRepository.save(role);
+                log.info("Upgraded user {} to PROFESSOR for research group {}", role.getUser().getUserId(), group.getResearchGroupId());
+            });
+
         return saved;
     }
 
@@ -325,13 +341,21 @@ public class ResearchGroupService {
 
         ResearchGroup saved = researchGroupRepository.save(researchGroup);
 
+        currentUser.setUniversityId(request.universityId());
         currentUser.setResearchGroup(saved);
         userRepository.save(currentUser);
 
-        UserResearchGroupRole role = new UserResearchGroupRole();
-        role.setUser(currentUser);
-        role.setResearchGroup(saved);
-        role.setRole(UserRole.PROFESSOR);
+        UserResearchGroupRole role = userResearchGroupRoleRepository
+            .findAllByUser(currentUser)
+            .stream()
+            .findFirst()
+            .orElseGet(() -> {
+                UserResearchGroupRole newRole = new UserResearchGroupRole();
+                newRole.setUser(currentUser);
+                return newRole;
+            });
+        role.setRole(UserRole.APPLICANT);
+        role.setResearchGroup(researchGroup);
         userResearchGroupRoleRepository.save(role);
 
         return saved;
