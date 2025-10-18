@@ -22,6 +22,7 @@ export interface Application {
     job?: any | null;
     state?: Application.StateEnum;
     desiredStartDate?: string;
+    appliedAt?: string;
     projects?: string;
     specialSkills?: string;
     motivation?: string;

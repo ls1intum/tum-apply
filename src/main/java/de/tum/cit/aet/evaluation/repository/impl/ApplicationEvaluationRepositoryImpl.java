@@ -33,14 +33,14 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
 
     private static final Map<String, String> SORT_COLUMNS = Map.ofEntries(
         Map.entry("name", "u.last_name"),
-        Map.entry("appliedAt", "a.created_at"),
+        Map.entry("appliedAt", "a.applied_at"),
         Map.entry("status", "a.application_state"),
         Map.entry("job", "j.title")
     );
 
     private static final Map<String, String> SORT_FIELD_MAPPING = Map.ofEntries(
         Map.entry("name", "applicant.user.lastName"),
-        Map.entry("appliedAt", "createdAt"),
+        Map.entry("appliedAt", "appliedAt"),
         Map.entry("status", "state"),
         Map.entry("job", "job.title")
     );
@@ -150,8 +150,8 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
                 case "job.title":
                     sortExpression = jobJoin.get(Job_.TITLE);
                     break;
-                case "createdAt":
-                    sortExpression = root.get(Application_.CREATED_AT);
+                case "appliedAt":
+                    sortExpression = root.get(Application_.appliedAt);
                     break;
                 case "state":
                     sortExpression = root.get(Application_.STATE);
@@ -213,7 +213,7 @@ public class ApplicationEvaluationRepositoryImpl implements ApplicationEvaluatio
         params.put("states", states.stream().map(ApplicationState::toString).toList());
         params.put("applicationId", applicationId);
 
-        String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.created_at", "a.application_id");
+        String orderBy = SqlQueryUtil.buildOrderByClause(sort, SORT_COLUMNS, "a.applied_at", "a.application_id");
 
         StringBuilder sql = new StringBuilder(
             """
