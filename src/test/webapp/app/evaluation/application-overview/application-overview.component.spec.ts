@@ -9,6 +9,7 @@ import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/applicatio
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
+import { provideToastServiceMock } from '../../../util/toast-service.mock';
 
 type GetOverviewsArgs = Parameters<ApplicationEvaluationResourceApiService['getApplicationsOverviews']>;
 
@@ -66,6 +67,7 @@ describe('ApplicationOverviewComponent', () => {
         },
         provideFontAwesomeTesting(),
         provideTranslateMock(),
+        provideToastServiceMock(),
       ],
     }).compileComponents();
 
