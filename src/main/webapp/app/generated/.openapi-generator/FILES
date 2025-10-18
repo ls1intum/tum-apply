@@ -49,7 +49,6 @@ model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
 model/jobDetailDTO.ts
-model/jobFilterOptionDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/loginRequestDTO.ts
