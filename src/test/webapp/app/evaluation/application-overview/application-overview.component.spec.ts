@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { ActivatedRoute, convertToParamMap, Params, Router } from '@angular/router';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ApplicationOverviewComponent } from 'app/evaluation/application-overview/application-overview.component';
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
@@ -68,7 +67,6 @@ describe('ApplicationOverviewComponent', () => {
         provideFontAwesomeTesting(),
         provideTranslateMock(),
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationOverviewComponent);
@@ -257,5 +255,16 @@ describe('ApplicationOverviewComponent', () => {
     api.getAllJobNames.mockReturnValueOnce(throwError(() => new Error('fail')));
     await component.loadAllJobNames();
     expect(component.allAvailableJobNames()).toEqual([]);
+  });
+
+  it('logs error to console when loadPage fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    api.getApplicationsOverviews.mockReturnValueOnce(throwError(() => new Error('API failure')));
+
+    await component.loadPage();
+
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to load applications:', expect.any(Error));
+
+    consoleSpy.mockRestore();
   });
 });

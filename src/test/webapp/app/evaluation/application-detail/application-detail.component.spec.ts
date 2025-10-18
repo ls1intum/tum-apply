@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ApplicationDetailComponent } from 'app/evaluation/application-detail/application-detail.component';
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
@@ -80,7 +79,6 @@ describe('ApplicationDetailComponent', () => {
         provideFontAwesomeTesting(),
         provideTranslateMock(),
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationDetailComponent);
@@ -134,6 +132,36 @@ describe('ApplicationDetailComponent', () => {
     expect(component.sortBy()).toBe('name');
     expect(component.sortDirection()).toBe('ASC');
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should reset isSortInitiatedByUser flag after query param effect when sort was user-initiated', async () => {
+    fixture.destroy();
+
+    q$.next(convertToParamMap({ sortBy: 'initialField', sortDir: 'DESC' }));
+
+    fixture = TestBed.createComponent(ApplicationDetailComponent);
+    component = fixture.componentInstance;
+
+    vi.spyOn(component as any, 'loadInitialPage').mockResolvedValue(undefined);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    vi.runOnlyPendingTimers();
+
+    (component as any).isSortInitiatedByUser = true;
+    component.sortBy.set('customField');
+
+    expect((component as any).isSortInitiatedByUser).toBe(true);
+    expect(component.sortBy()).toBe('customField');
+
+    q$.next(convertToParamMap({ sortBy: 'ignoredField', sortDir: 'ASC' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    vi.runOnlyPendingTimers();
+
+    expect(component.sortBy()).toBe('customField');
+    expect(component.sortDirection()).toBe('ASC');
+    expect((component as any).isSortInitiatedByUser).toBe(false);
   });
 
   // ---------------- ACCEPT / REJECT ----------------
