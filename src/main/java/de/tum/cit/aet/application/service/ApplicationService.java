@@ -384,11 +384,8 @@ public class ApplicationService {
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
-        assertCanViewApplicationDTO(applicationId);
-        Application application = applicationRepository
-            .findById(applicationId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
-        return documentDictionaryService.getDocumentIdsDTO(application);
+        assertCanViewApplication(applicationId);
+        return documentDictionaryService.getDocumentIdsDTO(assertCanViewApplication(applicationId));
     }
 
     /**
@@ -445,21 +442,18 @@ public class ApplicationService {
         return application;
     }
 
-    /**
-     * Asserts that the current user can manage the application with the given ID.
-     *
-     * @param applicationId the ID of the application to check
-     * @return the applicationForApplicantDTO entity if the user can manage it
-     */
-    private ApplicationForApplicantDTO assertCanManageApplicationDTO(UUID applicationId) {
+    private Application assertCanViewApplication(UUID applicationId) {
         if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
-        ApplicationForApplicantDTO application = applicationRepository.findDtoById(applicationId);
-        currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
+        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        if (currentUserService.isProfessor()) {
+            return application;
+        }
+        currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
         return application;
     }
-
+    
     /**
      * Asserts that the current user can view the application with the given ID.
      * Allows access to:
