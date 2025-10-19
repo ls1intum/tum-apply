@@ -115,6 +115,7 @@ public class MvcTestClient {
             case 200 -> result = getOk(url, params, accepts);
             case 400 -> result = getInvalid(url, params, accepts);
             case 401 -> result = getUnauthorized(url, params, accepts);
+            case 403 -> result = getForbidden(url, params, accepts);
             case 404 -> result = getNotFound(url, params, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -129,9 +130,11 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
+            case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -149,9 +152,11 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
+            case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -169,6 +174,7 @@ public class MvcTestClient {
             case 204 -> result = putNoContent(url, body, accepts);
             case 400 -> result = putInvalid(url, body, accepts);
             case 401 -> result = putUnauthorized(url, body, accepts);
+            case 403 -> result = putForbidden(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -189,6 +195,7 @@ public class MvcTestClient {
             case 204 -> result = putNoContent(url, body, accepts);
             case 400 -> result = putInvalid(url, body, accepts);
             case 401 -> result = putUnauthorized(url, body, accepts);
+            case 403 -> result = putForbidden(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -206,6 +213,7 @@ public class MvcTestClient {
             case 204 -> result = deleteNoContent(url, body, accepts);
             case 400 -> result = deleteInvalid(url, body, accepts);
             case 401 -> result = deleteUnauthorized(url, body, accepts);
+            case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -299,6 +307,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 201 Created and returns the MvcResult.
+     */
+    private MvcResult postCreated(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isCreated()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 201", e);
+        }
+    }
+
+    /**
      * Low-level POST that asserts 204 No Content and returns the MvcResult.
      */
     private MvcResult postNoContent(String url, Object body, MediaType... accepts) {
@@ -328,6 +347,17 @@ public class MvcTestClient {
             return postJson(url, body, accepts).andExpect(status().isUnauthorized()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("POST " + url + " failed with 401", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 403 Forbidden and returns the MvcResult.
+     */
+    private MvcResult postForbidden(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isForbidden()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 403", e);
         }
     }
 
@@ -386,6 +416,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level PUT that asserts 403 Forbidden and returns the MvcResult.
+     */
+    private MvcResult putForbidden(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isForbidden()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed with 403", e);
+        }
+    }
+
+    /**
      * Low-level PUT that asserts 404 Not Found and returns the MvcResult.
      */
     private MvcResult putNotFound(String url, Object body, MediaType... accepts) {
@@ -434,6 +475,16 @@ public class MvcTestClient {
             return deleteJson(url, body, accepts).andExpect(status().isUnauthorized()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("DELETE " + url + " failed with 401", e);
+        }
+    }
+
+    /*     * Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
+     */
+    private MvcResult deleteForbidden(String url, Object body, MediaType... accepts) {
+        try {
+            return deleteJson(url, body, accepts).andExpect(status().isForbidden()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 403", e);
         }
     }
 
