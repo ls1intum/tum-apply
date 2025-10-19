@@ -110,7 +110,7 @@ public class ApplicationService {
      * @return the ApplicationForApplicantDTO with the given ID
      */
     public ApplicationForApplicantDTO getApplicationById(UUID applicationId) {
-        return assertCanManageApplicationDTO(applicationId);
+        return assertCanViewApplicationDTO(applicationId);
     }
 
     /**
@@ -384,7 +384,10 @@ public class ApplicationService {
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
-        Application application = assertCanManageApplication(applicationId);
+        assertCanViewApplicationDTO(applicationId);
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         return documentDictionaryService.getDocumentIdsDTO(application);
     }
 
@@ -453,6 +456,35 @@ public class ApplicationService {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
         ApplicationForApplicantDTO application = applicationRepository.findDtoById(applicationId);
+        currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
+        return application;
+    }
+
+    /**
+     * Asserts that the current user can view the application with the given ID.
+     * Allows access to:
+     * - Application owner (applicant)
+     * - Admins
+     * - Any professor
+     *
+     * @param applicationId the ID of the application to check
+     * @return the applicationForApplicantDTO entity if the user can view it
+     */
+    private ApplicationForApplicantDTO assertCanViewApplicationDTO(UUID applicationId) {
+        if (applicationId == null) {
+            throw new InvalidParameterException("The applicationId may not be null.");
+        }
+        
+        ApplicationForApplicantDTO application = applicationRepository.findDtoById(applicationId);
+        if (application == null) {
+            throw EntityNotFoundException.forId("Application", applicationId);
+        }
+        
+        // Allow any professor to view applications
+        if (currentUserService.isProfessor()) {
+            return application;
+        }
+        
         currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
         return application;
     }
