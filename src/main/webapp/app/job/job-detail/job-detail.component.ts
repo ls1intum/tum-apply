@@ -11,7 +11,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
@@ -57,7 +56,7 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ConfirmDialog],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateModule, ButtonGroupComponent, TagComponent, ConfirmDialog],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
