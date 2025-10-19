@@ -11,7 +11,7 @@
 
 export interface DocumentInformationHolderDTO { 
     id: string;
-    size: number;
     name?: string;
+    size: number;
 }
 
