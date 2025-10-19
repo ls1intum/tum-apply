@@ -384,8 +384,8 @@ public class ApplicationService {
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
-        assertCanViewApplication(applicationId);
-        return documentDictionaryService.getDocumentIdsDTO(assertCanViewApplication(applicationId));
+        Application application = assertCanViewApplication(applicationId);
+        return documentDictionaryService.getDocumentIdsDTO(application);
     }
 
     /**
