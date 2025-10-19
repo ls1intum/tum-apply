@@ -21,7 +21,6 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
-import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -150,11 +149,13 @@ public class ApplicationService {
         applicant.setCity(applicantDTO.city());
         applicant.setCountry(applicantDTO.country());
         applicant.setBachelorDegreeName(applicantDTO.bachelorDegreeName());
-        applicant.setBachelorGradingScale(applicantDTO.bachelorGradingScale());
+        applicant.setBachelorGradeUpperLimit(applicantDTO.bachelorGradeUpperLimit());
+        applicant.setBachelorGradeLowerLimit(applicantDTO.bachelorGradeLowerLimit());
         applicant.setBachelorGrade(applicantDTO.bachelorGrade());
         applicant.setBachelorUniversity(applicantDTO.bachelorUniversity());
         applicant.setMasterDegreeName(applicantDTO.masterDegreeName());
-        applicant.setMasterGradingScale(applicantDTO.masterGradingScale());
+        applicant.setMasterGradeUpperLimit(applicantDTO.masterGradeUpperLimit());
+        applicant.setMasterGradeLowerLimit(applicantDTO.masterGradeLowerLimit());
         applicant.setMasterGrade(applicantDTO.masterGrade());
         applicant.setMasterUniversity(applicantDTO.masterUniversity());
         applicantRepository.save(applicant);
@@ -421,8 +422,6 @@ public class ApplicationService {
         User user = userRepository.findById(userId).orElseThrow();
         Applicant applicant = new Applicant();
         applicant.setUser(user);
-        applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
-        applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);
         return applicantRepository.save(applicant);
     }
 

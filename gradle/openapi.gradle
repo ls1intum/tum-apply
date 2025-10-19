@@ -84,6 +84,7 @@ tasks.register('pruneOpenApiSpec') {
       pruneInvalidReferences(specificationMap, componentsMap)
 
     removeOperationsWithNullSchemas(prunedSpecificationMap)
+    sortComponentsAndPaths(prunedSpecificationMap)
 
     outputFile.text = yamlParser.dump(prunedSpecificationMap)
     println "✔ Pruned specification written to ${outputFile}"
@@ -181,6 +182,47 @@ private static void removeOperationsWithNullSchemas(Map<String, Object> specific
   }.keySet().toList()
 
   emptyPathNames.each { pathsMap.remove(it) }
+}
+
+private static void sortComponentsAndPaths(Map<String, Object> specificationMap) {
+  // Sort components
+  Map<String, Map<String, Object>> componentsMap = specificationMap.components as Map<String, Map<String, Object>>
+  if (componentsMap != null) {
+    componentsMap.each { String category, Map<String, Object> categoryMap ->
+      if (categoryMap != null) {
+        def sorted = new LinkedHashMap()
+        categoryMap.entrySet().sort { it.key }.each { entry ->
+          def sortedValue = entry.value
+          // If this is a schema object, sort its properties
+          if (sortedValue instanceof Map && sortedValue.containsKey('properties')) {
+            sortedValue = sortSchemaProperties(sortedValue as Map<String, Object>)
+          }
+          sorted[entry.key] = sortedValue
+        }
+        componentsMap[category] = sorted
+      }
+    }
+  }
+
+  // Sort paths
+  Map<String, Map<String, Object>> pathsMap = specificationMap.paths as Map<String, Map<String, Object>>
+  if (pathsMap != null) {
+    def sortedPaths = new LinkedHashMap()
+    pathsMap.entrySet().sort { it.key }.each { sortedPaths[it.key] = it.value }
+    specificationMap.paths = sortedPaths
+  }
+}
+
+private static Map<String, Object> sortSchemaProperties(Map<String, Object> schema) {
+  def sortedSchema = new LinkedHashMap(schema)
+  if (schema.properties instanceof Map) {
+    def sortedProperties = new LinkedHashMap()
+    (schema.properties as Map).entrySet().sort { it.key }.each { 
+      sortedProperties[it.key] = it.value 
+    }
+    sortedSchema.properties = sortedProperties
+  }
+  return sortedSchema
 }
 
 private static boolean operationContainsNullSchema(Map<String, Object> operationDefinition) {
