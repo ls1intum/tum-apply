@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -46,10 +46,6 @@ describe('ButtonComponent', () => {
       imports: [ButtonComponent],
       providers: [provideFontAwesomeTesting(), provideTranslateMock(), provideFontAwesomeTesting()],
     }).compileComponents();
-  });
-
-  afterEach(() => {
-    // Reset any spies or mocks if used
   });
 
   it('should render with default inputs', () => {
@@ -109,11 +105,9 @@ describe('ButtonComponent', () => {
     expect(badgeEl).toBeTruthy();
   });
 
-  // it('should render translated label if shouldTranslate is true', () => {
-  //   const fixture = createButtonFixture({ label: 'test.label', shouldTranslate: true });
-
-  //   const translatedSpan = fixture.nativeElement.querySelector('[jhiTranslate]');
-  //   expect(translatedSpan).toBeTruthy();
-  //   expect(translatedSpan.getAttribute('jhiTranslate')).toBe('test.label');
-  // });
+  it('should show badge if size is set', () => {
+    const fixture = createButtonFixture({ size: 'sm' });
+    fixture.componentRef.setInput('label', undefined);
+    expect(fixture.componentInstance.buttonClass()).contain('w-8 h-8');
+  });
 });
