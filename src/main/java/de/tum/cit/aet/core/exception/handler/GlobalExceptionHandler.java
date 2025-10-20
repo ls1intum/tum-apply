@@ -140,7 +140,7 @@ public class GlobalExceptionHandler {
         }
         if (ex instanceof EmailTemplateException ete) {
             log.warn("Handled email template exception: {} - Path: {}", ete.getClass().getSimpleName(), request.getRequestURI(), ex);
-            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.EMAIL_TEMPLATE_ERROR, ex, request.getRequestURI(), null);
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_TEMPLATE_ERROR, ex, request.getRequestURI(), null);
         }
         if (ex instanceof EmailVerificationFailedException evfe) {
             log.info("Handled OTP verification failure - Path: {}", request.getRequestURI());

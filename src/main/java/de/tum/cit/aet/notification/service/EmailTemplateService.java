@@ -125,7 +125,9 @@ public class EmailTemplateService {
      * @return the {@link EmailTemplateDTO}
      */
     public EmailTemplateDTO getTemplate(UUID templateId) {
-        return toDTOWithQuillMentions(get(templateId));
+        EmailTemplate emailTemplate = get(templateId);
+        currentUserService.assertAccessTo(emailTemplate);
+        return toDTOWithQuillMentions(emailTemplate);
     }
 
     /**
@@ -135,12 +137,12 @@ public class EmailTemplateService {
      * @param researchGroup the research group for the template
      * @param createdBy     the user who creates the template
      * @return the created {@link EmailTemplateDTO}
-     * @throws IllegalArgumentException       if the email type does not allow multiple templates
+     * @throws EmailTemplateException       if the email type does not allow multiple templates
      * @throws ResourceAlreadyExistsException if a template with the same name already exists
      */
     public EmailTemplateDTO createTemplate(EmailTemplateDTO dto, ResearchGroup researchGroup, User createdBy) {
         if (!dto.emailType().isMultipleTemplates()) {
-            throw new IllegalArgumentException("Cannot create another template of type: " + dto.emailType());
+            throw new EmailTemplateException("Cannot create another template of type: " + dto.emailType());
         }
 
         EmailTemplate template = new EmailTemplate();
